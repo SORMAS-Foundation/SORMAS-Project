@@ -175,7 +175,7 @@ public class StartupShutdownService {
 
 		createDefaultUsers();
 
-		createSormasToSormasUser();
+		createOrUpdateSormasToSormasUser();
 
 		upgrade();
 
@@ -422,7 +422,7 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void createSormasToSormasUser() {
+	private void createOrUpdateSormasToSormasUser() {
 		final User sormasToSormasUser = userService.getByUserName(SORMAS_TO_SORMAS_USER_NAME);
 
 		serverAccessDataService.getServerAccessData().ifPresent((serverAccessData -> {

@@ -5268,11 +5268,11 @@ CREATE TABLE sormastosormasorigininfo (
     uuid varchar(36) not null unique,
     creationdate timestamp without time zone NOT NULL,
     changedate timestamp not null,
-    healthdepartment varchar(512),
+    organizationid varchar(512),
     sendername varchar(512),
     senderemail varchar(512),
     senderphonenumber varchar(512),
-    ownershipHandedOver boolean NOT NULL DEFAULT false,
+    ownershiphandedover boolean NOT NULL DEFAULT false,
     comment varchar(4096),
     primary key(id)
 );
@@ -5291,9 +5291,9 @@ CREATE TABLE sormastosormasshareinfo (
     changedate timestamp not null,
     caze_id bigint,
     contact_id bigint,
-    healthdepartment varchar(512),
+    organizationid varchar(512),
     sender_id bigint,
-    ownershipHandedOver boolean NOT NULL DEFAULT false,
+    ownershiphandedover boolean NOT NULL DEFAULT false,
     comment varchar(4096),
     primary key(id)
 );

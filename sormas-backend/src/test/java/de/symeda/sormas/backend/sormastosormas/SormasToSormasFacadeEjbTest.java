@@ -25,6 +25,8 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
@@ -137,7 +139,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
 
-		assertThat(savedCase.getSormasToSormasOriginInfo().getHealthDepartmentId(), is("testHealthDep"));
+		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is("testHealthDep"));
 		assertThat(savedCase.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 
 		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedCase.getPerson().getUuid());
@@ -263,7 +265,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedContact.getCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedContact.getEpiData().getAnimalCondition(), is(AnimalCondition.PROCESSED));
 
-		assertThat(savedContact.getSormasToSormasOriginInfo().getHealthDepartmentId(), is("testHealthDep"));
+		assertThat(savedContact.getSormasToSormasOriginInfo().getOrganizationId(), is("testHealthDep"));
 		assertThat(savedContact.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 
 		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedContact.getPerson().getUuid());
@@ -308,7 +310,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testShareCase() throws SormasToSormasException, JsonProcessingException {
+	public void testShareCase() throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
 		RDCF rdcf = creator.createRDCF();
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -322,10 +324,10 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setHealthDepartment(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
+		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(
 					invocation.getArgumentAt(0, String.class),
@@ -336,7 +338,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(authToken, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
 
 				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(2, SormasToSormasEncryptedDataDto.class);
-				assertThat(encryptedData.getSenderId(), is(DEFAULT_SERVER_ACCESS_CN));
+				assertThat(encryptedData.getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 
 				SormasToSormasCaseDto sharedCase = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto.class);
 
@@ -350,7 +352,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedCase.getCaze().getClassificationUser(), is(nullValue()));
 
 				// share information
-				assertThat(sharedCase.getOriginInfo().getHealthDepartmentId(), is(DEFAULT_SERVER_ACCESS_CN));
+				assertThat(sharedCase.getOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 				assertThat(sharedCase.getOriginInfo().getSenderName(), is("Surv Off"));
 				assertThat(sharedCase.getOriginInfo().getComment(), is("Test comment"));
 
@@ -363,13 +365,14 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);
 
 		assertThat(shareInfoList.size(), is(1));
-		assertThat(shareInfoList.get(0).getHealthDepartment().getUuid(), is(SECOND_SERVER_ACCESS_CN));
+		assertThat(shareInfoList.get(0).getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
 
 	@Test
-	public void testShareCaseWithContacts() throws SormasToSormasException, JsonProcessingException {
+	public void testShareCaseWithContacts()
+		throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
 		RDCF rdcf = creator.createRDCF();
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -385,11 +388,11 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact = creator.createContact(officer, creator.createPerson().toReference(), caze);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setHealthDepartment(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
+		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setComment("Test comment");
 		options.setWithAssociatedContacts(true);
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
 				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(2, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto sharedCase = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto.class);
@@ -406,13 +409,13 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		SormasToSormasShareInfoDto contactShareInfo =
 			shareInfoList.stream().filter(i -> DataHelper.isSame(i.getContact(), contact)).findFirst().get();
-		assertThat(contactShareInfo.getHealthDepartment().getUuid(), is(SECOND_SERVER_ACCESS_CN));
+		assertThat(contactShareInfo.getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
 		assertThat(contactShareInfo.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(contactShareInfo.getComment(), is("Test comment"));
 	}
 
 	@Test
-	public void testShareContact() throws SormasToSormasException, JsonProcessingException {
+	public void testShareContact() throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
 		RDCF rdcf = creator.createRDCF();
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -424,10 +427,10 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setHealthDepartment(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
+		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(
 					invocation.getArgumentAt(0, String.class),
@@ -450,7 +453,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedContact.getContact().getResultingCaseUser(), is(nullValue()));
 
 				// share information
-				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getHealthDepartmentId(), is(DEFAULT_SERVER_ACCESS_CN));
+				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getSenderName(), is("Surv Off"));
 				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getComment(), is("Test comment"));
 
@@ -462,13 +465,14 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), 0, 100);
 		assertThat(shareInfoList.size(), is(1));
-		assertThat(shareInfoList.get(0).getHealthDepartment().getUuid(), is(SECOND_SERVER_ACCESS_CN));
+		assertThat(shareInfoList.get(0).getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
 
 	@Test
-	public void testShareCaseWithPseudonymizePersonalData() throws SormasToSormasException, JsonProcessingException {
+	public void testShareCaseWithPseudonymizePersonalData()
+		throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
 		RDCF rdcf = creator.createRDCF();
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -483,10 +487,10 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setHealthDepartment(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
+		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setPseudonymizePersonalData(true);
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
 				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(2, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto sharedCase = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto.class);
@@ -502,7 +506,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testShareCaseWithPseudonymizeSensitiveData() throws SormasToSormasException, JsonProcessingException {
+	public void testShareCaseWithPseudonymizeSensitiveData()
+		throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
 		RDCF rdcf = creator.createRDCF();
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -518,10 +523,10 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setHealthDepartment(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
+		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setPseudonymizeSensitiveData(true);
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(
 					invocation.getArgumentAt(0, String.class),
@@ -558,7 +563,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	private SormasToSormasOriginInfoDto createSormasToSormasOriginInfo() {
 		SormasToSormasOriginInfoDto source = new SormasToSormasOriginInfoDto();
-		source.setHealthDepartmentId("testHealthDep");
+		source.setOrganizationId("testHealthDep");
 		source.setSenderName("John doe");
 
 		return source;
@@ -606,7 +611,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
 
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeyAlias()).thenReturn(DEFAULT_SERVER_ACCESS_CN);
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getOrganizationId()).thenReturn(DEFAULT_SERVER_ACCESS_CN);
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("sormas2sormas.keystore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certPass");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
@@ -617,7 +622,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccesssecond");
 
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeyAlias()).thenReturn(SECOND_SERVER_ACCESS_CN);
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getOrganizationId()).thenReturn(SECOND_SERVER_ACCESS_CN);
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("sormas2sormas.keystore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certipass");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");

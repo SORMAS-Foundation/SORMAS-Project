@@ -44,14 +44,14 @@ public class ServerAccessDataService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerAccessDataService.class);
 
-	private static final String SERVER_ACCESS_DATA_FILE_NAME = "server-access-data.csv";
+	private static final String SERVER_ACCESS_DATA_FILE_NAME_TPL = "%s-server-access-data.csv";
 
-	private static final String SERVER_LIST_FILE_NAME = "server-list.csv";
+	private static final String ORGANIZATION_LIST_FILE_NAME = "organization-list.csv";
 
 	@Inject
 	private SormasToSormasConfig sormasToSormasConfig;
 
-	public Optional<ServerAccessData> getServerAccessData() {
+	public Optional<OrganizationServerAccessData> getServerAccessData() {
 
 		String configPath = sormasToSormasConfig.getPath();
 
@@ -59,7 +59,9 @@ public class ServerAccessDataService {
 			return Optional.empty();
 		}
 
-		Path inputFile = Paths.get(configPath, SERVER_ACCESS_DATA_FILE_NAME);
+		String serverAccessConfigFileName = String.format(SERVER_ACCESS_DATA_FILE_NAME_TPL, sormasToSormasConfig.getOrganizationId());
+		Path inputFile = Paths.get(configPath, serverAccessConfigFileName);
+
 		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
 			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {
 			return Optional.of(buildServerAccessData(csvReader.readNext()));
@@ -70,14 +72,14 @@ public class ServerAccessDataService {
 		}
 	}
 
-	public List<ServerAccessListItem> getServerList() {
+	public List<OrganizationServerAccessData> getOrganizationList() {
 		String configPath = sormasToSormasConfig.getPath();
 
 		if (StringUtils.isEmpty(configPath)) {
 			return Collections.emptyList();
 		}
 
-		Path inputFile = Paths.get(configPath, SERVER_LIST_FILE_NAME);
+		Path inputFile = Paths.get(configPath, ORGANIZATION_LIST_FILE_NAME);
 
 		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
 			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {
@@ -86,7 +88,7 @@ public class ServerAccessDataService {
 				// skip the empty line and comment lines(starting with #)
 				.filter(r -> r.length > 1 || r[0].startsWith("#"))
 				// parse non-empty lines
-				.map(this::buildServerAccessListItem)
+				.map(this::buildServerAccessData)
 				.collect(Collectors.toList());
 		} catch (Exception e) {
 			LOGGER.warn("Unexpected error while reading sormas to sormas server list", e);
@@ -94,36 +96,20 @@ public class ServerAccessDataService {
 		}
 	}
 
-	public Optional<ServerAccessListItem> getServerListItemByCommonName(String commonName) {
-		return getServerList().stream().filter(i -> i.getHealthDepartmentId().equals(commonName)).findFirst();
+	public Optional<OrganizationServerAccessData> getServerListItemById(String id) {
+		return getOrganizationList().stream().filter(i -> i.getId().equals(id)).findFirst();
 	}
 
-	private ServerAccessData buildServerAccessData(String[] csvRow) {
-		ServerAccessData data = new ServerAccessData();
-
-		if (csvRow[0] != null) {
-			data.setHealthDepartmentId(csvRow[0]);
-		}
-		if (csvRow[1] != null) {
-			data.setHealthDepartmentName(csvRow[1]);
-		}
-		if (csvRow[2] != null) {
-			data.setRestUserPassword(csvRow[2]);
-		}
-
-		return data;
-	}
-
-	private ServerAccessListItem buildServerAccessListItem(String[] row) {
-		ServerAccessListItem dto = new ServerAccessListItem();
+	private OrganizationServerAccessData buildServerAccessData(String[] row) {
+		OrganizationServerAccessData dto = new OrganizationServerAccessData();
 		if (row[0] != null) {
-			dto.setHealthDepartmentId(row[0]);
+			dto.setId(row[0]);
 		}
 		if (row[1] != null) {
-			dto.setHealthDepartmentName(row[1]);
+			dto.setName(row[1]);
 		}
 		if (row[2] != null) {
-			dto.setUrl(row[2]);
+			dto.setHostName(row[2]);
 		}
 		if (row[3] != null) {
 			dto.setRestUserPassword(row[3]);

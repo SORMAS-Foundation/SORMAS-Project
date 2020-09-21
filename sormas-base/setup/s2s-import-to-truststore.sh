@@ -23,11 +23,11 @@ echo "# SORMAS TO SORMAS CERTIFICATE IMPORT"
 echo "# This script imports a certificate into the local truststore, to be used for SORMAS2SORMAS communication"
 echo "# If anything goes wrong, please consult the sormas to sormas import guide or get in touch with the developers."
 
-if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
-	LINUX=true
-else
-	LINUX=false
-fi
+#if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
+LINUX=true
+#else
+#	LINUX=false
+#fi
 
 # DIRECTORIES
 if [[ ${LINUX} = true ]]; then
@@ -69,10 +69,10 @@ else
   fi
 fi
 
-SERVER_LIST_FILE_NAME=server-list.csv
+ORGANIZATION_LIST_FILE_NAME=organization-list.csv
 TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12
 TRUSTSTORE_FILE=${SORMAS2SORMAS_DIR}/${TRUSTSTORE_FILE_NAME}
-SERVER_LIST_FILE=${SORMAS2SORMAS_DIR}/${SERVER_LIST_FILE_NAME}
+ORGANIZATION_LIST_FILE=${SORMAS2SORMAS_DIR}/${ORGANIZATION_LIST_FILE_NAME}
 NEW_TRUSTSTORE=false
 
 if [ ! -f "${TRUSTSTORE_FILE}" ]; then
@@ -80,9 +80,9 @@ if [ ! -f "${TRUSTSTORE_FILE}" ]; then
   echo "${TRUSTSTORE_FILE_NAME} not found. A new truststore file will be created."
 fi
 
-if [ ! -f "${SERVER_LIST_FILE}" ]; then
-  echo "${SERVER_LIST_FILE_NAME} not found. A new server list file will be created."
-  touch "${SERVER_LIST_FILE}"
+if [ ! -f "${ORGANIZATION_LIST_FILE}" ]; then
+  echo "${ORGANIZATION_LIST_FILE_NAME} not found. A new server list file will be created."
+  touch "${ORGANIZATION_LIST_FILE}"
 fi
 
 while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PASS} -lt 6 ]]; do
@@ -97,20 +97,31 @@ while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PA
   echo
 done
 
-read -p "Please provide the file name of the certificate to import. It should be located inside the sormas2sormas folder: " CRT_FILE_NAME
-CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
-while [[ -z "${CRT_FILE_NAME}" ]] || [ ! -f "${CRT_FILE}" ]; do
-  echo "File not found in ${SORMAS2SORMAS_DIR} folder."
-  read -p "Please provide the file name of the certificate to import. It should be located inside the sormas2sormas folder: " CRT_FILE_NAME
-  CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
+SORMAS_S2S_ORGANIZATION_ID="";
+while [[ -z "${SORMAS_S2S_ORGANIZATION_ID}" ]]; do
+  read -p "Please provide the organization ID of the certificate owner: " SORMAS_S2S_ORGANIZATION_ID
 done
 
-# get new certificate alias, which is the same as the Common Name (CN)
-ALIAS=$(openssl x509 -noout -subject -nameopt multiline -in "${CRT_FILE}" | sed -n 's/ *commonName *= //p')
+CRT_FILE_NAME=${SORMAS_S2S_ORGANIZATION_ID}.sormas2sormas.cert.crt;
+CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
+
+if [[ ! -f "${CRT_FILE}" ]]; then
+  echo "The file ${CRT_FILE_NAME} not found in ${SORMAS2SORMAS_DIR} folder."
+
+  exit 1;
+fi
+
+CSV_FILE_NAME=${SORMAS_S2S_ORGANIZATION_ID}-server-access-data.csv;
+CSV_FILE=${SORMAS2SORMAS_DIR}/${CSV_FILE_NAME};
+if [[ ! -f "${CSV_FILE}" ]]; then
+  echo "The file ${CSV_FILE_NAME} not found in ${SORMAS2SORMAS_DIR} folder."
+
+  exit 1;
+fi
 
 # import crt
 echo "Importing certificate into truststore..."
-keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias ${ALIAS} -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
+keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias ${SORMAS_S2S_ORGANIZATION_ID} -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
 
 if [[ ${NEW_TRUSTSTORE} = true ]]; then
   # remove existing properties and empty spaces at end of file
@@ -129,18 +140,6 @@ fi
 
 echo "Updating server list CSV"
 
-# get new certificate organization
-ORG=$(openssl x509 -noout -subject -nameopt multiline -in "${CRT_FILE}" | sed -n 's/ *organizationName *= //p')
+( head -1 $CSV_FILE ) >> ${ORGANIZATION_LIST_FILE}
 
-while [[ -z "${REST_URL}" ]]; do
-  read -p "Please provide the url for the REST interface: " REST_URL
-done
-
-while [[ -z "${REST_PASSWORD}" ]]; do
-  read -sp "Please provide the password for the REST interface: " REST_PASSWORD
-done
-
-echo -e "\"${ALIAS}\",\"${ORG}\",\"${REST_URL}\",\"${REST_PASSWORD}\",\n" > "${SERVER_LIST_FILE}"
-
-echo ""
 echo "The script finished executing. Please check for any errors."

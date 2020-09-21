@@ -58,9 +58,9 @@ public class SormasToSormasEncryptionService {
 			String keystorePass = sormasToSormasConfig.getKeystorePass();
 
 			KeyStore keystore = getKeyStore(keystorePath, keystorePass);
-			String keyAlias = sormasToSormasConfig.getKeyAlias();
-			X509Certificate signerCertificate = (X509Certificate) keystore.getCertificate(keyAlias);
-			PrivateKey privateKey = (PrivateKey) keystore.getKey(keyAlias, keystorePass.toCharArray());
+			String organizationId = sormasToSormasConfig.getOrganizationId();
+			X509Certificate signerCertificate = (X509Certificate) keystore.getCertificate(organizationId);
+			PrivateKey privateKey = (PrivateKey) keystore.getKey(organizationId, keystorePass.toCharArray());
 
 			Path truststorePath = Paths.get(filePath, sormasToSormasConfig.getTruststoreName());
 			KeyStore truststore = getKeyStore(truststorePath, sormasToSormasConfig.getTruststorePass());
@@ -81,9 +81,9 @@ public class SormasToSormasEncryptionService {
 			String keystorePass = sormasToSormasConfig.getKeystorePass();
 			KeyStore keystore = getKeyStore(keystorePath, keystorePass);
 
-			String keyAlias = sormasToSormasConfig.getKeyAlias();
-			X509Certificate recipientCertificate = (X509Certificate) keystore.getCertificate(keyAlias);
-			PrivateKey recipientPrivateKey = (PrivateKey) keystore.getKey(keyAlias, keystorePass.toCharArray());
+			String organizationId = sormasToSormasConfig.getOrganizationId();
+			X509Certificate recipientCertificate = (X509Certificate) keystore.getCertificate(organizationId);
+			PrivateKey recipientPrivateKey = (PrivateKey) keystore.getKey(organizationId, keystorePass.toCharArray());
 
 			Path truststorePath = Paths.get(filePath, sormasToSormasConfig.getTruststoreName());
 			KeyStore truststore = getKeyStore(truststorePath, sormasToSormasConfig.getTruststorePass());

@@ -21,24 +21,24 @@ public class SormasToSormasEncryptedDataDto implements Serializable {
 
 	private static final long serialVersionUID = 8658507076136806951L;
 
-	private String senderId;
+	private String organizationId;
 
 	private byte[] data;
 
 	public SormasToSormasEncryptedDataDto() {
 	}
 
-	public SormasToSormasEncryptedDataDto(String senderId, byte[] data) {
-		this.senderId = senderId;
+	public SormasToSormasEncryptedDataDto(String organizationId, byte[] data) {
+		this.organizationId = organizationId;
 		this.data = data;
 	}
 
-	public String getSenderId() {
-		return senderId;
+	public String getOrganizationId() {
+		return organizationId;
 	}
 
-	public void setSenderId(String senderId) {
-		this.senderId = senderId;
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public byte[] getData() {

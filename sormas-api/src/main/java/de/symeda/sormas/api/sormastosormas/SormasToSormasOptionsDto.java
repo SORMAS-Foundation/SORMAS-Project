@@ -21,7 +21,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "SormasToSormasOptions";
 
-	public static final String HEALTH_DEPARTMENT = "healthDepartment";
+	public static final String ORGANIZATION = "organization";
 	public static final String HAND_OVER_OWNERSHIP = "handOverOwnership";
 	public static final String PSEUDONYMIZE_PERSONAL_DATA = "pseudonymizePersonalData";
 	public static final String PSEUDONYMIZE_SENSITIVE_DATA = "pseudonymizeSensitiveData";
@@ -29,7 +29,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String WITH_ASSOCIATED_CONTACTS = "withAssociatedContacts";
 
-	private ServerAccessDataReferenceDto healthDepartment;
+	private ServerAccessDataReferenceDto organization;
 
 	private boolean handOverOwnership;
 
@@ -41,12 +41,12 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean withAssociatedContacts;
 
-	public ServerAccessDataReferenceDto getHealthDepartment() {
-		return healthDepartment;
+	public ServerAccessDataReferenceDto getOrganization() {
+		return organization;
 	}
 
-	public void setHealthDepartment(ServerAccessDataReferenceDto healthDepartment) {
-		this.healthDepartment = healthDepartment;
+	public void setOrganization(ServerAccessDataReferenceDto organization) {
+		this.organization = organization;
 	}
 
 	public boolean isHandOverOwnership() {

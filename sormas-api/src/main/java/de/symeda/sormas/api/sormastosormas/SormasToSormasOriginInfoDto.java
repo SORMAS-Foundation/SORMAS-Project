@@ -21,7 +21,7 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = -4921614789451304041L;
 
-	private String healthDepartmentId;
+	private String organizationId;
 	private String senderName;
 	private String senderEmail;
 	private String senderPhoneNumber;
@@ -31,12 +31,12 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 	public SormasToSormasOriginInfoDto() {
 	}
 
-	public String getHealthDepartmentId() {
-		return healthDepartmentId;
+	public String getOrganizationId() {
+		return organizationId;
 	}
 
-	public void setHealthDepartmentId(String healthDepartmentId) {
-		this.healthDepartmentId = healthDepartmentId;
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getSenderName() {

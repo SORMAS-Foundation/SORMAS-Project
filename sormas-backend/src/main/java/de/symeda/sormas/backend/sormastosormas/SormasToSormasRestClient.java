@@ -15,7 +15,14 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+
 import javax.enterprise.inject.Alternative;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -30,6 +37,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Alternative
 public class SormasToSormasRestClient {
 
+	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s/sormas-rest%s";
+
 	private final ObjectMapper mapper;
 
 	public SormasToSormasRestClient() {
@@ -38,12 +47,36 @@ public class SormasToSormasRestClient {
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 	}
 
-	public Response post(String url, String authToken, Object entity) throws JsonProcessingException, ProcessingException {
+	public Response post(String host, String endpoint, String authToken, Object entity)
+		throws JsonProcessingException, ProcessingException, KeyManagementException, NoSuchAlgorithmException {
+
+		SSLContext sslcontext = SSLContext.getInstance("TLS");
+		sslcontext.init(
+			null,
+			new TrustManager[] {
+				new TrustAllTrustManager() },
+			new java.security.SecureRandom());
+
 		return ClientBuilder.newBuilder()
+			.sslContext(sslcontext)
+			.hostnameVerifier((s1, s2) -> true)
 			.build()
-			.target(url)
+			.target(String.format(SORMAS_REST_URL_TEMPLATE, host, endpoint))
 			.request()
 			.header("Authorization", "Basic " + authToken)
 			.post(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
+	}
+
+	private static class TrustAllTrustManager implements X509TrustManager {
+
+		public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
+		}
+
+		public void checkServerTrusted(X509Certificate[] arg0, String arg1) {
+		}
+
+		public X509Certificate[] getAcceptedIssuers() {
+			return new X509Certificate[0];
+		}
 	}
 }

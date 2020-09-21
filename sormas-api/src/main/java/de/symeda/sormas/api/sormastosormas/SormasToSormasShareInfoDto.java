@@ -26,7 +26,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
-	private ServerAccessDataReferenceDto healthDepartment;
+	private ServerAccessDataReferenceDto target;
 	private UserReferenceDto sender;
 	private boolean ownershipHandedOver;
 	private String comment;
@@ -47,12 +47,12 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		this.contact = contact;
 	}
 
-	public ServerAccessDataReferenceDto getHealthDepartment() {
-		return healthDepartment;
+	public ServerAccessDataReferenceDto getTarget() {
+		return target;
 	}
 
-	public void setHealthDepartment(ServerAccessDataReferenceDto healthDepartment) {
-		this.healthDepartment = healthDepartment;
+	public void setTarget(ServerAccessDataReferenceDto target) {
+		this.target = target;
 	}
 
 	public UserReferenceDto getSender() {

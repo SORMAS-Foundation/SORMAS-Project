@@ -174,10 +174,9 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			addComponent(layout);
 			setExpandRatio(layout, 1);
 
-			Label healthDepartmentLabel =
-				new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getHealthDepartment());
-			healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
-			layout.addComponent(healthDepartmentLabel);
+			Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getTarget());
+			targetLabel.addStyleName(CssStyles.LABEL_BOLD);
+			layout.addComponent(targetLabel);
 
 			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
 			layout.addComponent(senderLabel);
@@ -199,11 +198,11 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		layout.setStyleName(CssStyles.VSPACE_3);
 
 		ServerAccessDataReferenceDto serverAccessDataRef =
-			FacadeProvider.getSormasToSormasFacade().getServerAccessDataRef(originInfo.getHealthDepartmentId());
+			FacadeProvider.getSormasToSormasFacade().getOrganizationRef(originInfo.getOrganizationId());
 
-		Label healthDepartmentLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
-		healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
-		layout.addComponent(healthDepartmentLabel);
+		Label senderOrganizationLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
+		senderOrganizationLabel.addStyleName(CssStyles.LABEL_BOLD);
+		layout.addComponent(senderOrganizationLabel);
 		layout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + originInfo.getSenderName()));
 
 		if (originInfo.getSenderEmail() != null) {

@@ -28,7 +28,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -842917698322793413L;
 
-	private String healthDepartment;
+	private String organizationId;
 
 	private String senderName;
 
@@ -41,12 +41,12 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	private String comment;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
-	public String getHealthDepartment() {
-		return healthDepartment;
+	public String getOrganizationId() {
+		return organizationId;
 	}
 
-	public void setHealthDepartment(String healthDepartment) {
-		this.healthDepartment = healthDepartment;
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)

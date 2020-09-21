@@ -23,11 +23,11 @@ echo "# SORMAS TO SORMAS NEW CERTIFICATE GENERATION"
 echo "# This script generates a new self signed certificate, to be used for SORMAS2SORMAS and SurvNet communication"
 echo "# If anything goes wrong, please consult the certificate creation guide or get in touch with the developers."
 
-if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
-	LINUX=true
-else
-	LINUX=false
-fi
+#if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
+LINUX=true
+#else
+#	LINUX=false
+#fi
 
 # DIRECTORIES
 if [[ ${LINUX} = true ]]; then
@@ -70,17 +70,21 @@ else
   fi
 fi
 
+while [[ -z "${SORMAS_ORG_ID}" ]]; do
+  read -p "Please provide an ID for the organization: " SORMAS_ORG_ID
+done
+
+while [[ -z "${SORMAS_ORG_NAME}" ]]; do
+  read -p "Please provide the Name of your organization: " SORMAS_ORG_NAME
+done
+
+while [[ -z "${SORMAS_HOST_NAME}" ]]; do
+  read -p "Please provide the Hostname of the server: " SORMAS_HOST_NAME
+done
+
 while [[ -z "${SORMAS_S2S_CERT_PASS}" ]] || [[ ${#SORMAS_S2S_CERT_PASS} -lt 6 ]]; do
   read -sp "Please provide a password for the certificate (at least 6 characters): " SORMAS_S2S_CERT_PASS
   echo
-done
-
-while [[ -z "${SORMAS_S2S_CERT_CN}" ]]; do
-  read -p "Please provide a Common Name (CN) for the certificate: " SORMAS_S2S_CERT_CN
-done
-
-while [[ -z "${SORMAS_S2S_CERT_ORG}" ]]; do
-  read -p "Please provide an Organization (O) for the certificate: " SORMAS_S2S_CERT_ORG
 done
 
 while [[ -z "${SORMAS_S2S_REST_PASSWORD}" ]] || [[ ${#SORMAS_S2S_REST_PASSWORD} -lt 12 ]]; do
@@ -89,35 +93,35 @@ while [[ -z "${SORMAS_S2S_REST_PASSWORD}" ]] || [[ ${#SORMAS_S2S_REST_PASSWORD} 
 done
 
 if [[ ${LINUX} = true ]]; then
-  CERT_SUBJ="/CN=${SORMAS_S2S_CERT_CN}/OU=SORMAS/O=${SORMAS_S2S_CERT_ORG}"
+  CERT_SUBJ="/CN=${SORMAS_ORG_ID}/OU=SORMAS/O=${SORMAS_ORG_NAME}"
 else
-  CERT_SUBJ="//CN=${SORMAS_S2S_CERT_CN}\OU=SORMAS\O=${SORMAS_S2S_CERT_ORG}"
+  CERT_SUBJ="//CN=${SORMAS_ORG_ID}\OU=SORMAS\O=${SORMAS_ORG_NAME}"
 fi
 echo "The certificate will be generated with the following subject:"
-echo "CN=${SORMAS_S2S_CERT_CN},OU=SORMAS,O=${SORMAS_S2S_CERT_ORG}"
+echo "CN=${SORMAS_ORG_ID},OU=SORMAS,O=${SORMAS_ORG_NAME}"
 read -p "Press [Enter] to continue or [Ctrl+C] to cancel."
 
-PEM_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.privkey.pem
-P12_FILE_NAME=sormas2sormas.keystore.p12
+PEM_FILE=${SORMAS2SORMAS_DIR}/${SORMAS_ORG_ID}.sormas2sormas.privkey.pem
+P12_FILE_NAME=${SORMAS_ORG_ID}.sormas2sormas.keystore.p12
 P12_FILE=${SORMAS2SORMAS_DIR}/${P12_FILE_NAME}
-CRT_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.cert.crt
-CSV_FILE=${SORMAS2SORMAS_DIR}/server-access-data.csv
+CRT_FILE=${SORMAS2SORMAS_DIR}/${SORMAS_ORG_ID}.sormas2sormas.cert.crt
+CSV_FILE=${SORMAS2SORMAS_DIR}/${SORMAS_ORG_ID}-server-access-data.csv
 
 # generate private key and self signed certificate
 openssl req -sha256 -newkey rsa:4096 -passout pass:"${SORMAS_S2S_CERT_PASS}" -keyout "${PEM_FILE}" -x509 -passin pass:"${SORMAS_S2S_CERT_PASS}" -days 1095 -subj "${CERT_SUBJ}" -out "${CRT_FILE}"
 
 # add to encrypted keystore
-openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${SORMAS_S2S_CERT_PASS}" -password pass:"${SORMAS_S2S_CERT_PASS}" -name "${SORMAS_S2S_CERT_CN}" -in "${CRT_FILE}"
+openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${SORMAS_S2S_CERT_PASS}" -password pass:"${SORMAS_S2S_CERT_PASS}" -name "${SORMAS_ORG_ID}" -in "${CRT_FILE}"
 
 rm "${PEM_FILE}"
 
 echo "Generating server access data CSV"
-echo -e "\"${SORMAS_S2S_CERT_CN}\",\"${SORMAS_S2S_CERT_ORG}\",\"${SORMAS_S2S_REST_PASSWORD}\",\n" > "${CSV_FILE}"
+echo -e "\"${SORMAS_ORG_ID}\",\"${SORMAS_ORG_NAME}\",\"${SORMAS_HOST_NAME}\",\"${SORMAS_S2S_REST_PASSWORD}\",\n" > "${CSV_FILE}"
 
 # remove existing properties and empty spaces at end of file
 sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"
 sed -i "/^sormas2sormas\.path/d" "${SORMAS_PROPERTIES}"
-sed -i "/^sormas2sormas\.keyAlias/d" "${SORMAS_PROPERTIES}"
+sed -i "/^sormas2sormas\.organizationId/d" "${SORMAS_PROPERTIES}"
 sed -i "/^sormas2sormas\.keystoreName/d" "${SORMAS_PROPERTIES}"
 sed -i "/^sormas2sormas\.keystorePass/d" "${SORMAS_PROPERTIES}"
 sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
@@ -126,7 +130,7 @@ sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
   echo;
   echo "# Key data for the generated SORMAS to SORMAS certificate";
   echo "sormas2sormas.path=${SORMAS2SORMAS_DIR}"
-  echo "sormas2sormas.keyAlias=${SORMAS_S2S_CERT_CN}"
+  echo "sormas2sormas.organizationId=${SORMAS_ORG_ID}"
   echo "sormas2sormas.keystoreName=${P12_FILE_NAME}"
   echo "sormas2sormas.keystorePass=${SORMAS_S2S_CERT_PASS}"
 } >> "${SORMAS_PROPERTIES}"

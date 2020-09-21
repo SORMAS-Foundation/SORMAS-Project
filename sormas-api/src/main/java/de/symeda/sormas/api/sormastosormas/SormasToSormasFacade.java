@@ -30,11 +30,11 @@ public interface SormasToSormasFacade {
 
 	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
-	List<ServerAccessDataReferenceDto> getAvailableHealthDepartments();
+	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
+
+	ServerAccessDataReferenceDto getOrganizationRef(String id);
 
 	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 
 	boolean isFeatureEnabled();
-
-	ServerAccessDataReferenceDto getServerAccessDataRef(String healthDepartmentId);
 }
