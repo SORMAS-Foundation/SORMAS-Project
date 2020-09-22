@@ -55,8 +55,6 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 	"highcharts-connector.js",
 	"highcharts-exporting.js",
 	"highcharts-export-data.js" })
-//@StyleSheet({
-//	"highcharts.css" })
 public class HighChart extends AbstractJavaScriptComponent {
 
 	private static final long serialVersionUID = 7738496276049495017L;
