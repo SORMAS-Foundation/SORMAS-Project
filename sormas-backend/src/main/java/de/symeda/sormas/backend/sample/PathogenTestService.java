@@ -34,7 +34,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -273,8 +272,6 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		if (criteria.getDeleted() != null) {
 			filter = and(cb, filter, cb.equal(pathogenJoins.get(PathogenTest.DELETED), criteria.getDeleted()));
 		}
-
-		filter = and(cb, filter, cb.equal(sampleJoin.get(Sample.SAMPLE_PURPOSE), SamplePurpose.EXTERNAL));
 
 		return filter;
 	}
