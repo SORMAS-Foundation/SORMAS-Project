@@ -86,8 +86,20 @@ public class GridTemplateAreaCreator {
 		return widthsSum;
 	}
 
-	public Integer getNrOfGridAreaColumns() {
+	public Integer getGridColumns() {
 		return nrOfGridAreaColumns;
+	}
+
+	public int getGridRows() {
+		int rows = 0;
+		for (int x = 0; x < nrOfGridAreaRows; x++) {
+			if (rowIsNull(x, nrOfGridAreaColumns)) {
+				continue;
+			} else {
+				rows++;
+			}
+		}
+		return rows;
 	}
 
 	private boolean rowIsNull(int x, Integer nrOfGridColumnAreas) {

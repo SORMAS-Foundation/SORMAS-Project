@@ -118,16 +118,22 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			final VerticalLayout diagramsWrapper = new VerticalLayout();
 			diagramsWrapper.setMargin(new MarginInfo(false, true, false, true));
 			diagramsWrapper.setId(tabId);
-			diagramsWrapper.setSizeFull();
+
+			diagramsWrapper.setWidth(
+				dashboardElements.size() == 1 && gridTemplateAreaCreator.getGridColumns() == 1 ? gridTemplateAreaCreator.getWidthsSum() : 100,
+				Unit.PERCENTAGE);
+			diagramsWrapper.setHeight(gridTemplateAreaCreator.getGridContainerHeight(), Unit.PERCENTAGE);
 
 			final CssLayout diagramsLayout = new CssLayout();
-			diagramsLayout.setWidth(
-				dashboardElements.size() == 1 && gridTemplateAreaCreator.getNrOfGridAreaColumns() == 1 ? gridTemplateAreaCreator.getWidthsSum() : 100,
-				Unit.PERCENTAGE);
-			diagramsLayout.setHeight(gridTemplateAreaCreator.getGridContainerHeight(), Unit.PERCENTAGE);
+			diagramsLayout.setSizeFull();
 			final String gridCssClass = tabId.replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;
 
-			styles.add(createDiagramGridStyle(gridCssClass, gridTemplateAreaCreator.getFormattedGridTemplate()));
+			styles.add(
+				createDiagramGridStyle(
+					gridCssClass,
+					gridTemplateAreaCreator.getFormattedGridTemplate(),
+					gridTemplateAreaCreator.getGridRows(),
+					gridTemplateAreaCreator.getGridColumns()));
 			diagramsLayout.setStyleName(gridCssClass);
 
 			campaignFormDataMap.forEach((campaignDashboardDiagramDto, diagramData) -> {
@@ -162,10 +168,11 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		return UUID.randomUUID().toString().substring(0, 6);
 	}
 
-	private String createDiagramGridStyle(String gridCssClass, String gridAreasTemplate) {
+	private String createDiagramGridStyle(String gridCssClass, String gridAreasTemplate, int rows, int columns) {
 		final String s = "." + gridCssClass;
 		campaignDashboardDiagramStyles.add(s);
-		return s + "{ display: grid; grid-gap:10px; grid-auto-columns: 1fr; grid-auto-rows: 1fr; grid-template-areas:" + gridAreasTemplate + "; }";
+		return s + "{ display: grid; grid-gap:1%; grid-auto-columns: " + (100 / columns - 1) + "%; grid-auto-rows: " + (100 / rows - 1)
+			+ "%; grid-template-areas:" + gridAreasTemplate + "; }";
 	}
 
 	private String createDiagramStyle(String diagramCssClass, String diagramId) {
