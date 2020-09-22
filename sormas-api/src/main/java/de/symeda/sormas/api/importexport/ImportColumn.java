@@ -68,10 +68,10 @@ public class ImportColumn {
 		return dataDescription;
 	}
 
-	public static ImportColumn from(Class<?> entityType, String columnName, Class<?> fieldType) {
+	public static ImportColumn from(Class<?> entityType, String columnName, Class<?> fieldType, char currentSeparator) {
 		String entityName = DataHelper.getHumanClassName(entityType);
 		String caption = computeCaption(entityName, columnName);
-		String dataType = computeDataType(fieldType);
+		String dataType = computeDataType(fieldType, currentSeparator);
 		return new ImportColumn(entityName, columnName, caption, dataType);
 	}
 
@@ -104,9 +104,12 @@ public class ImportColumn {
 	 * Computes the data type accepted for a certain field type. For values which cannot be determined at start a placeholder will be used (ex: {@link ImportFacade#ACTIVE_DISEASES_PLACEHOLDER}).
 	 *
 	 * @param fieldType type of a CSV field (column)
+	 * @param currentSeparator current CSV configured separator, used to identify a different one for joining lists
 	 * @return a data type description, example or placeholder
 	 */
-	private static String computeDataType(Class<?> fieldType) {
+	private static String computeDataType(Class<?> fieldType, char currentSeparator) {
+		char separator = ImportExportUtils.getCSVSeparatorDifferentFromCurrent(currentSeparator);
+
 		if (String.class.isAssignableFrom(fieldType)) {
 			return I18nProperties.getString(Strings.text);
 		} else if (Date.class.isAssignableFrom(fieldType)) {
@@ -120,7 +123,7 @@ public class ImportColumn {
 			for (Object enumConstant : fieldType.getEnumConstants()) {
 				enumNames.add(((Enum<?>) enumConstant).name());
 			}
-			return StringUtils.join(enumNames, ",");
+			return StringUtils.join(enumNames, separator);
 		} else if (Number.class.isAssignableFrom(fieldType)) {
 			return I18nProperties.getString(Strings.number);
 		} else {

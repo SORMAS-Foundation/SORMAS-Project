@@ -29,6 +29,7 @@ import java.util.Set;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.Order;
+import org.apache.commons.lang3.CharUtils;
 
 public final class ImportExportUtils {
 
@@ -83,5 +84,13 @@ public final class ImportExportUtils {
 		}
 		// XXX throw an exception ?
 		return -1;
+	}
+
+	public static char getCSVSeparatorDifferentFromCurrent(char currentSeparator) {
+		char separator = ',';
+		if (CharUtils.compare(',', currentSeparator) == 0) {
+			separator = ';';
+		}
+		return separator;
 	}
 }
