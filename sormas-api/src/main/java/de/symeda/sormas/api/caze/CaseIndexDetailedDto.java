@@ -25,6 +25,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String PHONE = "phone";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVENT_COUNT = "eventCount";
 
 	@PersonalData
 	@SensitiveData
@@ -44,6 +45,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private String postalCode;
 	@SensitiveData
 	private String phone;
+	private Long eventCount;
 
 	private UserReferenceDto reportingUser;
 
@@ -57,7 +59,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId,
 								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								String reportingUserFirstName, String reportingUserLastName, int visitCount) {
+								String reportingUserFirstName, String reportingUserLastName, int visitCount, long eventCount) {
 
 		super(id, uuid, epidNumber, externalID, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
@@ -73,6 +75,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
+		this.eventCount = eventCount;
 	}
 
 	public String getCity() {
@@ -105,5 +108,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public Long getEventCount() {
+		return eventCount;
 	}
 }

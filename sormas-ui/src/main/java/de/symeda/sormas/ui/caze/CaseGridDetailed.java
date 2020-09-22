@@ -31,6 +31,11 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	}
 
 	@Override
+	public Stream<String> getEventColumns() {
+		return Stream.of(CaseIndexDetailedDto.EVENT_COUNT);
+	}
+
+	@Override
 	protected Stream<String> getPersonColumns() {
 		return Stream.concat(
 			super.getPersonColumns(),
@@ -59,6 +64,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 		getColumn(CaseIndexDetailedDto.ADDITIONAL_INFORMATION).setWidth(200);
 		getColumn(CaseIndexDetailedDto.POSTAL_CODE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.PHONE).setWidth(100);
+		getColumn(CaseIndexDetailedDto.EVENT_COUNT).setWidth(80).setSortable(false);
 
 		((Column<CaseIndexDetailedDto, AgeAndBirthDateDto>) getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE)).setRenderer(
 			value -> value == null
