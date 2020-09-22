@@ -128,10 +128,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 
 		List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
-		List<Item> initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
-		List<Item> initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
-		List<Item> initialOccupationFacilities =
-			InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity(), null);
 
 		List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialPlaceOfBirthDistricts = InfrastructureHelper.loadDistricts(record.getPlaceOfBirthRegion());
@@ -142,8 +138,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
 		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
 
-		InfrastructureHelper
-			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.personPlaceOfBirthFacility,
 			contentBinding.personPlaceOfBirthFacilityDetails);
@@ -153,28 +147,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personCauseOfDeathDetails);
 		initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
-		InfrastructureHelper.initializeFacilityFields(
-			record,
-			contentBinding.personOccupationRegion,
-			initialOccupationRegions,
-			record.getOccupationRegion(),
-			contentBinding.personOccupationDistrict,
-			initialOccupationDistricts,
-			record.getOccupationDistrict(),
-			contentBinding.personOccupationCommunity,
-			initialOccupationCommunities,
-			record.getOccupationCommunity(),
-			null,
-			null,
-			null,
-			null,
-			contentBinding.personOccupationFacilityType,
-			occupationFacilityTypeList,
-			contentBinding.personOccupationFacility,
-			initialOccupationFacilities,
-			record.getOccupationFacility(),
-			contentBinding.personOccupationFacilityDetails,
-			true);
 		InfrastructureHelper.initializeFacilityFields(
 			record,
 			contentBinding.personPlaceOfBirthRegion,

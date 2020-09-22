@@ -919,6 +919,9 @@ public interface Captions {
 	String Location_addressTypeDetails = "Location.addressTypeDetails";
 	String Location_areaType = "Location.areaType";
 	String Location_details = "Location.details";
+	String Location_facility = "Location.facility";
+	String Location_facilityDetails = "Location.facilityDetails";
+	String Location_facilityType = "Location.facilityType";
 	String Location_houseNumber = "Location.houseNumber";
 	String Location_latitude = "Location.latitude";
 	String Location_latLon = "Location.latLon";
