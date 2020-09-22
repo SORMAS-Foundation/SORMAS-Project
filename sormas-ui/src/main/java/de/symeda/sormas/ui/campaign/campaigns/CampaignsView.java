@@ -23,12 +23,14 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -37,8 +39,13 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
+import de.symeda.sormas.ui.campaign.importer.CampaignImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+import java.io.IOException;
+import javax.naming.NamingException;
 
 @SuppressWarnings("serial")
 public class CampaignsView extends AbstractCampaignView {
@@ -50,6 +57,7 @@ public class CampaignsView extends AbstractCampaignView {
 	private CampaignGrid grid;
 	private Button createButton;
 	private Button validateFormsButton;
+	private Button importCampaignButton;
 
 	// Filter
 	private TextField searchField;
@@ -93,6 +101,33 @@ public class CampaignsView extends AbstractCampaignView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
+
+			VerticalLayout newFormLayout = new VerticalLayout();
+			newFormLayout.setSpacing(true);
+			newFormLayout.setMargin(true);
+			newFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			newFormLayout.setWidth(350, Unit.PIXELS);
+
+			importCampaignButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.PLUS_CIRCLE, newFormLayout);
+			importCampaignButton.setId("campaign-form-import");
+			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences()) {
+
+				Button campaignFormButton = ButtonHelper
+						.createButton(campaignForm.toString(), e -> {
+							Window popupWindow = null;
+							try {
+								popupWindow = VaadinUiUtil.showPopupWindow(new CampaignImportLayout(campaignForm.getUuid()));
+							} catch (IOException | NamingException ioException) {
+								ioException.printStackTrace();
+							}
+							popupWindow.setCaption(I18nProperties.getString(Strings.headingImportContacts));
+
+						});
+				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+				newFormLayout.addComponent(campaignFormButton);
+			}
+
+			addHeaderComponent(importCampaignButton);
 		}
 	}
 

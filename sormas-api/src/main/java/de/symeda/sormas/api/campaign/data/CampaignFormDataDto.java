@@ -21,6 +21,7 @@
 package de.symeda.sormas.api.campaign.data;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -70,15 +71,21 @@ public class CampaignFormDataDto extends EntityDto {
 		campaignFormData.setFormDate(new Date());
 		return campaignFormData;
 	}
+	public static CampaignFormDataDto build(){
+		CampaignFormDataDto campaignFormData = new CampaignFormDataDto();
+		campaignFormData.setUuid(DataHelper.createUuid());
+		return campaignFormData;
+	}
 
-	public List<CampaignFormDataEntry> getFormValues() {
+
+			public List<CampaignFormDataEntry> getFormValues() {
 		return formValues;
 	}
 
 	public void setFormValues(List<CampaignFormDataEntry> formValues) {
 		this.formValues = formValues;
 	}
-
+	@ImportIgnore
 	public CampaignFormMetaReferenceDto getCampaignFormMeta() {
 		return campaignFormMeta;
 	}
@@ -86,7 +93,6 @@ public class CampaignFormDataDto extends EntityDto {
 	public void setCampaignFormMeta(CampaignFormMetaReferenceDto campaignFormMeta) {
 		this.campaignFormMeta = campaignFormMeta;
 	}
-
 	public CampaignReferenceDto getCampaign() {
 		return campaign;
 	}

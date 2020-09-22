@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.importexport;
 
+import de.symeda.sormas.api.campaign.CampaignFacade;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -30,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -135,6 +142,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	private EpiDataService epiDataService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private CampaignFormMetaFacade campaignFormMetaFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
@@ -147,6 +156,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_community_template.csv";
 	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_facility_template.csv";
 	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_contact_template.csv";
+	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_campaign_form_data_template.csv";
 
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {
@@ -161,6 +171,27 @@ public class ImportFacadeEjb implements ImportFacade {
 		Path filePath = Paths.get(getCaseImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
 			writer.writeNext(entityNames.toArray(new String[entityNames.size()]));
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.flush();
+		}
+	}
+
+	@Override
+	public void generateCampaignFormImportTemplateFile(String campaignFormUuid) throws IOException {
+
+		createExportDirectoryIfNessecary();
+
+		List<String> columnNames = new ArrayList<>();
+		List<String> entityNames = new ArrayList<>();
+		appendListOfFields(columnNames, entityNames, CampaignFormDataDto.class, "");
+		CampaignFormMetaDto campaignFormMetaDto = campaignFormMetaFacade.getCampaignFormMetaByUuid(campaignFormUuid);
+		List<CampaignFormElement> formElements = campaignFormMetaDto.getCampaignFormElements().stream().filter(e -> !(CampaignFormElementType.SECTION.name().equalsIgnoreCase(e.getType()) || CampaignFormElementType.LABEL.name().equalsIgnoreCase(e.getType()))).collect(Collectors.toList());
+
+		for(CampaignFormElement formElement:formElements){
+			columnNames.add(formElement.getId());
+		}
+		Path filePath = Paths.get(getCampaignFormImportTemplateFilePath());
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
 			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 			writer.flush();
 		}
@@ -327,6 +358,14 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getCampaignFormImportTemplateFilePath() {
+
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
