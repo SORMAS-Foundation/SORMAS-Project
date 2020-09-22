@@ -324,7 +324,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			if (supervisors.isEmpty() && contact.getPerson().getAddress().getRegion() != null) {
 				supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
 			}
-			if (supervisors.isEmpty()) {
+			if (supervisors.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
 				supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);
 			}
 			if (!supervisors.isEmpty()) {
