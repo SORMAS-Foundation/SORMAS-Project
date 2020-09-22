@@ -761,15 +761,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		}, ValoTheme.BUTTON_LINK);
 
-		//setting symptoms to No button
-		Button setEmptyToNoButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToNo,SymptomState.NO);
+		Button setEmptyToNoButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToNo, SymptomState.NO);
 
-
-
-		//setting symptoms to unknown button
-		Button setEmptyToUnknownButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToUnknown,SymptomState.UNKNOWN);
-
-
+		Button setEmptyToUnknownButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToUnknown, SymptomState.UNKNOWN);
 
 		// Complications heading - not displayed for Rubella (dirty, should be made generic)
 		Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
@@ -1033,9 +1027,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return unconditionalSymptomFieldIds;
 	}
 
-
-
-	public Button createButtonSetClearedToSymptomState(String caption, SymptomState symptomState){
+	public Button createButtonSetClearedToSymptomState(String caption, SymptomState symptomState) {
 
 		Button button = ButtonHelper.createButton(caption, event -> {
 			for (Object symptomId : unconditionalSymptomFieldIds) {
