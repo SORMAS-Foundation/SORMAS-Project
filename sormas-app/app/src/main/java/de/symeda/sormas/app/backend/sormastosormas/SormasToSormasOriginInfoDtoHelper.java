@@ -37,7 +37,7 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 
 	@Override
 	protected void fillInnerFromDto(SormasToSormasOriginInfo sormasToSormasOriginInfo, SormasToSormasOriginInfoDto dto) {
-		sormasToSormasOriginInfo.setHealthDepartment(dto.getHealthDepartmentId());
+		sormasToSormasOriginInfo.setOrganizationId(dto.getOrganizationId());
 		sormasToSormasOriginInfo.setOwnershipHandedOver(dto.isOwnershipHandedOver());
 		sormasToSormasOriginInfo.setSenderName(dto.getSenderName());
 		sormasToSormasOriginInfo.setSenderEmail(dto.getSenderEmail());
@@ -47,7 +47,7 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 
 	@Override
 	protected void fillInnerFromAdo(SormasToSormasOriginInfoDto dto, SormasToSormasOriginInfo sormasToSormasOriginInfo) {
-		dto.setHealthDepartmentId(sormasToSormasOriginInfo.getHealthDepartment());
+		dto.setOrganizationId(sormasToSormasOriginInfo.getOrganizationId());
 		dto.setOwnershipHandedOver(sormasToSormasOriginInfo.isOwnershipHandedOver());
 		dto.setSenderName(sormasToSormasOriginInfo.getSenderName());
 		dto.setSenderEmail(sormasToSormasOriginInfo.getSenderEmail());
