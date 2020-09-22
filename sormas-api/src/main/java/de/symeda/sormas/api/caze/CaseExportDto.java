@@ -92,6 +92,7 @@ public class CaseExportDto implements Serializable {
 	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMATIC = "lastCooperativeVisitSymptomatic";
 	public static final String LAST_COOPERATIVE_VISIT_DATE = "lastCooperativeVisitDate";
 	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMS = "lastCooperativeVisitSymptoms";
+	public static final String EVENT_COUNT = "eventCount";
 
 	private String country;
 	private long id;
@@ -217,6 +218,8 @@ public class CaseExportDto implements Serializable {
 
 	private CaseJurisdictionDto jurisdiction;
 
+	private Long eventCount;
+
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
@@ -242,7 +245,8 @@ public class CaseExportDto implements Serializable {
 						 YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
-						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester) {
+						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
+						 long eventCount) {
 		//@formatter:on
 
 		this.id = id;
@@ -319,6 +323,7 @@ public class CaseExportDto implements Serializable {
 		this.trimester = trimester;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
+		this.eventCount = eventCount;
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -1258,6 +1263,15 @@ public class CaseExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
+	}
+
+	@Order(137)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.EVENT_COUNT)
+	@ExportGroup(ExportGroupType.EVENT)
+	public Long getEventCount() {
+		return eventCount;
 	}
 
 	public void setCountry(String country) {

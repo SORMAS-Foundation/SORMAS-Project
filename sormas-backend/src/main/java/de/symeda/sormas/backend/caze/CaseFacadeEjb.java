@@ -59,6 +59,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -185,6 +186,7 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
@@ -496,6 +498,19 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		CaseJoins<Case> joins = new CaseJoins<>(caseRoot);
 
+		// Events count subquery
+		Subquery<Long> eventCountSq = cq.subquery(Long.class);
+		Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
+		Join<EventParticipant, Event> event = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
+		Join<EventParticipant, Case> resultingCase = eventCountRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
+		eventCountSq.where(
+			cb.and(
+				cb.equal(resultingCase.get(Case.ID), caseRoot.get(Case.ID)),
+				cb.isFalse(event.get(Event.DELETED)),
+				cb.isFalse(event.get(Event.ARCHIVED)),
+				cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
+		eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
+
 		//@formatter:off
 		cq.multiselect(caseRoot.get(Case.ID), joins.getPerson().get(Person.ID), joins.getPersonAddress().get(Location.ID),
 				joins.getEpiData().get(EpiData.ID), joins.getSymptoms().get(Symptoms.ID), joins.getHospitalization().get(Hospitalization.ID),
@@ -540,7 +555,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE), joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
 				joins.getEpiData().get(EpiData.RODENTS), caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES),
 				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE),
-				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER)
+				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
+				eventCountSq
 				);
 		//@formatter:on
 
