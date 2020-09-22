@@ -197,6 +197,9 @@ public interface Captions {
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
+	String CaseData_latestEventId = "CaseData.latestEventId";
+	String CaseData_latestEventStatus = "CaseData.latestEventStatus";
+	String CaseData_latestEventTitle = "CaseData.latestEventTitle";
 	String CaseData_maternalHistory = "CaseData.maternalHistory";
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";

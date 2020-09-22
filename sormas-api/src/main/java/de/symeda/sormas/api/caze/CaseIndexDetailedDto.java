@@ -1,7 +1,10 @@
 package de.symeda.sormas.api.caze;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -10,8 +13,6 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
-
-import java.util.Date;
 
 public class CaseIndexDetailedDto extends CaseIndexDto {
 
@@ -26,6 +27,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String PHONE = "phone";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT_COUNT = "eventCount";
+	public static final String LATEST_EVENT_ID = "latestEventId";
+	public static final String LATEST_EVENT_STATUS = "latestEventStatus";
+	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
 
 	@PersonalData
 	@SensitiveData
@@ -46,6 +50,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	@SensitiveData
 	private String phone;
 	private Long eventCount;
+	private String latestEventId;
+	private String latestEventTitle;
+	private EventStatus latestEventStatus;
 
 	private UserReferenceDto reportingUser;
 
@@ -112,5 +119,29 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public Long getEventCount() {
 		return eventCount;
+	}
+
+	public String getLatestEventId() {
+		return latestEventId;
+	}
+
+	public void setLatestEventId(String latestEventId) {
+		this.latestEventId = latestEventId;
+	}
+
+	public String getLatestEventTitle() {
+		return latestEventTitle;
+	}
+
+	public void setLatestEventTitle(String latestEventTitle) {
+		this.latestEventTitle = latestEventTitle;
+	}
+
+	public EventStatus getLatestEventStatus() {
+		return latestEventStatus;
+	}
+
+	public void setLatestEventStatus(EventStatus latestEventStatus) {
+		this.latestEventStatus = latestEventStatus;
 	}
 }

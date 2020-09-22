@@ -187,6 +187,8 @@ import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.event.EventSummaryDetails;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -296,6 +298,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ContactService contactService;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private EventService eventService;
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -434,6 +438,27 @@ public class CaseFacadeEjb implements CaseFacade {
 			cases = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
 			cases = em.createQuery(cq).getResultList();
+		}
+
+		// Load latest events info
+		// Adding a second query here is not perfect, but selecting the last event with a criteria query
+		// doesn't seem to be possible and using a native query is not an option because of user filters
+		List<EventSummaryDetails> eventSummaries =
+			eventService.getEventSummaryDetailsByCases(cases.stream().map(CaseIndexDetailedDto::getId).collect(Collectors.toList()));
+		for (CaseIndexDetailedDto caze : cases) {
+			if (caze.getEventCount() == 0) {
+				continue;
+			}
+
+			eventSummaries.stream()
+				.filter(v -> v.getCaseId() == caze.getId())
+				.sorted(Comparator.comparing(EventSummaryDetails::getEventDate).reversed())
+				.findFirst()
+				.ifPresent(eventSummary -> {
+					caze.setLatestEventId(eventSummary.getEventUuid());
+					caze.setLatestEventStatus(eventSummary.getEventStatus());
+					caze.setLatestEventTitle(eventSummary.getEventTitle());
+				});
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
