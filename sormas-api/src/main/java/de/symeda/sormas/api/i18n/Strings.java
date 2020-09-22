@@ -106,6 +106,7 @@ public interface Strings {
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
 	String date = "date";
 	String day = "day";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
@@ -309,6 +310,7 @@ public interface Strings {
 	String headingMissingDateFilter = "headingMissingDateFilter";
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
+	String headingNetworkDiagramTooManyContacts = "headingNetworkDiagramTooManyContacts";
 	String headingNewCases = "headingNewCases";
 	String headingNewEvents = "headingNewEvents";
 	String headingNewPassword = "headingNewPassword";
@@ -760,6 +762,7 @@ public interface Strings {
 	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";
 	String unsavedChanges_warningTitle = "unsavedChanges.warningTitle";
 	String until = "until";
+	String warningNetworkDiagramTooManyContacts = "warningNetworkDiagramTooManyContacts";
 	String week = "week";
 	String weekShort = "weekShort";
 	String year = "year";

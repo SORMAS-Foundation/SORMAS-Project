@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -217,7 +218,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().generateContactFollowUpTasks();
 
 		// task should have been generated
-		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference());
+		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference()).stream()
+				.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
+				.collect(Collectors.toList());
 		assertEquals(1, tasks.size());
 		TaskDto task = tasks.get(0);
 		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
@@ -227,7 +230,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// task should not be generated multiple times 
 		getContactFacade().generateContactFollowUpTasks();
-		tasks = getTaskFacade().getAllByContact(contact.toReference());
+		tasks = getTaskFacade().getAllByContact(contact.toReference()).stream()
+				.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
+				.collect(Collectors.toList());
 		assertEquals(1, tasks.size());
 	}
 

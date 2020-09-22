@@ -77,6 +77,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 		dashboardLayout.setStyleName("crud-main-layout");
 
 		addComponent(dashboardLayout);
+		setExpandRatio(dashboardLayout, 1);
 	}
 
 	protected void navigateToDashboardView(Property.ValueChangeEvent e) {
