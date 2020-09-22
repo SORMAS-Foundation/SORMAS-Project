@@ -396,7 +396,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		cq.select(cb.count(root));
+		cq.select(cb.countDistinct(root));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -1182,6 +1182,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Symptoms> symptoms = joins.getSymptoms();
 		Join<Case, Symptoms> symptoms2 = root2.join(Case.SYMPTOMS, JoinType.LEFT);
 
+		cq.distinct(true);
+
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root);
 		Predicate criteriaFilter = criteria != null ? caseService.createCriteriaFilter(criteria, cb, cq, root, joins) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
@@ -1254,7 +1256,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		filter = cb.and(filter, creationDateFilter);
 
 		cq.where(filter);
-		cq.multiselect(root.get(Case.ID), root2.get(Case.ID));
+		cq.multiselect(root.get(Case.ID), root2.get(Case.ID), root.get(Case.CREATION_DATE));
 		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
 
 		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
@@ -1264,7 +1266,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			CriteriaQuery<CaseIndexDto> indexCasesCq = cb.createQuery(CaseIndexDto.class);
 			Root<Case> indexRoot = indexCasesCq.from(Case.class);
 			selectIndexDtoFields(indexCasesCq, indexRoot);
-			indexCasesCq.where(indexRoot.get(Case.ID).in(foundIds.stream().flatMap(Arrays::stream).collect(Collectors.toSet())));
+			indexCasesCq.where(
+				indexRoot.get(Case.ID).in(foundIds.stream().map(a -> Arrays.copyOf(a, 2)).flatMap(Arrays::stream).collect(Collectors.toSet())));
 			Map<Long, CaseIndexDto> indexCases =
 				em.createQuery(indexCasesCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 

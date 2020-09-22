@@ -55,7 +55,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
-								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
+								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId,
 								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserFirstName, String reportingUserLastName, int visitCount) {
 
@@ -63,7 +63,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
-				quarantineTo, completeness, followUpStatus, followUpUntil, visitCount);
+				quarantineTo, completeness, followUpStatus, followUpUntil, changeDate, facilityId, visitCount);
 		//@formatter:on
 
 		this.city = city;

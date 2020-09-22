@@ -80,6 +80,7 @@ public class CaseListCriteriaBuilder {
 		List<Selection<?>> selectionList = new ArrayList<>(selectionProvider.apply(caze, joins));
 		selectionList.add(visitCountSq);
 		cq.multiselect(selectionList);
+		cq.distinct(true);
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
@@ -147,7 +148,9 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.QUARANTINE_TO),
 			root.get(Case.COMPLETENESS),
 			root.get(Case.FOLLOW_UP_STATUS),
-			root.get(Case.FOLLOW_UP_UNTIL));
+			root.get(Case.FOLLOW_UP_UNTIL),
+			root.get(Case.CHANGE_DATE),
+			joins.getFacility().get(Facility.ID));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins) {
