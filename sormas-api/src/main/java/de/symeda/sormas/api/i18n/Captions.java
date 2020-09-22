@@ -488,6 +488,7 @@ public interface Captions {
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
 	String contactOpenContactCase = "contactOpenContactCase";
+	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
 	String contactQuarantineNotOrdered = "contactQuarantineNotOrdered";
