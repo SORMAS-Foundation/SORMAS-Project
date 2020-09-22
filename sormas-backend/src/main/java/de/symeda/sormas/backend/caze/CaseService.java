@@ -153,8 +153,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
+		CaseJoins<Case> joins = new CaseJoins<>(from);
 
-		Predicate filter = createCriteriaFilter(caseCriteria, cb, cq, from);
+		Predicate filter = createCriteriaFilter(caseCriteria, cb, cq, from, joins);
 		if (!ignoreUserFilter) {
 			filter = and(cb, filter, createUserFilter(cb, cq, from));
 		}
@@ -445,14 +446,19 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 	}
 
-	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Case> from) {
+	public <T extends AbstractDomainObject> Predicate createCriteriaFilter(
+		CaseCriteria caseCriteria,
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		From<T, Case> from,
+		CaseJoins<T> joins) {
 
-		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
-		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
-		Join<Case, Community> community = from.join(Case.COMMUNITY, JoinType.LEFT);
-		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Case, Person> person = joins.getPerson();
+		Join<Case, User> reportingUser = joins.getReportingUser();
+		Join<Case, Region> region = joins.getRegion();
+		Join<Case, District> district = joins.getDistrict();
+		Join<Case, Community> community = joins.getCommunity();
+		Join<Case, Facility> facility = joins.getFacility();
 		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
@@ -567,7 +573,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					DateHelper.getEndOfDay(caseCriteria.getQuarantineTo())));
 		}
 		if (caseCriteria.getPerson() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
+			filter = and(cb, filter, cb.equal(person.get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
 		if (caseCriteria.getMustHaveNoGeoCoordinates() != null && caseCriteria.getMustHaveNoGeoCoordinates() == true) {
 			Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);

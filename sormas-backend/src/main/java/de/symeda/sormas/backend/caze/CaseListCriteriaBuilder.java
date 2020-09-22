@@ -98,7 +98,7 @@ public class CaseListCriteriaBuilder {
 		Predicate filter = caseService.createUserFilter(cb, cq, caze);
 
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
