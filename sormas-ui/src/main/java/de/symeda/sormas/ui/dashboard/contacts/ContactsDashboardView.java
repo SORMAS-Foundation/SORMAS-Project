@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.dashboard.contacts;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
@@ -139,15 +138,6 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 			networkDiagramRowLayout = createNetworkDiagramRowLayout();
 			rowsLayout.addComponent(networkDiagramRowLayout);
-
-			networkDiagramLayout.ifPresent(l -> {
-				Consumer<Boolean> diseaseFilterChangeCallback = (diseaseSelected) -> {
-					networkDiagramLayout.get().setVisible(diseaseSelected);
-					noNetworkDiagramLayout.setVisible(!diseaseSelected);
-				};
-				filterLayout.setDiseaseFilterChangeCallback(diseaseFilterChangeCallback);
-				diseaseFilterChangeCallback.accept(null != dashboardDataProvider.getDisease());
-			});
 		}
 	}
 
@@ -481,7 +471,11 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		}
 
 		// Update cases and contacts shown on the map
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS) && networkDiagramLayout.isPresent()) {
+			boolean diseaseSelected = dashboardDataProvider.getDisease() != null;
+
+			networkDiagramLayout.get().setVisible(diseaseSelected);
+			noNetworkDiagramLayout.setVisible(!diseaseSelected);
 			networkDiagramComponent.filter(c -> c.getParent().isVisible()).ifPresent(DashboardNetworkComponent::refreshDiagram);
 		}
 

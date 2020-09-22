@@ -12,20 +12,26 @@ public class GridTemplateAreaCreator {
 
 	public static final String APOSTROPHE = "'";
 
-	public String createGridTemplate(List<CampaignDashboardElement> dashboardElements) {
+	private String[][] grid;
+	private Integer widthsSum;
+	private Integer nrOfGridAreaColumns;
+	private Integer nrOfGridAreaRows;
+	private Integer oneWidthAreaPercentage;
+	private Integer oneHeightAreaPercentage;
 
+	public GridTemplateAreaCreator(List<CampaignDashboardElement> dashboardElements) {
 		dashboardElements =
 			dashboardElements.stream().sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder)).collect(Collectors.toList());
 
 		final List<Integer> widths = dashboardElements.stream().map(cde -> cde.getWidth()).collect(Collectors.toList());
 		final List<Integer> heights = dashboardElements.stream().map(cde -> cde.getHeight()).collect(Collectors.toList());
-		final Integer oneWidthAreaPercentage = gcd(widths);
-		final Integer oneHeightAreaPercentage = gcd(heights);
-		final Integer nrOfGridAreaColumns = 100 / oneWidthAreaPercentage;
-		final Integer widthsSum = widths.stream().reduce(0, Integer::sum);
-		final Integer nrOfGridAreaRows = (widthsSum / 100 + (widthsSum % 100 == 0 ? 0 : 1)) * 100 / gcd(heights);
+		oneWidthAreaPercentage = gcd(widths);
+		oneHeightAreaPercentage = gcd(heights);
+		nrOfGridAreaColumns = 100 / oneWidthAreaPercentage;
+		widthsSum = widths.stream().reduce(0, Integer::sum);
+		nrOfGridAreaRows = (widthsSum / 100 + (widthsSum % 100 == 0 ? 0 : 1)) * 100 / gcd(heights);
 
-		final String[][] grid = new String[nrOfGridAreaColumns][nrOfGridAreaRows];
+		grid = new String[nrOfGridAreaColumns][nrOfGridAreaRows];
 
 		int startingColumn = 0;
 		int startingRow = 0;
@@ -40,34 +46,25 @@ public class GridTemplateAreaCreator {
 					grid[y + startingColumn][x + startingRow] = campaignDashboardElement.getDiagramId();
 				}
 			}
-			final GridElementIndex nextDiagramFirstGridElement = findNextDiagramsStartingIndex(
-				dashboardElements,
-				elementIndex,
-				oneWidthAreaPercentage,
-				widthAreas,
-				heightAreas,
-				nrOfGridAreaColumns,
-				nrOfGridAreaRows,
-				grid,
-				startingRow,
-				startingColumn);
+			final GridElementIndex nextDiagramFirstGridElement =
+				findNextDiagramsStartPosition(dashboardElements, elementIndex, oneWidthAreaPercentage, widthAreas, startingRow, startingColumn);
 			startingColumn = nextDiagramFirstGridElement.getX();
 			startingRow = nextDiagramFirstGridElement.getY();
 		}
-
-		return formatGridArea(nrOfGridAreaColumns, nrOfGridAreaRows, grid);
 	}
 
-	private String formatGridArea(Integer nrOfGridColumnAreas, Integer nrOfGridRowAreas, String[][] grid) {
+	public String getFormattedGridTemplate() {
 		final StringBuilder result = new StringBuilder();
 
-		for (int x = 0; x < nrOfGridRowAreas; x++) {
-			if (rowIsNull(grid, x, nrOfGridColumnAreas)) {
+		for (int x = 0; x < nrOfGridAreaRows; x++) {
+			if (rowIsNull(x, nrOfGridAreaColumns)) {
 				continue;
 			} else {
 				result.append(APOSTROPHE);
-				for (int y = 0; y < nrOfGridColumnAreas; y++) {
-					result.append(grid[y][x] + (y == nrOfGridColumnAreas - 1 ? StringUtils.EMPTY : StringUtils.SPACE));
+				for (int y = 0; y < nrOfGridAreaColumns; y++) {
+					final String diagramId = grid[y][x];
+					final String area = diagramId != null ? diagramId : ("area" + x);
+					result.append(area + (y == nrOfGridAreaColumns - 1 ? StringUtils.EMPTY : StringUtils.SPACE));
 				}
 				result.append(APOSTROPHE);
 			}
@@ -75,7 +72,37 @@ public class GridTemplateAreaCreator {
 		return result.toString();
 	}
 
-	private boolean rowIsNull(String[][] grid, int x, Integer nrOfGridColumnAreas) {
+	public Integer getGridContainerHeight() {
+		int nonNullRows = 0;
+		for (int x = 0; x < nrOfGridAreaRows; x++) {
+			if (!rowIsNull(x, nrOfGridAreaColumns)) {
+				nonNullRows++;
+			}
+		}
+		return nonNullRows * oneHeightAreaPercentage;
+	}
+
+	public Integer getWidthsSum() {
+		return widthsSum;
+	}
+
+	public Integer getGridColumns() {
+		return nrOfGridAreaColumns;
+	}
+
+	public int getGridRows() {
+		int rows = 0;
+		for (int x = 0; x < nrOfGridAreaRows; x++) {
+			if (rowIsNull(x, nrOfGridAreaColumns)) {
+				continue;
+			} else {
+				rows++;
+			}
+		}
+		return rows;
+	}
+
+	private boolean rowIsNull(int x, Integer nrOfGridColumnAreas) {
 		for (int y = 0; y < nrOfGridColumnAreas; y++) {
 			if (grid[y][x] != null)
 				return false;
@@ -83,15 +110,11 @@ public class GridTemplateAreaCreator {
 		return true;
 	}
 
-	private GridElementIndex findNextDiagramsStartingIndex(
+	private GridElementIndex findNextDiagramsStartPosition(
 		List<CampaignDashboardElement> dashboardElements,
 		int elementIndex,
 		int oneWidthAreaPercentage,
 		int widthAreas,
-		int heightAreas,
-		int nrOfGridAreaColumns,
-		int nrOfGridAreaRows,
-		String[][] grid,
 		int startingRow,
 		int startingColumn) {
 		if (elementIndex < dashboardElements.size() - 1) {
@@ -100,24 +123,21 @@ public class GridTemplateAreaCreator {
 			if (widthAreas + startingColumn + nextWidthAreas <= nrOfGridAreaColumns) {
 				startingColumn += widthAreas;
 			} else {
-				final GridElementIndex firstEmptyGridElement = findFirstEmptyGridElement(grid, nrOfGridAreaColumns, nrOfGridAreaRows);
-				if (startingRow + heightAreas >= nrOfGridAreaRows
-					|| (firstEmptyGridElement.getY() < startingRow + heightAreas && nextWidthAreas <= nrOfGridAreaColumns - widthAreas)) {
-					startingColumn = firstEmptyGridElement.getX();
-					startingRow = firstEmptyGridElement.getY();
-				} else {
-					startingRow += heightAreas;
-					startingColumn = startingRow == nrOfGridAreaRows || grid[0][startingRow] != null ? startingColumn : 0;
-				}
+				final int nextStartingColumn = startingColumn == 0 ? widthAreas : startingColumn;
+				final int nrOfColumnsToBeParsed =
+					nextStartingColumn + nextWidthAreas <= nrOfGridAreaColumns ? nrOfGridAreaColumns : nextStartingColumn;
+				final GridElementIndex firstEmptyGridElement = findFirstEmptyGridElement(nrOfColumnsToBeParsed, nrOfGridAreaRows);
+				startingColumn = firstEmptyGridElement.getX();
+				startingRow = firstEmptyGridElement.getY();
 			}
 		}
 		return new GridElementIndex(startingColumn, startingRow);
 	}
 
-	private GridElementIndex findFirstEmptyGridElement(String[][] matrix, Integer nrOfColumns, Integer nrOfRows) {
-		for (int x = 0; x < nrOfColumns; x++) {
-			for (int y = 0; y < nrOfRows; y++) {
-				if (matrix[x][y] == null) {
+	private GridElementIndex findFirstEmptyGridElement(Integer nrOfColumnsToBeParsed, Integer nrOfRows) {
+		for (int y = 0; y < nrOfRows; y++) {
+			for (int x = 0; x < nrOfColumnsToBeParsed; x++) {
+				if (grid[x][y] == null) {
 					return new GridElementIndex(x, y);
 				}
 			}

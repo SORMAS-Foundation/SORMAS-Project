@@ -13,8 +13,6 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 @RunWith(MockitoJUnitRunner.class)
 public class GridTemplateAreaCreatorTest {
 
-    private GridTemplateAreaCreator gridTemplateAreaCreator = new GridTemplateAreaCreator();
-
     @Test
     public void testGridTemplateCreateForDiagramsCase1(){
         final List<CampaignDashboardElement> dashboardElements = new ArrayList<>();
@@ -23,7 +21,7 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d3", null, 3, 40, 50));
 
         final String expectedResult = "'d1 d1 d1 d2 d2''d1 d1 d1 d3 d3'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -35,7 +33,7 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d4", null, 4, 50, 50));
 
         final String expectedResult = "'d1 d2''d3 d4'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -49,7 +47,7 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d6", null, 6, 50, 50));
 
         final String expectedResult = "'d1 d2''d3 d4''d5 d6'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -59,7 +57,7 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d2", null, 2, 50, 100));
 
         final String expectedResult = "'d1 d2'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -70,7 +68,7 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d3", null, 3, 40, 50));
 
         final String expectedResult = "'d1 d1 d2 d2 d2''d3 d3 d2 d2 d2'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -79,7 +77,7 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d1", null, 1, 100, 100));
 
         final String expectedResult = "'d1'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -90,8 +88,8 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d3", null, 3, 40, 50));
         dashboardElements.add(new CampaignDashboardElement("d4", null, 4, 60, 100));
 
-        final String expectedResult = "'d1 d1 d1 d2 d2''d1 d1 d1 d3 d3''d4 d4 d4 null null''d4 d4 d4 null null'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        final String expectedResult = "'d1 d1 d1 d2 d2''d1 d1 d1 d3 d3''d4 d4 d4 area2 area2''d4 d4 d4 area3 area3'";
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -99,8 +97,8 @@ public class GridTemplateAreaCreatorTest {
         final List<CampaignDashboardElement> dashboardElements = new ArrayList<>();
         dashboardElements.add(new CampaignDashboardElement("d1", null, 1, 40, 50));
 
-        final String expectedResult = "'d1 null'"; // this is questionable
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        final String expectedResult = "'d1 area0'"; // this is questionable
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -109,8 +107,8 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d1", null, 1, 60, 100));
         dashboardElements.add(new CampaignDashboardElement("d2", null, 4, 100, 100));
 
-        final String expectedResult = "'d1 d1 d1 null null''d2 d2 d2 d2 d2'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        final String expectedResult = "'d1 d1 d1 area0 area0''d2 d2 d2 d2 d2'";
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 
     @Test
@@ -121,6 +119,17 @@ public class GridTemplateAreaCreatorTest {
         dashboardElements.add(new CampaignDashboardElement("d3", null, 3, 40, 40));
 
         final String expectedResult = "'d1 d1 d1 d2 d2''d1 d1 d1 d3 d3'";
-        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
+    }
+
+    @Test
+    public void testGridTemplateCreateForDiagramsCase11(){
+        final List<CampaignDashboardElement> dashboardElements = new ArrayList<>();
+        dashboardElements.add(new CampaignDashboardElement("d1", null, 1, 60, 100));
+        dashboardElements.add(new CampaignDashboardElement("d2", null, 2, 40, 50));
+        dashboardElements.add(new CampaignDashboardElement("d3", null, 3, 70, 50));
+
+        final String expectedResult = "'d1 d1 d1 d1 d1 d1 d2 d2 d2 d2''d1 d1 d1 d1 d1 d1 area1 area1 area1 area1''d3 d3 d3 d3 d3 d3 d3 area2 area2 area2'";
+        Assert.assertEquals(expectedResult, new GridTemplateAreaCreator(dashboardElements).getFormattedGridTemplate());
     }
 }
