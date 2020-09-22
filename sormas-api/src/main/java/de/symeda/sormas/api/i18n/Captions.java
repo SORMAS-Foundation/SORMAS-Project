@@ -1037,6 +1037,7 @@ public interface Captions {
 	String regionArchivedRegions = "regionArchivedRegions";
 	String regionName = "regionName";
 	String Sample = "Sample";
+	String Sample_name = "Sample.name";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_associatedCase = "Sample.associatedCase";
 	String Sample_caseClassification = "Sample.caseClassification";
