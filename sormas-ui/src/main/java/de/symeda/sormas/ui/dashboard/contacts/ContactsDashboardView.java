@@ -64,6 +64,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	protected HorizontalLayout epiCurveAndMapLayout;
 	protected HorizontalLayout networkDiagramRowLayout;
 	protected HorizontalLayout caseStatisticsLayout;
+	protected HorizontalLayout contactsStatisticsLayout;
 	private VerticalLayout epiCurveLayout;
 	private Optional<VerticalLayout> mapLayout;
 	private Optional<VerticalLayout> networkDiagramLayout;
@@ -76,6 +77,10 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private Label maxLabel = new Label();
 	private Label avgLabel = new Label();
 	private Label sourceCasesLabel = new Label();
+
+	//Contacts in quarantine
+	private Label contactsInQuarantineByDate = new Label();
+	private Label contactsPlacedInQuarantineByDate = new Label();
 
 	public ContactsDashboardView() {
 		super(VIEW_NAME);
@@ -113,6 +118,10 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		caseStatisticsLayout = createCaseStatisticsLayout();
 		rowsLayout.addComponent(caseStatisticsLayout);
 		rowsLayout.setExpandRatio(caseStatisticsLayout, 0);
+
+		contactsStatisticsLayout = createContactsStatisticsLayout();
+		rowsLayout.addComponent(contactsStatisticsLayout);
+		rowsLayout.setExpandRatio(contactsStatisticsLayout, 0);
 
 		epiCurveComponent = new ContactsEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
@@ -190,6 +199,69 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		return layout;
 	}
 
+	private HorizontalLayout createContactsStatisticsLayout() {
+
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.addStyleName(DashboardCssStyles.HIGHLIGHTED_STATISTICS_COMPONENT);
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
+		layout.setSpacing(false);
+
+		HorizontalLayout contactsInQuarantine = createContactsInQuarantineLayout();
+		layout.addComponent(contactsInQuarantine);
+
+		HorizontalLayout contactsPlacedInQuarantine = createContactsPlacedInQuarantineLayout();
+		layout.addComponent(contactsPlacedInQuarantine);
+
+		layout.setComponentAlignment(contactsPlacedInQuarantine, Alignment.MIDDLE_RIGHT);
+
+		return layout;
+	}
+
+	private HorizontalLayout createContactsInQuarantineLayout() {
+
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(new MarginInfo(false, true, false, true));
+		layout.setSpacing(false);
+
+		Label captionInQuarantine = new Label(I18nProperties.getString(Strings.headingContactsInQuarantine));
+		CssStyles.style(captionInQuarantine, CssStyles.H3, CssStyles.HSPACE_RIGHT_1, CssStyles.VSPACE_TOP_NONE);
+		layout.addComponent(captionInQuarantine);
+
+		CssStyles.style(
+			contactsInQuarantineByDate,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_LARGE_ALT,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_5,
+			CssStyles.HSPACE_RIGHT_3);
+		layout.addComponent(contactsInQuarantineByDate);
+
+		return layout;
+	}
+
+	private HorizontalLayout createContactsPlacedInQuarantineLayout() {
+
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(new MarginInfo(false, true, false, true));
+		layout.setSpacing(false);
+
+		Label captionPlacedInQuarantine = new Label(I18nProperties.getString(Strings.headingContactsPlacedInQuarantine));
+		CssStyles.style(captionPlacedInQuarantine, CssStyles.H3, CssStyles.HSPACE_RIGHT_1, CssStyles.VSPACE_TOP_NONE);
+		layout.addComponent(captionPlacedInQuarantine);
+
+		CssStyles.style(
+			contactsPlacedInQuarantineByDate,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_LARGE_ALT,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_5,
+			CssStyles.HSPACE_RIGHT_3);
+		layout.addComponent(contactsPlacedInQuarantineByDate);
+
+		return layout;
+	}
+
 	private void updateCaseCountsAndSourceCasesLabels() {
 		List<Long> contactIds = dashboardDataProvider.getContacts().stream().map(dto -> dto.getId()).collect(Collectors.toList());
 		int[] counts;
@@ -217,6 +289,13 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		int newSourceCasesPercentage = newSourceCases == 0 ? 0 : (int) ((newSourceCases * 100.0f) / caseUuids.size());
 
 		sourceCasesLabel.setValue(newSourceCases + " (" + newSourceCasesPercentage + " %)");
+	}
+
+	private void updateContactsInQuarantineData() {
+
+		contactsInQuarantineByDate.setValue(dashboardDataProvider.getContactsInQuarantineCount().toString());
+
+		contactsPlacedInQuarantineByDate.setValue(dashboardDataProvider.getContactsPlacedInQuarantineCount().toString());
 	}
 
 	protected HorizontalLayout createEpiCurveAndMapLayout() {
@@ -383,6 +462,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		// Updates statistics
 		statisticsComponent.updateStatistics(dashboardDataProvider.getDisease());
 		updateCaseCountsAndSourceCasesLabels();
+
+		updateContactsInQuarantineData();
 
 		// Update cases and contacts shown on the map
 		if (mapComponent != null) {

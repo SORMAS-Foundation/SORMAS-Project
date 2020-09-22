@@ -603,6 +603,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (Boolean.TRUE.equals(caseCriteria.getWithExtendedQuarantine())) {
 			filter = and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_EXTENDED)));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getWithReducedQuarantine())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_REDUCED)));
+		}
 		if (caseCriteria.getRelevanceStatus() != null) {
 			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));

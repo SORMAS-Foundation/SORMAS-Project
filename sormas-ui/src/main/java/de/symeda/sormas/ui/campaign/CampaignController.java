@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.campaign;
 
+import static com.vaadin.v7.data.Validator.InvalidValueException;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -23,6 +25,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -41,8 +44,6 @@ import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import static com.vaadin.v7.data.Validator.InvalidValueException;
 
 public class CampaignController {
 
@@ -146,15 +147,14 @@ public class CampaignController {
 	public CommitDiscardWrapperComponent<CampaignEditForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
 
 		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto == null);
-
-		final CommitDiscardWrapperComponent<CampaignEditForm> view =
-			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup());
-
 		if (campaignDto == null) {
 			campaignDto = CampaignDto.build();
 			campaignDto.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		campaignEditForm.setValue(campaignDto);
+
+		final CommitDiscardWrapperComponent<CampaignEditForm> view =
+			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup());
 
 		view.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
@@ -174,16 +174,15 @@ public class CampaignController {
 		boolean showDeleteButton,
 		Runnable commitCallback,
 		Runnable discardCallback) {
+
 		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
-
-		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
-
 		if (campaignFormData == null) {
 			campaignFormData = CampaignFormDataDto.build(null, campaignForm, null, null, null);
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		form.setValue(campaignFormData);
-		final String campaignFormDataUuid = campaignFormData.getUuid();
+
+		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -211,6 +210,8 @@ public class CampaignController {
 		}
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+			String campaignFormDataUuid = campaignFormData.getUuid();
+
 			component.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
 				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);

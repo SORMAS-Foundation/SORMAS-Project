@@ -9,20 +9,17 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.CssLayout;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.ui.highcharts.HighChart;
-import de.symeda.sormas.ui.utils.CssStyles;
 
-public class CampaignDashboardDiagramComponent extends VerticalLayout {
+public class CampaignDashboardDiagramComponent extends CssLayout {
 
 	private CampaignDiagramDefinitionDto diagramDefinition;
 
-	private List<CampaignDiagramDataDto> diagramDataList;
 	private Map<String, Map<Object, CampaignDiagramDataDto>> diagramDataBySeriesAndXAxis = new HashMap<String, Map<Object, CampaignDiagramDataDto>>();
 	private List<Object> axisKeys = new ArrayList<Object>();
 	private Map<Object, String> axisCaptions = new HashMap<Object, String>();
@@ -32,21 +29,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	public CampaignDashboardDiagramComponent(CampaignDiagramDefinitionDto diagramDefinition, List<CampaignDiagramDataDto> diagramDataList) {
 
 		this.diagramDefinition = diagramDefinition;
-		this.diagramDataList = diagramDataList;
-
-		HorizontalLayout headerLayout = new HorizontalLayout();
-		headerLayout.setWidth(100, Unit.PERCENTAGE);
-		headerLayout.setSpacing(true);
-		CssStyles.style(headerLayout, CssStyles.VSPACE_4);
-
-		addComponent(headerLayout);
-
-		setWidth(100, Unit.PERCENTAGE);
 
 		campaignColumnChart = new HighChart();
 
+		campaignColumnChart.setSizeFull();
+
 		addComponent(campaignColumnChart);
-		setExpandRatio(campaignColumnChart, 1);
+//		setExpandRatio(campaignColumnChart, 1);
 
 		for (CampaignDiagramDataDto diagramData : diagramDataList) {
 			if (!axisKeys.contains(diagramData.getGroupingKey())) {
@@ -75,6 +64,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("var options = {"
 				+ "chart:{ "
 				+ " type: 'column', "
+				+ " width: $(\"#container\").height(), "
+				+ " height: $(\"#container\").width(), "
 				+ " backgroundColor: 'transparent', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
@@ -86,7 +77,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
 				+ "},"
 				+ "legend: { backgroundColor: 'transparent', margin: 30 },"
-				+ "colors: ['#FF0000','#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],"
+				+ "colors: ['#4472C4', '#ED7D31', '#A5A5A5', '#FFC000', '#5B9BD5', '#70AD47', '#FF0000', '#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],"
 				+ "title:{ text: '" + title + "'},");
 		//@formatter:on
 

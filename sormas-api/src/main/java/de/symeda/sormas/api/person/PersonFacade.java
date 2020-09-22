@@ -39,6 +39,8 @@ public interface PersonFacade {
 
 	PersonDto getPersonByUuid(String uuid);
 
+	PersonDto getPersonForJournal(String Uuid);
+
 	PersonDto savePerson(PersonDto dto);
 
 	void validate(PersonDto dto);
