@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
@@ -92,8 +91,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ACCESS_CN = "default";
 	public static final String SECOND_SERVER_ACCESS_CN = "second";
-	public static final String SECOND_SERVER_REST_URL = "http://localhost:8080/sormas-rest";
-	public static final String SECOND_SERVER_REST_PASSWORD = "resTPass";
+	public static final String SECOND_SERVER_REST_URL = "second.sormas.com";
+	public static final String SECOND_SERVER_REST_PASSWORD = "RestPasswoRdish";
 
 	private ObjectMapper objectMapper;
 
@@ -329,15 +328,14 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(
-					invocation.getArgumentAt(0, String.class),
-					is(SECOND_SERVER_REST_URL + SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT));
+				assertThat(invocation.getArgumentAt(0, String.class), is(SECOND_SERVER_REST_URL));
+				assertThat(invocation.getArgumentAt(1, String.class), is(SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT));
 
-				String authToken = new String(Base64.getDecoder().decode(invocation.getArgumentAt(1, String.class)));
+				String authToken = new String(Base64.getDecoder().decode(invocation.getArgumentAt(2, String.class)));
 				// uses password from server-list.csv from `serveraccessdefault` package
 				assertThat(authToken, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
 
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(2, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(3, SormasToSormasEncryptedDataDto.class);
 				assertThat(encryptedData.getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 
 				SormasToSormasCaseDto sharedCase = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto.class);
@@ -394,7 +392,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(2, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(3, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto sharedCase = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto.class);
 
 				assertThat(sharedCase.getAssociatedContacts().size(), is(1));
@@ -432,15 +430,14 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(
-					invocation.getArgumentAt(0, String.class),
-					is(SECOND_SERVER_REST_URL + SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT));
+				assertThat(invocation.getArgumentAt(0, String.class), is(SECOND_SERVER_REST_URL));
+				assertThat(invocation.getArgumentAt(1, String.class), is(SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT));
 
-				String authToken = new String(Base64.getDecoder().decode(invocation.getArgumentAt(1, String.class)));
+				String authToken = new String(Base64.getDecoder().decode(invocation.getArgumentAt(2, String.class)));
 				// uses password from server-list.csv from `serveraccessdefault` package
 				assertThat(authToken, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
 
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(2, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(3, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasContactDto sharedContact = decryptSharesData(encryptedData.getData(), SormasToSormasContactDto.class);
 
 				assertThat(sharedContact.getPerson().getFirstName(), is(person.getFirstName()));
@@ -492,7 +489,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(2, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(3, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto sharedCase = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto.class);
 
 				assertThat(sharedCase.getPerson().getFirstName(), is("Confidential"));
@@ -528,15 +525,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(
-					invocation.getArgumentAt(0, String.class),
-					is(SECOND_SERVER_REST_URL + SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT));
-
-				assertThat(
-					new String(Base64.getDecoder().decode(invocation.getArgumentAt(1, String.class))),
-					startsWith(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME));
-
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(2, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(3, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto sharedCase = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto.class);
 
 				assertThat(sharedCase.getPerson().getFirstName(), is("Confidential"));
@@ -612,7 +601,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getOrganizationId()).thenReturn(DEFAULT_SERVER_ACCESS_CN);
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("sormas2sormas.keystore.p12");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("default.sormas2sormas.keystore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certPass");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("truster");
@@ -623,10 +612,10 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getOrganizationId()).thenReturn(SECOND_SERVER_ACCESS_CN);
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("sormas2sormas.keystore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certipass");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("second.sormas2sormas.keystore.p12");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certiPass");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("trusterR");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("trusteR");
 	}
 
 	private byte[] encryptShareData(Object shareData) throws JsonProcessingException, SormasToSormasException {
