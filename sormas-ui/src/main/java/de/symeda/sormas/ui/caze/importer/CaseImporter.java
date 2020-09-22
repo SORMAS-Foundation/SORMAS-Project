@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +92,8 @@ public class CaseImporter extends DataImporter {
 	}
 
 	@Override
-	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible) throws IOException {
+	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible)
+		throws IOException, CsvValidationException {
 
 		this.currentUI = currentUI;
 		super.startImport(addErrorReportToLayoutCallback, currentUI, duplicatesPossible);
