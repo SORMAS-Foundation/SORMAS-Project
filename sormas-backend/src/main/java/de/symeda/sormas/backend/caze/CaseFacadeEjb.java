@@ -87,6 +87,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
@@ -100,6 +101,7 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
@@ -492,6 +494,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY_DATE),
 				caseRoot.get(Case.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 				caseRoot.get(Case.QUARANTINE_EXTENDED),
+				caseRoot.get(Case.QUARANTINE_REDUCED),
 				caseRoot.get(Case.QUARANTINE_OFFICIAL_ORDER_SENT),
 				caseRoot.get(Case.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
 
@@ -759,7 +762,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					Optional.ofNullable(samples.get(exportDto.getId())).ifPresent(caseSamples -> {
 						int count = 0;
 						for (Sample sample : caseSamples) {
-							CaseExportDto.CaseExportSampleDto sampleDto = new CaseExportDto.CaseExportSampleDto(
+							EmbeddedSampleExportDto sampleDto = new EmbeddedSampleExportDto(
 								sample.getSampleDateTime(),
 								sample.getLab() != null
 									? FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails())
@@ -806,10 +809,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 				pseudonymizer.pseudonymizeDto(CaseExportDto.class, exportDto, inJurisdiction, (c) -> {
 					pseudonymizer.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDto(CaseExportDto.CaseExportSampleDto.class, c.getSample1(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDto(CaseExportDto.CaseExportSampleDto.class, c.getSample2(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDto(CaseExportDto.CaseExportSampleDto.class, c.getSample3(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDtoCollection(CaseExportDto.CaseExportSampleDto.class, c.getOtherSamples(), s -> inJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(EmbeddedSampleExportDto.class, c.getSample1(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(EmbeddedSampleExportDto.class, c.getSample2(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(EmbeddedSampleExportDto.class, c.getSample3(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeDtoCollection(EmbeddedSampleExportDto.class, c.getOtherSamples(), s -> inJurisdiction, null);
 					pseudonymizer.pseudonymizeDto(BurialInfoDto.class, c.getBurialInfo(), inJurisdiction, null);
 					pseudonymizer.pseudonymizeDto(SymptomsDto.class, c.getSymptoms(), inJurisdiction, null);
 				});
@@ -868,6 +871,73 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return result;
+	}
+
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardQuarantineDataDto> cq = cb.createQuery(DashboardQuarantineDataDto.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setRegion(regionRef);
+		caseCriteria.setDistrict(districtRef);
+		caseCriteria.setDisease(disease);
+
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(false).excludeCasesFromContacts(false));
+		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+
+		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, from, to);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(caze.get(AbstractDomainObject.ID), caze.get(Case.QUARANTINE_FROM), caze.get(Case.QUARANTINE_TO));
+
+			return em.createQuery(cq).getResultList();
+		}
+
+		return Collections.emptyList();
+	}
+
+	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date from, Date to) {
+
+		return cb.or(
+			cb.and(cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), from), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), to)),
+			cb.and(cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), from), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_TO), to)),
+			cb.and(cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), from), cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), to)));
+	}
+
+	public long countCasesConvertedFromContacts(CaseCriteria caseCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(false).excludeCasesFromContacts(false));
+		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+
+		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.LEFT);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(caze));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
@@ -1935,6 +2005,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setReportingType(source.getReportingType());
@@ -2200,6 +2271,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setReportingType(source.getReportingType());

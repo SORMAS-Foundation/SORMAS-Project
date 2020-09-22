@@ -315,7 +315,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "' as fieldId"
 							+ ", jsonMeta->>'" + CampaignFormElement.CAPTION + "' as fieldCaption"
 							+ ", CASE"
-							+ " WHEN (jsonMeta ->> '" + CampaignFormElement.TYPE + "')  = '" + CampaignFormElementType.NUMBER.toString() + "' THEN sum((jsonData->>'" + CampaignFormDataEntry.VALUE + "')\\:\\:int)"
+							+ " WHEN (jsonMeta ->> '" + CampaignFormElement.TYPE + "')  = '" + CampaignFormElementType.NUMBER.toString() + "' THEN sum(cast_to_int(jsonData->>'" + CampaignFormDataEntry.VALUE + "', 0))"
 							+ " ELSE count((jsonData->>'" + CampaignFormDataEntry.VALUE + "') = '" + diagramSeries.getFieldValue() + "')"
 		      				+ " END as sumValue"
 							+ ", " + Region.TABLE_NAME + "." + Region.UUID
