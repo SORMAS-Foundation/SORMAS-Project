@@ -119,6 +119,8 @@ if [[ ! -f "${CSV_FILE}" ]]; then
   exit 1;
 fi
 
+
+
 # import crt
 echo "Importing certificate into truststore..."
 keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias ${SORMAS_S2S_ORGANIZATION_ID} -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
@@ -143,3 +145,6 @@ echo "Updating server list CSV"
 ( head -1 $CSV_FILE ) >> ${ORGANIZATION_LIST_FILE}
 
 echo "The script finished executing. Please check for any errors."
+
+#openssl s_client -showcerts -servername second.sormas.com -connect second.sormas.com:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > certificate.cer
+# keytool -importcert -trustcacerts -noprompt -keystore ~/Work/payara5_194/glassfish/domains/sormas/config/cacerts.jks -alias secondsormas -storepass changeit -file certificate.cer
