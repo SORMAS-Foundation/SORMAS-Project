@@ -71,7 +71,7 @@ public class DashboardDataProvider {
 	private List<DashboardTestResultDto> testResults = new ArrayList<>();
 	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
 	private Map<SampleCountType, Long> sampleCount = new HashMap<SampleCountType, Long>();
-	private Map<SampleCountType, Long> sampleCountDifference = new HashMap<SampleCountType, Long>();
+	private Map<SampleCountType, Long> previousSampleCount = new HashMap<SampleCountType, Long>();
 
 	public void refreshData() {
 
@@ -327,10 +327,10 @@ public class DashboardDataProvider {
 	}
 
 	public Map<SampleCountType, Long> getSampleCountDifference() {
-		return sampleCountDifference;
+		return previousSampleCount;
 	}
 
-	public void setSampleCountDifference(Map<SampleCountType, Long> sampleCountDifference) {
-		this.sampleCountDifference = sampleCountDifference;
+	public void setSampleCountDifference(Map<SampleCountType, Long> previousSampleCount) {
+		this.previousSampleCount = previousSampleCount;
 	}
 }
