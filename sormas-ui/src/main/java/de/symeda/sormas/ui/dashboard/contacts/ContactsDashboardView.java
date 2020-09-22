@@ -377,6 +377,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			}
 			caseStatisticsLayout.setVisible(!expanded);
 			networkDiagramRowLayout.setVisible(!expanded);
+			contactsStatisticsLayout.setVisible(!expanded);
 		});
 
 		return layout;
@@ -415,6 +416,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			}
 			caseStatisticsLayout.setVisible(!expanded);
 			networkDiagramRowLayout.setVisible(!expanded);
+			contactsStatisticsLayout.setVisible(!expanded);
 		});
 
 		return Optional.of(layout);
@@ -450,6 +452,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 				}
 				caseStatisticsLayout.setVisible(!expanded);
 				epiCurveAndMapLayout.setVisible(!expanded);
+				contactsStatisticsLayout.setVisible(!expanded);
 			});
 			return layout;
 		});
