@@ -7,11 +7,9 @@ import java.util.Date;
 import java.util.stream.Stream;
 
 import com.vaadin.server.Page;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -109,64 +107,62 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private HorizontalLayout buildWeekAndDateFilter() {
 
-		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
-
 		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter =
-			new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, null);
+			new EpiWeekAndDateFilterComponent<>(false, false, null, this);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventDateFrom));
 		weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventDateTo));
 
-		applyButton.addClickListener(e -> {
-			EventCriteria criteria = getValue();
-
-			DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
-			Date fromDate, toDate;
-			if (dateFilterOption == DateFilterOption.DATE) {
-				fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
-				toDate = DateHelper.getEndOfDay(weekAndDateFilter.getDateToFilter().getValue());
-			} else {
-				fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
-				toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
-			}
-			weekAndDateFilter.setVisible(false);
-
-			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
-				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				criteria.eventDateBetween(fromDate, toDate, dateFilterOption);
-
-				fireValueChange(true);
-			} else {
-				if (dateFilterOption == DateFilterOption.DATE) {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingDateFilter),
-						I18nProperties.getString(Strings.messageMissingDateFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				} else {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-						I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				}
-			}
-		});
+		addApplyHandler(e -> onApplyClick(weekAndDateFilter));
 
 		HorizontalLayout dateFilterRowLayout = new HorizontalLayout();
 		dateFilterRowLayout.setSpacing(true);
 		dateFilterRowLayout.setSizeUndefined();
 
 		dateFilterRowLayout.addComponent(weekAndDateFilter);
-		dateFilterRowLayout.addComponent(applyButton);
 
 		return dateFilterRowLayout;
+	}
+
+	private void onApplyClick(EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter) {
+		EventCriteria criteria = getValue();
+
+		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+		Date fromDate, toDate;
+		if (dateFilterOption == DateFilterOption.DATE) {
+			Date dateFrom = weekAndDateFilter.getDateFromFilter().getValue();
+			fromDate = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
+			Date dateTo = weekAndDateFilter.getDateToFilter().getValue();
+			toDate = dateFrom != null ? DateHelper.getEndOfDay(dateTo) : null;
+		} else {
+			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
+			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
+		}
+		weekAndDateFilter.setVisible(false);
+
+		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
+			criteria.eventDateBetween(fromDate, toDate, dateFilterOption);
+		} else {
+			if (dateFilterOption == DateFilterOption.DATE) {
+				Notification notification = new Notification(
+					I18nProperties.getString(Strings.headingMissingDateFilter),
+					I18nProperties.getString(Strings.messageMissingDateFilter),
+					Notification.Type.WARNING_MESSAGE,
+					false);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			} else {
+				Notification notification = new Notification(
+					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
+					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
+					Notification.Type.WARNING_MESSAGE,
+					false);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			}
+		}
 	}
 
 	@SuppressWarnings("rawtypes")

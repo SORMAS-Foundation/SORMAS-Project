@@ -53,6 +53,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
 
+		// needed before adding date filters
+		addApplyButton();
+
 		if (hasMoreFilters) {
 			moreFiltersLayout = new CustomLayout();
 			moreFiltersLayout.setTemplateContents(moreFiltersHtmlLayout);
@@ -62,11 +65,18 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			addMoreFilters(moreFiltersLayout);
 		}
 
+		addDefaultButtons();
+
 		this.addValueChangeListener(e -> {
 			onChange();
 		});
 
-		addDefaultButtons();
+	}
+
+	private void addApplyButton() {
+		Button applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, null, FILTER_ITEM_STYLE);
+		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+		getContent().addComponent(applyButton, APPLY_BUTTON_ID);
 	}
 
 	public void onChange() {
@@ -98,10 +108,6 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 		Button resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
 		getContent().addComponent(resetButton, RESET_BUTTON_ID);
-
-		Button applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, null, FILTER_ITEM_STYLE);
-		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-		getContent().addComponent(applyButton, APPLY_BUTTON_ID);
 
 		if (moreFiltersLayout != null) {
 			String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
