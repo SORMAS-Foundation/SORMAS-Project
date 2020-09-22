@@ -57,14 +57,23 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignFilter);
+
+		final CampaignReferenceDto lastStartedCampaign = dashboardDataProvider.getLastStartedCampaign();
+		if (lastStartedCampaign != null) {
+			campaignFilter.setValue(lastStartedCampaign);
+		}
 		dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
 	}
 
 	@SuppressWarnings("deprecation")
 	private void createJurisdictionFilters() {
-		// Region filter
-		setFilterVisibilitiesBasedOnArea(areaFilter.getValue());
-		if (UserProvider.getCurrent().getUser().getArea() == null) {
+		final AreaReferenceDto userArea = UserProvider.getCurrent().getUser().getArea();
+		final RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
+		final DistrictReferenceDto userDistrict = UserProvider.getCurrent().getUser().getDistrict();
+
+		dashboardDataProvider.setArea(userArea);
+		if (userArea == null && userRegion == null) {
+			setFilterVisibilitiesBasedOnArea(areaFilter.getValue());
 			areaFilter.setWidth(200, Unit.PIXELS);
 			areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptArea));
 			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
@@ -78,12 +87,11 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardDataProvider.setArea((AreaReferenceDto) areaFilter.getValue());
 		}
 
-		// Region filter
-		setFilterVisibilitiesBasedOnRegion(regionFilter.getValue());
-		if (UserProvider.getCurrent().getUser().getRegion() == null) {
+		dashboardDataProvider.setRegion(userRegion);
+		if (userRegion == null) {
+			setFilterVisibilitiesBasedOnRegion(regionFilter.getValue());
 			regionFilter.setWidth(200, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptRegion));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				final Object value = regionFilter.getValue();
 				dashboardDataProvider.setRegion((RegionReferenceDto) value);
@@ -94,12 +102,13 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 		}
 
-		// District filter
-		if (UserProvider.getCurrent().getUser().getRegion() != null && UserProvider.getCurrent().getUser().getDistrict() == null) {
+		dashboardDataProvider.setDistrict(userDistrict);
+		if (userRegion != null || userDistrict == null) {
 			districtFilter.setWidth(200, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptDistrict));
-			districtFilter
-				.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(UserProvider.getCurrent().getUser().getRegion().getUuid()));
+			if (userRegion != null) {
+				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
+			}
 			districtFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 				dashboardView.refreshDashboard();
@@ -112,6 +121,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	private void setFilterVisibilitiesBasedOnRegion(Object value) {
 		if (value != null) {
 			districtFilter.setVisible(true);
+			districtFilter.removeAllItems();
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(((RegionReferenceDto) value).getUuid()));
 		} else {
 			districtFilter.setVisible(false);
 			districtFilter.clear();
@@ -120,12 +131,13 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private void setFilterVisibilitiesBasedOnArea(Object value) {
 		if (value != null) {
+			regionFilter.removeAllItems();
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
 			regionFilter.setVisible(true);
-			districtFilter.setVisible(true);
 		} else {
 			regionFilter.setVisible(false);
-			districtFilter.setVisible(false);
 			regionFilter.clear();
+			districtFilter.setVisible(false);
 			districtFilter.clear();
 		}
 	}

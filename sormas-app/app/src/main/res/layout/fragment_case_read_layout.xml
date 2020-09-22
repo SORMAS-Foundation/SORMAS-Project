@@ -389,6 +389,14 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/caseData_quarantineReduced"
+                    app:dependencyParentField="@{caseDataQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@{data.quarantineReduced}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
                     android:id="@+id/caseData_quarantineOrderedVerbally"
                     app:dependencyParentField="@{caseDataQuarantine}"
                     app:dependencyParentValue="@{QuarantineType.HOME}"
@@ -416,6 +424,20 @@
                     app:dependencyParentField="@{caseDataQuarantineOrderedOfficialDocument}"
                     app:dependencyParentValue="@{true}"
                     app:value="@{data.quarantineOrderedOfficialDocumentDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/caseData_quarantineOfficialOrderSent"
+                    app:dependencyParentField="@{caseDataQuarantineOrderedOfficialDocument}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@{data.quarantineOfficialOrderSent}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_quarantineOfficialOrderSentDate"
+                    app:dependencyParentField="@{caseDataQuarantineOfficialOrderSent}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@{data.quarantineOfficialOrderSentDate}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

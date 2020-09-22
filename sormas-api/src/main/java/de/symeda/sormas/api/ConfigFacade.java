@@ -68,6 +68,10 @@ public interface ConfigFacade {
 
 	String getCustomBrandingLogoPath();
 
+	boolean isUseLoginSidebar();
+
+	String getLoginBackgroundPath();
+
 	String getSormasInstanceName();
 
 	double getNameSimilarityThreshold();
@@ -92,5 +96,9 @@ public interface ConfigFacade {
 
 	String getSymptomJournalSecret();
 
+	String getPatientDiaryUrl();
+
 	void validateExternalUrls();
+
+	Sormas2SormasConfig getSormas2SormasConfig();
 }

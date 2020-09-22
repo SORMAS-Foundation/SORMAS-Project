@@ -17,14 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
@@ -56,7 +49,8 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.visit.VisitDto;
+
+import java.util.Date;
 
 public class CaseDataDto extends PseudonymizableDto {
 
@@ -139,6 +133,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_REDUCED = "quarantineReduced";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
@@ -349,9 +346,21 @@ public class CaseDataDto extends PseudonymizableDto {
 	private Date quarantineTo;
 	@SensitiveData
 	private String quarantineHelpNeeded;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	private boolean quarantineOrderedVerbally;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	private boolean quarantineOrderedOfficialDocument;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	private Date quarantineOrderedVerballyDate;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	private Date quarantineOrderedOfficialDocumentDate;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
@@ -364,6 +373,15 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
+	private boolean quarantineReduced;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	private boolean quarantineOfficialOrderSent;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	private Date quarantineOfficialOrderSentDate;
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
@@ -401,43 +419,22 @@ public class CaseDataDto extends PseudonymizableDto {
 		return caze;
 	}
 
-	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
+	public static CaseDataDto buildFromContact(ContactDto contact) {
 
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease(), contact.getHealthConditions());
-		migratesAttributes(contact, cazeData, lastVisit);
+		migratesAttributes(contact, cazeData);
 		return cazeData;
 	}
 
-	public static CaseDataDto buildFromUnrelatedContact(ContactDto contact, VisitDto lastVisit, Disease disease) {
+	public static CaseDataDto buildFromUnrelatedContact(ContactDto contact, Disease disease) {
 
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), disease);
-		migratesAttributes(contact, cazeData, lastVisit);
+		migratesAttributes(contact, cazeData);
 		return cazeData;
 	}
 
-	private static void migratesAttributes(ContactDto contact, CaseDataDto cazeData, VisitDto lastVisit) {
+	private static void migratesAttributes(ContactDto contact, CaseDataDto cazeData) {
 		cazeData.setEpiData(contact.getEpiData());
-		SymptomsDto newSymptoms = cazeData.getSymptoms();
-		if (lastVisit != null) {
-			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
-
-			try {
-				// reflection to call the setters of the new symptoms object with the getters
-				// from the one in the visit
-				for (PropertyDescriptor pd : Introspector.getBeanInfo(SymptomsDto.class, EntityDto.class).getPropertyDescriptors()) {
-					if (pd.getWriteMethod() != null) {
-						try {
-							pd.getWriteMethod().invoke(newSymptoms, pd.getReadMethod().invoke(oldSymptoms));
-						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-							throw new RuntimeException(e);
-						}
-					}
-				}
-			} catch (IntrospectionException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		cazeData.setSymptoms(newSymptoms);
 	}
 
 	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, Disease eventDisease) {
@@ -1067,6 +1064,30 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setQuarantineExtended(boolean quarantineExtended) {
 		this.quarantineExtended = quarantineExtended;
+	}
+
+	public boolean isQuarantineReduced() {
+		return quarantineReduced;
+	}
+
+	public void setQuarantineReduced(boolean quarantineReduced) {
+		this.quarantineReduced = quarantineReduced;
+	}
+
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
 	public ReportingType getReportingType() {

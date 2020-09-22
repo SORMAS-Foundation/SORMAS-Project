@@ -5216,7 +5216,6 @@ DROP TABLE IF EXISTS t_edgl_id_map;
 
 INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735');
 
-
 -- 2020-09-01 - Store the status of the PIA account for a person
 ALTER TABLE person ADD COLUMN symptomjournalstatus varchar(255);
 ALTER TABLE person_history ADD COLUMN symptomjournalstatus varchar(255);
@@ -5231,5 +5230,91 @@ ALTER TABLE person ADD COLUMN covidCodeDelivered boolean DEFAULT false;
 ALTER TABLE person_history ADD COLUMN covidCodeDelivered boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (247, 'SwissCOVID-App fields (for Switzerland and COVID only), #2725');
+
+-- 2020-09-07 - Add reporting user on event participant
+ALTER TABLE eventparticipant ADD COLUMN reportingUser_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
+
+ALTER TABLE eventparticipant_history ADD COLUMN reportingUser_id bigint;
+ALTER TABLE eventparticipant_history ADD CONSTRAINT fk_eventparticipant_history_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add reporting user on event participant #2789');
+
+-- 2020-09-08 - Add "Official order sent" and corresponding date to cases and contacts #2847
+ALTER TABLE cases ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+ALTER TABLE contact ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (249, 'Add "Official order sent" and corresponding date to cases and contacts #2847');
+
+-- 2020-07-29 Campaign diagram visualisation refinement
+
+-- Hotfix additions to avoid errors for servers older than 2 months
+ALTER TABLE campaignformmeta DROP COLUMN IF EXISTS campaignformtranslations;
+ALTER TABLE campaignformmeta_history DROP COLUMN IF EXISTS campaignformtranslations;
+ALTER TABLE campaignformmeta ADD COLUMN campaignformtranslations json;
+-- End of hotfix additions
+
+ALTER TABLE campaignformmeta ALTER COLUMN campaignformelements TYPE json USING campaignformelements::json;
+ALTER TABLE campaignformmeta ALTER COLUMN campaignformtranslations TYPE json USING campaignformtranslations::json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformelements json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformtranslations json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
+
+-- 2020-09-07 Campaign dashboard element
+
+ALTER TABLE campaigns ADD COLUMN dashboardElements json;
+ALTER TABLE campaigns_history ADD COLUMN dashboardElements json;
+
+create or replace function cast_to_int(text, integer) returns integer as $$
+begin
+    return cast($1 as integer);
+exception
+    when invalid_text_representation then
+        return $2;
+end;
+$$ language plpgsql immutable;
+
+INSERT INTO schema_version (version_number, comment) VALUES (251, 'Campaign dashboard element #2527');
+
+-- 2020-09-14 Add person_locations table and remove person reference from locations #2746
+
+CREATE TABLE person_locations(
+	person_id bigint NOT NULL,
+	location_id bigint NOT NULL,
+	sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE person_locations OWNER TO sormas_user;
+ALTER TABLE ONLY person_locations ADD CONSTRAINT unq_person_locations_0 UNIQUE (person_id, location_id);
+ALTER TABLE ONLY person_locations ADD CONSTRAINT fk_person_locations_person_id FOREIGN KEY (person_id) REFERENCES person(id);
+ALTER TABLE ONLY person_locations ADD CONSTRAINT fk_person_locations_location_id FOREIGN KEY (location_id) REFERENCES location(id);
+
+CREATE TABLE person_locations_history (LIKE person_locations);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON person_locations
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_locations_history', true);
+ALTER TABLE person_locations_history OWNER TO sormas_user;
+
+INSERT INTO person_locations (person_id, location_id) SELECT l.person_id, l.id FROM location l WHERE l.person_id IS NOT NULL;
+
+ALTER TABLE location DROP COLUMN person_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (252, 'Add person_locations table and remove person reference from locations #2746');
+
+-- 2020-09-21 - Store if quarantine period has been reduced #2235
+ALTER TABLE cases ADD COLUMN quarantinereduced boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantinereduced boolean DEFAULT false;
+
+ALTER TABLE cases_history ADD COLUMN quarantinereduced boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantinereduced boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (253, 'Store if quarantine period has been reduced #2235');
 
 -- *** Insert new sql commands BEFORE this line ***

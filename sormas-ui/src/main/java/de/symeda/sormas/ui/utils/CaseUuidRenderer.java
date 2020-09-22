@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.util.function.Function;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -29,16 +31,16 @@ import elemental.json.JsonValue;
 @SuppressWarnings("serial")
 public class CaseUuidRenderer extends HtmlRenderer {
 
-	private final boolean withCreateCaseIfEmpty;
+	private Function<String, Boolean> canCreateCase;
 
-	public CaseUuidRenderer(boolean withCreateCaseIfEmpty) {
-		this.withCreateCaseIfEmpty = withCreateCaseIfEmpty;
+	public CaseUuidRenderer(Function<String, Boolean> canCreateCase) {
+		this.canCreateCase = canCreateCase;
 	}
 
 	@Override
 	public JsonValue encode(String value) {
 
-		if (withCreateCaseIfEmpty && (value == null || value.isEmpty())) {
+		if ((value == null || value.isEmpty()) && canCreateCase.apply(value)) {
 			value = "<a title='" + I18nProperties.getString(Strings.headingCreateNewCase) + "'>" + I18nProperties.getCaption(Captions.actionCreate)
 				+ "</a> " + VaadinIcons.EDIT.getHtml();
 			return super.encode(value);

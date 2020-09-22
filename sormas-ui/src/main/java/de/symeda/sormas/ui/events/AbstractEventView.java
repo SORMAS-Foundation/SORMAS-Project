@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEventView extends AbstractDetailView<EventReferenceDto> {
@@ -80,10 +81,10 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 	}
 
 	@Override
-	protected void setSubComponent(Component newComponent) {
+	protected void setSubComponent(DirtyStateComponent newComponent) {
 		super.setSubComponent(newComponent);
 
-		if (FacadeProvider.getEventFacade().isDeleted(getReference().getUuid())) {
+		if (getReference() != null && FacadeProvider.getEventFacade().isDeleted(getReference().getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}

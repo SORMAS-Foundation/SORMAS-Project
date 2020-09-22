@@ -174,6 +174,18 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	public List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end) {
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+
+		return contact.getVisits()
+			.stream()
+			.filter(visit -> visit.getVisitDateTime().after(begin) && visit.getVisitDateTime().before(end))
+			.map(visit -> convertToDto(visit, pseudonymizer))
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public VisitDto getLastVisitByCase(CaseReferenceDto caseRef) {
 		Case caze = caseService.getByReferenceDto(caseRef);
 		return toDto(caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null));

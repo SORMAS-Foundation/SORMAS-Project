@@ -17,6 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -26,6 +54,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.DashboardContactDto;
+import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.followup.FollowUpLogic;
@@ -60,32 +89,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
-import org.apache.commons.collections.CollectionUtils;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -401,36 +404,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
-		if (region != null) {
-			Predicate regionFilter = cb.or(
-				cb.equal(contact.get(Contact.REGION), region),
-				cb.and(cb.isNull(contact.get(Contact.REGION)), cb.equal(caze.get(Case.REGION), region)));
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
-
-		if (district != null) {
-			Predicate districtFilter = cb.or(
-				cb.equal(contact.get(Contact.DISTRICT), district),
-				cb.and(cb.isNull(contact.get(Contact.DISTRICT)), cb.equal(caze.get(Case.DISTRICT), district)));
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(contact.get(Contact.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
+		filter = AbstractAdoService.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze));
 
 		// Only retrieve contacts that are currently under follow-up
 		Predicate followUpFilter = cb.equal(contact.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
@@ -493,36 +467,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = dateFilter;
 		}
 
-		if (region != null) {
-			Predicate regionFilter = cb.or(
-				cb.equal(contact.get(Contact.REGION), region),
-				cb.and(cb.isNull(contact.get(Contact.REGION)), cb.equal(caze.get(Case.REGION), region)));
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
-
-		if (district != null) {
-			Predicate districtFilter = cb.or(
-				cb.equal(contact.get(Contact.DISTRICT), district),
-				cb.and(cb.isNull(contact.get(Contact.DISTRICT)), cb.equal(caze.get(Case.DISTRICT), district)));
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(contact.get(Contact.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
+		filter = AbstractAdoService.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -573,6 +518,75 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 				return dashboardContacts;
 			}
+		}
+
+		return Collections.emptyList();
+	}
+
+	public Predicate getRegionDistrictDiseasePredicate(
+		Region region,
+		District district,
+		Disease disease,
+		CriteriaBuilder cb,
+		Root<Contact> contact,
+		Join<Contact, Case> caze) {
+
+		Predicate filter = null;
+
+		if (region != null) {
+			Predicate regionFilter = cb.or(
+				cb.equal(contact.get(Contact.REGION), region),
+				cb.and(cb.isNull(contact.get(Contact.REGION)), cb.equal(caze.get(Case.REGION), region)));
+
+			filter = AbstractAdoService.and(cb, filter, regionFilter);
+		}
+
+		if (district != null) {
+			Predicate districtFilter = cb.or(
+				cb.equal(contact.get(Contact.DISTRICT), district),
+				cb.and(cb.isNull(contact.get(Contact.DISTRICT)), cb.equal(caze.get(Case.DISTRICT), district)));
+
+			filter = AbstractAdoService.and(cb, filter, districtFilter);
+		}
+
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(contact.get(Contact.DISEASE), disease);
+
+			filter = AbstractAdoService.and(cb, filter, diseaseFilter);
+		}
+		return filter;
+	}
+
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
+		Region region,
+		District district,
+		Disease disease,
+		Date from,
+		Date to,
+		User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardQuarantineDataDto> cq = cb.createQuery(DashboardQuarantineDataDto.class);
+		Root<Contact> contact = cq.from(getElementClass());
+		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
+
+		Predicate filter = createDefaultFilter(cb, contact);
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
+
+		Predicate quarantineDateFilter = buildQuarantineDateFilter(cb, contact, from, to);
+
+		filter = AbstractAdoService.and(cb, filter, quarantineDateFilter);
+
+		filter = AbstractAdoService.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze));
+
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(contact.get(AbstractDomainObject.ID), contact.get(Contact.QUARANTINE_FROM), contact.get(Contact.QUARANTINE_TO));
+
+			List<DashboardQuarantineDataDto> dashboardContactsInQuarantine = em.createQuery(cq).getResultList();
+
+			return dashboardContactsInQuarantine;
+
 		}
 
 		return Collections.emptyList();
@@ -1019,6 +1033,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (Boolean.TRUE.equals(contactCriteria.getWithExtendedQuarantine())) {
 			filter = and(cb, filter, cb.isTrue(from.get(Contact.QUARANTINE_EXTENDED)));
 		}
+		if (Boolean.TRUE.equals(contactCriteria.getWithReducedQuarantine())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Contact.QUARANTINE_REDUCED)));
+		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
@@ -1130,6 +1147,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			cb.or(
 				cb.and(cb.isNotNull(contact.get(Contact.LAST_CONTACT_DATE)), cb.lessThanOrEqualTo(contact.get(Contact.LAST_CONTACT_DATE), to)),
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
+	}
+
+	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Contact> contact, Date from, Date to) {
+
+		return cb.or(
+			cb.and(
+				cb.greaterThanOrEqualTo(contact.get(Contact.QUARANTINE_FROM), from),
+				cb.lessThanOrEqualTo(contact.get(Contact.QUARANTINE_FROM), to)),
+			cb.and(cb.greaterThanOrEqualTo(contact.get(Contact.QUARANTINE_TO), from), cb.lessThanOrEqualTo(contact.get(Contact.QUARANTINE_TO), to)),
+			cb.and(
+				cb.lessThanOrEqualTo(contact.get(Contact.QUARANTINE_FROM), from),
+				cb.greaterThanOrEqualTo(contact.get(Contact.QUARANTINE_TO), to)));
 	}
 
 	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<Long> cq, ContactJoins joins) {

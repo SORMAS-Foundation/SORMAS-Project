@@ -218,11 +218,19 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextImageField
-                    android:id="@+id/caseData_quarantineExtended"
+                    android:id="@+id/contact_quarantineExtended"
                     app:dependencyParentField="@{contactQuarantine}"
                     app:dependencyParentValue="@{QuarantineType.HOME}"
                     app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
                     app:value="@{data.quarantineExtended}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/contact_quarantineReduced"
+                    app:dependencyParentField="@{contactQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@{data.quarantineReduced}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextImageField
@@ -253,6 +261,20 @@
                     app:dependencyParentField="@{contactQuarantineOrderedOfficialDocument}"
                     app:dependencyParentValue="@{true}"
                     app:value="@{data.quarantineOrderedOfficialDocumentDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/contact_quarantineOfficialOrderSent"
+                    app:dependencyParentField="@{contactQuarantineOrderedOfficialDocument}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@{data.quarantineOfficialOrderSent}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_quarantineOfficialOrderSentDate"
+                    app:dependencyParentField="@{contactQuarantineOfficialOrderSent}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@{data.quarantineOfficialOrderSentDate}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

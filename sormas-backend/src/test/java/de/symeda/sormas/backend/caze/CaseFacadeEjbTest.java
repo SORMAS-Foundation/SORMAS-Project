@@ -1182,6 +1182,24 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
 	}
 
+	@Test
+	public void testSearchCasesWithReducedQuarantine() {
+		RDCF rdcf = creator.createRDCF();
+		CaseDataDto caze =
+				creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
+		caze.setQuarantineReduced(true);
+		getCaseFacade().saveCase(caze);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, Collections.emptyList());
+		assertThat(indexList.get(0).getUuid(), is(caze.getUuid()));
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setWithReducedQuarantine(true);
+
+		List<CaseIndexDto> indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
+	}
+
 //	@Test
 //	public void testGetSimilarCases() {
 //		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");

@@ -27,9 +27,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -55,7 +54,8 @@ public class EventParticipantsController {
 	private final PersonFacade personFacade = FacadeProvider.getPersonFacade();
 
 	public void createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
-		EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef);
+		EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
+
 		EventParticipantCreateForm createForm = new EventParticipantCreateForm();
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent =
@@ -159,9 +159,9 @@ public class EventParticipantsController {
 	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
-		final boolean isEventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(eventParticipant.getEvent().getUuid());
+		final boolean isInJurisdition = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipant.getUuid());
 
-		final EventParticipantEditForm editForm = new EventParticipantEditForm(event, isEventEditAllowed);
+		final EventParticipantEditForm editForm = new EventParticipantEditForm(event, isInJurisdition);
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 

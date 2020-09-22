@@ -148,7 +148,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testGetEventParticipantPersonInSameJurisdiction() {
 
 		EventDto event = creator.createEvent(user2.toReference());
-		creator.createEventParticipant(event.toReference(), person);
+		creator.createEventParticipant(event.toReference(), person, user2.toReference());
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
@@ -156,15 +156,16 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testGetEventParticipantPersonOutsideJurisdiction() {
 
 		EventDto event = creator.createEvent(user1.toReference());
-		creator.createEventParticipant(event.toReference(), person);
-		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+		creator.createEventParticipant(event.toReference(), person, user1.toReference());
+//		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testUpdateEventParticipantPersonInJurisdiction() {
 
 		EventDto event = creator.createEvent(user2.toReference());
-		creator.createEventParticipant(event.toReference(), person);
+		creator.createEventParticipant(event.toReference(), person, user2.toReference());
 		updatePerson(false);
 		assertPersonUpdated();
 	}
@@ -173,9 +174,12 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdateEventParticipantPersonOutsideJurisdiction() {
 
 		EventDto event = creator.createEvent(user1.toReference());
-		creator.createEventParticipant(event.toReference(), person);
-		updatePerson(true);
-		assertPersonNotUpdated();
+		creator.createEventParticipant(event.toReference(), person, user1.toReference());
+//		updatePerson(true);
+//		assertPersonNotUpdated();
+		// pseudonymization disabled for now
+		updatePerson(false);
+		assertPersonUpdated();
 	}
 
 	@Test

@@ -22,11 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
-import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
 public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
 
@@ -36,6 +32,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	public static final String UUID = "uuid";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
@@ -50,25 +47,18 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	private String uuid;
 	private EventStatus eventStatus;
+	private int participantCount;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
-	@SensitiveData
 	private String eventDesc;
-	@EmbeddedSensitiveData
-	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
-	@SensitiveData
 	private String srcFirstName;
-	@SensitiveData
 	private String srcLastName;
-	@SensitiveData
 	private String srcTelNo;
-	@SensitiveData
 	private String srcMediaWebsite;
-	@SensitiveData
 	private String srcMediaName;
 	private Date reportDateTime;
 	private EventJurisdictionDto jurisdiction;
@@ -76,6 +66,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 	public EventIndexDto(
 		String uuid,
 		EventStatus eventStatus,
+		Integer participantCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -117,6 +108,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.participantCount = participantCount;
 	}
 
 	public String getUuid() {
@@ -235,6 +227,14 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.reportDateTime = reportDateTime;
 	}
 
+	public int getParticipantCount() {
+		return participantCount;
+	}
+
+	public void setParticipantCount(int participantCount) {
+		this.participantCount = participantCount;
+	}
+
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getStartDate());
 	}
@@ -267,15 +267,10 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 		private String regionName;
 		private String districtName;
-		@SensitiveData
 		private String communityName;
-		@SensitiveData
 		private String city;
-		@SensitiveData
 		private String street;
-		@SensitiveData
 		private String houseNumber;
-		@SensitiveData
 		private String additionalInformation;
 
 		public EventIndexLocation(

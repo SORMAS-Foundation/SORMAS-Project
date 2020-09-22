@@ -48,7 +48,6 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -604,6 +603,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (Boolean.TRUE.equals(caseCriteria.getWithExtendedQuarantine())) {
 			filter = and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_EXTENDED)));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getWithReducedQuarantine())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_REDUCED)));
+		}
 		if (caseCriteria.getRelevanceStatus() != null) {
 			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
@@ -979,8 +981,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Date referenceDateStart = DateHelper.getStartOfDay(referenceDate);
 		Date referenceDateEnd = DateHelper.getEndOfDay(referenceDate);
 
-		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
-
 		Predicate filter = and(cb, cb.equal(from.get(Case.PERSON), person), cb.equal(from.get(Case.DISEASE), disease));
 
 		filter = and(
@@ -993,21 +993,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter,
 			or(
 				cb,
-				// If the case does not have a follow-up until date, use the symptom onset/case report date as a fallback
+				// If the case does not have a follow-up until date, use the case report date as a fallback
 				and(
 					cb,
 					cb.isNull(from.get(Case.FOLLOW_UP_UNTIL)),
-					or(
-						cb,
-						and(
-							cb,
-							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
-							cb.greaterThanOrEqualTo(
-								from.get(Case.REPORT_DATE),
-								DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET))),
-						cb.greaterThanOrEqualTo(
-							symptoms.get(Symptoms.ONSET_DATE),
-							DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET)))),
+					cb.greaterThanOrEqualTo(
+						from.get(Case.REPORT_DATE),
+						DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET))),
 				cb.greaterThanOrEqualTo(
 					from.get(Case.FOLLOW_UP_UNTIL),
 					DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET))));
@@ -1039,7 +1031,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		} else {
 			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
-			LocalDate beginDate = DateHelper8.toLocalDate(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()));
+			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
 			LocalDate untilDate = caze.isOverwriteFollowUpUntil()
 				|| (caze.getFollowUpUntil() != null && DateHelper8.toLocalDate(caze.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration)))
 					? DateHelper8.toLocalDate(caze.getFollowUpUntil())

@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.event;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -63,7 +64,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 	}
 
 	@Test
-	public void testEventInJurisdiction() {
+	public void testEventParticipantInJurisdiction() {
 		EventParticipantDto eventParticipant = createEventParticipant(user2, rdcf2);
 
 		assertNotPseudonymized(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
@@ -73,7 +74,9 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 	public void testEventOutsideJurisdiction() {
 		EventParticipantDto eventParticipant = createEventParticipant(user1, rdcf1);
 
-		assertPseudonymized(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
+//		assertPseudonymized(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
+		// pseudonymization disabled for now
+		assertNotPseudonymized(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 	}
 
 	@Test
@@ -85,32 +88,50 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 			getEventParticipantFacade().getByUuids(Arrays.asList(eventParticipant1.getUuid(), eventParticipant2.getUuid()));
 
 		assertNotPseudonymized(participants.stream().filter(p -> p.getUuid().equals(eventParticipant1.getUuid())).findFirst().get());
-		assertPseudonymized(participants.stream().filter(p -> p.getUuid().equals(eventParticipant2.getUuid())).findFirst().get());
+//		assertPseudonymized(participants.stream().filter(p -> p.getUuid().equals(eventParticipant2.getUuid())).findFirst().get());
+		// pseudonymization disabled for now
+		assertNotPseudonymized(participants.stream().filter(p -> p.getUuid().equals(eventParticipant2.getUuid())).findFirst().get());
 	}
 
 	@Test
 	public void testUpdateOutsideJurisdiction() {
 		EventParticipantDto participant = createEventParticipant(user1, rdcf1);
 
-		participant.setInvolvementDescription(null);
-		participant.getPerson().setFirstName(null);
-		participant.getPerson().setLastName(null);
+		participant.setInvolvementDescription("");
+		participant.getPerson().setFirstName("James");
+		participant.getPerson().setLastName("Doe");
 		participant.getPerson().getAddress().setStreet(null);
 		participant.getPerson().getAddress().setHouseNumber(null);
 		participant.getPerson().getAddress().setAdditionalInformation(null);
 		participant.getPerson().getAddress().setCity(null);
 
+		// saving event participant should be done in 2 steps: person and participant
+
+		getPersonFacade().savePerson(participant.getPerson());
+		PersonDto savedPerson = getPersonFacade().getPersonByUuid(participant.getPerson().getUuid());
+
+//		assertThat(savedPerson.getFirstName(), is("John"));
+//		assertThat(savedPerson.getLastName(), is("Smith"));
+//		assertThat(savedPerson.getAddress().getStreet(), is("Test Street"));
+//		assertThat(savedPerson.getAddress().getHouseNumber(), is("Test Number"));
+//		assertThat(savedPerson.getAddress().getAdditionalInformation(), is("Test Information"));
+//		assertThat(savedPerson.getAddress().getCity(), is("Test City"));
+
+		// pseudonymization disabled for now
+		assertThat(savedPerson.getFirstName(), is("James"));
+		assertThat(savedPerson.getLastName(), is("Doe"));
+		assertThat(savedPerson.getAddress().getStreet(), is(nullValue()));
+		assertThat(savedPerson.getAddress().getHouseNumber(), is(nullValue()));
+		assertThat(savedPerson.getAddress().getAdditionalInformation(), is(nullValue()));
+		assertThat(savedPerson.getAddress().getCity(), is(nullValue()));
+
 		getEventParticipantFacade().saveEventParticipant(participant);
+		EventParticipant savedParticipant = getEventParticipantService().getByUuid(participant.getUuid());
 
-		EventParticipant saved = getEventParticipantService().getByUuid(participant.getUuid());
+//		assertThat(savedParticipant.getInvolvementDescription(), is("Test involvement descr"));
 
-		assertThat(saved.getInvolvementDescription(), is("Test involvement descr"));
-		assertThat(saved.getPerson().getFirstName(), is("John"));
-		assertThat(saved.getPerson().getLastName(), is("Smith"));
-		assertThat(saved.getPerson().getAddress().getStreet(), is("Test Street"));
-		assertThat(saved.getPerson().getAddress().getHouseNumber(), is("Test Number"));
-		assertThat(saved.getPerson().getAddress().getAdditionalInformation(), is("Test Information"));
-		assertThat(saved.getPerson().getAddress().getCity(), is("Test City"));
+		// pseudonymization disabled for now
+		assertThat(savedParticipant.getInvolvementDescription(), is(""));
 	}
 
 	@Test
@@ -153,7 +174,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 			p.getAddress().setCity("Test City");
 		});
 
-		return creator.createEventParticipant(event.toReference(), person, "Test involvement descr");
+		return creator.createEventParticipant(event.toReference(), person, "Test involvement descr", user.toReference());
 	}
 
 	private void assertNotPseudonymized(EventParticipantDto eventParticipant) {

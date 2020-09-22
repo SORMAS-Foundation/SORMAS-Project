@@ -93,7 +93,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 			fluidRowLocs(PersonDto.SEX))
 			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
+			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
+			+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
 
 	public CaseCreateForm() {
@@ -161,6 +162,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		DateField onsetDate = addCustomField(SymptomsDto.ONSET_DATE, Date.class, DateField.class);
 		onsetDate.setCaption(I18nProperties.getCaption(Captions.Symptoms_onsetDate));
+
+		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
+		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
+		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
+		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
 
 		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
@@ -492,6 +498,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		return (Date) getField(SymptomsDto.ONSET_DATE).getValue();
 	}
 
+	public String getPhone() {
+		return (String) getField(PersonDto.PHONE).getValue();
+	}
+
+	public String getEmailAddress() {
+		return (String) getField(PersonDto.EMAIL_ADDRESS).getValue();
+	}
+
 	public void setPerson(PersonDto person) {
 
 		if (person != null) {
@@ -502,6 +516,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
+			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getPhone());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
@@ -510,6 +526,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			getField(PersonDto.BIRTH_DATE_YYYY).clear();
 			getField(PersonDto.SEX).clear();
 			getField(PersonDto.PRESENT_CONDITION).clear();
+			getField(PersonDto.PHONE).clear();
+			getField(PersonDto.EMAIL_ADDRESS).clear();
 		}
 	}
 
@@ -522,14 +540,22 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	public void setPersonalDetailsReadOnly(boolean readOnly) {
+	public void setPersonalDetailsReadOnlyIfNotEmpty(boolean readOnly) {
 
 		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
 		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
-		getField(PersonDto.SEX).setEnabled(!readOnly);
-		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
-		getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
-		getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
+		if (getField(PersonDto.SEX).getValue() != null) {
+			getField(PersonDto.SEX).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_YYYY).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_MM).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_DD).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
+		}
 	}
 
 	public void setDiseaseReadOnly(boolean readOnly) {

@@ -63,6 +63,7 @@ import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -155,6 +156,9 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_REDUCED = "quarantineReduced";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
@@ -165,6 +169,7 @@ public class Case extends CoreAdo {
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 
 	private Person person;
 	private String description;
@@ -268,6 +273,10 @@ public class Case extends CoreAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
+	private boolean quarantineReduced;
+	private boolean quarantineOfficialOrderSent;
+	private Date quarantineOfficialOrderSentDate;
+
 	private ReportingType reportingType;
 
 	private FollowUpStatus followUpStatus;
@@ -282,6 +291,7 @@ public class Case extends CoreAdo {
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
+	private Contact convertedContact;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -654,6 +664,15 @@ public class Case extends CoreAdo {
 		this.portHealthInfo = portHealthInfo;
 	}
 
+	@OneToOne(mappedBy = Contact.RESULTING_CASE, fetch = FetchType.LAZY)
+	public Contact getConvertedContact() {
+		return convertedContact;
+	}
+
+	public void setConvertedContact(Contact convertedContact) {
+		this.convertedContact = convertedContact;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getPregnant() {
 		return pregnant;
@@ -753,7 +772,6 @@ public class Case extends CoreAdo {
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
 	}
-
 
 	@AuditedIgnore
 	@OneToMany(mappedBy = Visit.CAZE, fetch = FetchType.LAZY)
@@ -1103,6 +1121,33 @@ public class Case extends CoreAdo {
 
 	public void setQuarantineExtended(boolean quarantineExtended) {
 		this.quarantineExtended = quarantineExtended;
+	}
+
+	@Column
+	public boolean isQuarantineReduced() {
+		return quarantineReduced;
+	}
+
+	public void setQuarantineReduced(boolean quarantineReduced) {
+		this.quarantineReduced = quarantineReduced;
+	}
+
+	@Column
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
 	@Enumerated(EnumType.STRING)
