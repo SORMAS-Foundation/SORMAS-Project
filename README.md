@@ -40,6 +40,8 @@ The project consists of the following modules:
 - **sormas-ear:** The ear needed to build the application
 - **sormas-rest:** The REST interface; see [`sormas-rest/README.md`](sormas-rest/README.md)
 - **sormas-ui:** The web application
+- **sormas-base/dependencies:** dependencies to be deployed with the payara server
+- **sormas-cargoserver:** setup for a local dev server using maven-cargo
 
 ## Server Management
 

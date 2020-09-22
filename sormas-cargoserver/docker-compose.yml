@@ -1,0 +1,20 @@
+version: '2.3'
+services:
+
+  postgres:
+    image: hzibraunschweig/sormas-postgres:${SORMAS_DOCKER_VERSION:-latest}
+    command: -c 'config_file=/etc/postgresql/postgresql.conf'
+    environment:
+      - POSTGRES_PASSWORD=sormas
+      - DB_NAME=sormas_db
+      - DB_NAME_AUDIT=sormas_audit_db
+      - SORMAS_POSTGRES_PASSWORD=sormas
+      - SORMAS_POSTGRES_USER=sormas_user
+      - TZ=Europe/Berlin
+    volumes:
+      - psqldata_cargoserver:/var/lib/postgresql/data
+    ports:
+      - "${SORMAS_POSTGRES_PORT}:5432"
+
+volumes:
+  psqldata_cargoserver:

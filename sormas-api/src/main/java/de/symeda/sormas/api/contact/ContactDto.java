@@ -96,6 +96,7 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
@@ -205,6 +206,7 @@ public class ContactDto extends PseudonymizableDto {
 	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
+	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
 		"de",
 		"ch" })
@@ -680,6 +682,14 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setQuarantineExtended(boolean quarantineExtended) {
 		this.quarantineExtended = quarantineExtended;
+	}
+
+	public boolean isQuarantineReduced() {
+		return quarantineReduced;
+	}
+
+	public void setQuarantineReduced(boolean quarantineReduced) {
+		this.quarantineReduced = quarantineReduced;
 	}
 
 	public boolean isQuarantineOfficialOrderSent() {

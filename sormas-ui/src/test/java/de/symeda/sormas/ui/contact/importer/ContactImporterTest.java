@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -42,7 +43,7 @@ import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 public class ContactImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testImportCaseContacts() throws IOException, InvalidColumnException, InterruptedException {
+	public void testImportCaseContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
@@ -120,10 +121,19 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(7, contactFacade.count(null));
 		assertEquals(7, getPersonFacade().getAllUuids().size());
+
+		// Test import contacts from a commented CSV file
+		// Successful import of 5 case contacts
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_comment_success.csv").getFile());
+		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze);
+		importResult = contactImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(12, contactFacade.count(null));
 	}
 
 	@Test
-	public void testImportContacts() throws IOException, InvalidColumnException, InterruptedException {
+	public void testImportContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
@@ -169,6 +179,14 @@ public class ContactImporterTest extends AbstractBeanTest {
 		// the others have their defined disease
 		contactCriteria = new ContactCriteria().disease(Disease.CORONAVIRUS);
 		assertEquals(3, contactFacade.count(contactCriteria));
+
+		// Test import contacts from a commented CSV file
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test_comment.csv").getFile());
+		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), null);
+		importResult = contactImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(8, contactFacade.count(null));
 	}
 
 	private static class ContactImporterExtension extends ContactImporter {

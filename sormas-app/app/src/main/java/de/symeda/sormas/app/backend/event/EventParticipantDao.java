@@ -67,6 +67,18 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 		}
 	}
 
+	public Long countByEvent(Event event) {
+		if (event.isSnapshot()) {
+			throw new IllegalArgumentException("Does not support snapshot entities");
+		}
+		try {
+			return queryBuilder().where().eq(EventParticipant.EVENT + "_id", event).and().eq(AbstractDomainObject.SNAPSHOT, false).countOf();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform countByEvent on EventParticipant");
+			throw new RuntimeException(e);
+		}
+	}
+
 	public List<EventParticipant> getByCase(Case caze) {
 
 		if (caze.isSnapshot()) {

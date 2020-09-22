@@ -165,6 +165,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
 					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3, CaseDataDto.QUARANTINE_TO) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_EXTENDED) +
+					fluidRowLocs(CaseDataDto.QUARANTINE_REDUCED) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_TYPE_DETAILS) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
@@ -203,6 +204,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
+	private CheckBox quarantineExtended;
+	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	private OptionGroup facilityOrHome;
@@ -302,6 +305,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
 		quarantine = addField(CaseDataDto.QUARANTINE);
+		quarantine.addValueChangeListener(e -> onValueChange());
 		quarantineFrom = addField(CaseDataDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
@@ -336,11 +340,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		CheckBox quarantineExtended = addField(CaseDataDto.QUARANTINE_EXTENDED, CheckBox.class);
+		quarantineExtended = addField(CaseDataDto.QUARANTINE_EXTENDED, CheckBox.class);
 		quarantineExtended.setEnabled(false);
 		quarantineExtended.setVisible(false);
 		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
-		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended));
+
+		quarantineReduced = addField(CaseDataDto.QUARANTINE_REDUCED, CheckBox.class);
+		quarantineReduced.setEnabled(false);
+		quarantineReduced.setVisible(false);
+		CssStyles.style(quarantineReduced, CssStyles.FORCE_CAPTION);
 
 		TextField quarantineHelpNeeded = addField(CaseDataDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -355,7 +363,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays
-				.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_EXTENDED, CaseDataDto.QUARANTINE_HELP_NEEDED),
+				.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
 			CaseDataDto.QUARANTINE,
 			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
 			true);
@@ -544,7 +552,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(Boolean.TRUE));
 		}
 		final DateField finalFollowUpUntil = dfFollowUpUntil;
-
+		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, finalFollowUpUntil));
+		this.addValueChangeListener(e -> onValueChange());
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
@@ -925,7 +934,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					if (confirmed) {
 						quarantineChangedByFollowUpUntilChange = true;
 						quarantineTo.setValue(followUpUntil);
-						if (followUpUntil.compareTo(getInternalValue().getFollowUpUntil()) > 0) {
+						if (followUpUntil.after(getInternalValue().getFollowUpUntil())) {
 							quarantineExtendedCheckBox.setValue(true);
 						}
 					}
@@ -933,7 +942,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
+	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckBox, CheckBox quarantineReducedCheckBox, DateField followUpUntilField) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -941,26 +950,93 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Date newQuarantineEnd = quarantineEndField.getValue();
 			CaseDataDto originalCase = getInternalValue();
 			Date oldQuarantineEnd = originalCase.getQuarantineTo();
-			if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
-				VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingExtendQuarantine),
-					new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					640,
-					confirmed -> {
-						if (confirmed) {
-							if (!originalCase.isQuarantineExtended()) {
-								quarantineExtendedCheckbox.setValue(true);
-							}
-						} else {
-							quarantineEndField.setValue(oldQuarantineEnd);
-						}
-					});
-			} else if (!originalCase.isQuarantineExtended()) {
-				quarantineExtendedCheckbox.setValue(false);
+			if (newQuarantineEnd != null) {
+				if (oldQuarantineEnd != null) {
+					if (newQuarantineEnd.after(oldQuarantineEnd)) {
+						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalCase, oldQuarantineEnd, followUpUntilField);
+					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
+						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
+					}
+				}
+			} else if (!originalCase.isQuarantineExtended() && !originalCase.isQuarantineReduced()) {
+				setVisible(false, quarantineExtendedCheckBox.getId(), quarantineReducedCheckBox.getId());
+				quarantineExtendedCheckBox.setValue(false);
+				quarantineReducedCheckBox.setValue(false);
 			}
 		}
+	}
+
+	private void confirmQuarantineEndExtended(
+		CheckBox quarantineExtendedCheckbox,
+		CheckBox quarantineReducedCheckbox,
+		Property<Date> quarantineEndField,
+		CaseDataDto originalCase,
+		Date oldQuarantineEnd,
+		DateField followUpUntil) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingExtendQuarantine),
+			new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					quarantineExtendedCheckbox.setValue(true);
+					quarantineReducedCheckbox.setValue(false);
+					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
+					setVisible(false, CaseDataDto.QUARANTINE_REDUCED);
+					if (caseFollowUpEnabled && originalCase.getFollowUpUntil() != null) {
+						confirmExtendFollowUpPeriod(originalCase, quarantineEndField.getValue(), followUpUntil);
+					}
+				} else {
+					quarantineEndField.setValue(oldQuarantineEnd);
+				}
+			});
+	}
+
+	private void confirmExtendFollowUpPeriod(CaseDataDto originalCase, Date quarantineEnd, DateField followUpUntil) {
+		if (quarantineEnd.after(originalCase.getFollowUpUntil())) {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingExtendFollowUp),
+				new Label(I18nProperties.getString(Strings.confirmationExtendFollowUp)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						if (followUpUntil.isReadOnly()) {
+							followUpUntil.setReadOnly(false);
+							followUpUntil.setValue(quarantineEnd);
+							followUpUntil.setReadOnly(true);
+						} else {
+							followUpUntil.setValue(quarantineEnd);
+						}
+					}
+				});
+		}
+	}
+
+	private void confirmQuarantineEndReduced(
+		CheckBox quarantineExtendedCheckbox,
+		CheckBox quarantineReducedCheckbox,
+		Property<Date> quarantineEndField,
+		Date oldQuarantineEnd) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingReduceQuarantine),
+			new Label(I18nProperties.getString(Strings.confirmationReduceQuarantine)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					quarantineExtendedCheckbox.setValue(false);
+					quarantineReducedCheckbox.setValue(true);
+					setVisible(false, CaseDataDto.QUARANTINE_EXTENDED);
+					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
+				} else {
+					quarantineEndField.setValue(oldQuarantineEnd);
+				}
+			});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1099,8 +1175,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		private static final long serialVersionUID = -5339850320902885768L;
 
 		private final AbstractSelect diseaseField;
-		private final Disease currentDisease;
 
+		private final Disease currentDisease;
 		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
 			this.diseaseField = diseaseField;
 			this.currentDisease = currentDisease;
@@ -1140,6 +1216,38 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				});
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingChangeCaseDisease));
 			}
+		}
+
+	}
+
+	private void onValueChange() {
+		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
+		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+			CaseDataDto caze = this.getInternalValue();
+			if (caze != null) {
+				quarantineFrom.setValue(caze.getQuarantineFrom());
+				if (caze.getQuarantineTo() == null) {
+					if (caseFollowUpEnabled) {
+						quarantineTo.setValue(caze.getFollowUpUntil());
+					}
+				} else {
+					quarantineTo.setValue(caze.getQuarantineTo());
+				}
+				if (caze.isQuarantineExtended()) {
+					quarantineExtended.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
+				}
+				if (caze.isQuarantineReduced()) {
+					quarantineReduced.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
+				}
+			}
+		} else {
+			quarantineFrom.clear();
+			quarantineTo.clear();
+			quarantineExtended.setValue(false);
+			quarantineReduced.setValue(false);
+			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
 		}
 	}
 }

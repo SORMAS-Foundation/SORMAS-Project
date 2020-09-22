@@ -23,5 +23,7 @@ public interface Descriptions {
 	String descCaseFilterExcludeSharedCasesString = "descCaseFilterExcludeSharedCases";
 	String descCaseFilterWithoutResponsibleOfficer = "descCaseFilterWithoutResponsibleOfficer";
 	String descCaseFilterWithExtendedQuarantine = "descCaseFilterWithExtendedQuarantine";
+	String descCaseFilterWithReducedQuarantine = "descCaseFilterWithReducedQuarantine";
 	String descContactOnlyWithExtendedQuarantine = "descContactOnlyWithExtendedQuarantine";
+	String descContactOnlyWithReducedQuarantine = "descContactOnlyWithReducedQuarantine";
 }

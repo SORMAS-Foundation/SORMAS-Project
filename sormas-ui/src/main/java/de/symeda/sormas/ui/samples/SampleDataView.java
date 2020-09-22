@@ -22,7 +22,6 @@ import java.util.function.Supplier;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -43,6 +42,7 @@ import de.symeda.sormas.ui.contact.ContactInfoLayout;
 import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
@@ -59,6 +59,8 @@ public class SampleDataView extends AbstractSampleView {
 	public static final String EVENT_PARTICIPANT_LOC = "eventParticipant";
 	public static final String PATHOGEN_TESTS_LOC = "pathogenTests";
 	public static final String ADDITIONAL_TESTS_LOC = "additionalTests";
+
+	private CommitDiscardWrapperComponent<SampleEditForm> editComponent;
 
 	public SampleDataView() {
 		super(VIEW_NAME);
@@ -77,7 +79,7 @@ public class SampleDataView extends AbstractSampleView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, PATHOGEN_TESTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ADDITIONAL_TESTS_LOC));
 
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
@@ -145,8 +147,7 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
-		CommitDiscardWrapperComponent<SampleEditForm> editComponent =
-			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), isSampleEditAllowed());
+		editComponent = ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), isSampleEditAllowed());
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

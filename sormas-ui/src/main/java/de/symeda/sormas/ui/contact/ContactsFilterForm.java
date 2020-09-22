@@ -76,7 +76,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.QUARANTINE_NOT_ORDERED,
 			ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
-			ContactCriteria.WITH_EXTENDED_QUARANTINE)
+			ContactCriteria.WITH_EXTENDED_QUARANTINE,
+			ContactCriteria.WITH_REDUCED_QUARANTINE)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -253,6 +254,15 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getDescription(Descriptions.descContactOnlyWithExtendedQuarantine),
 				CHECKBOX_STYLE));
 
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ContactCriteria.WITH_REDUCED_QUARANTINE,
+				I18nProperties.getCaption(Captions.contactOnlyWithReducedQuarantine),
+				I18nProperties.getDescription(Descriptions.descContactOnlyWithReducedQuarantine),
+				CHECKBOX_STYLE));
+
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
@@ -353,7 +363,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			null,
 			ContactDateType.class,
 			I18nProperties.getString(Strings.promptContactDateType),
-			null);
+			null,
+			this);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateFrom));
@@ -383,7 +394,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				}
 				criteria.dateFilterOption(dateFilterOption);
 
-				fireValueChange(true);
+				((Button) getContent().getComponent(APPLY_BUTTON_ID)).click();
 			} else {
 				if (dateFilterOption == DateFilterOption.DATE) {
 					Notification notification = new Notification(

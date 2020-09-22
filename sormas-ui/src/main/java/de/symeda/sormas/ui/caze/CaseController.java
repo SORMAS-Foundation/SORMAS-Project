@@ -462,6 +462,8 @@ public class CaseController {
 					duplicatePerson.setBirthdateYYYY(createForm.getBirthdateYYYY());
 					duplicatePerson.setSex(createForm.getSex());
 					duplicatePerson.setPresentCondition(createForm.getPresentCondition());
+					duplicatePerson.setPhone(createForm.getPhone());
+					duplicatePerson.setEmailAddress(createForm.getEmailAddress());
 
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {

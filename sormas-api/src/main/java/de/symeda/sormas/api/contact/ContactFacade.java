@@ -121,4 +121,11 @@ public interface ContactFacade {
 	boolean isContactEditAllowed(String contactUuid);
 
 	boolean exists(String uuid);
+
+	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to);
 }

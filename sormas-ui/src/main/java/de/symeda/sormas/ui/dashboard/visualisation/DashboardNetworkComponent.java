@@ -18,15 +18,18 @@
 package de.symeda.sormas.ui.dashboard.visualisation;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -39,31 +42,32 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class DashboardNetworkComponent extends VerticalLayout {
 
+	public static final int MAX_CONTACTS_SUPPORTED = 5000;
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;
 	private HorizontalLayout mapHeaderLayout;
 	private Button expandMapButton;
 	private Button collapseMapButton;
-	private final NetworkDiagram diagram;
+	private final NetworkDiagram networkDiagram;
 
 	private Consumer<Boolean> externalExpandListener;
 
 	private String getNetworkDiagramJson() {
-		Set<Disease> diseases = Optional.of(dashboardDataProvider)
-			.map(DashboardDataProvider::getDisease)
-			.map(Collections::singleton)
-			.orElseGet(() -> EnumSet.allOf(Disease.class));
+		Set<Disease> diseases =
+			Optional.of(dashboardDataProvider.getDisease()).map(Collections::singleton).orElseGet(() -> EnumSet.allOf(Disease.class));
 
+		Date fromDate = dashboardDataProvider.getFromDate();
+		Date toDate = dashboardDataProvider.getToDate();
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 
-		String networkJson = FacadeProvider.getVisualizationFacade()
-			.buildTransmissionChainJson(region, district, diseases, UserProvider.getCurrent().getUser().getLanguage());
-		return networkJson;
+		return FacadeProvider.getVisualizationFacade()
+			.buildTransmissionChainJson(fromDate, toDate, region, district, diseases, UserProvider.getCurrent().getUser().getLanguage());
 	}
 
 	public DashboardNetworkComponent(DashboardDataProvider dashboardDataProvider) {
@@ -73,17 +77,17 @@ public class DashboardNetworkComponent extends VerticalLayout {
 		setSpacing(false);
 		setSizeFull();
 
-		diagram = new NetworkDiagram();
-		diagram.setSizeFull();
+		networkDiagram = new NetworkDiagram();
+		networkDiagram.setSizeFull();
 
 		this.setMargin(true);
 
 		// Add components
 		addComponent(createHeader());
-		addComponent(diagram);
+		addComponent(networkDiagram);
 //		addComponent(createFooter());
-		setExpandRatio(diagram, 1);
-		diagram.setVisible(false);
+		setExpandRatio(networkDiagram, 1);
+		networkDiagram.setVisible(false);
 	}
 
 	boolean dirty = true;
@@ -95,10 +99,42 @@ public class DashboardNetworkComponent extends VerticalLayout {
 	}
 
 	private void updateDiagram() {
-		if (dirty && diagram.isVisible()) {
-			diagram.updateDiagram(getNetworkDiagramJson());
-			dirty = false;
+		if (dirty && networkDiagram.isVisible()) {
+
+			Long contactCount = FacadeProvider.getVisualizationFacade()
+				.getContactCount(
+					dashboardDataProvider.getFromDate(),
+					dashboardDataProvider.getToDate(),
+					dashboardDataProvider.getRegion(),
+					dashboardDataProvider.getDistrict(),
+					Optional.of(dashboardDataProvider.getDisease()).map(Collections::singleton).orElseGet(() -> EnumSet.allOf(Disease.class)));
+
+			if (contactCount <= MAX_CONTACTS_SUPPORTED) {
+				updateNetworkDiagram();
+			} else {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingNetworkDiagramTooManyContacts),
+					new Label(
+						String.format(
+							"%s<br/><br/>%s",
+							String.format(I18nProperties.getString(Strings.warningNetworkDiagramTooManyContacts), contactCount),
+							I18nProperties.getString(Strings.confirmNetworkDiagramTooManyContacts)),
+						ContentMode.HTML),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					640,
+					confirmed -> {
+						if (confirmed) {
+							updateNetworkDiagram();
+						}
+					});
+			}
 		}
+	}
+
+	private void updateNetworkDiagram() {
+		networkDiagram.updateDiagram(getNetworkDiagramJson());
+		dirty = false;
 	}
 
 	public void setExpandListener(Consumer<Boolean> listener) {
@@ -143,13 +179,13 @@ public class DashboardNetworkComponent extends VerticalLayout {
 			mapHeaderLayout.removeComponent(expandMapButton);
 			mapHeaderLayout.addComponent(collapseMapButton);
 			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
-			diagram.setVisible(true);
+			networkDiagram.setVisible(true);
 			updateDiagram();
 		} else {
 			mapHeaderLayout.removeComponent(collapseMapButton);
 			mapHeaderLayout.addComponent(expandMapButton);
 			mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
-			diagram.setVisible(false);
+			networkDiagram.setVisible(false);
 		}
 	}
 

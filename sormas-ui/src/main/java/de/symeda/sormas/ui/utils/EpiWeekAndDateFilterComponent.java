@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.vaadin.v7.ui.Field;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -49,8 +50,8 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 	private PopupDateField dateFromFilter;
 	private PopupDateField dateToFilter;
 
-	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption, String infoText) {
-		this(applyButton, fillAutomatically, showCaption, infoText, null, null, null);
+	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption, String infoText, AbstractFilterForm parentFilterForm) {
+		this(applyButton, fillAutomatically, showCaption, infoText, null, null, null, parentFilterForm);
 	}
 
 	public EpiWeekAndDateFilterComponent(
@@ -60,7 +61,8 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		String infoText,
 		Class<E> dateType,
 		String dateTypePrompt,
-		Enum<E> defaultDateType) {
+		Enum<E> defaultDateType,
+		AbstractFilterForm parentFilterForm) {
 		setSpacing(true);
 
 		Calendar c = Calendar.getInstance();
@@ -205,6 +207,15 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 				applyButton.setEnabled(true);
 			});
+		}
+
+		if (parentFilterForm != null) {
+			dateFilterOptionFilter.addValueChangeListener(e -> parentFilterForm.onChange());
+			dateTypeSelector.addValueChangeListener(e -> parentFilterForm.onChange());
+			weekFromFilter.addValueChangeListener(e -> parentFilterForm.onChange());
+			weekToFilter.addValueChangeListener(e -> parentFilterForm.onChange());
+			dateFromFilter.addValueChangeListener(e -> parentFilterForm.onChange());
+			dateToFilter.addValueChangeListener(e -> parentFilterForm.onChange());
 		}
 	}
 
