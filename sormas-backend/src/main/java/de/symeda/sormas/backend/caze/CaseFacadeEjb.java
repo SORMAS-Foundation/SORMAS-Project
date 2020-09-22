@@ -723,6 +723,18 @@ public class CaseFacadeEjb implements CaseFacade {
 				visitSummaries = em.createQuery(visitsCq).getResultList();
 			}
 
+			// Load latest events info
+			// Adding a second query here is not perfect, but selecting the last event with a criteria query
+			// doesn't seem to be possible and using a native query is not an option because of user filters
+			List<EventSummaryDetails> eventSummaries = null;
+			if (exportConfiguration == null
+				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_ID)
+				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_STATUS)
+				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_TITLE)) {
+
+				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
+			}
+
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 			for (CaseExportDto exportDto : resultList) {
@@ -847,6 +859,18 @@ public class CaseFacadeEjb implements CaseFacade {
 						exportDto.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(visitSymptoms, true, userLanguage));
 						exportDto.setLastCooperativeVisitSymptomatic(visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 					}
+				}
+
+				if (eventSummaries != null && exportDto.getEventCount() != 0) {
+					eventSummaries.stream()
+						.filter(v -> v.getCaseId() == exportDto.getId())
+						.sorted(Comparator.comparing(EventSummaryDetails::getEventDate).reversed())
+						.findFirst()
+						.ifPresent(eventSummary -> {
+							exportDto.setLatestEventId(eventSummary.getEventUuid());
+							exportDto.setLatestEventStatus(eventSummary.getEventStatus());
+							exportDto.setLatestEventTitle(eventSummary.getEventTitle());
+						});
 				}
 
 				pseudonymizer.pseudonymizeDto(CaseExportDto.class, exportDto, inJurisdiction, (c) -> {
