@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -41,6 +43,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -286,5 +289,52 @@ public class TaskService extends AbstractAdoService<Task> {
 		task.setPriority(TaskPriority.NORMAL);
 		task.setTaskStatus(TaskStatus.PENDING);
 		return task;
+	}
+
+	public User getTaskAssignee(Contact contact) throws TaskCreationException {
+		User assignee = null;
+
+		if (contact.getContactOfficer() != null) {
+			// 1) The contact officer that is responsible for the contact
+			assignee = contact.getContactOfficer();
+		} else {
+			// 2) A random contact officer from the contact's, contact person's or contact case's district
+			List<User> officers = new ArrayList<>();
+			if (contact.getDistrict() != null) {
+				officers = userService.getAllByDistrict(contact.getDistrict(), false, UserRole.CONTACT_OFFICER);
+			}
+			if (officers.isEmpty() && contact.getPerson().getAddress().getDistrict() != null) {
+				officers = userService.getAllByDistrict(contact.getPerson().getAddress().getDistrict(), false, UserRole.CONTACT_OFFICER);
+			}
+			if (officers.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
+				officers = userService.getAllByDistrict(contact.getCaze().getDistrict(), false, UserRole.CONTACT_OFFICER);
+			}
+			if (!officers.isEmpty()) {
+				Random rand = new Random();
+				assignee = officers.get(rand.nextInt(officers.size()));
+			}
+		}
+
+		if (assignee == null) {
+			// 3) Assign a random contact supervisor from the contact's, contact person's or contact case's region
+			List<User> supervisors = new ArrayList<>();
+			if (contact.getRegion() != null) {
+				supervisors = userService.getAllByRegionAndUserRoles(contact.getRegion(), UserRole.CONTACT_SUPERVISOR);
+			}
+			if (supervisors.isEmpty() && contact.getPerson().getAddress().getRegion() != null) {
+				supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
+			}
+			if (supervisors.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
+				supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);
+			}
+			if (!supervisors.isEmpty()) {
+				Random rand = new Random();
+				assignee = supervisors.get(rand.nextInt(supervisors.size()));
+			} else {
+				throw new TaskCreationException("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
+			}
+		}
+
+		return assignee;
 	}
 }

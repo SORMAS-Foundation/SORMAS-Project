@@ -490,6 +490,7 @@ public interface Captions {
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
 	String contactOpenContactCase = "contactOpenContactCase";
+	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
 	String contactQuarantineNotOrdered = "contactQuarantineNotOrdered";
@@ -793,6 +794,7 @@ public interface Captions {
 	String EventParticipant_person = "EventParticipant.person";
 	String EventParticipant_personUuid = "EventParticipant.personUuid";
 	String EventParticipant_sex = "EventParticipant.sex";
+	String EventParticipant_uuid = "EventParticipant.uuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
 	String EventParticipantExport_addressDistrict = "EventParticipantExport.addressDistrict";
 	String EventParticipantExport_addressGpsCoordinates = "EventParticipantExport.addressGpsCoordinates";
@@ -808,6 +810,7 @@ public interface Captions {
 	String EventParticipantExport_eventHouseNumber = "EventParticipantExport.eventHouseNumber";
 	String EventParticipantExport_eventParticipantInvolvmentDescription = "EventParticipantExport.eventParticipantInvolvmentDescription";
 	String EventParticipantExport_eventParticipantU = "EventParticipantExport.eventParticipantU";
+	String EventParticipantExport_eventParticipantUuid = "EventParticipantExport.eventParticipantUuid";
 	String EventParticipantExport_eventRegion = "EventParticipantExport.eventRegion";
 	String EventParticipantExport_eventStartDate = "EventParticipantExport.eventStartDate";
 	String EventParticipantExport_eventStreet = "EventParticipantExport.eventStreet";

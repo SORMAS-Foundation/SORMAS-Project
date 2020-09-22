@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -30,7 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,6 +58,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -161,6 +162,8 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -358,8 +361,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		//		}
 
 		Contact entity = fromDto(dto);
-
 		contactService.ensurePersisted(entity);
+
+		createInvestigationTask(entity);
 
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);
@@ -374,6 +378,22 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return toDto(entity);
+	}
+
+	private void createInvestigationTask(Contact entity) {
+		LocalDate now = LocalDate.now();
+		LocalDate reportDate = DateHelper8.toLocalDate(entity.getReportDateTime());
+		if (DAYS.between(reportDate, now) <= 30) {
+			try {
+				User assignee = taskService.getTaskAssignee(entity);
+				LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
+				LocalDateTime toDateTime = fromDateTime.plusDays(1);
+				Task task = createContactTask(TaskType.CONTACT_INVESTIGATION, fromDateTime, toDateTime, entity, assignee);
+				taskService.ensurePersisted(task);
+			} catch (TaskCreationException e) {
+				logger.warn(e.getMessage());
+			}
+		}
 	}
 
 	private void updateContactVisitAssociations(ContactDto existingContact, Contact contact) {
@@ -1317,47 +1337,12 @@ public class ContactFacadeEjb implements ContactFacade {
 				continue;
 			}
 
-			User assignee = null;
-			if (contact.getContactOfficer() != null) {
-				// 1) The contact officer that is responsible for the contact
-				assignee = contact.getContactOfficer();
-			} else {
-				// 2) A random contact officer from the contact's, contact person's or contact case's district
-				List<User> officers = new ArrayList<>();
-				if (contact.getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (officers.isEmpty() && contact.getPerson().getAddress().getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getPerson().getAddress().getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (officers.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getCaze().getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (!officers.isEmpty()) {
-					Random rand = new Random();
-					assignee = officers.get(rand.nextInt(officers.size()));
-				}
-			}
-
-			if (assignee == null) {
-				// 3) Assign a random contact supervisor from the contact's, contact person's or contact case's region
-				List<User> supervisors = new ArrayList<>();
-				if (contact.getRegion() != null) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (supervisors.isEmpty() && contact.getPerson().getAddress().getRegion() != null) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (supervisors.isEmpty()) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (!supervisors.isEmpty()) {
-					Random rand = new Random();
-					assignee = supervisors.get(rand.nextInt(supervisors.size()));
-				} else {
-					logger.warn("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
-					continue;
-				}
+			User assignee;
+			try {
+				assignee = taskService.getTaskAssignee(contact);
+			} catch (TaskCreationException e) {
+				logger.warn(e.getMessage());
+				continue;
 			}
 
 			// find already existing tasks
@@ -1383,20 +1368,24 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			// none found -> create the task
-			Task task = taskService.buildTask(null);
-			task.setTaskContext(TaskContext.CONTACT);
-			task.setContact(contact);
-			task.setTaskType(TaskType.CONTACT_FOLLOW_UP);
-			task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
-			task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
-			task.setAssigneeUser(assignee);
-
-			if (contact.isHighPriority()) {
-				task.setPriority(TaskPriority.HIGH);
-			}
-
+			Task task = createContactTask(TaskType.CONTACT_FOLLOW_UP, fromDateTime, toDateTime, contact, assignee);
 			taskService.ensurePersisted(task);
 		}
+	}
+
+	private Task createContactTask(TaskType taskType, LocalDateTime fromDateTime, LocalDateTime toDateTime, Contact contact, User assignee) {
+		Task task = taskService.buildTask(null);
+		task.setTaskContext(TaskContext.CONTACT);
+		task.setContact(contact);
+		task.setTaskType(taskType);
+		task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
+		task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+		task.setAssigneeUser(assignee);
+
+		if (contact.isHighPriority()) {
+			task.setPriority(TaskPriority.HIGH);
+		}
+		return task;
 	}
 
 	@Override
