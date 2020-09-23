@@ -123,7 +123,8 @@ public class GridTemplateAreaCreator {
 			if (widthAreas + startingColumn + nextWidthAreas <= nrOfGridAreaColumns) {
 				startingColumn += widthAreas;
 			} else {
-				final int nextStartingColumn = startingColumn == 0 ? widthAreas : startingColumn;
+				final int nextStartingColumn =
+					startingColumn == 0 || (startingColumn + widthAreas) >= nrOfGridAreaColumns ? widthAreas : startingColumn + widthAreas;
 				final int nrOfColumnsToBeParsed =
 					nextStartingColumn + nextWidthAreas <= nrOfGridAreaColumns ? nrOfGridAreaColumns : nextStartingColumn;
 				final GridElementIndex firstEmptyGridElement = findFirstEmptyGridElement(nrOfColumnsToBeParsed, nrOfGridAreaRows);
