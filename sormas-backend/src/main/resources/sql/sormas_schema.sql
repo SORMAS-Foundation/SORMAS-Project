@@ -5283,9 +5283,9 @@ end;
 $$ language plpgsql immutable;
 
 INSERT INTO schema_version (version_number, comment) VALUES (251, 'Campaign dashboard element #2527');
-                                                                                                                                          
+
 -- 2020-09-14 Add person_locations table and remove person reference from locations #2746
-                                                                                                                                          
+
 CREATE TABLE person_locations(
 	person_id bigint NOT NULL,
 	location_id bigint NOT NULL,
@@ -5308,11 +5308,26 @@ ALTER TABLE location DROP COLUMN person_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (252, 'Add person_locations table and remove person reference from locations #2746');
 
+-- 2020-09-21 - Store if quarantine period has been reduced #2235
+ALTER TABLE cases ADD COLUMN quarantinereduced boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantinereduced boolean DEFAULT false;
+
+ALTER TABLE cases_history ADD COLUMN quarantinereduced boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantinereduced boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (253, 'Store if quarantine period has been reduced #2235');
+
+-- 2020-09-21 Add new field externalId as per feature #2670
+ALTER TABLE person ADD COLUMN externalid varchar(255);
+ALTER TABLE person_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
+
 -- 2020-09-16 Add total series to campaigndiagramdefinition to calculate percentage values #2528
 
 ALTER TABLE campaigndiagramdefinition ADD COLUMN campaignseriestotal json;
 ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaignseriestotal json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (253, 'Add series total to campaigndiagramdefinition to calculate percentage values #2528');
+INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add series total to campaigndiagramdefinition to calculate percentage values #2528');
 
 -- *** Insert new sql commands BEFORE this line ***

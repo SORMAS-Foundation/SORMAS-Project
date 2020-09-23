@@ -196,7 +196,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return addFieldToLayout(layout, propertyId, field);
 	}
 
-	private <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
+	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		layout.addComponent(field, propertyId);

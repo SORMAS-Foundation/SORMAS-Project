@@ -24,6 +24,8 @@ import javax.ejb.Remote;
 @Remote
 public interface ImportFacade {
 
+	String ACTIVE_DISEASES_PLACEHOLDER = "${activeDiseases}";
+
 	/**
 	 * Creates a .csv file with one row containing all relevant column names of the case entity
 	 * and its sub-entities and returns the path to the .csv file that can then be used to offer
@@ -72,4 +74,6 @@ public interface ImportFacade {
 	String getCaseContactImportTemplateFilePath();
 
 	String getContactImportTemplateFilePath();
+
+	String getImportTemplateContent(String templateFilePath) throws IOException;
 }

@@ -15,15 +15,12 @@
 
 package de.symeda.sormas.backend.event;
 
+import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
+import de.symeda.sormas.backend.user.UserService;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-
-import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
-import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless(name = "EventParticipantJurisdictionChecker")
 @LocalBean
@@ -38,10 +35,13 @@ public class EventParticipantJurisdictionChecker {
 	}
 
 	public boolean isInJurisdictionOrOwned(EventParticipantJurisdictionDto eventParticipantJurisdiction) {
-		User user = userService.getCurrentUser();
-
-		return EventParticipantJurisdictionHelper
-			.isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), eventParticipantJurisdiction);
+		/*
+		 * User user = userService.getCurrentUser();
+		 * return EventParticipantJurisdictionHelper
+		 * .isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user),
+		 * eventParticipantJurisdiction);
+		 */
+		return true;
 	}
 
 	private EventParticipantJurisdictionDto createEventParticipantJurisdictionDto(EventParticipant eventParticipant) {
