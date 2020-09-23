@@ -37,97 +37,103 @@ import java.util.List;
  */
 public class ImportColumn {
 
-	private String entityName;
+    private String entityName;
 
-	private String columnName;
+    private String columnName;
 
-	private String caption;
+    private String caption;
 
-	private String dataDescription;
+    private String dataDescription;
 
-	private ImportColumn(String entityName, String columnName, String caption, String dataDescription) {
-		this.entityName = entityName;
-		this.columnName = columnName;
-		this.caption = caption;
-		this.dataDescription = dataDescription;
-	}
+    private ImportColumn(String entityName, String columnName, String caption, String dataDescription) {
+        this.entityName = entityName;
+        this.columnName = columnName;
+        this.caption = caption;
+        this.dataDescription = dataDescription;
+    }
 
-	public String getEntityName() {
-		return entityName;
-	}
+    public ImportColumn(String columnName, String caption, String dataDescription) {
+        this.columnName = columnName;
+        this.caption = caption;
+        this.dataDescription = dataDescription;
+    }
 
-	public String getColumnName() {
-		return columnName;
-	}
+    public String getEntityName() {
+        return entityName;
+    }
 
-	public String getCaption() {
-		return caption;
-	}
+    public String getColumnName() {
+        return columnName;
+    }
 
-	public String getDataDescription() {
-		return dataDescription;
-	}
+    public String getCaption() {
+        return caption;
+    }
 
-	public static ImportColumn from(Class<?> entityType, String columnName, Class<?> fieldType, char currentSeparator) {
-		String entityName = DataHelper.getHumanClassName(entityType);
-		String caption = computeCaption(entityName, columnName);
-		String dataType = computeDataType(fieldType, currentSeparator);
-		return new ImportColumn(entityName, columnName, caption, dataType);
-	}
+    public String getDataDescription() {
+        return dataDescription;
+    }
 
-	/**
-	 * Computes the captions based on the entity name and column name.
-	 * <p/>
-	 * Column name is composed (ex: <code>person.firstName</code> or <code>person.address.city</code>)
-	 * -> Split it in parts and use the last part as field name
-	 * -> Combine the entity name with the field name
-	 * <p/>
-	 * Column name is simple (ex: <code>diseaseDetails</code>) -> Combine the entity name with the column name
-	 * <p/>
-	 * The result is a list with the same length as the <code>columnNames</code>
-	 *
-	 * @param entityName name of the entity from which the field is part of
-	 * @param columnName column name from the CSV
-	 * @return list of captions for each column name.
-	 */
-	private static String computeCaption(String entityName, String columnName) {
-		if (StringUtils.contains(columnName, ".")) {
-			String[] parts = columnName.split("\\.");
-			String fieldName = parts[parts.length - 1];
-			return I18nProperties.getPrefixCaption(entityName, fieldName);
-		} else {
-			return I18nProperties.getPrefixCaption(entityName, columnName);
-		}
-	}
+    public static ImportColumn from(Class<?> entityType, String columnName, Class<?> fieldType, char currentSeparator) {
+        String entityName = DataHelper.getHumanClassName(entityType);
+        String caption = computeCaption(entityName, columnName);
+        String dataType = computeDataType(fieldType, currentSeparator);
+        return new ImportColumn(entityName, columnName, caption, dataType);
+    }
 
-	/**
-	 * Computes the data type accepted for a certain field type. For values which cannot be determined at start a placeholder will be used (ex: {@link ImportFacade#ACTIVE_DISEASES_PLACEHOLDER}).
-	 *
-	 * @param fieldType type of a CSV field (column)
-	 * @param currentSeparator current CSV configured separator, used to identify a different one for joining lists
-	 * @return a data type description, example or placeholder
-	 */
-	private static String computeDataType(Class<?> fieldType, char currentSeparator) {
-		char separator = ImportExportUtils.getCSVSeparatorDifferentFromCurrent(currentSeparator);
+    /**
+     * Computes the captions based on the entity name and column name.
+     * <p/>
+     * Column name is composed (ex: <code>person.firstName</code> or <code>person.address.city</code>)
+     * -> Split it in parts and use the last part as field name
+     * -> Combine the entity name with the field name
+     * <p/>
+     * Column name is simple (ex: <code>diseaseDetails</code>) -> Combine the entity name with the column name
+     * <p/>
+     * The result is a list with the same length as the <code>columnNames</code>
+     *
+     * @param entityName name of the entity from which the field is part of
+     * @param columnName column name from the CSV
+     * @return list of captions for each column name.
+     */
+    private static String computeCaption(String entityName, String columnName) {
+        if (StringUtils.contains(columnName, ".")) {
+            String[] parts = columnName.split("\\.");
+            String fieldName = parts[parts.length - 1];
+            return I18nProperties.getPrefixCaption(entityName, fieldName);
+        } else {
+            return I18nProperties.getPrefixCaption(entityName, columnName);
+        }
+    }
 
-		if (String.class.isAssignableFrom(fieldType)) {
-			return I18nProperties.getString(Strings.text);
-		} else if (Date.class.isAssignableFrom(fieldType)) {
-			return I18nProperties.getString(Strings.date) + ": dd/MM/yyyy";
-		} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
-			return String.format(I18nProperties.getString(Strings.nameOf), DataHelper.getHumanClassName(fieldType));
-		} else if (Disease.class.isAssignableFrom(fieldType)) {
-			return ImportFacade.ACTIVE_DISEASES_PLACEHOLDER;
-		} else if (fieldType.isEnum()) {
-			List<String> enumNames = new ArrayList<>();
-			for (Object enumConstant : fieldType.getEnumConstants()) {
-				enumNames.add(((Enum<?>) enumConstant).name());
-			}
-			return StringUtils.join(enumNames, separator);
-		} else if (Number.class.isAssignableFrom(fieldType)) {
-			return I18nProperties.getString(Strings.number);
-		} else {
-			return "";
-		}
-	}
+    /**
+     * Computes the data type accepted for a certain field type. For values which cannot be determined at start a placeholder will be used (ex: {@link ImportFacade#ACTIVE_DISEASES_PLACEHOLDER}).
+     *
+     * @param fieldType        type of a CSV field (column)
+     * @param currentSeparator current CSV configured separator, used to identify a different one for joining lists
+     * @return a data type description, example or placeholder
+     */
+    private static String computeDataType(Class<?> fieldType, char currentSeparator) {
+        char separator = ImportExportUtils.getCSVSeparatorDifferentFromCurrent(currentSeparator);
+
+        if (String.class.isAssignableFrom(fieldType)) {
+            return I18nProperties.getString(Strings.text);
+        } else if (Date.class.isAssignableFrom(fieldType)) {
+            return I18nProperties.getString(Strings.date) + ": dd/MM/yyyy";
+        } else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
+            return String.format(I18nProperties.getString(Strings.nameOf), DataHelper.getHumanClassName(fieldType));
+        } else if (Disease.class.isAssignableFrom(fieldType)) {
+            return ImportFacade.ACTIVE_DISEASES_PLACEHOLDER;
+        } else if (fieldType.isEnum()) {
+            List<String> enumNames = new ArrayList<>();
+            for (Object enumConstant : fieldType.getEnumConstants()) {
+                enumNames.add(((Enum<?>) enumConstant).name());
+            }
+            return StringUtils.join(enumNames, separator);
+        } else if (Number.class.isAssignableFrom(fieldType)) {
+            return I18nProperties.getString(Strings.number);
+        } else {
+            return "";
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.campaign.importer;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
@@ -45,7 +46,7 @@ public class CampaignFormDataImporter extends DataImporter {
     }
 
     @Override
-    public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible) throws IOException {
+    public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible) throws IOException, CsvValidationException {
 
         this.currentUI = currentUI;
         super.startImport(addErrorReportToLayoutCallback, currentUI, duplicatesPossible);
@@ -62,7 +63,7 @@ public class CampaignFormDataImporter extends DataImporter {
 
         try {
             campaignFormData = insertColumnEntryIntoData(campaignFormData, values, entityProperties);
-            CampaignFormMetaDto campaginMetaDto=FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormMetaUUID);
+            CampaignFormMetaDto campaginMetaDto = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormMetaUUID);
             campaignFormData.setCampaignFormMeta(new CampaignFormMetaReferenceDto(campaignFormMetaUUID, campaginMetaDto.getFormName()));
             FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(campaignFormData);
             return ImportLineResult.SUCCESS;
@@ -85,7 +86,7 @@ public class CampaignFormDataImporter extends DataImporter {
                         if (propertyType.isAssignableFrom(CampaignReferenceDto.class)) {
                             CampaignDto campaign = FacadeProvider.getCampaignFacade().getByUuid(entry[i]);
                             if (Objects.nonNull(campaign)) {
-                                propertyDescriptor.getWriteMethod().invoke(currentElement, new CampaignReferenceDto(campaign.getUuid(),campaign.getName()));
+                                propertyDescriptor.getWriteMethod().invoke(currentElement, new CampaignReferenceDto(campaign.getUuid(), campaign.getName()));
                             }
                         } else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
                             List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry[i], currentElement.getRegion(), true);

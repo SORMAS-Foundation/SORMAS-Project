@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.campaign.importer;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -43,7 +44,7 @@ public class CampaignImportLayout extends AbstractImportLayout {
                 resetDownloadErrorReportButton();
 
                 try {
-                    CampaignFormDataImporter importer = new CampaignFormDataImporter(file, false, currentUser,campaignFormUuid);
+                    CampaignFormDataImporter importer = new CampaignFormDataImporter(file, false, currentUser, campaignFormUuid);
                     importer.startImport(new Consumer<StreamResource>() {
 
                         @Override
@@ -51,7 +52,7 @@ public class CampaignImportLayout extends AbstractImportLayout {
                             extendDownloadErrorReportButton(resource);
                         }
                     }, currentUI, false);
-                } catch (IOException e) {
+                } catch (IOException | CsvValidationException e) {
                     new Notification(
                             I18nProperties.getString(Strings.headingImportFailed),
                             I18nProperties.getString(Strings.messageImportFailed),

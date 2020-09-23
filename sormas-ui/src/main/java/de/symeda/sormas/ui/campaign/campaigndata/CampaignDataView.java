@@ -15,11 +15,16 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import com.vaadin.ui.Window;
+import de.symeda.sormas.ui.campaign.importer.CampaignImportLayout;
 import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.naming.NamingException;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -56,199 +61,227 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
+    public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
 
-	private final CampaignFormDataCriteria criteria;
-	private final CampaignDataGrid grid;
-	private CampaignFormDataFilterForm filterForm;
+    private final CampaignFormDataCriteria criteria;
+    private final CampaignDataGrid grid;
+    private CampaignFormDataFilterForm filterForm;
+    private Button importCampaignButton;
 
-	protected OptionGroup campaignFormElementImportance;
+    protected OptionGroup campaignFormElementImportance;
 
-	public static final String ONLY_IMPORTANT_FORM_ELEMENTS = "onlyImportantFormElements";
+    public static final String ONLY_IMPORTANT_FORM_ELEMENTS = "onlyImportantFormElements";
 
-	@SuppressWarnings("deprecation")
-	public CampaignDataView() {
-		super(VIEW_NAME);
+    @SuppressWarnings("deprecation")
+    public CampaignDataView() {
+        super(VIEW_NAME);
 
-		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
-		grid = new CampaignDataGrid(criteria);
+        criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
+        grid = new CampaignDataGrid(criteria);
 
-		VerticalLayout mainLayout = new VerticalLayout();
-		HorizontalLayout filtersLayout = new HorizontalLayout();
+        VerticalLayout mainLayout = new VerticalLayout();
+        HorizontalLayout filtersLayout = new HorizontalLayout();
 
-		filtersLayout.setWidthFull();
-		filtersLayout.setMargin(false);
-		filtersLayout.setSpacing(true);
+        filtersLayout.setWidthFull();
+        filtersLayout.setMargin(false);
+        filtersLayout.setSpacing(true);
 
-		CampaignFormDataFilterForm filterBar = createFilterBar();
-		filtersLayout.addComponent(filterBar);
-		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
-		filtersLayout.setExpandRatio(filterBar, 0.8f);
+        CampaignFormDataFilterForm filterBar = createFilterBar();
+        filtersLayout.addComponent(filterBar);
+        filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
+        filtersLayout.setExpandRatio(filterBar, 0.8f);
 
-		createImportanceFilterSwitch();
-		filtersLayout.addComponent(campaignFormElementImportance);
-		filtersLayout.setComponentAlignment(campaignFormElementImportance, Alignment.TOP_RIGHT);
-		filtersLayout.setExpandRatio(campaignFormElementImportance, 0.2f);
+        createImportanceFilterSwitch();
+        filtersLayout.addComponent(campaignFormElementImportance);
+        filtersLayout.setComponentAlignment(campaignFormElementImportance, Alignment.TOP_RIGHT);
+        filtersLayout.setExpandRatio(campaignFormElementImportance, 0.2f);
 
-		mainLayout.addComponent(filtersLayout);
+        mainLayout.addComponent(filtersLayout);
 
-		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
-			Object value = e.getProperty().getValue();
-			campaignFormElementImportance.setVisible(value != null);
-		});
+        filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
+            Object value = e.getProperty().getValue();
+            campaignFormElementImportance.setVisible(value != null);
+        });
 
-		campaignFormElementImportance.addValueChangeListener(e -> {
-			grid.reload();
-			createFormMetaChangedCallback()
-				.accept((CampaignFormMetaReferenceDto) filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
-		});
+        campaignFormElementImportance.addValueChangeListener(e -> {
+            grid.reload();
+            createFormMetaChangedCallback()
+                    .accept((CampaignFormMetaReferenceDto) filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
+        });
 
-		mainLayout.addComponent(grid);
-		mainLayout.setMargin(true);
-		mainLayout.setSpacing(false);
-		mainLayout.setSizeFull();
-		mainLayout.setExpandRatio(grid, 1);
-		mainLayout.setStyleName("crud-main-layout");
+        mainLayout.addComponent(grid);
+        mainLayout.setMargin(true);
+        mainLayout.setSpacing(false);
+        mainLayout.setSizeFull();
+        mainLayout.setExpandRatio(grid, 1);
+        mainLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
-			VerticalLayout exportLayout = new VerticalLayout();
-			{
-				exportLayout.setSpacing(true);
-				exportLayout.setMargin(true);
-				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-				exportLayout.setWidth(250, Unit.PIXELS);
-			}
+        if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
+            VerticalLayout exportLayout = new VerticalLayout();
+            {
+                exportLayout.setSpacing(true);
+                exportLayout.setMargin(true);
+                exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+                exportLayout.setWidth(250, Unit.PIXELS);
+            }
 
-			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
-			addHeaderComponent(exportPopupButton);
+            PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+            addHeaderComponent(exportPopupButton);
 
-			{
-				StreamResource streamResource = new GridExportStreamResource(
-					grid,
-					"sormas_campaign_data",
-					createFileNameWithCurrentDate("sormas_campaign_data_", ".csv"),
-					EDIT_BTN_ID);
-				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
-			}
-		}
+            {
+                StreamResource streamResource = new GridExportStreamResource(
+                        grid,
+                        "sormas_campaign_data",
+                        createFileNameWithCurrentDate("sormas_campaign_data_", ".csv"),
+                        EDIT_BTN_ID);
+                addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+            }
+        }
 
-		VerticalLayout newFormLayout = new VerticalLayout();
-		{
-			newFormLayout.setSpacing(true);
-			newFormLayout.setMargin(true);
-			newFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			newFormLayout.setWidth(350, Unit.PIXELS);
+        VerticalLayout newFormLayout = new VerticalLayout();
+        {
+            newFormLayout.setSpacing(true);
+            newFormLayout.setMargin(true);
+            newFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+            newFormLayout.setWidth(350, Unit.PIXELS);
 
-			PopupButton newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
-			newFormButton.setId("new-form");
+            PopupButton newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
+            newFormButton.setId("new-form");
 
-			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences()) {
-				Button campaignFormButton = ButtonHelper
-					.createButton(campaignForm.toString(), e -> ControllerProvider.getCampaignController().createCampaignDataForm(campaignForm));
-				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
-				newFormLayout.addComponent(campaignFormButton);
-			}
+            for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences()) {
+                Button campaignFormButton = ButtonHelper
+                        .createButton(campaignForm.toString(), e -> ControllerProvider.getCampaignController().createCampaignDataForm(campaignForm));
+                campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+                newFormLayout.addComponent(campaignFormButton);
+            }
 
-			addHeaderComponent(newFormButton);
-		}
+            addHeaderComponent(newFormButton);
+        }
 
-		addComponent(mainLayout);
-	}
+        VerticalLayout importFormLayout = new VerticalLayout();
+        importFormLayout.setSpacing(true);
+        importFormLayout.setMargin(true);
+        importFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+        importFormLayout.setWidth(350, Unit.PIXELS);
 
-	private void createImportanceFilterSwitch() {
+        importCampaignButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.PLUS_CIRCLE, importFormLayout);
+        importCampaignButton.setId("campaign-form-import");
+        for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences()) {
 
-		campaignFormElementImportance = new OptionGroup();
-		CssStyles.style(campaignFormElementImportance, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		campaignFormElementImportance.setId(ONLY_IMPORTANT_FORM_ELEMENTS);
-		campaignFormElementImportance.addItem(CampaignFormElementImportance.IMPORTANT);
-		campaignFormElementImportance
-			.setItemCaption(CampaignFormElementImportance.IMPORTANT, I18nProperties.getEnumCaption(CampaignFormElementImportance.IMPORTANT));
-		campaignFormElementImportance.addItem(CampaignFormElementImportance.ALL);
-		campaignFormElementImportance
-			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
+            Button campaignFormButton = ButtonHelper
+                    .createButton(campaignForm.toString(), e -> {
+                        Window popupWindow = null;
+                        try {
+                            popupWindow = VaadinUiUtil.showPopupWindow(new CampaignImportLayout(campaignForm.getUuid()));
+                        } catch (IOException | NamingException ioException) {
+                            ioException.printStackTrace();
+                        }
+                        popupWindow.setCaption(I18nProperties.getString(Strings.headingImportContacts));
 
-		campaignFormElementImportance.setValue(CampaignFormElementImportance.ALL);
-		campaignFormElementImportance.setVisible(false);
-	}
+                    });
+            campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+            importFormLayout.addComponent(campaignFormButton);
+        }
 
-	public CampaignFormDataFilterForm createFilterBar() {
-		filterForm = new CampaignFormDataFilterForm();
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
-				navigateTo(null);
-			}
-		});
-		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
-			navigateTo(null, true);
-		});
-		filterForm.addApplyHandler(e -> {
-			if (!navigateTo(criteria, false)) {
-				grid.reload();
-			}
-		});
+        addHeaderComponent(importCampaignButton);
 
-		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
+        addComponent(mainLayout);
+    }
 
-		return filterForm;
-	}
+    private void createImportanceFilterSwitch() {
 
-	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallback() {
-		return formMetaReference -> {
-			grid.removeAllColumns();
-			grid.addDefaultColumns();
-			if (formMetaReference != null) {
-				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
-				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
-				CampaignFormTranslations translations = null;
-				if (userLanguage != null) {
-					translations = formMeta.getCampaignFormTranslations()
-						.stream()
-						.filter(t -> t.getLanguageCode().equals(userLanguage.getLocale().toString()))
-						.findFirst()
-						.orElse(null);
-				}
-				final boolean onlyImportantFormElements = CampaignFormElementImportance.IMPORTANT.equals(campaignFormElementImportance.getValue());
-				final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
-				for (CampaignFormElement element : campaignFormElements) {
-					if (element.isImportant() || !onlyImportantFormElements) {
-						String caption = null;
-						if (translations != null) {
-							caption = translations.getTranslations()
-								.stream()
-								.filter(t -> t.getElementId().equals(element.getId()))
-								.map(CampaignFormTranslation::getCaption)
-								.findFirst()
-								.orElse(null);
-						}
-						if (caption == null) {
-							caption = element.getCaption();
-						}
+        campaignFormElementImportance = new OptionGroup();
+        CssStyles.style(campaignFormElementImportance, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+        campaignFormElementImportance.setId(ONLY_IMPORTANT_FORM_ELEMENTS);
+        campaignFormElementImportance.addItem(CampaignFormElementImportance.IMPORTANT);
+        campaignFormElementImportance
+                .setItemCaption(CampaignFormElementImportance.IMPORTANT, I18nProperties.getEnumCaption(CampaignFormElementImportance.IMPORTANT));
+        campaignFormElementImportance.addItem(CampaignFormElementImportance.ALL);
+        campaignFormElementImportance
+                .setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
 
-						if (caption != null) {
-							grid.addCustomColumn(element.getId(), caption);
-						}
-					}
-				}
-			}
-		};
-	}
+        campaignFormElementImportance.setValue(CampaignFormElementImportance.ALL);
+        campaignFormElementImportance.setVisible(false);
+    }
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		String params = event.getParameters().trim();
-		if (params.startsWith("?")) {
-			params = params.substring(1);
-			criteria.fromUrlParams(params);
-		}
+    public CampaignFormDataFilterForm createFilterBar() {
+        filterForm = new CampaignFormDataFilterForm();
+        filterForm.addValueChangeListener(e -> {
+            if (!filterForm.hasFilter()) {
+                navigateTo(null);
+            }
+        });
+        filterForm.addResetHandler(e -> {
+            ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
+            navigateTo(null, true);
+        });
+        filterForm.addApplyHandler(e -> {
+            if (!navigateTo(criteria, false)) {
+                grid.reload();
+            }
+        });
 
-		applyingCriteria = true;
-		filterForm.setValue(criteria);
-		applyingCriteria = false;
+        filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
 
-		grid.reload();
+        return filterForm;
+    }
 
-		super.enter(event);
-	}
+    private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallback() {
+        return formMetaReference -> {
+            grid.removeAllColumns();
+            grid.addDefaultColumns();
+            if (formMetaReference != null) {
+                CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
+                Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+                CampaignFormTranslations translations = null;
+                if (userLanguage != null) {
+                    translations = formMeta.getCampaignFormTranslations()
+                            .stream()
+                            .filter(t -> t.getLanguageCode().equals(userLanguage.getLocale().toString()))
+                            .findFirst()
+                            .orElse(null);
+                }
+                final boolean onlyImportantFormElements = CampaignFormElementImportance.IMPORTANT.equals(campaignFormElementImportance.getValue());
+                final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
+                for (CampaignFormElement element : campaignFormElements) {
+                    if (element.isImportant() || !onlyImportantFormElements) {
+                        String caption = null;
+                        if (translations != null) {
+                            caption = translations.getTranslations()
+                                    .stream()
+                                    .filter(t -> t.getElementId().equals(element.getId()))
+                                    .map(CampaignFormTranslation::getCaption)
+                                    .findFirst()
+                                    .orElse(null);
+                        }
+                        if (caption == null) {
+                            caption = element.getCaption();
+                        }
+
+                        if (caption != null) {
+                            grid.addCustomColumn(element.getId(), caption);
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    @Override
+    public void enter(ViewChangeEvent event) {
+        String params = event.getParameters().trim();
+        if (params.startsWith("?")) {
+            params = params.substring(1);
+            criteria.fromUrlParams(params);
+        }
+
+        applyingCriteria = true;
+        filterForm.setValue(criteria);
+        applyingCriteria = false;
+
+        grid.reload();
+
+        super.enter(event);
+    }
 
 }
