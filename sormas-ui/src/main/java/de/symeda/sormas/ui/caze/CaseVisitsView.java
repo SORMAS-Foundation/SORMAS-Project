@@ -26,7 +26,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -45,6 +44,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
@@ -57,7 +57,7 @@ public class CaseVisitsView extends AbstractCaseView {
 
 	private VisitGrid grid;
 	private Button newButton;
-	private VerticalLayout gridLayout;
+	private DetailSubComponentWrapper gridLayout;
 
 	public CaseVisitsView() {
 		super(VIEW_NAME, false);
@@ -136,7 +136,7 @@ public class CaseVisitsView extends AbstractCaseView {
 
 		if (grid == null) {
 			grid = new VisitGrid(criteria);
-			gridLayout = new VerticalLayout();
+			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();
 			gridLayout.setMargin(true);
 			gridLayout.setSpacing(false);

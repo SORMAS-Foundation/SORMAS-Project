@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum PersonAddressType {
@@ -13,9 +12,8 @@ public enum PersonAddressType {
 	EVENT_LOCATION,
 	OTHER_ADDRESS;
 
-	public static PersonAddressType[] getValues() {
-
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+	public static PersonAddressType[] getValues(String countryCode) {
+		if (!CountryHelper.COUNTRY_CODE_SWITZERLAND.equals(countryCode)) {
 			return new PersonAddressType[] {
 				HOME,
 				PLACE_OF_WORK,

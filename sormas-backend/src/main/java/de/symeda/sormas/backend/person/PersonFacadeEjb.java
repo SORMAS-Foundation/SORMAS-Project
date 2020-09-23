@@ -557,6 +557,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
+		target.setExternalId(source.getExternalId());
 
 		return target;
 	}
@@ -718,6 +719,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
+		target.setExternalId(source.getExternalId());
 
 		return target;
 	}

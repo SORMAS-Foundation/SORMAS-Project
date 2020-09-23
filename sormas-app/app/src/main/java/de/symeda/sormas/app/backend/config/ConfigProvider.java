@@ -647,6 +647,28 @@ public final class ConfigProvider {
 		return instance.serverLocale;
 	}
 
+	public static String getServerCountryCode() {
+		String locale = getServerLocale();
+		String normalizedLocale = normalizeLocaleString(locale);
+
+		if (normalizedLocale.contains("-")) {
+			return normalizedLocale.substring(normalizedLocale.lastIndexOf("-") + 1);
+		} else {
+			return normalizedLocale;
+		}
+	}
+
+	public static String normalizeLocaleString(String locale) {
+		locale = locale.trim();
+		int pos = Math.max(locale.indexOf('-'), locale.indexOf('_'));
+		if (pos < 0) {
+			locale = locale.toLowerCase();
+		} else {
+			locale = locale.substring(0, pos).toLowerCase(Locale.ENGLISH) + '-' + locale.substring(pos + 1).toUpperCase(Locale.ENGLISH);
+		}
+		return locale;
+	}
+
 	public static boolean isConfiguredServer(String countryCode) {
 		if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, getServerLocale())) {
 			return getServerLocale().toLowerCase().endsWith(countryCode.toLowerCase());

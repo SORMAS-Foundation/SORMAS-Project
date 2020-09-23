@@ -1,0 +1,9 @@
+## This is a comment line
+##This is also a comment line
+## This is a comment line with a , inside
+pointOfEntryType,name,region,district,latitude,longitude,active,archived,externalID
+## This is a comment line after the headers
+AIRPORT,Airport A,Region with ä,District with ß,,,true,false,
+## This is a comment line between data rows
+AIRPORT,Airport B,Region with ä,District with ß,,,true,false,
+## This is an end of file comment line

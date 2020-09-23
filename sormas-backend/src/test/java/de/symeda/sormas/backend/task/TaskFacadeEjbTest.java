@@ -159,9 +159,9 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			event.toReference(),
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
-		// getAllActiveTasks and getAllUuids should return length 4+1 (case investigation)
-		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null).size());
-		assertEquals(5, getTaskFacade().getAllActiveUuids().size());
+		// getAllActiveTasks and getAllUuids should return length 4+1+1 (case investigation & contact investigation)
+		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
+		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
@@ -173,9 +173,9 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
 
-		// getAllActiveTasks and getAllUuids should return length 4
-		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null).size());
-		assertEquals(5, getTaskFacade().getAllActiveUuids().size());
+		// getAllActiveTasks and getAllUuids should return length 5 + 1 (contact investigation)
+		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
+		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
 	}
 
 	@Test
