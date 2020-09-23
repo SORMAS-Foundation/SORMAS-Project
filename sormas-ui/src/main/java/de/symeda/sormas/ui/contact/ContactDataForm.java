@@ -332,6 +332,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
 		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
+		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
 		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil));
 		this.addValueChangeListener(e -> onValueChange());
 
@@ -489,7 +490,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						minimumFollowUpUntilDate,
 						null,
 						Resolution.DAY));
-				dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended));
 			}
 
 			// Overwrite visibility for quarantine fields
@@ -654,26 +654,39 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		return HTML_LAYOUT;
 	}
 
-	private void onFollowUpUntilChanged(Property.ValueChangeEvent valueChangeEvent, DateField quarantineTo, CheckBox quarantineExtendedCheckBox) {
+	private void onFollowUpUntilChanged(Property.ValueChangeEvent valueChangeEvent, DateField quarantineTo, CheckBox quarantineExtendedCheckBox, CheckBox quarantineReducedCheckBox) {
 		Property<Date> followUpUntilField = valueChangeEvent.getProperty();
-		Date followUpUntil = followUpUntilField.getValue();
-		if (quarantineTo.getValue() != null && (followUpUntil == null || followUpUntil.compareTo(quarantineTo.getValue()) != 0)) {
+		Date newFollowUpUntil = followUpUntilField.getValue();
+		ContactDto originalContact = getInternalValue();
+		Date oldFollowUpUntil = originalContact.getFollowUpUntil();
+		Date oldQuarantineEnd = originalContact.getQuarantineTo();
+		if (adjustQuarantine(quarantineTo, newFollowUpUntil, oldFollowUpUntil)) {
 			VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingExtendQuarantine),
-					new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					640,
-					confirmed -> {
-						if (confirmed) {
-							quarantineChangedByFollowUpUntilChange = true;
-							quarantineTo.setValue(followUpUntil);
-							if (followUpUntil.after(getInternalValue().getFollowUpUntil())) {
-								quarantineExtendedCheckBox.setValue(true);
-							}
+				I18nProperties.getString(Strings.headingExtendQuarantine),
+				new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						quarantineChangedByFollowUpUntilChange = true;
+						quarantineTo.setValue(newFollowUpUntil);
+						if (oldQuarantineEnd != null) {
+							boolean quarantineExtended = newFollowUpUntil.after(oldQuarantineEnd);
+							quarantineExtendedCheckBox.setValue(quarantineExtended);
+							quarantineReducedCheckBox.setValue(!quarantineExtended);
+							setVisible(quarantineExtended, ContactDto.QUARANTINE_EXTENDED);
+							setVisible(!quarantineExtended, ContactDto.QUARANTINE_REDUCED);
 						}
-					});
+					}
+				});
 		}
+	}
+
+	private boolean adjustQuarantine(DateField quarantineTo, Date newFollowUpUntil, Date oldFollowUpUntil) {
+		return newFollowUpUntil != null &&
+				(oldFollowUpUntil == null || newFollowUpUntil.after(oldFollowUpUntil)) &&
+				quarantineTo.getValue() != null && newFollowUpUntil.compareTo(quarantineTo.getValue()) != 0;
 	}
 
 	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckBox, CheckBox quarantineReducedCheckBox, DateField followUpUntilField) {
