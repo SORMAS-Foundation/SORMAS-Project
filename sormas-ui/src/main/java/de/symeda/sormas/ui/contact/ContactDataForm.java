@@ -195,7 +195,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		tracingAppDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 //		tracingApp.setVisible(false);
 //		tracingAppDetails.setVisible(false);
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS,
@@ -213,7 +213,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 
@@ -371,9 +371,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, TextField.class);
 		OptionGroup ogCareForPeopleOver60 = addField(ContactDto.CARE_FOR_PEOPLE_OVER_60, OptionGroup.class);
 
-		cbDisease.addValueChangeListener(e -> {
-			updateDiseaseConfiguration((Disease) e.getProperty().getValue());
-		});
+		cbDisease.addValueChangeListener(e -> updateDiseaseConfiguration((Disease) e.getProperty().getValue()));
 
 		HealthConditionsForm clinicalCourseForm = addField(ContactDto.HEALTH_CONDITIONS, HealthConditionsForm.class);
 		clinicalCourseForm.setCaption(null);
@@ -469,7 +467,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					}
 				}
 
-				if (!isConfiguredServer("de")) {
+				if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 					setVisible(
 						false,
 						ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE,
