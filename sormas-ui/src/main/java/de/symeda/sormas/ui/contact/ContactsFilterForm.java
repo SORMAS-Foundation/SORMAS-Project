@@ -33,8 +33,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -268,15 +268,23 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 	@Override
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
-
 		switch (propertyId) {
 		case ContactCriteria.REGION: {
-			getField(ContactCriteria.DISTRICT).setValue(null);
-			getField(ContactCriteria.COMMUNITY).setValue(null);
+			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
+			if (region == null) {
+				clearAndDisableFields(ContactCriteria.DISTRICT, ContactCriteria.COMMUNITY);
+			} else {
+				applyRegionFilterDependency(region, ContactCriteria.DISTRICT);
+			}
 			break;
 		}
 		case ContactCriteria.DISTRICT: {
-			getField(ContactCriteria.COMMUNITY).setValue(null);
+			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
+			if (district == null) {
+				clearAndDisableFields(ContactCriteria.COMMUNITY);
+			} else {
+				applyDistrictDependency(district, ContactCriteria.COMMUNITY);
+			}
 			break;
 		}
 		case ContactCriteria.FOLLOW_UP_UNTIL_TO: {
@@ -291,11 +299,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		RegionReferenceDto region = newValue.getRegion();
 		DistrictReferenceDto district = newValue.getDistrict();
-		applyRegionAndDistrictFilterDependency(region, district);
+		applyRegionAndDistrictFilterDependency(region, ContactCriteria.DISTRICT, district, ContactCriteria.COMMUNITY);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 
-		ComboBox officerField = (ComboBox) getField(ContactCriteria.CONTACT_OFFICER);
+		ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
 		} else if (region != null) {
@@ -303,7 +311,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		} else {
 			officerField.removeAllItems();
 		}
-		ComboBox birthDateDD = (ComboBox) getField(ContactCriteria.BIRTHDATE_DD);
+		ComboBox birthDateDD = getField(ContactCriteria.BIRTHDATE_DD);
 		if (getField(ContactCriteria.BIRTHDATE_YYYY).getValue() != null && getField(ContactCriteria.BIRTHDATE_MM).getValue() != null) {
 			birthDateDD.addItems(
 				DateHelper.getDaysInMonth(

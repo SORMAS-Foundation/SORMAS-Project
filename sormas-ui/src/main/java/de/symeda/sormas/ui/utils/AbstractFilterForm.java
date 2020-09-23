@@ -4,23 +4,14 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.div;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.Component;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.UserProvider;
 import org.apache.commons.lang3.ArrayUtils;
 
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
@@ -32,8 +23,13 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.UserProvider;
 
 public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
@@ -84,7 +80,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), EXPAND_COLLAPSE_ID, RESET_BUTTON_ID, APPLY_BUTTON_ID)) + loc(MORE_FILTERS_ID));
+		return div(
+			filterLocs(ArrayUtils.addAll(getMainFilterLocators(), EXPAND_COLLAPSE_ID, RESET_BUTTON_ID, APPLY_BUTTON_ID)) + loc(MORE_FILTERS_ID));
 	}
 
 	protected abstract String[] getMainFilterLocators();
@@ -116,9 +113,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 					showHideButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
 
 					if (isShowMore) {
-						getContent().getComponent(MORE_FILTERS_ID).setVisible(true);
+						moreFiltersLayout.setVisible(true);
 					} else {
-						getContent().getComponent(MORE_FILTERS_ID).setVisible(false);
+						moreFiltersLayout.setVisible(false);
 					}
 				}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
 
@@ -127,7 +124,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected CustomLayout getMoreFiltersContainer() {
-		return (CustomLayout) getContent().getComponent(MORE_FILTERS_ID);
+		return moreFiltersLayout;
 	}
 
 	@Override
@@ -194,9 +191,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	}
 
-	protected void applyRegionFilterDependency(RegionReferenceDto region) {
+	protected void applyRegionFilterDependency(RegionReferenceDto region, String districtFieldId) {
 		UserDto user = UserProvider.getCurrent().getUser();
-		ComboBox districtField = (ComboBox) getField(ContactCriteria.DISTRICT);
+		ComboBox districtField = getField(districtFieldId);
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtField.setEnabled(true);
@@ -210,10 +207,18 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		}
 	}
 
-	protected void applyRegionAndDistrictFilterDependency(RegionReferenceDto region, DistrictReferenceDto district) {
-		applyRegionFilterDependency(region);
+	protected void applyRegionAndDistrictFilterDependency(
+		RegionReferenceDto region,
+		String districtFieldId,
+		DistrictReferenceDto district,
+		String communityFieldId) {
+		applyRegionFilterDependency(region, districtFieldId);
+		applyDistrictDependency(district, communityFieldId);
+	}
+
+	protected void applyDistrictDependency(DistrictReferenceDto district, String communityFieldId) {
 		UserDto user = UserProvider.getCurrent().getUser();
-		ComboBox communityField = (ComboBox) getField(ContactCriteria.COMMUNITY);
+		ComboBox communityField = getField(communityFieldId);
 		if (user.getDistrict() != null && user.getCommunity() == null) {
 			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
 			communityField.setEnabled(true);
@@ -268,6 +273,27 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	public boolean hasFilter() {
 		return hasFilter;
+	}
+
+	protected void clearFields(String... propertyIds) {
+		for (String propertyId : propertyIds) {
+			getField(propertyId).setValue(null);
+		}
+	}
+
+	protected void clearAndDisableFields(String... propertyIds) {
+		for (String propertyId : propertyIds) {
+			Field<?> field = getField(propertyId);
+
+			field.setValue(null);
+			field.setEnabled(false);
+		}
+	}
+
+	protected void enableFields(String... propertyIds) {
+		for (String propertyId : propertyIds) {
+			getField(propertyId).setEnabled(true);
+		}
 	}
 
 	interface Callable {
