@@ -97,11 +97,7 @@ public class DashboardDataProvider {
 
 		setContactsInQuarantineCount((long) contactsInQuarantineDtos.size());
 
-		Long dashboardContactsPlacedInQuarantineCount = contactsInQuarantineDtos.stream()
-			.filter(
-				dashboardQuarantineDataDto -> (fromDate.before(DateUtils.addDays(dashboardQuarantineDataDto.getQuarantineFrom(), 1))
-					&& dashboardQuarantineDataDto.getQuarantineFrom().before(toDate)))
-			.count();
+		Long dashboardContactsPlacedInQuarantineCount = getPlacedInQuarantine(contactsInQuarantineDtos);
 
 		setContactsPlacedInQuarantineCount(dashboardContactsPlacedInQuarantineCount);
 	}
@@ -113,13 +109,18 @@ public class DashboardDataProvider {
 
 		setCasesInQuarantineCount((long) casesInQuarantineDtos.size());
 
-		Long dashboardCasesPlacedInQuarantineCount = casesInQuarantineDtos.stream()
-			.filter(
-				dashboardQuarantineDataDto -> (fromDate.before(DateUtils.addDays(dashboardQuarantineDataDto.getQuarantineFrom(), 1))
-					&& dashboardQuarantineDataDto.getQuarantineFrom().before(toDate)))
-			.count();
+		Long dashboardCasesPlacedInQuarantineCount = getPlacedInQuarantine(casesInQuarantineDtos);
 
 		setCasesPlacedInQuarantineCount(dashboardCasesPlacedInQuarantineCount);
+	}
+
+	private Long getPlacedInQuarantine(List<DashboardQuarantineDataDto> contactsInQuarantineDtos) {
+		return contactsInQuarantineDtos.stream()
+			.filter(
+				dashboardQuarantineDataDto -> (dashboardQuarantineDataDto.getQuarantineFrom() != null
+					&& fromDate.before(DateUtils.addDays(dashboardQuarantineDataDto.getQuarantineFrom(), 1))
+					&& dashboardQuarantineDataDto.getQuarantineFrom().before(toDate)))
+			.count();
 	}
 
 	private void refreshDataForConvertedContactsToCase() {
