@@ -247,6 +247,16 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		campaignService.ensurePersisted(campaign);
 	}
 
+	@Override
+	public CampaignReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(campaignService.getByUuid(uuid));
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return campaignService.exists(uuid);
+	}
+
 	public static CampaignReferenceDto toReferenceDto(Campaign entity) {
 		if (entity == null) {
 			return null;
