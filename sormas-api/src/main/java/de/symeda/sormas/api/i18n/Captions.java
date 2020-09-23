@@ -819,6 +819,7 @@ public interface Captions {
 	String EventParticipantExport_eventRegion = "EventParticipantExport.eventRegion";
 	String EventParticipantExport_eventStartDate = "EventParticipantExport.eventStartDate";
 	String EventParticipantExport_eventStreet = "EventParticipantExport.eventStreet";
+	String EventParticipantExport_eventTitle = "EventParticipantExport.eventTitle";
 	String EventParticipantExport_eventTypeOfPlace = "EventParticipantExport.eventTypeOfPlace";
 	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
 	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
