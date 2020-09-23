@@ -15,14 +15,14 @@
 
 package de.symeda.sormas.api.campaign.data;
 
-import java.io.Serializable;
-
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+
+import java.io.Serializable;
 
 public class CampaignFormDataCriteria extends BaseCriteria implements Serializable {
 
