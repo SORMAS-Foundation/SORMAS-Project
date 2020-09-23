@@ -488,10 +488,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				}
 				updateFacilityDetails(facility, facilityDetails);
 			} else {
-
-				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
-				facility.addItem(noFacilityRef);
-				facility.setValue(noFacilityRef);
+				if (facility.getValue() == null && !facility.isReadOnly()) {
+					FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+					facility.addItem(noFacilityRef);
+					facility.setValue(noFacilityRef);
+				}
 			}
 		});
 		facilityTypeGroup.addValueChangeListener(e -> {
