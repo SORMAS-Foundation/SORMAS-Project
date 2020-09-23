@@ -644,20 +644,27 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 			}
 		}
-		if (caseCriteria.getEventLike() != null && !caseCriteria.getEventLike().trim().isEmpty()) {
+		boolean hasEventLikeCriteria = caseCriteria.getEventLike() != null && !caseCriteria.getEventLike().trim().isEmpty();
+		boolean hasEventAnyCriteria = Boolean.TRUE.equals(caseCriteria.getEventAny());
+		if (hasEventLikeCriteria || hasEventAnyCriteria) {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 
-			String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = formatForLike(textFilters[i]);
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(event.get(Event.EVENT_DESC)), textFilter),
-						cb.like(cb.lower(event.get(Event.EVENT_TITLE)), textFilter),
-						cb.like(cb.lower(event.get(Event.UUID)), textFilter));
-					filter = and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+			if (hasEventLikeCriteria) {
+				String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
+				for (int i = 0; i < textFilters.length; i++) {
+					String textFilter = formatForLike(textFilters[i]);
+					if (!DataHelper.isNullOrEmpty(textFilter)) {
+						Predicate likeFilters = cb.or(
+							cb.like(cb.lower(event.get(Event.EVENT_DESC)), textFilter),
+							cb.like(cb.lower(event.get(Event.EVENT_TITLE)), textFilter),
+							cb.like(cb.lower(event.get(Event.UUID)), textFilter));
+						filter = and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+					}
 				}
+			}
+			if (hasEventAnyCriteria) {
+				filter = and(cb, filter, cb.isNotNull(event.get(Event.ID)));
 			}
 		}
 		if (caseCriteria.getReportingUserLike() != null) {

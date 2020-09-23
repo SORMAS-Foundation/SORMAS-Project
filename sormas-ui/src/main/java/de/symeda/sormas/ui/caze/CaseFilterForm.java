@@ -88,7 +88,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.FOLLOW_UP_STATUS,
 			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE,
-			CaseCriteria.EVENT_LIKE };
+			CaseCriteria.EVENT_LIKE,
+			CaseCriteria.EVENT_ANY };
 	}
 
 	@Override
@@ -123,6 +124,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.EVENT_LIKE, I18nProperties.getString(Strings.promptCaseOrContactEventSearchField), 200));
 		eventSearchField.setNullRepresentation("");
+
+		addField(
+			getContent(),
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.EVENT_ANY,
+				I18nProperties.getCaption(Captions.caseFilterRelatedToEvent),
+				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
+				CssStyles.CHECKBOX_FILTER_INLINE));
 	}
 
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
