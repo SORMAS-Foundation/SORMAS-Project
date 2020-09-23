@@ -5317,4 +5317,10 @@ ALTER TABLE contact_history ADD COLUMN quarantinereduced boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (253, 'Store if quarantine period has been reduced #2235');
 
+-- 2020-09-21 Add new field externalId as per feature #2670
+ALTER TABLE person ADD COLUMN externalid varchar(255);
+ALTER TABLE person_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -114,6 +114,7 @@ public class Person extends AbstractDomainObject {
 	public static final String ADDRESSES = "addresses";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+	public static final String EXTERNAL_ID = "externalId";
 
 	private String firstName;
 	private String lastName;
@@ -177,6 +178,7 @@ public class Person extends AbstractDomainObject {
 
 	private boolean hasCovidApp;
 	private boolean covidCodeDelivered;
+	private String externalId;
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -651,6 +653,11 @@ public class Person extends AbstractDomainObject {
 	public void setCovidCodeDelivered(boolean covidCodeDelivered) {
 		this.covidCodeDelivered = covidCodeDelivered;
 	}
+
+	@Column
+	public String getExternalId() { return externalId; }
+
+	public void setExternalId(String externalId) { this.externalId = externalId; }
 
 	@Override
 	public String toString() {
