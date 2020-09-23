@@ -42,7 +42,7 @@ public interface Strings {
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
-	String confirmationAlsoExtendQuarantine = "confirmationAlsoExtendQuarantine";
+	String confirmationAlsoAdjustQuarantine = "confirmationAlsoAdjustQuarantine";
 	String confirmationArchiveArea = "confirmationArchiveArea";
 	String confirmationArchiveAreas = "confirmationArchiveAreas";
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
@@ -170,6 +170,7 @@ public interface Strings {
 	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
+	String headingAdjustQuarantine = "headingAdjustQuarantine";
 	String headingAllContacts = "headingAllContacts";
 	String headingAnimalContacts = "headingAnimalContacts";
 	String headingArchiveCampaign = "headingArchiveCampaign";

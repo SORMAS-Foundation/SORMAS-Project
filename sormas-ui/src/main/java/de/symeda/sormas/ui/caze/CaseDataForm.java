@@ -918,8 +918,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Date oldQuarantineEnd = originalCase.getQuarantineTo();
 		if (adjustQuarantine(quarantineTo, newFollowUpUntil, oldFollowUpUntil)) {
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingExtendQuarantine),
-				new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
+				I18nProperties.getString(Strings.headingAdjustQuarantine),
+				new Label(I18nProperties.getString(Strings.confirmationAlsoAdjustQuarantine)),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				640,
