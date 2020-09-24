@@ -660,7 +660,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		ContactDto originalContact = getInternalValue();
 		Date oldFollowUpUntil = originalContact.getFollowUpUntil();
 		Date oldQuarantineEnd = originalContact.getQuarantineTo();
-		if (adjustQuarantine(quarantineTo, newFollowUpUntil, oldFollowUpUntil)) {
+		if (shouldAdjustQuarantine(quarantineTo, newFollowUpUntil, oldFollowUpUntil)) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingAdjustQuarantine),
 				new Label(I18nProperties.getString(Strings.confirmationAlsoAdjustQuarantine)),
@@ -672,7 +672,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						quarantineChangedByFollowUpUntilChange = true;
 						quarantineTo.setValue(newFollowUpUntil);
 						if (oldQuarantineEnd != null) {
-							boolean quarantineExtended = newFollowUpUntil.after(oldQuarantineEnd);
+							boolean quarantineExtended = quarantineTo.getValue().after(oldQuarantineEnd);
 							quarantineExtendedCheckBox.setValue(quarantineExtended);
 							quarantineReducedCheckBox.setValue(!quarantineExtended);
 							setVisible(quarantineExtended, ContactDto.QUARANTINE_EXTENDED);
@@ -683,7 +683,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
-	private boolean adjustQuarantine(DateField quarantineTo, Date newFollowUpUntil, Date oldFollowUpUntil) {
+	private boolean shouldAdjustQuarantine(DateField quarantineTo, Date newFollowUpUntil, Date oldFollowUpUntil) {
 		return newFollowUpUntil != null &&
 				(oldFollowUpUntil == null || newFollowUpUntil.after(oldFollowUpUntil)) &&
 				quarantineTo.getValue() != null && newFollowUpUntil.compareTo(quarantineTo.getValue()) != 0;
