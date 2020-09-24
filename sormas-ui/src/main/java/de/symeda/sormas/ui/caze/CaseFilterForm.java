@@ -576,10 +576,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private HorizontalLayout buildWeekAndDateFilter() {
 
-		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
-
 		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
-			applyButton,
 			false,
 			false,
 			I18nProperties.getString(Strings.infoCaseDate),
@@ -592,54 +589,54 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));
 		weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptDateTo));
 
-		applyButton.addClickListener(e -> {
-			DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
-			Date fromDate, toDate;
-			if (dateFilterOption == DateFilterOption.DATE) {
-				fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
-				toDate = DateHelper.getEndOfDay(weekAndDateFilter.getDateToFilter().getValue());
-			} else {
-				fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
-				toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
-			}
-			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
-				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				CaseCriteria criteria = getValue();
-				NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getDateTypeSelector().getValue();
-
-				criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
-				criteria.dateFilterOption(dateFilterOption);
-
-				((Button) getContent().getComponent(APPLY_BUTTON_ID)).click();
-			} else {
-				if (dateFilterOption == DateFilterOption.DATE) {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingDateFilter),
-						I18nProperties.getString(Strings.messageMissingDateFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				} else {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-						I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				}
-			}
-		});
+		addApplyHandler(e -> onApplyClick(weekAndDateFilter));
 
 		HorizontalLayout dateFilterRowLayout = new HorizontalLayout();
 		dateFilterRowLayout.setSpacing(true);
 		dateFilterRowLayout.setSizeUndefined();
 
 		dateFilterRowLayout.addComponent(weekAndDateFilter);
-		dateFilterRowLayout.addComponent(applyButton);
 
 		return dateFilterRowLayout;
+	}
+
+	private void onApplyClick(EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter) {
+		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+		Date fromDate, toDate;
+		if (dateFilterOption == DateFilterOption.DATE) {
+			Date dateFrom = weekAndDateFilter.getDateFromFilter().getValue();
+			fromDate = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
+			Date dateTo = weekAndDateFilter.getDateToFilter().getValue();
+			toDate = dateFrom != null ? DateHelper.getEndOfDay(dateTo) : null;
+		} else {
+			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
+			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
+		}
+		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
+			CaseCriteria criteria = getValue();
+			NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+
+			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
+			criteria.dateFilterOption(dateFilterOption);
+		} else {
+			if (dateFilterOption == DateFilterOption.DATE) {
+				Notification notification = new Notification(
+					I18nProperties.getString(Strings.headingMissingDateFilter),
+					I18nProperties.getString(Strings.messageMissingDateFilter),
+					Notification.Type.WARNING_MESSAGE,
+					false);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			} else {
+				Notification notification = new Notification(
+					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
+					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
+					Notification.Type.WARNING_MESSAGE,
+					false);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			}
+		}
 	}
 
 	public void disableSearchAndReportingUser() {
