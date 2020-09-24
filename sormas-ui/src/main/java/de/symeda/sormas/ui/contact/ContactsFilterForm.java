@@ -9,12 +9,10 @@ import java.util.stream.Stream;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
@@ -43,7 +41,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -275,6 +272,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				clearAndDisableFields(ContactCriteria.DISTRICT, ContactCriteria.COMMUNITY);
 			} else {
 				applyRegionFilterDependency(region, ContactCriteria.DISTRICT);
+				clearAndDisableFields(ContactCriteria.COMMUNITY);
 			}
 			break;
 		}

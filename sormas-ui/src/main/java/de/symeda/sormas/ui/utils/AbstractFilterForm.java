@@ -201,11 +201,11 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		UserDto user = UserProvider.getCurrent().getUser();
 		ComboBox districtField = getField(districtFieldId);
 		if (user.getRegion() != null && user.getDistrict() == null) {
-			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtField.setEnabled(true);
 		} else {
 			if (region != null) {
-				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+				FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 				districtField.setEnabled(true);
 			} else {
 				districtField.setEnabled(false);
@@ -226,11 +226,11 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		UserDto user = UserProvider.getCurrent().getUser();
 		ComboBox communityField = getField(communityFieldId);
 		if (user.getDistrict() != null && user.getCommunity() == null) {
-			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
+			FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
 			communityField.setEnabled(true);
 		} else {
 			if (district != null) {
-				communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+				FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
 				communityField.setEnabled(true);
 			} else {
 				communityField.setEnabled(false);
