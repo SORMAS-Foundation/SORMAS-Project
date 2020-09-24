@@ -70,7 +70,7 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 
 	@Override
 	public void beforeLeave(ViewBeforeLeaveEvent event) {
-		if (subComponent.isDirty()) {
+		if (subComponent != null && subComponent.isDirty()) {
 			showNavigationConfirmPopup(event);
 		} else {
 			event.navigate();
