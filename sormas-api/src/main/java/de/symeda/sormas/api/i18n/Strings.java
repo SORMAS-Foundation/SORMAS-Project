@@ -757,6 +757,7 @@ public interface Strings {
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";
+	String unsavedChanges_cancel = "unsavedChanges.cancel";
 	String unsavedChanges_discard = "unsavedChanges.discard";
 	String unsavedChanges_save = "unsavedChanges.save";
 	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";
