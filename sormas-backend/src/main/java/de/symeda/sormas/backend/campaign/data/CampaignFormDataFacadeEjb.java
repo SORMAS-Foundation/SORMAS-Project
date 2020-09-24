@@ -404,19 +404,14 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			}
 
 			// WHERE
-			StringBuilder whereBuilder = new StringBuilder(" WHERE ").append(CampaignFormMeta.TABLE_NAME)
-				.append(".")
-				.append(CampaignFormMeta.FORM_ID)
-				.append(" = '")
-				.append(series.getFormId())
-				.append("'");
+			StringBuilder whereBuilder =
+				new StringBuilder(" WHERE ").append(CampaignFormMeta.TABLE_NAME).append(".").append(CampaignFormMeta.FORM_ID).append(" = ?0");
 
 			if (series.getFieldId() != null) {
 				whereBuilder.append(" AND jsonData->>'")
 					.append(CampaignFormDataEntry.ID)
-					.append("' = '")
-					.append(series.getFieldId())
-					.append("' AND jsonData->>'")
+					.append("' = ?1")
+					.append(" AND jsonData->>'")
 					.append(CampaignFormDataEntry.VALUE)
 					.append("' IS NOT NULL AND jsonData->>'")
 					.append(CampaignFormDataEntry.ID)
@@ -452,6 +447,12 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			Query seriesDataQuery = em.createNativeQuery(
 					selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
 			//@formatter:on
+
+			seriesDataQuery.setParameter(0, series.getFormId());
+
+			if (series.getFieldId() != null) {
+				seriesDataQuery.setParameter(1, series.getFieldId());
+			}
 
 			@SuppressWarnings("unchecked")
 			List<Object[]> resultList = seriesDataQuery.getResultList();
