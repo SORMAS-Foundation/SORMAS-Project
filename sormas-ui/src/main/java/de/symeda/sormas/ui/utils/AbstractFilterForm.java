@@ -62,19 +62,34 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			addMoreFilters(moreFiltersLayout);
 		}
 
-		this.addValueChangeListener(e -> {
-			onChange();
-		});
+		addResetHandler(e -> onButtonClick());
+		addApplyHandler(e -> onButtonClick());
+		this.addValueChangeListener(e -> onFilterChange());
 
 		addDefaultButtons();
 	}
 
-	public void onChange() {
+	// hide buttons when no filters remain
+	public void onButtonClick() {
 		hasFilter = streamFieldsForEmptyCheck(getContent()).anyMatch(f -> !f.isEmpty());
-		getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
-		Component applyButton = getContent().getComponent(APPLY_BUTTON_ID);
-		if (applyButton != null) {
-			applyButton.setVisible(hasFilter);
+		if (!hasFilter) {
+			getContent().getComponent(RESET_BUTTON_ID).setVisible(false);
+			Component applyButton = getContent().getComponent(APPLY_BUTTON_ID);
+			if (applyButton != null) {
+				applyButton.setVisible(false);
+			}
+		}
+	}
+
+	// show buttons when there are filters
+	public void onFilterChange() {
+		hasFilter = streamFieldsForEmptyCheck(getContent()).anyMatch(f -> !f.isEmpty());
+		if (hasFilter) {
+			getContent().getComponent(RESET_BUTTON_ID).setVisible(true);
+			Component applyButton = getContent().getComponent(APPLY_BUTTON_ID);
+			if (applyButton != null) {
+				applyButton.setVisible(true);
+			}
 		}
 	}
 
@@ -98,10 +113,12 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 		Button resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
 		getContent().addComponent(resetButton, RESET_BUTTON_ID);
+		resetButton.setVisible(false);
 
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, null, FILTER_ITEM_STYLE);
 		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		getContent().addComponent(applyButton, APPLY_BUTTON_ID);
+		applyButton.setVisible(false);
 
 		if (moreFiltersLayout != null) {
 			String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
@@ -150,11 +167,17 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	public void addResetHandler(Button.ClickListener resetHandler) {
-		((Button) getContent().getComponent(RESET_BUTTON_ID)).addClickListener(resetHandler);
+		Button resetButton = (Button) getContent().getComponent(RESET_BUTTON_ID);
+		if (resetButton != null) {
+			resetButton.addClickListener(resetHandler);
+		}
 	}
 
 	public void addApplyHandler(Button.ClickListener applyHandler) {
-		((Button) getContent().getComponent(APPLY_BUTTON_ID)).addClickListener(applyHandler);
+		Button applyButton = (Button) getContent().getComponent(APPLY_BUTTON_ID);
+		if (applyButton != null) {
+			applyButton.addClickListener(applyHandler);
+		}
 	}
 
 	@Override

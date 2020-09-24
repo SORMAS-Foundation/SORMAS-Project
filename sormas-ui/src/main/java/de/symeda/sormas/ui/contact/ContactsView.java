@@ -341,11 +341,6 @@ public class ContactsView extends AbstractView {
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		filterForm = new ContactsFilterForm();
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
-				navigateTo(null);
-			}
-		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
 			navigateTo(null, true);

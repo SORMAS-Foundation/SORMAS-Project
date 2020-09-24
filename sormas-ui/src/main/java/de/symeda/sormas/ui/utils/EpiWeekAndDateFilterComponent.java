@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.vaadin.v7.ui.Field;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -210,12 +209,12 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		}
 
 		if (parentFilterForm != null) {
-			dateFilterOptionFilter.addValueChangeListener(e -> parentFilterForm.onChange());
-			dateTypeSelector.addValueChangeListener(e -> parentFilterForm.onChange());
-			weekFromFilter.addValueChangeListener(e -> parentFilterForm.onChange());
-			weekToFilter.addValueChangeListener(e -> parentFilterForm.onChange());
-			dateFromFilter.addValueChangeListener(e -> parentFilterForm.onChange());
-			dateToFilter.addValueChangeListener(e -> parentFilterForm.onChange());
+			dateFilterOptionFilter.addValueChangeListener(e -> parentFilterForm.onButtonClick());
+			dateTypeSelector.addValueChangeListener(e -> parentFilterForm.onButtonClick());
+			weekFromFilter.addValueChangeListener(e -> parentFilterForm.onButtonClick());
+			weekToFilter.addValueChangeListener(e -> parentFilterForm.onButtonClick());
+			dateFromFilter.addValueChangeListener(e -> parentFilterForm.onButtonClick());
+			dateToFilter.addValueChangeListener(e -> parentFilterForm.onButtonClick());
 		}
 	}
 

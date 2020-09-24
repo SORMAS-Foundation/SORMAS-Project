@@ -218,11 +218,6 @@ public class EventsView extends AbstractView {
 		filterLayout.setSizeUndefined();
 
 		filterForm = new EventsFilterForm();
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
-				navigateTo(null);
-			}
-		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			navigateTo(null);

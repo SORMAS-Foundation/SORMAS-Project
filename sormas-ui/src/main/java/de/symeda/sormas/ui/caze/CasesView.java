@@ -496,11 +496,6 @@ public class CasesView extends AbstractView {
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		filterForm = new CaseFilterForm();
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
-				navigateTo(null);
-			}
-		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
 			navigateTo(null, true);

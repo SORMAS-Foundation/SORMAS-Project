@@ -107,11 +107,6 @@ public class SampleGridComponent extends VerticalLayout {
 		filterLayout.addStyleName("wrap");
 
 		filterForm = new SampleGridFilterForm();
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
-				samplesView.navigateTo(null);
-			}
-		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
 			samplesView.navigateTo(null, true);

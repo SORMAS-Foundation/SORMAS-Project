@@ -173,11 +173,6 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	public CampaignFormDataFilterForm createFilterBar() {
 		filterForm = new CampaignFormDataFilterForm();
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
-				navigateTo(null);
-			}
-		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
 			navigateTo(null, true);

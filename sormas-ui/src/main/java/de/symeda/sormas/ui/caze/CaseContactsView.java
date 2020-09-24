@@ -45,7 +45,6 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -187,6 +186,20 @@ public class CaseContactsView extends AbstractCaseView {
 		searchField.addTextChangeListener(e -> criteria.setNameUuidCaseLike(e.getText()));
 		topLayout.addComponent(searchField);
 
+		classificationFilter.addValueChangeListener(e -> onFilterChange());
+		regionFilter.addValueChangeListener(e -> onFilterChange());
+		officerFilter.addValueChangeListener(e -> onFilterChange());
+		districtFilter.addValueChangeListener(e -> onFilterChange());
+		searchField.addValueChangeListener(e -> onFilterChange());
+
+		return topLayout;
+	}
+
+	public HorizontalLayout createFilterButtonsBar() {
+		HorizontalLayout topLayout = new HorizontalLayout();
+		topLayout.setSpacing(true);
+		topLayout.setSizeUndefined();
+
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(CaseContactsView.class).remove(ContactCriteria.class);
 			navigateTo(null);
@@ -199,11 +212,8 @@ public class CaseContactsView extends AbstractCaseView {
 		applyButton.setVisible(false);
 		topLayout.addComponent(applyButton);
 
-		classificationFilter.addValueChangeListener(e -> updateApplyResetButtons());
-		regionFilter.addValueChangeListener(e -> updateApplyResetButtons());
-		officerFilter.addValueChangeListener(e -> updateApplyResetButtons());
-		districtFilter.addValueChangeListener(e -> updateApplyResetButtons());
-		searchField.addValueChangeListener(e -> updateApplyResetButtons());
+		resetButton.addClickListener(e -> onButtonClick());
+		applyButton.addClickListener(e -> onButtonClick());
 
 		return topLayout;
 	}
@@ -373,6 +383,7 @@ public class CaseContactsView extends AbstractCaseView {
 			grid = new ContactGrid(criteria, getClass());
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.addComponent(createFilterBar());
+			gridLayout.addComponent(createFilterButtonsBar());
 			gridLayout.addComponent(createStatusFilterBar());
 			gridLayout.addComponent(grid);
 			gridLayout.setMargin(true);
@@ -428,12 +439,21 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 	}
 
-	private void updateApplyResetButtons() {
+	// hide buttons when no filters remain
+	private void onButtonClick() {
 		boolean hasFilters = hasFilters();
-		resetButton.setVisible(hasFilters);
-		applyButton.setVisible(hasFilters);
 		if (!hasFilters) {
-			navigateTo(null);
+			resetButton.setVisible(false);
+			applyButton.setVisible(false);
+		}
+	}
+
+	// show buttons when there are filters
+	private void onFilterChange() {
+		boolean hasFilters = hasFilters();
+		if (hasFilters) {
+			resetButton.setVisible(true);
+			applyButton.setVisible(true);
 		}
 	}
 
