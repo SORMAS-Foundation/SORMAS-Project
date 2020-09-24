@@ -394,7 +394,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.eventLike = eventLike;
 	}
 
-	@IgnoreForUrl
 	public String getEventLike() {
 		return eventLike;
 	}
