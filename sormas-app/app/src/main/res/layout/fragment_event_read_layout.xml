@@ -28,9 +28,12 @@
         <import type="android.view.View" />
         <import type="de.symeda.sormas.api.event.EventStatus" />
         <import type="de.symeda.sormas.api.event.EventSourceType" />
+        <import type="de.symeda.sormas.api.event.EventDto" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="multiDayEvent" type="Boolean"/>
+        <variable name="participantCount" type="int"/>
     </data>
 
     <ScrollView
@@ -91,6 +94,19 @@
                     android:id="@+id/event_reportingUser"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.reportingUser}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_participants"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:labelCaption="@{I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.PARTICIPANTS_COUNT)}"
+                    app:value="@{participantCount}" />
 
             </LinearLayout>
 

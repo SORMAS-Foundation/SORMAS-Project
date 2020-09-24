@@ -42,6 +42,7 @@ import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -138,7 +139,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	}
 
 	@Override
-	protected void setSubComponent(Component newComponent) {
+	protected void setSubComponent(DirtyStateComponent newComponent) {
 		super.setSubComponent(newComponent);
 
 		if (FacadeProvider.getContactFacade().isDeleted(getReference().getUuid())) {

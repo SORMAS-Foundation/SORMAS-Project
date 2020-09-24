@@ -42,6 +42,8 @@ public interface ContactFacade {
 
 	ContactDto saveContact(ContactDto dto);
 
+	ContactDto saveContact(ContactDto dto, boolean handleChanges);
+
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllActiveUuids();
@@ -119,4 +121,11 @@ public interface ContactFacade {
 	boolean isContactEditAllowed(String contactUuid);
 
 	boolean exists(String uuid);
+
+	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to);
 }

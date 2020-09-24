@@ -200,7 +200,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		contentBinding.samplePurpose.setEnabled(referredSample == null || record.getSamplePurpose() != SamplePurpose.EXTERNAL);
 		contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), field -> {
 			Facility laboratory = (Facility) field.getValue();
-			if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+			if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 				contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
 			} else {
 				contentBinding.sampleLabDetails.hideField(true);

@@ -1,12 +1,20 @@
 package de.symeda.sormas.backend.caze;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -21,25 +29,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
-
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJoins;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.ModelConstants;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Stateless
 @LocalBean
@@ -207,7 +203,9 @@ public class CaseListCriteriaBuilder {
 		selections.addAll(
 			Arrays.asList(
 				joins.getAddress().get(Location.CITY),
-				joins.getAddress().get(Location.ADDRESS),
+				joins.getAddress().get(Location.STREET),
+				joins.getAddress().get(Location.HOUSE_NUMBER),
+				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
 				joins.getPerson().get(Person.PHONE),
 				joins.getReportingUser().get(User.FIRST_NAME),
@@ -220,7 +218,9 @@ public class CaseListCriteriaBuilder {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDetailedDto.CITY:
-		case CaseIndexDetailedDto.ADDRESS:
+		case CaseIndexDetailedDto.STREET:
+		case CaseIndexDetailedDto.HOUSE_NUMBER:
+		case CaseIndexDetailedDto.ADDITIONAL_INFORMATION:
 		case CaseIndexDetailedDto.POSTAL_CODE:
 			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.PHONE:
@@ -235,12 +235,12 @@ public class CaseListCriteriaBuilder {
 	public Stream<Selection<?>> getJurisdictionSelections(CaseJoins joins) {
 
 		return Stream.of(
-				joins.getReportingUser().get(User.UUID),
-				joins.getRegion().get(Region.UUID),
-				joins.getDistrict().get(District.UUID),
-				joins.getCommunity().get(Community.UUID),
-				joins.getFacility().get(Facility.UUID),
-				joins.getPointOfEntry().get(PointOfEntry.UUID));
+			joins.getReportingUser().get(User.UUID),
+			joins.getRegion().get(Region.UUID),
+			joins.getDistrict().get(District.UUID),
+			joins.getCommunity().get(Community.UUID),
+			joins.getFacility().get(Facility.UUID),
+			joins.getPointOfEntry().get(PointOfEntry.UUID));
 	}
 
 	private interface OrderExpressionProvider {

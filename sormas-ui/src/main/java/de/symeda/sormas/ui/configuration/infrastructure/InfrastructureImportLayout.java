@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -55,9 +56,9 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			fileNameAddition = "_district_import_";
 			break;
 		case FACILITY:
-			templateFilePath = FacadeProvider.getImportFacade().getFacilityLaboratoryImportTemplateFilePath();
-			templateFileName = "sormas_import_facility_laboratory_template.csv";
-			fileNameAddition = "_facility_laboratory_import_";
+			templateFilePath = FacadeProvider.getImportFacade().getFacilityImportTemplateFilePath();
+			templateFileName = "sormas_import_facility_template.csv";
+			fileNameAddition = "_facility_import_";
 			break;
 		case POINT_OF_ENTRY:
 			templateFilePath = FacadeProvider.getImportFacade().getPointOfEntryImportTemplateFilePath();
@@ -130,7 +131,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 							extendDownloadErrorReportButton(resource);
 						}
 					}, currentUI, true);
-				} catch (IOException e) {
+				} catch (IOException | CsvValidationException e) {
 					new Notification(
 						I18nProperties.getString(Strings.headingImportFailed),
 						I18nProperties.getString(Strings.messageImportFailed),

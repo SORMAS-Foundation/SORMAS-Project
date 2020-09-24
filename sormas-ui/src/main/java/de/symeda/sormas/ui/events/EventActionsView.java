@@ -22,7 +22,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.action.ActionContext;
@@ -36,6 +35,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.action.ActionList;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
 public class EventActionsView extends AbstractEventView {
 
@@ -47,7 +47,7 @@ public class EventActionsView extends AbstractEventView {
 
 	private ActionList list;
 	private Button addButton;
-	private VerticalLayout listLayout;
+	private DetailSubComponentWrapper listLayout;
 	private EventActionFilterForm filterForm;
 
 	public EventActionsView() {
@@ -92,9 +92,8 @@ public class EventActionsView extends AbstractEventView {
 		filterLayout.setSizeUndefined();
 
 		filterForm = new EventActionFilterForm();
-		filterForm.addValueChangeListener(e -> navigateTo(criteria));
 		filterForm.addResetHandler(e -> navigateTo(null));
-
+		filterForm.addApplyHandler(e -> navigateTo(criteria));
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
@@ -110,7 +109,7 @@ public class EventActionsView extends AbstractEventView {
 
 		if (list == null) {
 			list = new ActionList(ActionContext.EVENT, criteria, 20);
-			listLayout = new VerticalLayout();
+			listLayout = new DetailSubComponentWrapper(() -> null);
 			listLayout.setSizeFull();
 			listLayout.setMargin(true);
 			listLayout.setSpacing(false);

@@ -31,10 +31,11 @@ public class GermanCaseClassificationValidator extends AbstractValidator<CaseCla
 
 	@Override
 	protected boolean isValidValue(CaseClassification caseClassification) {
-		return de.symeda.sormas.api.caze.GermanCaseClassificationValidator.isValidGermanCaseClassification(
-			caseClassification,
-			FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid),
-			FacadeProvider.getCaseFacade().hasPositiveLabResult(caseUuid));
+		return true;
+//		return de.symeda.sormas.api.caze.GermanCaseClassificationValidator.isValidGermanCaseClassification(
+//			caseClassification,
+//			FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid),
+//			FacadeProvider.getCaseFacade().hasPositiveLabResult(caseUuid));
 	}
 
 	@Override

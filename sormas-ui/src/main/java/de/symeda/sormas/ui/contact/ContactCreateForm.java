@@ -23,7 +23,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.time.Month;
 import java.util.Arrays;
 
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import org.joda.time.LocalDate;
 
 import com.vaadin.shared.ui.ContentMode;
@@ -55,6 +54,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -79,6 +79,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 							fluidRowLocs(PersonDto.SEX)) +
 					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
+					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
 					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
@@ -131,6 +132,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
+		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
+		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
+		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
 		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
@@ -138,7 +143,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
@@ -202,7 +207,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
 			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY);
-			if (isGermanServer()) {
+			if (isConfiguredServer("de")) {
 				contactCategory.setVisible(disease != null);
 				contactProximityDetails.setVisible(disease != null);
 			}
@@ -256,7 +261,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);
 			if (!hasCaseRelation && disease == null) {
 				setVisible(false, ContactDto.CONTACT_PROXIMITY);
-				if (isGermanServer()) {
+				if (isConfiguredServer("de")) {
 					contactCategory.setVisible(false);
 					contactProximityDetails.setVisible(false);
 				}
@@ -393,6 +398,14 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	public Sex getSex() {
 		return (Sex) getField(PersonDto.SEX).getValue();
+	}
+
+	public String getPhone() {
+		return (String) getField(PersonDto.PHONE).getValue();
+	}
+
+	public String getEmailAddress() {
+		return (String) getField(PersonDto.EMAIL_ADDRESS).getValue();
 	}
 
 	@Override

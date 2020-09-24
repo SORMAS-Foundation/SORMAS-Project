@@ -33,10 +33,11 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.samples.SampleListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class EventParticipantDataView extends AbstractDetailView<EventParticipantReferenceDto> {
@@ -50,6 +51,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 	public static final String HTML_LAYOUT =
 		LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
+
+	private CommitDiscardWrapperComponent<?> editComponent;
 
 	public EventParticipantDataView() {
 		super(VIEW_NAME);
@@ -81,7 +84,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	protected void initView(String params) {
 		setHeightUndefined();
 
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
@@ -94,7 +97,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		final EventParticipantReferenceDto eventParticipantRef = getReference();
 
-		CommitDiscardWrapperComponent<?> editComponent =
+		editComponent =
 			ControllerProvider.getEventParticipantController().getEventParticipantDataEditComponent(eventParticipantRef.getUuid());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
@@ -129,6 +132,11 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			}
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
+		}
+
+		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
+		if (!isEditAllowed) {
+			container.setEnabled(false);
 		}
 	}
 

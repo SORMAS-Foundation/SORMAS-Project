@@ -48,6 +48,7 @@ import de.symeda.sormas.api.region.RegionIndexDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -73,6 +74,17 @@ public class RegionFacadeEjb implements RegionFacade {
 	private PopulationDataFacadeEjbLocal populationDataFacade;
 	@EJB
 	private AreaService areaService;
+
+	@Override
+	public List<RegionReferenceDto> getAllActiveByArea(String areaUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
+		Root<Region> root = cq.from(Region.class);
+		cq.where(cb.and(cb.isFalse(root.get(InfrastructureAdo.ARCHIVED)), cb.equal(root.get(Region.AREA).get(Area.UUID), areaUuid)));
+		cq.orderBy(cb.asc(root.get(Region.NAME)));
+
+		return em.createQuery(cq).getResultList().stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveAsReference() {

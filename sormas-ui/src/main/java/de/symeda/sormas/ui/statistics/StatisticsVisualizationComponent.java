@@ -270,8 +270,8 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 	public boolean hasIncidenceIncompatibleGrouping() {
 		return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.COMMUNITY
 			|| columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.COMMUNITY
-			|| rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.HEALTH_FACILITY
-			|| columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.HEALTH_FACILITY;
+			|| rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.FACILITY
+			|| columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.FACILITY;
 	}
 
 	public boolean hasSexGrouping() {

@@ -32,10 +32,11 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
-import de.symeda.sormas.ui.samples.SampleListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -54,6 +55,8 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String SAMPLES_LOC = "samples";
 	public static final String EVENTS_LOC = "events";
 
+	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
+
 	public CaseDataView() {
 		super(VIEW_NAME, false);
 	}
@@ -71,7 +74,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC));
 
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
@@ -83,7 +86,7 @@ public class CaseDataView extends AbstractCaseView {
 		container.addComponent(layout);
 
 		Boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
-		CommitDiscardWrapperComponent<CaseDataForm> editComponent;
+
 		//		if (getViewMode() == ViewMode.SIMPLE) {
 		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
 		//					ViewMode.SIMPLE);

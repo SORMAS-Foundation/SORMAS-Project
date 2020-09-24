@@ -331,6 +331,7 @@ public class TestDataCreator {
 		caze.setRegion(rdcf.region);
 		caze.setDistrict(rdcf.district);
 		caze.setCommunity(rdcf.community);
+		caze.setFacilityType(beanTest.getFacilityFacade().getByUuid(rdcf.facility.getUuid()).getType());
 		caze.setHealthFacility(rdcf.facility);
 		caze.setPointOfEntry(rdcf.pointOfEntry);
 
@@ -608,13 +609,17 @@ public class TestDataCreator {
 		return event;
 	}
 
-	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson) {
-		return createEventParticipant(event, eventPerson, "Description");
+	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, UserReferenceDto reportingUser) {
+		return createEventParticipant(event, eventPerson, "Description", reportingUser);
 	}
 
-	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, String involvementDescription) {
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto event,
+		PersonDto eventPerson,
+		String involvementDescription,
+		UserReferenceDto reportingUser) {
 
-		EventParticipantDto eventParticipant = EventParticipantDto.build(event);
+		EventParticipantDto eventParticipant = EventParticipantDto.build(event, reportingUser);
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 
@@ -1067,7 +1072,7 @@ public class TestDataCreator {
 	}
 
 	public Facility createFacility(String facilityName, Region region, District district, Community community) {
-		return createFacility(facilityName, null, region, district, community);
+		return createFacility(facilityName, FacilityType.HOSPITAL, region, district, community);
 	}
 
 	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community) {
@@ -1092,6 +1097,7 @@ public class TestDataCreator {
 
 		FacilityDto facility = FacilityDto.build();
 		facility.setName(facilityName);
+		facility.setType(FacilityType.HOSPITAL);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);

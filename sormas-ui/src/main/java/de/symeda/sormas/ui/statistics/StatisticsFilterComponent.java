@@ -137,6 +137,8 @@ public class StatisticsFilterComponent extends VerticalLayout {
 			filterElement = new StatisticsFilterDateRangeElement(rowIndex);
 		} else if (selectedAttribute == StatisticsCaseAttribute.JURISDICTION) {
 			filterElement = new StatisticsFilterJurisdictionElement(rowIndex);
+		} else if (selectedAttribute == StatisticsCaseAttribute.PLACE_OF_RESIDENCE) {
+			filterElement = new StatisticsFilterResidenceElement(rowIndex);
 		} else if (selectedAttribute.getSubAttributes().length == 0 || selectedSubAttribute != null) {
 			filterElement = new StatisticsFilterValuesElement(
 				selectedAttribute.toString() + (selectedSubAttribute != null ? " (" + selectedSubAttribute.toString() + ")" : ""),

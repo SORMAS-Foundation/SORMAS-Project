@@ -1134,19 +1134,15 @@ public class TextViewBindingAdapters {
 	}
 
 	private static String getDisease(Task record) {
-		String result = null;
-
-//        if (record.getCaze() != null && record.getCaze().getDisease() != null) {
-//            result = record.getCaze().getDisease().toShortString();
-//        } else if (record.getContact() != null && record.getContact().getCaze() != null && record.getContact().getCaze().getDisease() != null) {
-//            result = record.getContact().getCaze().getDisease().toShortString();
-//        } else if (record.getEvent() != null && record.getEvent().getDisease() != null){
-//            result = record.getEvent().getDisease().toShortString();
-//        } else {
-//            result = "";
-//        }
-
-		return result;
+		if (record.getCaze() != null && record.getCaze().getDisease() != null) {
+			return record.getCaze().getDisease().toShortString();
+		} else if (record.getContact() != null && record.getContact().getDisease() != null) {
+			return record.getContact().getDisease().toShortString();
+		} else if (record.getEvent() != null && record.getEvent().getDisease() != null) {
+			return record.getEvent().getDisease().toShortString();
+		} else {
+			return "";
+		}
 	}
 
 	private static String getDisease(Event record) {

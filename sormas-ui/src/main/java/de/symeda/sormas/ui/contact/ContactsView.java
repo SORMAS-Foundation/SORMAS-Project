@@ -342,18 +342,22 @@ public class ContactsView extends AbstractView {
 
 		filterForm = new ContactsFilterForm();
 		filterForm.addValueChangeListener(e -> {
+			if (!filterForm.hasFilter()) {
+				navigateTo(null);
+			}
+		});
+		filterForm.addResetHandler(e -> {
+			ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
+			navigateTo(null, true);
+		});
+		filterForm.addApplyHandler(e -> {
 			if (!navigateTo(criteria, false)) {
-				filterForm.updateResetButtonState();
 				if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 					((ContactFollowUpGrid) grid).reload();
 				} else {
 					((AbstractContactGrid<?>) grid).reload();
 				}
 			}
-		});
-		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
-			navigateTo(null, true);
 		});
 		filterLayout.addComponent(filterForm);
 

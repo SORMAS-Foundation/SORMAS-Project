@@ -29,6 +29,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface RegionFacade {
 
+	List<RegionReferenceDto> getAllActiveByArea(String areaUuid);
+
 	List<RegionReferenceDto> getAllActiveAsReference();
 
 	List<RegionDto> getAllAfter(Date date);

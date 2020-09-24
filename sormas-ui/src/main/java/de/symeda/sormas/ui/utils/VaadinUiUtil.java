@@ -60,6 +60,10 @@ public final class VaadinUiUtil {
 	}
 
 	public static Window showSimplePopupWindow(String caption, String contentText) {
+		return showSimplePopupWindow(caption, contentText, ContentMode.TEXT);
+	}
+
+	public static Window showSimplePopupWindow(String caption, String contentText, ContentMode contentMode) {
 		Window window = new Window(null);
 		window.setModal(true);
 		window.setSizeUndefined();
@@ -70,7 +74,7 @@ public final class VaadinUiUtil {
 		popupLayout.setMargin(true);
 		popupLayout.setSpacing(true);
 		popupLayout.setSizeUndefined();
-		Label contentLabel = new Label(contentText);
+		Label contentLabel = new Label(contentText, contentMode);
 		contentLabel.setWidth(100, Unit.PERCENTAGE);
 		popupLayout.addComponent(contentLabel);
 		Button okayButton = ButtonHelper.createButton(Captions.actionOkay, e -> {

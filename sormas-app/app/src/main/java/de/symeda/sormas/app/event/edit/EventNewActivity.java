@@ -132,11 +132,13 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 		final Event eventToSave = (Event) getActiveFragment().getPrimaryData();
 		EventEditFragment fragment = (EventEditFragment) getActiveFragment();
 
-		Case linkedCase = DatabaseHelper.getCaseDao().getByReferenceDto(new CaseReferenceDto(caseUuid));
-		if (caseUuid != null && !eventToSave.getDisease().equals(linkedCase.getDisease())) {
-			NotificationHelper
-				.showNotification(this, WARNING, getString(R.string.message_Event_and_Case_disease_mismatch) + " " + linkedCase.getDisease());
-			return;
+		if (caseUuid != null) {
+			Case linkedCase = DatabaseHelper.getCaseDao().getByReferenceDto(new CaseReferenceDto(caseUuid));
+			if (!eventToSave.getDisease().equals(linkedCase.getDisease())) {
+				NotificationHelper
+					.showNotification(this, WARNING, getString(R.string.message_Event_and_Case_disease_mismatch) + " " + linkedCase.getDisease());
+				return;
+			}
 		}
 
 		fragment.setLiveValidationDisabled(false);

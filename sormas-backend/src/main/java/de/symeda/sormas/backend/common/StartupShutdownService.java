@@ -224,27 +224,27 @@ public class StartupShutdownService {
 			district.getCommunities().add(community);
 		}
 
-		// Health Facility
-		Facility healthFacility;
+		// Facility
+		Facility facility;
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
-		facilityCriteria.type(null);
 		if (facilityFacade.count(facilityCriteria) == 0) {
-			healthFacility = new Facility();
-			healthFacility.setUuid(DataHelper.createUuid());
-			healthFacility.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
+			facility = new Facility();
+			facility.setUuid(DataHelper.createUuid());
+			facility.setType(FacilityType.HOSPITAL);
+			facility.setName(I18nProperties.getCaption(Captions.defaultFacility, "Default Health Facility"));
 			if (community == null) {
 				community = communityService.getAll().get(0);
 			}
-			healthFacility.setCommunity(community);
+			facility.setCommunity(community);
 			if (district == null) {
 				district = districtService.getAll().get(0);
 			}
-			healthFacility.setDistrict(district);
+			facility.setDistrict(district);
 			if (region == null) {
 				region = regionService.getAll().get(0);
 			}
-			healthFacility.setRegion(region);
-			facilityService.ensurePersisted(healthFacility);
+			facility.setRegion(region);
+			facilityService.ensurePersisted(facility);
 		}
 
 		// Laboratory
@@ -331,7 +331,7 @@ public class StartupShutdownService {
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
-			List<Facility> healthFacilities = facilityService.getActiveHealthFacilitiesByCommunity(community, false);
+			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);
 			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
 			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
 			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
@@ -608,7 +608,7 @@ public class StartupShutdownService {
 			logger.error("Could not create community import template .csv file.");
 		}
 		try {
-			importFacade.generateFacilityLaboratoryImportTemplateFile();
+			importFacade.generateFacilityImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}

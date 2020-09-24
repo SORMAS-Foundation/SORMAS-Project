@@ -222,6 +222,18 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
+		target.setFeverishFeeling(source.getFeverishFeeling());
+		target.setWeakness(source.getWeakness());
+		target.setFatigue(source.getFatigue());
+		target.setCoughWithoutSputum(source.getCoughWithoutSputum());
+		target.setBreathlessness(source.getBreathlessness());
+		target.setChestPressure(source.getChestPressure());
+		target.setBlueLips(source.getBlueLips());
+		target.setBloodCirculationProblems(source.getBloodCirculationProblems());
+		target.setPalpitations(source.getPalpitations());
+		target.setDizzinessStandingUp(source.getDizzinessStandingUp());
+		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
+		target.setUrinaryRetention(source.getUrinaryRetention());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
@@ -395,6 +407,18 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
+		target.setFeverishFeeling(source.getFeverishFeeling());
+		target.setWeakness(source.getWeakness());
+		target.setFatigue(source.getFatigue());
+		target.setCoughWithoutSputum(source.getCoughWithoutSputum());
+		target.setBreathlessness(source.getBreathlessness());
+		target.setChestPressure(source.getChestPressure());
+		target.setBlueLips(source.getBlueLips());
+		target.setBloodCirculationProblems(source.getBloodCirculationProblems());
+		target.setPalpitations(source.getPalpitations());
+		target.setDizzinessStandingUp(source.getDizzinessStandingUp());
+		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
+		target.setUrinaryRetention(source.getUrinaryRetention());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

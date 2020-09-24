@@ -17,17 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
-
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -51,6 +46,11 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> extends FilteredGrid<IndexDto, ContactCriteria> {
@@ -119,7 +119,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		pendingTasksColumn.setSortable(false);
 
 		setColumns(getColumnList().toArray(String[]::new));
-		if (!FacadeProvider.getConfigFacade().isGermanServer()) {
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(ContactIndexDto.CONTACT_CATEGORY).setHidden(true);
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);

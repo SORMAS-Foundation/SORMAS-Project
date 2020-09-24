@@ -19,10 +19,10 @@ package de.symeda.sormas.ui.dashboard.contacts;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -38,6 +38,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
@@ -52,6 +54,9 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 	private static final int ROW_HEIGHT = 555;
 
+	protected DashboardDataProvider dashboardDataProvider;
+	protected DashboardFilterLayout filterLayout;
+
 	protected AbstractDashboardStatisticsComponent statisticsComponent;
 	protected AbstractEpiCurveComponent epiCurveComponent;
 	protected DashboardMapComponent mapComponent;
@@ -59,6 +64,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	protected HorizontalLayout epiCurveAndMapLayout;
 	protected HorizontalLayout networkDiagramRowLayout;
 	protected HorizontalLayout caseStatisticsLayout;
+	protected HorizontalLayout contactsStatisticsLayout;
 	private VerticalLayout epiCurveLayout;
 	private Optional<VerticalLayout> mapLayout;
 	private Optional<VerticalLayout> networkDiagramLayout;
@@ -72,8 +78,29 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private Label avgLabel = new Label();
 	private Label sourceCasesLabel = new Label();
 
+	//Contacts in quarantine
+	private Label contactsInQuarantineByDate = new Label();
+	private Label contactsPlacedInQuarantineByDate = new Label();
+
 	public ContactsDashboardView() {
-		super(VIEW_NAME, DashboardType.CONTACTS);
+		super(VIEW_NAME);
+
+		dashboardDataProvider = new DashboardDataProvider();
+		if (dashboardDataProvider.getDashboardType() == null) {
+			dashboardDataProvider.setDashboardType(DashboardType.CONTACTS);
+		}
+		if (DashboardType.CONTACTS.equals(dashboardDataProvider.getDashboardType())) {
+			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
+		}
+
+		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
+		dashboardLayout.addComponent(filterLayout);
+
+		dashboardSwitcher.setValue(DashboardType.CONTACTS);
+		dashboardSwitcher.addValueChangeListener(e -> {
+			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
+			navigateToDashboardView(e);
+		});
 
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
 
@@ -92,6 +119,10 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		rowsLayout.addComponent(caseStatisticsLayout);
 		rowsLayout.setExpandRatio(caseStatisticsLayout, 0);
 
+		contactsStatisticsLayout = createContactsStatisticsLayout();
+		rowsLayout.addComponent(contactsStatisticsLayout);
+		rowsLayout.setExpandRatio(contactsStatisticsLayout, 0);
+
 		epiCurveComponent = new ContactsEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
 
@@ -107,16 +138,12 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 			networkDiagramRowLayout = createNetworkDiagramRowLayout();
 			rowsLayout.addComponent(networkDiagramRowLayout);
-
-			networkDiagramLayout.ifPresent(l -> {
-				Consumer<Boolean> diseaseFilterChangeCallback = (diseaseSelected) -> {
-					networkDiagramLayout.get().setVisible(diseaseSelected);
-					noNetworkDiagramLayout.setVisible(!diseaseSelected);
-				};
-				filterLayout.setDiseaseFilterChangeCallback(diseaseFilterChangeCallback);
-				diseaseFilterChangeCallback.accept(null != dashboardDataProvider.getDisease());
-			});
 		}
+	}
+
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		refreshDashboard();
 	}
 
 	private HorizontalLayout createCaseStatisticsLayout() {
@@ -172,6 +199,69 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		return layout;
 	}
 
+	private HorizontalLayout createContactsStatisticsLayout() {
+
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.addStyleName(DashboardCssStyles.HIGHLIGHTED_STATISTICS_COMPONENT);
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
+		layout.setSpacing(false);
+
+		HorizontalLayout contactsInQuarantine = createContactsInQuarantineLayout();
+		layout.addComponent(contactsInQuarantine);
+
+		HorizontalLayout contactsPlacedInQuarantine = createContactsPlacedInQuarantineLayout();
+		layout.addComponent(contactsPlacedInQuarantine);
+
+		layout.setComponentAlignment(contactsPlacedInQuarantine, Alignment.MIDDLE_RIGHT);
+
+		return layout;
+	}
+
+	private HorizontalLayout createContactsInQuarantineLayout() {
+
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(new MarginInfo(false, true, false, true));
+		layout.setSpacing(false);
+
+		Label captionInQuarantine = new Label(I18nProperties.getString(Strings.headingContactsInQuarantine));
+		CssStyles.style(captionInQuarantine, CssStyles.H3, CssStyles.HSPACE_RIGHT_1, CssStyles.VSPACE_TOP_NONE);
+		layout.addComponent(captionInQuarantine);
+
+		CssStyles.style(
+			contactsInQuarantineByDate,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_LARGE_ALT,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_5,
+			CssStyles.HSPACE_RIGHT_3);
+		layout.addComponent(contactsInQuarantineByDate);
+
+		return layout;
+	}
+
+	private HorizontalLayout createContactsPlacedInQuarantineLayout() {
+
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(new MarginInfo(false, true, false, true));
+		layout.setSpacing(false);
+
+		Label captionPlacedInQuarantine = new Label(I18nProperties.getString(Strings.headingContactsPlacedInQuarantine));
+		CssStyles.style(captionPlacedInQuarantine, CssStyles.H3, CssStyles.HSPACE_RIGHT_1, CssStyles.VSPACE_TOP_NONE);
+		layout.addComponent(captionPlacedInQuarantine);
+
+		CssStyles.style(
+			contactsPlacedInQuarantineByDate,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_LARGE_ALT,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_5,
+			CssStyles.HSPACE_RIGHT_3);
+		layout.addComponent(contactsPlacedInQuarantineByDate);
+
+		return layout;
+	}
+
 	private void updateCaseCountsAndSourceCasesLabels() {
 		List<Long> contactIds = dashboardDataProvider.getContacts().stream().map(dto -> dto.getId()).collect(Collectors.toList());
 		int[] counts;
@@ -199,6 +289,13 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		int newSourceCasesPercentage = newSourceCases == 0 ? 0 : (int) ((newSourceCases * 100.0f) / caseUuids.size());
 
 		sourceCasesLabel.setValue(newSourceCases + " (" + newSourceCasesPercentage + " %)");
+	}
+
+	private void updateContactsInQuarantineData() {
+
+		contactsInQuarantineByDate.setValue(dashboardDataProvider.getContactsInQuarantineCount().toString());
+
+		contactsPlacedInQuarantineByDate.setValue(dashboardDataProvider.getContactsPlacedInQuarantineCount().toString());
 	}
 
 	protected HorizontalLayout createEpiCurveAndMapLayout() {
@@ -280,6 +377,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			}
 			caseStatisticsLayout.setVisible(!expanded);
 			networkDiagramRowLayout.setVisible(!expanded);
+			contactsStatisticsLayout.setVisible(!expanded);
 		});
 
 		return layout;
@@ -318,6 +416,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			}
 			caseStatisticsLayout.setVisible(!expanded);
 			networkDiagramRowLayout.setVisible(!expanded);
+			contactsStatisticsLayout.setVisible(!expanded);
 		});
 
 		return Optional.of(layout);
@@ -353,6 +452,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 				}
 				caseStatisticsLayout.setVisible(!expanded);
 				epiCurveAndMapLayout.setVisible(!expanded);
+				contactsStatisticsLayout.setVisible(!expanded);
 			});
 			return layout;
 		});
@@ -360,11 +460,13 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 	public void refreshDashboard() {
 
-		super.refreshDashboard();
+		dashboardDataProvider.refreshData();
 
 		// Updates statistics
 		statisticsComponent.updateStatistics(dashboardDataProvider.getDisease());
 		updateCaseCountsAndSourceCasesLabels();
+
+		updateContactsInQuarantineData();
 
 		// Update cases and contacts shown on the map
 		if (mapComponent != null) {
@@ -372,7 +474,11 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		}
 
 		// Update cases and contacts shown on the map
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS) && networkDiagramLayout.isPresent()) {
+			boolean diseaseSelected = dashboardDataProvider.getDisease() != null;
+
+			networkDiagramLayout.get().setVisible(diseaseSelected);
+			noNetworkDiagramLayout.setVisible(!diseaseSelected);
 			networkDiagramComponent.filter(c -> c.getParent().isVisible()).ifPresent(DashboardNetworkComponent::refreshDiagram);
 		}
 
