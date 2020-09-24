@@ -128,7 +128,8 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, null);
+		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter =
+			new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, null);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekTo));
@@ -188,7 +189,14 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
 		switch (propertyId) {
 		case SampleCriteria.REGION: {
-			getField(SampleCriteria.DISTRICT).setValue(null);
+			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
+			if (region == null) {
+				clearAndDisableFields(SampleCriteria.DISTRICT);
+			} else {
+				enableFields(SampleCriteria.DISTRICT);
+				applyRegionFilterDependency(region, SampleCriteria.DISTRICT);
+			}
+
 			break;
 		}
 		}

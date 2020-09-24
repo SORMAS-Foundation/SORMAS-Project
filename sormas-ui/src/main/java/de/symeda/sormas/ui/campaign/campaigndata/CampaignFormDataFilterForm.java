@@ -24,7 +24,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -125,8 +125,11 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		case CampaignFormDataDto.REGION:
 			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
 
-			if (!DataHelper.equal(region, criteria.getRegion())) {
-				getField(CaseDataDto.DISTRICT).setValue(null);
+			if (region == null) {
+				clearAndDisableFields(CampaignFormDataCriteria.DISTRICT, CampaignFormDataCriteria.COMMUNITY);
+			} else {
+				enableFields(EventCriteria.DISTRICT);
+				applyRegionFilterDependency(region, EventCriteria.DISTRICT);
 			}
 
 			break;
@@ -134,7 +137,12 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
 
 			if (!DataHelper.equal(district, criteria.getDistrict())) {
-				getField(CaseDataDto.COMMUNITY).setValue(null);
+				if (district == null) {
+					clearAndDisableFields(CampaignFormDataCriteria.COMMUNITY);
+				} else {
+					enableFields(CampaignFormDataCriteria.COMMUNITY);
+					applyDistrictDependency(district, CampaignFormDataCriteria.COMMUNITY);
+				}
 			}
 
 			break;

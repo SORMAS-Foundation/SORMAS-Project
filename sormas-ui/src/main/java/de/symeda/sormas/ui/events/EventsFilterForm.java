@@ -12,13 +12,13 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -50,8 +50,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
 	private static final String MORE_FILTERS_HTML_LAYOUT =
-		filterLocs(EventDto.SRC_TYPE, LocationDto.REGION, LocationDto.DISTRICT, EventDto.TYPE_OF_PLACE)
-			+ loc(WEEK_AND_DATE_FILTER);
+		filterLocs(EventDto.SRC_TYPE, LocationDto.REGION, LocationDto.DISTRICT, EventDto.TYPE_OF_PLACE) + loc(WEEK_AND_DATE_FILTER);
 
 	@Override
 	protected String[] getMainFilterLocators() {
@@ -112,7 +111,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, null);
+		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter =
+			new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, null);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekTo));
@@ -182,6 +182,23 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	}
 
 	@Override
+	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
+		switch (propertyId) {
+		case EventCriteria.REGION: {
+			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
+			if (region == null) {
+				clearAndDisableFields(EventCriteria.DISTRICT);
+			} else {
+				enableFields(EventCriteria.DISTRICT);
+				applyRegionFilterDependency(region, EventCriteria.DISTRICT);
+			}
+
+			break;
+		}
+		}
+	}
+
+	@Override
 	protected void applyDependenciesOnNewValue(EventCriteria criteria) {
 
 		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
@@ -200,7 +217,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			weekAndDateFilter.getDateToFilter().setValue(sampleDateTo);
 		}
 
-		applyRegionFilterDependency(criteria.getRegion());
+		applyRegionFilterDependency(criteria.getRegion(), EventCriteria.DISTRICT);
 	}
 
 	@Override
