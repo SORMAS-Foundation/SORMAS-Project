@@ -36,28 +36,21 @@ public class CountsTileViewLayout extends CssLayout {
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	private DashboardDataProvider dashboardDataProvider;
-//	private static final String BURDEN_LOC = "burden";
-//	private static final String DIFFERENCE_LOC = "difference";
-//	private static final String EXTEND_BUTTONS_LOC = "extendButtons";
 
 	public CountsTileViewLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-//		setTemplateContents(
-//			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(6, 0, 12, 0, BURDEN_LOC), LayoutUtil.fluidColumnLoc(6, 0, 12, 0, DIFFERENCE_LOC))
-//				+ LayoutUtil.loc(EXTEND_BUTTONS_LOC));
 	}
 
 	@Override
 	protected String getCss(Component c) {
-		return "margin-left: 18px; margin-bottom: 18px; display: flex; flex-direction: column";
+		c.setId("sample-card-wrapper");
+		return "display: flex !important; flex-wrap: wrap !important; flex-direction: column; white-space: normal !important";
 	}
 
 	public void refresh() {
 		Map<SampleCountType, Long> sampleCount = dashboardDataProvider.getSampleCount();
 		Map<SampleCountType, Long> sampleCountDifference = dashboardDataProvider.getSampleCountDifference();
 		this.removeAllComponents();
-//		
-//		layout.setMargin(false);
 
 		SampleCountType[] totalCol = {
 			SampleCountType.TOTAL };
@@ -83,35 +76,24 @@ public class CountsTileViewLayout extends CssLayout {
 			SampleCountType.NOT_SHIPED };
 
 		HorizontalLayout totalHorizontalLayout = new HorizontalLayout();
-		totalHorizontalLayout.setWidth(95, Unit.PERCENTAGE);
-
-		totalHorizontalLayout.addComponent(createCountRow(totalCol, sampleCount, sampleCountDifference, null));
-		totalHorizontalLayout.addComponent(createCountRow(conditionCol, sampleCount, sampleCountDifference, Captions.Sample_specimenCondition));
-
+		totalHorizontalLayout.setWidth(500, Unit.PIXELS);
+		totalHorizontalLayout.addComponent(createCountRow(totalCol, sampleCount, sampleCountDifference, Captions.Sample_name));
 		addComponent(totalHorizontalLayout);
 
-		HorizontalLayout sampleTestResultHorizontalLayout = new HorizontalLayout();
+		HorizontalLayout conditionHorizontalLayout = new HorizontalLayout();
+		conditionHorizontalLayout.setWidth(60, Unit.PERCENTAGE);
+		conditionHorizontalLayout.addComponent(createCountRow(conditionCol, sampleCount, sampleCountDifference, Captions.Sample_specimenCondition));
+		addComponent(conditionHorizontalLayout);
 
+		HorizontalLayout sampleTestResultHorizontalLayout = new HorizontalLayout();
+		sampleTestResultHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
 		sampleTestResultHorizontalLayout.addComponent(createCountRow(resultTypeCol, sampleCount, sampleCountDifference, Captions.Sample_testResult));
 		addComponent(sampleTestResultHorizontalLayout);
 
 		HorizontalLayout shipmentHorizontalLayout = new HorizontalLayout();
-
+		shipmentHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
 		shipmentHorizontalLayout.addComponent(createCountRow(shipmentCol, sampleCount, sampleCountDifference, Captions.Sample_shipment));
-//		shipmentHorizontalLayout.addComponent(createCountRow(recievedCol, sampleCount, Captions.Sample_shipemt_status));
-
 		addComponent(shipmentHorizontalLayout);
-
-//
-//		layout.addComponent(diseaseTileViewLayout);
-//		layout.setExpandRatio(diseaseTileViewLayout, 1);
-//		for (SampleCountType type : SampleCountType.values()) {
-//			if (sampleCount.get(type) != null) {
-//				CountTileComponent tile = new CountTileComponent(type, sampleCount.get(type));
-//				tile.setWidth(230, Unit.PIXELS);
-//				addComponent(tile);
-//			}
-//		}
 	}
 
 	private VerticalLayout createCountRow(
