@@ -9,11 +9,9 @@ import java.util.stream.Stream;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -49,7 +47,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -289,7 +286,17 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			if (!DataHelper.equal(region, criteria.getRegion())) {
 				if (region != null) {
 					enableFields(CaseDataDto.DISTRICT);
-					districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+
+					clearAndDisableFields(
+						CaseDataDto.COMMUNITY,
+						CaseCriteria.FACILITY_TYPE_GROUP,
+						CaseCriteria.FACILITY_TYPE,
+						CaseDataDto.HEALTH_FACILITY);
+
+					if (pointOfEntryField != null) {
+						pointOfEntryField.setEnabled(false);
+					}
 				} else {
 					clearAndDisableFields(
 						CaseDataDto.DISTRICT,
@@ -312,13 +319,14 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			if (!DataHelper.equal(newDistrict, criteria.getDistrict())) {
 				if (newDistrict != null) {
 					enableFields(CaseDataDto.COMMUNITY, CaseCriteria.FACILITY_TYPE_GROUP);
-					communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
+					clearAndDisableFields(CaseCriteria.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
+					FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
+
 					if (pointOfEntryField != null && currentCaseOrigin == CaseOrigin.POINT_OF_ENTRY) {
 						pointOfEntryField.setEnabled(true);
 						FieldHelper.updateItems(
 							pointOfEntryField,
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
-
 					}
 				} else {
 					clearAndDisableFields(

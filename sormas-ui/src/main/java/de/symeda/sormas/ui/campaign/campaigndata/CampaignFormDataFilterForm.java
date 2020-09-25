@@ -129,6 +129,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				clearAndDisableFields(CampaignFormDataCriteria.DISTRICT, CampaignFormDataCriteria.COMMUNITY);
 			} else {
 				enableFields(EventCriteria.DISTRICT);
+				clearAndDisableFields(CampaignFormDataCriteria.COMMUNITY);
 				applyRegionFilterDependency(region, EventCriteria.DISTRICT);
 			}
 
