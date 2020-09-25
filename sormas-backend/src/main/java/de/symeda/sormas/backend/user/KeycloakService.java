@@ -25,6 +25,7 @@ import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import net.minidev.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -47,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.keycloak.representations.IDToken.LOCALE;
 
@@ -67,6 +70,8 @@ public class KeycloakService {
 
 	private static final String REALM_NAME = "SORMAS";
 
+	private static final List<UserRole> REST_ROLES = Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER);
+
 	private Keycloak keycloak = null;
 
 	@PostConstruct
@@ -74,7 +79,8 @@ public class KeycloakService {
 		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
 
 		if (!oidcJson.isPresent()) {
-			logger.warn("Undefined KEYCLOAK configuration for sormas.backend.security.oidc.json. Configure the property or disable the KEYCLOAK authentication provider.");
+			logger.warn(
+				"Undefined KEYCLOAK configuration for sormas.backend.security.oidc.json. Configure the property or disable the KEYCLOAK authentication provider.");
 			return;
 		}
 
@@ -96,7 +102,7 @@ public class KeycloakService {
 
 	public void handleUserCreateEvent(@Observes UserCreateEvent userCreateEvent) {
 		Optional<Keycloak> keycloak = getKeycloak();
-		if(!keycloak.isPresent()) {
+		if (!keycloak.isPresent()) {
 			logger.warn("Cannot obtain keycloak instance. Will not create user in keycloak");
 			return;
 		}
@@ -108,7 +114,7 @@ public class KeycloakService {
 
 	public void handleUserUpdateEvent(@Observes UserUpdateEvent userUpdateEvent) {
 		Optional<Keycloak> keycloak = getKeycloak();
-		if(!keycloak.isPresent()) {
+		if (!keycloak.isPresent()) {
 			logger.warn("Cannot obtain keycloak instance. Will not update user in keycloak");
 			return;
 		}
@@ -117,7 +123,7 @@ public class KeycloakService {
 		User oldUser = userUpdateEvent.getOldUser();
 
 		Optional<UserRepresentation> userRepresentation = updateUser(keycloak.get(), oldUser, newUser);
-		if(!userRepresentation.isPresent()) {
+		if (!userRepresentation.isPresent()) {
 			logger.debug("Cannot find user in Keycloak. Will try to create it");
 			String userId = createUser(keycloak.get(), newUser);
 			sendActivationEmail(keycloak.get(), userId);
@@ -126,7 +132,7 @@ public class KeycloakService {
 
 	public void handlePasswordResetEvent(@Observes PasswordResetEvent passwordResetEvent) {
 		Optional<Keycloak> keycloak = getKeycloak();
-		if(!keycloak.isPresent()) {
+		if (!keycloak.isPresent()) {
 			logger.warn("Cannot obtain keycloak instance. Will not reset user password in keycloak");
 			return;
 		}
@@ -174,11 +180,7 @@ public class KeycloakService {
 		String[] pathSegments = response.getLocation().getPath().split("/");
 		String userId = pathSegments[pathSegments.length - 1];
 
-		boolean isRestUser = user.getUserRoles().stream().anyMatch(userRole -> UserRole.REST_USER == userRole);
-
-		if (isRestUser) {
-			addRealmRole(keycloak, userId, UserRole.REST_USER.name());
-		}
+		ensureRestRoles(keycloak, userId, user.getUserRoles(), Collections.emptySet());
 
 		return userId;
 	}
@@ -196,34 +198,35 @@ public class KeycloakService {
 
 		keycloak.realm(REALM_NAME).users().get(newUserRepresentation.getId()).update(newUserRepresentation);
 
-		boolean newUserIsRestUser = newUser.getUserRoles().stream().anyMatch(userRole -> UserRole.REST_USER == userRole);
-		boolean oldUserIsRestUser = oldUser.getUserRoles().stream().anyMatch(userRole -> UserRole.REST_USER == userRole);
-
-		if (!oldUserIsRestUser && newUserIsRestUser) {
-			addRealmRole(keycloak, newUserRepresentation.getId(), UserRole.REST_USER.name());
-		} else if (oldUserIsRestUser && !newUserIsRestUser) {
-			removeRealmRole(keycloak, newUserRepresentation.getId(), UserRole.REST_USER.name());
-		}
+		ensureRestRoles(keycloak, newUserRepresentation.getId(), newUser.getUserRoles(), oldUser.getUserRoles());
 
 		return Optional.of(newUserRepresentation);
 	}
 
-	private void addRealmRole(Keycloak keycloak, String userId, String role) {
-		RoleRepresentation roleRepresentation = keycloak.realm(REALM_NAME).roles().get(role).toRepresentation();
-		if (roleRepresentation != null) {
-			keycloak.realm(REALM_NAME).users().get(userId).roles().realmLevel().add(Collections.singletonList(roleRepresentation));
-		}
-	}
+	private void ensureRestRoles(Keycloak keycloak, String userRepresentationId, Set<UserRole> newUserRoles, Set<UserRole> oldUserRoles) {
+		Set<UserRole> newRestRoles = newUserRoles.stream().filter(REST_ROLES::contains).collect(Collectors.toSet());
+		Set<UserRole> oldRestRoles = oldUserRoles.stream().filter(REST_ROLES::contains).collect(Collectors.toSet());
 
-	private void removeRealmRole(Keycloak keycloak, String userId, String role) {
-		RoleRepresentation roleRepresentation = keycloak.realm(REALM_NAME).roles().get(role).toRepresentation();
-		if (roleRepresentation != null) {
-			keycloak.realm(REALM_NAME).users().get(userId).roles().realmLevel().remove(Collections.singletonList(roleRepresentation));
+		List<RoleRepresentation> rolesToAdd = newRestRoles.stream()
+			.filter(restRole -> !oldRestRoles.contains(restRole))
+			.map(restRole -> keycloak.realm(REALM_NAME).roles().get(restRole.name()).toRepresentation())
+			.collect(Collectors.toList());
+
+		List<RoleRepresentation> rolesToRemove = oldRestRoles.stream()
+			.filter(restRole -> !newRestRoles.contains(restRole))
+			.map(restRole -> keycloak.realm(REALM_NAME).roles().get(restRole.name()).toRepresentation())
+			.collect(Collectors.toList());
+
+		if (CollectionUtils.isNotEmpty(rolesToAdd)) {
+			keycloak.realm(REALM_NAME).users().get(userRepresentationId).roles().realmLevel().add(rolesToAdd);
+		}
+		if (CollectionUtils.isNotEmpty(rolesToRemove)) {
+			keycloak.realm(REALM_NAME).users().get(userRepresentationId).roles().realmLevel().remove(rolesToRemove);
 		}
 	}
 
 	private Optional<UserRepresentation> getUserByUsername(Keycloak keycloak, String username) {
-		List<UserRepresentation> users = keycloak.realm("SORMAS").users().search(username, true);
+		List<UserRepresentation> users = keycloak.realm(REALM_NAME).users().search(username, true);
 
 		return users.stream().findFirst();
 	}
@@ -242,7 +245,7 @@ public class KeycloakService {
 			attributes = new HashMap<>();
 		}
 
-		if(language != null) {
+		if (language != null) {
 			attributes.put(LOCALE, Collections.singletonList(language.getLocale().getLanguage()));
 		}
 	}
