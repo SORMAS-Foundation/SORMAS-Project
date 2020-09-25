@@ -81,7 +81,6 @@ public class CountsTileViewLayout extends CssLayout {
 		addComponent(totalHorizontalLayout);
 
 		HorizontalLayout conditionHorizontalLayout = new HorizontalLayout();
-		conditionHorizontalLayout.setWidth(60, Unit.PERCENTAGE);
 		conditionHorizontalLayout.addComponent(createCountRow(conditionCol, sampleCount, sampleCountDifference, Captions.Sample_specimenCondition));
 		addComponent(conditionHorizontalLayout);
 
