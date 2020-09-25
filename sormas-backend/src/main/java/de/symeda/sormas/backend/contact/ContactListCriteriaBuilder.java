@@ -29,6 +29,7 @@ import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -90,7 +91,7 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
@@ -127,7 +128,10 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseHealthFacility().get(Facility.UUID),
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
 			contact.get(Contact.CHANGE_DATE),
-			contact.get(Contact.EXTERNAL_ID));
+			contact.get(Contact.EXTERNAL_ID),
+			contact.get(AbstractDomainObject.ID),
+			contact.get(AbstractDomainObject.CREATION_DATE),
+			contact.get(Contact.COMPLETENESS));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
@@ -163,6 +167,9 @@ public class ContactListCriteriaBuilder {
 		case ContactJurisdictionDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
 			break;
+		case ContactIndexDto.ID:
+		case ContactIndexDto.CREATION_DATE:
+		case ContactIndexDto.COMPLETENESS:
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
 		}
@@ -301,5 +308,40 @@ public class ContactListCriteriaBuilder {
 	private interface OrderExpressionProvider {
 
 		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins);
+	}
+
+	public List<Selection<?>> getContactIndexSelectionsAll(Root<Contact> contact, ContactJoins joins) {
+
+		return Arrays.asList(
+				contact.get(Contact.UUID),
+				joins.getPerson().get(Person.FIRST_NAME),
+				joins.getPerson().get(Person.LAST_NAME),
+				joins.getCaze().get(Case.UUID),
+				contact.get(Contact.DISEASE),
+				contact.get(Contact.DISEASE_DETAILS),
+				joins.getCasePerson().get(Person.FIRST_NAME),
+				joins.getCasePerson().get(Person.LAST_NAME),
+				joins.getRegion().get(Region.UUID),
+				joins.getDistrict().get(District.UUID),
+				contact.get(Contact.LAST_CONTACT_DATE),
+				contact.get(Contact.CONTACT_CATEGORY),
+				contact.get(Contact.CONTACT_PROXIMITY),
+				contact.get(Contact.CONTACT_CLASSIFICATION),
+				contact.get(Contact.CONTACT_STATUS),
+				contact.get(Contact.FOLLOW_UP_STATUS),
+				contact.get(Contact.FOLLOW_UP_UNTIL),
+				joins.getContactOfficer().get(User.UUID),
+				joins.getReportingUser().get(User.UUID),
+				contact.get(Contact.REPORT_DATE_TIME),
+				joins.getCaze().get(Case.CASE_CLASSIFICATION),
+				joins.getCaseReportingUser().get(User.UUID),
+				joins.getCaseRegion().get(Region.UUID),
+				joins.getCaseDistrict().get(District.UUID),
+				joins.getCaseCommunity().get(Community.UUID),
+				joins.getCaseHealthFacility().get(Facility.UUID),
+				joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
+				contact.get(AbstractDomainObject.ID),
+				contact.get(AbstractDomainObject.CREATION_DATE),
+				contact.get(Contact.COMPLETENESS));
 	}
 }

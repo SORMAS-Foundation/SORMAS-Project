@@ -459,6 +459,18 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		super.delete(sample);
 	}
 
+	public int getSampleCountByContact(Contact contact) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Sample> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Sample.ASSOCIATED_CONTACT), contact)));
+
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
+
 	/**
 	 * Creates a filter that excludes all samples that are either {@link CoreAdo#deleted} or associated with
 	 * cases that are {@link Case#archived}.

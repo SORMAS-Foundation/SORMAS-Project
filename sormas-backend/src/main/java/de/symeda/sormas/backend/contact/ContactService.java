@@ -966,6 +966,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = null;
 		Join<Contact, Case> caze = joins.getCaze();
 		Join<Contact, Case> resultingCase = joins.getResultingCase();
+		Join<Contact, User> reportingUser = from.join(Contact.REPORTING_USER, JoinType.LEFT);
 
 		if (contactCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(contactCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
@@ -1020,6 +1021,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getFollowUpStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), contactCriteria.getFollowUpStatus()));
+		}
+		if (contactCriteria.getCreationDateFrom() != null) {
+			filter = and(cb, filter, cb.greaterThan(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(contactCriteria.getCreationDateFrom())));
+		}
+		if (contactCriteria.getCreationDateTo() != null) {
+			filter = and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(contactCriteria.getCreationDateTo())));
 		}
 		if (contactCriteria.getReportDateFrom() != null && contactCriteria.getReportDateTo() != null) {
 			filter = and(
@@ -1195,6 +1202,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.equal(joins.getCaseEvent().get(Event.UUID), contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent().getUuid()));
 		}
 
+		if (contactCriteria.getReportingUserLike() != null) {
+			String[] textFilters = contactCriteria.getReportingUserLike().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
+							cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
 		return filter;
 	}
 

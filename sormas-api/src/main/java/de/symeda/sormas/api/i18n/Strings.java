@@ -116,6 +116,8 @@ public interface Strings {
 	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmationMergeContactAndDeleteOther = "confirmationMergeContactAndDeleteOther";
+	String confirmationPickContactAndDeleteOther = "confirmationPickContactAndDeleteOther";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
 	String date = "date";
 	String day = "day";

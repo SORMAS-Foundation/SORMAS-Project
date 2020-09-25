@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.utils;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;

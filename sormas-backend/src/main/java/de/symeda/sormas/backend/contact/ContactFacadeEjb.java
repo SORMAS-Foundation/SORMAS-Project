@@ -58,6 +58,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -163,6 +166,46 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.therapy.PrescriptionCriteria;
+import de.symeda.sormas.api.therapy.PrescriptionDto;
+import de.symeda.sormas.api.therapy.TherapyReferenceDto;
+import de.symeda.sormas.api.therapy.TreatmentCriteria;
+import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.therapy.Prescription;
+import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
+import de.symeda.sormas.backend.therapy.Treatment;
+import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
@@ -210,6 +253,14 @@ public class ContactFacadeEjb implements ContactFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private SampleService sampleService;
+	@EJB
+	private SampleFacadeEjbLocal sampleFacade;
+	@EJB
+	private PersonFacadeEjbLocal personFacade;
+	@EJB
+	private PathogenTestFacadeEjbLocal sampleTestFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -309,6 +360,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			if (entity.getCaze() != null) {
 				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
 			}
+			entity.setCompleteness(calculateCompleteness(entity));
 		}
 
 		return toDto(entity);
@@ -1507,6 +1559,248 @@ public class ContactFacadeEjb implements ContactFacade {
 			});
 
 		return contacts;
+	}
+
+	@Override
+	public List<ContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Contact> root = cq.from(Contact.class);
+		Root<Contact> root2 = cq.from(Contact.class);
+		Join<Contact, Person> person = root.join(Contact.PERSON, JoinType.LEFT);
+		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
+		Join<Contact, Region> region = root.join(Contact.REGION, JoinType.LEFT);
+		Join<Contact, Region> region2 = root2.join(Contact.REGION, JoinType.LEFT);
+
+		Predicate userFilter = contactService.createUserFilter(cb, cq, root2);
+		Predicate criteriaFilter = criteria != null ? contactService.buildCriteriaFilter(criteria, cb, root2) : null;
+		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
+		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
+		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
+		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
+		Predicate nameSimilarityFilter =
+				cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
+		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
+		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
+
+		Predicate cazeFilter = cb.equal(root.get(Contact.CAZE),root2.get(Contact.CAZE));
+
+		Predicate reportDateFilter = cb.lessThanOrEqualTo(
+				cb.abs(
+						cb.diff(
+								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
+								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
+				new Long(30 * 24 * 60 * 60) // 30 days
+		);
+		// Sex filter: only when sex is filled in for both Contacts
+		Predicate sexFilter = cb.or(
+				cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
+				cb.equal(person.get(Person.SEX), person2.get(Person.SEX)));
+		// Birth date filter: only when birth date is filled in for both Contacts
+		Predicate birthDateFilter = cb.or(
+				cb.or(
+						cb.isNull(person.get(Person.BIRTHDATE_DD)),
+						cb.isNull(person.get(Person.BIRTHDATE_MM)),
+						cb.isNull(person.get(Person.BIRTHDATE_YYYY)),
+						cb.isNull(person2.get(Person.BIRTHDATE_DD)),
+						cb.isNull(person2.get(Person.BIRTHDATE_MM)),
+						cb.isNull(person2.get(Person.BIRTHDATE_YYYY))),
+				cb.and(
+						cb.equal(person.get(Person.BIRTHDATE_DD), person2.get(Person.BIRTHDATE_DD)),
+						cb.equal(person.get(Person.BIRTHDATE_MM), person2.get(Person.BIRTHDATE_MM)),
+						cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));
+
+		Predicate creationDateFilter = cb.lessThan(root.get(Contact.CREATION_DATE), root2.get(Contact.CREATION_DATE));
+
+		Predicate filter = cb.and(contactService.createDefaultFilter(cb, root), contactService.createDefaultFilter(cb, root2));
+		if (userFilter != null) {
+			filter = cb.and(filter, userFilter);
+		}
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
+		if (filter != null) {
+			filter = cb.and(filter, nameSimilarityFilter);
+		} else {
+			filter = nameSimilarityFilter;
+		}
+		if (filter != null) {
+			filter = cb.and(filter, cazeFilter);
+		} else {
+			filter = cazeFilter;
+		}
+		filter = cb.and(filter, diseaseFilter);
+
+		if (!showDuplicatesWithDifferentRegion) {
+			filter = cb.and(filter, regionFilter);
+		}
+
+		filter = cb.and(filter, reportDateFilter);
+		filter = cb.and(filter, cb.or(sexFilter, birthDateFilter));
+		filter = cb.and(filter, creationDateFilter);
+
+		cq.where(filter);
+		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID));
+		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
+
+		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
+		List<ContactIndexDto[]> resultList = new ArrayList<>();
+
+		if (!foundIds.isEmpty()) {
+			CriteriaQuery<ContactIndexDto> indexContactsCq = cb.createQuery(ContactIndexDto.class);
+			Root<Contact> indexRoot = indexContactsCq.from(Contact.class);
+			selectIndexDtoFields(indexContactsCq, indexRoot);
+			indexContactsCq.where(indexRoot.get(Contact.ID).in(foundIds.stream().flatMap(Arrays::stream).collect(Collectors.toSet())));
+			Map<Long, ContactIndexDto> indexContacts =
+					em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
+
+			for (Object[] idPair : foundIds) {
+				try {
+					// Cloning is necessary here to allow us to add the same ContactIndexDto to the grid multiple times
+					ContactIndexDto parent = (ContactIndexDto) indexContacts.get(idPair[0]).clone();
+					ContactIndexDto child = (ContactIndexDto) indexContacts.get(idPair[1]).clone();
+
+					if (parent.getCompleteness() == null && child.getCompleteness() == null
+							|| parent.getCompleteness() != null
+							&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
+						resultList.add(
+								new ContactIndexDto[] {
+										parent,
+										child });
+					} else {
+						resultList.add(
+								new ContactIndexDto[] {
+										child,
+										parent });
+					}
+				} catch (CloneNotSupportedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+
+		return resultList;
+	}
+
+	private void selectIndexDtoFields(CriteriaQuery<ContactIndexDto> cq, Root<Contact> root) {
+		List<Selection<?>> selections = listCriteriaBuilder.getContactIndexSelectionsAll(root, new ContactJoins(root));
+		cq.multiselect(selections);
+
+	}
+
+	public void updateCompleteness(String contactUuid) {
+
+		Contact contact = contactService.getByUuid(contactUuid);
+		contact.setCompleteness(calculateCompleteness(contact));
+		contactService.ensurePersisted(contact);
+	}
+
+	private float calculateCompleteness(Contact contact) {
+
+		float completeness = 0f;
+
+		if (contact.getLastContactDate() != null) { // annuler le suivi abandon
+			completeness += 0.2f;
+		}
+		if (contact.getRelationToCase() != null) {
+			completeness += 0.2f;
+		}
+		if (contact.getPerson().getNationalHealthId() != null) {
+			completeness += 0.2f;
+		}
+		if (sampleService.getSampleCountByContact(contact) > 0) {
+			completeness += 0.10f;
+		}
+		if (contact.getVisits().size() > 0) {
+			completeness += 0.10f;
+		}
+		if (contact.getPerson().getBirthdateYYYY() != null || contact.getPerson().getApproximateAge() != null) {
+			completeness += 0.05f;
+		}
+		if (contact.getPerson().getSex() != null) {
+			completeness += 0.05f;
+		}
+		if(contact.getCaseOrEventInformation() != null){
+			completeness += 0.05f;
+		}
+		if(contact.getRelationDescription() != null){
+			completeness += 0.05f;
+		}
+		return completeness;
+	}
+
+	@Override
+	public void mergeContact(String leadUuid, String otherUuid) {
+		mergeContact(getContactByUuid(leadUuid), getContactByUuid(otherUuid), false);
+	}
+
+	private void mergeContact(ContactDto leadContact, ContactDto otherContact, boolean cloning) {
+		// 1 Merge Dtos
+		// 1.1 Contact
+		fillDto(leadContact, otherContact, cloning);
+		saveContact(leadContact, !cloning);
+
+		// 1.2 Person
+		if (!cloning) {
+			PersonDto leadPerson = personFacade.getPersonByUuid(leadContact.getPerson().getUuid());
+			PersonDto otherPerson = personFacade.getPersonByUuid(otherContact.getPerson().getUuid());
+			fillDto(leadPerson, otherPerson, cloning);
+			personFacade.savePerson(leadPerson);
+		} else {
+			assert (DataHelper.equal(leadContact.getPerson().getUuid(), otherContact.getPerson().getUuid()));
+		}
+
+		// 2 Change ContactReference
+		Contact leadCont = contactService.getByUuid(leadContact.getUuid());
+		Contact otherCont = contactService.getByUuid(otherContact.getUuid());
+
+
+		// 2.2 Samples
+		List<Sample> samples = sampleService.findBy(new SampleCriteria().contact(otherCont.toReference()), null);
+		for (Sample sample : samples) {
+			if (cloning) {
+				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), leadCont.toReference());
+				fillDto(newSample, SampleFacadeEjb.toDto(sample), cloning);
+				sampleFacade.saveSample(newSample, false);
+
+				// 2.2.1 Pathogen Tests
+				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
+					fillDto(newPathogenTest, PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
+					sampleTestFacade.savePathogenTest(newPathogenTest);
+
+				}
+			} else {
+				// simply move existing entities to the merge target
+				sample.setAssociatedContact(leadCont);
+				sampleService.ensurePersisted(sample);
+			}
+		}
+
+
+		// 2.4 Tasks
+		if (!cloning) {
+			// simply move existing entities to the merge target
+
+			List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(otherCont.getUuid())), true);
+			for (Task task : tasks) {
+				task.setContact(leadCont);
+				taskService.ensurePersisted(task);
+			}
+		}
+	}
+
+	@Override
+	public void deleteContactAsDuplicate(String contactUuid, String duplicateOfContactUuid) {
+
+		Contact contact = contactService.getByUuid(contactUuid);
+		Contact duplicateOfCase = contactService.getByUuid(duplicateOfContactUuid);
+		contact.setDuplicateOf(duplicateOfCase);
+		contactService.ensurePersisted(contact);
+
+		deleteContact(contactUuid);
 	}
 
 	@Override
