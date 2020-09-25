@@ -200,7 +200,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PathogenTest, PathogenTest> sampleTestPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PathogenTest> sampleTestPath) {
 
 		// whoever created the sample the sample test is associated with is allowed to
 		// access it

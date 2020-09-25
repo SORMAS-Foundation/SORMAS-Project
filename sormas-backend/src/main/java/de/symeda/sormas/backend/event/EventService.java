@@ -294,7 +294,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
 		return createUserFilter(cb, cq, eventPath, null);
 	}
 
@@ -302,7 +302,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	public Predicate createUserFilter(
 		CriteriaBuilder cb,
 		CriteriaQuery cq,
-		From<Event, Event> eventPath,
+		From<?, Event> eventPath,
 		EventUserFilterCriteria eventUserFilterCriteria) {
 
 		final User currentUser = getCurrentUser();
@@ -353,7 +353,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return filter;
 	}
 
-	public Predicate createCaseFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath) {
+	public Predicate createCaseFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
 
 		Predicate filter = null;
 

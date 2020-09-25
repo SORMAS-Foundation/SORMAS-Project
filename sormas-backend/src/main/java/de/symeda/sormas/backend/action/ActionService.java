@@ -106,7 +106,7 @@ public class ActionService extends AbstractAdoService<Action> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Action, Action> actionPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Action> actionPath) {
 
 		// National users can access all actions in the system
 		User currentUser = getCurrentUser();
