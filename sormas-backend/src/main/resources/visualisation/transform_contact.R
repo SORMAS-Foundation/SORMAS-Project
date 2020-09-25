@@ -65,7 +65,7 @@ if (idContString == "") idContString = "NULL"
 #query all relevant contacts
 sql_edge = "select distinct cs.person_id case_pid, ct.person_id contact_pid,
 	'ContactProximity.' || ct.contactproximity as contactproximity, 'ContactStatus.' || ct.contactstatus as contactstatus
-from public.contact ct 
+from public.contact ct
 	join public.cases cs on ct.caze_id = cs.id
 where ct.id in (%s)"
 
@@ -80,7 +80,7 @@ sql_node = "with clean_ct as (
 clean_cs as (
 	select *
 	from public.cases
-	where deleted = FALSE 
+	where deleted = FALSE
 		and caseclassification != 'NO_CASE'
 ),
 node as (
@@ -92,7 +92,7 @@ node as (
 union
 	--caze
 	select distinct p.id, cs.reportdate, cs.uuid, cs.caseclassification
-	from clean_ct ct 
+	from clean_ct ct
 		join public.cases cs on ct.caze_id = cs.id
 		join public.person p on cs.person_id = p.id
 )

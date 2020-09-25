@@ -185,6 +185,9 @@ public class Person extends PseudonymizableAdo {
 
 	private List<Location> addresses = new ArrayList<>();
 
+	@Column
+	private String externalId;
+
 	public Person() {
 	}
 
@@ -595,4 +598,8 @@ public class Person extends PseudonymizableAdo {
 	public void setAddresses(List<Location> addresses) {
 		this.addresses = addresses;
 	}
+
+	public String getExternalId() { return externalId; }
+
+	public void setExternalId(String externalId) { this.externalId = externalId; }
 }

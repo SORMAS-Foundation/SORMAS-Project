@@ -726,6 +726,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				case FollowUpDto.UUID:
 				case ContactFollowUpDto.LAST_CONTACT_DATE:
 				case FollowUpDto.REPORT_DATE:
+					expression = contact.get(Contact.REPORT_DATE_TIME);
+					break;
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
 					break;

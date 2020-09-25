@@ -166,6 +166,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return normalizeLocaleString(locale);
 	}
 
+	@Override
+	public String getCountryCode() {
+		String locale = getProperty(COUNTRY_LOCALE, Language.EN.getLocale().toString());
+		String normalizedLocale = normalizeLocaleString(locale);
+
+		if (normalizedLocale.contains("-")) {
+			return normalizedLocale.substring(normalizedLocale.lastIndexOf("-") + 1);
+		} else {
+			return normalizedLocale;
+		}
+	}
+
 	static String normalizeLocaleString(String locale) {
 
 		locale = locale.trim();

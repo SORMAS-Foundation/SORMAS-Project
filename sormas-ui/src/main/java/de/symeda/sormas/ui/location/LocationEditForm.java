@@ -113,7 +113,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		if (!isConfiguredServer("ch")) {
 			addressType.removeAllItems();
 			addressType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
-			addressType.addItems(PersonAddressType.getValues());
+			addressType.addItems(PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode()));
 		}
 		TextField addressTypeDetails = addField(LocationDto.ADDRESS_TYPE_DETAILS, TextField.class);
 		addressTypeDetails.setVisible(false);
@@ -166,7 +166,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
-			.map(this::getField)
+			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
 	}
 

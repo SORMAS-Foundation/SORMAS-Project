@@ -42,7 +42,7 @@ public interface Strings {
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
-	String confirmationAlsoExtendQuarantine = "confirmationAlsoExtendQuarantine";
+	String confirmationAlsoAdjustQuarantine = "confirmationAlsoAdjustQuarantine";
 	String confirmationArchiveArea = "confirmationArchiveArea";
 	String confirmationArchiveAreas = "confirmationArchiveAreas";
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
@@ -106,6 +106,8 @@ public interface Strings {
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
+	String date = "date";
 	String day = "day";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
@@ -168,6 +170,7 @@ public interface Strings {
 	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
+	String headingAdjustQuarantine = "headingAdjustQuarantine";
 	String headingAllContacts = "headingAllContacts";
 	String headingAnimalContacts = "headingAnimalContacts";
 	String headingArchiveCampaign = "headingArchiveCampaign";
@@ -308,6 +311,7 @@ public interface Strings {
 	String headingMissingDateFilter = "headingMissingDateFilter";
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
+	String headingNetworkDiagramTooManyContacts = "headingNetworkDiagramTooManyContacts";
 	String headingNewCases = "headingNewCases";
 	String headingNewEvents = "headingNewEvents";
 	String headingNewPassword = "headingNewPassword";
@@ -652,6 +656,7 @@ public interface Strings {
 	String min = "min";
 	String mmhg = "mmhg";
 	String month = "month";
+	String nameOf = "nameOf";
 	String no = "no";
 	String none = "none";
 	String notAnswered = "notAnswered";
@@ -688,6 +693,7 @@ public interface Strings {
 	String notificationVisitCompleted = "notificationVisitCompleted";
 	String notificationVisitCompletedSubject = "notificationVisitCompletedSubject";
 	String notSpecified = "notSpecified";
+	String number = "number";
 	String numberEight = "numberEight";
 	String numberEleven = "numberEleven";
 	String numberFive = "numberFive";
@@ -749,13 +755,16 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
+	String text = "text";
 	String toCase = "toCase";
 	String total = "total";
+	String unsavedChanges_cancel = "unsavedChanges.cancel";
 	String unsavedChanges_discard = "unsavedChanges.discard";
 	String unsavedChanges_save = "unsavedChanges.save";
 	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";
 	String unsavedChanges_warningTitle = "unsavedChanges.warningTitle";
 	String until = "until";
+	String warningNetworkDiagramTooManyContacts = "warningNetworkDiagramTooManyContacts";
 	String week = "week";
 	String weekShort = "weekShort";
 	String year = "year";

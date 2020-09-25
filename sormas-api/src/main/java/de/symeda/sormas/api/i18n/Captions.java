@@ -111,6 +111,7 @@ public interface Captions {
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
+	String Area_archived = "Area.archived";
 	String Area_externalId = "Area.externalId";
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
@@ -366,6 +367,7 @@ public interface Captions {
 	String columnDiseaseShort = "columnDiseaseShort";
 	String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
 	String community = "community";
+	String Community_archived = "Community.archived";
 	String Community_externalID = "Community.externalID";
 	String communityActiveCommunities = "communityActiveCommunities";
 	String communityAllCommunities = "communityAllCommunities";
@@ -443,6 +445,9 @@ public interface Captions {
 	String Contact_relationToCase = "Contact.relationToCase";
 	String Contact_reportDateTime = "Contact.reportDateTime";
 	String Contact_reportingUser = "Contact.reportingUser";
+	String Contact_reportLat = "Contact.reportLat";
+	String Contact_reportLatLonAccuracy = "Contact.reportLatLonAccuracy";
+	String Contact_reportLon = "Contact.reportLon";
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
 	String Contact_tracingApp = "Contact.tracingApp";
@@ -646,6 +651,7 @@ public interface Captions {
 	String DiseaseBurden_outbreakDistrictCount = "DiseaseBurden.outbreakDistrictCount";
 	String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
 	String district = "district";
+	String District_archived = "District.archived";
 	String District_epidCode = "District.epidCode";
 	String District_externalID = "District.externalID";
 	String District_growthRate = "District.growthRate";
@@ -831,6 +837,7 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
+	String Facility_archived = "Facility.archived";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
 	String Facility_district = "Facility.district";
@@ -840,6 +847,7 @@ public interface Captions {
 	String Facility_name = "Facility.name";
 	String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
+	String Facility_publicOwnership = "Facility.publicOwnership";
 	String Facility_region = "Facility.region";
 	String Facility_type = "Facility.type";
 	String Facility_typeGroup = "Facility.typeGroup";
@@ -1031,6 +1039,7 @@ public interface Captions {
 	String Person_educationDetails = "Person.educationDetails";
 	String Person_educationType = "Person.educationType";
 	String Person_emailAddress = "Person.emailAddress";
+	String Person_externalId = "Person.externalId";
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
@@ -1123,6 +1132,7 @@ public interface Captions {
 	String PrescriptionExport_caseUuid = "PrescriptionExport.caseUuid";
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String region = "region";
+	String Region_archived = "Region.archived";
 	String Region_epidCode = "Region.epidCode";
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";
