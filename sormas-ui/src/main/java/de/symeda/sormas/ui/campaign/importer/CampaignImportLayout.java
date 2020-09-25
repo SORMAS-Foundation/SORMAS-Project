@@ -1,42 +1,39 @@
 package de.symeda.sormas.ui.campaign.importer;
 
 import com.opencsv.exceptions.CsvValidationException;
-import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
+import de.symeda.sormas.ui.importer.ImportLayoutComponent;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.function.Consumer;
-import javax.ejb.EJB;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.rmi.PortableRemoteObject;
 
 
 public class CampaignImportLayout extends AbstractImportLayout {
 
 
-    public CampaignImportLayout(String campaignFormUuid) throws IOException, NamingException {
+    public CampaignImportLayout(String campaignFormUuid, CampaignReferenceDto campaignReferenceDto) throws IOException, NamingException {
         super();
-
-        addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 
         ImportFacade importFacade = FacadeProvider.getImportFacade();
         importFacade.generateCampaignFormImportTemplateFile(campaignFormUuid);
 
+        ComboBox cbCampaign = addCampaignDropdown(1, campaignReferenceDto);
         addDownloadImportTemplateComponent(
                 2,
                 importFacade.getCampaignFormImportTemplateFilePath(),
                 "sormas_import_campaign_form_data_template.csv");
-
         addImportCsvComponent(3, new ImportReceiver("_campaign_import_", new Consumer<File>() {
 
             @Override
@@ -44,7 +41,7 @@ public class CampaignImportLayout extends AbstractImportLayout {
                 resetDownloadErrorReportButton();
 
                 try {
-                    CampaignFormDataImporter importer = new CampaignFormDataImporter(file, false, currentUser, campaignFormUuid);
+                    CampaignFormDataImporter importer = new CampaignFormDataImporter(file, false, currentUser, campaignFormUuid, (CampaignReferenceDto) cbCampaign.getValue());
                     importer.startImport(new Consumer<StreamResource>() {
 
                         @Override
@@ -62,6 +59,33 @@ public class CampaignImportLayout extends AbstractImportLayout {
             }
         }));
         addDownloadErrorReportComponent(4);
+        upload.setEnabled(false);
+        this.getComponent(2).setEnabled(false);
     }
 
+    protected void addDownloadImportTemplateComponent(int step, String templateFilePath, String templateFileName) {
+        super.addDownloadImportTemplateComponent(step, templateFilePath, templateFileName);
+
+    }
+
+    protected ComboBox addCampaignDropdown(int step, CampaignReferenceDto campaignReferenceDto) {
+        String headline = I18nProperties.getString(Strings.headingImportCsvFile);
+        String infoText = I18nProperties.getString(Strings.infoImportCsvFile);
+        ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
+        addComponent(importCsvComponent);
+        ComboBox cbCampaign = new ComboBox();
+        cbCampaign.setItems(FacadeProvider.getCampaignFacade().getAllCampaignsAsReference());
+        cbCampaign.setValue(campaignReferenceDto);
+        cbCampaign.addValueChangeListener(event -> {
+            if (Objects.nonNull(cbCampaign.getValue())) {
+                this.getComponent(2).setEnabled(true);
+                upload.setEnabled(true);
+            } else {
+                this.getComponent(2).setEnabled(false);
+                upload.setEnabled(false);
+            }
+        });
+        addComponent(cbCampaign);
+        return cbCampaign;
+    }
 }
