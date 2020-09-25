@@ -44,8 +44,6 @@ public class ServerAccessDataService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerAccessDataService.class);
 
-	private static final String SERVER_ACCESS_DATA_FILE_NAME_TPL = "%s-server-access-data.csv";
-
 	private static final String ORGANIZATION_LIST_FILE_NAME = "organization-list.csv";
 
 	@Inject
@@ -59,8 +57,7 @@ public class ServerAccessDataService {
 			return Optional.empty();
 		}
 
-		String serverAccessConfigFileName = String.format(SERVER_ACCESS_DATA_FILE_NAME_TPL, sormasToSormasConfig.getOrganizationId());
-		Path inputFile = Paths.get(configPath, serverAccessConfigFileName);
+		Path inputFile = Paths.get(configPath, sormasToSormasConfig.getServerAccessDataFileName());
 
 		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
 			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {

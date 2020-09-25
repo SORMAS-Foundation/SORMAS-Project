@@ -23,11 +23,11 @@ echo "# SORMAS TO SORMAS CERTIFICATE IMPORT"
 echo "# This script imports a certificate into the local truststore, to be used for SORMAS2SORMAS communication"
 echo "# If anything goes wrong, please consult the sormas to sormas import guide or get in touch with the developers."
 
-#if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
-LINUX=true
-#else
-#	LINUX=false
-#fi
+if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
+  LINUX=true
+else
+	LINUX=false
+fi
 
 # DIRECTORIES
 if [[ ${LINUX} = true ]]; then
@@ -52,22 +52,19 @@ else
   fi
 fi
 
-if [[ -z "${SORMAS_PROPERTIES}" ]]; then
-  DEFAULT_SORMAS_PROPERTIES_PATH="${ROOT_PREFIX}/opt/domains/sormas/sormas.properties"
-  if [[ -f "${DEFAULT_SORMAS_PROPERTIES_PATH}" ]]; then
-    SORMAS_PROPERTIES="${DEFAULT_SORMAS_PROPERTIES_PATH}"
+if [[ ! -d "${SORMAS_DOMAIN_PATH}" ]]; then
+  DEFAULT_SORMAS_DOMAIN_PATH="${ROOT_PREFIX}/opt/domains/sormas";
+
+  if [[ -d "${DEFAULT_SORMAS_DOMAIN_PATH}" ]]; then
+    SORMAS_DOMAIN_PATH="${DEFAULT_SORMAS_DOMAIN_PATH}";
   else
-    while [[ ! -f "${SORMAS_PROPERTIES}" ]]; do
-		  read -r -p "Please specify a valid sormas properties path: " SORMAS_PROPERTIES
+     while [[ ! -d "${SORMAS_DOMAIN_PATH}" ]]; do
+		  read -r -p "Please specify a valid SORMAS domain path: " SORMAS_DOMAIN_PATH
 	  done
-	  export SORMAS_PROPERTIES
-  fi
-else
-  if [[ ! -f "${SORMAS_PROPERTIES}" ]]; then
-    echo "sormas properties file not found: ${SORMAS_PROPERTIES}"
-    exit 1
   fi
 fi
+
+SORMAS_PROPERTIES="${SORMAS_DOMAIN_PATH}/sormas.properties"
 
 ORGANIZATION_LIST_FILE_NAME=organization-list.csv
 TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12
@@ -97,12 +94,18 @@ while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PA
   echo
 done
 
-SORMAS_S2S_ORGANIZATION_ID="";
-while [[ -z "${SORMAS_S2S_ORGANIZATION_ID}" ]]; do
-  read -p "Please provide the organization ID of the certificate owner: " SORMAS_S2S_ORGANIZATION_ID
+while [[ -z "${SORMAS_S2S_HOST_NAME}" ]]; do
+  read -p "Please provide the Hostname of the certificate owner: " SORMAS_S2S_HOST_NAME
 done
 
-CRT_FILE_NAME=${SORMAS_S2S_ORGANIZATION_ID}.sormas2sormas.cert.crt;
+read -p "Please provide the https port of the server (443): " SORMAS_S2S_HTTPS_PORT
+if [[ -z "${SORMAS_S2S_HTTPS_PORT}" ]]; then
+  SORMAS_S2S_HOST_AND_PORT="${SORMAS_S2S_HOST_NAME}:443";
+else
+  SORMAS_S2S_HOST_AND_PORT="${SORMAS_S2S_HOST_NAME}:${SORMAS_S2S_HTTPS_PORT}";
+fi
+
+CRT_FILE_NAME=${SORMAS_S2S_HOST_NAME}.sormas2sormas.cert.crt;
 CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
 
 if [[ ! -f "${CRT_FILE}" ]]; then
@@ -111,7 +114,7 @@ if [[ ! -f "${CRT_FILE}" ]]; then
   exit 1;
 fi
 
-CSV_FILE_NAME=${SORMAS_S2S_ORGANIZATION_ID}-server-access-data.csv;
+CSV_FILE_NAME=${SORMAS_S2S_HOST_NAME//./-}-server-access-data.csv;
 CSV_FILE=${SORMAS2SORMAS_DIR}/${CSV_FILE_NAME};
 if [[ ! -f "${CSV_FILE}" ]]; then
   echo "The file ${CSV_FILE_NAME} not found in ${SORMAS2SORMAS_DIR} folder."
@@ -119,11 +122,10 @@ if [[ ! -f "${CSV_FILE}" ]]; then
   exit 1;
 fi
 
-
-
 # import crt
 echo "Importing certificate into truststore..."
-keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias ${SORMAS_S2S_ORGANIZATION_ID} -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
+ALIAS=$(openssl x509 -noout -subject -nameopt multiline -in "${CRT_FILE}" | sed -n 's/ *commonName *= //p')
+keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias "${ALIAS}" -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
 
 if [[ ${NEW_TRUSTSTORE} = true ]]; then
   # remove existing properties and empty spaces at end of file
@@ -142,9 +144,24 @@ fi
 
 echo "Updating server list CSV"
 
-( head -1 $CSV_FILE ) >> ${ORGANIZATION_LIST_FILE}
+( head -1 "$CSV_FILE" ) >> "${ORGANIZATION_LIST_FILE}"
+
+echo "Importing SSL certificate"
+if [[ -z "$SORMAS_DOMAIN_KEY_STORE_PASS" ]]; then
+  read -p "Please provide the password of the keystore in the SORMAS domain (changeit): " SORMAS_DOMAIN_KEY_STORE_PASS;
+
+  if [[ -z "$SORMAS_DOMAIN_KEY_STORE_PASS" ]]; then
+    SORMAS_DOMAIN_KEY_STORE_PASS="changeit";
+  fi
+fi
+
+SORMAS_S2S_SSL_CERT="tmp_${SORMAS_S2S_HOST_NAME}.crt";
+SORMAS_DOMAIN_KEYSTORE="${SORMAS_DOMAIN_PATH}/config/cacerts.jks";
+
+keytool -delete -alias "${SORMAS_S2S_HOST_NAME}" -keystore "${SORMAS_DOMAIN_KEYSTORE}" -storepass "${SORMAS_DOMAIN_KEY_STORE_PASS}" > dev.null
+openssl s_client -showcerts -servername "${SORMAS_S2S_HOST_NAME}" -connect "${SORMAS_S2S_HOST_AND_PORT}" </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${SORMAS_S2S_SSL_CERT}"
+keytool -importcert -trustcacerts -noprompt -keystore "${SORMAS_DOMAIN_KEYSTORE}" -alias "${SORMAS_S2S_HOST_NAME}" -storepass "${SORMAS_DOMAIN_KEY_STORE_PASS}" -file "${SORMAS_S2S_SSL_CERT}"
+
+rm -f SORMAS_S2S_SSL_CERT
 
 echo "The script finished executing. Please check for any errors."
-
-#openssl s_client -showcerts -servername second.sormas.com -connect second.sormas.com:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > certificate.cer
-# keytool -importcert -trustcacerts -noprompt -keystore ~/Work/payara5_194/glassfish/domains/sormas/config/cacerts.jks -alias secondsormas -storepass changeit -file certificate.cer

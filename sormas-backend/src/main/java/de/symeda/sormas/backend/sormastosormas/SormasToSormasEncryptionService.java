@@ -25,6 +25,7 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -49,6 +50,8 @@ public class SormasToSormasEncryptionService {
 
 	@Inject
 	protected SormasToSormasConfig sormasToSormasConfig;
+	@EJB
+	protected ServerAccessDataService serverAccessDataService;
 
 	public byte[] encrypt(byte[] data, String instanceID) throws SormasToSormasException {
 		try {
@@ -58,7 +61,8 @@ public class SormasToSormasEncryptionService {
 			String keystorePass = sormasToSormasConfig.getKeystorePass();
 
 			KeyStore keystore = getKeyStore(keystorePath, keystorePass);
-			String organizationId = sormasToSormasConfig.getOrganizationId();
+			String organizationId = getOrganizationId();
+
 			X509Certificate signerCertificate = (X509Certificate) keystore.getCertificate(organizationId);
 			PrivateKey privateKey = (PrivateKey) keystore.getKey(organizationId, keystorePass.toCharArray());
 
@@ -81,7 +85,7 @@ public class SormasToSormasEncryptionService {
 			String keystorePass = sormasToSormasConfig.getKeystorePass();
 			KeyStore keystore = getKeyStore(keystorePath, keystorePass);
 
-			String organizationId = sormasToSormasConfig.getOrganizationId();
+			String organizationId = getOrganizationId();
 			X509Certificate recipientCertificate = (X509Certificate) keystore.getCertificate(organizationId);
 			PrivateKey recipientPrivateKey = (PrivateKey) keystore.getKey(organizationId, keystorePass.toCharArray());
 
@@ -101,5 +105,11 @@ public class SormasToSormasEncryptionService {
 		KeyStore keystore = KeyStore.getInstance("pkcs12");
 		keystore.load(new FileInputStream(keystorePath.toFile()), keystorePass.toCharArray());
 		return keystore;
+	}
+
+	private String getOrganizationId() throws SormasToSormasException {
+		return serverAccessDataService.getServerAccessData()
+			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated)))
+			.getId();
 	}
 }

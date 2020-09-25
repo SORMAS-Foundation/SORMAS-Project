@@ -90,7 +90,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ACCESS_CN = "default";
+	public static final String DEFAULT_SERVER_ACCESS_DATA_CSV = "default-server-access-data.csv";
 	public static final String SECOND_SERVER_ACCESS_CN = "second";
+	public static final String SECOND_SERVER_ACCESS_DATA_CSV = "second-server-access-data.csv";
 	public static final String SECOND_SERVER_REST_URL = "second.sormas.com";
 	public static final String SECOND_SERVER_REST_PASSWORD = "RestPasswoRdish";
 
@@ -600,7 +602,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
 
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getOrganizationId()).thenReturn(DEFAULT_SERVER_ACCESS_CN);
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getServerAccessDataFileName()).thenReturn(DEFAULT_SERVER_ACCESS_DATA_CSV);
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("default.sormas2sormas.keystore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certPass");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
@@ -611,7 +613,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccesssecond");
 
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getOrganizationId()).thenReturn(SECOND_SERVER_ACCESS_CN);
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getServerAccessDataFileName()).thenReturn(SECOND_SERVER_ACCESS_DATA_CSV);
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("second.sormas2sormas.keystore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certiPass");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");

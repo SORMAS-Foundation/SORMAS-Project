@@ -633,19 +633,21 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	private void sendEntityToSormas(Object entity, String endpoint, SormasToSormasOptionsDto options) throws SormasToSormasException {
 
-		OrganizationServerAccessData targetServer = getOrganizationServerAccessData(options.getOrganization().getUuid())
+		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData()
+			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
+		OrganizationServerAccessData targetServerAccessData = getOrganizationServerAccessData(options.getOrganization().getUuid())
 			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 
-		String userCredentials = StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + targetServer.getRestUserPassword();
+		String userCredentials = StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + targetServerAccessData.getRestUserPassword();
 
 		Response response;
 		try {
-			byte[] encryptedEntity = encryptionService.encrypt(objectMapper.writeValueAsBytes(entity), targetServer.getId());
+			byte[] encryptedEntity = encryptionService.encrypt(objectMapper.writeValueAsBytes(entity), targetServerAccessData.getId());
 			response = sormasToSormasRestClient.post(
-				targetServer.getHostName(),
+				targetServerAccessData.getHostName(),
 				endpoint,
 				new String(Base64.getEncoder().encode(userCredentials.getBytes())),
-				new SormasToSormasEncryptedDataDto(sormasToSormasConfig.getOrganizationId(), encryptedEntity));
+				new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedEntity));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Unable to send data sormas", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));

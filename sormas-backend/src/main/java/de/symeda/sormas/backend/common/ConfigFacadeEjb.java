@@ -95,7 +95,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
 
 	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
-	private static final String SORMAS2SORMAS_ORGANIZATION_ID = "sormas2sormas.organizationId";
+	private static final String SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME = "sormas2sormas.serverAccessDataFileName";
 	private static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
 	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
@@ -363,7 +363,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public SormasToSormasConfig getSormasToSormasConfig() {
 		SormasToSormasConfig config = new SormasToSormasConfig();
 		config.setPath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
-		config.setOrganizationId(getProperty(SORMAS2SORMAS_ORGANIZATION_ID, null));
+		config.setServerAccessDataFileName(getProperty(SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME, null));
 		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));
 		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
