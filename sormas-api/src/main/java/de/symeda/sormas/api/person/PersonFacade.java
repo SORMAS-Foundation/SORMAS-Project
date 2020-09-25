@@ -17,15 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Remote;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-
-import javax.ejb.Remote;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Remote
 public interface PersonFacade {
@@ -38,6 +39,8 @@ public interface PersonFacade {
 
 	PersonDto getPersonByUuid(String uuid);
 
+	JournalPersonDto getPersonForJournal(String Uuid);
+
 	PersonDto savePerson(PersonDto dto);
 
 	void validate(PersonDto dto);
@@ -45,8 +48,6 @@ public interface PersonFacade {
 	List<String> getAllUuids();
 
 	List<PersonDto> getByUuids(List<String> uuids);
-
-	PersonIndexDto getIndexDto(String uuid);
 
 	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 
@@ -61,4 +62,11 @@ public interface PersonFacade {
 	Boolean isValidPersonUuid(String personUuid);
 
 	List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since);
+
+	List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomsJournal);
+
+	Date getLatestFollowUpEndDateByUuid(String Uuid);
+
+	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
+
 }

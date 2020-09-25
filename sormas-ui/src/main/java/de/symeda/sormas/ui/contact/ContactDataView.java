@@ -41,11 +41,12 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
-import de.symeda.sormas.ui.samples.SampleListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
@@ -64,6 +65,8 @@ public class ContactDataView extends AbstractContactView {
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
 
+	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
+
 	public ContactDataView() {
 		super(VIEW_NAME);
 	}
@@ -80,7 +83,7 @@ public class ContactDataView extends AbstractContactView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
 
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
@@ -92,7 +95,7 @@ public class ContactDataView extends AbstractContactView {
 		container.addComponent(layout);
 
 		Boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
-		CommitDiscardWrapperComponent<?> editComponent =
+		editComponent =
 			ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, isInJurisdiction);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);

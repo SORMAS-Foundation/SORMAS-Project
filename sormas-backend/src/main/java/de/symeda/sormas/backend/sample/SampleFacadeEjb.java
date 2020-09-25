@@ -17,39 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -78,7 +51,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
-import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
@@ -108,6 +80,33 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
@@ -261,11 +260,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		final Root<Sample> sample = cq.from(Sample.class);
 
-		@SuppressWarnings({
-			"unchecked",
-			"rawtypes" })
-		final QueryContext qc = new QueryContext(cb, cq, sample);
-
 		SampleJoins joins = new SampleJoins(sample);
 
 		final Join<Sample, Case> caze = joins.getCaze();
@@ -286,14 +280,16 @@ public class SampleFacadeEjb implements SampleFacade {
 			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE_DETAILS)).otherwise(event.get(Event.DISEASE_DETAILS)));
 
 		Expression<Object> districtSelect = cb.selectCase()
-			.when(cb.isNotNull(caseDistrict), caseDistrict.get(District.UUID))
+			.when(cb.isNotNull(caseDistrict), caseDistrict.get(District.NAME))
 			.otherwise(
 				cb.selectCase()
-					.when(cb.isNotNull(contactDistrict), contactDistrict.get(District.UUID))
+					.when(cb.isNotNull(contactDistrict), contactDistrict.get(District.NAME))
 					.otherwise(
 						cb.selectCase()
-							.when(cb.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.UUID))
-							.otherwise(eventDistrict.get(District.UUID))));
+							.when(cb.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.NAME))
+							.otherwise(eventDistrict.get(District.NAME))));
+
+		cq.distinct(true);
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -324,14 +320,11 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.PATHOGEN_TEST_RESULT),
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
-				joins.getCaseDistrict().get(Region.NAME),
-				joins.getContactDistrict().get(Region.NAME),
-				joins.getContactCaseDistrict().get(Region.NAME),
+				districtSelect,
 				joins.getReportingUser().get(User.UUID),
 				joins.getLab().get(Facility.UUID)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
-		selections.add(joins.getEventDistrict().get(District.NAME));
 		selections.addAll(getEventJurisdictionSelections(joins));
 
 		cq.multiselect(selections);
@@ -411,12 +404,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer
-			.pseudonymizeDtoCollection(
-				SampleIndexDto.class,
-				samples,
-				s -> sampleJurisdictionChecker.isInJurisdictionOrOwned(s.getJurisdiction()),
-				null);
+		pseudonymizer.pseudonymizeDtoCollection(
+			SampleIndexDto.class,
+			samples,
+			s -> sampleJurisdictionChecker.isInJurisdictionOrOwned(s.getJurisdiction()),
+			null);
 
 		return samples;
 	}
@@ -556,17 +548,23 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCasePersonAddressDistrict().get(District.NAME),
 				joins.getCasePersonAddressCommunity().get(Community.NAME),
 				joins.getCasePersonAddress().get(Location.CITY),
-				joins.getCasePersonAddress().get(Location.ADDRESS),
+				joins.getCasePersonAddress().get(Location.STREET),
+				joins.getCasePersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getCasePersonAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getContactPersonAddressRegion().get(Region.NAME),
 				joins.getContactPersonAddressDistrict().get(District.NAME),
 				joins.getContactPersonAddressCommunity().get(Community.NAME),
 				joins.getContactPersonAddress().get(Location.CITY),
-				joins.getContactPersonAddress().get(Location.ADDRESS),
+				joins.getContactPersonAddress().get(Location.STREET),
+				joins.getContactPersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getContactPersonAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getEventRegion().get(Region.NAME),
 				joins.getEventDistrict().get(District.NAME),
 				joins.getEventCommunity().get(Community.NAME),
 				joins.getEventLocation().get(Location.CITY),
-				joins.getEventLocation().get(Location.ADDRESS),
+				joins.getEventLocation().get(Location.STREET),
+				joins.getEventLocation().get(Location.HOUSE_NUMBER),
+				joins.getEventLocation().get(Location.ADDITIONAL_INFORMATION),
 				joins.getCaze().get(Case.REPORT_DATE),
 				joins.getCaze().get(Case.CASE_CLASSIFICATION),
 				joins.getCaze().get(Case.OUTCOME),
@@ -693,12 +691,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.select(cb.count(root));
-		Long count = em.createQuery(cq).getSingleResult();
-		return count;
+
+		cq.select(cb.countDistinct(root));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
@@ -839,11 +838,14 @@ public class SampleFacadeEjb implements SampleFacade {
 				sampleContact.getContactName(),
 				contactJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction()),
 				null);
-			pseudonymizer.pseudonymizeDto(
-				ContactReferenceDto.PersonName.class,
-				sampleContact.getCaseName(),
-				caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
-				null);
+
+			if (sampleContact.getCaseName() != null) {
+				pseudonymizer.pseudonymizeDto(
+					ContactReferenceDto.PersonName.class,
+					sampleContact.getCaseName(),
+					caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
+					null);
+			}
 		}
 
 		if (sampleEventParticipant != null) {
@@ -928,8 +930,10 @@ public class SampleFacadeEjb implements SampleFacade {
 			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
 		}
 
-		// Send an email to the lab user when a sample has been shipped to his lab
-		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
+		// Send an email to the lab user when a sample has been shipped to their lab
+		if (newSample.isShipped()
+			&& (existingSample == null || !existingSample.isShipped())
+			&& !StringUtils.equals(newSample.getLab().getUuid(), FacilityDto.OTHER_FACILITY_UUID)) {
 			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
 
 			for (User recipient : messageRecipients) {

@@ -74,8 +74,8 @@ public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 
 		Path domainXmlPath = writeDomainXml();
 
-		String poolName = "sormasDataPool";
-		Map<String, String> dbProperties = VisualizationFacadeEjb.getConnectionPoolProperties(domainXmlPath, poolName);
+		Map<String, String> dbProperties =
+			VisualizationFacadeEjb.getConnectionPoolProperties(domainXmlPath, VisualizationFacadeEjb.SORMAS_DATA_POOL_JNDI);
 		assertThat(dbProperties.entrySet(), hasSize(5));
 		assertThat(dbProperties, Matchers.hasEntry("user", "sormas_user"));
 		assertThat(dbProperties, Matchers.hasEntry("password", "sormas_user"));

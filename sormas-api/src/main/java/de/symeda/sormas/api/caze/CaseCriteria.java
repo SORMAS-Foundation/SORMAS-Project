@@ -24,6 +24,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -47,6 +49,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String EXCLUDE_SHARED_CASES = "excludeSharedCases";
 	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
+	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
@@ -58,6 +61,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
+	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -84,6 +89,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean mustHaveCaseManagementData;
 	private Boolean withoutResponsibleOfficer;
 	private Boolean withExtendedQuarantine;
+	private Boolean withReducedQuarantine;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
@@ -99,6 +105,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date followUpUntilTo;
 	private Date followUpUntilFrom;
 	private Date reportDateTo;
+	private FacilityTypeGroup facilityTypeGroup;
+	private FacilityType facilityType;
 
 	@Override
 	public CaseCriteria clone() {
@@ -282,6 +290,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setWithExtendedQuarantine(Boolean withExtendedQuarantine) {
 		this.withExtendedQuarantine = withExtendedQuarantine;
+	}
+
+	public Boolean getWithReducedQuarantine() {
+		return withReducedQuarantine;
+	}
+
+	public void setWithReducedQuarantine(Boolean withReducedQuarantine) {
+		this.withReducedQuarantine = withReducedQuarantine;
 	}
 
 	public CaseClassification getCaseClassification() {
@@ -495,5 +511,21 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setReportDateTo(Date reportDateTo) {
 		this.reportDateTo = reportDateTo;
+	}
+
+	public FacilityTypeGroup getFacilityTypeGroup() {
+		return facilityTypeGroup;
+	}
+
+	public void setFacilityTypeGroup(FacilityTypeGroup typeGroup) {
+		this.facilityTypeGroup = typeGroup;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType type) {
+		this.facilityType = type;
 	}
 }

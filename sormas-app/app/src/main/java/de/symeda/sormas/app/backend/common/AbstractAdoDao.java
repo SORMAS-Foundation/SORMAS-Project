@@ -282,10 +282,36 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		return null;
 	}
 
+	/**
+	 * Retrieves the latest change date from a table that references this table.
+	 */
 	protected Date getLatestChangeDateJoin(String joinTableName, String joinColumnName) {
-
 		String query = "SELECT MAX(jo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
 			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_ID";
+		return getLatestChangeDateJoinFromQuery(query);
+	}
+
+	/**
+	 * Retrieves the latest change date from a table that references another table that references this table.
+	 */
+	protected Date getLatestChangeDateSubJoin(String joinTableName, String joinColumnName, String subJoinTableName) {
+		String query = "SELECT MAX(sjo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
+			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_id" + " LEFT JOIN " + subJoinTableName + " AS sjo ON jo."
+			+ AbstractDomainObject.ID + " = sjo." + joinColumnName + "_id";
+		return getLatestChangeDateJoinFromQuery(query);
+	}
+
+	/**
+	 * Retrieves the latest change date from a table that is referenced by another table that references this table.
+	 */
+	protected Date getLatestChangeDateSubJoinReverse(String joinTableName, String joinColumnName, String subJoinTableName, String subJoinColumnName) {
+		String query = "SELECT MAX(sjo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
+			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_id" + " LEFT JOIN " + subJoinTableName + " AS sjo ON jo."
+			+ subJoinColumnName + "_id = sjo." + AbstractDomainObject.ID;
+		return getLatestChangeDateJoinFromQuery(query);
+	}
+
+	private Date getLatestChangeDateJoinFromQuery(String query) {
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
 			query,
 			new DataType[] {
@@ -351,7 +377,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
 
 				AbstractDomainObject embeddedAdoSnapshot = null;
-				if (parentProperty.equals(property.getName())) {
+				if (parentProperty.equals(property.getName()) || property.getReadMethod().isAnnotationPresent(JoinTableReference.class)) {
 
 					// ignore parent property
 					if (!withSnapshot)
@@ -415,7 +441,14 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		try {
 			// get the setter
 			String parentPropertyName = getAdoClass().getAnnotation(EmbeddedAdo.class).parentAccessor();
-			String methodName = "set" + parentPropertyName.substring(0, 1).toUpperCase() + parentPropertyName.substring(1);
+			String methodName;
+			if (StringUtils.isNotBlank(parentPropertyName)) {
+				methodName = "set" + parentPropertyName.substring(0, 1).toUpperCase() + parentPropertyName.substring(1);
+			} else {
+				// Explicitely used for location-person relation because locations don't have a distinct parent accessor;
+				// This only works if the field has the same name as its class (e.g. Person person)
+				methodName = "set" + parent.getClass().getSimpleName().substring(0, 1).toUpperCase() + parent.getClass().getSimpleName().substring(1);
+			}
 			Method parentSetter = getAdoClass().getMethod(methodName, parent.getClass());
 
 			// save remaining
@@ -476,7 +509,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
 
 				AbstractDomainObject embeddedAdoSnapshot;
-				if (parentProperty.equals(property.getName())) {
+				if (parentProperty.equals(property.getName()) || property.getReadMethod().isAnnotationPresent(JoinTableReference.class)) {
 
 					// ignore parent property
 					if (!snapshotNeeded)
@@ -582,6 +615,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				// ignore some types and specific properties
 				if (!AdoPropertyHelper.isModifiableProperty(property)
 					|| parentProperty.equals(property.getName())
+					|| property.getReadMethod().isAnnotationPresent(JoinTableReference.class)
 					|| Case.COMPLETENESS.equals(property.getName()))
 					continue;
 
@@ -762,7 +796,15 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					if (parentSetter == null) {
 						// get the setter
 						String parentPropertyName = resultElement.getClass().getAnnotation(EmbeddedAdo.class).parentAccessor();
-						String methodName = "set" + parentPropertyName.substring(0, 1).toUpperCase() + parentPropertyName.substring(1);
+						String methodName;
+						if (StringUtils.isNotBlank(parentPropertyName)) {
+							methodName = "set" + parentPropertyName.substring(0, 1).toUpperCase() + parentPropertyName.substring(1);
+						} else {
+							// Explicitely used for location-person relation because locations don't have a distinct parent accessor;
+							// This only works if the field has the same name as its class (e.g. Person person)
+							methodName = "set" + parent.getClass().getSimpleName().substring(0, 1).toUpperCase()
+								+ parent.getClass().getSimpleName().substring(1);
+						}
 						parentSetter = resultElement.getClass().getMethod(methodName, parent.getClass());
 					}
 
@@ -853,7 +895,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				PropertyDescriptor property = propertyIterator.next();
 
 				// ignore parent property
-				if (parentProperty.equals(property.getName())) {
+				if (parentProperty.equals(property.getName()) || property.getReadMethod().isAnnotationPresent(JoinTableReference.class)) {
 					continue;
 				}
 
@@ -903,7 +945,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				PropertyDescriptor property = propertyIterator.next();
 
 				// ignore parent property
-				if (parentProperty.equals(property.getName()))
+				if (parentProperty.equals(property.getName()) || property.getReadMethod().isAnnotationPresent(JoinTableReference.class))
 					continue;
 
 				// get embedded
@@ -1013,7 +1055,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				PropertyDescriptor property = propertyIterator.next();
 
 				// ignore parent property
-				if (parentProperty.equals(property.getName()))
+				if (parentProperty.equals(property.getName()) || property.getReadMethod().isAnnotationPresent(JoinTableReference.class))
 					continue;
 
 				// build embedded

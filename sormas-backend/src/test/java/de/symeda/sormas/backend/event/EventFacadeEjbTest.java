@@ -32,7 +32,6 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -107,7 +106,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description");
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description", user.toReference());
 		ActionDto action = creator.createAction(event.toReference());
 
 		// Database should contain the created event and event participant
@@ -119,7 +118,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		// Event should be marked as deleted; Event participant should be deleted
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
-		assertNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
+		assertTrue(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
 		assertNull(getActionFacade().getByUuid(action.getUuid()));
 	}
 
@@ -220,7 +219,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
-		creator.createEventParticipant(event.toReference(), eventPerson, "Description");
+		creator.createEventParticipant(event.toReference(), eventPerson, "Description", user.toReference());
 		Date testStartDate = new Date();
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
@@ -277,19 +276,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		cut.archiveOrDearchiveEvent(event1.getUuid(), true);
 
 		// One other event
-		EventDto event2 = creator.createEvent(
-			EventStatus.SIGNAL,
-			"",
-			"",
-			"",
-			"",
-			TypeOfPlace.HOSPITAL,
-			new Date(),
-			new Date(),
-			user,
-			user,
-			Disease.DENGUE,
-			rdcf.district);
+		EventDto event2 = creator
+			.createEvent(EventStatus.SIGNAL, "", "", "", "", TypeOfPlace.HOSPITAL, new Date(), new Date(), user, user, Disease.DENGUE, rdcf.district);
 
 		assertTrue(cut.isArchived(event1.getUuid()));
 		assertFalse(cut.isArchived(event2.getUuid()));

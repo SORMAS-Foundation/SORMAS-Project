@@ -53,6 +53,7 @@ import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.Table.ColumnGenerator;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
@@ -407,14 +408,18 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 
 	protected void initInaccessiblePlaceHolders() {
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!fieldAccessCheckers.isAccessible(getEntryType(), columnId.toString())) {
+			if (!isAccessible(columnId)) {
 				if (table.getColumnGenerator(columnId) != null) {
 					table.removeGeneratedColumn(columnId);
 				}
-				table.addGeneratedColumn(columnId, (source, itemId, columnId1) -> "Confidential");
+				table.addGeneratedColumn(columnId, (source, itemId, columnId1) -> I18nProperties.getCaption(Captions.inaccessibleValue));
 			}
 		}
-		table.setCellStyleGenerator(FieldAccessCellStyleGenerator.withFieldAccessCheckers(getEntryType(), fieldAccessCheckers));
+		table.setCellStyleGenerator(new FieldAccessCellStyleGenerator(e -> isAccessible(e)));
+	}
+
+	protected boolean isAccessible(Object columnId) {
+		return fieldAccessCheckers.isAccessible(getEntryType(), columnId.toString());
 	}
 
 	@Override

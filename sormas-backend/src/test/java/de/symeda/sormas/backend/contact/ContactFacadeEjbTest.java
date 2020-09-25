@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -55,7 +56,6 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
@@ -218,7 +218,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().generateContactFollowUpTasks();
 
 		// task should have been generated
-		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference());
+		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference()).stream()
+				.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
+				.collect(Collectors.toList());
 		assertEquals(1, tasks.size());
 		TaskDto task = tasks.get(0);
 		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
@@ -228,7 +230,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// task should not be generated multiple times 
 		getContactFacade().generateContactFollowUpTasks();
-		tasks = getTaskFacade().getAllByContact(contact.toReference());
+		tasks = getTaskFacade().getAllByContact(contact.toReference()).stream()
+				.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
+				.collect(Collectors.toList());
 		assertEquals(1, tasks.size());
 	}
 
@@ -549,7 +553,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
 		contactPerson.getAddress().setCity("City");
-		contactPerson.getAddress().setAddress("Street Address");
+		contactPerson.getAddress().setStreet("Test street");
+		contactPerson.getAddress().setHouseNumber("Test number");
+		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
 		getPersonFacade().savePerson(contactPerson);
 
@@ -567,7 +573,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(rdcf.region.getCaption(), exportDto.getAddressRegion());
 		assertEquals(rdcf.district.getCaption(), exportDto.getAddressDistrict());
 		assertEquals("City", exportDto.getCity());
-		assertEquals("Street Address", exportDto.getAddress());
+		assertEquals("Test street", exportDto.getStreet());
+		assertEquals("Test number", exportDto.getHouseNumber());
+		assertEquals("Test information", exportDto.getAdditionalInformation());
 		assertEquals("1234", exportDto.getPostalCode());
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
@@ -829,6 +837,24 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		ContactCriteria contactCriteria = new ContactCriteria();
 		contactCriteria.setWithExtendedQuarantine(true);
+
+		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
+		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));
+	}
+
+	@Test
+	public void testSearchContactsWithReducedQuarantine() {
+		RDCF rdcf = creator.createRDCF();
+		ContactDto contact =
+				creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
+		contact.setQuarantineReduced(true);
+		getContactFacade().saveContact(contact);
+
+		List<ContactIndexDto> indexList = getContactFacade().getIndexList(new ContactCriteria(), 0, 100, Collections.emptyList());
+		assertThat(indexList.get(0).getUuid(), is(contact.getUuid()));
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setWithReducedQuarantine(true);
 
 		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
 		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));

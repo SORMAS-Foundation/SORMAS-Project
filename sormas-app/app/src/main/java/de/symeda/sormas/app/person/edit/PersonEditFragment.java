@@ -24,8 +24,17 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -44,6 +53,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.location.Location;
@@ -53,6 +63,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.core.FieldHelper;
+import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
@@ -65,6 +76,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 	private Person record;
 	private AbstractDomainObject rootData;
+	private IEntryItemOnClickListener onAddressItemClickListener;
 
 	// Instance methods
 
@@ -118,13 +130,17 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
 		List<Item> initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
-		List<Item> initialOccupationFacilities = InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity());
+		List<Item> initialOccupationFacilities =
+			InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity(), null);
 
 		List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialPlaceOfBirthDistricts = InfrastructureHelper.loadDistricts(record.getPlaceOfBirthRegion());
 		List<Item> initialPlaceOfBirthCommunities = InfrastructureHelper.loadCommunities(record.getPlaceOfBirthDistrict());
 		List<Item> initialPlaceOfBirthFacilities =
-			InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity());
+			InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
+
+		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
+		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
 
 		InfrastructureHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
@@ -138,6 +154,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
 		InfrastructureHelper.initializeFacilityFields(
+			record,
 			contentBinding.personOccupationRegion,
 			initialOccupationRegions,
 			record.getOccupationRegion(),
@@ -147,10 +164,19 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personOccupationCommunity,
 			initialOccupationCommunities,
 			record.getOccupationCommunity(),
+			null,
+			null,
+			null,
+			null,
+			contentBinding.personOccupationFacilityType,
+			occupationFacilityTypeList,
 			contentBinding.personOccupationFacility,
 			initialOccupationFacilities,
-			record.getOccupationFacility());
+			record.getOccupationFacility(),
+			contentBinding.personOccupationFacilityDetails,
+			true);
 		InfrastructureHelper.initializeFacilityFields(
+			record,
 			contentBinding.personPlaceOfBirthRegion,
 			initialPlaceOfBirthRegions,
 			record.getPlaceOfBirthRegion(),
@@ -160,9 +186,17 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personPlaceOfBirthCommunity,
 			initialPlaceOfBirthCommunities,
 			record.getPlaceOfBirthCommunity(),
+			null,
+			null,
+			null,
+			null,
+			contentBinding.personPlaceOfBirthFacilityType,
+			placeOfBirthFacilityTypeList,
 			contentBinding.personPlaceOfBirthFacility,
 			initialPlaceOfBirthFacilities,
-			record.getPlaceOfBirthFacility());
+			record.getPlaceOfBirthFacility(),
+			contentBinding.personPlaceOfBirthFacilityDetails,
+			false);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
@@ -356,6 +390,64 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		}
 	}
 
+	private ObservableList<Location> getAddresses() {
+		ObservableArrayList<Location> newAddresses = new ObservableArrayList<>();
+		newAddresses.addAll(record.getAddresses());
+		return newAddresses;
+	}
+
+	private void setFieldVisibilitiesAndAccesses(View view) {
+		setFieldVisibilitiesAndAccesses(LocationDto.class, (ViewGroup) view);
+	}
+
+	private void setUpControlListeners() {
+		onAddressItemClickListener = (v, item) -> {
+			final Location address = (Location) item;
+			final Location addressClone = (Location) address.clone();
+			final LocationDialog dialog = new LocationDialog(BaseActivity.getActiveActivity(), addressClone, null);
+
+			dialog.setPositiveCallback(() -> {
+				record.getAddresses().set(record.getAddresses().indexOf(address), addressClone);
+				updateAddresses();
+			});
+
+			dialog.setDeleteCallback(() -> {
+				removeAddress(address);
+				dialog.dismiss();
+			});
+
+			dialog.show();
+			dialog.configureAsPersonAddressDialog(true);
+		};
+
+		getContentBinding().btnAddAddress.setOnClickListener(v -> {
+			final Location address = DatabaseHelper.getLocationDao().build();
+			final LocationDialog dialog = new LocationDialog(BaseActivity.getActiveActivity(), address, null);
+
+			dialog.setPositiveCallback(() -> addAddress(address));
+
+			dialog.setDeleteCallback(() -> removeAddress(address));
+
+			dialog.show();
+			dialog.configureAsPersonAddressDialog(false);
+		});
+	}
+
+	private void updateAddresses() {
+		getContentBinding().setAddressList(getAddresses());
+		getContentBinding().setAddressBindCallback(this::setFieldVisibilitiesAndAccesses);
+	}
+
+	private void removeAddress(Location item) {
+		record.getAddresses().remove(item);
+		updateAddresses();
+	}
+
+	private void addAddress(Location item) {
+		record.getAddresses().add(0, item);
+		updateAddresses();
+	}
+
 	// Overrides
 
 	@Override
@@ -382,13 +474,24 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			throw new UnsupportedOperationException(
 				"ActivityRootData of class " + ado.getClass().getSimpleName() + " does not support PersonEditFragment");
 		}
+
+		// Workaround because person is not an embedded entity and therefore the locations are not 
+		// automatically loaded (because there's no additional queryForId call for person when the
+		// parent data is loaded)
+		DatabaseHelper.getPersonDao().initLocations(record);
 	}
 
 	@Override
 	public void onLayoutBinding(FragmentPersonEditLayoutBinding contentBinding) {
+		setUpControlListeners();
+
 		contentBinding.setData(record);
 
 		PersonValidator.initializePersonValidation(contentBinding);
+
+		contentBinding.setAddressList(getAddresses());
+		contentBinding.setAddressItemClickCallback(onAddressItemClickListener);
+		getContentBinding().setAddressBindCallback(this::setFieldVisibilitiesAndAccesses);
 	}
 
 	@Override

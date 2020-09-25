@@ -1,5 +1,20 @@
 package de.symeda.sormas.ui.caze.importer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.function.Consumer;
+
+import com.opencsv.exceptions.CsvValidationException;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
@@ -8,14 +23,10 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
-import de.symeda.sormas.ui.TestDataCreator.RDCF;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +44,11 @@ import static org.junit.Assert.assertTrue;
 public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException {
+	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 
 		TestDataCreator creator = new TestDataCreator();
 
-		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -210,11 +221,19 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(7, getCaseFacade().count(null));
+
+		// Successful import of 5 cases from a commented CSV file
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_comment_success.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(12, getCaseFacade().count(null));
 	}
 
 	@Test
-	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException {
-		RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
+	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -225,6 +244,14 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
+
+		// Successful import of 5 cases from commented CSV file
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_comment_line_listing.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, false, user.toReference());
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(10, getCaseFacade().count(null));
 	}
 
 	private static class CaseImporterExtension extends CaseImporter {

@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,10 +50,11 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
  *         Based on https://github.com/xylo/highcharts-vaadin7 (Apache 2.0 license)
  */
 @JavaScript({
-	"jquery-min.js",
+	"jquery.slim.min.js",
 	"highcharts.js",
 	"highcharts-connector.js",
-	"highcharts-exporting.js" })
+	"highcharts-exporting.js",
+	"highcharts-export-data.js" })
 public class HighChart extends AbstractJavaScriptComponent {
 
 	private static final long serialVersionUID = 7738496276049495017L;

@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -25,11 +26,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,14 +54,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.api.followup.FollowUpDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -78,6 +76,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.DashboardContactDto;
+import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -86,6 +85,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -93,6 +93,8 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -113,8 +115,11 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -124,6 +129,9 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -131,6 +139,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -185,6 +194,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private EpiDataFacadeEjbLocal epiDataFacade;
+	@EJB
+	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -249,6 +262,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		return saveContact(dto, true);
 	}
 
+	@Override
 	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);
@@ -265,8 +279,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		//		}
 
 		Contact entity = fromDto(dto);
-
 		contactService.ensurePersisted(entity);
+
+		createInvestigationTask(entity);
 
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);
@@ -280,6 +295,22 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return toDto(entity);
+	}
+
+	private void createInvestigationTask(Contact entity) {
+		LocalDate now = LocalDate.now();
+		LocalDate reportDate = DateHelper8.toLocalDate(entity.getReportDateTime());
+		if (DAYS.between(reportDate, now) <= 30) {
+			try {
+				User assignee = taskService.getTaskAssignee(entity);
+				LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
+				LocalDateTime toDateTime = fromDateTime.plusDays(1);
+				Task task = createContactTask(TaskType.CONTACT_INVESTIGATION, fromDateTime, toDateTime, entity, assignee);
+				taskService.ensurePersisted(task);
+			} catch (TaskCreationException e) {
+				logger.warn(e.getMessage());
+			}
+		}
 	}
 
 	private void updateContactVisitAssociations(ContactDto existingContact, Contact contact) {
@@ -396,12 +427,17 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
 					contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 					contact.get(Contact.QUARANTINE_EXTENDED),
+					contact.get(Contact.QUARANTINE_REDUCED),
+					contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT),
+					contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
 					joins.getPerson().get(Person.PRESENT_CONDITION),
 					joins.getPerson().get(Person.DEATH_DATE),
 					joins.getAddressRegion().get(Region.NAME),
 					joins.getAddressDistrict().get(District.NAME),
 					joins.getAddress().get(Location.CITY),
-					joins.getAddress().get(Location.ADDRESS),
+					joins.getAddress().get(Location.STREET),
+					joins.getAddress().get(Location.HOUSE_NUMBER),
+					joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 					joins.getAddress().get(Location.POSTAL_CODE),
 					joins.getPerson().get(Person.PHONE),
 					joins.getPerson().get(Person.PHONE_OWNER),
@@ -477,17 +513,17 @@ public class ContactFacadeEjb implements ContactFacade {
 
 				VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
 					.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
-					.max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime()))
+					.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
 					.orElse(null);
 
 				exportContact.setNumberOfVisits(visits.size());
 				if (lastCooperativeVisit != null) {
-					pseudonymizer.pseudonymizeDto(Symptoms.class, lastCooperativeVisit.getSymptoms(), inJurisdiction, null);
+					SymptomsDto symptoms = SymptomsFacadeEjb.toDto(lastCooperativeVisit.getSymptoms());
+					pseudonymizer.pseudonymizeDto(SymptomsDto.class, symptoms, inJurisdiction, null);
 
 					exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
-					exportContact.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
-					exportContact
-						.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+					exportContact.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(symptoms, true, userLanguage));
+					exportContact.setLastCooperativeVisitSymptomatic(symptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				}
 
 				if (travels != null) {
@@ -575,9 +611,10 @@ public class ContactFacadeEjb implements ContactFacade {
 				visitSummaries.stream().collect(Collectors.toMap(VisitSummaryExportDto::getContactId, Function.identity()));
 
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-			visitSummaryDetails.stream().forEach(v -> {
+			visitSummaryDetails.forEach(v -> {
+				SymptomsDto symptoms = SymptomsFacadeEjb.toDto(v.getSymptoms());
 				pseudonymizer
-					.pseudonymizeDto(Symptoms.class, v.getSymptoms(), contactJurisdictionChecker.isInJurisdictionOrOwned(v.getJurisdiction()), null);
+					.pseudonymizeDto(SymptomsDto.class, symptoms, contactJurisdictionChecker.isInJurisdictionOrOwned(v.getJurisdiction()), null);
 
 				visitSummaryMap.get(v.getContactId())
 					.getVisitDetails()
@@ -585,7 +622,7 @@ public class ContactFacadeEjb implements ContactFacade {
 						new VisitSummaryExportDetailsDto(
 							v.getVisitDateTime(),
 							v.getVisitStatus(),
-							v.getSymptoms().toHumanString(true, userLanguage)));
+							SymptomsHelper.buildSymptomsHumanString(symptoms, true, userLanguage)));
 			});
 		}
 
@@ -734,6 +771,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				visitsJoin.get(Visit.VISIT_DATE_TIME),
 				visitsJoin.get(Visit.VISIT_STATUS),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
+
+			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)), cb.asc(visitsJoin.get(Visit.CREATION_DATE)));
 
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			Map<String, ContactFollowUpDto> resultMap =
@@ -956,9 +995,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
+		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
 
 		return target;
 	}
@@ -989,6 +1032,24 @@ public class ContactFacadeEjb implements ContactFacade {
 		User user = userService.getCurrentUser();
 
 		return contactService.getContactsForDashboard(region, district, disease, from, to, user);
+	}
+
+	@Override
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to) {
+
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+		User user = userService.getCurrentUser();
+
+		List<DashboardQuarantineDataDto> dashboardContactsInQuarantine =
+			contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
+
+		return dashboardContactsInQuarantine;
 	}
 
 	@Override
@@ -1167,9 +1228,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
+		target.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(source.getHealthConditions()));
 
 		return target;
 	}
@@ -1189,47 +1254,12 @@ public class ContactFacadeEjb implements ContactFacade {
 				continue;
 			}
 
-			User assignee = null;
-			if (contact.getContactOfficer() != null) {
-				// 1) The contact officer that is responsible for the contact
-				assignee = contact.getContactOfficer();
-			} else {
-				// 2) A random contact officer from the contact's, contact person's or contact case's district
-				List<User> officers = new ArrayList<>();
-				if (contact.getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (officers.isEmpty() && contact.getPerson().getAddress().getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getPerson().getAddress().getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (officers.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getCaze().getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (!officers.isEmpty()) {
-					Random rand = new Random();
-					assignee = officers.get(rand.nextInt(officers.size()));
-				}
-			}
-
-			if (assignee == null) {
-				// 3) Assign a random contact supervisor from the contact's, contact person's or contact case's region
-				List<User> supervisors = new ArrayList<>();
-				if (contact.getRegion() != null) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (supervisors.isEmpty() && contact.getPerson().getAddress().getRegion() != null) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (supervisors.isEmpty()) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (!supervisors.isEmpty()) {
-					Random rand = new Random();
-					assignee = supervisors.get(rand.nextInt(supervisors.size()));
-				} else {
-					logger.warn("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
-					continue;
-				}
+			User assignee;
+			try {
+				assignee = taskService.getTaskAssignee(contact);
+			} catch (TaskCreationException e) {
+				logger.warn(e.getMessage());
+				continue;
 			}
 
 			// find already existing tasks
@@ -1255,20 +1285,24 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			// none found -> create the task
-			Task task = taskService.buildTask(null);
-			task.setTaskContext(TaskContext.CONTACT);
-			task.setContact(contact);
-			task.setTaskType(TaskType.CONTACT_FOLLOW_UP);
-			task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
-			task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
-			task.setAssigneeUser(assignee);
-
-			if (contact.isHighPriority()) {
-				task.setPriority(TaskPriority.HIGH);
-			}
-
+			Task task = createContactTask(TaskType.CONTACT_FOLLOW_UP, fromDateTime, toDateTime, contact, assignee);
 			taskService.ensurePersisted(task);
 		}
+	}
+
+	private Task createContactTask(TaskType taskType, LocalDateTime fromDateTime, LocalDateTime toDateTime, Contact contact, User assignee) {
+		Task task = taskService.buildTask(null);
+		task.setTaskContext(TaskContext.CONTACT);
+		task.setContact(contact);
+		task.setTaskType(taskType);
+		task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
+		task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+		task.setAssigneeUser(assignee);
+
+		if (contact.isHighPriority()) {
+			task.setPriority(TaskPriority.HIGH);
+		}
+		return task;
 	}
 
 	@Override

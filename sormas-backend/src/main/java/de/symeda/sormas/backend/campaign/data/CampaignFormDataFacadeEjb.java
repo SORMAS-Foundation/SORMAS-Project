@@ -20,13 +20,42 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -37,6 +66,7 @@ import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -50,27 +80,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Stateless(name = "CampaignFormDataFacade")
 public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
@@ -86,6 +95,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@EJB
 	private CampaignFormMetaService campaignFormMetaService;
+
+	@EJB
+	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	@EJB
 	private RegionService regionService;
@@ -111,7 +123,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		DtoHelper.validateDto(source, target);
 
-		target.setFormValuesList(source.getFormValues());
+		target.setFormValues(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));
 		target.setCampaignFormMeta(campaignFormMetaService.getByReferenceDto(source.getCampaignFormMeta()));
 		target.setFormDate(source.getFormDate());
@@ -131,7 +143,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CampaignFormDataDto target = new CampaignFormDataDto();
 		DtoHelper.fillDto(target, source);
 
-		target.setFormValues(source.getFormValuesList());
+		target.setFormValues(source.getFormValues());
 		target.setCampaign(CampaignFacadeEjb.toReferenceDto(source.getCampaign()));
 		target.setCampaignFormMeta(CampaignFormMetaFacadeEjb.toReferenceDto(source.getCampaignFormMeta()));
 		target.setFormDate(source.getFormDate());
@@ -218,7 +230,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			root.get(CampaignFormData.UUID),
 			campaignJoin.get(Campaign.NAME),
 			campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME),
-			root.get(CampaignFormData.FORM_VALUES),
+			criteria.getCampaignFormMeta() != null ? root.get(CampaignFormData.FORM_VALUES) : cb.nullLiteral(String.class),
 			regionJoin.get(Region.NAME),
 			districtJoin.get(District.NAME),
 			communityJoin.get(Community.NAME),
@@ -270,18 +282,87 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			result = em.createQuery(cq).getResultList();
 		}
 
-		if (criteria.getCampaignFormMeta() != null) {
-			ObjectMapper mapper = new ObjectMapper();
-			result.forEach(r -> {
-				try {
-					r.setFormValuesList(Arrays.asList(mapper.readValue(r.getFormValues(), CampaignFormDataEntry[].class)));
-				} catch (IOException e) {
-					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormDataEntry> - UUID: " + r.getUuid());
-				}
-			});
-		}
-
 		return result;
+	}
+
+	@Override
+	public List<CampaignDiagramDataDto> getDiagramData(
+		List<CampaignDiagramSeries> diagramSeriesList,
+		CampaignDiagramCriteria campaignDiagramCriteria) {
+
+		List<CampaignDiagramDataDto> resultData = new ArrayList<CampaignDiagramDataDto>();
+
+		for (CampaignDiagramSeries diagramSeries : diagramSeriesList) {
+
+			//@formatter:off
+			final AreaReferenceDto area = campaignDiagramCriteria.getArea();
+			final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
+			final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
+			final CampaignReferenceDto campaign = campaignDiagramCriteria.getCampaign();
+			
+			final String areaFilter = area != null ? " AND " + Area.TABLE_NAME + "." + Area.UUID + " = '" + area.getUuid() + "'": "";
+			final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = '" + region.getUuid() + "'": "";
+			final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = '" + district.getUuid() + "'" : "";
+			final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = '" + campaign.getUuid() +  "'" : "";
+			final String jurisdictionGrouping =
+					(district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
+					region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : "")
+							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME;
+			
+			Query seriesDataQuery = em.createNativeQuery(
+					"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + " as formUuid,"
+							+ CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " as formId"
+							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "' as fieldId"
+							+ ", jsonMeta->>'" + CampaignFormElement.CAPTION + "' as fieldCaption"
+							+ ", CASE"
+							+ " WHEN (jsonMeta ->> '" + CampaignFormElement.TYPE + "')  = '" + CampaignFormElementType.NUMBER.toString() + "' THEN sum(cast_to_int(jsonData->>'" + CampaignFormDataEntry.VALUE + "', 0))"
+							+ " ELSE count((jsonData->>'" + CampaignFormDataEntry.VALUE + "') = '" + diagramSeries.getFieldValue() + "')"
+		      				+ " END as sumValue"
+							+ ", " + Region.TABLE_NAME + "." + Region.UUID
+							+ ", " + Region.TABLE_NAME + "." + Region.NAME
+							+ " FROM " + CampaignFormData.TABLE_NAME
+							+ " LEFT JOIN " + CampaignFormMeta.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN_FORM_META + "_id = " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.ID
+							+ " LEFT JOIN " + Region.TABLE_NAME + " ON " + CampaignFormData.REGION + "_id = " + Region.TABLE_NAME + "." + Region.ID
+							+ " LEFT JOIN " + Area.TABLE_NAME + " ON " + Region.AREA + "_id = " + Area.TABLE_NAME + "." + Area.ID
+							+ " LEFT JOIN " + District.TABLE_NAME + " ON " + CampaignFormData.DISTRICT + "_id = " + District.TABLE_NAME + "." + District.ID
+							+ " LEFT JOIN " + Community.TABLE_NAME + " ON " + CampaignFormData.COMMUNITY + "_id = " + Community.TABLE_NAME + "." + Community.ID
+							+ " LEFT JOIN " + Campaign.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN + "_id = " + Campaign.TABLE_NAME + "." + Campaign.ID
+							+ ", json_array_elements(" + CampaignFormData.FORM_VALUES + ") as jsonData"
+							+ ", json_array_elements(" + CampaignFormMeta.CAMPAIGN_FORM_ELEMENTS + ") as jsonMeta"
+					+ " WHERE " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " = '" + diagramSeries.getFormId() + "'"
+							+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = '" + diagramSeries.getFieldId() + "'"
+							+ " AND jsonData->>'" + CampaignFormDataEntry.VALUE + "' IS NOT NULL"
+							+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = jsonMeta->>'" + CampaignFormElement.ID + "'"
+							+ areaFilter
+							+ regionFilter
+							+ districtFilter
+							+ campaignFilter 
+					+ " GROUP BY " 
+							+ CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + "," 
+							+ CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
+							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
+							+ ", jsonMeta->>'" + CampaignFormElement.CAPTION + "'"
+							+ ", jsonMeta->>'" + CampaignFormElement.TYPE + "'"
+							+ jurisdictionGrouping);
+			//@formatter:on
+
+			@SuppressWarnings("unchecked")
+			List<Object[]> resultList = seriesDataQuery.getResultList();
+
+			resultData.addAll(
+				resultList.stream()
+					.map(
+						(result) -> new CampaignDiagramDataDto(
+							(String) result[0],
+							(String) result[1],
+							(String) result[2],
+							(String) result[3],
+							(Object) result[4],
+							(String) result[5],
+							(String) result[6]))
+					.collect(Collectors.toList()));
+		}
+		return resultData;
 	}
 
 	@Override

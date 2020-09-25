@@ -20,10 +20,14 @@
 
 package de.symeda.sormas.api.campaign.data;
 
-import de.symeda.sormas.api.utils.SortProperty;
+import java.util.List;
 
 import javax.ejb.Remote;
-import java.util.List;
+
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface CampaignFormDataFacade {
@@ -45,4 +49,6 @@ public interface CampaignFormDataFacade {
 	List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(CampaignFormDataCriteria criteria);
+
+	List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeriesList, CampaignDiagramCriteria campaignDiagramCriteria);
 }

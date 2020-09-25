@@ -24,12 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.DashboardContactDto;
+import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -40,6 +43,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 
+// FIXME: 06/08/2020 this should be refactored into two specific data providers for case and contact dashboards
 public class DashboardDataProvider {
 
 	private DashboardType dashboardType;
@@ -70,6 +74,12 @@ public class DashboardDataProvider {
 	private List<DashboardTestResultDto> testResults = new ArrayList<>();
 	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
 
+	private Long contactsInQuarantineCount = 0L;
+	private Long contactsPlacedInQuarantineCount = 0L;
+	private Long casesInQuarantineCount = 0L;
+	private Long casesPlacedInQuarantineCount = 0L;
+	private Long contactsConvertedToCaseCount = 0L;
+
 	public void refreshData() {
 
 		// Update the entities lists according to the filters
@@ -78,6 +88,46 @@ public class DashboardDataProvider {
 			FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate, toDate, previousFromDate, previousToDate));
 
 		this.refreshDataForSelectedDisease();
+	}
+
+	private void refreshDataForQuarantinedContacts() {
+
+		List<DashboardQuarantineDataDto> contactsInQuarantineDtos =
+			FacadeProvider.getContactFacade().getQuarantineDataForDashBoard(region, district, disease, fromDate, toDate);
+
+		setContactsInQuarantineCount((long) contactsInQuarantineDtos.size());
+
+		Long dashboardContactsPlacedInQuarantineCount = contactsInQuarantineDtos.stream()
+			.filter(
+				dashboardQuarantineDataDto -> (fromDate.before(DateUtils.addDays(dashboardQuarantineDataDto.getQuarantineFrom(), 1))
+					&& dashboardQuarantineDataDto.getQuarantineFrom().before(toDate)))
+			.count();
+
+		setContactsPlacedInQuarantineCount(dashboardContactsPlacedInQuarantineCount);
+	}
+
+	private void refreshDataForQuarantinedCases() {
+
+		List<DashboardQuarantineDataDto> casesInQuarantineDtos =
+			FacadeProvider.getCaseFacade().getQuarantineDataForDashBoard(region, district, disease, fromDate, toDate);
+
+		setCasesInQuarantineCount((long) casesInQuarantineDtos.size());
+
+		Long dashboardCasesPlacedInQuarantineCount = casesInQuarantineDtos.stream()
+			.filter(
+				dashboardQuarantineDataDto -> (fromDate.before(DateUtils.addDays(dashboardQuarantineDataDto.getQuarantineFrom(), 1))
+					&& dashboardQuarantineDataDto.getQuarantineFrom().before(toDate)))
+			.count();
+
+		setCasesPlacedInQuarantineCount(dashboardCasesPlacedInQuarantineCount);
+	}
+
+	private void refreshDataForConvertedContactsToCase() {
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, null);
+
+		setContactsConvertedToCaseCount(FacadeProvider.getCaseFacade().countCasesConvertedFromContacts(caseCriteria));
+
 	}
 
 	private void refreshDataForSelectedDisease() {
@@ -89,6 +139,8 @@ public class DashboardDataProvider {
 			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate));
 			setPreviousContacts(
 				FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate));
+
+			this.refreshDataForQuarantinedContacts();
 		}
 
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
@@ -137,6 +189,9 @@ public class DashboardDataProvider {
 			FacadeProvider.getOutbreakFacade()
 				.getOutbreakDistrictCount(
 					new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
+
+		refreshDataForQuarantinedCases();
+		refreshDataForConvertedContactsToCase();
 	}
 
 	public List<DashboardCaseDto> getCases() {
@@ -307,5 +362,45 @@ public class DashboardDataProvider {
 
 	public void setDashboardType(DashboardType dashboardType) {
 		this.dashboardType = dashboardType;
+	}
+
+	public Long getContactsInQuarantineCount() {
+		return contactsInQuarantineCount;
+	}
+
+	public void setContactsInQuarantineCount(Long contactsInQuarantineCount) {
+		this.contactsInQuarantineCount = contactsInQuarantineCount;
+	}
+
+	public Long getContactsPlacedInQuarantineCount() {
+		return contactsPlacedInQuarantineCount;
+	}
+
+	public void setContactsPlacedInQuarantineCount(Long contactsPlacedInQuarantineCount) {
+		this.contactsPlacedInQuarantineCount = contactsPlacedInQuarantineCount;
+	}
+
+	public Long getCasesInQuarantineCount() {
+		return casesInQuarantineCount;
+	}
+
+	public void setCasesInQuarantineCount(Long casesInQuarantineCount) {
+		this.casesInQuarantineCount = casesInQuarantineCount;
+	}
+
+	public Long getCasesPlacedInQuarantineCount() {
+		return casesPlacedInQuarantineCount;
+	}
+
+	public void setCasesPlacedInQuarantineCount(Long casesPlacedInQuarantineCount) {
+		this.casesPlacedInQuarantineCount = casesPlacedInQuarantineCount;
+	}
+
+	public Long getContactsConvertedToCaseCount() {
+		return contactsConvertedToCaseCount;
+	}
+
+	public void setContactsConvertedToCaseCount(Long contactsConvertedToCaseCount) {
+		this.contactsConvertedToCaseCount = contactsConvertedToCaseCount;
 	}
 }

@@ -17,6 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -46,28 +64,10 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.facility.Facility;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class SampleFacadeEjbTest extends AbstractBeanTest {
 
@@ -152,7 +152,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), cazePerson);
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), cazePerson, user.toReference());
 		SampleDto sampleOfEventParticipant = creator.createSample(
 			eventParticipant.toReference(),
 			DateHelper.subtractDays(new Date(), 2),
@@ -217,7 +217,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto contactPerson = creator.createPerson("Contact", "Person2");
 		ContactDto contact = creator.createContact(user.toReference(), contactPerson.toReference(), caze);
-		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference());
 		SampleDto cazeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		cazeSample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
 		getSampleFacade().saveSample(cazeSample);
@@ -238,9 +237,10 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		sample.setReferredTo(referredSample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 
-		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact, visit);
+		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact);
 		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid()));
 		caseDataDto.setReportingUser(user.toReference());
 		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);

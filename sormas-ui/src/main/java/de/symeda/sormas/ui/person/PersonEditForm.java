@@ -17,6 +17,58 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.DeathPlaceType;
+import de.symeda.sormas.api.person.EducationType;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.ui.location.LocationEditForm;
+import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
+import de.symeda.sormas.ui.utils.ViewMode;
+import org.apache.commons.lang3.StringUtils;
+
+import java.time.Month;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
@@ -27,54 +79,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfFourCol;
 import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
-import java.time.Month;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.TextField;
-
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.DeathPlaceType;
-import de.symeda.sormas.api.person.EducationType;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper.Pair;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.location.LocationEditForm;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-import de.symeda.sormas.ui.utils.ViewMode;
-
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private static final long serialVersionUID = -1L;
@@ -82,10 +86,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
+	private static final String ADDRESSES_HEADER = "addressesHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 
 	private Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
 	private Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
+	private Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
 
 	private Disease disease;
@@ -97,77 +103,90 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private TextField occupationFacilityDetails;
 	private final ViewMode viewMode;
 	private ComboBox birthDateDay;
+	private ComboBox cbPlaceOfBirthFacility;
+	private PersonContext personContext;
 
 	//@formatter:off
-	private static final String HTML_LAYOUT =
-			loc(PERSON_INFORMATION_HEADING_LOC) +
-					fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
-					fluidRow(
-							fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-							fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
-					) +
-					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
-					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
-					fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
-					fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
-					fluidRow(
-							oneOfFourCol(PersonDto.DEATH_DATE),
-							oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
-							fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
-							oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
-					) +
-					fluidRow(
-							oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
-							oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
-					) +
-					fluidRow(
-							oneOfFourCol(PersonDto.BURIAL_DATE),
-							oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
-							oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
-					) +
-					fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
+    private static final String HTML_LAYOUT =
+            loc(PERSON_INFORMATION_HEADING_LOC) +
+					fluidRowLocs(PersonDto.UUID, "")+
+                    fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+                    fluidRow(
+                            fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+                            fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
+                    ) +
+                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
+                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
+                    fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
+                    fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
+                    fluidRow(
+                            oneOfFourCol(PersonDto.DEATH_DATE),
+                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
+                            fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
+                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
+                    ) +
+                    fluidRow(
+                            oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
+                            oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
+                    ) +
+                    fluidRow(
+                            oneOfFourCol(PersonDto.BURIAL_DATE),
+                            oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
+                            oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
+                    ) +
+                    fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
+					fluidRowLocs(PersonDto.EXTERNAL_ID, "") +
 
-					loc(OCCUPATION_HEADER) +
-					divsCss(VSPACE_3,
-							fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
-							fluidRowLocs(PersonDto.OCCUPATION_REGION, PersonDto.OCCUPATION_DISTRICT, PersonDto.OCCUPATION_COMMUNITY, PersonDto.OCCUPATION_FACILITY),
-							fluidRowLocs("", "", PersonDto.OCCUPATION_FACILITY_DETAILS),
-							fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
-					) +
 
-					loc(ADDRESS_HEADER) +
-					divsCss(VSPACE_3, fluidRowLocs(PersonDto.ADDRESS)) +
 
-					loc(CONTACT_INFORMATION_HEADER) +
-					divsCss(
-							VSPACE_3,
-							fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
-									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-									fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
-									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
-									loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
+					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
+
+                    loc(OCCUPATION_HEADER) +
+                    divsCss(VSPACE_3,
+                            fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
+                            fluidRowLocs(PersonDto.OCCUPATION_REGION, PersonDto.OCCUPATION_DISTRICT, PersonDto.OCCUPATION_COMMUNITY),
+                            fluidRowLocs(PersonDto.OCCUPATION_FACILITY_TYPE, PersonDto.OCCUPATION_FACILITY, PersonDto.OCCUPATION_FACILITY_DETAILS),
+                            fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
+                    ) +
+
+                    loc(ADDRESS_HEADER) +
+                    divsCss(VSPACE_3, fluidRowLocs(PersonDto.ADDRESS)) +
+
+					loc(ADDRESSES_HEADER) +
+					fluidRowLocs(PersonDto.ADDRESSES) +
+
+                    loc(CONTACT_INFORMATION_HEADER) +
+                    divsCss(
+                            VSPACE_3,
+                            fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
+                                    fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
+                                    fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
+                                    fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+                                    loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 	//@formatter:on
 
-	public PersonEditForm(Disease disease, String diseaseDetails, ViewMode viewMode, boolean isInJurisdiction) {
+	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isInJurisdiction) {
 		super(
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withDisease(disease).add(new OutbreakFieldVisibilityChecker(viewMode)),
+			FieldVisibilityCheckers.withDisease(disease)
+				.add(new OutbreakFieldVisibilityChecker(viewMode))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			UiFieldAccessCheckers.withCheckers(
 				isInJurisdiction,
 				FieldHelper.createPersonalDataFieldAccessChecker(),
 				FieldHelper.createSensitiveDataFieldAccessChecker()));
 
+		this.personContext = personContext;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.viewMode = viewMode;
 
-		occupationHeader.addStyleName(CssStyles.H3);
-		addressHeader.addStyleName(CssStyles.H3);
-		contactInformationHeader.addStyleName(CssStyles.H3);
+		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
+		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
 
 		addFields();
@@ -180,6 +199,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		personInformationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(personInformationHeadingLabel, PERSON_INFORMATION_HEADING_LOC);
 
+		addField(PersonDto.UUID).setReadOnly(true);
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
@@ -232,6 +252,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
+		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
 		addFields(
 			PersonDto.OCCUPATION_TYPE,
@@ -242,12 +263,25 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.PHONE_OWNER,
 			PersonDto.EMAIL_ADDRESS,
 			PersonDto.PASSPORT_NUMBER,
-			PersonDto.NATIONAL_HEALTH_ID);
+			PersonDto.NATIONAL_HEALTH_ID,
+			PersonDto.EXTERNAL_ID);
+
+		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+
+		if (personContext != PersonContext.CASE) {
+			setVisible(false, PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED);
+		}
 
 		ComboBox cbPlaceOfBirthRegion = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_REGION);
 		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);
 		ComboBox cbPlaceOfBirthCommunity = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_COMMUNITY);
-		ComboBox cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
+		ComboBox placeOfBirthFacilityType = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE);
+		FieldHelper.removeItems(placeOfBirthFacilityType);
+		placeOfBirthFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
+		placeOfBirthFacilityType.addItems(FacilityType.getPlaceOfBirthTypes());
+
+		cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
 		TextField tfPlaceOfBirthFacilityDetails = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS, TextField.class);
 
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
@@ -262,6 +296,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox facilityCommunity = addInfrastructureField(PersonDto.OCCUPATION_COMMUNITY);
 		facilityCommunity.setImmediate(true);
 		facilityCommunity.setNullSelectionAllowed(true);
+		ComboBox occupationFacilityType = addField(PersonDto.OCCUPATION_FACILITY_TYPE);
+		FieldHelper.removeItems(occupationFacilityType);
+		occupationFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
+		occupationFacilityType.addItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY));
 		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
 		occupationFacility.setImmediate(true);
 		occupationFacility.setNullSelectionAllowed(true);
@@ -276,6 +314,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		setVisible(
 			false,
 			PersonDto.OCCUPATION_DETAILS,
+			PersonDto.OCCUPATION_FACILITY_TYPE,
 			PersonDto.OCCUPATION_FACILITY,
 			PersonDto.OCCUPATION_FACILITY_DETAILS,
 			PersonDto.OCCUPATION_REGION,
@@ -315,6 +354,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			occupationHeader.setVisible(false);
 		if (!getField(PersonDto.ADDRESS).isVisible())
 			addressHeader.setVisible(false);
+		if (!getField(PersonDto.ADDRESSES).isVisible())
+			addressesHeader.setVisible(false);
 
 		// Add listeners
 
@@ -356,9 +397,18 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			cbPlaceOfBirthRegion,
 			cbPlaceOfBirthDistrict,
 			cbPlaceOfBirthCommunity,
+			placeOfBirthFacilityType,
 			cbPlaceOfBirthFacility,
-			tfPlaceOfBirthFacilityDetails);
-		addListenersToInfrastructureFields(facilityRegion, facilityDistrict, facilityCommunity, occupationFacility, occupationFacilityDetails);
+			tfPlaceOfBirthFacilityDetails,
+			true);
+		addListenersToInfrastructureFields(
+			facilityRegion,
+			facilityDistrict,
+			facilityCommunity,
+			occupationFacilityType,
+			occupationFacility,
+			occupationFacilityDetails,
+			false);
 		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
@@ -404,8 +454,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox regionField,
 		ComboBox districtField,
 		ComboBox communityField,
+		ComboBox typeField,
 		ComboBox facilityField,
-		TextField detailsField) {
+		TextField detailsField,
+		boolean allowNoneFacility) {
+
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper
@@ -413,38 +466,67 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		});
 
 		districtField.addValueChangeListener(e -> {
-			if (communityField.getValue() == null) {
-				FieldHelper.removeItems(facilityField);
-			}
-			FieldHelper.removeItems(communityField);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(
 				communityField,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-			FieldHelper.updateItems(
-				facilityField,
-				districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
+			updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility);
+
 		});
 
-		communityField.addValueChangeListener(e -> {
-			if (occupationFacility.getValue() == null) {
-				FieldHelper.removeItems(facilityField);
-				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-				FieldHelper.updateItems(
-					facilityField,
-					communityDto != null
-						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true)
-						: districtField.getValue() != null
-							? FacadeProvider.getFacilityFacade()
-								.getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) districtField.getValue(), true)
-							: null);
-			}
-		});
+		communityField.addValueChangeListener(e -> updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility));
+		typeField.addValueChangeListener(e -> updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility));
+		FieldHelper.updateItems(
+			facilityField,
+			Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
+			if (facilityField.equals(occupationFacility)) {
+				this.getValue().setOccupationFacilityType((FacilityType) typeField.getValue());
+			} else if (facilityField.equals(cbPlaceOfBirthFacility)) {
+				this.getValue().setPlaceOfBirthFacilityType((FacilityType) typeField.getValue());
+			}
 		});
 		// Set initial visibility
 		updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) facilityField.getValue());
+	}
+
+	private void updateFacilities(
+		ComboBox facilityField,
+		ComboBox typeField,
+		ComboBox communityField,
+		ComboBox districtField,
+		boolean allowNoneFacility) {
+		if (typeField.getValue() != null) {
+			FieldHelper.updateItems(
+				facilityField,
+				communityField.getValue() != null
+					? FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByCommunityAndType(
+							(CommunityReferenceDto) communityField.getValue(),
+							(FacilityType) typeField.getValue(),
+							true,
+							false)
+					: districtField.getValue() != null
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) districtField.getValue(),
+								(FacilityType) typeField.getValue(),
+								true,
+								false)
+						: null);
+		} else {
+			if (allowNoneFacility) {
+				// "home or other place" as fallback
+				FieldHelper.updateItems(
+					facilityField,
+					Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+			} else {
+				FieldHelper.removeItems(facilityField);
+			}
+		}
+
 	}
 
 	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
@@ -518,6 +600,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			case OTHER:
 				setVisible(
 					false,
+					PersonDto.OCCUPATION_FACILITY_TYPE,
 					PersonDto.OCCUPATION_FACILITY,
 					PersonDto.OCCUPATION_FACILITY_DETAILS,
 					PersonDto.OCCUPATION_REGION,
@@ -532,6 +615,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					PersonDto.OCCUPATION_REGION,
 					PersonDto.OCCUPATION_DISTRICT,
 					PersonDto.OCCUPATION_COMMUNITY,
+					PersonDto.OCCUPATION_FACILITY_TYPE,
 					PersonDto.OCCUPATION_FACILITY);
 				updateFacilityDetailsVisibility(occupationFacilityDetails, (FacilityReferenceDto) occupationFacility.getValue());
 				break;
@@ -539,6 +623,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				setVisible(
 					false,
 					PersonDto.OCCUPATION_DETAILS,
+					PersonDto.OCCUPATION_FACILITY_TYPE,
 					PersonDto.OCCUPATION_FACILITY,
 					PersonDto.OCCUPATION_FACILITY_DETAILS,
 					PersonDto.OCCUPATION_REGION,
@@ -550,6 +635,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			setVisible(
 				false,
 				PersonDto.OCCUPATION_DETAILS,
+				PersonDto.OCCUPATION_FACILITY_TYPE,
 				PersonDto.OCCUPATION_FACILITY,
 				PersonDto.OCCUPATION_FACILITY_DETAILS,
 				PersonDto.OCCUPATION_REGION,
@@ -565,17 +651,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			return;
 		}
 
-		boolean otherHealthFacility = facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-		boolean noneHealthFacility = facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-		boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+		boolean otherFacility = facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+		boolean noneFacility = facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+		boolean visibleAndRequired = otherFacility || noneFacility;
 
 		detailsField.setVisible(visibleAndRequired);
 
-		if (otherHealthFacility) {
+		if (otherFacility) {
 			detailsField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 		}
-		if (noneHealthFacility) {
-			detailsField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+		if (noneFacility) {
+			detailsField.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 		}
 		if (!visibleAndRequired) {
 			detailsField.clear();

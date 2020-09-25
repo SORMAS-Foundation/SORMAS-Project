@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -46,6 +47,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.io.FileUtils;
@@ -78,7 +80,9 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "VisualizationFacade")
 public class VisualizationFacadeEjb implements VisualizationFacade {
 
-//	private static final String TRANSMISSION_CHAIN_SCRIPT = "transmission_chain.r";
+	static final String SORMAS_DATA_POOL_JNDI = "jdbc/sormasDataPool";
+
+	//	private static final String TRANSMISSION_CHAIN_SCRIPT = "transmission_chain.r";
 	private static final String TRANSMISSION_CHAIN_SCRIPT = "transform_contact.R";
 	private static final String[] REQUIRED_SCRIPTS = {
 		"encodeGraphic.R",
@@ -96,6 +100,8 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 
 	@Override
 	public String buildTransmissionChainJson(
+		Date fromDate,
+		Date toDate,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		Collection<Disease> diseases,
@@ -107,7 +113,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		}
 		Path tempBasePath = new File(configFacade.getTempFilesPath()).toPath();
 
-		Collection<Long> contactIds = getContactIds(region, district, diseases);
+		Collection<Long> contactIds = getContactIds(fromDate, toDate, region, district, diseases);
 
 		if (contactIds.isEmpty()) {
 			return null;
@@ -119,29 +125,63 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		return buildTransmissionChainJson(rExecutable, tempBasePath, domainXmlPath, contactIds, language);
 	}
 
-	private Collection<Long> getContactIds(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
+	@Override
+	public Long getContactCount(Date fromDate, Date toDate, RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> root = cq.from(Contact.class);
-		Join<Contact, Case> caze = root.join(Contact.CAZE, JoinType.LEFT);
 
-		cq.where(
-			AbstractAdoService.and(
-				cb,
-				contactService.createUserFilter(cb, cq, root),
-				contactService.createActiveContactsFilter(cb, root),
-				contactService.createDefaultFilter(cb, root),
-				cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),
-				cb.or(
-					cb.isNull(caze),
-					cb.and(caseService.createDefaultFilter(cb, caze), cb.notEqual(caze.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE))),
-				root.get(Contact.DISEASE).in(diseases),
-				region == null ? null : cb.equal(root.join(Contact.REGION).get(Region.UUID), region.getUuid()),
-				district == null ? null : cb.equal(root.join(Contact.DISTRICT).get(District.UUID), district.getUuid())));
+		cq.where(buildContactFilters(cb, cq, root, fromDate, toDate, region, district, diseases));
+
+		cq.select(cb.count(root.get(AbstractDomainObject.ID)));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	private Collection<Long> getContactIds(
+		Date fromDate,
+		Date toDate,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Collection<Disease> diseases) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> root = cq.from(Contact.class);
+
+		cq.where(buildContactFilters(cb, cq, root, fromDate, toDate, region, district, diseases));
 
 		cq.select(root.get(AbstractDomainObject.ID));
+
 		return em.createQuery(cq).getResultList();
+	}
+
+	private Predicate buildContactFilters(
+		CriteriaBuilder cb,
+		CriteriaQuery<Long> cq,
+		Root<Contact> root,
+		Date fromDate,
+		Date toDate,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Collection<Disease> diseases) {
+		Join<Contact, Case> caze = root.join(Contact.CAZE, JoinType.LEFT);
+
+		return AbstractAdoService.and(
+			cb,
+			contactService.createUserFilter(cb, cq, root),
+			contactService.createActiveContactsFilter(cb, root),
+			contactService.createDefaultFilter(cb, root),
+			cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),
+			cb.or(
+				cb.isNull(caze),
+				cb.and(caseService.createDefaultFilter(cb, caze), cb.notEqual(caze.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE))),
+			fromDate == null ? null : cb.greaterThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), fromDate),
+			toDate == null ? null : cb.lessThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), toDate),
+			root.get(Contact.DISEASE).in(diseases),
+			region == null ? null : cb.equal(root.join(Contact.REGION).get(Region.UUID), region.getUuid()),
+			district == null ? null : cb.equal(root.join(Contact.DISTRICT).get(District.UUID), district.getUuid()));
 	}
 
 	enum EnvParam {
@@ -222,7 +262,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				}
 				pb.directory(tempDir.toFile());
 
-				Map<String, String> poolProperties = getConnectionPoolProperties(domainXmlPath, "sormasDataPool");
+				Map<String, String> poolProperties = getConnectionPoolProperties(domainXmlPath, SORMAS_DATA_POOL_JNDI);
 				Map<String, String> env = pb.environment();
 
 				EnvParam.DB_USER.putFrom(env, poolProperties);
@@ -353,14 +393,16 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		return string.replace("\"", "\\\"");
 	}
 
-	static Map<String, String> getConnectionPoolProperties(Path domPath, String poolName) throws IOException {
+	static Map<String, String> getConnectionPoolProperties(Path domPath, String jndiName) throws IOException {
 		final Parser parser = Parser.xmlParser();
 		final org.jsoup.nodes.Document doc;
 		try (Reader rd = Files.newBufferedReader(domPath)) {
 			doc = parser.parseInput(rd, "");
 		}
 
-		Map<String, String> dbProperties = doc.select("jdbc-connection-pool[name=" + poolName + "] > property")
+		String poolName = doc.selectFirst("jdbc-resource[jndi-name=\"" + jndiName + "\"]").attr("pool-name");
+
+		Map<String, String> dbProperties = doc.select("jdbc-connection-pool[name=\"" + poolName + "\"] > property")
 			.stream()
 			.collect(Collectors.toMap(e -> e.attr("name"), e -> e.attr("value")));
 		return dbProperties;

@@ -36,6 +36,7 @@ public class EventDto extends PseudonymizableDto {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
+	public static final String PARTICIPANTS_COUNT = "participantCount";
 	public static final String EVENT_ACTIONS = "eventActions";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_DESC = "eventDesc";
@@ -66,7 +67,6 @@ public class EventDto extends PseudonymizableDto {
 	private EventStatus eventStatus;
 	private String externalId;
 	@Required
-	@SensitiveData
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
 	private Date startDate;
@@ -78,28 +78,19 @@ public class EventDto extends PseudonymizableDto {
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private EventSourceType srcType;
-	@SensitiveData
 	private String srcFirstName;
-	@SensitiveData
 	private String srcLastName;
-	@SensitiveData
 	private String srcTelNo;
-	@SensitiveData
 	private String srcEmail;
-	@SensitiveData
 	private String srcMediaWebsite;
-	@SensitiveData
 	private String srcMediaName;
-	@SensitiveData
 	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;
 	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
 	private String typeOfPlaceText;
-	@SensitiveData
 	private Double reportLat;
-	@SensitiveData
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 

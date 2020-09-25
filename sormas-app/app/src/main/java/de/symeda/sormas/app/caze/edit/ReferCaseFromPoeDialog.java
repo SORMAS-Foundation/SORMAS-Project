@@ -84,8 +84,9 @@ public class ReferCaseFromPoeDialog extends AbstractDialog {
 		List<Item> initialRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity());
+		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
 		InfrastructureHelper.initializeFacilityFields(
+			data,
 			contentBinding.caseDataRegion,
 			initialRegions,
 			data.getRegion(),
@@ -95,9 +96,17 @@ public class ReferCaseFromPoeDialog extends AbstractDialog {
 			contentBinding.caseDataCommunity,
 			initialCommunities,
 			data.getCommunity(),
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
-			data.getHealthFacility());
+			data.getHealthFacility(),
+			contentBinding.caseDataHealthFacilityDetails,
+			false);
 	}
 
 	@Override

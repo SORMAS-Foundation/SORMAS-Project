@@ -27,8 +27,6 @@ import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
@@ -66,11 +64,11 @@ public class PersonSelectionGrid extends Grid {
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(
-				I18nProperties.getPrefixCaption(PersonIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+				I18nProperties.getPrefixCaption(SimilarPersonDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
-		getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);
-		getColumn(PersonIndexDto.LAST_NAME).setMinimumWidth(150);
+		getColumn(SimilarPersonDto.FIRST_NAME).setMinimumWidth(150);
+		getColumn(SimilarPersonDto.LAST_NAME).setMinimumWidth(150);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,13 +81,6 @@ public class PersonSelectionGrid extends Grid {
 		List<String> similarPersonUuids = FacadeProvider.getPersonFacade()
 			.getMatchingNameDtos(UserProvider.getCurrent().getUserReference(), criteria)
 			.stream()
-			.filter(
-				dto -> PersonHelper.areNamesSimilar(
-					criteria.getFirstName(),
-					criteria.getLastName(),
-					dto.getFirstName(),
-					dto.getLastName(),
-					FacadeProvider.getConfigFacade().getNameSimilarityThreshold()))
 			.map(PersonNameDto::getUuid)
 			.collect(Collectors.toList());
 		List<SimilarPersonDto> similarPersons = FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(similarPersonUuids);

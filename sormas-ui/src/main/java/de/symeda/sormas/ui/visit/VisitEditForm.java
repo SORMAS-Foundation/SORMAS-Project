@@ -21,7 +21,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.function.Supplier;
 
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.OptionGroup;
@@ -33,6 +32,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
@@ -49,9 +49,10 @@ import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	private static final long serialVersionUID = 4265377973842591202L;
+	private static final String CONTACT_PERSON_PHONE_NUMBER_LOC = "contactPersonPhoneNumberLoc";
 
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(VisitDto.VISIT_STATUS) + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
+		fluidRowLocs(VisitDto.VISIT_STATUS, CONTACT_PERSON_PHONE_NUMBER_LOC)  + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
 
 	private final Disease disease;
 	private final ContactDto contact;
@@ -110,6 +111,13 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			return;
 		}
 
+		TextField textFieldPhone = new TextField(I18nProperties.getCaption(Captions.contactPersonPhoneNumber));
+		textFieldPhone.setWidth(100, Unit.PERCENTAGE);
+		textFieldPhone.setValue(this.person.getPhone());
+		textFieldPhone.setNullRepresentation("");
+		textFieldPhone.setReadOnly(true);
+		getContent().addComponent(textFieldPhone, CONTACT_PERSON_PHONE_NUMBER_LOC);
+
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
 		addField(VisitDto.VISIT_REMARKS, TextField.class);
@@ -123,23 +131,21 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (contact != null) {
+			Date startDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
+
 			addDateValidation(
-				() -> ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()),
-				() -> contact.getLastContactDate(),
-				() -> contact.getFollowUpUntil(),
-				Validations.visitBeforeLastContactDate,
-				Validations.visitBeforeContactReport,
-				Validations.visitAfterFollowUp);
+				startDate,
+				startDate,
+				contact.getLastContactDate() != null ? Validations.visitBeforeLastContactDate : Validations.visitBeforeContactReport,
+				contact.getFollowUpUntil());
 		}
 
 		if (caze != null) {
 			addDateValidation(
-				() -> CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
-				() -> caze.getSymptoms().getOnsetDate(),
-				() -> CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()),
-				Validations.visitBeforeSymptomsOnSet,
-				Validations.visitBeforeCaseReport,
-				Validations.visitAfterFollowUp);
+				CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
+				caze.getReportDate(),
+				caze.getSymptoms().getOnsetDate() != null ? Validations.visitBeforeSymptomsOnSet : Validations.visitBeforeCaseReport,
+				CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()));
 		}
 
 		symptomsForm.initializeSymptomRequirementsForVisit((OptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
@@ -147,36 +153,21 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		FieldHelper.setEnabledWhen(getFieldGroup(), visitStatus, Arrays.asList(VisitStatus.COOPERATIVE), Arrays.asList(VisitDto.SYMPTOMS), true);
 	}
 
-	private void addDateValidation(
-		Supplier<Date> startDateSupplier,
-		Supplier<Date> firstStartDatePart,
-		Supplier<Date> endDateSupplier,
-		String errorMessageDateTooEarly,
-		String errorMessageDateTooEarlyFirstPart,
-		String errorMessageDateTooLate) {
+	private void addDateValidation(Date startDate, Date referenceStartDate, String errorMessageDateTooEarly, Date endDate) {
 
 		getField(VisitDto.VISIT_DATE_TIME).addValidator((Validator) value -> {
 			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
-			Date startDate = startDateSupplier.get();
-			if (visitDateTime.before(startDate)
-				&& DateHelper.getDaysBetween(visitDateTime, caze.getReportDate()) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
-				if (firstStartDatePart.get() != null) {
-					throw new Validator.InvalidValueException(
-						I18nProperties.getValidationError(errorMessageDateTooEarlyFirstPart, FollowUpLogic.ALLOWED_DATE_OFFSET));
-				} else {
-					throw new Validator.InvalidValueException(
-						I18nProperties.getValidationError(errorMessageDateTooEarly, FollowUpLogic.ALLOWED_DATE_OFFSET));
-				}
+			if (visitDateTime.before(startDate) && DateHelper.getDaysBetween(visitDateTime, referenceStartDate) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
+				throw new Validator.InvalidValueException(
+					I18nProperties.getValidationError(errorMessageDateTooEarly, FollowUpLogic.ALLOWED_DATE_OFFSET));
 			}
-			Date endDate = endDateSupplier.get();
 			if (endDate != null
 				&& visitDateTime.after(endDate)
 				&& DateHelper.getDaysBetween(endDate, visitDateTime) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
 				throw new Validator.InvalidValueException(
-					I18nProperties.getValidationError(errorMessageDateTooLate, FollowUpLogic.ALLOWED_DATE_OFFSET));
+					I18nProperties.getValidationError(Validations.visitAfterFollowUp, FollowUpLogic.ALLOWED_DATE_OFFSET));
 			}
 		});
-
 	}
 
 	@Override

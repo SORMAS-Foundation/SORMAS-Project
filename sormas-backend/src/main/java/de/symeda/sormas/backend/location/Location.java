@@ -17,8 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,15 +34,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.AreaType;
-import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity
 @Audited
@@ -44,7 +45,6 @@ public class Location extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "location";
 
-	public static final String ADDRESS = "address";
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
 	public static final String AREA_TYPE = "areaType";
@@ -54,8 +54,12 @@ public class Location extends AbstractDomainObject {
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String POSTAL_CODE = "postalCode";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
+	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
+	public static final String ADDRESS_TYPE = "addressType";
+	public static final String ADDRESS_TYPE_DETAILS = "addressTypeDetails";
 
-	private String address;
 	private String details;
 	private String city;
 	private AreaType areaType;
@@ -69,15 +73,11 @@ public class Location extends AbstractDomainObject {
 	private Float latLonAccuracy;
 
 	private String postalCode;
-
-	@Column(length = COLUMN_LENGTH_BIG)
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
+	private String street;
+	private String houseNumber;
+	private String additionalInformation;
+	private PersonAddressType addressType;
+	private String addressTypeDetails;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDetails() {
@@ -166,6 +166,51 @@ public class Location extends AbstractDomainObject {
 		this.postalCode = postalCode;
 	}
 
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PersonAddressType getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(PersonAddressType addressType) {
+		this.addressType = addressType;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getAddressTypeDetails() {
+		return addressTypeDetails;
+	}
+
+	public void setAddressTypeDetails(String addressTypeDetails) {
+		this.addressTypeDetails = addressTypeDetails;
+	}
+
 	public String buildGpsCoordinatesCaption() {
 		if (latitude == null && longitude == null) {
 			return "";
@@ -185,6 +230,8 @@ public class Location extends AbstractDomainObject {
 			district != null ? district.getName() : null,
 			community != null ? community.getName() : null,
 			city,
-			address);
+			street,
+			houseNumber,
+			additionalInformation);
 	}
 }

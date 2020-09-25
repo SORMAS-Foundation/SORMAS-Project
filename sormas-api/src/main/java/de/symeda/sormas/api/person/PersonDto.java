@@ -17,11 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -30,6 +34,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
@@ -97,6 +102,15 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
+	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
+	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
+	public static final String ADDRESSES = "addresses";
+
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+
+	public static final String HAS_COVID_APP = "hasCovidApp";
+	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
+	public static final String EXTERNAL_ID = "externalId";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -141,6 +155,9 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.CONGENITAL_RUBELLA })
 	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
+	private FacilityType placeOfBirthFacilityType;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@SensitiveData
@@ -240,6 +257,8 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private CommunityReferenceDto occupationCommunity;
 	@SensitiveData
+	private FacilityType occupationFacilityType;
+	@SensitiveData
 	private FacilityReferenceDto occupationFacility;
 	@SensitiveData
 	private String occupationFacilityDetails;
@@ -249,6 +268,19 @@ public class PersonDto extends PseudonymizableDto {
 	private String passportNumber;
 	@SensitiveData
 	private String nationalHealthId;
+	private List<LocationDto> addresses = new ArrayList<>();
+
+	@Diseases(Disease.CORONAVIRUS)
+	@HideForCountriesExcept(countries = "ch")
+	private boolean hasCovidApp;
+	@Diseases(Disease.CORONAVIRUS)
+	@HideForCountriesExcept(countries = "ch")
+	private boolean covidCodeDelivered;
+
+	private SymptomJournalStatus symptomJournalStatus;
+	@SensitiveData
+	@HideForCountriesExcept(countries = "de")
+	private String externalId;
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -616,6 +648,63 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
+	}
+
+	public FacilityType getOccupationFacilityType() {
+		return occupationFacilityType;
+	}
+
+	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
+		this.occupationFacilityType = occupationFacilityType;
+	}
+
+	public FacilityType getPlaceOfBirthFacilityType() {
+		return placeOfBirthFacilityType;
+	}
+
+	public void setPlaceOfBirthFacilityType(FacilityType placeOfBirthFacilityType) {
+		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
+	}
+
+	@ImportIgnore
+	public List<LocationDto> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<LocationDto> addresses) {
+		this.addresses = addresses;
+	}
+
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
+	public boolean isHasCovidApp() {
+		return hasCovidApp;
+	}
+
+	public void setHasCovidApp(boolean hasCovidApp) {
+		this.hasCovidApp = hasCovidApp;
+	}
+
+	public boolean isCovidCodeDelivered() {
+		return covidCodeDelivered;
+	}
+
+	public void setCovidCodeDelivered(boolean covidCodeDelivered) {
+		this.covidCodeDelivered = covidCodeDelivered;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	@Override

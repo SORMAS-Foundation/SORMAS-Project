@@ -49,7 +49,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()),
 			AppFieldAccessCheckers.withCheckers(
-				EventEditAuthorization.isEventEditAllowed(activityRootData.getEvent()),
+				EventEditAuthorization.isEventParticipantEditAllowed(activityRootData),
 				FieldHelper.createPersonalDataFieldAccessChecker(),
 				FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}

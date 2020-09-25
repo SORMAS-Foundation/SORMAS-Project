@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -33,7 +34,7 @@ import de.symeda.sormas.ui.TestDataCreator.RDCF;
 public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testUmlautsInInfrastructureImport() throws IOException, InvalidColumnException, InterruptedException {
+	public void testUmlautsInInfrastructureImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
@@ -59,11 +60,17 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").getFile());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user.toReference(), InfrastructureType.FACILITY);
 		importer.runImport();
-		getFacilityFacade().getByName("Facility with ü", district, community, false).get(0);
+		getFacilityFacade().getByNameAndType("Facility with ü", district, community, null, false).get(0);
+
+		// Import point of entry from commented CSV file
+		File commentedPoeCsvFile = new File(getClass().getClassLoader().getResource("sormas_poe_import_test_comment.csv").getFile());
+		importer = new InfrastructureImporterExtension(commentedPoeCsvFile, user.toReference(), InfrastructureType.POINT_OF_ENTRY);
+		importer.runImport();
+		getPointOfEntryFacade().getByName("Airport A", district, false).get(0);
 	}
 
 	@Test
-	public void testDontImportDuplicateInfrastructure() throws IOException, InvalidColumnException, InterruptedException {
+	public void testDontImportDuplicateInfrastructure() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
@@ -89,7 +96,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").getFile());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user.toReference(), InfrastructureType.FACILITY);
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
-		assertEquals(2, getFacilityFacade().count(new FacilityCriteria()));
+		assertEquals(3, getFacilityFacade().count(new FacilityCriteria()));
 
 		// Import point of entry
 		File poeCsvFile = new File(getClass().getClassLoader().getResource("sormas_poe_import_test.csv").getFile());

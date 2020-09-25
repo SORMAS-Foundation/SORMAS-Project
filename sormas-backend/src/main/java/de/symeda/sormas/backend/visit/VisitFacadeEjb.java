@@ -76,6 +76,8 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -118,6 +120,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	private ContactService contactService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -167,6 +171,18 @@ public class VisitFacadeEjb implements VisitFacade {
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 
 		return convertToDto(contact.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null), pseudonymizer);
+	}
+
+	@Override
+	public List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end) {
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+
+		return contact.getVisits()
+			.stream()
+			.filter(visit -> visit.getVisitDateTime().after(begin) && visit.getVisitDateTime().before(end))
+			.map(visit -> convertToDto(visit, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -623,7 +639,11 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 
 		if (newVisit.getCaze() != null) {
-			caseService.updateFollowUpUntilAndStatus(newVisit.getCaze());
+			// Update case symptoms
+			CaseDataDto caze = CaseFacadeEjb.toDto(newVisit.getCaze());
+			SymptomsDto caseSymptoms = caze.getSymptoms();
+			SymptomsHelper.updateSymptoms(toDto(newVisit).getSymptoms(), caseSymptoms);
+			caseFacade.saveCase(caze);
 		}
 	}
 
@@ -643,7 +663,9 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void updateCaseVisitAssociations(VisitDto existingVisit, Visit visit) {
 
-		if (existingVisit != null && existingVisit.getVisitDateTime() == visit.getVisitDateTime()) {
+		if (existingVisit != null
+			&& existingVisit.getVisitDateTime() == visit.getVisitDateTime()
+			&& existingVisit.getPerson().equals(visit.getPerson())) {
 			// No need to update the associations
 			return;
 		}

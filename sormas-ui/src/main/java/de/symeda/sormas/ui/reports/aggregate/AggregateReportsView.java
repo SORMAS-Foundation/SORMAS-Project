@@ -179,11 +179,11 @@ public class AggregateReportsView extends AbstractView {
 
 			cbDistrictFilter = new ComboBox<>();
 			cbDistrictFilter.setId(AggregateReportCriteria.DISTRICT);
-			cbDistrictFilter.addValueChangeListener(e -> updateButtonVisibility());
 			cbDistrictFilter.setWidth(200, Unit.PIXELS);
 			cbDistrictFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 			binder.bind(cbDistrictFilter, AggregateReportCriteria.DISTRICT);
 			cbDistrictFilter.addValueChangeListener(e -> {
+				updateButtonVisibility();
 				DistrictReferenceDto district = e.getValue();
 				if (cbFacilityFilter != null) {
 					cbFacilityFilter.clear();
@@ -193,7 +193,7 @@ public class AggregateReportsView extends AbstractView {
 				}
 				if (district != null) {
 					if (cbFacilityFilter != null) {
-						cbFacilityFilter.setItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(district, false));
+						cbFacilityFilter.setItems(FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(district, false));
 						cbFacilityFilter.setEnabled(true);
 					}
 					if (cbPoeFilter != null) {
