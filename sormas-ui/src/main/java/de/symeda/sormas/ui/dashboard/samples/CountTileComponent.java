@@ -33,10 +33,9 @@ public class CountTileComponent extends VerticalLayout {
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	public CountTileComponent(SampleCountType sampleCountType, Long count, Long countDifference) {
+		addTopLayout(sampleCountType, count, countDifference);
 		setMargin(false);
 		setSpacing(false);
-
-		addTopLayout(sampleCountType, count, countDifference);
 	}
 
 	private void addTopLayout(SampleCountType sampleCountType, Long count, Long countDifference) {
@@ -50,7 +49,6 @@ public class CountTileComponent extends VerticalLayout {
 		VerticalLayout countLayout = new VerticalLayout();
 		countLayout.setMargin(false);
 		countLayout.setSpacing(false);
-//		CssStyles.style(countLayout, CssStyles.getSampleCountColor(sampleCountType), CssStyles.BACKGROUND_DARKER);
 		countLayout.setHeight(65, Unit.PIXELS);
 		countLayout.setWidth(100, Unit.PERCENTAGE);
 
