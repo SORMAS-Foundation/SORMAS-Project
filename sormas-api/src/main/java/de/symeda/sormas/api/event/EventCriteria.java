@@ -24,6 +24,7 @@ import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -47,6 +48,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Boolean deleted = Boolean.FALSE;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	private Date reportedDateFrom;
 	private Date reportedDateTo;
 	private EntityRelevanceStatus relevanceStatus;
@@ -156,6 +158,19 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public DistrictReferenceDto getDistrict() {
 		return this.district;
+	}
+
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
+	}
+
+	public EventCriteria eventCommunity(CommunityReferenceDto eventCommunity) {
+		this.community = eventCommunity;
+		return this;
 	}
 
 	/**

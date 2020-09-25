@@ -451,6 +451,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID),
 					eventCriteria.getDistrict().getUuid()));
 		}
+		if (eventCriteria.getCommunity() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID),
+					eventCriteria.getCommunity().getUuid()));
+		}
 		if (eventCriteria.getReportedDateFrom() != null || eventCriteria.getReportedDateTo() != null) {
 			filter =
 				and(cb, filter, cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));

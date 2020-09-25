@@ -20,11 +20,11 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -33,7 +33,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 
@@ -48,7 +47,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
 	private static final String MORE_FILTERS_HTML_LAYOUT =
-		filterLocs(EventDto.SRC_TYPE, LocationDto.REGION, LocationDto.DISTRICT, EventDto.TYPE_OF_PLACE) + loc(WEEK_AND_DATE_FILTER);
+		filterLocs(EventDto.SRC_TYPE, LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY, EventDto.TYPE_OF_PLACE)
+			+ loc(WEEK_AND_DATE_FILTER);
 
 	@Override
 	protected String[] getMainFilterLocators() {
@@ -87,28 +87,31 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		if (user.getRegion() == null) {
 			ComboBox regionField = addField(
 				moreFiltersContainer,
-				FieldConfiguration.withCaptionAndPixelSized(
-					EventCriteria.REGION,
-					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION),
-					140));
+				FieldConfiguration
+					.withCaptionAndPixelSized(LocationDto.REGION, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION), 140));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		}
 
 		ComboBox districtField = addField(
 			moreFiltersContainer,
-			FieldConfiguration.withCaptionAndPixelSized(
-				EventCriteria.DISTRICT,
-				I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT),
-				140));
+			FieldConfiguration
+				.withCaptionAndPixelSized(LocationDto.DISTRICT, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT), 140));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
+
+		ComboBox communityField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				LocationDto.COMMUNITY,
+				I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY),
+				140));
+		communityField.setDescription(I18nProperties.getDescription(Descriptions.descCommunityFilter));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter() {
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter =
-			new EpiWeekAndDateFilterComponent<>(false, false, null, this);
+		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, this);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekTo));
@@ -180,17 +183,23 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	@Override
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
 		switch (propertyId) {
-		case EventCriteria.REGION: {
+		case LocationDto.REGION:
 			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
 			if (region == null) {
-				clearAndDisableFields(EventCriteria.DISTRICT);
+				clearAndDisableFields(LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			} else {
-				enableFields(EventCriteria.DISTRICT);
-				applyRegionFilterDependency(region, EventCriteria.DISTRICT);
+				applyRegionFilterDependency(region, LocationDto.DISTRICT);
+				clearAndDisableFields(LocationDto.COMMUNITY);
 			}
-
 			break;
-		}
+		case LocationDto.DISTRICT:
+			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
+			if (district == null) {
+				clearAndDisableFields(LocationDto.COMMUNITY);
+			} else {
+				applyDistrictDependency(district, LocationDto.COMMUNITY);
+			}
+			break;
 		}
 	}
 
@@ -213,7 +222,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			weekAndDateFilter.getDateToFilter().setValue(sampleDateTo);
 		}
 
-		applyRegionFilterDependency(criteria.getRegion(), EventCriteria.DISTRICT);
+		RegionReferenceDto region = criteria.getRegion();
+		DistrictReferenceDto district = criteria.getDistrict();
+		applyRegionAndDistrictFilterDependency(region, LocationDto.DISTRICT, district, LocationDto.COMMUNITY);
 	}
 
 	@Override
