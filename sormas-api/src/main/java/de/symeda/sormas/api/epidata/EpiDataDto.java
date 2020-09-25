@@ -277,7 +277,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.NEW_INFLUENZA,
 		Disease.ANTHRAX,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown areaInfectedAnimals;
@@ -288,7 +287,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.RABIES,
 		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown sickDeadAnimals;
@@ -299,7 +297,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.RABIES,
 		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
@@ -311,7 +308,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.RABIES,
 		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private Date sickDeadAnimalsDate;
@@ -321,7 +317,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.NEW_INFLUENZA,
 		Disease.ANTHRAX,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
@@ -332,7 +327,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.NEW_INFLUENZA,
 		Disease.ANTHRAX,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown eatingRawAnimalsInInfectedArea;
@@ -342,7 +336,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.NEW_INFLUENZA,
 		Disease.ANTHRAX,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown eatingRawAnimals;
@@ -352,7 +345,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.NEW_INFLUENZA,
 		Disease.ANTHRAX,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
@@ -378,7 +370,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.UNSPECIFIED_VHF,
 		Disease.RABIES,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown bats;
@@ -471,7 +462,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.RABIES,
 		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown otherAnimals;
@@ -485,7 +475,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.RABIES,
 		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
@@ -662,12 +651,10 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.OTHER })
 	private YesNoUnknown visitedAnimalMarket;
 	@Diseases({
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown camels;
 	@Diseases({
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown snakes;

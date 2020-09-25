@@ -15,8 +15,9 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
+
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -25,8 +26,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
-
-import static com.vaadin.ui.Notification.Type.*;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
 public class CampaignFormDataView extends AbstractCampaignDataView {
 
@@ -34,31 +34,33 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/dataform";
 
+	private CommitDiscardWrapperComponent<CampaignFormDataEditForm> editComponent;
+
 	public CampaignFormDataView() {
 		super(VIEW_NAME);
 	}
 
 	@Override
 	protected void initView(String params) {
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
 
 		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
-		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = ControllerProvider.getCampaignController()
+		editComponent = ControllerProvider.getCampaignController()
 			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignFormMeta(), true, true, () -> {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
 					TRAY_NOTIFICATION);
 			}, null);
-		component.setMargin(false);
-		component.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		component.setHeightUndefined();
-		component.addStyleName(CssStyles.ROOT_COMPONENT);
-		component.setWidth(100, Unit.PERCENTAGE);
+		editComponent.setMargin(false);
+		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
+		editComponent.setHeightUndefined();
+		editComponent.addStyleName(CssStyles.ROOT_COMPONENT);
+		editComponent.setWidth(100, Unit.PERCENTAGE);
 
-		container.addComponent(component);
+		container.addComponent(editComponent);
 
 		hideInfoLabel();
 

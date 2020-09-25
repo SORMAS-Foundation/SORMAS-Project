@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>1.48.2</version>
+        <version>1.49.0</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -24,7 +24,7 @@
 		    <artifactId>hibernate-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -60,13 +60,42 @@
 			<artifactId>vaadin-themes</artifactId>
 			<scope>provided</scope>
 		</dependency>
-			
+
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>assemblyZip.xml</descriptor>
+						<descriptor>assemblyLibJar.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
 

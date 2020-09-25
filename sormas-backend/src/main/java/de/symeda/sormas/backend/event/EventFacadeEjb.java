@@ -40,8 +40,10 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -55,6 +57,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -214,9 +217,17 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
+		Subquery<Long> participantCount = cq.subquery(Long.class);
+		Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
+		Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		participantCount.select(cb.count(eventParticipantRoot));
+		participantCount.where(assignedToEvent, notDeleted);
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
+			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -309,10 +320,18 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
+		Subquery<Long> participantCount = cq.subquery(Long.class);
+		Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
+		Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		participantCount.select(cb.count(eventParticipantRoot));
+		participantCount.where(assignedToEvent, notDeleted);
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
+			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),

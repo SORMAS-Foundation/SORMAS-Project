@@ -67,7 +67,7 @@ public class Hospitalization extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date intensiveCareUnitEnd;
 	// just for reference, not persisted in DB
-	private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
+	private List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
 
 	public Date getAdmissionDate() {
 		return admissionDate;

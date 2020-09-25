@@ -32,6 +32,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	public static final String UUID = "uuid";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
@@ -46,6 +47,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	private String uuid;
 	private EventStatus eventStatus;
+	private long participantCount;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -64,6 +66,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 	public EventIndexDto(
 		String uuid,
 		EventStatus eventStatus,
+		Long participantCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -105,6 +108,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.participantCount = participantCount;
 	}
 
 	public String getUuid() {
@@ -221,6 +225,14 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	public long getParticipantCount() {
+		return participantCount;
+	}
+
+	public void setParticipantCount(long participantCount) {
+		this.participantCount = participantCount;
 	}
 
 	public EventReferenceDto toReference() {

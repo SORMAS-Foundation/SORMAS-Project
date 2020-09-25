@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.opencsv.exceptions.CsvValidationException;
+import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +51,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Base class for all importers that are used to get data from CSV files into SORMAS.
@@ -110,7 +114,8 @@ public abstract class DataImporter {
 	/**
 	 * Opens a progress layout and runs the import logic in a separate thread.
 	 */
-	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible) throws IOException {
+	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible)
+		throws IOException, CsvValidationException {
 
 		ImportProgressLayout progressLayout =
 			new ImportProgressLayout(readImportFileLength(inputFile), currentUI, this::cancelImport, duplicatesPossible);
@@ -209,26 +214,27 @@ public abstract class DataImporter {
 	/**
 	 * To be called by async import thread or unit test
 	 */
-	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException {
+	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 		logger.debug("runImport - " + inputFile.getAbsolutePath());
 		Date methodDate = new Date();
 
 		CSVReader csvReader = null;
 		try {
-			csvReader = CSVUtils
-				.createCSVReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-8"), FacadeProvider.getConfigFacade().getCsvSeparator());
+			csvReader = CSVUtils.createCSVReader(new InputStreamReader(new FileInputStream(inputFile), UTF_8),
+				FacadeProvider.getConfigFacade().getCsvSeparator(),
+				new CSVCommentLineValidator());
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
 
 			// Build dictionary of entity headers
 			String[] entityClasses;
 			if (hasEntityClassRow) {
-				entityClasses = csvReader.readNext();
+				entityClasses = readNextValidLine(csvReader);
 			} else {
 				entityClasses = null;
 			}
 
 			// Build dictionary of column paths
-			String[] entityProperties = csvReader.readNext();
+			String[] entityProperties = readNextValidLine(csvReader);
 			String[][] entityPropertyPaths = new String[entityProperties.length][];
 			for (int i = 0; i < entityProperties.length; i++) {
 				String[] entityPropertyPath = entityProperties[i].split("\\.");
@@ -244,7 +250,7 @@ public abstract class DataImporter {
 			errorReportCsvWriter.writeNext(columnNames);
 
 			// Read and import all lines from the import file
-			String[] nextLine = csvReader.readNext();
+			String[] nextLine = readNextValidLine(csvReader);
 			int lineCounter = 0;
 			while (nextLine != null) {
 				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0);
@@ -255,7 +261,8 @@ public abstract class DataImporter {
 				if (cancelAfterCurrent) {
 					break;
 				}
-				nextLine = csvReader.readNext();
+				nextLine = readNextValidLine(csvReader);
+				lineCounter++;
 			}
 
 			logger.debug("runImport - done");
@@ -309,10 +316,13 @@ public abstract class DataImporter {
 	 * Reads the number of actual CSV lines in the file minus the header line(s).
 	 * This is different from "normal" lines, because CSV may have escaped multi-line text blocks.
 	 */
-	protected int readImportFileLength(File inputFile) throws IOException {
+	protected int readImportFileLength(File inputFile) throws IOException, CsvValidationException {
 		int importFileLength = 0;
-		try (CSVReader caseCountReader = CSVUtils.createCSVReader(new FileReader(inputFile), FacadeProvider.getConfigFacade().getCsvSeparator())) {
-			while (caseCountReader.readNext() != null) {
+		try (CSVReader caseCountReader = CSVUtils.createCSVReader(new FileReader(inputFile),
+			FacadeProvider.getConfigFacade().getCsvSeparator(),
+			new CSVCommentLineValidator())) {
+
+			while (readNextValidLine(caseCountReader) != null) {
 				importFileLength++;
 			}
 			// subtract header line(s)
@@ -506,5 +516,26 @@ public abstract class DataImporter {
 
 	protected String buildEntityProperty(String[] entityPropertyPath) {
 		return String.join(".", entityPropertyPath);
+	}
+
+	private String[] readNextValidLine(CSVReader csvReader) throws IOException, CsvValidationException {
+		String[] nextValidLine = null;
+		boolean isCommentLine;
+
+		do {
+			try {
+				nextValidLine = csvReader.readNext();
+				isCommentLine = false;
+			} catch (CsvValidationException e) {
+				if (StringUtils.contains(e.getMessage(), CSVCommentLineValidator.ERROR_MESSAGE)) {
+					logger.debug("Found comment line. Skipping it");
+					csvReader.skip(1);
+					isCommentLine = true;
+				} else {
+					throw e;
+				}
+			}
+		} while(isCommentLine);
+		return nextValidLine;
 	}
 }

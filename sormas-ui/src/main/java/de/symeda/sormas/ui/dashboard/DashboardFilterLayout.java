@@ -20,15 +20,10 @@ package de.symeda.sormas.ui.dashboard;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.v7.ui.Field;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
@@ -95,7 +90,6 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private HorizontalLayout customDateFilterLayout;
 
 	private Runnable dateFilterChangeCallback;
-	private Consumer<Boolean> diseaseFilterChangeCallback;
 
 	public DashboardFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
 		this.dashboardView = dashboardView;
@@ -159,9 +153,6 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
 		}
 		diseaseFilter.addValueChangeListener(e -> {
-			if (diseaseFilterChangeCallback != null) {
-				diseaseFilterChangeCallback.accept(diseaseFilter.getValue() != null);
-			}
 			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
 		});
 		addComponent(diseaseFilter);
@@ -314,11 +305,10 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		// 'Apply custom filter' button
 		Button applyButton =
 			ButtonHelper.createButton(Captions.dashboardApplyCustomFilter, null, CssStyles.FORCE_CAPTION, CssStyles.BUTTON_FILTER_LIGHT);
-		applyButton.setEnabled(false);
 
 		// Date & Epi Week filter
 		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter =
-			new EpiWeekAndDateFilterComponent<>(applyButton, true, true, I18nProperties.getString(Strings.infoCaseDate));
+			new EpiWeekAndDateFilterComponent<>(true, true, I18nProperties.getString(Strings.infoCaseDate), null);
 		customDateFilterLayout.addComponents(weekAndDateFilter, applyButton);
 
 		// Apply button listener
@@ -550,14 +540,6 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	public void setDateFilterChangeCallback(Runnable dateFilterChangeCallback) {
 		this.dateFilterChangeCallback = dateFilterChangeCallback;
-	}
-
-	public Consumer<Boolean> getDiseaseFilterChangeCallback() {
-		return diseaseFilterChangeCallback;
-	}
-
-	public void setDiseaseFilterChangeCallback(Consumer<Boolean> diseaseFilterChangeCallback) {
-		this.diseaseFilterChangeCallback = diseaseFilterChangeCallback;
 	}
 
 	public boolean hasDiseaseSelected() {
