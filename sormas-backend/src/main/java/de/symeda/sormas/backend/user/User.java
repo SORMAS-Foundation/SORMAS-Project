@@ -77,6 +77,7 @@ public class User extends AbstractDomainObject {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String LANGUAGE = "language";
+	public static final String GDPR = "gdpr";
 
 	private String userName;
 	private String password;
@@ -108,6 +109,8 @@ public class User extends AbstractDomainObject {
 	private Disease limitedDisease;
 
 	private Language language;
+
+	private boolean gdpr;
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getUserName() {
@@ -309,6 +312,10 @@ public class User extends AbstractDomainObject {
 	public void setLanguage(Language language) {
 		this.language = language;
 	}
+
+	public boolean isGdpr() { return gdpr; }
+
+	public void setGdpr(boolean gdpr) { this.gdpr = gdpr; }
 
 	/**
 	 * Checks if the User possesses any of the specified userRoles

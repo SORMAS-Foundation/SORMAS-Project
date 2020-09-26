@@ -5379,7 +5379,7 @@ INSERT INTO person_locations (person_id, location_id) SELECT person_id, location
 ALTER TABLE person DROP COLUMN occupationregion_id, DROP COLUMN occupationdistrict_id, DROP COLUMN occupationcommunity_id, DROP COLUMN occupationfacilitytype, DROP COLUMN occupationfacility_id, DROP COLUMN occupationfacilitydetails;
 
 INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add facility fields to location and refactor occupation facilities for persons #2456');
-                                                                                                                                          
+
 -- 202-10-01 Split general signs of disease #2916
 ALTER TABLE symptoms ADD COLUMN shivering character varying(255);
 ALTER TABLE symptoms RENAME generalsignsofdisease to feelingill;
@@ -5488,4 +5488,9 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaign_
 ALTER TABLE campaign_campaignformmeta_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (266, 'CampaignFormMeta to Campaigns relation #2855');
+
+ALTER TABLE users ADD COLUMN gdpr boolean default true;
+ALTER TABLE users_history ADD COLUMN gdpr boolean default true;
+INSERT INTO schema_version (version_number, comment) VALUES (267, 'Add gdpr popup to user');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -59,6 +59,7 @@ public class UserDto extends EntityDto {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String LIMITED_DISEASE = "limitedDisease";
 	public static final String LANGUAGE = "language";
+	public static final String GDPR = "gdpr";
 
 	private boolean active = true;
 
@@ -89,6 +90,8 @@ public class UserDto extends EntityDto {
 	private Disease limitedDisease;
 
 	private Language language;
+
+	private boolean gdpr;
 
 	public static UserDto build() {
 		UserDto user = new UserDto();
@@ -253,4 +256,8 @@ public class UserDto extends EntityDto {
 	public void setLanguage(Language language) {
 		this.language = language;
 	}
+
+	public boolean isGdpr() { return gdpr; }
+
+	public void setGdpr(boolean gdpr) { this.gdpr = gdpr; }
 }
