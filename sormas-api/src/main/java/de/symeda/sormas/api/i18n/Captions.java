@@ -760,6 +760,7 @@ public interface Captions {
 	String Event_eventParticipants = "Event.eventParticipants";
 	String Event_eventPersons = "Event.eventPersons";
 	String Event_eventStatus = "Event.eventStatus";
+	String Event_eventTitle = "Event.eventTitle";
 	String Event_eventType = "Event.eventType";
 	String Event_externalId = "Event.externalId";
 	String Event_informationSource = "Event.informationSource";
@@ -819,6 +820,7 @@ public interface Captions {
 	String EventParticipantExport_eventRegion = "EventParticipantExport.eventRegion";
 	String EventParticipantExport_eventStartDate = "EventParticipantExport.eventStartDate";
 	String EventParticipantExport_eventStreet = "EventParticipantExport.eventStreet";
+	String EventParticipantExport_eventTitle = "EventParticipantExport.eventTitle";
 	String EventParticipantExport_eventTypeOfPlace = "EventParticipantExport.eventTypeOfPlace";
 	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
 	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
