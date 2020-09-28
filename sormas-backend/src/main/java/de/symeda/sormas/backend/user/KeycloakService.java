@@ -21,15 +21,18 @@ package de.symeda.sormas.backend.user;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -51,6 +54,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
 import static org.keycloak.representations.IDToken.LOCALE;
 
 /**
@@ -69,6 +73,9 @@ public class KeycloakService {
 	private static final String OIDC_SECRET = "secret";
 
 	private static final String REALM_NAME = "SORMAS";
+
+	private static final String ACTION_UPDATE_PASSWORD = "UPDATE_PASSWORD";
+	private static final String ACTION_VERIFY_EMAIL = "VERIFY_EMAIL";
 
 	private static final List<UserRole> REST_ROLES = Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER);
 
@@ -107,9 +114,16 @@ public class KeycloakService {
 			return;
 		}
 
+		String password = null;
+		if (userCreateEvent instanceof MockUserCreateEvent) {
+			password = ((MockUserCreateEvent) userCreateEvent).getPassword();
+		}
+
 		User user = userCreateEvent.getUser();
-		String userId = createUser(keycloak.get(), user);
-		sendActivationEmail(keycloak.get(), userId);
+		String userId = createUser(keycloak.get(), user, password);
+		if (StringUtils.isNotBlank(user.getUserEmail())) {
+			sendActivationEmail(keycloak.get(), userId);
+		}
 	}
 
 	public void handleUserUpdateEvent(@Observes UserUpdateEvent userUpdateEvent) {
@@ -125,8 +139,10 @@ public class KeycloakService {
 		Optional<UserRepresentation> userRepresentation = updateUser(keycloak.get(), oldUser, newUser);
 		if (!userRepresentation.isPresent()) {
 			logger.debug("Cannot find user in Keycloak. Will try to create it");
-			String userId = createUser(keycloak.get(), newUser);
-			sendActivationEmail(keycloak.get(), userId);
+			String userId = createUser(keycloak.get(), newUser, null);
+			if (StringUtils.isNotBlank(newUser.getUserEmail())) {
+				sendActivationEmail(keycloak.get(), userId);
+			}
 		}
 	}
 
@@ -146,16 +162,22 @@ public class KeycloakService {
 		userRepresentation.ifPresent(existing -> sendPasswordResetEmail(keycloak.get(), existing.getId()));
 	}
 
-	private UserRepresentation createUserRepresentation(User user) {
+	private UserRepresentation createUserRepresentation(User user, String password) {
 		UserRepresentation userRepresentation = new UserRepresentation();
 
 		userRepresentation.setEnabled(user.isActive());
 		userRepresentation.setUsername(user.getUserName());
 		userRepresentation.setFirstName(user.getFirstName());
 		userRepresentation.setLastName(user.getLastName());
-		userRepresentation.setEmail(user.getUserEmail());
-		userRepresentation.setRequiredActions(Arrays.asList("VERIFY_EMAIL", "UPDATE_PASSWORD"));
 		setLanguage(userRepresentation, user.getLanguage());
+		if(StringUtils.isNotBlank(password)) {
+			setCredentials(userRepresentation, password);
+		}
+
+		if (StringUtils.isNotBlank(user.getUserEmail())) {
+			userRepresentation.setEmail(user.getUserEmail());
+			userRepresentation.setRequiredActions(Arrays.asList(ACTION_VERIFY_EMAIL, ACTION_UPDATE_PASSWORD));
+		}
 
 		return userRepresentation;
 	}
@@ -169,9 +191,8 @@ public class KeycloakService {
 		setLanguage(userRepresentation, user.getLanguage());
 	}
 
-	private String createUser(Keycloak keycloak, User user) {
-
-		UserRepresentation userRepresentation = createUserRepresentation(user);
+	private String createUser(Keycloak keycloak, User user, String initialPassword) {
+		UserRepresentation userRepresentation = createUserRepresentation(user, initialPassword);
 		Response response = keycloak.realm(REALM_NAME).users().create(userRepresentation);
 		if (response.getStatus() != Response.Status.CREATED.getStatusCode()) {
 			throw new WebApplicationException(response);
@@ -236,7 +257,7 @@ public class KeycloakService {
 	}
 
 	private void sendPasswordResetEmail(Keycloak keycloak, String userId) {
-		keycloak.realm(REALM_NAME).users().get(userId).executeActionsEmail(Collections.singletonList("UPDATE_PASSWORD"));
+		keycloak.realm(REALM_NAME).users().get(userId).executeActionsEmail(Collections.singletonList(ACTION_UPDATE_PASSWORD));
 	}
 
 	private void setLanguage(UserRepresentation userRepresentation, Language language) {
@@ -248,6 +269,14 @@ public class KeycloakService {
 		if (language != null) {
 			attributes.put(LOCALE, Collections.singletonList(language.getLocale().getLanguage()));
 		}
+	}
+
+	private void setCredentials(UserRepresentation userRepresentation, String password) {
+		CredentialRepresentation credential = new CredentialRepresentation();
+		credential.setType(CredentialRepresentation.PASSWORD);
+		credential.setValue(password);
+		credential.setTemporary(false);
+		userRepresentation.setCredentials(singletonList(credential));
 	}
 
 	private Optional<Keycloak> getKeycloak() {

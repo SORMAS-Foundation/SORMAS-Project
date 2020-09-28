@@ -21,6 +21,8 @@ package de.symeda.sormas.backend.user.event;
 import de.symeda.sormas.backend.user.User;
 
 /**
+ * Event fired whenever a user's password is changed.
+ *
  * @author Alex Vidrean
  * @since 15-Aug-20
  */

@@ -21,20 +21,21 @@ package de.symeda.sormas.backend.user.event;
 import de.symeda.sormas.backend.user.User;
 
 /**
- * Event fired when a user is created and persisted.
+ * Event used for hard coded created users.
  *
  * @author Alex Vidrean
  * @since 15-Aug-20
  */
-public class UserCreateEvent {
+public class MockUserCreateEvent extends UserCreateEvent {
 
-	private User user;
+	private String password;
 
-	public UserCreateEvent(User user) {
-		this.user = user;
+	public MockUserCreateEvent(User user, String password) {
+		super(user);
+		this.password = password;
 	}
 
-	public User getUser() {
-		return user;
+	public String getPassword() {
+		return password;
 	}
 }
