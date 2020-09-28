@@ -711,6 +711,10 @@ public interface Strings {
 	String or = "or";
 	String pleaseSpecify = "pleaseSpecify";
 	String previousPeriod = "previousPeriod";
+	String promptActionDateFrom = "promptActionDateFrom";
+	String promptActionDateTo = "promptActionDateTo";
+	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
+	String promptActionEpiWeekTo = "promptActionEpiWeekTo";
 	String promptArea = "promptArea";
 	String promptCampaign = "promptCampaign";
 	String promptCampaignSearch = "promptCampaignSearch";

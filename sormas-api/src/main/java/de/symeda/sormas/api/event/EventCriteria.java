@@ -40,6 +40,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String FREE_TEXT = "freeText";
+	public static final String EVENT_STATUS = "eventStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
 
@@ -305,6 +306,18 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public EventCriteria dateBetween(DateType dateType, Date dateFrom, Date dateTo, DateFilterOption dateFilterOption) {
+		switch (dateType) {
+		case EVENT:
+			eventDateBetween(dateFrom, dateTo, dateFilterOption);
+			break;
+		case ACTION:
+			actionChangeDateBetween(dateFrom, dateTo, dateFilterOption);
+			break;
+		}
+		return this;
+	}
+
 	public Date getActionChangeDateFrom() {
 		return actionChangeDateFrom;
 	}
@@ -342,5 +355,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public DateFilterOption getActionChangeDateFilterOption() {
 		return actionChangeDateFilterOption;
+	}
+
+	public enum DateType {
+		EVENT,
+		ACTION,
 	}
 }
