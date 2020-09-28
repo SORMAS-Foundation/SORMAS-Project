@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
@@ -153,6 +154,37 @@ public final class VaadinUiUtil {
 		Integer width,
 		Consumer<Boolean> resultConsumer) {
 
+		return showConfirmationPopup(caption, content, popupWindow -> {
+			ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected void onConfirm() {
+					resultConsumer.accept(true);
+					popupWindow.close();
+				}
+
+				@Override
+				protected void onCancel() {
+					resultConsumer.accept(false);
+					popupWindow.close();
+				}
+			};
+
+			confirmationComponent.getConfirmButton().setCaption(confirmCaption);
+			confirmationComponent.getCancelButton().setCaption(cancelCaption);
+
+			return confirmationComponent;
+		}, width);
+	}
+
+	public static Window showConfirmationPopup(
+		String caption,
+		Component content,
+		Function<Window, ConfirmationComponent> confirmationComponentProvider,
+		Integer width) {
+
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 		if (width != null) {
 			popupWindow.setWidth(width, Unit.PIXELS);
@@ -166,33 +198,18 @@ public final class VaadinUiUtil {
 		content.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(content);
 
-		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected void onConfirm() {
-				resultConsumer.accept(true);
-				popupWindow.close();
-			}
-
-			@Override
-			protected void onCancel() {
-				resultConsumer.accept(false);
-				popupWindow.close();
-			}
-		};
-		confirmationComponent.getConfirmButton().setCaption(confirmCaption);
-		confirmationComponent.getCancelButton().setCaption(cancelCaption);
+		ConfirmationComponent confirmationComponent = confirmationComponentProvider.apply(popupWindow);
 
 		layout.addComponent(confirmationComponent);
 		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setSpacing(true);
+
 		popupWindow.setContent(layout);
 		popupWindow.setClosable(false);
 
 		UI.getCurrent().addWindow(popupWindow);
+
 		return popupWindow;
 	}
 
