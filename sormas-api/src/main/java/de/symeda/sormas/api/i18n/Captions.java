@@ -26,6 +26,7 @@ public interface Captions {
 	String Action_event = "Action.event";
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
+	String Action_title = "Action.title";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
