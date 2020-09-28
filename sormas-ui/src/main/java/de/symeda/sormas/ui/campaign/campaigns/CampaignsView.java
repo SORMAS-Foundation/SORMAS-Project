@@ -23,14 +23,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -39,133 +37,128 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
-import de.symeda.sormas.ui.campaign.importer.CampaignImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-import java.io.IOException;
-import javax.naming.NamingException;
 
 @SuppressWarnings("serial")
 public class CampaignsView extends AbstractCampaignView {
 
-    public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigns";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigns";
 
-    private CampaignCriteria criteria;
-    private VerticalLayout gridLayout;
-    private CampaignGrid grid;
-    private Button createButton;
-    private Button validateFormsButton;
+	private CampaignCriteria criteria;
+	private VerticalLayout gridLayout;
+	private CampaignGrid grid;
+	private Button createButton;
+	private Button validateFormsButton;
 
-    // Filter
-    private TextField searchField;
-    private com.vaadin.v7.ui.ComboBox relevanceStatusFilter;
+	// Filter
+	private TextField searchField;
+	private com.vaadin.v7.ui.ComboBox relevanceStatusFilter;
 
-    public CampaignsView() {
+	public CampaignsView() {
 
-        super(VIEW_NAME);
+		super(VIEW_NAME);
 
-        ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 
-        criteria = ViewModelProviders.of(CampaignsView.class).get(CampaignCriteria.class);
-        if (criteria.getRelevanceStatus() == null) {
-            criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-        }
+		criteria = ViewModelProviders.of(CampaignsView.class).get(CampaignCriteria.class);
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		}
 
-        grid = new CampaignGrid(criteria);
-        gridLayout = new VerticalLayout();
-        gridLayout.addComponent(createFilterBar());
-        gridLayout.addComponent(grid);
-        gridLayout.setMargin(true);
-        gridLayout.setSpacing(false);
-        gridLayout.setSizeFull();
-        gridLayout.setExpandRatio(grid, 1);
-        gridLayout.setStyleName("crud-main-layout");
+		grid = new CampaignGrid(criteria);
+		gridLayout = new VerticalLayout();
+		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(grid);
+		gridLayout.setMargin(true);
+		gridLayout.setSpacing(false);
+		gridLayout.setSizeFull();
+		gridLayout.setExpandRatio(grid, 1);
+		gridLayout.setStyleName("crud-main-layout");
 
-        addComponent(gridLayout);
+		addComponent(gridLayout);
 
-        if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT)) {
-            validateFormsButton = ButtonHelper.createIconButton(Captions.campaignValidateForms, VaadinIcons.CHECK_CIRCLE, e -> {
-                FacadeProvider.getCampaignFormMetaFacade().validateAllFormMetas();
-                Notification.show(I18nProperties.getString(Strings.messageAllCampaignFormsValid), Type.TRAY_NOTIFICATION);
-            }, ValoTheme.BUTTON_PRIMARY);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT)) {
+			validateFormsButton = ButtonHelper.createIconButton(Captions.campaignValidateForms, VaadinIcons.CHECK_CIRCLE, e -> {
+				FacadeProvider.getCampaignFormMetaFacade().validateAllFormMetas();
+				Notification.show(I18nProperties.getString(Strings.messageAllCampaignFormsValid), Type.TRAY_NOTIFICATION);
+			}, ValoTheme.BUTTON_PRIMARY);
 
-            addHeaderComponent(validateFormsButton);
+			addHeaderComponent(validateFormsButton);
 
-            createButton = ButtonHelper.createIconButton(
-                    Captions.campaignNewCampaign,
-                    VaadinIcons.PLUS_CIRCLE,
-                    e -> ControllerProvider.getCampaignController().createOrEditCampaign(null),
-                    ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButton(
+				Captions.campaignNewCampaign,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getCampaignController().createOrEditCampaign(null),
+				ValoTheme.BUTTON_PRIMARY);
 
-            addHeaderComponent(createButton);
-        }
-    }
+			addHeaderComponent(createButton);
+		}
+	}
 
-    private HorizontalLayout createFilterBar() {
+	private HorizontalLayout createFilterBar() {
 
-        HorizontalLayout filterLayout = new HorizontalLayout();
-        filterLayout.setWidth(100, Unit.PERCENTAGE);
-        filterLayout.setSpacing(true);
+		HorizontalLayout filterLayout = new HorizontalLayout();
+		filterLayout.setWidth(100, Unit.PERCENTAGE);
+		filterLayout.setSpacing(true);
 
-        searchField = new TextField();
-        searchField.setId("search");
-        searchField.setWidth(200, Unit.PIXELS);
-        searchField.setNullRepresentation("");
-        searchField.setInputPrompt(I18nProperties.getString(Strings.promptCampaignSearch));
-        searchField.setImmediate(true);
-        searchField.addTextChangeListener(e -> {
-            criteria.freeText(e.getText());
-            grid.reload();
-        });
-        filterLayout.addComponent(searchField);
+		searchField = new TextField();
+		searchField.setId("search");
+		searchField.setWidth(200, Unit.PIXELS);
+		searchField.setNullRepresentation("");
+		searchField.setInputPrompt(I18nProperties.getString(Strings.promptCampaignSearch));
+		searchField.setImmediate(true);
+		searchField.addTextChangeListener(e -> {
+			criteria.freeText(e.getText());
+			grid.reload();
+		});
+		filterLayout.addComponent(searchField);
 
-        // Show active/archived/all dropdown
-        relevanceStatusFilter = new com.vaadin.v7.ui.ComboBox();
-        relevanceStatusFilter.setId("relevanceStatus");
-        relevanceStatusFilter.setWidth(140, Unit.PIXELS);
-        relevanceStatusFilter.setNullSelectionAllowed(false);
-        relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-        relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.campaignActiveCampaigns));
-        relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.campaignArchivedCampaigns));
-        relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.campaignAllCampaigns));
-        relevanceStatusFilter.addValueChangeListener(e -> {
-            criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
-            navigateTo(criteria);
-        });
-        filterLayout.addComponent(relevanceStatusFilter);
-        filterLayout.setComponentAlignment(relevanceStatusFilter, Alignment.MIDDLE_RIGHT);
-        filterLayout.setExpandRatio(relevanceStatusFilter, 1);
+		// Show active/archived/all dropdown
+		relevanceStatusFilter = new com.vaadin.v7.ui.ComboBox();
+		relevanceStatusFilter.setId("relevanceStatus");
+		relevanceStatusFilter.setWidth(140, Unit.PIXELS);
+		relevanceStatusFilter.setNullSelectionAllowed(false);
+		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.campaignActiveCampaigns));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.campaignArchivedCampaigns));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.campaignAllCampaigns));
+		relevanceStatusFilter.addValueChangeListener(e -> {
+			criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(relevanceStatusFilter);
+		filterLayout.setComponentAlignment(relevanceStatusFilter, Alignment.MIDDLE_RIGHT);
+		filterLayout.setExpandRatio(relevanceStatusFilter, 1);
 
-        return filterLayout;
-    }
+		return filterLayout;
+	}
 
-    @Override
-    public void enter(ViewChangeEvent event) {
+	@Override
+	public void enter(ViewChangeEvent event) {
 
-        if (event != null) {
-            String params = event.getParameters().trim();
-            if (params.startsWith("?")) {
-                params = params.substring(1);
-                criteria.fromUrlParams(params);
-            }
-            updateFilterComponents();
-        }
-        grid.reload();
+		if (event != null) {
+			String params = event.getParameters().trim();
+			if (params.startsWith("?")) {
+				params = params.substring(1);
+				criteria.fromUrlParams(params);
+			}
+			updateFilterComponents();
+		}
+		grid.reload();
 
-        super.enter(event);
-    }
+		super.enter(event);
+	}
 
-    private void updateFilterComponents() {
+	private void updateFilterComponents() {
 
-        applyingCriteria = true;
+		applyingCriteria = true;
 
-        if (relevanceStatusFilter != null) {
-            relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
-        }
-        searchField.setValue(criteria.getFreeText());
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
+		searchField.setValue(criteria.getFreeText());
 
-        applyingCriteria = false;
-    }
+		applyingCriteria = false;
+	}
 }

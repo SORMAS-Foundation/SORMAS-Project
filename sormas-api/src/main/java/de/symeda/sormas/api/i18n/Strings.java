@@ -356,6 +356,7 @@ public interface Strings {
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
+	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
