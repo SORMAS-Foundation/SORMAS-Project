@@ -54,7 +54,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
 	public static final String EVENT_LIKE = "eventLike";
-	public static final String EVENT_ANY = "eventAny";
+	public static final String ONLY_CASES_WITH_EVENTS = "onlyCasesWithEvents";
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
 	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
 	public static final String NEW_CASE_DATE_FROM = "newCaseDateFrom";
@@ -95,7 +95,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String eventLike;
-	private Boolean eventAny = Boolean.FALSE;
+	private Boolean onlyCasesWithEvents = Boolean.FALSE;
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
 	private EntityRelevanceStatus relevanceStatus;
@@ -404,17 +404,17 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return this;
 	}
 
-	public void setEventAny(Boolean eventAny) {
-		this.eventAny = eventAny;
+	public void setOnlyCasesWithEvents(Boolean onlyCasesWithEvents) {
+		this.onlyCasesWithEvents = onlyCasesWithEvents;
 	}
 
 	@IgnoreForUrl
-	public Boolean getEventAny() {
-		return eventAny;
+	public Boolean getOnlyCasesWithEvents() {
+		return onlyCasesWithEvents;
 	}
 
-	public CaseCriteria eventAny(Boolean eventAny) {
-		this.eventAny = eventAny;
+	public CaseCriteria onlyCasesWithEvents(Boolean onlyCasesWithEvents) {
+		this.onlyCasesWithEvents = onlyCasesWithEvents;
 		return this;
 	}
 

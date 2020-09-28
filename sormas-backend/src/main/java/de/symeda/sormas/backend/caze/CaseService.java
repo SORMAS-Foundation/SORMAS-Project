@@ -645,8 +645,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 		}
 		boolean hasEventLikeCriteria = caseCriteria.getEventLike() != null && !caseCriteria.getEventLike().trim().isEmpty();
-		boolean hasEventAnyCriteria = Boolean.TRUE.equals(caseCriteria.getEventAny());
-		if (hasEventLikeCriteria || hasEventAnyCriteria) {
+		boolean hasOnlyCasesWithEventsCriteria = Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithEvents());
+		if (hasEventLikeCriteria || hasOnlyCasesWithEventsCriteria) {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 
@@ -663,7 +663,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					}
 				}
 			}
-			if (hasEventAnyCriteria) {
+			if (hasOnlyCasesWithEventsCriteria) {
 				filter = and(cb, filter, cb.isNotNull(event.get(Event.ID)));
 			}
 		}
