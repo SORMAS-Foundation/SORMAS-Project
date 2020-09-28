@@ -1,6 +1,6 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
-import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
@@ -16,13 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.vaadin.ui.VerticalLayout;
-
-import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
-import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
-import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
-import de.symeda.sormas.ui.highcharts.HighChart;
 
 @SuppressWarnings("serial")
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
@@ -114,6 +107,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		//@formatter:off
 		hcjs.append("yAxis: { min: 0, title: { text: ''}");
+		if (totalValues != null) {
+			hcjs.append(", max: 100, ");
+		}
 		if (stackMap.size() > 1) {
 			hcjs.append(
 					", stackLabels: {enabled: true,verticalAlign: 'bottom',crop: false,overflow: 'none',y: 20,formatter: function() {  return this.stack;},style: {  color: 'grey'}}");
