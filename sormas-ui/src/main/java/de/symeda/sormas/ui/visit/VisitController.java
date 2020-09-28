@@ -29,6 +29,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -147,7 +148,7 @@ public class VisitController {
 	}
 
 	private VisitDto createNewVisit(PersonReferenceDto personRef, Disease disease) {
-		VisitDto visit = VisitDto.build(personRef, disease);
+		VisitDto visit = VisitDto.build(personRef, disease, VisitOrigin.USER);
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		visit.setVisitUser(userReference);
 		return visit;

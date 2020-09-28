@@ -24,6 +24,7 @@ import java.util.HashSet;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -214,7 +215,7 @@ public class TestDataCreator {
 
 	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime, VisitStatus visitStatus) {
 
-		VisitDto visit = VisitDto.build(contactPerson, disease);
+		VisitDto visit = VisitDto.build(contactPerson, disease, VisitOrigin.USER);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
 		visit = FacadeProvider.getVisitFacade().saveVisit(visit);
