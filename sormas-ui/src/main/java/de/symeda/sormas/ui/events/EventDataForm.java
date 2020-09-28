@@ -42,6 +42,7 @@ import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -156,7 +157,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
 		title.addStyleName(CssStyles.SOFT_REQUIRED);
-		addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
+		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
+		descriptionField.setRows(2);
+		descriptionField.setDescription(I18nProperties.getDescription(Captions.Event_eventDesc) + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
 
 		addField(EventDto.NOSOCOMIAL, OptionGroup.class);
 

@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
+import de.symeda.sormas.api.i18n.Descriptions;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
@@ -386,6 +387,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
+		additionalDetails.setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		addFields(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS);
