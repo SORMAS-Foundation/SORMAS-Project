@@ -50,6 +50,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String ONLY_QUARANTINE_HELP_NEEDED = "onlyQuarantineHelpNeeded";
 	public static final String ONLY_HIGH_PRIORITY_CONTACTS = "onlyHighPriorityContacts";
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
+	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
@@ -86,12 +87,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	private QuarantineType quarantineType;
+	private Date quarantineFrom;
 	private Date quarantineTo;
 	private Boolean onlyQuarantineHelpNeeded;
 	private Boolean quarantineOrderedVerbally;
 	private Boolean quarantineOrderedOfficialDocument;
 	private Boolean quarantineNotOrdered;
 	private Boolean withExtendedQuarantine;
+	private Boolean withReducedQuarantine;
 	private PersonReferenceDto person;
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
@@ -362,6 +365,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.onlyQuarantineHelpNeeded = onlyQuarantineHelpNeeded;
 	}
 
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
@@ -400,6 +411,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setWithExtendedQuarantine(Boolean withExtendedQuarantine) {
 		this.withExtendedQuarantine = withExtendedQuarantine;
+	}
+
+	public Boolean getWithReducedQuarantine() {
+		return withReducedQuarantine;
+	}
+
+	public void setWithReducedQuarantine(Boolean withReducedQuarantine) {
+		this.withReducedQuarantine = withReducedQuarantine;
 	}
 
 	public PersonReferenceDto getPerson() {

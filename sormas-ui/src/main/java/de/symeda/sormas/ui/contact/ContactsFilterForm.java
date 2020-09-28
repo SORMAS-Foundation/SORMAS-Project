@@ -9,12 +9,10 @@ import java.util.stream.Stream;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
@@ -33,8 +31,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -43,7 +41,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -76,7 +73,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.QUARANTINE_NOT_ORDERED,
 			ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
-			ContactCriteria.WITH_EXTENDED_QUARANTINE)
+			ContactCriteria.WITH_EXTENDED_QUARANTINE,
+			ContactCriteria.WITH_REDUCED_QUARANTINE)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -253,20 +251,38 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getDescription(Descriptions.descContactOnlyWithExtendedQuarantine),
 				CHECKBOX_STYLE));
 
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ContactCriteria.WITH_REDUCED_QUARANTINE,
+				I18nProperties.getCaption(Captions.contactOnlyWithReducedQuarantine),
+				I18nProperties.getDescription(Descriptions.descContactOnlyWithReducedQuarantine),
+				CHECKBOX_STYLE));
+
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
 	@Override
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
-
 		switch (propertyId) {
 		case ContactCriteria.REGION: {
-			getField(ContactCriteria.DISTRICT).setValue(null);
-			getField(ContactCriteria.COMMUNITY).setValue(null);
+			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
+			if (region == null) {
+				clearAndDisableFields(ContactCriteria.DISTRICT, ContactCriteria.COMMUNITY);
+			} else {
+				applyRegionFilterDependency(region, ContactCriteria.DISTRICT);
+				clearAndDisableFields(ContactCriteria.COMMUNITY);
+			}
 			break;
 		}
 		case ContactCriteria.DISTRICT: {
-			getField(ContactCriteria.COMMUNITY).setValue(null);
+			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
+			if (district == null) {
+				clearAndDisableFields(ContactCriteria.COMMUNITY);
+			} else {
+				applyDistrictDependency(district, ContactCriteria.COMMUNITY);
+			}
 			break;
 		}
 		case ContactCriteria.FOLLOW_UP_UNTIL_TO: {
@@ -281,11 +297,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		RegionReferenceDto region = newValue.getRegion();
 		DistrictReferenceDto district = newValue.getDistrict();
-		applyRegionAndDistrictFilterDependency(region, district);
+		applyRegionAndDistrictFilterDependency(region, ContactCriteria.DISTRICT, district, ContactCriteria.COMMUNITY);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 
-		ComboBox officerField = (ComboBox) getField(ContactCriteria.CONTACT_OFFICER);
+		ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
 		} else if (region != null) {
@@ -293,7 +309,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		} else {
 			officerField.removeAllItems();
 		}
-		ComboBox birthDateDD = (ComboBox) getField(ContactCriteria.BIRTHDATE_DD);
+		ComboBox birthDateDD = getField(ContactCriteria.BIRTHDATE_DD);
 		if (getField(ContactCriteria.BIRTHDATE_YYYY).getValue() != null && getField(ContactCriteria.BIRTHDATE_MM).getValue() != null) {
 			birthDateDD.addItems(
 				DateHelper.getDaysInMonth(
@@ -344,75 +360,74 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter() {
-		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
 		EpiWeekAndDateFilterComponent<ContactDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
-			applyButton,
 			false,
 			false,
 			null,
 			ContactDateType.class,
 			I18nProperties.getString(Strings.promptContactDateType),
-			null);
+			null,
+			this);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateFrom));
 		weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateTo));
 
-		applyButton.addClickListener(e -> {
-			ContactCriteria criteria = getValue();
-
-			DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
-			Date fromDate, toDate;
-			if (dateFilterOption == DateFilterOption.DATE) {
-				fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
-				toDate = DateHelper.getEndOfDay(weekAndDateFilter.getDateToFilter().getValue());
-			} else {
-				fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
-				toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
-			}
-			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
-				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				ContactDateType contactDateType = (ContactDateType) weekAndDateFilter.getDateTypeSelector().getValue();
-				if (contactDateType == ContactDateType.LAST_CONTACT_DATE) {
-					criteria.lastContactDateBetween(fromDate, toDate);
-					criteria.reportDateBetween(null, null);
-				} else {
-					criteria.reportDateBetween(fromDate, toDate);
-					criteria.lastContactDateBetween(null, null);
-				}
-				criteria.dateFilterOption(dateFilterOption);
-
-				fireValueChange(true);
-			} else {
-				if (dateFilterOption == DateFilterOption.DATE) {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingDateFilter),
-						I18nProperties.getString(Strings.messageMissingDateFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				} else {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-						I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				}
-			}
-		});
+		addApplyHandler(e -> onApplyClick(weekAndDateFilter));
 
 		HorizontalLayout dateFilterRowLayout = new HorizontalLayout();
 		dateFilterRowLayout.setSpacing(true);
 		dateFilterRowLayout.setSizeUndefined();
 
 		dateFilterRowLayout.addComponent(weekAndDateFilter);
-		dateFilterRowLayout.addComponent(applyButton);
 
 		return dateFilterRowLayout;
+	}
+
+	private void onApplyClick(EpiWeekAndDateFilterComponent<ContactDateType> weekAndDateFilter) {
+		ContactCriteria criteria = getValue();
+
+		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+		Date fromDate, toDate;
+		if (dateFilterOption == DateFilterOption.DATE) {
+			Date dateFrom = weekAndDateFilter.getDateFromFilter().getValue();
+			fromDate = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
+			Date dateTo = weekAndDateFilter.getDateToFilter().getValue();
+			toDate = dateFrom != null ? DateHelper.getEndOfDay(dateTo) : null;
+		} else {
+			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
+			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
+		}
+		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
+			ContactDateType contactDateType = (ContactDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+			if (contactDateType == ContactDateType.LAST_CONTACT_DATE) {
+				criteria.lastContactDateBetween(fromDate, toDate);
+				criteria.reportDateBetween(null, null);
+			} else {
+				criteria.reportDateBetween(fromDate, toDate);
+				criteria.lastContactDateBetween(null, null);
+			}
+			criteria.dateFilterOption(dateFilterOption);
+		} else {
+			if (dateFilterOption == DateFilterOption.DATE) {
+				Notification notification = new Notification(
+					I18nProperties.getString(Strings.headingMissingDateFilter),
+					I18nProperties.getString(Strings.messageMissingDateFilter),
+					Notification.Type.WARNING_MESSAGE,
+					false);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			} else {
+				Notification notification = new Notification(
+					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
+					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
+					Notification.Type.WARNING_MESSAGE,
+					false);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			}
+		}
 	}
 
 	public void setSearchFieldEnabled(boolean enabled) {

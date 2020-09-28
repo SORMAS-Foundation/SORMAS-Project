@@ -26,6 +26,7 @@ public interface Captions {
 	String Action_event = "Action.event";
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
+	String Action_title = "Action.title";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
@@ -111,6 +112,7 @@ public interface Captions {
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
+	String Area_archived = "Area.archived";
 	String Area_externalId = "Area.externalId";
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
@@ -228,6 +230,7 @@ public interface Captions {
 	String CaseData_quarantineOrderedOfficialDocumentDate = "CaseData.quarantineOrderedOfficialDocumentDate";
 	String CaseData_quarantineOrderedVerbally = "CaseData.quarantineOrderedVerbally";
 	String CaseData_quarantineOrderedVerballyDate = "CaseData.quarantineOrderedVerballyDate";
+	String CaseData_quarantineReduced = "CaseData.quarantineReduced";
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_quarantineTypeDetails = "CaseData.quarantineTypeDetails";
 	String CaseData_rabiesType = "CaseData.rabiesType";
@@ -306,6 +309,7 @@ public interface Captions {
 	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
+	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
@@ -364,6 +368,7 @@ public interface Captions {
 	String columnDiseaseShort = "columnDiseaseShort";
 	String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
 	String community = "community";
+	String Community_archived = "Community.archived";
 	String Community_externalID = "Community.externalID";
 	String communityActiveCommunities = "communityActiveCommunities";
 	String communityAllCommunities = "communityAllCommunities";
@@ -387,6 +392,7 @@ public interface Captions {
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
+	String Contact_climedoAccount = "Contact.climedoAccount";
 	String Contact_community = "Contact.community";
 	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_contactCategory = "Contact.contactCategory";
@@ -431,6 +437,7 @@ public interface Captions {
 	String Contact_quarantineOrderedOfficialDocumentDate = "Contact.quarantineOrderedOfficialDocumentDate";
 	String Contact_quarantineOrderedVerbally = "Contact.quarantineOrderedVerbally";
 	String Contact_quarantineOrderedVerballyDate = "Contact.quarantineOrderedVerballyDate";
+	String Contact_quarantineReduced = "Contact.quarantineReduced";
 	String Contact_quarantineTo = "Contact.quarantineTo";
 	String Contact_quarantineTypeDetails = "Contact.quarantineTypeDetails";
 	String Contact_region = "Contact.region";
@@ -439,6 +446,9 @@ public interface Captions {
 	String Contact_relationToCase = "Contact.relationToCase";
 	String Contact_reportDateTime = "Contact.reportDateTime";
 	String Contact_reportingUser = "Contact.reportingUser";
+	String Contact_reportLat = "Contact.reportLat";
+	String Contact_reportLatLonAccuracy = "Contact.reportLatLonAccuracy";
+	String Contact_reportLon = "Contact.reportLon";
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
 	String Contact_tracingApp = "Contact.tracingApp";
@@ -482,7 +492,9 @@ public interface Captions {
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
+	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
 	String contactOpenContactCase = "contactOpenContactCase";
+	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
 	String contactQuarantineNotOrdered = "contactQuarantineNotOrdered";
@@ -640,6 +652,7 @@ public interface Captions {
 	String DiseaseBurden_outbreakDistrictCount = "DiseaseBurden.outbreakDistrictCount";
 	String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
 	String district = "district";
+	String District_archived = "District.archived";
 	String District_epidCode = "District.epidCode";
 	String District_externalID = "District.externalID";
 	String District_growthRate = "District.growthRate";
@@ -747,12 +760,14 @@ public interface Captions {
 	String Event_eventParticipants = "Event.eventParticipants";
 	String Event_eventPersons = "Event.eventPersons";
 	String Event_eventStatus = "Event.eventStatus";
+	String Event_eventTitle = "Event.eventTitle";
 	String Event_eventType = "Event.eventType";
 	String Event_externalId = "Event.externalId";
 	String Event_informationSource = "Event.informationSource";
 	String Event_multiDayEvent = "Event.multiDayEvent";
 	String Event_nosocomial = "Event.nosocomial";
 	String Event_numberOfPendingTasks = "Event.numberOfPendingTasks";
+	String Event_participantCount = "Event.participantCount";
 	String Event_reportDateTime = "Event.reportDateTime";
 	String Event_reportingUser = "Event.reportingUser";
 	String Event_srcEmail = "Event.srcEmail";
@@ -785,7 +800,30 @@ public interface Captions {
 	String EventParticipant_person = "EventParticipant.person";
 	String EventParticipant_personUuid = "EventParticipant.personUuid";
 	String EventParticipant_sex = "EventParticipant.sex";
+	String EventParticipant_uuid = "EventParticipant.uuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
+	String EventParticipantExport_addressDistrict = "EventParticipantExport.addressDistrict";
+	String EventParticipantExport_addressGpsCoordinates = "EventParticipantExport.addressGpsCoordinates";
+	String EventParticipantExport_addressRegion = "EventParticipantExport.addressRegion";
+	String EventParticipantExport_ageGroup = "EventParticipantExport.ageGroup";
+	String EventParticipantExport_burialInfo = "EventParticipantExport.burialInfo";
+	String EventParticipantExport_eventCity = "EventParticipantExport.eventCity";
+	String EventParticipantExport_eventCommunity = "EventParticipantExport.eventCommunity";
+	String EventParticipantExport_eventDescription = "EventParticipantExport.eventDescription";
+	String EventParticipantExport_eventDisease = "EventParticipantExport.eventDisease";
+	String EventParticipantExport_eventDistrict = "EventParticipantExport.eventDistrict";
+	String EventParticipantExport_eventEndDate = "EventParticipantExport.eventEndDate";
+	String EventParticipantExport_eventHouseNumber = "EventParticipantExport.eventHouseNumber";
+	String EventParticipantExport_eventParticipantInvolvmentDescription = "EventParticipantExport.eventParticipantInvolvmentDescription";
+	String EventParticipantExport_eventParticipantU = "EventParticipantExport.eventParticipantU";
+	String EventParticipantExport_eventParticipantUuid = "EventParticipantExport.eventParticipantUuid";
+	String EventParticipantExport_eventRegion = "EventParticipantExport.eventRegion";
+	String EventParticipantExport_eventStartDate = "EventParticipantExport.eventStartDate";
+	String EventParticipantExport_eventStreet = "EventParticipantExport.eventStreet";
+	String EventParticipantExport_eventTitle = "EventParticipantExport.eventTitle";
+	String EventParticipantExport_eventTypeOfPlace = "EventParticipantExport.eventTypeOfPlace";
+	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
+	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
 	String eventSelect = "eventSelect";
@@ -802,6 +840,7 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
+	String Facility_archived = "Facility.archived";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
 	String Facility_district = "Facility.district";
@@ -811,6 +850,7 @@ public interface Captions {
 	String Facility_name = "Facility.name";
 	String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
+	String Facility_publicOwnership = "Facility.publicOwnership";
 	String Facility_region = "Facility.region";
 	String Facility_type = "Facility.type";
 	String Facility_typeGroup = "Facility.typeGroup";
@@ -1002,6 +1042,7 @@ public interface Captions {
 	String Person_educationDetails = "Person.educationDetails";
 	String Person_educationType = "Person.educationType";
 	String Person_emailAddress = "Person.emailAddress";
+	String Person_externalId = "Person.externalId";
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
@@ -1094,6 +1135,7 @@ public interface Captions {
 	String PrescriptionExport_caseUuid = "PrescriptionExport.caseUuid";
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String region = "region";
+	String Region_archived = "Region.archived";
 	String Region_epidCode = "Region.epidCode";
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";

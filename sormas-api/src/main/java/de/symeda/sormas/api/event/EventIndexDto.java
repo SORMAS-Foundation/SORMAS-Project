@@ -32,11 +32,12 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	public static final String UUID = "uuid";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
-	public static final String EVENT_DESC = "eventDesc";
+	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
@@ -46,11 +47,12 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	private String uuid;
 	private EventStatus eventStatus;
+	private long participantCount;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
-	private String eventDesc;
+	private String eventTitle;
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
 	private String srcFirstName;
@@ -64,11 +66,12 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 	public EventIndexDto(
 		String uuid,
 		EventStatus eventStatus,
+		Long participantCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
 		Date endDate,
-		String eventDesc,
+		String eventTitle,
 		String regionUuid,
 		String regionName,
 		String districtUuid,
@@ -95,7 +98,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.eventDesc = eventDesc;
+		this.eventTitle = eventTitle;
 		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		this.srcType = srcType;
 		this.srcFirstName = srcFirstName;
@@ -105,6 +108,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.participantCount = participantCount;
 	}
 
 	public String getUuid() {
@@ -155,12 +159,12 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.endDate = endDate;
 	}
 
-	public String getEventDesc() {
-		return eventDesc;
+	public String getEventTitle() {
+		return eventTitle;
 	}
 
-	public void setEventDesc(String eventDesc) {
-		this.eventDesc = eventDesc;
+	public void setEventTitle(String eventTitle) {
+		this.eventTitle = eventTitle;
 	}
 
 	public EventIndexLocation getEventLocation() {
@@ -221,6 +225,14 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	public long getParticipantCount() {
+		return participantCount;
+	}
+
+	public void setParticipantCount(long participantCount) {
+		this.participantCount = participantCount;
 	}
 
 	public EventReferenceDto toReference() {

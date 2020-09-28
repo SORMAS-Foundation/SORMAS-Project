@@ -23,6 +23,7 @@ package de.symeda.sormas.ui.caze.eventLink;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -117,9 +118,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	private void addCreateEventRadioGroup() {
 		rbCreateEvent = new RadioButtonGroup<>();
 		rbCreateEvent.setItems(CREATE_EVENT);
-		rbCreateEvent.setItemCaptionGenerator((item) -> {
-			return I18nProperties.getCaption(Captions.eventNewEvent);
-		});
+		rbCreateEvent.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventNewEvent));
 		rbCreateEvent.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
 				rbSelectEvent.setValue(null);
@@ -199,9 +198,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 		searchField.setCaption(I18nProperties.getString(Strings.promptEventsSearchField));
 
-		searchField.addValueChangeListener(e -> {
-			updateGrid(e.getValue());
-		});
+		searchField.addValueChangeListener(e -> updateGrid(e.getValue()));
 
 		filterLayout.addComponent(searchField);
 
@@ -219,7 +216,8 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null);
+		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter =
+			new EpiWeekAndDateFilterComponent<>(false, false, null, null);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekTo));
@@ -286,5 +284,9 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		dateFilterRowLayout.addComponent(resetButton);
 
 		return dateFilterRowLayout;
+	}
+
+	public EventSelectionGrid getEventGrid() {
+		return eventGrid;
 	}
 }

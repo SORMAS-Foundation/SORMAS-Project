@@ -17,6 +17,48 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
+import static java.time.temporal.ChronoUnit.DAYS;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -34,6 +76,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.DashboardContactDto;
+import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -75,6 +118,8 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -108,45 +153,6 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
@@ -190,6 +196,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private EpiDataFacadeEjbLocal epiDataFacade;
 	@EJB
 	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -271,8 +279,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		//		}
 
 		Contact entity = fromDto(dto);
-
 		contactService.ensurePersisted(entity);
+
+		createInvestigationTask(entity);
 
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);
@@ -286,6 +295,22 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return toDto(entity);
+	}
+
+	private void createInvestigationTask(Contact entity) {
+		LocalDate now = LocalDate.now();
+		LocalDate reportDate = DateHelper8.toLocalDate(entity.getReportDateTime());
+		if (DAYS.between(reportDate, now) <= 30) {
+			try {
+				User assignee = taskService.getTaskAssignee(entity);
+				LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
+				LocalDateTime toDateTime = fromDateTime.plusDays(1);
+				Task task = createContactTask(TaskType.CONTACT_INVESTIGATION, fromDateTime, toDateTime, entity, assignee);
+				taskService.ensurePersisted(task);
+			} catch (TaskCreationException e) {
+				logger.warn(e.getMessage());
+			}
+		}
 	}
 
 	private void updateContactVisitAssociations(ContactDto existingContact, Contact contact) {
@@ -402,6 +427,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
 					contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 					contact.get(Contact.QUARANTINE_EXTENDED),
+					contact.get(Contact.QUARANTINE_REDUCED),
 					contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT),
 					contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
 					joins.getPerson().get(Person.PRESENT_CONDITION),
@@ -700,6 +726,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				case FollowUpDto.UUID:
 				case ContactFollowUpDto.LAST_CONTACT_DATE:
 				case FollowUpDto.REPORT_DATE:
+					expression = contact.get(Contact.REPORT_DATE_TIME);
+					break;
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
 					break;
@@ -969,6 +997,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setAdditionalDetails(source.getAdditionalDetails());
@@ -1005,6 +1034,24 @@ public class ContactFacadeEjb implements ContactFacade {
 		User user = userService.getCurrentUser();
 
 		return contactService.getContactsForDashboard(region, district, disease, from, to, user);
+	}
+
+	@Override
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to) {
+
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+		User user = userService.getCurrentUser();
+
+		List<DashboardQuarantineDataDto> dashboardContactsInQuarantine =
+			contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
+
+		return dashboardContactsInQuarantine;
 	}
 
 	@Override
@@ -1183,6 +1230,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setAdditionalDetails(source.getAdditionalDetails());
@@ -1208,47 +1256,12 @@ public class ContactFacadeEjb implements ContactFacade {
 				continue;
 			}
 
-			User assignee = null;
-			if (contact.getContactOfficer() != null) {
-				// 1) The contact officer that is responsible for the contact
-				assignee = contact.getContactOfficer();
-			} else {
-				// 2) A random contact officer from the contact's, contact person's or contact case's district
-				List<User> officers = new ArrayList<>();
-				if (contact.getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (officers.isEmpty() && contact.getPerson().getAddress().getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getPerson().getAddress().getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (officers.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
-					officers = userService.getAllByDistrict(contact.getCaze().getDistrict(), false, UserRole.CONTACT_OFFICER);
-				}
-				if (!officers.isEmpty()) {
-					Random rand = new Random();
-					assignee = officers.get(rand.nextInt(officers.size()));
-				}
-			}
-
-			if (assignee == null) {
-				// 3) Assign a random contact supervisor from the contact's, contact person's or contact case's region
-				List<User> supervisors = new ArrayList<>();
-				if (contact.getRegion() != null) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (supervisors.isEmpty() && contact.getPerson().getAddress().getRegion() != null) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (supervisors.isEmpty()) {
-					supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);
-				}
-				if (!supervisors.isEmpty()) {
-					Random rand = new Random();
-					assignee = supervisors.get(rand.nextInt(supervisors.size()));
-				} else {
-					logger.warn("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
-					continue;
-				}
+			User assignee;
+			try {
+				assignee = taskService.getTaskAssignee(contact);
+			} catch (TaskCreationException e) {
+				logger.warn(e.getMessage());
+				continue;
 			}
 
 			// find already existing tasks
@@ -1274,20 +1287,24 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			// none found -> create the task
-			Task task = taskService.buildTask(null);
-			task.setTaskContext(TaskContext.CONTACT);
-			task.setContact(contact);
-			task.setTaskType(TaskType.CONTACT_FOLLOW_UP);
-			task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
-			task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
-			task.setAssigneeUser(assignee);
-
-			if (contact.isHighPriority()) {
-				task.setPriority(TaskPriority.HIGH);
-			}
-
+			Task task = createContactTask(TaskType.CONTACT_FOLLOW_UP, fromDateTime, toDateTime, contact, assignee);
 			taskService.ensurePersisted(task);
 		}
+	}
+
+	private Task createContactTask(TaskType taskType, LocalDateTime fromDateTime, LocalDateTime toDateTime, Contact contact, User assignee) {
+		Task task = taskService.buildTask(null);
+		task.setTaskContext(TaskContext.CONTACT);
+		task.setContact(contact);
+		task.setTaskType(taskType);
+		task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
+		task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+		task.setAssigneeUser(assignee);
+
+		if (contact.isHighPriority()) {
+			task.setPriority(TaskPriority.HIGH);
+		}
+		return task;
 	}
 
 	@Override

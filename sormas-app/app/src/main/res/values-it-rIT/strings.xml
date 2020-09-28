@@ -229,6 +229,8 @@
     <string name="confirmation_delete">Vuoi davvero cancellare questa registrazione?</string>
     <string name="confirmation_pick_gps">Siete in questo posto in questo momento?</string>
     <string name="confirmation_extend_quarantine">Are you sure you want to extend the quarantine?</string>
+    <string name="confirmation_reduce_quarantine">Are you sure you want to reduce the quarantine?</string>
+    <string name="confirmation_extend_followup">Would you also want the follow-up period to be extended accordingly?</string>
     <string name="description_epi_week">Settimana Epi</string>
     <string name="description_first_name">Nome</string>
     <string name="description_last_name">Cognome</string>
@@ -255,6 +257,7 @@
     <string name="error_no_pathogentest_labuser">il test patogeno non ha un utilizzatore di laboratorio</string>
     <string name="heading_additional_details">Commento generale</string>
     <string name="heading_additional_medical_information">Ulteriori Informazioni Mediche</string>
+    <string name="heading_addresses">Addresses</string>
     <string name="heading_animal_contacts">Contatti Animali</string>
     <string name="heading_app_download_failed">Download app non riuscito</string>
     <string name="heading_app_downloading">Download in corso</string>
@@ -359,6 +362,8 @@
     <string name="heading_change_laboratory_result">Cambia Risultato Del Laboratorio</string>
     <string name="heading_change_case_disease">Cambia malattia caso</string>
     <string name="heading_extend_quarantine">Extend quarantine</string>
+    <string name="heading_reduce_quarantine">Reduce quarantine</string>
+    <string name="heading_extend_followup">Extend follow-up period</string>
     <string name="hint_add_to_empty_list">Aggiungi una nuova voce premendo il simbolo \"+\" in alto a destra.</string>
     <string name="hint_clear">Elimina tutto</string>
     <string name="hint_create_pin">Scegli un PIN a quattro cifre che utilizzerai per autenticarti ogni volta che apri l\'app SORMAS.</string>
