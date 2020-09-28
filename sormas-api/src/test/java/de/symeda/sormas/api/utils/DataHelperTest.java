@@ -16,7 +16,7 @@ public class DataHelperTest {
 
 		assertEquals("CaseData", DataHelper.getHumanClassName(CaseDataDto.class));
 		assertEquals("Disease", DataHelper.getHumanClassName(Disease.class));
-		assertEquals("Region", DataHelper.getHumanClassName(RegionReferenceDto.class));
+		assertEquals("RegionReference", DataHelper.getHumanClassName(RegionReferenceDto.class));
 	}
 
 	@Test
