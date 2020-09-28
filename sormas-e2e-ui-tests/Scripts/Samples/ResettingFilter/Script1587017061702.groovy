@@ -20,6 +20,8 @@ WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Pending'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 
+WebUI.delay(1)
+
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Test Result')
@@ -29,6 +31,8 @@ WebUI.click(findTestObject('Samples/MainView/filterselect-button-condition'))
 WebUI.click(findTestObject('Object Repository/Samples/MainView/td_Adequate'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
+WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
@@ -40,6 +44,8 @@ WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Not yet clas
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 
+WebUI.delay(1)
+
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Case Classification')	
@@ -49,6 +55,8 @@ WebUI.click(findTestObject('Samples/MainView/filterselect-button-disease'))
 WebUI.click(findTestObject('Object Repository/Samples/MainView/span_COVID-19'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
+WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
@@ -60,6 +68,8 @@ WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Voreingestel
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 
+WebUI.delay(1)
+
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'District')
@@ -70,6 +80,8 @@ WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Voreingestel
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 
+WebUI.delay(1)
+
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Laboratory')
@@ -77,6 +89,8 @@ checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Laboratory')
 WebUI.setText(findTestObject('Samples/MainView/input_Export_caseCodeIdLike'), 'test')
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
+WebUI.delay(1)
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 

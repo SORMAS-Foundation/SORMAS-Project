@@ -29,7 +29,8 @@ WebUI.delay(1)
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
-WebUI.click(findTestObject('Contacts/CasesView/caseInfo_Contacts'))
+//WebUI.click(findTestObject('Contacts/CasesView/caseInfo_Contacts'))
+WebUI.click(findTestObject('Contacts/CasesView/div_Contacts tab'))
 
 WebUI.callTestCase(findTestCase('Contacts/partials/createAndCheckNewContactFromCaseContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
