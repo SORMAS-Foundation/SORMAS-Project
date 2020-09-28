@@ -147,7 +147,7 @@ public class CampaignController {
 
 	public CommitDiscardWrapperComponent<CampaignEditForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
 
-		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto == null);
+		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto);
 		if (campaignDto == null) {
 			campaignDto = CampaignDto.build();
 			campaignDto.setCreatingUser(UserProvider.getCurrent().getUserReference());
@@ -161,6 +161,7 @@ public class CampaignController {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
 				CampaignDto dto = campaignEditForm.getValue();
 				FacadeProvider.getCampaignFacade().saveCampaign(dto);
+				SormasUI.refreshView();
 				callback.run();
 			}
 		});

@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.campaign;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
@@ -48,6 +50,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@EJB
 	private CampaignService campaignService;
+	@EJB
+	private CampaignFormMetaService campaignFormMetaService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -164,11 +168,17 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setEndDate(source.getEndDate());
 		target.setName(source.getName());
 		target.setStartDate(source.getStartDate());
+		target.setCampaignFormMetas(
+			source.getCampaignFormMetas()
+				.stream()
+				.map(campaignFormMetaReferenceDto -> campaignFormMetaService.getByUuid(campaignFormMetaReferenceDto.getUuid()))
+				.collect(Collectors.toSet()));
+		target.setDashboardElements(source.getCampaignDashboardElements());
 
 		return target;
 	}
 
-	public static CampaignDto toDto(Campaign source) {
+	public CampaignDto toDto(Campaign source) {
 
 		if (source == null) {
 			return null;
@@ -182,6 +192,9 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setEndDate(source.getEndDate());
 		target.setName(source.getName());
 		target.setStartDate(source.getStartDate());
+		target.setCampaignFormMetas(
+			source.getCampaignFormMetas().stream().map(campaignFormMeta -> campaignFormMeta.toReference()).collect(Collectors.toSet()));
+		target.setCampaignDashboardElements(source.getDashboardElements());
 
 		return target;
 	}
@@ -206,7 +219,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 				}
 			});
 		}
-		return result;
+		return result.stream().sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder)).collect(Collectors.toList());
 	}
 
 	@Override

@@ -5323,4 +5323,23 @@ ALTER TABLE person_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
 
+-- 2020-09-23 CampaignFormMeta to Campaigns relation #2855
+
+CREATE TABLE campaign_campaignformmeta(
+                                campaign_id bigint NOT NULL,
+                                campaignformmeta_id bigint NOT NULL,
+                                sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE campaign_campaignformmeta OWNER TO sormas_user;
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT unq_campaign_campaignformmeta_0 UNIQUE (campaign_id, campaignformmeta_id);
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT fk_campaign_campaignformmeta_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT fk_campaign_campaignformmeta_meta_id FOREIGN KEY (campaignformmeta_id) REFERENCES campaignformmeta(id);
+
+CREATE TABLE campaign_campaignformmeta_history (LIKE campaign_campaignformmeta);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaign_campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaign_campaignformmeta_history', true);
+ALTER TABLE campaign_campaignformmeta_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (255, 'CampaignFormMeta to Campaigns relation #2855');
 -- *** Insert new sql commands BEFORE this line ***

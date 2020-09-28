@@ -176,6 +176,8 @@ public interface Strings {
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
+	String headingCampaignBasics = "headingCampaignBasics";
+	String headingCampaignDashboard = "headingCampaignDashboard";
 	String headingCampaignData = "headingCampaignData";
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseData = "headingCaseData";

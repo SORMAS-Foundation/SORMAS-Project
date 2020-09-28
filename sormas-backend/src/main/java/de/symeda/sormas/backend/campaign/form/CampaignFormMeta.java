@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
@@ -158,6 +160,10 @@ public class CampaignFormMeta extends AbstractDomainObject {
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Content of campaignFormTranslationsList could not be parsed to JSON String - ID: " + getId());
 		}
+	}
+
+	public CampaignFormMetaReferenceDto toReference() {
+		return new CampaignFormMetaReferenceDto(getUuid(), formName);
 	}
 
 	@Override
