@@ -210,7 +210,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setLossOfSmell(source.getLossOfSmell());
 		target.setLossOfTaste(source.getLossOfTaste());
 		target.setCoughWithSputum(source.getCoughWithSputum());
-		target.setCoughWithHemoptysis(source.getCoughWithHemoptysis());
+		target.setCoughWithHaemoptysis(source.getCoughWithHaemoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
 		target.setSkinUlcers(source.getSkinUlcers());
@@ -395,7 +395,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setLossOfSmell(source.getLossOfSmell());
 		target.setLossOfTaste(source.getLossOfTaste());
 		target.setCoughWithSputum(source.getCoughWithSputum());
-		target.setCoughWithHemoptysis(source.getCoughWithHemoptysis());
+		target.setCoughWithHaemoptysis(source.getCoughWithHaemoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
 		target.setSkinUlcers(source.getSkinUlcers());

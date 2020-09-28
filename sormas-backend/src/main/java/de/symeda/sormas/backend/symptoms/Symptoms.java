@@ -94,7 +94,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState soreThroat;
 	private SymptomState cough;
 	private SymptomState coughWithSputum;
-	private SymptomState coughWithHemoptysis;
+	private SymptomState coughWithHaemoptysis;
 	private SymptomState runnyNose;
 	private SymptomState difficultyBreathing;
 	private SymptomState chestPain;
@@ -1662,12 +1662,12 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public SymptomState getCoughWithHemoptysis() {
-		return coughWithHemoptysis;
+	public SymptomState getCoughWithHaemoptysis() {
+		return coughWithHaemoptysis;
 	}
 
-	public void setCoughWithHemoptysis(SymptomState coughWithHemoptysis) {
-		this.coughWithHemoptysis = coughWithHemoptysis;
+	public void setCoughWithHaemoptysis(SymptomState coughWithHaemoptysis) {
+		this.coughWithHaemoptysis = coughWithHaemoptysis;
 	}
 
 	@Enumerated(EnumType.STRING)

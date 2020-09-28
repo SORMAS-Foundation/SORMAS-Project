@@ -384,7 +384,7 @@ public final class SymptomsHelper {
 		appendYesSymptom(string, symptomsDto.getSoreThroat(), SymptomsDto.SORE_THROAT);
 		appendYesSymptom(string, symptomsDto.getCough(), SymptomsDto.COUGH);
 		appendYesSymptom(string, symptomsDto.getCoughWithSputum(), SymptomsDto.COUGH_WITH_SPUTUM);
-		appendYesSymptom(string, symptomsDto.getCoughWithHemoptysis(), SymptomsDto.COUGH_WITH_HEMOPTYSIS);
+		appendYesSymptom(string, symptomsDto.getCoughWithHaemoptysis(), SymptomsDto.COUGH_WITH_HAEMOPTYSIS);
 		appendYesSymptom(string, symptomsDto.getRunnyNose(), SymptomsDto.RUNNY_NOSE);
 		appendYesSymptom(string, symptomsDto.getDifficultyBreathing(), SymptomsDto.DIFFICULTY_BREATHING);
 		appendYesSymptom(string, symptomsDto.getChestPain(), SymptomsDto.CHEST_PAIN);

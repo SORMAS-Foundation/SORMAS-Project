@@ -128,7 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 226;
+	public static final int DATABASE_VERSION = 227;
 
 	private static DatabaseHelper instance = null;
 
@@ -1604,7 +1604,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "excessSalivation VARCHAR, insomnia VARCHAR, paralysis VARCHAR, excitation VARCHAR, dysphagia VARCHAR, aerophobia VARCHAR, hyperactivity VARCHAR, paresis VARCHAR, agitation VARCHAR,"
 						+ "ascendingFlaccidParalysis VARCHAR, erraticBehaviour VARCHAR, coma VARCHAR, convulsion VARCHAR, fluidInLungCavityAuscultation VARCHAR, fluidInLungCavityXray VARCHAR, abnormalLungXrayFindings VARCHAR,"
 						+ "conjunctivalInjection VARCHAR, acuteRespiratoryDistressSyndrome VARCHAR, pneumoniaClinicalOrradiologic VARCHAR, lossOfTaste VARCHAR, lossOfSmell VARCHAR, coughWithSputum VARCHAR,"
-						+ "coughWithHemoptysis VARCHAR, lymphadenopathy VARCHAR, wheezing VARCHAR, skinUlcers VARCHAR, inabilityToWalk VARCHAR, inDrawingOfChestWall VARCHAR, otherComplications VARCHAR,"
+						+ "coughWithHaemoptysis VARCHAR, lymphadenopathy VARCHAR, wheezing VARCHAR, skinUlcers VARCHAR, inabilityToWalk VARCHAR, inDrawingOfChestWall VARCHAR, otherComplications VARCHAR,"
 						+ "otherComplicationsText VARCHAR, respiratoryDiseaseVentilation VARCHAR, generalSignsOfDisease VARCHAR, fastHeartRate VARCHAR, oxygenSaturationLower94 VARCHAR, feverishFeeling VARCHAR, weakness VARCHAR,"
 						+ "fatigue VARCHAR, coughWithoutSputum VARCHAR, breathlessness VARCHAR, chestPressure VARCHAR, blueLips VARCHAR, bloodCirculationProblems VARCHAR, palpitations VARCHAR, dizzinessStandingUp VARCHAR,"
 						+ "highOrLowBloodPressure VARCHAR, urinaryRetention VARCHAR, UNIQUE (uuid));");
@@ -1631,7 +1631,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "excessSalivation, insomnia, paralysis, excitation, dysphagia, aerophobia, hyperactivity, paresis, agitation,"
 						+ "ascendingFlaccidParalysis, erraticBehaviour, coma, convulsion, fluidInLungCavityAuscultation, fluidInLungCavityXray, abnormalLungXrayFindings,"
 						+ "conjunctivalInjection, acuteRespiratoryDistressSyndrome, pneumoniaClinicalOrradiologic, lossOfTaste, lossOfSmell, coughWithSputum,"
-						+ "coughWithHemoptysis, lymphadenopathy, wheezing, skinUlcers, inabilityToWalk, inDrawingOfChestWall, otherComplications,"
+						+ "coughWithHaemoptysis, lymphadenopathy, wheezing, skinUlcers, inabilityToWalk, inDrawingOfChestWall, otherComplications,"
 						+ "otherComplicationsText, respiratoryDiseaseVentilation, generalSignsOfDisease, fastHeartRate, oxygenSaturationLower94, feverishFeeling, weakness,"
 						+ "fatigue, coughWithoutSputum, breathlessness, chestPressure, blueLips, bloodCirculationProblems, palpitations, dizzinessStandingUp,"
 						+ "highOrLowBloodPressure, urinaryRetention, FROM tmp_symptoms");

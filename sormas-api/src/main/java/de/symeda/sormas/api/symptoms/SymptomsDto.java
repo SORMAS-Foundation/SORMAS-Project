@@ -92,7 +92,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String CONVULSION = "convulsion";
 	public static final String COUGH = "cough";
 	public static final String COUGHING_BLOOD = "coughingBlood";
-	public static final String COUGH_WITH_HEMOPTYSIS = "coughWithHemoptysis";
+	public static final String COUGH_WITH_HAEMOPTYSIS = "coughWithHaemoptysis";
 	public static final String COUGH_WITH_SPUTUM = "coughWithSputum";
 	public static final String DARK_URINE = "darkUrine";
 	public static final String DEHYDRATION = "dehydration";
@@ -470,7 +470,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		CORONAVIRUS })
 	@HideForCountries
-	private SymptomState coughWithHemoptysis;
+	private SymptomState coughWithHaemoptysis;
 
 	@Diseases({
 		AFP,
@@ -2801,8 +2801,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	}
 
 	@Order(267)
-	public SymptomState getCoughWithHemoptysis() {
-		return coughWithHemoptysis;
+	public SymptomState getCoughWithHaemoptysis() {
+		return coughWithHaemoptysis;
 	}
 
 	@Order(268)
@@ -3616,8 +3616,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.coughWithSputum = coughWithSputum;
 	}
 
-	public void setCoughWithHemoptysis(SymptomState coughWithHemoptysis) {
-		this.coughWithHemoptysis = coughWithHemoptysis;
+	public void setCoughWithHaemoptysis(SymptomState coughWithHaemoptysis) {
+		this.coughWithHaemoptysis = coughWithHaemoptysis;
 	}
 
 	public void setLymphadenopathy(SymptomState lymphadenopathy) {

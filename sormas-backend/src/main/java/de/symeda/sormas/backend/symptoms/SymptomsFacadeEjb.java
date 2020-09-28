@@ -208,7 +208,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLossOfTaste(source.getLossOfTaste());
 		target.setLossOfSmell(source.getLossOfSmell());
 		target.setCoughWithSputum(source.getCoughWithSputum());
-		target.setCoughWithHemoptysis(source.getCoughWithHemoptysis());
+		target.setCoughWithHaemoptysis(source.getCoughWithHaemoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
 		target.setSkinUlcers(source.getSkinUlcers());
@@ -404,7 +404,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setLossOfTaste(source.getLossOfTaste());
 		target.setLossOfSmell(source.getLossOfSmell());
 		target.setCoughWithSputum(source.getCoughWithSputum());
-		target.setCoughWithHemoptysis(source.getCoughWithHemoptysis());
+		target.setCoughWithHaemoptysis(source.getCoughWithHaemoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
 		target.setSkinUlcers(source.getSkinUlcers());
