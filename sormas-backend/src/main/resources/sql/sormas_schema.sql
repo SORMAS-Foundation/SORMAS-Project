@@ -5380,7 +5380,7 @@ INSERT INTO person_locations (person_id, location_id) SELECT person_id, location
 ALTER TABLE person DROP COLUMN occupationregion_id, DROP COLUMN occupationdistrict_id, DROP COLUMN occupationcommunity_id, DROP COLUMN occupationfacilitytype, DROP COLUMN occupationfacility_id, DROP COLUMN occupationfacilitydetails;
 
 INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add facility fields to location and refactor occupation facilities for persons #2456');
-                                                                                                                                          
+
 -- 202-10-01 Split general signs of disease #2916
 ALTER TABLE symptoms ADD COLUMN shivering character varying(255);
 ALTER TABLE symptoms RENAME generalsignsofdisease to feelingill;
@@ -5400,8 +5400,8 @@ ALTER TABLE contact_history
     ADD COLUMN endofquarantinereason varchar(255),
     ADD COLUMN endofquarantinereasondetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (260, 'Contacts > Minimal Essential Data (MED) for Switzerland #2960');                                                                                                                                     
-                                                                                                                                          
+INSERT INTO schema_version (version_number, comment) VALUES (260, 'Contacts > Minimal Essential Data (MED) for Switzerland #2960');
+
 -- 2020-09-16 Add total series to campaigndiagramdefinition to calculate percentage values #2528
 ALTER TABLE campaigndiagramdefinition ADD COLUMN campaignseriestotal json;
 ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaignseriestotal json;
@@ -5419,4 +5419,10 @@ ALTER TABLE contact ADD COLUMN returningtraveler varchar(255);
 ALTER TABLE contact_history ADD COLUMN returningtraveler varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (263, 'Add new field returningTraveler to contact #2603');
+
+-- 2020-10-05 Change type of symptomatic
+ALTER TABLE symptoms ALTER COLUMN symptomatic TYPE varchar(255);
+ALTER TABLE symptoms_history ALTER COLUMN symptomatic TYPE varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (264, 'Modify the type of symptomtic');
+
 -- *** Insert new sql commands BEFORE this line ***

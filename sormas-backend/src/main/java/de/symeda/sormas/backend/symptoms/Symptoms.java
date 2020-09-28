@@ -53,7 +53,7 @@ public class Symptoms extends AbstractDomainObject {
 
 	private Date onsetDate;
 	private String onsetSymptom;
-	private Boolean symptomatic;
+	private YesNoUnknown symptomatic;
 	private String patientIllLocation;
 
 	private Float temperature;
@@ -529,7 +529,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.seizures = seizures;
 	}
 
-	public void setSymptomatic(Boolean symptomatic) {
+	public void setSymptomatic(YesNoUnknown symptomatic) {
 		this.symptomatic = symptomatic;
 	}
 
@@ -651,7 +651,7 @@ public class Symptoms extends AbstractDomainObject {
 		return seizures;
 	}
 
-	public Boolean getSymptomatic() {
+	public YesNoUnknown getSymptomatic() {
 		return symptomatic;
 	}
 
