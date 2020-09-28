@@ -1428,7 +1428,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries
 	private SymptomState swollenGlands;
 
-	private Boolean symptomatic;
+	private YesNoUnknown symptomatic;
 
 	@Diseases({
 		AFP,
@@ -2160,7 +2160,7 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Order(20)
 	@ImportIgnore
-	public Boolean getSymptomatic() {
+	public YesNoUnknown getSymptomatic() {
 		return symptomatic;
 	}
 
@@ -3355,7 +3355,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.swollenGlands = swollenGlands;
 	}
 
-	public void setSymptomatic(Boolean symptomatic) {
+	public void setSymptomatic(YesNoUnknown symptomatic) {
 		this.symptomatic = symptomatic;
 	}
 

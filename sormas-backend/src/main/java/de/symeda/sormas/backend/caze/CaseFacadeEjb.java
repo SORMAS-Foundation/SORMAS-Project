@@ -1827,7 +1827,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (sampleService.getSampleCountByCase(caze) > 0) {
 			completeness += 0.15f;
 		}
-		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
+		if ((caze.getSymptoms().getSymptomatic()) == YesNoUnknown.YES) {
 			completeness += 0.15f;
 		}
 		if (contactService.getContactCountByCase(caze) > 0) {

@@ -5494,4 +5494,10 @@ ALTER TABLE users ADD COLUMN hasConsentedToGdpr boolean default false;
 ALTER TABLE users_history ADD COLUMN hasConsentedToGdpr boolean default false;
 INSERT INTO schema_version (version_number, comment) VALUES (267, 'Add gdpr popup to user');
 
+
+-- 2020-10-05 Change type of symptomatic
+ALTER TABLE symptoms ALTER COLUMN symptomatic TYPE varchar(255);
+ALTER TABLE symptoms_history ALTER COLUMN symptomatic TYPE varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (268, 'Modify the type of symptomtic');
+
 -- *** Insert new sql commands BEFORE this line ***
