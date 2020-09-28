@@ -47,7 +47,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 	private String uuid;
 	private EventStatus eventStatus;
-	private int participantCount;
+	private long participantCount;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -66,7 +66,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 	public EventIndexDto(
 		String uuid,
 		EventStatus eventStatus,
-		Integer participantCount,
+		Long participantCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -227,11 +227,11 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.reportDateTime = reportDateTime;
 	}
 
-	public int getParticipantCount() {
+	public long getParticipantCount() {
 		return participantCount;
 	}
 
-	public void setParticipantCount(int participantCount) {
+	public void setParticipantCount(long participantCount) {
 		this.participantCount = participantCount;
 	}
 

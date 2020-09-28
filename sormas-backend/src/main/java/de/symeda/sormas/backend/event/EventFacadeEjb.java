@@ -40,6 +40,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -216,10 +217,12 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
-		Subquery<Integer> participantCount = cq.subquery(Integer.class);
-		Root<Event> participantCountRoot = participantCount.from(Event.class);
-		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
-		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+		Subquery<Long> participantCount = cq.subquery(Long.class);
+		Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
+		Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		participantCount.select(cb.count(eventParticipantRoot));
+		participantCount.where(assignedToEvent, notDeleted);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -317,10 +320,12 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
-		Subquery<Integer> participantCount = cq.subquery(Integer.class);
-		Root<Event> participantCountRoot = participantCount.from(Event.class);
-		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
-		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+		Subquery<Long> participantCount = cq.subquery(Long.class);
+		Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
+		Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		participantCount.select(cb.count(eventParticipantRoot));
+		participantCount.where(assignedToEvent, notDeleted);
 
 		cq.multiselect(
 			event.get(Event.UUID),

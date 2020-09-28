@@ -50,12 +50,11 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 	private PopupDateField dateFromFilter;
 	private PopupDateField dateToFilter;
 
-	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption, String infoText, AbstractFilterForm parentFilterForm) {
-		this(applyButton, fillAutomatically, showCaption, infoText, null, null, null, parentFilterForm);
+	public EpiWeekAndDateFilterComponent(boolean fillAutomatically, boolean showCaption, String infoText, AbstractFilterForm parentFilterForm) {
+		this(fillAutomatically, showCaption, infoText, null, null, null, parentFilterForm);
 	}
 
 	public EpiWeekAndDateFilterComponent(
-		Button applyButton,
 		boolean fillAutomatically,
 		boolean showCaption,
 		String infoText,
@@ -156,12 +155,6 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		if (showCaption) {
 			weekFromFilter.setCaption(I18nProperties.getCaption(Captions.epiWeekFrom));
 		}
-		if (applyButton != null) {
-			weekFromFilter.addValueChangeListener(e -> {
-				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-				applyButton.setEnabled(true);
-			});
-		}
 		addComponent(weekFromFilter);
 
 		weekToFilter.setId("weekTo");
@@ -176,12 +169,6 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		if (showCaption) {
 			weekToFilter.setCaption(I18nProperties.getCaption(Captions.epiWeekTo));
 		}
-		if (applyButton != null) {
-			weekToFilter.addValueChangeListener(e -> {
-				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-				applyButton.setEnabled(true);
-			});
-		}
 		addComponent(weekToFilter);
 
 		// Date filter
@@ -190,23 +177,11 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		if (showCaption) {
 			dateFromFilter.setCaption(I18nProperties.getCaption(Captions.from));
 		}
-		if (applyButton != null) {
-			dateFromFilter.addValueChangeListener(e -> {
-				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-				applyButton.setEnabled(true);
-			});
-		}
 
 		dateToFilter.setId("dateTo");
 		dateToFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
 			dateToFilter.setCaption(I18nProperties.getCaption(Captions.to));
-		}
-		if (applyButton != null) {
-			dateToFilter.addValueChangeListener(e -> {
-				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-				applyButton.setEnabled(true);
-			});
 		}
 
 		if (parentFilterForm != null) {
