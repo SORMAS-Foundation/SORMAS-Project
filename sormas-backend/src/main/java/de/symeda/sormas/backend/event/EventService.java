@@ -407,7 +407,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super.delete(event);
 	}
 
-	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, Root<Event> from) {
+	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, From<?, Event> from) {
 
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {

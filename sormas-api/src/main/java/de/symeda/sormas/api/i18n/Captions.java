@@ -783,6 +783,15 @@ public interface Captions {
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
+	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
+	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
+	String EventAction_actionPriority = "EventAction.actionPriority";
+	String EventAction_actionReplyingUser = "EventAction.actionReplyingUser";
+	String EventAction_actionStatus = "EventAction.actionStatus";
+	String EventAction_actionTitle = "EventAction.actionTitle";
+	String EventAction_eventStatus = "EventAction.eventStatus";
+	String EventAction_eventTitle = "EventAction.eventTitle";
+	String EventAction_eventUuid = "EventAction.eventUuid";
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";

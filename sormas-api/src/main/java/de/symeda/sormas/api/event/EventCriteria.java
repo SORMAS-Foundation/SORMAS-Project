@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -62,6 +63,11 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Boolean userFilterIncluded = true;
 	private TypeOfPlace typeOfPlace;
 
+	// Actions criterias
+	private ActionStatus actionStatus;
+	private Date actionChangeDateFrom;
+	private Date actionChangeDateTo;
+	private DateFilterOption actionChangeDateFilterOption = DateFilterOption.DATE;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -277,5 +283,64 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setTypeOfPlace(TypeOfPlace typeOfPlace) {
 		this.typeOfPlace = typeOfPlace;
+	}
+
+	public ActionStatus getActionStatus() {
+		return actionStatus;
+	}
+
+	public void setActionStatus(ActionStatus actionStatus) {
+		this.actionStatus = actionStatus;
+	}
+
+	public EventCriteria actionStatus(ActionStatus actionStatus) {
+		setActionStatus(actionStatus);
+		return this;
+	}
+
+	public EventCriteria actionChangeDateBetween(Date actionChangeDateFrom, Date actionChangeDateTo, DateFilterOption actionChangeDateFilterOption) {
+		this.actionChangeDateFrom = actionChangeDateFrom;
+		this.actionChangeDateTo = actionChangeDateTo;
+		this.actionChangeDateFilterOption = actionChangeDateFilterOption;
+		return this;
+	}
+
+	public Date getActionChangeDateFrom() {
+		return actionChangeDateFrom;
+	}
+
+	public void setActionChangeDateFrom(Date actionChangeDateFrom) {
+		this.actionChangeDateFrom = actionChangeDateFrom;
+	}
+
+	public EventCriteria actionChangeDateFrom(Date actionChangeDateFrom) {
+		this.actionChangeDateFrom = actionChangeDateFrom;
+		return this;
+	}
+
+	public Date getActionChangeDateTo() {
+		return actionChangeDateTo;
+	}
+
+	public void setActionChangeDateTo(Date actionChangeDateTo) {
+		this.actionChangeDateTo = actionChangeDateTo;
+	}
+
+	public EventCriteria actionChangeDateTo(Date actionChangeDateTo) {
+		this.actionChangeDateTo = actionChangeDateTo;
+		return this;
+	}
+
+	public void setActionChangeDateFilterOption(DateFilterOption actionChangeDateFilterOption) {
+		this.actionChangeDateFilterOption = actionChangeDateFilterOption;
+	}
+
+	public EventCriteria actionChangeDateFilterOption(DateFilterOption actionChangeDateFilterOption) {
+		this.actionChangeDateFilterOption = actionChangeDateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getActionChangeDateFilterOption() {
+		return actionChangeDateFilterOption;
 	}
 }
