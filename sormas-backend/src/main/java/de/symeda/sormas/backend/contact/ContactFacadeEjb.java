@@ -542,7 +542,6 @@ public class ContactFacadeEjb implements ContactFacade {
 					else if (lastCooperativeVisit.getSymptoms().getSymptomatic() == YesNoUnknown.NO) exportContact
 							.setLastCooperativeVisitSymptomatic(YesNoUnknown.NO);
 					else exportContact.setLastCooperativeVisitSymptomatic(YesNoUnknown.UNKNOWN);
-
 				}
 
 				if (travels != null) {
