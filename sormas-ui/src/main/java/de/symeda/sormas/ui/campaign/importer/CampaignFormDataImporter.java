@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -84,10 +87,13 @@ public class CampaignFormDataImporter extends DataImporter {
 			CampaignFormMetaDto campaginMetaDto = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormMetaUUID);
 			campaignFormData.setCampaign(campaignReferenceDto);
 			campaignFormData.setCampaignFormMeta(new CampaignFormMetaReferenceDto(campaignFormMetaUUID, campaginMetaDto.getFormName()));
-			if (validateFormValues(campaginMetaDto, campaignFormData) == false) {
-				writeImportError(values, I18nProperties.getValidationError(Validations.importUnexpectedError));
+			Map<String,String> invalidEntries =  validateFormValues(campaginMetaDto, campaignFormData);
+			if (!invalidEntries.isEmpty()) {
+				for(String e:invalidEntries.keySet()){
+					writeImportError(values, I18nProperties.getValidationError(Validations.importWrongDataTypeError,invalidEntries.get(e),e));
+				}
 				return ImportLineResult.ERROR;
-			} else {
+				} else {
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(campaignFormData);
 			}
 		} catch (ImportErrorException e) {
@@ -97,19 +103,20 @@ public class CampaignFormDataImporter extends DataImporter {
 		return ImportLineResult.SUCCESS;
 	}
 
-	private boolean validateFormValues(CampaignFormMetaDto campaginMetaDto, CampaignFormDataDto campaignFormData) {
-		boolean isRowValid = true;
+	private Map<String,String> validateFormValues(CampaignFormMetaDto campaginMetaDto, CampaignFormDataDto campaignFormData) {
+		Map<String,String> wrongEntries = new LinkedHashMap<>();
 		List<CampaignFormElement> formElements = campaginMetaDto.getCampaignFormElements();
 		Optional<CampaignFormElement> formElementOptional;
 		for (CampaignFormDataEntry formDataEntry : campaignFormData.getFormValues()) {
 			formElementOptional = formElements.stream().filter(formElement -> formElement.getId().equals(formDataEntry.getId())).findFirst();
 			if (formElementOptional.isPresent()) {
 				if (!isEntryValid(formElementOptional.get(), formDataEntry)) {
-					isRowValid = false;
+					wrongEntries.put(formElementOptional.get().getId(),formDataEntry.getValue().toString());
+
 				}
 			}
 		}
-		return isRowValid;
+		return wrongEntries;
 	}
 
 	private boolean isEntryValid(CampaignFormElement definition, CampaignFormDataEntry entry) {
