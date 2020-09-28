@@ -5323,4 +5323,10 @@ ALTER TABLE person_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
 
+-- 2020-09-18 Add action title
+ALTER TABLE action ADD COLUMN title character varying(512);
+ALTER TABLE action_history ADD COLUMN title character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add action.title');
+
 -- *** Insert new sql commands BEFORE this line ***
