@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.VisitOrigin;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -171,7 +172,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private VisitDto createVisit(UserDto visitUser, ContactDto contact, PersonDto person) {
-		VisitDto visitDto = creator.createVisit(Disease.CORONAVIRUS, person.toReference(), new Date(), VisitStatus.COOPERATIVE, (v) -> {
+		VisitDto visitDto = creator.createVisit(Disease.CORONAVIRUS, person.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER, (v) -> {
 			v.setVisitUser(visitUser.toReference());
 			v.setReportLat(46.432);
 			v.setReportLon(23.234);
