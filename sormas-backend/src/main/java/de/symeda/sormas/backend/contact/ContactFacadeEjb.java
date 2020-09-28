@@ -48,6 +48,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -1653,8 +1654,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			Root<Contact> indexRoot = indexContactsCq.from(Contact.class);
 			selectIndexDtoFields(indexContactsCq, indexRoot);
 			indexContactsCq.where(indexRoot.get(Contact.ID).in(foundIds.stream().flatMap(Arrays::stream).collect(Collectors.toSet())));
-			Map<Long, ContactIndexDto> indexContacts =
-					em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
+			TypedQuery q = em.createQuery(indexContactsCq);
+			Map<Long, ContactIndexDto> indexContacts = em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
 				try {
