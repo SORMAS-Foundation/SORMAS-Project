@@ -792,9 +792,11 @@ public interface Captions {
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
 	String EventAction_eventUuid = "EventAction.eventUuid";
+	String eventActionsView = "eventActionsView";
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";
+	String eventDefaultView = "eventDefaultView";
 	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";

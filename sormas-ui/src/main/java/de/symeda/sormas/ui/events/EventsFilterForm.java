@@ -50,22 +50,22 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			+ loc(EVENT_WEEK_AND_DATE_FILTER)
 			+ loc(ACTION_WEEK_AND_DATE_FILTER);
 
-	private final boolean hideEventStatus;
-	private final boolean hideActions;
+	private final boolean hideEventStatusFilter;
+	private final boolean hideActionFilters;
 
-	protected EventsFilterForm(boolean hideEventStatus, boolean hideActions) {
+	protected EventsFilterForm(boolean hideEventStatusFilter, boolean hideActionFilters) {
 		super(EventCriteria.class, EventIndexDto.I18N_PREFIX);
-		this.hideEventStatus = hideEventStatus;
-		this.hideActions = hideActions;
+		this.hideEventStatusFilter = hideEventStatusFilter;
+		this.hideActionFilters = hideActionFilters;
 
 		updateFields();
 	}
 
 	private void updateFields() {
-		if (hideActions) {
+		if (hideActionFilters) {
 			getEpiWeekAndDateComponent(ACTION_WEEK_AND_DATE_FILTER).setVisible(false);
 		}
-		if (hideEventStatus) {
+		if (hideEventStatusFilter) {
 			getField(EventCriteria.EVENT_STATUS).setVisible(false);
 		}
 	}
