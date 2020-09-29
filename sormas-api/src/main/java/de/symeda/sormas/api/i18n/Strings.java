@@ -286,6 +286,7 @@ public interface Strings {
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
 	String headingImportContacts = "headingImportContacts";
+	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCsvFile = "headingImportCsvFile";
 	String headingImportDistricts = "headingImportDistricts";
 	String headingImportedCaseInfo = "headingImportedCaseInfo";
