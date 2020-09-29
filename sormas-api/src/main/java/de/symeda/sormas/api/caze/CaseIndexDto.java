@@ -98,8 +98,6 @@ public class CaseIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Seri
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private Integer visitCount;
-	private Date changeDate;
-	private Long facilityId;
 
 	private CaseJurisdictionDto jurisdiction;
 
@@ -129,7 +127,9 @@ public class CaseIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Seri
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId, Integer visitCount) {
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
+						Date changeDate, Long facilityId, // XXX: unused, only here for TypedQuery mapping
+						Integer visitCount) {
 	//@formatter:on
 
 		this.id = id;
@@ -157,8 +157,6 @@ public class CaseIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Seri
 		this.completeness = completeness;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
-		this.changeDate = changeDate;
-		this.facilityId = facilityId;
 
 		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
