@@ -33,6 +33,8 @@ public interface ImportFacade {
 	 */
 	void generateCaseImportTemplateFile() throws IOException;
 
+	void generateCampaignFormImportTemplateFile(String campaignFormUuid) throws IOException;
+
 	void generateCaseContactImportTemplateFile() throws IOException;
 
 	void generateCaseLineListingImportTemplateFile() throws IOException;
@@ -54,6 +56,8 @@ public interface ImportFacade {
 	void generateContactImportTemplateFile() throws IOException;
 
 	String getCaseImportTemplateFilePath();
+
+	String getCampaignFormImportTemplateFilePath();
 
 	String getPointOfEntryImportTemplateFilePath();
 

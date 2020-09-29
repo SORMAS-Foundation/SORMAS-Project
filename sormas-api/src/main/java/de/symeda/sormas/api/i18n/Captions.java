@@ -1280,6 +1280,7 @@ public interface Captions {
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
+	String sex = "sex";
 	String singleDayEventDate = "singleDayEventDate";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";

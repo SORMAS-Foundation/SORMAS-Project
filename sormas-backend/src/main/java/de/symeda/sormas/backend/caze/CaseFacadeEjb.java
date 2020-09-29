@@ -406,7 +406,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		List<CaseIndexDto> cases;
 		if (first != null && max != null) {
-			cases = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			TypedQuery query = em.createQuery(cq);
+			cases = query.setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
 			cases = em.createQuery(cq).getResultList();
 		}
