@@ -650,6 +650,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 
+			filter = and(
+				cb,
+				filter,
+				cb.isFalse(event.get(Event.DELETED)),
+				cb.isFalse(event.get(Event.ARCHIVED)),
+				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+
 			if (hasEventLikeCriteria) {
 				String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
 				for (int i = 0; i < textFilters.length; i++) {
