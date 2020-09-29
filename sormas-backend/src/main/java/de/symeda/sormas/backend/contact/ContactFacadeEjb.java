@@ -707,6 +707,7 @@ public class ContactFacadeEjb implements ContactFacade {
 						contact.get(Contact.LAST_CONTACT_DATE),
 						contact.get(Contact.REPORT_DATE_TIME),
 						contact.get(Contact.FOLLOW_UP_UNTIL),
+						joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 						contact.get(Contact.DISEASE)),
 					listCriteriaBuilder.getJurisdictionSelections(joins))
 				.collect(Collectors.toList()));
@@ -728,6 +729,9 @@ public class ContactFacadeEjb implements ContactFacade {
 				case FollowUpDto.REPORT_DATE:
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
+					break;
+				case ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS:
+					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
 					break;
 				case FollowUpDto.PERSON:
 					expression = joins.getPerson().get(Person.FIRST_NAME);

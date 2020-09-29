@@ -450,6 +450,7 @@ public interface Captions {
 	String Contact_reportLon = "Contact.reportLon";
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
+	String Contact_symptomJournalStatus = "Contact.symptomJournalStatus";
 	String Contact_tracingApp = "Contact.tracingApp";
 	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
 	String Contact_uuid = "Contact.uuid";
@@ -1071,6 +1072,7 @@ public interface Captions {
 	String Person_placeOfBirthRegion = "Person.placeOfBirthRegion";
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
+	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
 	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
@@ -1626,6 +1628,7 @@ public interface Captions {
 	String View_users_sub = "View.users.sub";
 	String Visit = "Visit";
 	String Visit_disease = "Visit.disease";
+	String Visit_origin = "Visit.origin";
 	String Visit_person = "Visit.person";
 	String Visit_reportLat = "Visit.reportLat";
 	String Visit_reportLon = "Visit.reportLon";

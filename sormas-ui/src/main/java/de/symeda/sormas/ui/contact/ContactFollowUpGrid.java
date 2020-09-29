@@ -54,7 +54,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			ContactFollowUpDto.CONTACT_OFFICER,
 			ContactFollowUpDto.LAST_CONTACT_DATE,
 			FollowUpDto.REPORT_DATE,
-			FollowUpDto.FOLLOW_UP_UNTIL);
+			FollowUpDto.FOLLOW_UP_UNTIL,
+			ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS);
 
 		setVisitColumns(referenceDate, interval, criteria);
 
@@ -65,7 +66,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<ContactFollowUpDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if (!dateColumnIds.contains(column.getId())) {
 				column.setStyleGenerator(
 					FieldAccessColumnStyleGenerator.withCheckers(

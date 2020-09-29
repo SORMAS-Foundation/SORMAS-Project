@@ -167,18 +167,18 @@ public class VisitExportDto implements Serializable {
 
 	@Order(8)
 	@ExportTarget(visitExportTypes = VisitExportType.CONTACT_VISITS)
-	@ExportProperty(VisitDto.SYMPTOMS)
-	@ExportGroup(ExportGroupType.ADDITIONAL)
-	public SymptomsDto getSymptoms() {
-		return symptoms;
-	}
-
-	@Order(9)
-	@ExportTarget(visitExportTypes = VisitExportType.CONTACT_VISITS)
 	@ExportProperty(VisitDto.ORIGIN)
 	@ExportGroup(ExportGroupType.CORE)
 	public VisitOrigin getOrigin() {
 		return origin;
+	}
+
+	@Order(9)
+	@ExportTarget(visitExportTypes = VisitExportType.CONTACT_VISITS)
+	@ExportProperty(VisitDto.SYMPTOMS)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public SymptomsDto getSymptoms() {
+		return symptoms;
 	}
 
 	public void setId(Long id) {
