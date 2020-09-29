@@ -62,6 +62,7 @@ public interface Validations {
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
 	String importRegionNotUnique = "importRegionNotUnique";
 	String importUnexpectedError = "importUnexpectedError";
+	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";

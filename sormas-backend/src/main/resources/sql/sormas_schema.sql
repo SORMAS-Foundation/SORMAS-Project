@@ -5329,4 +5329,10 @@ ALTER TABLE action_history ADD COLUMN title character varying(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add action.title');
 
+-- 2020-09-18 Add event title
+ALTER TABLE events ADD COLUMN eventTitle character varying(512);
+ALTER TABLE events_history ADD COLUMN eventTitle character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (256, 'Add event.eventTitle');
+
 -- *** Insert new sql commands BEFORE this line ***

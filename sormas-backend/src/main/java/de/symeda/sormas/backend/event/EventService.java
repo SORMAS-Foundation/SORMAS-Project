@@ -492,8 +492,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			for (int i = 0; i < textFilters.length; i++) {
 				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters =
-						cb.or(cb.like(cb.lower(from.get(Event.UUID)), textFilter), cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter));
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(from.get(Event.UUID)), textFilter),
+						cb.like(cb.lower(from.get(Event.EVENT_TITLE)), textFilter),
+						cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
