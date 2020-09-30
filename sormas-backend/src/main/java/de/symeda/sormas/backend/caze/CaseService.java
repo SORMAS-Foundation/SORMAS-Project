@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1132,7 +1133,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
 		Root<Case> root = cu.from(Case.class);
 
-		// TODO #2894: set changeDate
+		cu.set(Case.CHANGE_DATE, Timestamp.from(Instant.now()));
 		cu.set(root.get(Case.ARCHIVED), archived);
 
 		cu.where(root.get(Case.UUID).in(caseUuids));
