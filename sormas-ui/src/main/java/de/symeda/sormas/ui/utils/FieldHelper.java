@@ -43,6 +43,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 
 public final class FieldHelper {
@@ -600,5 +601,10 @@ public final class FieldHelper {
 
 	public static SensitiveDataFieldAccessChecker createSensitiveDataFieldAccessChecker() {
 		return SensitiveDataFieldAccessChecker.create(r -> UserProvider.getCurrent().hasUserRight(r));
+	}
+
+	public static Collection<Enum<?>> getVisibleEnumItems(Class<Enum<?>> enumClass, FieldVisibilityCheckers checkers) {
+		return Arrays.stream(enumClass.getEnumConstants()).filter(constant -> checkers.isVisible(enumClass, constant.name()))
+			.collect(Collectors.toList());
 	}
 }
