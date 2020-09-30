@@ -29,10 +29,13 @@ import java.util.stream.Stream.Builder;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
@@ -1113,5 +1116,27 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		ensurePersisted(caze);
+	}
+
+	/**
+	 * @param caseUuids
+	 *            {@link Case}s identified by {@code uuid} to be archived or not.
+	 * @param archived
+	 *            {@code true} archives the Case, {@code false} unarchives it.
+	 * @see {@link Case#setArchived(boolean)}
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void updateArchived(List<String> caseUuids, boolean archived) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+
+		// TODO #2894: set changeDate
+		cu.set(root.get(Case.ARCHIVED), archived);
+
+		cu.where(root.get(Case.UUID).in(caseUuids));
+
+		em.createQuery(cu).executeUpdate();
 	}
 }

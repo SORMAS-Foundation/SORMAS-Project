@@ -49,7 +49,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -2912,16 +2911,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.select(from.get(Case.UUID));
 		List<String> uuids = em.createQuery(cq).getResultList();
 
+		// TODO #2894: Slice the uuids into batchs not hitting the parameter limit
 		if (!uuids.isEmpty()) {
-
-			CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
-			Root<Case> root = cu.from(Case.class);
-
-			cu.set(root.get(Case.ARCHIVED), true);
-
-			cu.where(root.get(Case.UUID).in(uuids));
-
-			em.createQuery(cu).executeUpdate();
+			caseService.updateArchived(uuids, true);
 		}
 	}
 
