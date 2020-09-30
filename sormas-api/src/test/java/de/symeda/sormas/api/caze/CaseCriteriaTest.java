@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.caze;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -25,6 +24,6 @@ public class CaseCriteriaTest {
 		generatedCriteria.fromUrlParams(criteria.toUrlParams());
 		assertEquals(criteria.getDistrict(), generatedCriteria.getDistrict());
 		assertEquals(criteria.getDisease(), generatedCriteria.getDisease());
-		assertNull(generatedCriteria.getEventLike());
+		assertEquals(criteria.getEventLike(), generatedCriteria.getEventLike());
 	}
 }
