@@ -251,7 +251,7 @@ public class EventsView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setSizeUndefined();
 
-		filterForm = new EventsFilterForm(!isDefaultViewType(), !isDefaultViewType());
+		filterForm = new EventsFilterForm(isDefaultViewType(), isDefaultViewType());
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter()) {
 				navigateTo(null);
