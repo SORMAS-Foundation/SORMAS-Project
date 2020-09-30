@@ -24,5 +24,7 @@ If you've never submitted an issue to the SORMAS repository before or this is yo
 * Device:
 * SORMAS version:
 * Android version/Browser:
+* Server URL:
+* User Role:
 
 ### Additional Information

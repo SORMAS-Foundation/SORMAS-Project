@@ -42,7 +42,7 @@ public interface Strings {
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
-	String confirmationAlsoExtendQuarantine = "confirmationAlsoExtendQuarantine";
+	String confirmationAlsoAdjustQuarantine = "confirmationAlsoAdjustQuarantine";
 	String confirmationArchiveArea = "confirmationArchiveArea";
 	String confirmationArchiveAreas = "confirmationArchiveAreas";
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
@@ -170,6 +170,7 @@ public interface Strings {
 	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
+	String headingAdjustQuarantine = "headingAdjustQuarantine";
 	String headingAllContacts = "headingAllContacts";
 	String headingAnimalContacts = "headingAnimalContacts";
 	String headingArchiveCampaign = "headingArchiveCampaign";
@@ -358,6 +359,7 @@ public interface Strings {
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
+	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
@@ -759,6 +761,7 @@ public interface Strings {
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";
+	String unsavedChanges_cancel = "unsavedChanges.cancel";
 	String unsavedChanges_discard = "unsavedChanges.discard";
 	String unsavedChanges_save = "unsavedChanges.save";
 	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";

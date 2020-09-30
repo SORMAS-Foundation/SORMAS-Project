@@ -100,7 +100,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			EventIndexDto.EVENT_STATUS,
 			createEventDateColumn(this, userLanguage),
 			DISEASE_SHORT,
-			EventIndexDto.EVENT_DESC,
+			EventIndexDto.EVENT_TITLE,
 			EventIndexDto.EVENT_LOCATION,
 			EventIndexDto.SRC_TYPE,
 			INFORMATION_SOURCE,

@@ -63,7 +63,7 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 
 		setColumns(
 			EventIndexDto.EVENT_LOCATION,
-			EventIndexDto.EVENT_DESC,
+			EventIndexDto.EVENT_TITLE,
 			EventGrid.createEventDateColumn(this, userLanguage),
 			EventIndexDto.EVENT_STATUS,
 			EventIndexDto.REPORT_DATE_TIME);
@@ -78,7 +78,7 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 					FieldHelper.createSensitiveDataFieldAccessChecker()));
 		}
 
-		getColumn(EventIndexDto.EVENT_DESC).setMaximumWidth(300);
+		getColumn(EventIndexDto.EVENT_TITLE).setMaximumWidth(300);
 
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
@@ -103,7 +103,11 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 
 		EventSelectionGrid tempGrid = this;
 		dataProvider.addDataProviderListener((DataProviderListener<EventIndexDto>) dataChangeEvent -> {
-			tempGrid.setHeightByRows(Math.min(tempGrid.getItemCount(), 5));
+			if (tempGrid.getItemCount() > 0) {
+				tempGrid.setHeightByRows(Math.min(tempGrid.getItemCount(), 5));
+			} else {
+				tempGrid.setHeightByRows(1);
+			}
 		});
 	}
 

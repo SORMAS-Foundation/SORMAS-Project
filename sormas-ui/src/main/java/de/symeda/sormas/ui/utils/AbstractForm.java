@@ -310,7 +310,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
-	public Field<?> getField(String fieldOrPropertyId) {
+	public <T extends Field<?>> T getField(String fieldOrPropertyId) {
 		Field<?> field = getFieldGroup().getField(fieldOrPropertyId);
 		if (field == null) {
 			// try to get the field from the layout
@@ -319,7 +319,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 				field = (Field<?>) component;
 			}
 		}
-		return field;
+		return (T) field;
 	}
 
 	@Override

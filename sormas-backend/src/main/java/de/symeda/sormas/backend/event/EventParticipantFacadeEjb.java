@@ -318,6 +318,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.TYPE_OF_PLACE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.NAME),
 			eventLocation.join(Location.DISTRICT, JoinType.LEFT).get(District.NAME),

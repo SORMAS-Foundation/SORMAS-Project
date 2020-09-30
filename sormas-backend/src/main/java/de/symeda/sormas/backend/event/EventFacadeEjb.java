@@ -40,6 +40,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -216,10 +217,12 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
-		Subquery<Integer> participantCount = cq.subquery(Integer.class);
-		Root<Event> participantCountRoot = participantCount.from(Event.class);
-		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
-		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+		Subquery<Long> participantCount = cq.subquery(Long.class);
+		Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
+		Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		participantCount.select(cb.count(eventParticipantRoot));
+		participantCount.where(assignedToEvent, notDeleted);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -229,7 +232,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
-			event.get(Event.EVENT_DESC),
+			event.get(Event.EVENT_TITLE),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			district.get(District.UUID),
@@ -273,7 +276,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
-				case EventIndexDto.EVENT_DESC:
+				case EventIndexDto.EVENT_TITLE:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:
 				case EventIndexDto.SRC_TEL_NO:
@@ -317,10 +320,12 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
-		Subquery<Integer> participantCount = cq.subquery(Integer.class);
-		Root<Event> participantCountRoot = participantCount.from(Event.class);
-		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
-		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+		Subquery<Long> participantCount = cq.subquery(Long.class);
+		Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
+		Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		participantCount.select(cb.count(eventParticipantRoot));
+		participantCount.where(assignedToEvent, notDeleted);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -331,6 +336,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.NOSOCOMIAL),
 			region.get(Region.UUID),
@@ -438,6 +444,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setExternalId(source.getExternalId());
+		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
 		target.setStartDate(source.getStartDate());
@@ -512,6 +519,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setExternalId(source.getExternalId());
+		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
 		target.setStartDate(source.getStartDate());
