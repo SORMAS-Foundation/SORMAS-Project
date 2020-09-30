@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.visit;
 
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 
 public class VisitLogic {
@@ -8,18 +10,18 @@ public class VisitLogic {
     // hidden constructor
   }
 
-  public static VisitResult getVisitResult(VisitStatus status, boolean symptomatic) {
-
+  public static VisitResultDto getVisitResult(VisitStatus status, VisitOrigin origin, boolean symptomatic) {
+    boolean external = origin.equals(VisitOrigin.EXTERNAL_JOURNAL);
     if (VisitStatus.UNCOOPERATIVE.equals(status)) {
-      return VisitResult.UNCOOPERATIVE;
+      return new VisitResultDto(external, VisitResult.UNCOOPERATIVE);
     }
     if (VisitStatus.UNAVAILABLE.equals(status)) {
-      return VisitResult.UNAVAILABLE;
+      return new VisitResultDto(external, VisitResult.UNAVAILABLE);
     }
     if (symptomatic) {
-      return VisitResult.SYMPTOMATIC;
+      return new VisitResultDto(external, VisitResult.SYMPTOMATIC);
     }
-    return VisitResult.NOT_SYMPTOMATIC;
+    return new VisitResultDto(external, VisitResult.NOT_SYMPTOMATIC);
   }
 
 }

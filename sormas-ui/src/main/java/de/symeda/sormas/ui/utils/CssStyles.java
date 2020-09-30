@@ -207,6 +207,11 @@ public final class CssStyles {
 	public static final String GRID_CELL_UNAVAILABLE = "follow-up-unavailable";
 	public static final String GRID_CELL_UNCOOPERATIVE = "follow-up-uncooperative";
 	public static final String GRID_CELL_NOT_PERFORMED = "follow-up-not-performed";
+	public static final String GRID_CELL_SYMPTOMATIC_EXTERNAL = "follow-up-symptomatic-external";
+	public static final String GRID_CELL_NOT_SYMPTOMATIC_EXTERNAL = "follow-up-not-symptomatic-external";
+	public static final String GRID_CELL_UNAVAILABLE_EXTERNAL = "follow-up-unavailable-external";
+	public static final String GRID_CELL_UNCOOPERATIVE_EXTERNAL = "follow-up-uncooperative-external";
+	public static final String GRID_CELL_NOT_PERFORMED_EXTERNAL = "follow-up-not-performed-external";
 
 	public static final String GRID_CELL_ODD = "odd";
 

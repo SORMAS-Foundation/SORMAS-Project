@@ -17,6 +17,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
@@ -98,7 +99,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 			final int index = i;
 			getColumn(columnId).setCaption(columnId).setSortable(false).setStyleGenerator((StyleGenerator<ContactFollowUpDto>) item -> {
-				final VisitResult visitResult = item.getVisitResults()[index];
+				final VisitResultDto visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
 				return getVisitResultCssStyle(
 					visitResult,
@@ -106,7 +107,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate()),
 					item.getFollowUpUntil());
 			}).setDescriptionGenerator((DescriptionGenerator<ContactFollowUpDto>) item -> {
-				final VisitResult visitResult = item.getVisitResults()[index];
+				final VisitResultDto visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
 				return getVisitResultDescription(
 					visitResult,

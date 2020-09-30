@@ -54,6 +54,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -774,6 +776,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				visitsCqRoot.get(Contact.UUID),
 				visitsJoin.get(Visit.VISIT_DATE_TIME),
 				visitsJoin.get(Visit.VISIT_STATUS),
+				visitsJoin.get(Visit.ORIGIN),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
 
 			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)), cb.asc(visitsJoin.get(Visit.CREATION_DATE)));
@@ -792,7 +795,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
-				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
+				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (boolean) v[4]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
 			});
 		}
