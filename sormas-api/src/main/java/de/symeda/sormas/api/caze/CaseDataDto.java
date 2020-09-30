@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -360,20 +363,20 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOrderedVerbally;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOrderedOfficialDocument;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOrderedVerballyDate;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOrderedOfficialDocumentDate;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
@@ -388,12 +391,12 @@ public class CaseDataDto extends PseudonymizableDto {
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOfficialOrderSent;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
@@ -403,25 +406,25 @@ public class CaseDataDto extends PseudonymizableDto {
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
 
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Integer caseIdIsm;
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private CovidTestReason covidTestReason;
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
 	private String covidTestReasonDetails;
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private ContactTracingContactType contactTracingFirstContactType;
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Date contactTracingFirstContactDate;
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private QuarantineReason quarantineReasonBeforeIsolation;
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
 	private String quarantineReasonBeforeIsolationDetails;
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private EndOfIsolationReason endOfIsolationReason;
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
 	private String endOfIsolationReasonDetails;
 
