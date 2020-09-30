@@ -20,10 +20,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -332,9 +334,11 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(invocation.getArgumentAt(0, String.class), is(SECOND_SERVER_REST_URL));
 				assertThat(invocation.getArgumentAt(1, String.class), is("/sormasToSormas/case"));
 
-				String authToken = new String(Base64.getDecoder().decode(invocation.getArgumentAt(2, String.class)));
+				String authToken = invocation.getArgumentAt(2, String.class);
+				assertThat(authToken, startsWith("Basic "));
+				String credentials = new String(Base64.getDecoder().decode(authToken.replace("Basic ", "")), StandardCharsets.UTF_8);
 				// uses password from server-list.csv from `serveraccessdefault` package
-				assertThat(authToken, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
+				assertThat(credentials, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
 
 				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(3, SormasToSormasEncryptedDataDto.class);
 				assertThat(encryptedData.getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
@@ -355,7 +359,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedCase.getOriginInfo().getSenderName(), is("Surv Off"));
 				assertThat(sharedCase.getOriginInfo().getComment(), is("Test comment"));
 
-				return Response.ok().build();
+				return Response.noContent().build();
 			});
 
 		getSormasToSormasFacade().shareCase(caze.getUuid(), options);
@@ -398,7 +402,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 				assertThat(sharedCase.getAssociatedContacts().size(), is(1));
 
-				return Response.ok().build();
+				return Response.noContent().build();
 			});
 
 		getSormasToSormasFacade().shareCase(caze.getUuid(), options);
@@ -434,9 +438,11 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(invocation.getArgumentAt(0, String.class), is(SECOND_SERVER_REST_URL));
 				assertThat(invocation.getArgumentAt(1, String.class), is("/sormasToSormas/contact"));
 
-				String authToken = new String(Base64.getDecoder().decode(invocation.getArgumentAt(2, String.class)));
+				String authToken = invocation.getArgumentAt(2, String.class);
+				assertThat(authToken, startsWith("Basic "));
+				String credentials = new String(Base64.getDecoder().decode(authToken.replace("Basic ", "")), StandardCharsets.UTF_8);
 				// uses password from server-list.csv from `serveraccessdefault` package
-				assertThat(authToken, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
+				assertThat(credentials, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
 
 				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgumentAt(3, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasContactDto sharedContact = decryptSharesData(encryptedData.getData(), SormasToSormasContactDto.class);
@@ -455,7 +461,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getSenderName(), is("Surv Off"));
 				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getComment(), is("Test comment"));
 
-				return Response.ok().build();
+				return Response.noContent().build();
 			});
 
 		getSormasToSormasFacade().shareContact(contact.getUuid(), options);
@@ -497,7 +503,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedCase.getPerson().getLastName(), is("Confidential"));
 				assertThat(sharedCase.getCaze().getAdditionalDetails(), is("Test additional details"));
 
-				return Response.ok().build();
+				return Response.noContent().build();
 			});
 
 		getSormasToSormasFacade().shareCase(caze.getUuid(), options);
@@ -533,7 +539,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedCase.getPerson().getLastName(), is("Confidential"));
 				assertThat(sharedCase.getCaze().getAdditionalDetails(), isEmptyString());
 
-				return Response.ok().build();
+				return Response.noContent().build();
 			});
 
 		getSormasToSormasFacade().shareCase(caze.getUuid(), options);
