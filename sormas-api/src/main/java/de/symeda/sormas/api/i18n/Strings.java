@@ -283,6 +283,7 @@ public interface Strings {
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
 	String headingImportAreas = "headingImportAreas";
+	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCaseContacts = "headingImportCaseContacts";
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
