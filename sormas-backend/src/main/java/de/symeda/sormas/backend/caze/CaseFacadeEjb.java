@@ -247,6 +247,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -2911,10 +2912,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.select(from.get(Case.UUID));
 		List<String> uuids = em.createQuery(cq).getResultList();
 
-		// TODO #2894: Slice the uuids into batchs not hitting the parameter limit
-		if (!uuids.isEmpty()) {
-			caseService.updateArchived(uuids, true);
-		}
+		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, e -> caseService.updateArchived(e, true));
 	}
 
 	@Override
