@@ -1570,9 +1570,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 
-		Case caze = caseService.getByUuid(caseUuid);
-		caze.setArchived(archive);
-		caseService.ensurePersisted(caze);
+		caseService.updateArchived(Collections.singletonList(caseUuid), archive);
 	}
 
 	/**
@@ -2913,6 +2911,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<String> uuids = em.createQuery(cq).getResultList();
 
 		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, e -> caseService.updateArchived(e, true));
+	}
+
+	@Override
+	public void updateArchived(List<String> caseUuids, boolean archived) {
+
+		IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, e -> caseService.updateArchived(e, archived));
 	}
 
 	@Override
