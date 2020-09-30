@@ -931,7 +931,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
-		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.LEFT);
+		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.INNER);
 
 		if (filter != null) {
 			cq.where(filter);

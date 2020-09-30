@@ -291,7 +291,7 @@ public class Case extends CoreAdo {
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
-	private Contact convertedContact;
+	private List<Contact> convertedContact;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -664,12 +664,12 @@ public class Case extends CoreAdo {
 		this.portHealthInfo = portHealthInfo;
 	}
 
-	@OneToOne(mappedBy = Contact.RESULTING_CASE, fetch = FetchType.LAZY)
-	public Contact getConvertedContact() {
+	@OneToMany(mappedBy = Contact.RESULTING_CASE, fetch = FetchType.LAZY)
+	public List<Contact> getConvertedContact() {
 		return convertedContact;
 	}
 
-	public void setConvertedContact(Contact convertedContact) {
+	public void setConvertedContact(List<Contact> convertedContact) {
 		this.convertedContact = convertedContact;
 	}
 
