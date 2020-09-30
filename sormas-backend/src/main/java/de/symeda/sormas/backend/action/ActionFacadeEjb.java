@@ -202,7 +202,7 @@ public class ActionFacadeEjb implements ActionFacade {
 
 	@Override
 	public long countEventAction(EventCriteria criteria) {
-		return actionService.countEventAction(criteria);
+		return actionService.countEventActions(criteria);
 	}
 
 	@LocalBean

@@ -110,7 +110,7 @@ public class EventsView extends AbstractView {
 			grid = new EventGrid(criteria, getClass());
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 		} else {
-			grid = new EventWithActionsGrid(criteria, getClass());
+			grid = new EventActionsGrid(criteria, getClass());
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 		}
 		gridLayout = new VerticalLayout();
@@ -434,7 +434,7 @@ public class EventsView extends AbstractView {
 		if (isDefaultViewType()) {
 			((EventGrid) grid).reload();
 		} else {
-			((EventWithActionsGrid) grid).reload();
+			((EventActionsGrid) grid).reload();
 		}
 	}
 

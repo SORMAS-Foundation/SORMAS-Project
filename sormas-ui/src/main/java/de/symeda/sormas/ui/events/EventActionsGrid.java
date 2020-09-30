@@ -44,12 +44,12 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
-public class EventWithActionsGrid extends FilteredGrid<EventActionIndexDto, EventCriteria> {
+public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCriteria> {
 
 	public static final String EVENT_DATE = Captions.singleDayEventDate;
 
 	@SuppressWarnings("unchecked")
-	public <V extends View> EventWithActionsGrid(EventCriteria eventCriteria, Class<V> viewClass) {
+	public <V extends View> EventActionsGrid(EventCriteria eventCriteria, Class<V> viewClass) {
 
 		super(EventActionIndexDto.class);
 		setSizeFull();

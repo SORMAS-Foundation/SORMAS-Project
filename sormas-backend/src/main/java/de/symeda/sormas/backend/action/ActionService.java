@@ -31,7 +31,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -219,10 +218,8 @@ public class ActionService extends AbstractAdoService<Action> {
 
 		From<Action, Action> action = joins.getRoot();
 		From<Action, Event> event = joins.getEvent(JoinType.INNER);
-		Path<Location> location = event.get(Event.EVENT_LOCATION);
 
 		Predicate filter = eventService.buildCriteriaFilter(criteria, cb, event);
-		// TODO xca: EventService : filtre community
 
 		if (criteria.getActionChangeDateFrom() != null && criteria.getActionChangeDateTo() != null) {
 			filter =
@@ -347,7 +344,7 @@ public class ActionService extends AbstractAdoService<Action> {
 		return actions;
 	}
 
-	public long countEventAction(EventCriteria criteria) {
+	public long countEventActions(EventCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Action> action = cq.from(getElementClass());
