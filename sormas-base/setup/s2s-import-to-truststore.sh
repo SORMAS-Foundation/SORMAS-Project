@@ -23,11 +23,11 @@ echo "# SORMAS TO SORMAS CERTIFICATE IMPORT"
 echo "# This script imports a certificate into the local truststore, to be used for SORMAS2SORMAS communication"
 echo "# If anything goes wrong, please consult the sormas to sormas import guide or get in touch with the developers."
 
-if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
-  LINUX=true
-else
-	LINUX=false
-fi
+#if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
+LINUX=true
+#else
+#	LINUX=false
+#fi
 
 # DIRECTORIES
 if [[ ${LINUX} = true ]]; then
@@ -107,7 +107,7 @@ if [[ ! -f "${CRT_FILE}" ]]; then
   exit 1;
 fi
 
-CSV_FILE_NAME=${SORMAS_S2S_HOST_NAME//./-}-server-access-data.csv;
+CSV_FILE_NAME=${SORMAS_S2S_HOST_NAME}-server-access-data.csv;
 CSV_FILE=${SORMAS2SORMAS_DIR}/${CSV_FILE_NAME};
 if [[ ! -f "${CSV_FILE}" ]]; then
   echo "The file ${CSV_FILE_NAME} not found in ${SORMAS2SORMAS_DIR} folder."

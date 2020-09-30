@@ -31,14 +31,14 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
-@Path("/")
+@Path(SormasToSormasApiConstants.RESOURCE_PATH)
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed(UserRole._SORMAS_TO_SORMAS_CLIENT)
 public class SormasToSormasResource {
 
 	@POST
-	@Path(SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT)
+	@Path(SormasToSormasApiConstants.CASE_ENDPOINT)
 	public Response saveSharedCase(SormasToSormasEncryptedDataDto sharedCase) {
 		try {
 			FacadeProvider.getSormasToSormasFacade().saveSharedCase(sharedCase);
@@ -52,7 +52,7 @@ public class SormasToSormasResource {
 	}
 
 	@POST
-	@Path(SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT)
+	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
 	public Response saveSharedContact(SormasToSormasEncryptedDataDto sharedContact) {
 		try {
 			FacadeProvider.getSormasToSormasFacade().saveSharedContact(sharedContact);

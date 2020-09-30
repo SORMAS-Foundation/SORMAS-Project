@@ -15,10 +15,14 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CASE_ENDPOINT;
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_ENDPOINT;
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -45,6 +49,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
 
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +77,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -111,6 +115,10 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasFacadeEjb.class);
+
+	public static final String SAVE_SHARED_CASE_ENDPOINT = RESOURCE_PATH + CASE_ENDPOINT;
+
+	private static final String SAVE_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_ENDPOINT;
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -219,7 +227,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			entityToSend.setAssociatedContacts(getAssociatedContactDtos(associatedContacts, pseudonymizer, options));
 		}
 
-		sendEntityToSormas(entityToSend, SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT, options);
+		sendEntityToSormas(entityToSend, SAVE_SHARED_CASE_ENDPOINT, options);
 
 		saveNewShareInfo(currentUser.toReference(), options, caze, null);
 		associatedContacts.forEach((contact) -> saveNewShareInfo(currentUser.toReference(), options, null, contact));
@@ -236,7 +244,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		ContactDto contactDto = getContactDto(contact, pseudonymizer);
 		contactDto.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo(currentUser, options));
 
-		sendEntityToSormas(new SormasToSormasContactDto(personDto, contactDto), SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT, options);
+		sendEntityToSormas(new SormasToSormasContactDto(personDto, contactDto), SAVE_SHARED_CONTACT_ENDPOINT, options);
 
 		saveNewShareInfo(currentUser.toReference(), options, null, contact);
 	}
@@ -643,7 +651,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			response = sormasToSormasRestClient.post(
 				targetServerAccessData.getHostName(),
 				endpoint,
-				new String(Base64.getEncoder().encode(userCredentials.getBytes())),
+				"Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8),
 				new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedEntity));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Unable to send data sormas", e);
@@ -663,7 +671,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 
 		int statusCode = response.getStatus();
-		if (statusCode < 200 || statusCode >= 400) {
+		if (statusCode != HttpStatus.SC_NO_CONTENT) {
 			String errorMessage = response.readEntity(String.class);
 			try {
 				SormasToSormasErrorResponse errorResponse = objectMapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
@@ -672,7 +680,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 				// do nothing, keep the unparsed response as error message
 			}
 
-			LOGGER.error("Share case failed: {}; {}", statusCode, errorMessage);
+			if (statusCode != HttpStatus.SC_BAD_REQUEST) {
+				// don't log validation errors, will be displayed on the UI
+				LOGGER.error("Share case failed: {}; {}", statusCode, errorMessage);
+			}
+
 			throw new SormasToSormasException(errorMessage);
 		}
 	}

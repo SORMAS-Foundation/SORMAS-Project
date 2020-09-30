@@ -66,7 +66,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -331,7 +330,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(invocation.getArgumentAt(0, String.class), is(SECOND_SERVER_REST_URL));
-				assertThat(invocation.getArgumentAt(1, String.class), is(SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT));
+				assertThat(invocation.getArgumentAt(1, String.class), is("/sormasToSormas/case"));
 
 				String authToken = new String(Base64.getDecoder().decode(invocation.getArgumentAt(2, String.class)));
 				// uses password from server-list.csv from `serveraccessdefault` package
@@ -433,7 +432,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(invocation.getArgumentAt(0, String.class), is(SECOND_SERVER_REST_URL));
-				assertThat(invocation.getArgumentAt(1, String.class), is(SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT));
+				assertThat(invocation.getArgumentAt(1, String.class), is("/sormasToSormas/contact"));
 
 				String authToken = new String(Base64.getDecoder().decode(invocation.getArgumentAt(2, String.class)));
 				// uses password from server-list.csv from `serveraccessdefault` package

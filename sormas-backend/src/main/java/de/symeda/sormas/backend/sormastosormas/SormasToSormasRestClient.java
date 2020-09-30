@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.SORMAS_REST_ENDPOINT_BASE;
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.SORMAS_REST_PATH;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Alternative
 public class SormasToSormasRestClient {
 
-	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_ENDPOINT_BASE + "%s";
+	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
 
 	private final ObjectMapper mapper;
 
@@ -52,7 +52,7 @@ public class SormasToSormasRestClient {
 			.build()
 			.target(String.format(SORMAS_REST_URL_TEMPLATE, host, endpoint))
 			.request()
-			.header("Authorization", "Basic " + authToken)
+			.header("Authorization", authToken)
 			.post(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
 	}
 }

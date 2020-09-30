@@ -23,11 +23,11 @@ echo "# SORMAS TO SORMAS NEW CERTIFICATE GENERATION"
 echo "# This script generates a new self signed certificate, to be used for SORMAS2SORMAS and SurvNet communication"
 echo "# If anything goes wrong, please consult the certificate creation guide or get in touch with the developers."
 
-if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
-  LINUX=true
-else
-	LINUX=false
-fi
+#if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
+LINUX=true
+#else
+#	LINUX=false
+#fi
 
 # DIRECTORIES
 if [[ ${LINUX} = true ]]; then
@@ -79,6 +79,16 @@ while [[ -z "${SORMAS_HOST_NAME}" ]]; do
   read -p "Please provide the Hostname of the server: " SORMAS_HOST_NAME
 done
 
+if [[ -z "${SORMAS_HTTPS_PORT}" ]]; then
+  read -p "Please provide the https port of the server (443): " SORMAS_HTTPS_PORT
+fi
+
+if [[ -z "${SORMAS_HTTPS_PORT}" ]]; then
+  SORMAS_HOST_AND_PORT="${SORMAS_HOST_NAME}";
+else
+  SORMAS_HOST_AND_PORT="${SORMAS_HOST_NAME}:${SORMAS_HTTPS_PORT}";
+fi
+
 while [[ -z "${SORMAS_S2S_CERT_PASS}" ]] || [[ ${#SORMAS_S2S_CERT_PASS} -lt 6 ]]; do
   read -sp "Please provide a password for the certificate (at least 6 characters): " SORMAS_S2S_CERT_PASS
   echo
@@ -102,7 +112,7 @@ PEM_FILE=${SORMAS2SORMAS_DIR}/${SORMAS_HOST_NAME}.sormas2sormas.privkey.pem
 P12_FILE_NAME=${SORMAS_HOST_NAME}.sormas2sormas.keystore.p12
 P12_FILE=${SORMAS2SORMAS_DIR}/${P12_FILE_NAME}
 CRT_FILE=${SORMAS2SORMAS_DIR}/${SORMAS_HOST_NAME}.sormas2sormas.cert.crt
-CSV_FILE_NAME=${SORMAS_HOST_NAME//./-}-server-access-data.csv;
+CSV_FILE_NAME=${SORMAS_HOST_NAME}-server-access-data.csv;
 CSV_FILE=${SORMAS2SORMAS_DIR}/${CSV_FILE_NAME}
 
 # generate private key and self signed certificate
@@ -114,7 +124,7 @@ openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${S
 rm "${PEM_FILE}"
 
 echo "Generating server access data CSV"
-echo -e "\"${SORMAS_ORG_ID}\",\"${SORMAS_ORG_NAME}\",\"${SORMAS_HOST_NAME}\",\"${SORMAS_S2S_REST_PASSWORD}\"\n" > "${CSV_FILE}"
+echo -e "\"${SORMAS_ORG_ID}\",\"${SORMAS_ORG_NAME}\",\"${SORMAS_HOST_AND_PORT}\",\"${SORMAS_S2S_REST_PASSWORD}\",\n" > "${CSV_FILE}"
 
 # remove existing properties and empty spaces at end of file
 sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"

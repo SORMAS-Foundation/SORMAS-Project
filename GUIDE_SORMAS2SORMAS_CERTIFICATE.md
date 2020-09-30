@@ -17,11 +17,14 @@ See [Installing Java](SERVER_SETUP.md#java-11)
 1. Run ``bash ./generate-cert.sh``
 2. If the ``SORMAS2SORMAS_DIR`` environment variable is not available, the script will search for ``/opt/sormas2sormas`` by default. 
 If it is not found there, you will be prompted to provide the pat to the *sormas2sormas* directory.
-3. If the ``SORMAS_DOMAIN_DIR`` environment variable is not available, the script will search for ``/opt/domains/sormas`` by default. 
-If it is not found there, you will be prompted to provide the path to the *sormas domain directory*.
+3. If the ``SORMAS_DOMAIN_DIR`` environment variable is not available, the script will search for ``/opt/domains/sormas`` by default.<br>
+   If it is not found there, you will be prompted to provide the path to the *sormas domain directory*.
+   >If you don't have a local sormas installation, for example you are using the docker environment, 
+   >you can specify any existing directory and after the script finishes you will find a ``sormas.properties`` file there
+   >that contains the necessary configuration that must be added to the ``sormas.properties`` file of your installation
 4. For the generation of the certificate, the following data is needed:
    an identifier of the *Organization*, the name of the *Organization*, the host name of the SORMAS server, the **https** port of the server,
-   a password for the certificate key store and a password for the REST user to be used when sharing data through the REST api.
+   a password for the certificate keystore and a password for the REST user to be used when sharing data through the REST api.
    These may be set in environment variables (recommended), or provided manually as the script executes.
 
     * the identifier of the *Organization* environment variable should be named ``SORMAS_ORG_ID``. 
@@ -33,6 +36,8 @@ If it is not found there, you will be prompted to provide the path to the *sorma
     E.g. *GA Musterhausen*
     * the host name variable should be named ``SORMAS_HOST_NAME``. <br/>
     E.g. *sormas.gesundheitsamt-musterhausen.de* 
+    * the https port environment variable should be named ``SORMAS_HTTPS_PORT``. If it is not found, you will be prompted to provide it. 
+    If you press enter without typing a port number the default 443 will be used.
     * The password environment variable should be named ``SORMAS_S2S_CERT_PASS``. Please note that the password has to be 
     at least 6 characters, or you will be prompted for a new one.
     * the REST user password environment variable should be named ``SORMAS_S2S_REST_PASSWORD``.
@@ -60,8 +65,12 @@ list. To complete this setup, please follow the next steps:
 1. Run ``bash ./import-to-truststore.sh``
 2. If the ``SORMAS2SORMAS_DIR`` environment variable is not available, the script will search for ``/opt/sormas2sormas`` by default. 
 If it is not found there, you will be prompted to provide the path to the *sormas2sormas* directory.
-3. If the ``SORMAS_DOMAIN_DIR`` environment variable is not available, the script will search for ``/opt/domains/sormas`` by default. 
-If it is not found there, you will be prompted to provide the path to the *sormas domain directory*.
+3. If the ``SORMAS_DOMAIN_DIR`` environment variable is not available, the script will search for ``/opt/domains/sormas`` by default.
+   If it is not found there, you will be prompted to provide the path to the *sormas domain directory*.
+   >If you don't have a local sormas installation, for example you are using the docker environment, 
+   >you can specify any existing directory and after the script finishes you will find a ``sormas.properties`` file there
+   >that contains the necessary configuration that must be added to the ``sormas.properties`` file of your installation
+ 
 4. If ``sormas2sormas.truststore.p12`` is not found in the folder ``/sormas2sormas``, it will be created. 
     The truststore password may be provided in an environment variable ``SORMAS_S2S_TRUSTSTORE_PASS``.
     * If the aforementioned environment variable is not available, the truststore password will be searched in the 
@@ -76,6 +85,20 @@ If it is not found there, you will be prompted to provide the path to the *sorma
 8. The content of the ``server-access-data.csv`` provided together with the certificate will be copied to the ``server-list.csv`` file.  
 9. You may now delete the ``.crt`` and ``server-access-data.csv`` files.
 
+10. *Optional for test systems or systems without a CA certificate* <br>
+    You must import the SSL certificate of the other server into the ``cacerts.jks`` of your sormas domain.
+    * For getting the SSL certificate you can use ``openssl`` <br>
+        e.g.
+        ```shell script
+        openssl s_client -showcerts -servername sormas.gesundheitsamt-musterhausen.de -connect sormas.gesundheitsamt-musterhausen.de:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > certificate.cer        
+        ```
+    * To import the SSL certificate you can use ``keytool`` <br>
+        e.g.
+        ```shell script
+        keytool -importcert -trustcacerts -noprompt -keystore /opt/domains/sormas/config/cacerts.jks -alias sormas_dev -storepass changeit -file certificate.cer
+        ```
+        Note that the alias can be used only once.
+        
 After the certificate is generated and at least one other certificate is imported, 
 on some pages of the application you will see a new box with a *Share* button and information about sharing.
   
