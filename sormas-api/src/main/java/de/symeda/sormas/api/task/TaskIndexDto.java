@@ -23,6 +23,7 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -88,7 +89,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	//@formatter:off
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
-			String eventUuid, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, Date eventDate,
+			String eventUuid, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Date eventDate,
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
@@ -120,7 +121,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			eventJurisdiction =
 				new EventJurisdictionDto(eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid);
 
-			this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventDate);
+			this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventInvestigationStatus, eventDate);
 		}
 
 		ContactJurisdictionDto contactJurisdiction = null;

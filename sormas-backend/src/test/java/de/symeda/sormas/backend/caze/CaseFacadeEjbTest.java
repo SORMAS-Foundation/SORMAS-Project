@@ -63,6 +63,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -408,8 +409,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
 
-		EventDto event1 = creator.createEvent(EventStatus.SIGNAL, "Signal foo", "A long description for this event", user.toReference(), eventDto -> {
-		});
+		EventDto event1 = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Signal foo",
+			"A long description for this event",
+			user.toReference(),
+			eventDto -> {
+			});
 
 		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
 		EventParticipantDto event1Participant2 = creator.createEventParticipant(event1.toReference(), person2, user.toReference());
@@ -1057,7 +1064,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 4.7 Visits;
 		List<String> mergedVisits = getVisitFacade().getIndexList(new VisitCriteria().caze(mergedCase.toReference()), null, null, null)
-				.stream().map(VisitIndexDto::getUuid).collect(Collectors.toList());
+			.stream()
+			.map(VisitIndexDto::getUuid)
+			.collect(Collectors.toList());
 		assertEquals(2, mergedVisits.size());
 		assertTrue(mergedVisits.contains(leadVisit.getUuid()));
 		assertTrue(mergedVisits.contains(otherVisit.getUuid()));
@@ -1098,8 +1107,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto cazePerson = creator.createPerson("Foo", "Bar").toReference();
-		CaseDataDto caze =
-				creator.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator
+			.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
 		caze.getSymptoms().setChestPain(SymptomState.YES);
 
 		// Add a new visit to the case
@@ -1234,7 +1243,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testSearchCasesWithReducedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		CaseDataDto caze =
-				creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
+			creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
 		caze.setQuarantineReduced(true);
 		getCaseFacade().saveCase(caze);
 

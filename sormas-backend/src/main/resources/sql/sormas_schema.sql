@@ -5494,4 +5494,14 @@ ALTER TABLE users ADD COLUMN hasConsentedToGdpr boolean default false;
 ALTER TABLE users_history ADD COLUMN hasConsentedToGdpr boolean default false;
 INSERT INTO schema_version (version_number, comment) VALUES (267, 'Add gdpr popup to user');
 
+-- 2020-10-12 Add event investigation status
+ALTER TABLE events ADD COLUMN eventInvestigationStatus varchar(255);
+ALTER TABLE events_history ADD COLUMN eventInvestigationStatus varchar(255);
+ALTER TABLE events ADD COLUMN eventInvestigationStartDate timestamp;
+ALTER TABLE events_history ADD COLUMN eventInvestigationStartDate timestamp;
+ALTER TABLE events ADD COLUMN eventInvestigationEndDate timestamp;
+ALTER TABLE events_history ADD COLUMN eventInvestigationEndDate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (268, 'Add event.eventInvestigationStatus #2992');
+
 -- *** Insert new sql commands BEFORE this line ***

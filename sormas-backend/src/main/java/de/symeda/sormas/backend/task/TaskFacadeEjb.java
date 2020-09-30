@@ -377,7 +377,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
 				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), 
+				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS), 
 				joins.getEvent().get(Event.START_DATE), joins.getContact().get(Contact.UUID), joins.getContactPerson().get(Person.FIRST_NAME), 
 				joins.getContactPerson().get(Person.LAST_NAME), joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
 				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY), task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
