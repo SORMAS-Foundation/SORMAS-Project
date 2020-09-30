@@ -26,6 +26,7 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 
 	public CampaignDashboardElementsGridComponent(List<CampaignDashboardElement> savedElements, List<CampaignDashboardElement> allElements) {
 		super(savedElements, allElements);
+		setWidth(100, Unit.PERCENTAGE);
 	}
 
 	protected Binder<CampaignDashboardElement> addColumnsBinder(List<CampaignDashboardElement> allElements) {

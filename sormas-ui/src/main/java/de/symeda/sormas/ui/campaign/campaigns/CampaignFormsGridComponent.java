@@ -21,6 +21,7 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 		List<CampaignFormMetaReferenceDto> allCampaignFormMetas) {
 
 		super(savedCampaignFormMetas, allCampaignFormMetas);
+		setWidth(500, Unit.PIXELS);
 	}
 
 	@Override

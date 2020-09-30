@@ -155,7 +155,13 @@ public class CampaignController {
 		campaignEditForm.setValue(campaignDto);
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> view =
-			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
+				@Override
+				public void discard() {
+					super.discard();
+					campaignEditForm.discard();
+				}
+			};
 
 		view.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {

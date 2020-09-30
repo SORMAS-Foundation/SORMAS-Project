@@ -25,6 +25,7 @@ import java.util.HashSet;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -142,6 +143,20 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		campaignDto.setCampaignFormMetas(new HashSet<>(campaignFormsGridComponent.getItems()));
 		campaignDto.setCampaignDashboardElements(campaignDashboardGridComponent.getItems());
 		return campaignDto;
+	}
+
+	@Override
+	public void setValue(CampaignDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		campaignFormsGridComponent.setSavedItems(new ArrayList<>(newFieldValue.getCampaignFormMetas()));
+		campaignDashboardGridComponent.setSavedItems(newFieldValue.getCampaignDashboardElements());
+	}
+
+	@Override
+	public void discard() throws SourceException {
+		super.discard();
+		campaignFormsGridComponent.discardGrid();
+		campaignDashboardGridComponent.discardGrid();
 	}
 
 	@Override

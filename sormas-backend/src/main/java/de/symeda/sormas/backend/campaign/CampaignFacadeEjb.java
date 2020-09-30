@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -21,12 +22,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
@@ -168,11 +172,13 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setEndDate(source.getEndDate());
 		target.setName(source.getName());
 		target.setStartDate(source.getStartDate());
-		target.setCampaignFormMetas(
-			source.getCampaignFormMetas()
-				.stream()
-				.map(campaignFormMetaReferenceDto -> campaignFormMetaService.getByUuid(campaignFormMetaReferenceDto.getUuid()))
-				.collect(Collectors.toSet()));
+		final Set<CampaignFormMetaReferenceDto> campaignFormMetas = source.getCampaignFormMetas();
+		if (!CollectionUtils.isEmpty(campaignFormMetas)) {
+			target.setCampaignFormMetas(
+				campaignFormMetas.stream()
+					.map(campaignFormMetaReferenceDto -> campaignFormMetaService.getByUuid(campaignFormMetaReferenceDto.getUuid()))
+					.collect(Collectors.toSet()));
+		}
 		target.setDashboardElements(source.getCampaignDashboardElements());
 
 		return target;
