@@ -103,4 +103,6 @@ public interface ConfigFacade {
 	void validateExternalUrls();
 
 	Sormas2SormasConfig getSormas2SormasConfig();
+
+	String getAuthenticationProvider();
 }
