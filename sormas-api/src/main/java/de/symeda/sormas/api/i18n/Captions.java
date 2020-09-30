@@ -184,6 +184,7 @@ public interface Captions {
 	String CaseData_epiData = "CaseData.epiData";
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
+	String CaseData_eventCount = "CaseData.eventCount";
 	String CaseData_externalID = "CaseData.externalID";
 	String CaseData_facilityType = "CaseData.facilityType";
 	String CaseData_followUpComment = "CaseData.followUpComment";
@@ -197,6 +198,9 @@ public interface Captions {
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
+	String CaseData_latestEventId = "CaseData.latestEventId";
+	String CaseData_latestEventStatus = "CaseData.latestEventStatus";
+	String CaseData_latestEventTitle = "CaseData.latestEventTitle";
 	String CaseData_maternalHistory = "CaseData.maternalHistory";
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
@@ -305,6 +309,7 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
+	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
@@ -789,6 +794,7 @@ public interface Captions {
 	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
+	String eventLinkToCases = "eventLinkToCases";
 	String eventNewEvent = "eventNewEvent";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
 	String EventParticipant = "EventParticipant";
@@ -1280,6 +1286,7 @@ public interface Captions {
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
+	String sex = "sex";
 	String singleDayEventDate = "singleDayEventDate";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";

@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.login;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
@@ -72,7 +73,17 @@ public final class LoginHelper {
 		return false;
 	}
 
+	/**
+	 * Trigger logout event for Authentication Mechanism or other components to react.
+	 */
+	@SuppressWarnings("unchecked")
 	public static boolean logout() {
+
+		BeanManager bm = CDI.current().getBeanManager();
+		Bean<Event> eventBean = (Bean<Event>) bm.getBeans(Event.class).iterator().next();
+		CreationalContext<Event> ctx = bm.createCreationalContext(eventBean);
+		Event<LogoutEvent> event = (Event<LogoutEvent>) bm.getReference(eventBean, Event.class, ctx);
+		event.fire(new LogoutEvent());
 
 		try {
 			VaadinServletService.getCurrentServletRequest().logout();
@@ -85,4 +96,9 @@ public final class LoginHelper {
 
 		return true;
 	}
+
+	public static class LogoutEvent {
+
+	}
+
 }

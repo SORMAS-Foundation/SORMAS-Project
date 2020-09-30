@@ -176,7 +176,7 @@ public class CampaignDataView extends AbstractCampaignView {
 				} catch (IOException | NamingException ioException) {
 					ioException.printStackTrace();
 				}
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportContacts));
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
 
 			});
 			campaignFormButton.setWidth(100, Unit.PERCENTAGE);

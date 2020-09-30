@@ -43,6 +43,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private DateField dfCreationDateTo;
 	private ComboBox<Disease> cbDisease;
 	private TextField tfSearch;
+	private TextField eventSearch;
 	private TextField tfReportingUser;
 	private CheckBox cbIgnoreRegion;
 	private ComboBox<RegionReferenceDto> cbRegion;
@@ -112,6 +113,14 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		tfSearch.setPlaceholder(I18nProperties.getString(Strings.promptCasesSearchField));
 		binder.bind(tfSearch, CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE);
 		firstRowLayout.addComponent(tfSearch);
+
+		eventSearch = new TextField();
+		eventSearch.setId(CaseCriteria.EVENT_LIKE);
+		eventSearch.setWidth(200, Unit.PIXELS);
+		CssStyles.style(eventSearch, CssStyles.FORCE_CAPTION);
+		eventSearch.setPlaceholder(I18nProperties.getString(Strings.promptCaseOrContactEventSearchField));
+		binder.bind(eventSearch, CaseCriteria.EVENT_LIKE);
+		firstRowLayout.addComponent(eventSearch);
 
 		tfReportingUser = new TextField();
 		tfReportingUser.setId(CaseCriteria.REPORTING_USER_LIKE);

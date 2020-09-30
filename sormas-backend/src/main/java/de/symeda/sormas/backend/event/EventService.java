@@ -558,4 +558,31 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			return null;
 		}
 	}
+
+	public List<EventSummaryDetails> getEventSummaryDetailsByCases(List<Long> casesId) {
+		if (casesId.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventSummaryDetails> eventsCq = cb.createQuery(EventSummaryDetails.class);
+		Root<EventParticipant> eventsCqRoot = eventsCq.from(EventParticipant.class);
+		Join<EventParticipant, Event> eventJoin = eventsCqRoot.join(EventParticipant.EVENT, JoinType.INNER);
+		Join<EventParticipant, Case> cazeJoin = eventsCqRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
+
+		eventsCq.where(
+			cb.and(
+				cazeJoin.get(AbstractDomainObject.ID).in(casesId),
+				cb.isFalse(eventJoin.get(Event.DELETED)),
+				cb.isFalse(eventJoin.get(Event.ARCHIVED)),
+				cb.isFalse(eventsCqRoot.get(EventParticipant.DELETED))));
+		eventsCq.multiselect(
+			cazeJoin.get(Case.ID),
+			eventJoin.get(Event.UUID),
+			eventJoin.get(Event.EVENT_STATUS),
+			eventJoin.get(Event.EVENT_TITLE),
+			cb.coalesce(cb.coalesce(eventJoin.get(Event.END_DATE), eventJoin.get(Event.START_DATE)), eventJoin.get(Event.REPORT_DATE_TIME)));
+
+		return em.createQuery(eventsCq).getResultList();
+	}
 }
