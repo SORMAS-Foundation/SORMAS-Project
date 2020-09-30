@@ -25,7 +25,7 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Area, Area> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Area> from) {
 		return null;
 	}
 

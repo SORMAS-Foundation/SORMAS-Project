@@ -929,7 +929,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case, Case> casePath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath) {
 		return createUserFilter(cb, cq, casePath, null);
 	}
 

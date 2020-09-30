@@ -148,7 +148,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ClinicalVisit, ClinicalVisit> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		return caseService.createUserFilter(cb, cq, clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT));
 	}
