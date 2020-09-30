@@ -159,6 +159,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	public CampaignFormDataDto saveCampaignFormData(CampaignFormDataDto campaignFormDataDto) throws ValidationRuntimeException {
 
 		CampaignFormData campaignFormData = fromDto(campaignFormDataDto);
+		CampaignFormDataEntry.removeNullValueEntries(campaignFormData.getFormValues());
 		campaignFormDataService.ensurePersisted(campaignFormData);
 		return toDto(campaignFormData);
 	}
