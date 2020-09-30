@@ -69,16 +69,21 @@ public class VisitController {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
 		editForm.setValue(visit);
-		editVisit(editForm, visit.toReference(), doneConsumer);
+		boolean canEdit = visit.getOrigin().equals(VisitOrigin.USER);
+		editVisit(editForm, visit.toReference(), doneConsumer, canEdit);
 	}
 
-	private void editVisit(VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer) {
+	private void editVisit(VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer, boolean canEdit) {
 
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
 			editForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT),
 			editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
+
+		if (!canEdit) {
+			editView.setEnabled(false);
+		}
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
 		// visit form is too big for typical screens
