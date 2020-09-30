@@ -170,6 +170,7 @@ public class Case extends CoreAdo {
 	public static final String VISITS = "visits";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 
 	private Person person;
 	private String description;
