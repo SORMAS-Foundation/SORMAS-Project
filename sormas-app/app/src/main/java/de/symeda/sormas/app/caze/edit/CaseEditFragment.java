@@ -31,9 +31,13 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.ContactTracingContactType;
+import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
@@ -95,6 +99,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> reportingTypeList;
 	private List<Item> facilityOrHomeList;
 	private List<Item> facilityTypeGroupList;
+	private List<Item> quarantineReasonList;
+	private List<Item> endOfIsolationReasonList;
+	private List<Item> covidTestReasonList;
+	private List<Item> contactTracingContactTypeList;
 
 	// Static methods
 
@@ -259,6 +267,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
 		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
 		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
+
+		quarantineReasonList = DataUtils.getEnumItems(QuarantineReason.class, true);
+		endOfIsolationReasonList = DataUtils.getEnumItems(EndOfIsolationReason.class, true);
+		covidTestReasonList = DataUtils.getEnumItems(CovidTestReason.class, true);
+		contactTracingContactTypeList = DataUtils.getEnumItems(ContactTracingContactType.class, true);
 	}
 
 	@Override
@@ -480,6 +493,23 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		} else {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 			contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
+		}
+
+		// Swiss fields
+		contentBinding.caseDataQuarantineReasonBeforeIsolation.initializeSpinner(quarantineReasonList);
+		contentBinding.caseDataEndOfIsolationReason.initializeSpinner(endOfIsolationReasonList);
+
+		if(isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)){
+			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
+			contentBinding.caseDataCovidTestReason.initializeSpinner(covidTestReasonList);
+		}
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactType)
+			|| isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactDate)) {
+			contentBinding.caseDataContactTracingDivider.setVisibility(VISIBLE);
+			contentBinding.caseDataContactTracingFirstContactHeading.setVisibility(VISIBLE);
+
+			contentBinding.caseDataContactTracingFirstContactType.initializeSpinner(contactTracingContactTypeList);
+			contentBinding.caseDataContactTracingFirstContactDate.initializeDateField(getChildFragmentManager());
 		}
 	}
 

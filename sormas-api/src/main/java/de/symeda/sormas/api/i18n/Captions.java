@@ -162,6 +162,7 @@ public interface Captions {
 	String CaseData = "CaseData";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_caseClassification = "CaseData.caseClassification";
+	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
 	String CaseData_classificationComment = "CaseData.classificationComment";
@@ -176,11 +177,17 @@ public interface Captions {
 	String CaseData_community = "CaseData.community";
 	String CaseData_completeness = "CaseData.completeness";
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
+	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
+	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
+	String CaseData_covidTestReason = "CaseData.covidTestReason";
+	String CaseData_covidTestReasonDetails = "CaseData.covidTestReasonDetails";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
+	String CaseData_endOfIsolationReason = "CaseData.endOfIsolationReason";
+	String CaseData_endOfIsolationReasonDetails = "CaseData.endOfIsolationReasonDetails";
 	String CaseData_epiData = "CaseData.epiData";
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
@@ -230,6 +237,8 @@ public interface Captions {
 	String CaseData_quarantineOrderedOfficialDocumentDate = "CaseData.quarantineOrderedOfficialDocumentDate";
 	String CaseData_quarantineOrderedVerbally = "CaseData.quarantineOrderedVerbally";
 	String CaseData_quarantineOrderedVerballyDate = "CaseData.quarantineOrderedVerballyDate";
+	String CaseData_quarantineReasonBeforeIsolation = "CaseData.quarantineReasonBeforeIsolation";
+	String CaseData_quarantineReasonBeforeIsolationDetails = "CaseData.quarantineReasonBeforeIsolationDetails";
 	String CaseData_quarantineReduced = "CaseData.quarantineReduced";
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_quarantineTypeDetails = "CaseData.quarantineTypeDetails";

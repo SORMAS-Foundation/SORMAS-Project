@@ -45,10 +45,14 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.ContactTracingContactType;
+import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
@@ -292,6 +296,16 @@ public class Case extends CoreAdo {
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
 	private Contact convertedContact;
+
+	private Integer caseIdIsm;
+	private CovidTestReason covidTestReason;
+	private String covidTestReasonDetails;
+	private ContactTracingContactType contactTracingFirstContactType;
+	private Date contactTracingFirstContactDate;
+	private QuarantineReason quarantineReasonBeforeIsolation;
+	private String quarantineReasonBeforeIsolationDetails;
+	private EndOfIsolationReason endOfIsolationReason;
+	private String endOfIsolationReasonDetails;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1220,5 +1234,86 @@ public class Case extends CoreAdo {
 
 	public void setFacilityType(FacilityType facilityType) {
 		this.facilityType = facilityType;
+	}
+
+	@Column
+	public Integer getCaseIdIsm() {
+		return caseIdIsm;
+	}
+
+	public void setCaseIdIsm(Integer caseIdIsm) {
+		this.caseIdIsm = caseIdIsm;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CovidTestReason getCovidTestReason() {
+		return covidTestReason;
+	}
+
+	public void setCovidTestReason(CovidTestReason covidTestReason) {
+		this.covidTestReason = covidTestReason;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getCovidTestReasonDetails() {
+		return covidTestReasonDetails;
+	}
+
+	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
+		this.covidTestReasonDetails = covidTestReasonDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ContactTracingContactType getContactTracingFirstContactType() {
+		return contactTracingFirstContactType;
+	}
+
+	public void setContactTracingFirstContactType(ContactTracingContactType contactTracingContactType) {
+		this.contactTracingFirstContactType = contactTracingContactType;
+	}
+
+	@Column
+	public Date getContactTracingFirstContactDate() {
+		return contactTracingFirstContactDate;
+	}
+
+	public void setContactTracingFirstContactDate(Date contactTracingContactDate) {
+		this.contactTracingFirstContactDate = contactTracingContactDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public QuarantineReason getQuarantineReasonBeforeIsolation() {
+		return quarantineReasonBeforeIsolation;
+	}
+
+	public void setQuarantineReasonBeforeIsolation(QuarantineReason quarantineReasonBeforeIsolation) {
+		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getQuarantineReasonBeforeIsolationDetails() {
+		return quarantineReasonBeforeIsolationDetails;
+	}
+
+	public void setQuarantineReasonBeforeIsolationDetails(String quarantineReasonBeforeIsolationDetails) {
+		this.quarantineReasonBeforeIsolationDetails = quarantineReasonBeforeIsolationDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public EndOfIsolationReason getEndOfIsolationReason() {
+		return endOfIsolationReason;
+	}
+
+	public void setEndOfIsolationReason(EndOfIsolationReason endOfIsolationReason) {
+		this.endOfIsolationReason = endOfIsolationReason;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getEndOfIsolationReasonDetails() {
+		return endOfIsolationReasonDetails;
+	}
+
+	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
+		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
 	}
 }
