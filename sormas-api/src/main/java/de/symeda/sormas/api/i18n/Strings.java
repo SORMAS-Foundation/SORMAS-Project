@@ -716,6 +716,7 @@ public interface Strings {
 	String promptArea = "promptArea";
 	String promptCampaign = "promptCampaign";
 	String promptCampaignSearch = "promptCampaignSearch";
+	String promptCaseOrContactEventSearchField = "promptCaseOrContactEventSearchField";
 	String promptCasesDateFrom = "promptCasesDateFrom";
 	String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
