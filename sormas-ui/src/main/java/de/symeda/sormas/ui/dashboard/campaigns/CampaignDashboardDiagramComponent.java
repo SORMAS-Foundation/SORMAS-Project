@@ -27,6 +27,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final List<Object> axisKeys = new ArrayList<Object>();
 	private final Map<Object, String> axisCaptions = new HashMap<Object, String>();
 	private final Map<Object, Double> totalValues;
+	private boolean showPercentage = true;
 
 	private final HighChart campaignColumnChart;
 
@@ -67,7 +68,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		buildDiagramChart(diagramDefinition.getDiagramCaption());
 	}
 
-	private void buildDiagramChart(String title) {
+	public void buildDiagramChart(String title) {
+		this.showPercentage = !showPercentage;
 		final StringBuilder hcjs = new StringBuilder();
 
 		//@formatter:off
@@ -81,9 +83,24 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ "},"
 				+ "credits:{ enabled: false },"
 				+ "exporting:{ "
-				+ " enabled: true,"
-				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
-				+ "},"
+				+ " enabled: true,");
+		//@formatter:on
+
+		if (totalValues != null) {
+			hcjs.append(
+				" menuItemDefinitions: { togglePercentages: { onclick: function() { window.changeDiagramState_" + diagramDefinition.getDiagramId()
+					+ "(); }, text: '" + (showPercentage ? "Show total values" : "Show percentages") + "' } }, ");
+		}
+
+		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }");
+
+		if (totalValues != null) {
+			hcjs.append(
+				", menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS', 'viewData', 'separator', 'togglePercentages']");
+		}
+
+		//@formatter:off
+		hcjs.append("} } }," 
 				+ "legend: { backgroundColor: 'transparent', margin: 30 },"
 				+ "colors: ['#4472C4', '#ED7D31', '#A5A5A5', '#FFC000', '#5B9BD5', '#70AD47', '#FF0000', '#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],"
 				+ "title:{ text: '" + title + "', style: { fontSize: '15px' } },");
@@ -107,7 +124,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		//@formatter:off
 		hcjs.append("yAxis: { min: 0, title: { text: ''}");
-		if (totalValues != null) {
+		if (showPercentage && totalValues != null) {
 			hcjs.append(", max: 100, ");
 		}
 		if (stackMap.size() > 1) {
@@ -119,13 +136,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		// series
 
-		if (stackMap.size() > 0 || totalValues != null) {
+		if (stackMap.size() > 0 || (showPercentage && totalValues != null)) {
 			hcjs.append("plotOptions: {");
 
 			if (stackMap.size() > 0) {
 				hcjs.append("column: { stacking: 'normal'}");
 			}
-			if (totalValues != null) {
+			if (showPercentage && totalValues != null) {
 				hcjs.append(stackMap.size() > 0 ? ", " : "").append("series: { dataLabels: { enabled: true, format: '{y} %'}}");
 			}
 
@@ -145,7 +162,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("{ name:'").append(fieldName).append("', data: [");
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {
-					if (totalValues != null) {
+					if (showPercentage && totalValues != null) {
 						double totalValue = totalValues.get(seriesData.get(axisKey).getGroupingKey());
 						if (totalValue > 0) {
 							hcjs.append(
@@ -174,4 +191,5 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		campaignColumnChart.setHcjs(hcjs.toString());
 	}
+
 }

@@ -4,6 +4,8 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
@@ -142,6 +144,15 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					dataProvider.getCampaignFormTotalValues().get(campaignDashboardDiagramDto));
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
+
+				JavaScript.getCurrent()
+					.addFunction("changeDiagramState_" + campaignDiagramDefinitionDto.getDiagramId(), (JavaScriptFunction) jsonArray -> {
+						int index = diagramsLayout.getComponentIndex(diagramComponent);
+						diagramsLayout.removeComponent(diagramComponent);
+						diagramComponent.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption());
+						diagramsLayout.addComponent(diagramComponent, index);
+					});
+
 				diagramsLayout.addComponent(diagramComponent);
 			});
 			diagramsWrapper.addComponent(diagramsLayout);
