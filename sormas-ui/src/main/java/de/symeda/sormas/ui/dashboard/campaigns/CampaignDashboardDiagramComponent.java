@@ -4,6 +4,8 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.highcharts.HighChart;
 
 import java.math.BigDecimal;
@@ -89,7 +91,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		if (totalValues != null) {
 			hcjs.append(
 				" menuItemDefinitions: { togglePercentages: { onclick: function() { window.changeDiagramState_" + diagramDefinition.getDiagramId()
-					+ "(); }, text: '" + (showPercentage ? "Show total values" : "Show percentages") + "' } }, ");
+					+ "(); }, text: '"
+					+ (showPercentage
+						? I18nProperties.getCaption(Captions.dashboardShowTotalValues)
+						: I18nProperties.getCaption(Captions.dashboardShowPercentageValues))
+					+ "' } }, ");
 		}
 
 		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }");
@@ -143,7 +149,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				hcjs.append("column: { stacking: 'normal'}");
 			}
 			if (showPercentage && totalValues != null) {
-				hcjs.append(stackMap.size() > 0 ? ", " : "").append("series: { dataLabels: { enabled: true, format: '{y} %'}}");
+				hcjs.append(stackMap.size() > 0 ? ", " : "")
+					.append("series: { dataLabels: { enabled: true, format: '{y} %', style: { fontSize: 14 + 'px' }}}");
 			}
 
 			hcjs.append("},");
