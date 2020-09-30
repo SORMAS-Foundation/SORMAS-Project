@@ -53,7 +53,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -147,8 +146,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private ServerAccessDataService serverAccessDataService;
 	@EJB
 	protected SormasToSormasEncryptionService encryptionService;
-	@Inject
-	private SormasToSormasConfig sormasToSormasConfig;
 
 	private final ObjectMapper objectMapper;
 

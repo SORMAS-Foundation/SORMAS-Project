@@ -79,13 +79,6 @@ while [[ -z "${SORMAS_HOST_NAME}" ]]; do
   read -p "Please provide the Hostname of the server: " SORMAS_HOST_NAME
 done
 
-read -p "Please provide the https port of the server (443): " SORMAS_HTTPS_PORT
-if [[ -z "${SORMAS_HTTPS_PORT}" ]]; then
-  SORMAS_HOST_AND_PORT="${SORMAS_HOST_NAME}";
-else
-  SORMAS_HOST_AND_PORT="${SORMAS_HOST_NAME}:${SORMAS_HTTPS_PORT}";
-fi
-
 while [[ -z "${SORMAS_S2S_CERT_PASS}" ]] || [[ ${#SORMAS_S2S_CERT_PASS} -lt 6 ]]; do
   read -sp "Please provide a password for the certificate (at least 6 characters): " SORMAS_S2S_CERT_PASS
   echo
@@ -121,7 +114,7 @@ openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${S
 rm "${PEM_FILE}"
 
 echo "Generating server access data CSV"
-echo -e "\"${SORMAS_ORG_ID}\",\"${SORMAS_ORG_NAME}\",\"${SORMAS_HOST_AND_PORT}\",\"${SORMAS_S2S_REST_PASSWORD}\",\n" > "${CSV_FILE}"
+echo -e "\"${SORMAS_ORG_ID}\",\"${SORMAS_ORG_NAME}\",\"${SORMAS_HOST_NAME}\",\"${SORMAS_S2S_REST_PASSWORD}\"\n" > "${CSV_FILE}"
 
 # remove existing properties and empty spaces at end of file
 sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"

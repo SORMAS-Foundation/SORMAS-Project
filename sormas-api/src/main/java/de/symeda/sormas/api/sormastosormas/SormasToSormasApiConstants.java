@@ -17,6 +17,8 @@ package de.symeda.sormas.api.sormastosormas;
 
 public class SormasToSormasApiConstants {
 
+	public static final String SORMAS_REST_ENDPOINT_BASE = "/sormas-rest";
+
 	private static final String SORMAS_TO_SORMAS_ENDPOINT = "/sormasToSormas";
 
 	public static final String SAVE_SHARED_CASE_ENDPOINT = SORMAS_TO_SORMAS_ENDPOINT + "/case";

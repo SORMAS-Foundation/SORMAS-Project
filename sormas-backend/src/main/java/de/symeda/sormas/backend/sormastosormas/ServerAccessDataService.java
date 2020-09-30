@@ -76,6 +76,11 @@ public class ServerAccessDataService {
 			return Collections.emptyList();
 		}
 
+		String ownOrganizationId = getServerAccessData().map(OrganizationServerAccessData::getId).orElse(null);
+		if (StringUtils.isEmpty(ownOrganizationId)) {
+			return Collections.emptyList();
+		}
+
 		Path inputFile = Paths.get(configPath, ORGANIZATION_LIST_FILE_NAME);
 
 		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
@@ -86,6 +91,7 @@ public class ServerAccessDataService {
 				.filter(r -> r.length > 1 || r[0].startsWith("#"))
 				// parse non-empty lines
 				.map(this::buildServerAccessData)
+				.filter(serverAccessData -> !ownOrganizationId.equals(serverAccessData.getId()))
 				.collect(Collectors.toList());
 		} catch (Exception e) {
 			LOGGER.warn("Unexpected error while reading sormas to sormas server list", e);

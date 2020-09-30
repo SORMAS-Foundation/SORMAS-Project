@@ -98,13 +98,6 @@ while [[ -z "${SORMAS_S2S_HOST_NAME}" ]]; do
   read -p "Please provide the Hostname of the certificate owner: " SORMAS_S2S_HOST_NAME
 done
 
-read -p "Please provide the https port of the server (443): " SORMAS_S2S_HTTPS_PORT
-if [[ -z "${SORMAS_S2S_HTTPS_PORT}" ]]; then
-  SORMAS_S2S_HOST_AND_PORT="${SORMAS_S2S_HOST_NAME}:443";
-else
-  SORMAS_S2S_HOST_AND_PORT="${SORMAS_S2S_HOST_NAME}:${SORMAS_S2S_HTTPS_PORT}";
-fi
-
 CRT_FILE_NAME=${SORMAS_S2S_HOST_NAME}.sormas2sormas.cert.crt;
 CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
 
@@ -145,23 +138,5 @@ fi
 echo "Updating server list CSV"
 
 ( head -1 "$CSV_FILE" ) >> "${ORGANIZATION_LIST_FILE}"
-
-echo "Importing SSL certificate"
-if [[ -z "$SORMAS_DOMAIN_KEY_STORE_PASS" ]]; then
-  read -p "Please provide the password of the keystore in the SORMAS domain (changeit): " SORMAS_DOMAIN_KEY_STORE_PASS;
-
-  if [[ -z "$SORMAS_DOMAIN_KEY_STORE_PASS" ]]; then
-    SORMAS_DOMAIN_KEY_STORE_PASS="changeit";
-  fi
-fi
-
-SORMAS_S2S_SSL_CERT="tmp_${SORMAS_S2S_HOST_NAME}.crt";
-SORMAS_DOMAIN_KEYSTORE="${SORMAS_DOMAIN_PATH}/config/cacerts.jks";
-
-keytool -delete -alias "${SORMAS_S2S_HOST_NAME}" -keystore "${SORMAS_DOMAIN_KEYSTORE}" -storepass "${SORMAS_DOMAIN_KEY_STORE_PASS}" > dev.null
-openssl s_client -showcerts -servername "${SORMAS_S2S_HOST_NAME}" -connect "${SORMAS_S2S_HOST_AND_PORT}" </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > "${SORMAS_S2S_SSL_CERT}"
-keytool -importcert -trustcacerts -noprompt -keystore "${SORMAS_DOMAIN_KEYSTORE}" -alias "${SORMAS_S2S_HOST_NAME}" -storepass "${SORMAS_DOMAIN_KEY_STORE_PASS}" -file "${SORMAS_S2S_SSL_CERT}"
-
-rm -f SORMAS_S2S_SSL_CERT
 
 echo "The script finished executing. Please check for any errors."
