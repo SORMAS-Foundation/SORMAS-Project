@@ -42,7 +42,7 @@ public interface Strings {
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
-	String confirmationAlsoExtendQuarantine = "confirmationAlsoExtendQuarantine";
+	String confirmationAlsoAdjustQuarantine = "confirmationAlsoAdjustQuarantine";
 	String confirmationArchiveArea = "confirmationArchiveArea";
 	String confirmationArchiveAreas = "confirmationArchiveAreas";
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
@@ -170,6 +170,7 @@ public interface Strings {
 	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
+	String headingAdjustQuarantine = "headingAdjustQuarantine";
 	String headingAllContacts = "headingAllContacts";
 	String headingAnimalContacts = "headingAnimalContacts";
 	String headingArchiveCampaign = "headingArchiveCampaign";
@@ -210,6 +211,7 @@ public interface Strings {
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
+	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateEntry = "headingCreateEntry";
@@ -282,6 +284,7 @@ public interface Strings {
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
 	String headingImportAreas = "headingImportAreas";
+	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCaseContacts = "headingImportCaseContacts";
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
@@ -311,6 +314,7 @@ public interface Strings {
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
 	String headingNetworkDiagramTooManyContacts = "headingNetworkDiagramTooManyContacts";
+	String headingNewAccount = "headingNewAccount";
 	String headingNewCases = "headingNewCases";
 	String headingNewEvents = "headingNewEvents";
 	String headingNewPassword = "headingNewPassword";
@@ -356,6 +360,7 @@ public interface Strings {
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
+	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
@@ -471,6 +476,7 @@ public interface Strings {
 	String lastWeek = "lastWeek";
 	String lastYear = "lastYear";
 	String max = "max";
+	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregateReportFound = "messageAggregateReportFound";
@@ -611,6 +617,7 @@ public interface Strings {
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
 	String messageOutbreakSaved = "messageOutbreakSaved";
+	String messagePasswordReset = "messagePasswordReset";
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";
@@ -710,9 +717,14 @@ public interface Strings {
 	String or = "or";
 	String pleaseSpecify = "pleaseSpecify";
 	String previousPeriod = "previousPeriod";
+	String promptActionDateFrom = "promptActionDateFrom";
+	String promptActionDateTo = "promptActionDateTo";
+	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
+	String promptActionEpiWeekTo = "promptActionEpiWeekTo";
 	String promptArea = "promptArea";
 	String promptCampaign = "promptCampaign";
 	String promptCampaignSearch = "promptCampaignSearch";
+	String promptCaseOrContactEventSearchField = "promptCaseOrContactEventSearchField";
 	String promptCasesDateFrom = "promptCasesDateFrom";
 	String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
@@ -757,6 +769,7 @@ public interface Strings {
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";
+	String unsavedChanges_cancel = "unsavedChanges.cancel";
 	String unsavedChanges_discard = "unsavedChanges.discard";
 	String unsavedChanges_save = "unsavedChanges.save";
 	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";

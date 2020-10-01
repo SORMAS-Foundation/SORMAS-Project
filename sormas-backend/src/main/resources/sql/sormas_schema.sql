@@ -5323,11 +5323,49 @@ ALTER TABLE person_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
 
+-- 2020-09-18 Add action title
+ALTER TABLE action ADD COLUMN title character varying(512);
+ALTER TABLE action_history ADD COLUMN title character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add action.title');
+
+-- 2020-09-18 Add event title
+ALTER TABLE events ADD COLUMN eventTitle character varying(512);
+ALTER TABLE events_history ADD COLUMN eventTitle character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (256, 'Add event.eventTitle');
+
+-- 2020-09-25 Cases > Minimal Essential Data (MED) for Switzerland #2959
+ALTER TABLE cases
+    ADD COLUMN caseidism integer,
+    ADD COLUMN covidtestreason varchar(255),
+    ADD COLUMN covidtestreasondetails varchar(512),
+    ADD COLUMN contacttracingfirstcontacttype varchar(255),
+    ADD COLUMN contacttracingfirstcontactdate timestamp,
+    ADD COLUMN quarantinereasonbeforeisolation varchar(255),
+    ADD COLUMN quarantinereasonbeforeisolationdetails varchar(512),
+    ADD COLUMN endofisolationreason varchar(255),
+    ADD COLUMN endofisolationreasondetails varchar(512);
+
+ALTER TABLE cases_history
+    ADD COLUMN caseidism integer,
+    ADD COLUMN covidtestreason varchar(255),
+    ADD COLUMN covidtestreasondetails varchar(512),
+    ADD COLUMN contacttracingfirstcontacttype varchar(255),
+    ADD COLUMN contacttracingfirstcontactdate timestamp,
+    ADD COLUMN quarantinereasonbeforeisolation varchar(255),
+    ADD COLUMN quarantinereasonbeforeisolationdetails varchar(512),
+    ADD COLUMN endofisolationreason varchar(255),
+    ADD COLUMN endofisolationreasondetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (257, 'Cases > Minimal Essential Data (MED) for Switzerland #2959');
+
 -- 2020-09-16 Add total series to campaigndiagramdefinition to calculate percentage values #2528
 
 ALTER TABLE campaigndiagramdefinition ADD COLUMN campaignseriestotal json;
 ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaignseriestotal json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add series total to campaigndiagramdefinition to calculate percentage values #2528');
+INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add series total to campaigndiagramdefinition to calculate percentage values #2528');
+
 
 -- *** Insert new sql commands BEFORE this line ***

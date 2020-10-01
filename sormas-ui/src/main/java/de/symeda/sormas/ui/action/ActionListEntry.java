@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -58,6 +59,10 @@ public class ActionListEntry extends HorizontalLayout {
 		withContentLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponent(withContentLayout);
 		setExpandRatio(withContentLayout, 1);
+
+		Label title = new Label(MoreObjects.firstNonNull(Strings.emptyToNull(action.getTitle()), "-"));
+		title.addStyleName(CssStyles.H3);
+		withContentLayout.addComponent(title);
 
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setMargin(false);
