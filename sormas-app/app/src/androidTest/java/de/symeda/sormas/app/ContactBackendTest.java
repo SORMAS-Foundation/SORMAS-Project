@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -104,6 +105,7 @@ public class ContactBackendTest {
 		mergeVisit.getSymptoms().setId(null);
 
 		mergeVisit.setVisitStatus(VisitStatus.COOPERATIVE);
+		mergeVisit.setOrigin(VisitOrigin.EXTERNAL_JOURNAL);
 
 		DatabaseHelper.getContactDao().mergeOrCreate(mergeContact);
 		DatabaseHelper.getVisitDao().mergeOrCreate(mergeVisit);

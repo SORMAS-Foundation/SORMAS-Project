@@ -25,6 +25,7 @@ import android.content.res.Resources;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -168,7 +169,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
 		if (SymptomsContext.VISIT.equals(symptomsContext)) {
 			Visit visit = (Visit) getActivityRootData();
-			boolean enabled = VisitStatus.COOPERATIVE.equals(visit.getVisitStatus());
+			boolean enabled = VisitStatus.COOPERATIVE.equals(visit.getVisitStatus()) && visit.getOrigin().equals(VisitOrigin.USER);
 			for (int i = 0; i < contentBinding.mainContent.getChildCount(); i++) {
 				View child = contentBinding.mainContent.getChildAt(i);
 				child.setEnabled(enabled);
