@@ -15,6 +15,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.components.grid.GridDragEndListener;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.i18n.Captions;
@@ -75,6 +76,15 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 			grid.addColumn(campaignDashboardElement -> intToString(campaignDashboardElement.getHeight()))
 				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardChartHeight));
 		heightColumn.setEditorBinding(heightBind);
+
+		TextField order = new TextField("Order");
+		order.setEnabled(false);
+		Binder.Binding<CampaignDashboardElement, String> orderBind =
+			binder.bind(order, campaignDashboardElement -> intToString(campaignDashboardElement.getOrder()), (c, s) -> c.setOrder(new Integer(s)));
+		Grid.Column<CampaignDashboardElement, String> orderColumn =
+			grid.addColumn(campaignDashboardElement -> intToString(campaignDashboardElement.getOrder()))
+				.setCaption(I18nProperties.getCaption("Order"));
+		orderColumn.setEditorBinding(orderBind);
 		return binder;
 	}
 
@@ -110,5 +120,15 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 
 	protected String getAdditionalRowCaption() {
 		return Captions.campaignAdditionalChart;
+	}
+
+	@Override
+	protected GridDragEndListener<CampaignDashboardElement> gridDragEndListener() {
+		return gridDragEndEvent -> {
+			final ArrayList gridItems =
+				(ArrayList) ((ListDataProvider) ((DataCommunicator) ((Collection) this.grid.getExtensions()).iterator().next()).getDataProvider())
+					.getItems();
+			items.forEach(campaignDashboardElement -> campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement)));
+		};
 	}
 }

@@ -5,9 +5,12 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.provider.DataCommunicator;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.grid.HeightMode;
@@ -17,6 +20,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.components.grid.GridDragEndListener;
 import com.vaadin.ui.components.grid.GridRowDragger;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -65,7 +69,8 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		grid.setSelectionMode(Grid.SelectionMode.SINGLE);
 		setSizeFull();
 
-		new GridRowDragger<>(grid);
+		final GridRowDragger<T> gridRowDragger = new GridRowDragger<>(grid);
+		gridRowDragger.getGridDragSource().addGridDragEndListener(gridDragEndListener());
 
 		final Binder<T> binder = addColumnsBinder(allElements);
 
@@ -76,7 +81,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		grid.getColumns().stream().forEach(col -> {
 			col.setSortable(false);
 			if (DELETE.equals(col.getId())) {
-				col.setStyleGenerator(item -> "v-align-center");
+				col.setStyleGenerator(item -> CssStyles.ALIGN_CENTER);
 			}
 		});
 
@@ -108,6 +113,8 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 	public void discardGrid() {
 		this.grid.setItems(savedItems);
 	}
+
+	protected abstract GridDragEndListener<T> gridDragEndListener();
 
 	protected abstract String getHeaderString();
 

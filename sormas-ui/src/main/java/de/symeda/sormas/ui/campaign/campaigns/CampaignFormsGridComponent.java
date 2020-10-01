@@ -6,6 +6,7 @@ import com.vaadin.data.Binder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.GridDragEndListener;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -59,5 +60,11 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 
 	protected String getAdditionalRowCaption() {
 		return Captions.campaignAdditionalForm;
+	}
+
+	@Override
+	protected GridDragEndListener<CampaignFormMetaReferenceDto> gridDragEndListener() {
+		return gridDragEndEvent -> {
+		};
 	}
 }
