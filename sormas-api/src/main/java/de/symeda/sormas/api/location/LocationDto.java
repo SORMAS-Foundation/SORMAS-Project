@@ -253,6 +253,6 @@ public class LocationDto extends PseudonymizableDto {
 	}
 
 	public static String buildStreetAndHouseNumberCaption(String street, String houseNumber) {
-		return street + " " + houseNumber;
+		return DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber);
 	}
 }
