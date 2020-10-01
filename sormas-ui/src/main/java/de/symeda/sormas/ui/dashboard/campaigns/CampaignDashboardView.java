@@ -141,7 +141,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				final CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(
 					campaignDiagramDefinitionDto,
 					diagramData,
-					dataProvider.getCampaignFormTotalValues().get(campaignDashboardDiagramDto));
+					dataProvider.getCampaignFormTotalValues().get(campaignDashboardDiagramDto),
+					campaignDiagramDefinitionDto.isPercentageDefault());
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
 
@@ -149,6 +150,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					.addFunction("changeDiagramState_" + campaignDiagramDefinitionDto.getDiagramId(), (JavaScriptFunction) jsonArray -> {
 						int index = diagramsLayout.getComponentIndex(diagramComponent);
 						diagramsLayout.removeComponent(diagramComponent);
+						diagramComponent.setShowPercentages(!diagramComponent.isShowPercentages());
 						diagramComponent.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption());
 						diagramsLayout.addComponent(diagramComponent, index);
 					});

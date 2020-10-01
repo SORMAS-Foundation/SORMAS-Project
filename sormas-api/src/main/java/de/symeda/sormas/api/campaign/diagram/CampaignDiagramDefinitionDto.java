@@ -11,6 +11,7 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 	private DiagramType diagramType;
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
 	private List<CampaignDiagramSeries> campaignSeriesTotal;
+	private boolean percentageDefault;
 
 	public String getDiagramId() {
 		return diagramId;
@@ -50,5 +51,13 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 
 	public void setCampaignSeriesTotal(List<CampaignDiagramSeries> campaignSeriesTotal) {
 		this.campaignSeriesTotal = campaignSeriesTotal;
+	}
+
+	public boolean isPercentageDefault() {
+		return percentageDefault;
+	}
+
+	public void setPercentageDefault(boolean percentageDefault) {
+		this.percentageDefault = percentageDefault;
 	}
 }

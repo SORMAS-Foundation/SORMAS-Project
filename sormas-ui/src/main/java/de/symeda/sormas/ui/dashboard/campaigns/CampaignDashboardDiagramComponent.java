@@ -24,22 +24,23 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
-	private final Map<String, Map<Object, CampaignDiagramDataDto>> diagramDataBySeriesAndXAxis =
-		new HashMap<String, Map<Object, CampaignDiagramDataDto>>();
-	private final List<Object> axisKeys = new ArrayList<Object>();
-	private final Map<Object, String> axisCaptions = new HashMap<Object, String>();
+	private final Map<String, Map<Object, CampaignDiagramDataDto>> diagramDataBySeriesAndXAxis = new HashMap<>();
+	private final List<Object> axisKeys = new ArrayList<>();
+	private final Map<Object, String> axisCaptions = new HashMap<>();
 	private final Map<Object, Double> totalValues;
-	private boolean showPercentage = true;
+	private boolean showPercentages;
 
 	private final HighChart campaignColumnChart;
 
 	public CampaignDashboardDiagramComponent(
 		CampaignDiagramDefinitionDto diagramDefinition,
 		List<CampaignDiagramDataDto> diagramDataList,
-		Map<Object, Double> totalValues) {
+		Map<Object, Double> totalValues,
+		boolean showPercentages) {
 
 		this.totalValues = totalValues;
 		this.diagramDefinition = diagramDefinition;
+		this.showPercentages = showPercentages;
 
 		campaignColumnChart = new HighChart();
 
@@ -71,7 +72,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	public void buildDiagramChart(String title) {
-		this.showPercentage = !showPercentage;
 		final StringBuilder hcjs = new StringBuilder();
 
 		//@formatter:off
@@ -92,7 +92,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append(
 				" menuItemDefinitions: { togglePercentages: { onclick: function() { window.changeDiagramState_" + diagramDefinition.getDiagramId()
 					+ "(); }, text: '"
-					+ (showPercentage
+					+ (showPercentages
 						? I18nProperties.getCaption(Captions.dashboardShowTotalValues)
 						: I18nProperties.getCaption(Captions.dashboardShowPercentageValues))
 					+ "' } }, ");
@@ -130,7 +130,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		//@formatter:off
 		hcjs.append("yAxis: { min: 0, title: { text: ''}");
-		if (showPercentage && totalValues != null) {
+		if (showPercentages && totalValues != null) {
 			hcjs.append(", max: 100, ");
 		}
 		if (stackMap.size() > 1) {
@@ -142,13 +142,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		// series
 
-		if (stackMap.size() > 0 || (showPercentage && totalValues != null)) {
+		if (stackMap.size() > 0 || (showPercentages && totalValues != null)) {
 			hcjs.append("plotOptions: {");
 
 			if (stackMap.size() > 0) {
 				hcjs.append("column: { stacking: 'normal'}");
 			}
-			if (showPercentage && totalValues != null) {
+			if (showPercentages && totalValues != null) {
 				hcjs.append(stackMap.size() > 0 ? ", " : "")
 					.append("series: { dataLabels: { enabled: true, format: '{y} %', style: { fontSize: 14 + 'px' }}}");
 			}
@@ -169,7 +169,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("{ name:'").append(fieldName).append("', data: [");
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {
-					if (showPercentage && totalValues != null) {
+					if (showPercentages && totalValues != null) {
 						double totalValue = totalValues.get(seriesData.get(axisKey).getGroupingKey());
 						if (totalValue > 0) {
 							hcjs.append(
@@ -199,4 +199,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		campaignColumnChart.setHcjs(hcjs.toString());
 	}
 
+	public boolean isShowPercentages() {
+		return showPercentages;
+	}
+
+	public void setShowPercentages(boolean showPercentages) {
+		this.showPercentages = showPercentages;
+	}
 }

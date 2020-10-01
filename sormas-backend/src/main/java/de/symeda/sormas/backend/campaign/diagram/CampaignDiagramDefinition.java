@@ -24,6 +24,7 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 	private DiagramType diagramType;
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
 	private List<CampaignDiagramSeries> campaignSeriesTotal;
+	private boolean percentageDefault;
 
 	@Column
 	public String getDiagramId() {
@@ -74,4 +75,12 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 		this.campaignSeriesTotal = campaignSeriesTotal;
 	}
 
+	@Column
+	public boolean isPercentageDefault() {
+		return percentageDefault;
+	}
+
+	public void setPercentageDefault(boolean percentageDefault) {
+		this.percentageDefault = percentageDefault;
+	}
 }

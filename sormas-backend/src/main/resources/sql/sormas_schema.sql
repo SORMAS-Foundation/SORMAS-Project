@@ -5361,11 +5361,15 @@ ALTER TABLE cases_history
 INSERT INTO schema_version (version_number, comment) VALUES (257, 'Cases > Minimal Essential Data (MED) for Switzerland #2959');
 
 -- 2020-09-16 Add total series to campaigndiagramdefinition to calculate percentage values #2528
-
 ALTER TABLE campaigndiagramdefinition ADD COLUMN campaignseriestotal json;
 ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaignseriestotal json;
 
 INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add series total to campaigndiagramdefinition to calculate percentage values #2528');
 
+-- 2020-10-01 Add possibility to set percentage visualization as default for campaign diagram definitions #2528
+ALTER TABLE campaigndiagramdefinition ADD COLUMN percentagedefault boolean DEFAULT false;
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN percentagedefault boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (259, 'Add possibility to set percentage visualization as default for campaign diagram definitions #2528');
 
 -- *** Insert new sql commands BEFORE this line ***
