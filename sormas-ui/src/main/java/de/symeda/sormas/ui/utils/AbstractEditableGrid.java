@@ -38,7 +38,6 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 	public static final String DELETE = "delete";
 
 	protected Grid<T> grid = new Grid();
-	protected List<T> items = new ArrayList<>();
 	protected List<T> savedItems = new ArrayList<>();
 
 	public AbstractEditableGrid(List<T> savedElements, List<T> allElements) {
@@ -64,8 +63,8 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		grid.setWidth(100, Unit.PERCENTAGE);
 
 		savedItems.addAll(savedElements);
-		items.addAll(savedElements);
-		grid.setItems(savedElements);
+		grid.setItems(new ArrayList<>(savedElements));
+		reorderGrid();
 		grid.setSelectionMode(Grid.SelectionMode.SINGLE);
 		setSizeFull();
 
@@ -86,6 +85,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		});
 
 		grid.addItemClickListener(e -> {
+			final List<T> items = getItems();
 			int i = items.indexOf(e.getItem());
 
 			if (e.getColumn() != null && DELETE.equals(e.getColumn().getId())) {
@@ -110,11 +110,16 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		addComponent(buttonLayout, ADDITIONAL_ROW_LOC);
 	}
 
-	public void discardGrid() {
-		this.grid.setItems(savedItems);
+	protected GridDragEndListener<T> gridDragEndListener() {
+		return gridDragEndEvent -> reorderGrid();
 	}
 
-	protected abstract GridDragEndListener<T> gridDragEndListener();
+	public void discardGrid() {
+		this.grid.setItems(new ArrayList<>(this.savedItems));
+		reorderGrid();
+	}
+
+	protected abstract void reorderGrid();
 
 	protected abstract String getHeaderString();
 
@@ -124,11 +129,13 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 
 	protected abstract Binder<T> addColumnsBinder(List<T> allElements);
 
-	public List<T> getItems() {
-		return items;
-	}
-
 	public void setSavedItems(List<T> savedItems) {
 		this.savedItems = savedItems;
+		this.grid.setItems(new ArrayList<>(savedItems));
+	}
+
+	public ArrayList<T> getItems() {
+		return (ArrayList) ((ListDataProvider) ((DataCommunicator) ((Collection) this.grid.getExtensions()).iterator().next()).getDataProvider())
+			.getItems();
 	}
 }

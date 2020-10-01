@@ -459,6 +459,7 @@ public interface Strings {
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
+	String infoUsageOfEditableGrid = "infoUsageOfEditableGrid";
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";

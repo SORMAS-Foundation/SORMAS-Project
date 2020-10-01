@@ -21,8 +21,12 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -32,6 +36,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -45,6 +50,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 	private static final String STATUS_CHANGE = "statusChange";
 	private static final String CAMPAIGN_BASIC_HEADING_LOC = "campaignBasicHeadingLoc";
+	private static final String USAGE_INFO = "usageInfo";
 	private static final String CAMPAIGN_DATA_LOC = "campaignDataLoc";
 	private static final String CAMPAIGN_DASHBOARD_LOC = "campaignDashboardLoc";
 
@@ -53,6 +59,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.NAME)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
+		+ fluidRowLocs(USAGE_INFO)
 		+ fluidRowLocs(CAMPAIGN_DATA_LOC)
 		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC);
 
@@ -124,6 +131,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		FieldHelper.addSoftRequiredStyle(description);
 
+		Label usageInfo =
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableGrid), ContentMode.HTML);
+		getContent().addComponent(usageInfo, USAGE_INFO);
+
 		campaignFormsGridComponent = new CampaignFormsGridComponent(
 			this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
 			FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
@@ -149,7 +160,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	public void setValue(CampaignDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 		campaignFormsGridComponent.setSavedItems(new ArrayList<>(newFieldValue.getCampaignFormMetas()));
-		campaignDashboardGridComponent.setSavedItems(newFieldValue.getCampaignDashboardElements());
+		campaignDashboardGridComponent.setSavedItems(
+			newFieldValue.getCampaignDashboardElements()
+				.stream()
+				.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
+				.collect(Collectors.toList()));
 	}
 
 	@Override

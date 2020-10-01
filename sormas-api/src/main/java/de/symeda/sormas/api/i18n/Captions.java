@@ -149,6 +149,7 @@ public interface Captions {
 	String campaignDashboardChart = "campaignDashboardChart";
 	String campaignDashboardChartHeight = "campaignDashboardChartHeight";
 	String campaignDashboardChartWidth = "campaignDashboardChartWidth";
+	String campaignDashboardOrder = "campaignDashboardOrder";
 	String campaignDashboardTabName = "campaignDashboardTabName";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";

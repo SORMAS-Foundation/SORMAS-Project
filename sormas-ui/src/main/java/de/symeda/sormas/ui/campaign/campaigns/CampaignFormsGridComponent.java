@@ -1,12 +1,12 @@
 package de.symeda.sormas.ui.campaign.campaigns;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.components.grid.GridDragEndListener;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -28,8 +28,9 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 	@Override
 	protected Button.ClickListener newRowEvent() {
 		return event -> {
-			items.add(new CampaignFormMetaReferenceDto());
-			grid.setItems(items);
+			final ArrayList<CampaignFormMetaReferenceDto> gridItems = getItems();
+			gridItems.add(new CampaignFormMetaReferenceDto());
+			grid.setItems(gridItems);
 		};
 	}
 
@@ -50,21 +51,15 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 		return binder;
 	}
 
-	public List<CampaignFormMetaReferenceDto> getItems() {
-		return items;
-	}
-
 	protected String getHeaderString() {
 		return Strings.headingCampaignData;
 	}
 
-	protected String getAdditionalRowCaption() {
-		return Captions.campaignAdditionalForm;
+	@Override
+	protected void reorderGrid() {
 	}
 
-	@Override
-	protected GridDragEndListener<CampaignFormMetaReferenceDto> gridDragEndListener() {
-		return gridDragEndEvent -> {
-		};
+	protected String getAdditionalRowCaption() {
+		return Captions.campaignAdditionalForm;
 	}
 }

@@ -1,21 +1,17 @@
 package de.symeda.sormas.ui.campaign.campaigns;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.provider.DataCommunicator;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.components.grid.GridDragEndListener;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.i18n.Captions;
@@ -77,13 +73,13 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardChartHeight));
 		heightColumn.setEditorBinding(heightBind);
 
-		TextField order = new TextField("Order");
+		TextField order = new TextField(Captions.campaignDashboardOrder);
 		order.setEnabled(false);
 		Binder.Binding<CampaignDashboardElement, String> orderBind =
 			binder.bind(order, campaignDashboardElement -> intToString(campaignDashboardElement.getOrder()), (c, s) -> c.setOrder(new Integer(s)));
 		Grid.Column<CampaignDashboardElement, String> orderColumn =
 			grid.addColumn(campaignDashboardElement -> intToString(campaignDashboardElement.getOrder()))
-				.setCaption(I18nProperties.getCaption("Order"));
+				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardOrder));
 		orderColumn.setEditorBinding(orderBind);
 		return binder;
 	}
@@ -91,9 +87,10 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 	protected Button.ClickListener newRowEvent() {
 		return event -> {
 			final CampaignDashboardElement campaignDashboardElement = new CampaignDashboardElement();
-			items.add(campaignDashboardElement);
-			campaignDashboardElement.setOrder(items.indexOf(campaignDashboardElement));
-			grid.setItems(items);
+			final ArrayList<CampaignDashboardElement> gridItems = getItems();
+			gridItems.add(campaignDashboardElement);
+			campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement));
+			grid.setItems(gridItems);
 		};
 	}
 
@@ -105,15 +102,6 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 		return h != null ? h.toString() : StringUtils.EMPTY;
 	}
 
-	public List<CampaignDashboardElement> getItems() {
-		final List<CampaignDashboardElement> items = super.getItems();
-		final ArrayList gridItems =
-			(ArrayList) ((ListDataProvider) ((DataCommunicator) ((Collection) this.grid.getExtensions()).iterator().next()).getDataProvider())
-				.getItems();
-		items.forEach(campaignDashboardElement -> campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement)));
-		return items;
-	}
-
 	protected String getHeaderString() {
 		return Strings.headingCampaignDashboard;
 	}
@@ -122,13 +110,8 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 		return Captions.campaignAdditionalChart;
 	}
 
-	@Override
-	protected GridDragEndListener<CampaignDashboardElement> gridDragEndListener() {
-		return gridDragEndEvent -> {
-			final ArrayList gridItems =
-				(ArrayList) ((ListDataProvider) ((DataCommunicator) ((Collection) this.grid.getExtensions()).iterator().next()).getDataProvider())
-					.getItems();
-			items.forEach(campaignDashboardElement -> campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement)));
-		};
+	protected void reorderGrid() {
+		final ArrayList<CampaignDashboardElement> gridItems = getItems();
+		gridItems.forEach(campaignDashboardElement -> campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement)));
 	}
 }
