@@ -5368,5 +5368,5 @@ ALTER TABLE symptoms_history ADD COLUMN shivering character varying(255);
 ALTER TABLE symptoms_history RENAME generalsignsofdisease to feelingill;
 
 
-INSERT INTO schema_version (version_number, comment) VALUES (257, 'Split general signs of disease #2916');
+INSERT INTO schema_version (version_number, comment) VALUES (258, 'Split general signs of disease #2916');
 -- *** Insert new sql commands BEFORE this line ***
