@@ -1150,6 +1150,7 @@ public interface Captions {
 	String regionAllRegions = "regionAllRegions";
 	String regionArchivedRegions = "regionArchivedRegions";
 	String regionName = "regionName";
+	String remove = "remove";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_associatedCase = "Sample.associatedCase";

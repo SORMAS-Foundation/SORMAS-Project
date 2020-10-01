@@ -5,13 +5,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataCommunicator;
-import com.vaadin.data.provider.ListDataProvider;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.utils.AbstractEditableGrid;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.provider.DataCommunicator;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -21,6 +19,9 @@ import com.vaadin.ui.TextField;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.ui.utils.AbstractEditableGrid;
 
 public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid<CampaignDashboardElement> {
 
@@ -59,7 +60,7 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 
 		TextField width = new TextField(Captions.campaignDashboardChartWidth);
 		Binder.Binding<CampaignDashboardElement, String> widthBind = binder.forField(width)
-			.withValidator(percentValidator(), "Must be a number multiple of 5!")
+			.withValidator(percentValidator(), I18nProperties.getValidationError(Validations.campaignDashboardChartPercentage))
 			.bind(campaignDashboardElement -> intToString(campaignDashboardElement.getWidth()), (c, s) -> c.setWidth(new Integer(s)));
 		Grid.Column<CampaignDashboardElement, String> widthColumn =
 			grid.addColumn(campaignDashboardElement -> intToString(campaignDashboardElement.getWidth()))
@@ -68,7 +69,7 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 
 		TextField height = new TextField(Captions.campaignDashboardChartHeight);
 		Binder.Binding<CampaignDashboardElement, String> heightBind = binder.forField(height)
-			.withValidator(percentValidator(), "Must be a number multiple of 5!")
+			.withValidator(percentValidator(), I18nProperties.getValidationError(Validations.campaignDashboardChartPercentage))
 			.bind(campaignDashboardElement -> intToString(campaignDashboardElement.getHeight()), (c, s) -> c.setHeight(new Integer(s)));
 		Grid.Column<CampaignDashboardElement, String> heightColumn =
 			grid.addColumn(campaignDashboardElement -> intToString(campaignDashboardElement.getHeight()))
@@ -96,7 +97,9 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 
 	public List<CampaignDashboardElement> getItems() {
 		final List<CampaignDashboardElement> items = super.getItems();
-		final ArrayList gridItems = (ArrayList) ((ListDataProvider) ((DataCommunicator) ((Collection) this.grid.getExtensions()).iterator().next()).getDataProvider()).getItems();
+		final ArrayList gridItems =
+			(ArrayList) ((ListDataProvider) ((DataCommunicator) ((Collection) this.grid.getExtensions()).iterator().next()).getDataProvider())
+				.getItems();
 		items.forEach(campaignDashboardElement -> campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement)));
 		return items;
 	}

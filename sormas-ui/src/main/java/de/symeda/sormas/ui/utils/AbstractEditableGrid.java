@@ -21,6 +21,7 @@ import com.vaadin.ui.components.grid.GridRowDragger;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public abstract class AbstractEditableGrid<T> extends CustomLayout implements View {
@@ -69,8 +70,8 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		final Binder<T> binder = addColumnsBinder(allElements);
 
 		Grid.Column<T, String> deleteColumn =
-			grid.addColumn(t -> VaadinIcons.TRASH.getHtml(), new HtmlRenderer()).setId(DELETE).setCaption("");
-		deleteColumn.setMaximumWidth(30);
+			grid.addColumn(t -> VaadinIcons.TRASH.getHtml(), new HtmlRenderer()).setId(DELETE).setCaption(I18nProperties.getCaption(Captions.remove));
+		deleteColumn.setMaximumWidth(50);
 
 		grid.getColumns().stream().forEach(col -> {
 			col.setSortable(false);
