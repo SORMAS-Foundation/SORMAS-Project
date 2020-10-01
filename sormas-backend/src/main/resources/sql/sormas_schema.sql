@@ -5360,4 +5360,13 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (257, 'Cases > Minimal Essential Data (MED) for Switzerland #2959');
 
+-- 202-10-01 Split general signs of disease #2916
+ALTER TABLE symptoms ADD COLUMN shivering character varying(255);
+ALTER TABLE symptoms RENAME generalsignsofdisease to feelingill;
+
+ALTER TABLE symptoms_history ADD COLUMN shivering character varying(255);
+ALTER TABLE symptoms_history RENAME generalsignsofdisease to feelingill;
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (257, 'Split general signs of disease #2916');
 -- *** Insert new sql commands BEFORE this line ***
