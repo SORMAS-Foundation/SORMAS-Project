@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import static com.vaadin.ui.themes.ValoTheme.BUTTON_SMALL;
 import static de.symeda.sormas.ui.utils.ButtonHelper.createButton;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
@@ -14,14 +13,12 @@ import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomField;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.components.grid.GridRowDragger;
+import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -33,6 +30,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 	private static final String ADDITIONAL_ROW_LOC = "additionalRowLoc";
 
 	private static final String HTML_LAYOUT = loc(HEADING_LOC) + loc(GRID_LOC) + loc(ADDITIONAL_ROW_LOC);
+	public static final String DELETE = "delete";
 
 	protected Grid<T> grid = new Grid();
 	protected List<T> items = new ArrayList<>();
@@ -67,43 +65,24 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		setSizeFull();
 
 		new GridRowDragger<>(grid);
-		grid.getColumns().stream().forEach(col -> {
-			col.setSortable(false);
-			col.setStyleGenerator(t -> "");
-		});
 
 		final Binder<T> binder = addColumnsBinder(allElements);
 
-		CustomField deleteField = new CustomField() {
+		Grid.Column<T, String> deleteColumn =
+			grid.addColumn(t -> VaadinIcons.TRASH.getHtml(), new HtmlRenderer()).setId(DELETE).setCaption("");
+		deleteColumn.setMaximumWidth(30);
 
-			@Override
-			public Object getValue() {
-				return null;
+		grid.getColumns().stream().forEach(col -> {
+			col.setSortable(false);
+			if (DELETE.equals(col.getId())) {
+				col.setStyleGenerator(item -> "v-align-center");
 			}
-
-			@Override
-			protected void doSetValue(Object o) {
-
-			}
-
-			@Override
-			protected Component initContent() {
-				CssLayout cssLayout = new CssLayout();
-				final Button deleteButton = createButton(Button::new, "deleteButton", "", BUTTON_SMALL);
-				deleteButton.setIcon(VaadinIcons.TRASH);
-				cssLayout.addComponent(deleteButton);
-				return cssLayout;
-			}
-		};
-		Binder.Binding<T, String> deleteBind = binder.bind(deleteField, d -> "X", (t, s) -> {
 		});
-		Grid.Column<T, String> deleteColumn = grid.addColumn(t -> "").setId("delete").setCaption("");
-		deleteColumn.setEditorBinding(deleteBind);
 
 		grid.addItemClickListener(e -> {
 			int i = items.indexOf(e.getItem());
 
-			if (e.getColumn() != null && "delete".equals(e.getColumn().getId())) {
+			if (e.getColumn() != null && DELETE.equals(e.getColumn().getId())) {
 				items.remove(i);
 				grid.setItems(items);
 			} else if (i > -1) {
