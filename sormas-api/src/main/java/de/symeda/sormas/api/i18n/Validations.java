@@ -81,7 +81,7 @@ public interface Validations {
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
-	String sormasToSormasSenderHealthDepartmentMissing = "sormasToSormasSenderHealthDepartmentMissing";
+	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String specifyFirstName = "specifyFirstName";

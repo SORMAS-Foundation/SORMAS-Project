@@ -24,14 +24,14 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerAccessData;
+import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
 
-	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.HEALTH_DEPARTMENT)
+	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.ORGANIZATION)
 		+ fluidRowLocs(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS)
 		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
@@ -58,13 +58,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	@Override
 	protected void addFields() {
-		ComboBox healthDepartmentField = addField(SormasToSormasOptionsDto.HEALTH_DEPARTMENT, ComboBox.class);
-		healthDepartmentField.setRequired(true);
-		List<HealthDepartmentServerAccessData> healthDepartments = FacadeProvider.getSormasToSormasFacade().getAvailableHealthDepartments();
-		healthDepartmentField.addItems(healthDepartments);
-		healthDepartments.forEach(hd -> {
-			healthDepartmentField.setItemCaption(hd, hd.getName());
-		});
+		ComboBox organizationField = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
+		organizationField.setRequired(true);
+		List<ServerAccessDataReferenceDto> organizations = FacadeProvider.getSormasToSormasFacade().getAvailableOrganizations();
+		organizationField.addItems(organizations);
 
 		if (forCase) {
 			addField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS);

@@ -13,22 +13,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas;
 
-import de.symeda.sormas.api.ReferenceDto;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.enterprise.inject.Produces;
 
-public class HealthDepartmentServerReferenceDto extends ReferenceDto {
+import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
-	private static final long serialVersionUID = 807898485681272418L;
+@LocalBean
+public class SormasToSormasConfigProducer {
 
-	public HealthDepartmentServerReferenceDto() {
-	}
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	public HealthDepartmentServerReferenceDto(String uuid) {
-		super(uuid);
-	}
-
-	public HealthDepartmentServerReferenceDto(String uuid, String caption) {
-		super(uuid, caption);
+	@Produces
+	public SormasToSormasConfig sormas2SormasConfig() {
+		return configFacade.getSormasToSormasConfig();
 	}
 }

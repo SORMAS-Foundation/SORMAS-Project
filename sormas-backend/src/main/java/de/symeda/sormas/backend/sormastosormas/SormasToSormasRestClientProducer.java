@@ -17,7 +17,7 @@ package de.symeda.sormas.backend.sormastosormas;
 
 import javax.enterprise.inject.Produces;
 
-public class SormasToSormasClientProducer {
+public class SormasToSormasRestClientProducer {
 
 	@Produces
 	public SormasToSormasRestClient sormasToSormasClient() {

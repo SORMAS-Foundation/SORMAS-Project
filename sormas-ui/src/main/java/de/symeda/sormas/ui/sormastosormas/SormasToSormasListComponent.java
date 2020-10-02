@@ -32,6 +32,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
@@ -48,7 +49,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 	private SormasToSormasList sormasToSormasList;
 
-	public SormasToSormasListComponent(CaseDataDto caze) {
+	public SormasToSormasListComponent(CaseDataDto caze, boolean canShare) {
 		CaseReferenceDto caseRef = caze.toReference();
 
 		sormasToSormasList = new SormasToSormasList(
@@ -59,10 +60,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			e -> ControllerProvider.getSormasToSormasController().shareCaseToSormas(caseRef, this));
+			canShare ? e -> ControllerProvider.getSormasToSormasController().shareCaseToSormas(caseRef, this) : null);
 	}
 
-	public SormasToSormasListComponent(ContactDto contact) {
+	public SormasToSormasListComponent(ContactDto contact, boolean canShare) {
 		ContactReferenceDto contactRef = contact.toReference();
 
 		sormasToSormasList = new SormasToSormasList(
@@ -73,10 +74,13 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			e -> ControllerProvider.getSormasToSormasController().shareContactToSormas(contactRef, this));
+			canShare ? e -> ControllerProvider.getSormasToSormasController().shareContactToSormas(contactRef, this) : null);
 	}
 
-	private void initLayout(SormasToSormasOriginInfoDto originInfo, SormasToSormasList sormasToSormasList, Button.ClickListener clickListener) {
+	private void initLayout(
+		SormasToSormasOriginInfoDto originInfo,
+		SormasToSormasList sormasToSormasList,
+		Button.ClickListener shareButtonClickListener) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -98,11 +102,13 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		header.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(header);
 
-		Button shareButtonButton =
-			ButtonHelper.createIconButton(Captions.sormasToSormasShare, VaadinIcons.SHARE, clickListener, ValoTheme.BUTTON_PRIMARY);
+		if (shareButtonClickListener != null) {
+			Button shareButtonButton =
+				ButtonHelper.createIconButton(Captions.sormasToSormasShare, VaadinIcons.SHARE, shareButtonClickListener, ValoTheme.BUTTON_PRIMARY);
 
-		componentHeader.addComponent(shareButtonButton);
-		componentHeader.setComponentAlignment(shareButtonButton, Alignment.MIDDLE_RIGHT);
+			componentHeader.addComponent(shareButtonButton);
+			componentHeader.setComponentAlignment(shareButtonButton, Alignment.MIDDLE_RIGHT);
+		}
 	}
 
 	public void reloadList() {
@@ -168,10 +174,9 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			addComponent(layout);
 			setExpandRatio(layout, 1);
 
-			Label healthDepartmentLabel =
-				new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getHealthDepartment());
-			healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
-			layout.addComponent(healthDepartmentLabel);
+			Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getTarget());
+			targetLabel.addStyleName(CssStyles.LABEL_BOLD);
+			layout.addComponent(targetLabel);
 
 			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
 			layout.addComponent(senderLabel);
@@ -192,10 +197,12 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		layout.setSpacing(false);
 		layout.setStyleName(CssStyles.VSPACE_3);
 
-		Label healthDepartmentLabel =
-			new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + originInfo.getHealthDepartment());
-		healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
-		layout.addComponent(healthDepartmentLabel);
+		ServerAccessDataReferenceDto serverAccessDataRef =
+			FacadeProvider.getSormasToSormasFacade().getOrganizationRef(originInfo.getOrganizationId());
+
+		Label senderOrganizationLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
+		senderOrganizationLabel.addStyleName(CssStyles.LABEL_BOLD);
+		layout.addComponent(senderOrganizationLabel);
 		layout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + originInfo.getSenderName()));
 
 		if (originInfo.getSenderEmail() != null) {

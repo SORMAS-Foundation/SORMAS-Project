@@ -17,50 +17,35 @@ package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
 
-public class HealthDepartmentServerAccessData implements Serializable {
+public class SormasToSormasEncryptedDataDto implements Serializable {
 
-	private static final long serialVersionUID = 6340918261432968684L;
+	private static final long serialVersionUID = 8658507076136806951L;
 
-	public static String NAME = "name";
+	private String organizationId;
 
-	private String id;
-	private String name;
-	private String url;
+	private byte[] data;
 
-	public HealthDepartmentServerAccessData() {
+	public SormasToSormasEncryptedDataDto() {
 	}
 
-	public HealthDepartmentServerAccessData(String id, String name, String url) {
-		this.id = id;
-		this.name = name;
-		this.url = url;
+	public SormasToSormasEncryptedDataDto(String organizationId, byte[] data) {
+		this.organizationId = organizationId;
+		this.data = data;
 	}
 
-	public String getId() {
-		return id;
+	public String getOrganizationId() {
+		return organizationId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
-	public String getName() {
-		return name;
+	public byte[] getData() {
+		return data;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public HealthDepartmentServerReferenceDto toReferenceDto() {
-		return new HealthDepartmentServerReferenceDto(id, name);
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 }

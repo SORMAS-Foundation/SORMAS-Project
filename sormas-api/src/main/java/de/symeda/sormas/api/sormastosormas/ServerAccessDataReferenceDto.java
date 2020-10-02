@@ -15,26 +15,20 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import java.util.List;
+import de.symeda.sormas.api.ReferenceDto;
 
-import javax.ejb.Remote;
+public class ServerAccessDataReferenceDto extends ReferenceDto {
 
-@Remote
-public interface SormasToSormasFacade {
+	private static final long serialVersionUID = 807898485681272418L;
 
-	void saveSharedCase(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException;
+	public ServerAccessDataReferenceDto() {
+	}
 
-	void saveSharedContact(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException;
+	public ServerAccessDataReferenceDto(String uuid) {
+		super(uuid);
+	}
 
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
-
-	ServerAccessDataReferenceDto getOrganizationRef(String id);
-
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
-
-	boolean isFeatureEnabled();
+	public ServerAccessDataReferenceDto(String uuid, String caption) {
+		super(uuid, caption);
+	}
 }

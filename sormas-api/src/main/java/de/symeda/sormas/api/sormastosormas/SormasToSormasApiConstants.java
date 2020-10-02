@@ -17,10 +17,12 @@ package de.symeda.sormas.api.sormastosormas;
 
 public class SormasToSormasApiConstants {
 
-	private static final String SORMAS_TO_SORMAS_ENDPOINT = "/sormasToSormas";
+	public static final String SORMAS_REST_PATH = "/sormas-rest";
 
-	public static final String SAVE_SHARED_CASE_ENDPOINT = SORMAS_TO_SORMAS_ENDPOINT + "/case";
+	public static final String RESOURCE_PATH = "/sormasToSormas";
 
-	public static final String SAVE_SHARED_CONTACT_ENDPOINT = SORMAS_TO_SORMAS_ENDPOINT + "/contact";
+	public static final String CASE_ENDPOINT = "/case";
+
+	public static final String CONTACT_ENDPOINT = "/contact";
 
 }

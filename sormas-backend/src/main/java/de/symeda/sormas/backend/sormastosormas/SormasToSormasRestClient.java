@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.SORMAS_REST_PATH;
+
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 import javax.enterprise.inject.Alternative;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
@@ -30,6 +35,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Alternative
 public class SormasToSormasRestClient {
 
+	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
+
 	private final ObjectMapper mapper;
 
 	public SormasToSormasRestClient() {
@@ -38,12 +45,14 @@ public class SormasToSormasRestClient {
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 	}
 
-	public Response post(String url, String authToken, Object entity) throws JsonProcessingException, ProcessingException {
+	public Response post(String host, String endpoint, String authToken, Object entity)
+		throws JsonProcessingException, ProcessingException, KeyManagementException, NoSuchAlgorithmException {
+
 		return ClientBuilder.newBuilder()
 			.build()
-			.target(url)
+			.target(String.format(SORMAS_REST_URL_TEMPLATE, host, endpoint))
 			.request()
-			.header("Authorization", "Basic " + authToken)
+			.header("Authorization", authToken)
 			.post(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
 	}
 }

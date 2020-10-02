@@ -41,7 +41,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private Contact contact;
 
-	private String healthDepartment;
+	private String organizationId;
 
 	private boolean ownershipHandedOver;
 
@@ -70,12 +70,12 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
-	public String getHealthDepartment() {
-		return healthDepartment;
+	public String getOrganizationId() {
+		return organizationId;
 	}
 
-	public void setHealthDepartment(String healthDepartment) {
-		this.healthDepartment = healthDepartment;
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	@Column

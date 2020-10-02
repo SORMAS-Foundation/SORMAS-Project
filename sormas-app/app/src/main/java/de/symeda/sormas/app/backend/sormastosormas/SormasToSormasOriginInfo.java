@@ -20,7 +20,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	private static final String I18N_PREFIX = "SormasToSormasOriginInfo";
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String healthDepartment;
+	private String organizationId;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String senderName;
@@ -42,12 +42,12 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		return I18N_PREFIX;
 	}
 
-	public String getHealthDepartment() {
-		return healthDepartment;
+	public String getOrganizationId() {
+		return organizationId;
 	}
 
-	public void setHealthDepartment(String healthDepartment) {
-		this.healthDepartment = healthDepartment;
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getSenderName() {

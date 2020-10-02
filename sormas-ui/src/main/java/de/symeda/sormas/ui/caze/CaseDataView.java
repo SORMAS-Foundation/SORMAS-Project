@@ -139,11 +139,14 @@ public class CaseDataView extends AbstractCaseView {
 		sormasToSormasLocLayout.setMargin(false);
 		sormasToSormasLocLayout.setSpacing(false);
 
-		SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(caze);
-		sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
-		sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(caze, sormasToSormasEnabled);
+			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
-		layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+		}
 
 		setCaseEditPermission(container);
 	}

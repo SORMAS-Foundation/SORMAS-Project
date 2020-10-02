@@ -211,11 +211,14 @@ public class ContactDataView extends AbstractContactView {
 		sormasToSormasLocLayout.setMargin(false);
 		sormasToSormasLocLayout.setSpacing(false);
 
-		SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto);
-		sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
-		sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
+		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null) {
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, sormasToSormasfeatureEnabled);
+			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
-		layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+		}
 
 		setContactEditPermission(container);
 	}
