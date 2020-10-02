@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
@@ -31,17 +36,13 @@ import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
 
@@ -79,7 +80,6 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 		getFieldGroup().addCommitHandler(this);
 		setWidth(900, Unit.PIXELS);
-
 
 		if (addFields) {
 			addFields();
