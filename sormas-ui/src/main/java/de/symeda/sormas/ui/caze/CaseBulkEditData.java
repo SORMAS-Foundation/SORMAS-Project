@@ -34,6 +34,7 @@ public class CaseBulkEditData extends EntityDto {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 
 	private Disease disease;
 	private String diseaseDetails;
@@ -48,6 +49,7 @@ public class CaseBulkEditData extends EntityDto {
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private FacilityReferenceDto healthFacility;
+	private String healthFacilityDetails;
 
 	public Disease getDisease() {
 		return disease;
@@ -151,5 +153,13 @@ public class CaseBulkEditData extends EntityDto {
 
 	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
+	}
+
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
 	}
 }
