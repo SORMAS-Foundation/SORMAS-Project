@@ -104,6 +104,7 @@ public class PersonDto extends PseudonymizableDto {
 
 	public static final String HAS_COVID_APP = "hasCovidApp";
 	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
+	public static final String EXTERNAL_ID = "externalId";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -261,6 +262,9 @@ public class PersonDto extends PseudonymizableDto {
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
+	@SensitiveData
+	@HideForCountriesExcept(countries = "de")
+	private String externalId;
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -629,6 +633,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setCovidCodeDelivered(boolean covidCodeDelivered) {
 		this.covidCodeDelivered = covidCodeDelivered;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	@Override

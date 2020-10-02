@@ -1599,12 +1599,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 228:
 				currentVersion = 228;
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityType varchar(255);");
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facility_id bigint REFERENCES facility(id);");
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityDetails varchar(512);");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN externalId varchar(255);");
 
 			case 229:
 				currentVersion = 229;
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityType varchar(255);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facility_id bigint REFERENCES facility(id);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityDetails varchar(512);");
 
 				GenericRawResults<Object[]> rawResult = getDao(Person.class).queryRaw(
 					"SELECT occupationRegion_id, occupationDistrict_id, occupationCommunity_id, occupationFacility_id, occupationFacilityDetails, occupationFacilityType, id FROM person WHERE changeDate IS 0 AND (occupationRegion_id IS NOT NULL OR occupationFacilityType IS NOT NULL);",

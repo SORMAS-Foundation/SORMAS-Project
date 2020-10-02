@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -46,7 +47,7 @@ public class ContactsImportLayout extends AbstractImportLayout {
 							extendDownloadErrorReportButton(resource);
 						}
 					}, currentUI, false);
-				} catch (IOException e) {
+				} catch (IOException | CsvValidationException e) {
 					new Notification(
 						I18nProperties.getString(Strings.headingImportFailed),
 						I18nProperties.getString(Strings.messageImportFailed),

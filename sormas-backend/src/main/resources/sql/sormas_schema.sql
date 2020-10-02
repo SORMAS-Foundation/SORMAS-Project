@@ -5317,6 +5317,12 @@ ALTER TABLE contact_history ADD COLUMN quarantinereduced boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (253, 'Store if quarantine period has been reduced #2235');
 
+-- 2020-09-21 Add new field externalId as per feature #2670
+ALTER TABLE person ADD COLUMN externalid varchar(255);
+ALTER TABLE person_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
+
 -- 2020-09-22 Add facility fields to location and refactor occupation facilities for persons #2456
 ALTER TABLE location ADD COLUMN facilitytype varchar(255);
 ALTER TABLE location_history ADD COLUMN facilitytype varchar(255);
@@ -5336,5 +5342,5 @@ FROM t_id_map;
 INSERT INTO person_locations (person_id, location_id) SELECT person_id, location_id FROM t_id_map;
 ALTER TABLE person DROP COLUMN occupationregion_id, DROP COLUMN occupationdistrict_id, DROP COLUMN occupationcommunity_id, DROP COLUMN occupationfacilitytype, DROP COLUMN occupationfacility_id, DROP COLUMN occupationfacilitydetails;
 
-INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add facility fields to location and refactor occupation facilities for persons #2456');
+INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add facility fields to location and refactor occupation facilities for persons #2456');
 -- *** Insert new sql commands BEFORE this line ***

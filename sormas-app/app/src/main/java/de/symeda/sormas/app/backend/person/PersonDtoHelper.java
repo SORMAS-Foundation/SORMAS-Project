@@ -127,6 +127,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 			}
 		}
 		target.setAddresses(addresses);
+
+		target.setExternalId(source.getExternalId());
 	}
 
 	@Override
@@ -215,6 +217,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 			locationDtos.add(locationDto);
 		}
 		target.setAddresses(locationDtos);
+
+		target.setExternalId(source.getExternalId());
 	}
 
 	public static PersonReferenceDto toReferenceDto(Person ado) {
