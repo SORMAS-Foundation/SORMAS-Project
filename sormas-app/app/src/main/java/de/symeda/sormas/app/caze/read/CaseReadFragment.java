@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -135,6 +134,18 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
+		}
+
+		contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
+		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
+
+		if(isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)){
+			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
+		}
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactType)
+			|| isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactDate)) {
+			contentBinding.caseDataContactTracingDivider.setVisibility(VISIBLE);
+			contentBinding.caseDataContactTracingFirstContactHeading.setVisibility(VISIBLE);
 		}
 	}
 

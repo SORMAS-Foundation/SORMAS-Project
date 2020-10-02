@@ -21,21 +21,23 @@ import static android.view.View.VISIBLE;
 import java.util.Date;
 import java.util.List;
 
-import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.ContactTracingContactType;
+import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
@@ -49,7 +51,6 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseActivity;
@@ -98,6 +99,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> reportingTypeList;
 	private List<Item> facilityOrHomeList;
 	private List<Item> facilityTypeGroupList;
+	private List<Item> quarantineReasonList;
+	private List<Item> endOfIsolationReasonList;
+	private List<Item> covidTestReasonList;
+	private List<Item> contactTracingContactTypeList;
 
 	// Static methods
 
@@ -143,13 +148,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		// Smallpox vaccination scar image
-		contentBinding.caseDataSmallpoxVaccinationScar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-			@Override
-			public void onGlobalLayout() {
-				contentBinding.smallpoxVaccinationScarImg.setVisibility(contentBinding.caseDataSmallpoxVaccinationScar.getVisibility());
-			}
-		});
+		contentBinding.caseDataSmallpoxVaccinationScar.getViewTreeObserver()
+			.addOnGlobalLayoutListener(
+				() -> contentBinding.smallpoxVaccinationScarImg.setVisibility(contentBinding.caseDataSmallpoxVaccinationScar.getVisibility()));
 
 		// Port Health fields
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
@@ -194,6 +195,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		} else {
 			contentBinding.caseDataEpidNumber.setVisibility(GONE);
 		}
+
+		contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
+		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
 	}
 
 	private void setUpButtonListeners(FragmentCaseEditLayoutBinding contentBinding) {
@@ -263,6 +267,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
 		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
 		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
+
+		quarantineReasonList = DataUtils.getEnumItems(QuarantineReason.class, true);
+		endOfIsolationReasonList = DataUtils.getEnumItems(EndOfIsolationReason.class, true);
+		covidTestReasonList = DataUtils.getEnumItems(CovidTestReason.class, true);
+		contactTracingContactTypeList = DataUtils.getEnumItems(ContactTracingContactType.class, true);
 	}
 
 	@Override
@@ -352,12 +361,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 					contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
-
-				contentBinding.caseDataQuarantineExtended.setVisibility(VISIBLE);
 			} else {
 				contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
 				contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
 				contentBinding.caseDataQuarantineExtended.setVisibility(GONE);
+				contentBinding.caseDataQuarantineReduced.setVisibility(GONE);
 			}
 		});
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
@@ -371,35 +379,71 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		contentBinding.caseDataQuarantineExtended.setEnabled(false);
+		contentBinding.caseDataQuarantineReduced.setEnabled(false);
 
 		contentBinding.caseDataQuarantineTo.addValueChangedListener(new ValueChangeListener() {
 
 			private Date currentQuarantineTo = record.getQuarantineTo();
 			private boolean currentQuarantineExtended = record.isQuarantineExtended();
+			private boolean currentQuarantineReduced = record.isQuarantineReduced();
 
 			@Override
 			public void onChange(ControlPropertyField e) {
 				Date newQuarantineTo = (Date) e.getValue();
 
-				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.compareTo(currentQuarantineTo) > 0) {
-					final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
-						getActivity(),
-						R.string.heading_extend_quarantine,
-						R.string.confirmation_extend_quarantine,
-						R.string.yes,
-						R.string.no);
-
-					confirmationDialog.setPositiveCallback(() -> {
-						contentBinding.caseDataQuarantineExtended.setValue(true);
-					});
-					confirmationDialog.setNegativeCallback(() -> contentBinding.caseDataQuarantineTo.setValue(currentQuarantineTo));
-
-					confirmationDialog.show();
+				if (newQuarantineTo == null) {
+					contentBinding.caseDataQuarantineExtended.setValue(false);
+					contentBinding.caseDataQuarantineReduced.setValue(false);
+				}
+				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.after(currentQuarantineTo)) {
+					extendQuarantine();
 				} else if (!currentQuarantineExtended) {
 					contentBinding.caseDataQuarantineExtended.setValue(false);
 				}
+				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.before(currentQuarantineTo)) {
+					reduceQuarantine();
+				} else if (!currentQuarantineReduced) {
+					contentBinding.caseDataQuarantineReduced.setValue(false);
+				}
+			}
+
+			private void extendQuarantine() {
+				final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+					getActivity(),
+					R.string.heading_extend_quarantine,
+					R.string.confirmation_extend_quarantine,
+					R.string.yes,
+					R.string.no);
+
+				confirmationDialog.setPositiveCallback(() -> {
+					contentBinding.caseDataQuarantineExtended.setValue(true);
+					contentBinding.caseDataQuarantineReduced.setValue(false);
+				});
+				confirmationDialog.setNegativeCallback(() -> contentBinding.caseDataQuarantineTo.setValue(currentQuarantineTo));
+				confirmationDialog.show();
+			}
+
+			private void reduceQuarantine() {
+				final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+					getActivity(),
+					R.string.heading_reduce_quarantine,
+					R.string.confirmation_reduce_quarantine,
+					R.string.yes,
+					R.string.no);
+
+				confirmationDialog.setPositiveCallback(() -> {
+					contentBinding.caseDataQuarantineExtended.setValue(false);
+					contentBinding.caseDataQuarantineReduced.setValue(true);
+				});
+				confirmationDialog.setNegativeCallback(() -> contentBinding.caseDataQuarantineTo.setValue(currentQuarantineTo));
+				confirmationDialog.show();
 			}
 		});
+
+		contentBinding.caseDataQuarantineExtended
+			.addValueChangedListener(e -> contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE));
+		contentBinding.caseDataQuarantineReduced
+			.addValueChangedListener(e -> contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE));
 	}
 
 	@Override
@@ -449,6 +493,23 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		} else {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 			contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
+		}
+
+		// Swiss fields
+		contentBinding.caseDataQuarantineReasonBeforeIsolation.initializeSpinner(quarantineReasonList);
+		contentBinding.caseDataEndOfIsolationReason.initializeSpinner(endOfIsolationReasonList);
+
+		if(isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)){
+			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
+			contentBinding.caseDataCovidTestReason.initializeSpinner(covidTestReasonList);
+		}
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactType)
+			|| isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactDate)) {
+			contentBinding.caseDataContactTracingDivider.setVisibility(VISIBLE);
+			contentBinding.caseDataContactTracingFirstContactHeading.setVisibility(VISIBLE);
+
+			contentBinding.caseDataContactTracingFirstContactType.initializeSpinner(contactTracingContactTypeList);
+			contentBinding.caseDataContactTracingFirstContactDate.initializeDateField(getChildFragmentManager());
 		}
 	}
 

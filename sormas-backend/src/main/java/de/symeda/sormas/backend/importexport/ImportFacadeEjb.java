@@ -17,25 +17,51 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.importexport;
 
+import static de.symeda.sormas.api.campaign.data.CampaignFormDataDto.FORM_DATE;
+import static de.symeda.sormas.api.caze.CaseDataDto.CASE_ORIGIN;
+import static de.symeda.sormas.api.caze.CaseDataDto.COMMUNITY;
+import static de.symeda.sormas.api.caze.CaseDataDto.DENGUE_FEVER_TYPE;
+import static de.symeda.sormas.api.caze.CaseDataDto.DISEASE;
+import static de.symeda.sormas.api.caze.CaseDataDto.DISEASE_DETAILS;
+import static de.symeda.sormas.api.caze.CaseDataDto.DISTRICT;
+import static de.symeda.sormas.api.caze.CaseDataDto.EPID_NUMBER;
+import static de.symeda.sormas.api.caze.CaseDataDto.FACILITY_TYPE;
+import static de.symeda.sormas.api.caze.CaseDataDto.HEALTH_FACILITY;
+import static de.symeda.sormas.api.caze.CaseDataDto.HEALTH_FACILITY_DETAILS;
+import static de.symeda.sormas.api.caze.CaseDataDto.PERSON;
+import static de.symeda.sormas.api.caze.CaseDataDto.PLAGUE_TYPE;
+import static de.symeda.sormas.api.caze.CaseDataDto.POINT_OF_ENTRY;
+import static de.symeda.sormas.api.caze.CaseDataDto.POINT_OF_ENTRY_DETAILS;
+import static de.symeda.sormas.api.caze.CaseDataDto.RABIES_TYPE;
+import static de.symeda.sormas.api.caze.CaseDataDto.REGION;
+import static de.symeda.sormas.api.caze.CaseDataDto.REPORT_DATE;
+import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +69,23 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.text.WordUtils;
 import com.opencsv.CSVWriter;
 
 import de.symeda.sormas.api.AgeGroup;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.importexport.ImportColumn;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
@@ -57,6 +93,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -68,73 +105,28 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.hospitalization.HospitalizationService;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
-	private CaseFacadeEjbLocal caseFacade;
-	@EJB
-	private CaseService caseService;
-	@EJB
-	private UserService userService;
-	@EJB
-	private UserFacadeEjbLocal userFacade;
-	@EJB
-	private RegionService regionService;
-	@EJB
-	private RegionFacadeEjbLocal regionFacade;
-	@EJB
-	private DistrictService districtService;
-	@EJB
-	private DistrictFacadeEjbLocal districtFacade;
-	@EJB
-	private CommunityService communityService;
-	@EJB
-	private CommunityFacadeEjbLocal communityFacade;
-	@EJB
-	private FacilityService facilityService;
-	@EJB
-	private FacilityFacadeEjbLocal facilityFacade;
-	@EJB
-	private PersonFacadeEjbLocal personFacade;
-	@EJB
-	private PersonService personService;
-	@EJB
-	private HospitalizationService hospitalizationService;
-	@EJB
-	private EpiDataService epiDataService;
-	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	@EJB
+	private CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
@@ -147,100 +139,118 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_community_template.csv";
 	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_facility_template.csv";
 	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_contact_template.csv";
+	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_campaign_form_data_template.csv";
 
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, CaseDataDto.class, "");
-		appendListOfFields(columnNames, entityNames, SampleDto.class, "");
-		appendListOfFields(columnNames, entityNames, PathogenTestDto.class, "");
-		Path filePath = Paths.get(getCaseImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(entityNames.toArray(new String[entityNames.size()]));
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-			writer.flush();
-		}
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, CaseDataDto.class, "", separator);
+		appendListOfFields(importColumns, SampleDto.class, "", separator);
+		appendListOfFields(importColumns, PathogenTestDto.class, "", separator);
+
+		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
+	}
+
+	@Override
+	public void generateCampaignFormImportTemplateFile(String campaignFormUuid) throws IOException {
+
+		createExportDirectoryIfNecessary();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		char separator = configFacade.getCsvSeparator();
+
+		/* importColumns.add(ImportColumn.from(CampaignFormDataDto.class, CAMPAIGN, CampaignReferenceDto.class, separator)); */
+		importColumns.add(ImportColumn.from(CampaignFormDataDto.class, FORM_DATE, Date.class, separator));
+		importColumns.add(ImportColumn.from(CampaignFormDataDto.class, REGION, RegionReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CampaignFormDataDto.class, DISTRICT, DistrictReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CampaignFormDataDto.class, COMMUNITY, CommunityReferenceDto.class, separator));
+
+		CampaignFormMetaDto campaignFormMetaDto = campaignFormMetaFacade.getCampaignFormMetaByUuid(campaignFormUuid);
+		campaignFormMetaDto.getCampaignFormElements()
+			.stream()
+			.filter(
+				e -> !(CampaignFormElementType.SECTION.name().equalsIgnoreCase(e.getType())
+					|| CampaignFormElementType.LABEL.name().equalsIgnoreCase(e.getType())))
+			.forEach(formElement -> importColumns.add(new ImportColumn(formElement.getId(), formElement.getCaption(), formElement.getType())));
+		writeTemplate(Paths.get(getCampaignFormImportTemplateFilePath()), importColumns, false);
+
 	}
 
 	@Override
 	public void generateCaseContactImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
-		columnNames.removeAll(
-			Arrays.asList(
-				ContactDto.CAZE,
-				ContactDto.DISEASE,
-				ContactDto.DISEASE_DETAILS,
-				ContactDto.RESULTING_CASE,
-				ContactDto.CASE_ID_EXTERNAL_SYSTEM,
-				ContactDto.CASE_OR_EVENT_INFORMATION));
-		Path filePath = Paths.get(getCaseContactImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-			writer.flush();
-		}
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, ContactDto.class, "", separator);
+
+		List<String> columnsToRemove = Arrays.asList(
+			ContactDto.CAZE,
+			ContactDto.DISEASE,
+			ContactDto.DISEASE_DETAILS,
+			ContactDto.RESULTING_CASE,
+			ContactDto.CASE_ID_EXTERNAL_SYSTEM,
+			ContactDto.CASE_OR_EVENT_INFORMATION);
+		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
+
+		writeTemplate(Paths.get(getCaseContactImportTemplateFilePath()), importColumns, false);
 	}
 
 	@Override
 	public void generateContactImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
-		columnNames.removeAll(Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE));
+		char separator = configFacade.getCsvSeparator();
 
-		Path filePath = Paths.get(getContactImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-			writer.flush();
-		}
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, ContactDto.class, "", separator);
+		List<String> columnsToRemove = Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE);
+		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
+
+		writeTemplate(Paths.get(getContactImportTemplateFilePath()), importColumns, false);
 	}
 
 	@Override
 	public void generateCaseLineListingImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		columnNames.add(CaseDataDto.DISEASE);
-		columnNames.add(CaseDataDto.DISEASE_DETAILS);
-		columnNames.add(CaseDataDto.PLAGUE_TYPE);
-		columnNames.add(CaseDataDto.DENGUE_FEVER_TYPE);
-		columnNames.add(CaseDataDto.RABIES_TYPE);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.FIRST_NAME);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.LAST_NAME);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.SEX);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_DD);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_MM);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_YYYY);
-		columnNames.add(CaseDataDto.EPID_NUMBER);
-		columnNames.add(CaseDataDto.REPORT_DATE);
-		columnNames.add(CaseDataDto.CASE_ORIGIN);
-		columnNames.add(CaseDataDto.REGION);
-		columnNames.add(CaseDataDto.DISTRICT);
-		columnNames.add(CaseDataDto.COMMUNITY);
-		columnNames.add(CaseDataDto.FACILITY_TYPE);
-		columnNames.add(CaseDataDto.HEALTH_FACILITY);
-		columnNames.add(CaseDataDto.HEALTH_FACILITY_DETAILS);
-		columnNames.add(CaseDataDto.POINT_OF_ENTRY);
-		columnNames.add(CaseDataDto.POINT_OF_ENTRY_DETAILS);
-		columnNames.add(CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE);
+		char separator = configFacade.getCsvSeparator();
 
-		Path filePath = Paths.get(getCaseLineListingImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-			writer.flush();
-		}
+		List<ImportColumn> importColumns = new ArrayList<>();
+		importColumns.add(ImportColumn.from(CaseDataDto.class, DISEASE, Disease.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, DISEASE_DETAILS, String.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, PLAGUE_TYPE, PlagueType.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, DENGUE_FEVER_TYPE, DengueFeverType.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, RABIES_TYPE, RabiesType.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.FIRST_NAME, String.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.LAST_NAME, String.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.SEX, Sex.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.BIRTH_DATE_DD, Integer.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.BIRTH_DATE_MM, Integer.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.BIRTH_DATE_YYYY, Integer.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, EPID_NUMBER, String.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, REPORT_DATE, Date.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CASE_ORIGIN, CaseOrigin.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, REGION, RegionReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, DISTRICT, DistrictReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, COMMUNITY, CommunityReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, FACILITY_TYPE, FacilityType.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, HEALTH_FACILITY, FacilityReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, HEALTH_FACILITY_DETAILS, String.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, POINT_OF_ENTRY, PointOfEntryReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, POINT_OF_ENTRY_DETAILS, String.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, SYMPTOMS + "." + SymptomsDto.ONSET_DATE, Date.class, separator));
+
+		writeTemplate(Paths.get(getCaseLineListingImportTemplateFilePath()), importColumns, false);
 	}
 
 	@Override
@@ -251,30 +261,29 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Override
 	public void generatePopulationDataImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		columnNames.add(PopulationDataDto.REGION);
-		columnNames.add(PopulationDataDto.DISTRICT);
-		columnNames.add(RegionDto.GROWTH_RATE);
-		columnNames.add("TOTAL");
-		columnNames.add("MALE_TOTAL");
-		columnNames.add("FEMALE_TOTAL");
-		columnNames.add("OTHER_TOTAL");
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.REGION, RegionReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.DISTRICT, DistrictReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(RegionDto.class, RegionDto.GROWTH_RATE, Float.class, separator));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL", Integer.class, separator));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_TOTAL", Integer.class, separator));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_TOTAL", Integer.class, separator));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_TOTAL", Integer.class, separator));
 		for (AgeGroup ageGroup : AgeGroup.values()) {
-			columnNames.add("TOTAL_" + ageGroup.name());
-			columnNames.add("MALE_" + ageGroup.name());
-			columnNames.add("FEMALE_" + ageGroup.name());
-			columnNames.add("OTHER_" + ageGroup.name());
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL_" + ageGroup.name(), Integer.class, separator));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_" + ageGroup.name(), Integer.class, separator));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_" + ageGroup.name(), Integer.class, separator));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_" + ageGroup.name(), Integer.class, separator));
 		}
-		Path filePath = Paths.get(getPopulationDataImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-			writer.flush();
-		}
+
+		writeTemplate(Paths.get(getPopulationDataImportTemplateFilePath()), importColumns, false);
 	}
 
-	private void createExportDirectoryIfNessecary() throws IOException {
+	private void createExportDirectoryIfNecessary() throws IOException {
 
 		try {
 			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
@@ -311,15 +320,14 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath) throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, clazz, "");
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-			writer.flush();
-		}
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, clazz, "", separator);
+
+		writeTemplate(filePath, importColumns, false);
 	}
 
 	@Override
@@ -327,6 +335,14 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getCampaignFormImportTemplateFilePath() {
+
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
@@ -416,7 +432,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	 * fields in the order of declaration (which is what we need here), but that could change
 	 * in the future.
 	 */
-	private void appendListOfFields(List<String> columnNames, List<String> entityNames, Class<?> clazz, String prefix) {
+	private void appendListOfFields(List<ImportColumn> importColumns, Class<?> clazz, String prefix, char separator) {
 
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
@@ -461,19 +477,18 @@ public class ImportFacadeEjb implements ImportFacade {
 			// Other non-infrastructure EntityDto/ReferenceDto classes, recursively call this method to include fields of the sub-entity
 			if (EntityDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(
-					columnNames,
-					entityNames,
+					importColumns,
 					field.getType(),
-					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
+					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".",
+					separator);
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(
-					columnNames,
-					entityNames,
+					importColumns,
 					PersonDto.class,
-					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
+					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".",
+					separator);
 			} else {
-				entityNames.add(DataHelper.getHumanClassName(clazz));
-				columnNames.add(prefix + field.getName());
+				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));
 			}
 		}
 	}
@@ -485,6 +500,80 @@ public class ImportFacadeEjb implements ImportFacade {
 			|| clazz == CommunityReferenceDto.class
 			|| clazz == FacilityReferenceDto.class
 			|| clazz == PointOfEntryReferenceDto.class;
+	}
+
+	/**
+	 * Writes the given line as a comment line
+	 *
+	 * @param csvWriter
+	 *            file writer
+	 * @param line
+	 *            line to write
+	 */
+	private void writeCommentLine(CSVWriter csvWriter, String[] line) {
+		String[] commentedLine = Arrays.copyOf(line, line.length);
+		commentedLine[0] = CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX + commentedLine[0];
+		csvWriter.writeNext(commentedLine, false);
+	}
+
+	/**
+	 * Writes template files with the following lines:
+	 * <ul>
+	 * <li><code>entityNames</code> - only if <code>includeEntityNames</code> is <code>true</code></li>
+	 * <li><code>columnNames</code> - represent the DTO properties that can be filled</li>
+	 * <li><code>captions</code> - (commented) internationalized caption for each field</li>
+	 * <li><code>dataDescription</code> - (commented) data examples or description for each field</li>
+	 * </ul>
+	 *
+	 * @param templatePath
+	 *            path to write the template to
+	 * @param importColumns
+	 *            details about each CSV column
+	 * @param includeEntityNames
+	 *            weather to include the <code>entityNames</code> or not
+	 * @throws IOException
+	 */
+	private void writeTemplate(Path templatePath, List<ImportColumn> importColumns, boolean includeEntityNames) throws IOException {
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(templatePath.toString()), configFacade.getCsvSeparator())) {
+			if (includeEntityNames) {
+				writer.writeNext(importColumns.stream().map(ImportColumn::getEntityName).toArray(String[]::new));
+			}
+			writer.writeNext(importColumns.stream().map(ImportColumn::getColumnName).toArray(String[]::new));
+			writeCommentLine(writer, importColumns.stream().map(ImportColumn::getCaption).toArray(String[]::new));
+			writeCommentLine(writer, importColumns.stream().map(ImportColumn::getDataDescription).toArray(String[]::new));
+			writer.flush();
+		}
+	}
+
+	@Override
+	public String getImportTemplateContent(String templateFilePath) throws IOException {
+		Charset charset = StandardCharsets.UTF_8;
+		String content = new String(Files.readAllBytes(Paths.get(templateFilePath)), charset);
+		return resolvePlaceholders(content);
+	}
+
+	/**
+	 * Replaces placeholders in the given file content.
+	 * The placeholders are resolved using dynamic data. For any static data extend {@link ImportColumn}.
+	 *
+	 * @param content
+	 *            file content.
+	 * @return
+	 * @see ImportFacade#ACTIVE_DISEASES_PLACEHOLDER
+	 */
+	private String resolvePlaceholders(String content) {
+		Map<String, Provider<String>> placeholderResolvers = new HashMap<>();
+		placeholderResolvers.put(
+			ImportFacade.ACTIVE_DISEASES_PLACEHOLDER,
+			() -> StringUtils.join(
+				diseaseConfigurationFacade.getAllActiveDiseases().stream().map(Disease::getName).collect(Collectors.toList()),
+				ImportExportUtils.getCSVSeparatorDifferentFromCurrent(configFacade.getCsvSeparator())));
+
+		for (Map.Entry<String, Provider<String>> placeholderResolver : placeholderResolvers.entrySet()) {
+			content = content.replace(placeholderResolver.getKey(), placeholderResolver.getValue().get());
+		}
+
+		return content;
 	}
 
 	@LocalBean

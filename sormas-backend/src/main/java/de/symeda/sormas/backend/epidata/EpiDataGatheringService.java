@@ -36,7 +36,7 @@ public class EpiDataGatheringService extends AbstractAdoService<EpiDataGathering
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataGathering, EpiDataGathering> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EpiDataGathering> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

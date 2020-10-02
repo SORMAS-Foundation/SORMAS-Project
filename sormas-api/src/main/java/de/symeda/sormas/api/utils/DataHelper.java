@@ -201,6 +201,10 @@ public final class DataHelper {
 		return input.substring(0, 1).toUpperCase() + input.substring(1);
 	}
 
+	public static String lowercaseFirst(String input) {
+		return input.substring(0, 1).toLowerCase() + input.substring(1);
+	}
+
 	public static BigDecimal getTruncatedBigDecimal(BigDecimal number) {
 		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0, RoundingMode.HALF_UP) : number;
 	}
@@ -291,6 +295,15 @@ public final class DataHelper {
 
 		String className = classType.getSimpleName();
 		className = className.replaceAll("Dto$", "");
+		return className;
+	}
+
+	public static String getHumanClassCaption(Class<?> classType) {
+
+		String className = classType.getSimpleName();
+		className = className.replaceAll("Dto$", "");
+		className = className.replaceAll("Reference$", "");
+		I18nProperties.getCaption(DataHelper.lowercaseFirst(className), className);
 		return className;
 	}
 

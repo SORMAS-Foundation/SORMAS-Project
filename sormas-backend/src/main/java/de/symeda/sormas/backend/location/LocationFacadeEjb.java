@@ -17,12 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import java.sql.Timestamp;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
 import de.symeda.sormas.backend.person.PersonService;
@@ -33,6 +27,11 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.sql.Timestamp;
 
 @Stateless(name = "LocationFacade")
 public class LocationFacadeEjb implements LocationFacade {

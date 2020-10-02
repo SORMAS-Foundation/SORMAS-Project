@@ -46,7 +46,6 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private DiseaseStatisticsComponent statisticsComponent;
 	private SurveillanceEpiCurveComponent epiCurveComponent;
 	private DashboardMapComponent mapComponent;
-
 	private Consumer<Boolean> externalExpandListener;
 	private SubMenu carouselMenu;
 	private List<Disease> diseases;
@@ -56,6 +55,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		this.dashboardDataProvider = dashboardDataProvider;
 
 		statisticsComponent = new DiseaseStatisticsComponent(dashboardDataProvider);
+
 		epiCurveComponent = new SurveillanceEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
 		diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);

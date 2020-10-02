@@ -169,6 +169,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
 		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
@@ -182,6 +183,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setFacilityType(source.getFacilityType());
+
+		target.setCaseIdIsm(source.getCaseIdIsm());
+		target.setCovidTestReason(source.getCovidTestReason());
+		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
+		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
+		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
+		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
+		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
+		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
+		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
 	}
 
 	@Override
@@ -356,6 +367,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
 		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
@@ -369,6 +381,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setFacilityType(source.getFacilityType());
+
+		target.setCaseIdIsm(source.getCaseIdIsm());
+		target.setCovidTestReason(source.getCovidTestReason());
+		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
+		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
+		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
+		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
+		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
+		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
+		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
 	}
 
 	public static CaseReferenceDto toReferenceDto(Case ado) {

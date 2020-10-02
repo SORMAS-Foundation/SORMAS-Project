@@ -17,41 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
@@ -70,6 +47,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -93,6 +71,27 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -193,14 +192,15 @@ public class PersonFacadeEjb implements PersonFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
-		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
+		CaseJoins<Case> joins = new CaseJoins<>(root);
+		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(
 			cb,
 			cq,
 			root,
 			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
-		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root));
+		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root, joins));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
 		if (filter != null) {
@@ -256,13 +256,32 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
-
-		Person person = personService.getByUuid(source.getUuid());
-		Set<Location> existingAddresses = new HashSet<>();
-		if (person != null) {
-			existingAddresses = person.getAddresses();
+	public JournalPersonDto getPersonForJournal(String Uuid) {
+		PersonDto detailedPerson = getPersonByUuid(Uuid);
+		//only specific attributes of the person shall be returned:
+		if (detailedPerson != null) {
+			JournalPersonDto exportPerson = new JournalPersonDto();
+			exportPerson.setUuid(detailedPerson.getUuid());
+			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
+			exportPerson.setPhone(detailedPerson.getPhone());
+			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
+			exportPerson.setFirstName(detailedPerson.getFirstName());
+			exportPerson.setLastName(detailedPerson.getLastName());
+			exportPerson.setBirthdateYYYY(detailedPerson.getBirthdateYYYY());
+			exportPerson.setBirthdateMM(detailedPerson.getBirthdateMM());
+			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
+			exportPerson.setSex(detailedPerson.getSex());
+			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(Uuid));
+			return exportPerson;
+		} else {
+			return null;
 		}
+	}
+
+	@Override
+	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
+		Person person = personService.getByUuid(source.getUuid());
+
 		PersonDto existingPerson = toDto(person);
 
 		restorePseudonymizedDto(source, person, existingPerson);
@@ -335,6 +354,31 @@ public class PersonFacadeEjb implements PersonFacade {
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
 
 		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+	}
+
+	@Override
+	public Date getLatestFollowUpEndDateByUuid(String Uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
+		Root<Contact> contactRoot = cq.from(Contact.class);
+		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+
+		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
+
+		if (Uuid != null) {
+			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.UUID), Uuid));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.FOLLOW_UP_UNTIL));
+		cq.orderBy(cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
+
+		List<PersonFollowUpEndDto> resultlist = em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+		return resultlist.get(0).getLatestFollowUpEndDate();
+
 	}
 
 	@Override
@@ -476,7 +520,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		List<Location> locations = new ArrayList<>();
 		for (LocationDto locationDto : source.getAddresses()) {
 			Location location = locationFacade.fromDto(locationDto);
-			location.setPerson(target);
 			locations.add(location);
 		}
 		if (!DataHelper.equal(target.getAddresses(), locations)) {
@@ -516,6 +559,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
+		target.setExternalId(source.getExternalId());
 
 		return target;
 	}
@@ -677,6 +721,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
+		target.setExternalId(source.getExternalId());
 
 		return target;
 	}

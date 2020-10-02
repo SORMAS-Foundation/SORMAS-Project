@@ -15,28 +15,39 @@
 
 package de.symeda.sormas.app.component.dialog;
 
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
+import de.symeda.sormas.app.epidata.EpiDataBurialDialog;
 import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class LocationDialog extends FormDialog {
 
@@ -60,7 +71,7 @@ public class LocationDialog extends FormDialog {
 			activity,
 			R.layout.dialog_root_layout,
 			R.layout.dialog_location_layout,
-			R.layout.dialog_root_two_button_panel_layout,
+			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_location,
 			-1,
 			closeOnPositiveButtonClick,
@@ -125,6 +136,10 @@ public class LocationDialog extends FormDialog {
 			});
 			confirmationDialog.show();
 		});
+
+		if (data.getId() == null) {
+			setLiveValidationDisabled(true);
+		}
 	}
 
 	public void setRegionAndDistrictRequired(boolean required) {
@@ -137,17 +152,57 @@ public class LocationDialog extends FormDialog {
 	}
 
 	@Override
+	protected void onPositiveClick() {
+		setLiveValidationDisabled(false);
+
+		try {
+			FragmentValidator.validate(getContext(), contentBinding);
+		} catch (ValidationException e) {
+			NotificationHelper.showDialogNotification(LocationDialog.this, ERROR, e.getMessage());
+			return;
+		}
+
+		super.onPositiveClick();
+	}
+
+	@Override
+	public boolean isDeleteButtonVisible() {
+		return false;
+	}
+
+	@Override
 	public boolean isRounded() {
 		return true;
 	}
 
 	@Override
 	public ControlButtonType getNegativeButtonType() {
-		return ControlButtonType.LINE_DANGER;
+		return ControlButtonType.LINE_SECONDARY;
 	}
 
 	@Override
 	public ControlButtonType getPositiveButtonType() {
 		return ControlButtonType.LINE_PRIMARY;
 	}
+
+	@Override
+	public ControlButtonType getDeleteButtonType() {
+		return ControlButtonType.LINE_DANGER;
+	}
+
+	public void configureAsPersonAddressDialog(boolean showDeleteButton) {
+		if (showDeleteButton) {
+			getDeleteButton().setVisibility(View.VISIBLE);
+		}
+
+		contentBinding.locationAddressType.setVisibility(View.VISIBLE);
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+			contentBinding.locationAddressType
+				.initializeSpinner(DataUtils.toItems(Arrays.asList(PersonAddressType.getValues(ConfigProvider.getServerCountryCode()))));
+		} else {
+			contentBinding.locationAddressType.initializeSpinner(DataUtils.getEnumItems(PersonAddressType.class));
+		}
+		contentBinding.locationAddressType.setValidationCallback(() -> contentBinding.locationAddressType.getValue() != null);
+	}
+
 }

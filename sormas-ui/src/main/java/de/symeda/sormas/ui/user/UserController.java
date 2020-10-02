@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
@@ -36,6 +34,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
@@ -54,7 +53,10 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserController {
 
+	public final boolean isSormasAuthentication;
+
 	public UserController() {
+		isSormasAuthentication = FacadeProvider.getConfigFacade().getAuthenticationProvider().equalsIgnoreCase(AuthProvider.SORMAS);
 	}
 
 	public void create() {
@@ -166,7 +168,8 @@ public class UserController {
 					UserDto dto = createForm.getValue();
 					dto = FacadeProvider.getUserFacade().saveUser(dto);
 					refreshView();
-					makeNewPassword(dto.getUuid());
+					makeInitialPassword(dto.getUuid());
+					showAccountCreatedSuccessful();
 				}
 			}
 		});
@@ -177,9 +180,24 @@ public class UserController {
 		return FacadeProvider.getUserFacade().isLoginUnique(uuid, userName);
 	}
 
+	public void makeInitialPassword(String userUuid) {
+		if (isSormasAuthentication) {
+			String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
+			showPasswordResetInternalSuccessPopup(newPassword);
+		}
+	}
+
 	public void makeNewPassword(String userUuid) {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
+		if (isSormasAuthentication) {
+			showPasswordResetInternalSuccessPopup(newPassword);
+		} else {
+			showPasswordResetExternalSuccessPopup();
+		}
+	}
+
+	private void showPasswordResetInternalSuccessPopup(String newPassword) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
 		Label passwordLabel = new Label(newPassword);
@@ -187,6 +205,24 @@ public class UserController {
 		layout.addComponent(passwordLabel);
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
+		layout.setMargin(true);
+	}
+
+	private void showAccountCreatedSuccessful() {
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messageActivateAccount)));
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewAccount));
+		popupWindow.setWidth(350, Unit.PIXELS);
+		layout.setMargin(true);
+	}
+
+	private void showPasswordResetExternalSuccessPopup() {
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordReset)));
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
+		popupWindow.setWidth(350, Unit.PIXELS);
 		layout.setMargin(true);
 	}
 
@@ -272,5 +308,9 @@ public class UserController {
 		for (Language language : Language.values()) {
 			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
 		}
+	}
+
+	public boolean isEmailRequired() {
+		return !isSormasAuthentication;
 	}
 }
