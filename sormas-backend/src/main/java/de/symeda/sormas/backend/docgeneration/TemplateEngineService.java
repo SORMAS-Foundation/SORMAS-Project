@@ -63,11 +63,12 @@ public class TemplateEngineService {
 		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
 
 		IContext context = report.createContext();
-		for (String key : properties.stringPropertyNames()) {
-
-			String property = properties.getProperty(key);
-			if (property != null && !property.isEmpty()) {
-				context.put(key, property);
+		for (Object key : properties.keySet()) {
+			if (key instanceof String) {
+				Object property = properties.get(key);
+				if (property != null && !(property instanceof String && ((String) property).isEmpty())) {
+					context.put((String) key, property);
+				}
 			}
 		}
 
