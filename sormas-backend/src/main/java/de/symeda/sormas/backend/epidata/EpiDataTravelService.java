@@ -36,7 +36,7 @@ public class EpiDataTravelService extends AbstractAdoService<EpiDataTravel> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataTravel, EpiDataTravel> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EpiDataTravel> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

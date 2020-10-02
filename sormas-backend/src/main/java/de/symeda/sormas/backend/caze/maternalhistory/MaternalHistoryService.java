@@ -19,7 +19,7 @@ public class MaternalHistoryService extends AbstractAdoService<MaternalHistory> 
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<MaternalHistory, MaternalHistory> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, MaternalHistory> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
