@@ -866,8 +866,8 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
-	String Facility_archived = "Facility.archived";
 	String facility = "facility";
+	String Facility_archived = "Facility.archived";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
 	String Facility_district = "Facility.district";

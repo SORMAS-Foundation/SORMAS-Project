@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.component.dialog;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,7 +35,6 @@ import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
@@ -42,13 +43,9 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
-import de.symeda.sormas.app.epidata.EpiDataBurialDialog;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class LocationDialog extends FormDialog {
 
