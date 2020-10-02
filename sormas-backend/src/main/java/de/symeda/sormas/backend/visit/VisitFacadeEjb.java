@@ -723,8 +723,6 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		List<VisitCaseJurisdictionDto> jurisdictions = em.createQuery(cq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 
-		//	List<VisitContactJurisdiction> jurisdictions = em.createQuery(cq).getResultList();
-
 		return jurisdictions.stream().collect(Collectors.toMap(j -> j.getVisitId(), j -> j));
 	}
 
