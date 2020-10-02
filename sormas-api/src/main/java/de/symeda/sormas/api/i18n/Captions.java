@@ -423,6 +423,8 @@ public interface Captions {
 	String Contact_diseaseDetails = "Contact.diseaseDetails";
 	String Contact_district = "Contact.district";
 	String Contact_districtUuid = "Contact.districtUuid";
+	String Contact_endOfQuarantineReason = "Contact.endOfQuarantineReason";
+	String Contact_endOfQuarantineReasonDetails = "Contact.endOfQuarantineReasonDetails";
 	String Contact_epiData = "Contact.epiData";
 	String Contact_externalID = "Contact.externalID";
 	String Contact_firstName = "Contact.firstName";

@@ -5369,4 +5369,15 @@ ALTER TABLE symptoms_history RENAME generalsignsofdisease to feelingill;
 
 
 INSERT INTO schema_version (version_number, comment) VALUES (258, 'Split general signs of disease #2916');
+
+-- 2020-10-01 Contacts > Minimal Essential Data (MED) for Switzerland #2960
+ALTER TABLE contact
+    ADD COLUMN endofquarantinereason varchar(255),
+    ADD COLUMN endofquarantinereasondetails varchar(512);
+
+ALTER TABLE contact_history
+    ADD COLUMN endofquarantinereason varchar(255),
+    ADD COLUMN endofquarantinereasondetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (259, 'Contacts > Minimal Essential Data (MED) for Switzerland #2960');
 -- *** Insert new sql commands BEFORE this line ***
