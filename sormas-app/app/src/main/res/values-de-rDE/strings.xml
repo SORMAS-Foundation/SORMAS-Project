@@ -230,7 +230,7 @@
     <string name="confirmation_pick_gps">Sind Sie gerade an diesem Ort?</string>
     <string name="confirmation_extend_quarantine">Sind Sie sicher, dass sie die Quarantäne verlängern wollen?</string>
     <string name="confirmation_reduce_quarantine">Sind Sie sicher, dass sie die Quarantäne verkürzen wollen?</string>
-    <string name="confirmation_extend_followup">Möchten Sie auch, dass der Nachverfolgungszeitraum enstprechend verlängert wird?</string>
+    <string name="confirmation_extend_followup">Möchten Sie auch, dass der Nachverfolgungszeitraum entsprechend verlängert wird?</string>
     <string name="description_epi_week">Epi Woche</string>
     <string name="description_first_name">Vorname</string>
     <string name="description_last_name">Nachname</string>
