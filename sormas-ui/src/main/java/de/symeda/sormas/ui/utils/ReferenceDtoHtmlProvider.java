@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import com.vaadin.data.ValueProvider;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -31,7 +33,8 @@ public class ReferenceDtoHtmlProvider implements ValueProvider<ReferenceDto, Str
 		String html;
 		if (source != null) {
 			String uuid = source.getUuid();
-			html = "<a title='" + uuid + "'>" + DataHelper.getShortUuid(uuid) + "</a> (" + source.getCaption() + ")";
+			html = "<a title='" + StringEscapeUtils.escapeHtml4(uuid) + "'>" + StringEscapeUtils.escapeHtml4(DataHelper.getShortUuid(uuid)) + "</a> ("
+				+ StringEscapeUtils.escapeHtml4(source.getCaption()) + ")";
 		} else {
 			html = "";
 		}

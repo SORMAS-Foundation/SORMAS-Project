@@ -23,9 +23,11 @@ import java.util.stream.Collectors;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
+import com.vaadin.ui.renderers.TextRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
@@ -119,14 +121,14 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 
 		Column<TaskIndexDto, UserReferenceDto> assigneeUserColumn = (Column<TaskIndexDto, UserReferenceDto>) getColumn(TaskIndexDto.ASSIGNEE_USER);
 		assigneeUserColumn.setRenderer(user -> {
-			String html;
+			String text;
 			if (user != null) {
-				html = ControllerProvider.getTaskController().getUserCaptionWithPendingTaskCount(user);
+				text = ControllerProvider.getTaskController().getUserCaptionWithPendingTaskCount(user);
 			} else {
-				html = "";
+				text = "";
 			}
-			return html;
-		}, new HtmlRenderer());
+			return text;
+		}, new TextRenderer());
 
 		Column<TaskIndexDto, TaskPriority> priorityColumn = (Column<TaskIndexDto, TaskPriority>) getColumn(TaskIndexDto.PRIORITY);
 		priorityColumn.setStyleGenerator(item -> {
