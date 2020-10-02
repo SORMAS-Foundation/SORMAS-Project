@@ -5,7 +5,7 @@ This guide explains how to:
  * set up the server address list file
  * add certificates of other SORMAS instances to the local truststore
  * add other servers to the local server list
- * add the ssl certificate of the other server into the key store of the local server
+ * handling self-signed ssl certificates on test systems
    
 ### Prerequisites
 
@@ -29,7 +29,7 @@ If it is not found there, you will be prompted to provide the pat to the *sormas
 
     * the identifier of the *Organization* environment variable should be named ``SORMAS_ORG_ID``. 
     This variable is also used as *Common Name* (CN) of the certificate<br/>
-    **Important**: for Germany, this value should be the SORMAS SurvNet Code Site((e.g. 2.99.1.01 if the regular Code Site was 1.99.1.01)). <br/>
+    **Important**: for Germany, this value should be the SORMAS SurvNet Code Site (e.g. 2.99.1.01 if the regular Code Site was 1.99.1.01). <br/>
     * the name of the organization *Organization* (O) environment variable should be named ``SORMAS_ORG_NAME``.<br/>
     **Important**: for Germany, this value should be the name of the Health Department (Gesundheitsamt) 
     to which the SORMAS instance will be assigned. <br/>

@@ -46,9 +46,9 @@
 		</auth-constraint>
 	</security-constraint>
 	<security-constraint>
-		<display-name>secure all</display-name>
+		<display-name>secure sormasToSormas</display-name>
 		<web-resource-collection>
-			<web-resource-name>all</web-resource-name>
+			<web-resource-name>sormasToSormas</web-resource-name>
 			<url-pattern>/sormasToSormas/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
