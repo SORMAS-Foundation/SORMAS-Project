@@ -132,7 +132,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		FieldHelper.addSoftRequiredStyle(description);
 
 		Label usageInfo =
-			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableGrid), ContentMode.HTML);
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableCampaignGrids), ContentMode.HTML);
 		getContent().addComponent(usageInfo, USAGE_INFO);
 
 		campaignFormsGridComponent = new CampaignFormsGridComponent(
