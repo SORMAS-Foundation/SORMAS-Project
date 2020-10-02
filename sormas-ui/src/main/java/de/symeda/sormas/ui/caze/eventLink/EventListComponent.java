@@ -20,8 +20,6 @@
 
 package de.symeda.sormas.ui.caze.eventLink;
 
-
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -29,6 +27,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -49,17 +48,15 @@ public class EventListComponent extends VerticalLayout {
 
 		createEventListComponent(new EventList(caseRef), e -> {
 
-			EventCriteria eventCriteria=new EventCriteria();
+			EventCriteria eventCriteria = new EventCriteria();
 
 			//check if there are active events in the database
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
-			if (events>0) {
+			if (events > 0) {
 				ControllerProvider.getEventController().selectOrCreateEvent(caseRef);
 			} else {
 				ControllerProvider.getEventController().create(caseRef);
-
 			}
-
 		});
 
 	}

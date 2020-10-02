@@ -283,8 +283,6 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-
-
 		return toDto(entity);
 	}
 
@@ -894,7 +892,6 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-		
 		DtoHelper.validateDto(source, target);
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
