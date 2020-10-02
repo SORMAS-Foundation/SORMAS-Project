@@ -23,11 +23,11 @@ echo "# SORMAS TO SORMAS NEW CERTIFICATE GENERATION"
 echo "# This script generates a new self signed certificate, to be used for SORMAS2SORMAS and SurvNet communication"
 echo "# If anything goes wrong, please consult the certificate creation guide or get in touch with the developers."
 
-#if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
-LINUX=true
-#else
-#	LINUX=false
-#fi
+if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+  LINUX=true
+else
+	LINUX=false
+fi
 
 # DIRECTORIES
 if [[ ${LINUX} = true ]]; then
@@ -83,7 +83,7 @@ if [[ -z "${SORMAS_HTTPS_PORT}" ]]; then
   read -p "Please provide the https port of the server (443): " SORMAS_HTTPS_PORT
 fi
 
-if [[ -z "${SORMAS_HTTPS_PORT}" ]]; then
+if [[ -z "${SORMAS_HTTPS_PORT}" ]] || [[ SORMAS_HTTPS_PORT -eq 443 ]]; then
   SORMAS_HOST_AND_PORT="${SORMAS_HOST_NAME}";
 else
   SORMAS_HOST_AND_PORT="${SORMAS_HOST_NAME}:${SORMAS_HTTPS_PORT}";

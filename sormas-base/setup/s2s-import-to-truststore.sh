@@ -23,11 +23,11 @@ echo "# SORMAS TO SORMAS CERTIFICATE IMPORT"
 echo "# This script imports a certificate into the local truststore, to be used for SORMAS2SORMAS communication"
 echo "# If anything goes wrong, please consult the sormas to sormas import guide or get in touch with the developers."
 
-#if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
-LINUX=true
-#else
-#	LINUX=false
-#fi
+if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+  LINUX=true
+else
+	LINUX=false
+fi
 
 # DIRECTORIES
 if [[ ${LINUX} = true ]]; then

@@ -29,7 +29,7 @@ If it is not found there, you will be prompted to provide the pat to the *sormas
 
     * the identifier of the *Organization* environment variable should be named ``SORMAS_ORG_ID``. 
     This variable is also used as *Common Name* (CN) of the certificate<br/>
-    **Important**: for Germany, this value should be the SORMAS SurvNet Code Site(The regular SurvNet Code Site would be 1.03.1.01). <br/>
+    **Important**: for Germany, this value should be the SORMAS SurvNet Code Site((e.g. 2.99.1.01 if the regular Code Site was 1.99.1.01)). <br/>
     * the name of the organization *Organization* (O) environment variable should be named ``SORMAS_ORG_NAME``.<br/>
     **Important**: for Germany, this value should be the name of the Health Department (Gesundheitsamt) 
     to which the SORMAS instance will be assigned. <br/>
@@ -85,7 +85,7 @@ If it is not found there, you will be prompted to provide the path to the *sorma
 8. The content of the ``server-access-data.csv`` provided together with the certificate will be copied to the ``server-list.csv`` file.  
 9. You may now delete the ``.crt`` and ``server-access-data.csv`` files.
 
-10. *Optional for test systems or systems without a CA certificate* <br>
+10. *Optional for test systems and other systems with self-signed ssl certificates* <br>
     You must import the SSL certificate of the other server into the ``cacerts.jks`` of your sormas domain.
     * For getting the SSL certificate you can use ``openssl`` <br>
         e.g.
