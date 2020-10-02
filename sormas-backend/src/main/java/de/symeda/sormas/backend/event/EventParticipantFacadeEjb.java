@@ -368,7 +368,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			personAddressesCq.where(
 				personAddressesIdsExpr
 					.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getPersonAddressId).collect(Collectors.toList())));
-			personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 			personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
 
 			Map<Long, List<Sample>> samples = null;
@@ -379,7 +379,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			Expression<String> eventParticipantIdsExpr = samplesEventParticipantJoin.get(EventParticipant.ID);
 			samplesCq.where(
 				eventParticipantIdsExpr.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getId).collect(Collectors.toList())));
-			samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 			samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedEventParticipant().getId()));
 
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
