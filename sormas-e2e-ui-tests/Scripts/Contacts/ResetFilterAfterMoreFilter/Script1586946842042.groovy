@@ -18,8 +18,7 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters
 
 WebUI.delay(1)
 
-if ((((((((((!(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_Apply date filter'), 1)) || !(WebUI.verifyElementPresent(
-    findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
+if ((((((((((!(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
         'Contacts/ContactsOverview/input_ResponsibleContact'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
         'Contacts/ContactsOverview/input_ReportedBy'), 1))) || !(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_FollowUpUntil'), 
     1))) || !(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_Quarantine'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
@@ -38,8 +37,7 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters
 WebUI.delay(1)
 
 // CHECK
-if ((((((((((!(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/div_Apply date filter'), 1)) || !(WebUI.verifyElementNotPresent(
-    findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
+if ((((((((((!(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_ResponsibleContact'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/input_ReportedBy'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_FollowUpUntil'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_Quarantine'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(

@@ -23,11 +23,14 @@ WebUI.click(findTestObject('Contacts/MainView/menu_Cases'))
 WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_More_nameUuidEpidNumberLike'), findTestData(GlobalVariable.gContactTestDataName).getValue(
         2, 2))
 
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
 WebUI.delay(1)
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
-WebUI.click(findTestObject('Contacts/CasesView/caseInfo_Contacts'))
+//WebUI.click(findTestObject('Contacts/CasesView/caseInfo_Contacts'))
+WebUI.click(findTestObject('Contacts/CasesView/div_Contacts tab'))
 
 WebUI.callTestCase(findTestCase('Contacts/partials/createAndCheckNewContactFromCaseContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
