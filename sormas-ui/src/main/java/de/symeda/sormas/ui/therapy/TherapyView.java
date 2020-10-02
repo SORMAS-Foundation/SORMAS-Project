@@ -47,6 +47,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 
 @SuppressWarnings("serial")
@@ -251,7 +252,7 @@ public class TherapyView extends AbstractCaseView {
 	protected void initView(String params) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> null);
 		container.setSpacing(false);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);

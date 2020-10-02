@@ -53,6 +53,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -78,6 +79,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
 			fluidRowLocs(EventDto.EXTERNAL_ID, "") +
+			fluidRowLocs(EventDto.EVENT_TITLE) +
 			fluidRowLocs(EventDto.EVENT_DESC) +
 			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
 
@@ -152,6 +154,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
+		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
+		title.addStyleName(CssStyles.SOFT_REQUIRED);
 		addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
 
 		addField(EventDto.NOSOCOMIAL, OptionGroup.class);

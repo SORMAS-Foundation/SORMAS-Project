@@ -47,6 +47,8 @@ import de.symeda.sormas.api.utils.VersionHelper;
 @Stateless(name = "ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 
+	private static final String AUTHENTICATION_PROVIDER = "authentication.provider";
+
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
@@ -88,6 +90,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_SYMPTOM_JOURNAL_AUTH_URL = "interface.symptomjournal.authurl";
 	public static final String INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID = "interface.symptomjournal.clientid";
 	public static final String INTERFACE_SYMPTOM_JOURNAL_SECRET = "interface.symptomjournal.secret";
+
+	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
@@ -166,6 +170,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 		String locale = getProperty(COUNTRY_LOCALE, Language.EN.getLocale().toString());
 		return normalizeLocaleString(locale);
+	}
+
+	@Override
+	public String getCountryCode() {
+		String locale = getProperty(COUNTRY_LOCALE, Language.EN.getLocale().toString());
+		String normalizedLocale = normalizeLocaleString(locale);
+
+		if (normalizedLocale.contains("-")) {
+			return normalizedLocale.substring(normalizedLocale.lastIndexOf("-") + 1);
+		} else {
+			return normalizedLocale;
+		}
 	}
 
 	static String normalizeLocaleString(String locale) {
@@ -372,6 +388,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String getPatientDiaryUrl() {
+		return getProperty(INTERFACE_PATIENT_DIARY_URL, null);
+	}
+
+	@Override
 	public String getSormasToSormasUserPassword() {
 		return getProperty(SORMAS_TO_SORMAS_USER_PASSWORD, null);
 	}
@@ -392,6 +413,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 				"https" }).isValid(piaUrl)) {
 			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL + "' is not a valid URL");
 		}
+	}
+
+	@Override
+	public String getAuthenticationProvider() {
+		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
 	}
 
 	@Override

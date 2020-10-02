@@ -33,7 +33,10 @@ import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.action.ActionStatEntry;
+import de.symeda.sormas.api.event.EventActionIndexDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
@@ -76,6 +79,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setReplyingUser(userService.getByReferenceDto(source.getReplyingUser()));
 		target.setReply(source.getReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
+		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
@@ -116,6 +120,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setUuid(source.getUuid());
 
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
+		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setReply(source.getReply());
 		target.setReplyingUser(UserFacadeEjb.toReferenceDto(source.getReplyingUser()));
@@ -188,6 +193,16 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public List<ActionStatEntry> getActionStats(ActionCriteria actionCriteria) {
 		return actionService.getActionStats(actionCriteria);
+	}
+
+	@Override
+	public List<EventActionIndexDto> getEventActionList(EventCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		return actionService.getEventActionIndexList(criteria, first, max, sortProperties);
+	}
+
+	@Override
+	public long countEventAction(EventCriteria criteria) {
+		return actionService.countEventActions(criteria);
 	}
 
 	@LocalBean

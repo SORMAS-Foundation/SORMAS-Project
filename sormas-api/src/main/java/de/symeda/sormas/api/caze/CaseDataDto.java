@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
+
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
@@ -43,6 +48,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -137,6 +143,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String REPORTING_TYPE = "reportingType";
@@ -148,6 +155,16 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String VISITS = "visits";
 	public static final String FACILITY_TYPE = "facilityType";
+
+	public static final String CASE_ID_ISM = "caseIdIsm";
+	public static final String COVID_TEST_REASON = "covidTestReason";
+	public static final String COVID_TEST_REASON_DETAILS = "covidTestReasonDetails";
+	public static final String CONTACT_TRACING_FIRST_CONTACT_TYPE = "contactTracingFirstContactType";
+	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
+	public static final String QUARANTINE_REASON_BEFORE_ISOLATION = "quarantineReasonBeforeIsolation";
+	public static final String QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS = "quarantineReasonBeforeIsolationDetails";
+	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
+	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -172,6 +189,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Outbreaks
+	@HideForCountries()
 	private String epidNumber;
 	@Outbreaks
 	@Required
@@ -343,6 +361,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String pointOfEntryDetails;
 	@SensitiveData
 	private String additionalDetails;
+	@HideForCountriesExcept
 	private String externalID;
 	private boolean sharedToCountry;
 	private QuarantineType quarantine;
@@ -353,20 +372,20 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOrderedVerbally;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOrderedOfficialDocument;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOrderedVerballyDate;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOrderedOfficialDocumentDate;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
@@ -379,13 +398,14 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
+	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOfficialOrderSent;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
@@ -396,6 +416,28 @@ public class CaseDataDto extends PseudonymizableDto {
 	private boolean overwriteFollowUpUntil;
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
+
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	private Integer caseIdIsm;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	private CovidTestReason covidTestReason;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@SensitiveData
+	private String covidTestReasonDetails;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	private ContactTracingContactType contactTracingFirstContactType;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	private Date contactTracingFirstContactDate;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	private QuarantineReason quarantineReasonBeforeIsolation;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@SensitiveData
+	private String quarantineReasonBeforeIsolationDetails;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	private EndOfIsolationReason endOfIsolationReason;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	@SensitiveData
+	private String endOfIsolationReasonDetails;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1073,6 +1115,14 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.quarantineExtended = quarantineExtended;
 	}
 
+	public boolean isQuarantineReduced() {
+		return quarantineReduced;
+	}
+
+	public void setQuarantineReduced(boolean quarantineReduced) {
+		this.quarantineReduced = quarantineReduced;
+	}
+
 	public boolean isQuarantineOfficialOrderSent() {
 		return quarantineOfficialOrderSent;
 	}
@@ -1151,6 +1201,78 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setFacilityType(FacilityType facilityType) {
 		this.facilityType = facilityType;
+	}
+
+	public Integer getCaseIdIsm() {
+		return caseIdIsm;
+	}
+
+	public void setCaseIdIsm(Integer caseIdIsm) {
+		this.caseIdIsm = caseIdIsm;
+	}
+
+	public CovidTestReason getCovidTestReason() {
+		return covidTestReason;
+	}
+
+	public void setCovidTestReason(CovidTestReason covidTestReason) {
+		this.covidTestReason = covidTestReason;
+	}
+
+	public String getCovidTestReasonDetails() {
+		return covidTestReasonDetails;
+	}
+
+	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
+		this.covidTestReasonDetails = covidTestReasonDetails;
+	}
+
+	public ContactTracingContactType getContactTracingFirstContactType() {
+		return contactTracingFirstContactType;
+	}
+
+	public void setContactTracingFirstContactType(ContactTracingContactType contactTracingFirstContactType) {
+		this.contactTracingFirstContactType = contactTracingFirstContactType;
+	}
+
+	public Date getContactTracingFirstContactDate() {
+		return contactTracingFirstContactDate;
+	}
+
+	public void setContactTracingFirstContactDate(Date contactTracingFirstContactDate) {
+		this.contactTracingFirstContactDate = contactTracingFirstContactDate;
+	}
+
+	public QuarantineReason getQuarantineReasonBeforeIsolation() {
+		return quarantineReasonBeforeIsolation;
+	}
+
+	public void setQuarantineReasonBeforeIsolation(QuarantineReason quarantineReasonBeforeIsolation) {
+		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
+	}
+
+	public String getQuarantineReasonBeforeIsolationDetails() {
+		return quarantineReasonBeforeIsolationDetails;
+	}
+
+	public void setQuarantineReasonBeforeIsolationDetails(String quarantineReasonBeforeIsolationDetails) {
+		this.quarantineReasonBeforeIsolationDetails = quarantineReasonBeforeIsolationDetails;
+	}
+
+	public EndOfIsolationReason getEndOfIsolationReason() {
+		return endOfIsolationReason;
+	}
+
+	public void setEndOfIsolationReason(EndOfIsolationReason endOfIsolationReason) {
+		this.endOfIsolationReason = endOfIsolationReason;
+	}
+
+	public String getEndOfIsolationReasonDetails() {
+		return endOfIsolationReasonDetails;
+	}
+
+	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
+		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
 	}
 
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {

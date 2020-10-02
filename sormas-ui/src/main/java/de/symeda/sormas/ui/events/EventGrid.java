@@ -17,15 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import java.util.Date;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
-
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -47,6 +43,9 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+
+import java.util.Date;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
@@ -98,12 +97,15 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			EventIndexDto.EVENT_STATUS,
 			createEventDateColumn(this, userLanguage),
 			DISEASE_SHORT,
-			EventIndexDto.EVENT_DESC,
+			EventIndexDto.EVENT_TITLE,
 			EventIndexDto.EVENT_LOCATION,
 			EventIndexDto.SRC_TYPE,
 			INFORMATION_SOURCE,
 			EventIndexDto.REPORT_DATE_TIME,
-			NUMBER_OF_PENDING_TASKS);
+			NUMBER_OF_PENDING_TASKS,
+			EventIndexDto.PARTICIPANT_COUNT);
+
+		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))

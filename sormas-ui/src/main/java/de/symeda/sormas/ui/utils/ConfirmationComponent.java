@@ -37,14 +37,23 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 
 	private transient List<DoneListener> doneListeners = new ArrayList<DoneListener>();
 
+	private final boolean inverseOrder;
 	private Button confirmButton;
 	private Button cancelButton;
+	private final String cancelButtonStyle;
 
 	public ConfirmationComponent() {
 		this(false);
 	}
 
 	public ConfirmationComponent(boolean inverseOrder) {
+		this(inverseOrder, ValoTheme.BUTTON_PRIMARY);
+	}
+
+	public ConfirmationComponent(boolean inverseOrder, String cancelButtonStyle) {
+		this.inverseOrder = inverseOrder;
+		this.cancelButtonStyle = cancelButtonStyle;
+
 		setSpacing(true);
 		setSizeUndefined();
 
@@ -57,6 +66,15 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 
 		if (inverseOrder)
 			addComponent(discardButton);
+	}
+
+	public void addExtraButton(Button button, Button.ClickListener handler) {
+		button.addClickListener(e -> {
+			handler.buttonClick(e);
+			onDone();
+		});
+
+		addComponent(button, inverseOrder ? getComponentCount() - 1 : 0);
 	}
 
 	public Button getConfirmButton() {
@@ -75,7 +93,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 			cancelButton = ButtonHelper.createButton(Captions.actionCancel, event -> {
 				onCancel();
 				onDone();
-			}, ValoTheme.BUTTON_LINK);
+			}, cancelButtonStyle);
 		}
 
 		return cancelButton;

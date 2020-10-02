@@ -33,6 +33,7 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
@@ -272,7 +273,9 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 				.collect(Collectors.toList()));
 
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit);
-		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze());
+
+		CaseJoins<ClinicalCourse> caseJoins = new CaseJoins<>(joins.getCaze());
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));

@@ -233,7 +233,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	 * Used by most getAll* and getAllUuids methods to filter by user
 	 */
 	@SuppressWarnings("rawtypes")
-	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO, ADO> from);
+	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);

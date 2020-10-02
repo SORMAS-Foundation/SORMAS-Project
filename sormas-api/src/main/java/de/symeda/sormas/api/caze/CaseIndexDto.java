@@ -108,47 +108,17 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 			String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-			Float completeness, FollowUpStatus followUpStatus, Date followUpUntil) {
-		//@formatter:on
-		this(
-			id,
-			uuid,
-			epidNumber,
-			externalID,
-			personFirstName,
-			personLastName,
-			disease,
-			diseaseDetails,
-			caseClassification,
-			investigationStatus,
-			presentCondition,
-			reportDate,
-			reportingUserUuid,
-			creationDate,
-			regionUuid,
-			districtUuid,
-			districtName,
-			communityUuid,
-			healthFacilityUuid,
-			healthFacilityName,
-			healthFacilityDetails,
-			pointOfEntryUuid,
-			pointOfEntryName,
-			pointOfEntryDetails,
-			surveillanceOfficerUuid,
-			outcome,
-			age,
-			ageType,
-			birthdateDD,
-			birthdateMM,
-			birthdateYYYY,
-			sex,
-			quarantineTo,
-			completeness,
-			followUpStatus,
-			followUpUntil,
-			null);
+			Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId) {
+		this(id, uuid, epidNumber, externalID,personFirstName, personLastName, disease,
+				diseaseDetails, caseClassification, investigationStatus,
+				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
+				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
+				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
+				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
+				completeness, followUpStatus, followUpUntil, changeDate, facilityId, null
+			);
 	}
+	//@formatter:on
 
 	//@formatter:off
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
@@ -157,7 +127,9 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Integer visitCount) {
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
+						Date changeDate, Long facilityId, // XXX: unused, only here for TypedQuery mapping
+						Integer visitCount) {
 	//@formatter:on
 
 		this.id = id;

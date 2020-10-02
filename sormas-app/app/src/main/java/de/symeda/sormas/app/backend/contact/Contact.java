@@ -192,6 +192,8 @@ public class Contact extends PseudonymizableAdo {
 	private Date quarantineOrderedOfficialDocumentDate;
 	@DatabaseField
 	private boolean quarantineExtended;
+	@DatabaseField
+	private boolean quarantineReduced;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -632,6 +634,14 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setQuarantineExtended(boolean quarantineExtended) {
 		this.quarantineExtended = quarantineExtended;
+	}
+
+	public boolean isQuarantineReduced() {
+		return quarantineReduced;
+	}
+
+	public void setQuarantineReduced(boolean quarantineReduced) {
+		this.quarantineReduced = quarantineReduced;
 	}
 
 	public YesNoUnknown getQuarantineHomePossible() {

@@ -112,11 +112,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
-		final boolean noneFacility = healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
-		facilityField.setValue(
-			healthFacility == null
-				|| noneFacility
-				|| !FacilityType.HOSPITAL.equals(caze.getFacilityType()) ? null : healthFacility.toString());
+		final boolean noneFacility = healthFacility == null || healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
+		facilityField.setValue(noneFacility || !FacilityType.HOSPITAL.equals(caze.getFacilityType()) ? null : healthFacility.toString());
 		facilityField.setReadOnly(true);
 
 		final OptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);

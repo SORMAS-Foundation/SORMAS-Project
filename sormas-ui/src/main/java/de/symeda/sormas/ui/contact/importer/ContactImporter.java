@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -69,7 +70,8 @@ public class ContactImporter extends DataImporter {
 	}
 
 	@Override
-	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible) throws IOException {
+	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible)
+		throws IOException, CsvValidationException {
 
 		this.currentUI = currentUI;
 		super.startImport(addErrorReportToLayoutCallback, currentUI, duplicatesPossible);

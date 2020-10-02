@@ -15,15 +15,19 @@
 
 package de.symeda.sormas.app.backend.person;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
@@ -125,6 +129,18 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setPseudonymized(source.isPseudonymized());
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+
+		List<Location> addresses = new ArrayList<>();
+		if (!source.getAddresses().isEmpty()) {
+			for (LocationDto locationDto : source.getAddresses()) {
+				Location location = locationHelper.fillOrCreateFromDto(null, locationDto);
+				location.setPerson(target);
+				addresses.add(location);
+			}
+		}
+		target.setAddresses(addresses);
+
+		target.setExternalId(source.getExternalId());
 	}
 
 	@Override
@@ -231,6 +247,17 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setPseudonymized(source.isPseudonymized());
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+
+		List<LocationDto> locationDtos = new ArrayList<>();
+		// Necessary because the person is synchronized independently
+		DatabaseHelper.getPersonDao().initLocations(source);
+		for (Location location : source.getAddresses()) {
+			LocationDto locationDto = locationHelper.adoToDto(location);
+			locationDtos.add(locationDto);
+		}
+		target.setAddresses(locationDtos);
+
+		target.setExternalId(source.getExternalId());
 	}
 
 	public static PersonReferenceDto toReferenceDto(Person ado) {

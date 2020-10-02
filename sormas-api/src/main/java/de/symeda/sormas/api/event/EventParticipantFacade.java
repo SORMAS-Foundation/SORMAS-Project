@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -60,4 +61,7 @@ public interface EventParticipantFacade {
 	List<String> getDeletedUuidsSince(Date date);
 
 	boolean isEventParticipantEditAllowed(String uuid);
+
+	List<EventParticipantExportDto> getExportList(EventParticipantCriteria eventParticipantCriteria, int first, int max, Language userLanguage);
+
 }

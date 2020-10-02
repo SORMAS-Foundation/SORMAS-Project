@@ -28,6 +28,8 @@ public interface ConfigFacade {
 
 	String getCountryLocale();
 
+	String getCountryCode();
+
 	boolean isConfiguredCountry(String countryCode);
 
 	String getEpidPrefix();
@@ -96,9 +98,13 @@ public interface ConfigFacade {
 
 	String getSymptomJournalSecret();
 
+	String getPatientDiaryUrl();
+
 	String getSormasToSormasUserPassword();
 
 	void validateExternalUrls();
 
 	SormasToSormasConfig getSormasToSormasConfig();
+
+	String getAuthenticationProvider();
 }

@@ -37,6 +37,7 @@ import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -56,6 +57,8 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String EVENTS_LOC = "events";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
+	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
+
 	public CaseDataView() {
 		super(VIEW_NAME, false);
 	}
@@ -74,7 +77,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
 
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);

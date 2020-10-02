@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import java.sql.Timestamp;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -30,8 +32,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
-
-import java.sql.Timestamp;
 
 @Stateless
 @LocalBean
@@ -50,7 +50,7 @@ public class EpiDataService extends AbstractAdoService<EpiData> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiData, EpiData> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EpiData> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
@@ -65,15 +65,14 @@ public class EpiDataService extends AbstractAdoService<EpiData> {
 		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
 		dateFilter = cb.or(
-				dateFilter,
-				greaterThanAndNotNull(cb, epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+			dateFilter,
+			greaterThanAndNotNull(cb, epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
 
 		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
 		dateFilter = cb.or(
-				dateFilter,
-				greaterThanAndNotNull(cb, epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-
+			dateFilter,
+			greaterThanAndNotNull(cb, epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
 
 		return dateFilter;
 	}

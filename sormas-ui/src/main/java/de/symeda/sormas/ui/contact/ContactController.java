@@ -189,6 +189,8 @@ public class ContactController {
 				person.setBirthdateMM(createForm.getBirthdateMM());
 				person.setBirthdateDD(createForm.getBirthdateDD());
 				person.setSex(createForm.getSex());
+				person.setPhone(createForm.getPhone());
+				person.setEmailAddress(createForm.getEmailAddress());
 
 				ControllerProvider.getPersonController()
 					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
@@ -514,6 +516,16 @@ public class ContactController {
 		window.setHeight(80, Unit.PERCENTAGE);
 
 		UI.getCurrent().addWindow(window);
+	}
+
+	/**
+	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
+	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
+	 */
+	public void openDiaryTab(PersonDto person) {
+		String url = FacadeProvider.getConfigFacade().getPatientDiaryUrl();
+		url += "/enroll?personUuid=" + person.getUuid();
+		UI.getCurrent().getPage().open(url, "_blank");
 	}
 
 	private String getSymptomJournalAuthToken() {

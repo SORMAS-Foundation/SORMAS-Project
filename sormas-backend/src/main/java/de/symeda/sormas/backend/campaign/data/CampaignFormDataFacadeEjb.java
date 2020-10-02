@@ -159,6 +159,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	public CampaignFormDataDto saveCampaignFormData(CampaignFormDataDto campaignFormDataDto) throws ValidationRuntimeException {
 
 		CampaignFormData campaignFormData = fromDto(campaignFormDataDto);
+		CampaignFormDataEntry.removeNullValueEntries(campaignFormData.getFormValues());
 		campaignFormDataService.ensurePersisted(campaignFormData);
 		return toDto(campaignFormData);
 	}
@@ -309,14 +310,15 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : "")
 							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME;
 			
+			
 			Query seriesDataQuery = em.createNativeQuery(
 					"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + " as formUuid,"
 							+ CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " as formId"
 							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "' as fieldId"
 							+ ", jsonMeta->>'" + CampaignFormElement.CAPTION + "' as fieldCaption"
 							+ ", CASE"
-							+ " WHEN (jsonMeta ->> '" + CampaignFormElement.TYPE + "')  = '" + CampaignFormElementType.NUMBER.toString() + "' THEN sum((jsonData->>'" + CampaignFormDataEntry.VALUE + "')\\:\\:int)"
-							+ " ELSE count((jsonData->>'" + CampaignFormDataEntry.VALUE + "') = '" + diagramSeries.getFieldValue() + "')"
+							+ " WHEN (jsonMeta ->> '" + CampaignFormElement.TYPE + "')  = '" + CampaignFormElementType.NUMBER.toString() + "' THEN sum(cast_to_int(jsonData->>'" + CampaignFormDataEntry.VALUE + "', 0))"
+							+ " ELSE sum(CASE WHEN(jsonData->>'" + CampaignFormDataEntry.VALUE + "') = '" + diagramSeries.getFieldValue() + "' THEN 1 ELSE 0 END)"
 		      				+ " END as sumValue"
 							+ ", " + Region.TABLE_NAME + "." + Region.UUID
 							+ ", " + Region.TABLE_NAME + "." + Region.NAME

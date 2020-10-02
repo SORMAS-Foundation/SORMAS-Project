@@ -32,7 +32,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
 
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -111,5 +113,12 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	@Override
+	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
+		field.addValueChangeListener(e -> fireValueChange(false));
+
+		return super.addFieldToLayout(layout, propertyId, field);
 	}
 }

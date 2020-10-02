@@ -111,7 +111,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {
-		return creator.createEvent(EventStatus.SIGNAL, "Test Description", user.toReference(), e -> {
+		return creator.createEvent(EventStatus.SIGNAL, "Test title", "Test Description", user.toReference(), e -> {
 			e.setSurveillanceOfficer(user.toReference());
 		});
 	}

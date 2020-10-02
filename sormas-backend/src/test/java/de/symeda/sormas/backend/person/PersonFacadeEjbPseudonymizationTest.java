@@ -159,7 +159,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		EventDto event = creator.createEvent(user1.toReference());
 		creator.createEventParticipant(event.toReference(), person, user1.toReference());
-		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+//		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
@@ -176,8 +177,11 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		EventDto event = creator.createEvent(user1.toReference());
 		creator.createEventParticipant(event.toReference(), person, user1.toReference());
-		updatePerson(true);
-		assertPersonNotUpdated();
+//		updatePerson(true);
+//		assertPersonNotUpdated();
+		// pseudonymization disabled for now
+		updatePerson(false);
+		assertPersonUpdated();
 	}
 
 	@Test

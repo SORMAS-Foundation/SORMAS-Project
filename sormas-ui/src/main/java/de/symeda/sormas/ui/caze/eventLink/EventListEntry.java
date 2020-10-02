@@ -68,10 +68,10 @@ public class EventListEntry extends HorizontalLayout {
 			topLeftLayout.setMargin(false);
 			topLeftLayout.setSpacing(false);
 
-			Label eventDescriptionLabel = new Label(DataHelper.toStringNullable(event.getEventDesc()));
-			CssStyles.style(eventDescriptionLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			Label eventTitleLabel = new Label(DataHelper.toStringNullable(event.getEventTitle()));
+			CssStyles.style(eventTitleLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 
-			topLeftLayout.addComponent(eventDescriptionLabel);
+			topLeftLayout.addComponent(eventTitleLabel);
 
 			Label materialLabel = new Label(DataHelper.toStringNullable(event.getEventLocation()));
 			CssStyles.style(materialLabel);

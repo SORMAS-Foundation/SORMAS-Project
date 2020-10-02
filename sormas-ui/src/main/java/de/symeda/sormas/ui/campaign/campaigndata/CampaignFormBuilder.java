@@ -271,13 +271,11 @@ public class CampaignFormBuilder {
 	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
-			((OptionGroup) field).setValue(value == null ? null : (Boolean) value);
+			((OptionGroup) field).setValue(value instanceof Boolean ? (Boolean) value : null);
 			break;
 		case TEXT:
-			((TextField) field).setValue(value == null ? null : (String) value);
-			break;
-		case NUMBER:
-			((TextField) field).setValue(value == null ? null : value.toString());
+			case NUMBER:
+			((TextField) field).setValue(value != null ? value.toString() : null);
 			break;
 		default:
 			throw new IllegalArgumentException(type.toString());
