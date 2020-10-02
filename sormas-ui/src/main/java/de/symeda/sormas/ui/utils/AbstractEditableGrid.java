@@ -20,6 +20,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.GridDragEndListener;
 import com.vaadin.ui.components.grid.GridRowDragger;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -27,6 +28,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 
 public abstract class AbstractEditableGrid<T> extends CustomLayout implements View {
 
@@ -89,8 +91,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 			int i = items.indexOf(e.getItem());
 
 			if (e.getColumn() != null && DELETE.equals(e.getColumn().getId())) {
-				items.remove(i);
-				grid.setItems(items);
+				showGridRowRemoveConfirmation(items, i);
 			} else if (i > -1) {
 				grid.getEditor().editRow(i);
 			}
@@ -117,6 +118,38 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 	public void discardGrid() {
 		this.grid.setItems(new ArrayList<>(this.savedItems));
 		reorderGrid();
+	}
+
+	private void showGridRowRemoveConfirmation(List<T> items, int index) {
+		Window confirmationPopup = VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.confirmationRemoveGridRowTitle),
+			new Label(I18nProperties.getString(Strings.confirmationRemoveGridRowMessage)),
+			popupWindow -> {
+				ConfirmationComponent confirmationComponent = new ConfirmationComponent(false, null) {
+
+					private static final long serialVersionUID = 3664636750443474734L;
+
+					@Override
+					protected void onConfirm() {
+						items.remove(index);
+						grid.setItems(items);
+						popupWindow.close();;
+					}
+
+					@Override
+					protected void onCancel() {
+						popupWindow.close();
+					}
+				};
+
+				confirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.confirmationRemoveGridRowConfirm));
+				confirmationComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.confirmationRemoveGridRowCancel));
+
+				return confirmationComponent;
+			},
+			400);
+
+		confirmationPopup.setClosable(true);
 	}
 
 	protected abstract void reorderGrid();
