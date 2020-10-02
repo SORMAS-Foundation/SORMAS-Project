@@ -324,13 +324,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
+		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
 
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
-		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(2);
+		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
 		addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
-		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
+		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
 		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil));
@@ -382,7 +382,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
 
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
-		additionalDetails.setRows(3);
+		additionalDetails.setRows(6);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		initializeVisibilitiesAndAllowedVisibilities();

@@ -51,7 +51,7 @@ public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringD
 	@Override
 	protected void addFields() {
 		DateField gatheringDate = addField(EpiDataGatheringDto.GATHERING_DATE, DateField.class);
-		addField(EpiDataGatheringDto.DESCRIPTION, TextArea.class).setRows(2);
+		addField(EpiDataGatheringDto.DESCRIPTION, TextArea.class).setRows(4);
 		addField(EpiDataGatheringDto.GATHERING_ADDRESS, LocationEditForm.class).setCaption(null);
 
 		initializeAccessAndAllowedAccesses();
