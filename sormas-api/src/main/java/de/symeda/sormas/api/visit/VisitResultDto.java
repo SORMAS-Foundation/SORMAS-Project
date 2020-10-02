@@ -1,25 +1,27 @@
 package de.symeda.sormas.api.visit;
 
+import de.symeda.sormas.api.VisitOrigin;
+
 import java.io.Serializable;
 
 public class VisitResultDto implements Serializable {
 
     public VisitResultDto() {}
 
-    public VisitResultDto(boolean external, VisitResult result) {
-        this.external = external;
+    public VisitResultDto(VisitOrigin origin, VisitResult result) {
+        this.origin = origin;
         this.result = result;
     }
 
-    private boolean external;
+    private VisitOrigin origin;
     private VisitResult result;
 
-    public boolean isExternal() {
-        return external;
+    public VisitOrigin getOrigin() {
+        return origin;
     }
 
-    public void setExternal(boolean external) {
-        this.external = external;
+    public void setOrigin(VisitOrigin origin) {
+        this.origin = origin;
     }
 
     public VisitResult getResult() {

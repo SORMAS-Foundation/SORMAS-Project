@@ -6,6 +6,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitResult;
@@ -83,7 +84,7 @@ public class FollowUpUtils {
       return "";
     }
 
-    if (result.isExternal()) {
+    if (VisitOrigin.EXTERNAL_JOURNAL.equals(result.getOrigin())) {
       switch (result.getResult()) {
         case NOT_SYMPTOMATIC:
           return CssStyles.GRID_CELL_NOT_SYMPTOMATIC_EXTERNAL;

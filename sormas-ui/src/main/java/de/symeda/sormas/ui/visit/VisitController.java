@@ -69,7 +69,7 @@ public class VisitController {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
 		editForm.setValue(visit);
-		boolean canEdit = visit.getOrigin().equals(VisitOrigin.USER);
+		boolean canEdit = VisitOrigin.USER.equals(visit.getOrigin());
 		editVisit(editForm, visit.toReference(), doneConsumer, canEdit);
 	}
 

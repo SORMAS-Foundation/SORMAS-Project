@@ -11,17 +11,16 @@ public class VisitLogic {
   }
 
   public static VisitResultDto getVisitResult(VisitStatus status, VisitOrigin origin, boolean symptomatic) {
-    boolean external = origin.equals(VisitOrigin.EXTERNAL_JOURNAL);
     if (VisitStatus.UNCOOPERATIVE.equals(status)) {
-      return new VisitResultDto(external, VisitResult.UNCOOPERATIVE);
+      return new VisitResultDto(origin, VisitResult.UNCOOPERATIVE);
     }
     if (VisitStatus.UNAVAILABLE.equals(status)) {
-      return new VisitResultDto(external, VisitResult.UNAVAILABLE);
+      return new VisitResultDto(origin, VisitResult.UNAVAILABLE);
     }
     if (symptomatic) {
-      return new VisitResultDto(external, VisitResult.SYMPTOMATIC);
+      return new VisitResultDto(origin, VisitResult.SYMPTOMATIC);
     }
-    return new VisitResultDto(external, VisitResult.NOT_SYMPTOMATIC);
+    return new VisitResultDto(origin, VisitResult.NOT_SYMPTOMATIC);
   }
 
 }

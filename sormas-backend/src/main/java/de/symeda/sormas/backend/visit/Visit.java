@@ -197,6 +197,7 @@ public class Visit extends AbstractDomainObject {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public VisitOrigin getOrigin() {
 		return origin;
 	}

@@ -21,7 +21,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -54,7 +53,7 @@ public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutB
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState == null)
 			savedInstanceState = getArguments();
-		contactUuid = new Bundler(savedInstanceState).getContactUuid();;
+		contactUuid = new Bundler(savedInstanceState).getContactUuid();
 	}
 
 	@Override
@@ -87,13 +86,6 @@ public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutB
 		VisitValidator.initializeVisitValidation(contact, contentBinding);
 
 		contentBinding.setVisitStatusClass(VisitStatus.class);
-
-		boolean isExternalVisit = record.getOrigin().equals(VisitOrigin.EXTERNAL_JOURNAL);
-		if (isExternalVisit) {
-			contentBinding.visitVisitDateTime.setEnabled(false);
-			contentBinding.visitVisitRemarks.setEnabled(false);
-			contentBinding.visitVisitStatus.setEnabled(false);
-		}
 	}
 
 	@Override

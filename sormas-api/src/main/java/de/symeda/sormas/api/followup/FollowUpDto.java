@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.visit.VisitResult;
@@ -41,7 +42,7 @@ public abstract class FollowUpDto implements Serializable {
 
 	public void initVisitSize(int i) {
 		visitResults = new VisitResultDto[i];
-		Arrays.fill(visitResults, new VisitResultDto(false, VisitResult.NOT_PERFORMED));
+		Arrays.fill(visitResults, new VisitResultDto(VisitOrigin.USER, VisitResult.NOT_PERFORMED));
 	}
 
 	public String getUuid() {
