@@ -15,11 +15,17 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import java.lang.reflect.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -29,6 +35,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -128,7 +135,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 231;
+	public static final int DATABASE_VERSION = 232;
 
 	private static DatabaseHelper instance = null;
 
@@ -1610,6 +1617,61 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineReasonBeforeIsolationDetails varchar(512);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN endOfIsolationReason varchar(255);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN endOfIsolationReasonDetails varchar(512);");
+          
+        case 231:
+          currentVersion = 231;
+          
+          getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityType varchar(255);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facility_id bigint REFERENCES facility(id);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityDetails varchar(512);");
+
+				GenericRawResults<Object[]> rawResult = getDao(Person.class).queryRaw(
+					"SELECT occupationRegion_id, occupationDistrict_id, occupationCommunity_id, occupationFacility_id, occupationFacilityDetails, occupationFacilityType, id FROM person WHERE changeDate IS 0 AND (occupationRegion_id IS NOT NULL OR occupationFacilityType IS NOT NULL);",
+					new DataType[] {
+						DataType.BIG_INTEGER,
+						DataType.BIG_INTEGER,
+						DataType.BIG_INTEGER,
+						DataType.BIG_INTEGER,
+						DataType.STRING,
+						DataType.ENUM_STRING,
+						DataType.INTEGER });
+
+				for (Object[] result : rawResult) {
+					if (DataHelper.isNullOrEmpty((String) result[4])) {
+						Array.set(result, 4, null);
+					} else {
+						Array.set(result, 4, "'" + result[4] + "'");
+					}
+					if (!DataHelper.isNullOrEmpty((String) result[5])) {
+						Array.set(result, 5, "'" + result[5] + "'");
+					}
+					String query =
+						"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, region_id, district_id, community_id, facility_id, facilityDetails, facilityType, addressType, person_id, pseudonymized, modified, snapshot) VALUES ('"
+							+ DataHelper.createUuid()
+							+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
+							+ result[0] + ", " + result[1] + ", " + result[2] + ", " + result[3] + ", " + result[4] + ", " + result[5]
+							+ ", 'PLACE_OF_WORK', " + result[6] + ", 0, 0, 0);";
+					getDao(Location.class).executeRaw(query);
+				}
+
+				Cursor personDbCursor = db.query(Person.TABLE_NAME, null, null, null, null, null, null);
+				String[] personColumnNames = personDbCursor.getColumnNames();
+				personDbCursor.close();
+				List personColumnList = new ArrayList(Arrays.asList(personColumnNames));
+				personColumnList.removeAll(
+					Arrays.asList(
+						"occupationRegion_id",
+						"occupationDistrict_id",
+						"occupationCommunity_id",
+						"occupationFacility_id",
+						"occupationFacilityDetails",
+						"occupationFacilityType"));
+				String personQueryColumns = TextUtils.join(",", personColumnList);
+
+				db.execSQL("ALTER TABLE person RENAME TO person_old;");
+				TableUtils.createTable(connectionSource, Person.class);
+				db.execSQL("INSERT INTO person (" + personQueryColumns + ") SELECT " + personQueryColumns + " FROM person_old;");
+				db.execSQL("DROP TABLE person_old;");
 
 				// ATTENTION: break should only be done after last version
 				break;

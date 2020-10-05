@@ -5360,4 +5360,24 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (257, 'Cases > Minimal Essential Data (MED) for Switzerland #2959');
 
+-- 2020-09-22 Add facility fields to location and refactor occupation facilities for persons #2456
+ALTER TABLE location ADD COLUMN facilitytype varchar(255);
+ALTER TABLE location_history ADD COLUMN facilitytype varchar(255);
+ALTER TABLE location ADD COLUMN facility_id bigint;
+ALTER TABLE location_history ADD COLUMN facility_id bigint;
+ALTER TABLE location ADD CONSTRAINT fk_location_facility_id FOREIGN KEY (facility_id) REFERENCES facility(id);
+ALTER TABLE location ADD COLUMN facilitydetails varchar(512);
+ALTER TABLE location_history ADD COLUMN facilitydetails varchar(512);
+
+CREATE temp table t_id_map
+AS SELECT id AS person_id, nextval('entity_seq') AS location_id, create_new_uuid(uuid) AS uuid, occupationregion_id, occupationdistrict_id, occupationcommunity_id, occupationfacility_id, occupationfacilitydetails, occupationfacilitytype
+FROM person WHERE occupationregion_id IS NOT NULL OR occupationdistrict_id IS NOT NULL OR occupationcommunity_id IS NOT NULL OR occupationfacility_id IS NOT NULL;
+
+INSERT INTO location (id, uuid, changedate, creationdate, region_id, district_id, community_id, facility_id, facilitydetails, facilitytype, addresstype)
+SELECT location_id, uuid, now(), now(), occupationregion_id, occupationdistrict_id, occupationcommunity_id, occupationfacility_id, occupationfacilitydetails, occupationfacilitytype, 'PLACE_OF_WORK'
+FROM t_id_map;
+INSERT INTO person_locations (person_id, location_id) SELECT person_id, location_id FROM t_id_map;
+ALTER TABLE person DROP COLUMN occupationregion_id, DROP COLUMN occupationdistrict_id, DROP COLUMN occupationcommunity_id, DROP COLUMN occupationfacilitytype, DROP COLUMN occupationfacility_id, DROP COLUMN occupationfacilitydetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add facility fields to location and refactor occupation facilities for persons #2456');
 -- *** Insert new sql commands BEFORE this line ***
