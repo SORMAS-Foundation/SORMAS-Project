@@ -41,6 +41,14 @@ public class SymptomsHelperTest {
 		SymptomsHelper.updateIsSymptomatic(symptoms);
 
 		assertEquals(SymptomState.YES, symptoms.getSymptomatic());
+
+		symptoms.setBackache(SymptomState.UNKNOWN);
+		SymptomsHelper.updateIsSymptomatic(symptoms);
+		assertEquals(SymptomState.UNKNOWN, symptoms.getSymptomatic());
+
+		symptoms.setBackache(null);
+		SymptomsHelper.updateIsSymptomatic(symptoms);
+		assertEquals(null, symptoms.getSymptomatic());
 	}
 
 	@Test

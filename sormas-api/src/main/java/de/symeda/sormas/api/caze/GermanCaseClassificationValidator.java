@@ -18,6 +18,7 @@ package de.symeda.sormas.api.caze;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class GermanCaseClassificationValidator {
 
@@ -66,7 +67,7 @@ public class GermanCaseClassificationValidator {
 	private static boolean hasCoronavirusSymptom(CaseDataDto caseDataDto) {
 		final SymptomsDto symptoms = caseDataDto.getSymptoms();
 		return caseDataDto.getDisease() == Disease.CORONAVIRUS
-			&& symptoms.getSymptomatic()
+			&& symptoms.getSymptomatic() == YesNoUnknown.YES
 			&& SymptomsHelper.atLeastOnSymptomTrue(
 				symptoms.getPneumoniaClinicalOrRadiologic(),
 				symptoms.getDifficultyBreathing(),
