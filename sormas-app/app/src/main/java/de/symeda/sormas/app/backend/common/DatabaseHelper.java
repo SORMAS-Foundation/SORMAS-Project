@@ -1684,6 +1684,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				// ATTENTION: break should only be done after last version
 				break;
+
+			case 234:
+				currentVersion = 234;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);");
+
+				// ATTENTION: break should only be done after last version
+				break;
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
 			}

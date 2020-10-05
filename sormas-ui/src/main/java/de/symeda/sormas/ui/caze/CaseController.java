@@ -78,6 +78,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -423,6 +424,9 @@ public class CaseController {
 						gatheringDto.setUuid(DataHelper.createUuid());
 						gatheringDto.getGatheringAddress().setUuid(DataHelper.createUuid());
 					});
+
+					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
+
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
