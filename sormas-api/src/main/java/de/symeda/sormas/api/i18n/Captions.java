@@ -277,6 +277,7 @@ public interface Captions {
 	String caseEvents = "caseEvents";
 	String caseEventsResetDateFilter = "caseEventsResetDateFilter";
 	String CaseExport_address = "CaseExport.address";
+	String CaseExport_addressCommunity = "CaseExport.addressCommunity";
 	String CaseExport_addressDistrict = "CaseExport.addressDistrict";
 	String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
 	String CaseExport_addressRegion = "CaseExport.addressRegion";
@@ -484,6 +485,7 @@ public interface Captions {
 	String contactCreatePIAAccount = "contactCreatePIAAccount";
 	String contactDetailedOverview = "contactDetailedOverview";
 	String ContactExport_address = "ContactExport.address";
+	String ContactExport_addressCommunity = "ContactExport.addressCommunity";
 	String ContactExport_addressDistrict = "ContactExport.addressDistrict";
 	String ContactExport_addressRegion = "ContactExport.addressRegion";
 	String ContactExport_burialAttended = "ContactExport.burialAttended";
@@ -828,6 +830,7 @@ public interface Captions {
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
+	String EventParticipantExport_addressCommunity = "EventParticipantExport.addressCommunity";
 	String EventParticipantExport_addressDistrict = "EventParticipantExport.addressDistrict";
 	String EventParticipantExport_addressGpsCoordinates = "EventParticipantExport.addressGpsCoordinates";
 	String EventParticipantExport_addressRegion = "EventParticipantExport.addressRegion";

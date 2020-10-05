@@ -54,6 +54,7 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Contact, User> reportingUser;
 	private Join<Location, Region> addressRegion;
 	private Join<Location, Region> addressDistrict;
+	private Join<Location, Community> addressCommunity;
 	private Join<Person, Facility> occupationFacility;
 	private Join<Contact, EpiData> epiData;
 
@@ -201,6 +202,14 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private void setAddressDistrict(Join<Location, Region> addressDistrict) {
 		this.addressDistrict = addressDistrict;
+	}
+
+	public Join<Location, Community> getAddressCommunity() {
+		return getOrCreate(addressCommunity, Location.COMMUNITY, JoinType.LEFT, getAddress(), this::setAddressCommunity);
+	}
+
+	private void setAddressCommunity(Join<Location, Community> addressCommunity) {
+		this.addressCommunity = addressCommunity;
 	}
 
 	public Join<Person, Facility> getOccupationFacility() {
