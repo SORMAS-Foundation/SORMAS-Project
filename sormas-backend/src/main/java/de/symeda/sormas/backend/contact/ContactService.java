@@ -1093,6 +1093,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
 			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), contactCriteria.getBirthdateDD()));
 		}
+		if (contactCriteria.getReturningTraveler() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.RETURNING_TRAVELER), contactCriteria.getReturningTraveler()));
+		}
 
 		return filter;
 	}

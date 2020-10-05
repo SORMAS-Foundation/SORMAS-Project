@@ -5360,4 +5360,9 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (257, 'Cases > Minimal Essential Data (MED) for Switzerland #2959');
 
+-- 2020-10-02 Add new field returningTraveler to contact
+ALTER TABLE contact ADD COLUMN returningtraveler varchar(255);
+ALTER TABLE contact_history ADD COLUMN returningtraveler varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add new field returningTraveler to contact #2603');
 -- *** Insert new sql commands BEFORE this line ***

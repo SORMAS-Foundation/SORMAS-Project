@@ -465,6 +465,7 @@ public interface Captions {
 	String Contact_reportLon = "Contact.reportLon";
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
+	String Contact_returningTraveler = "Contact.returningTraveler";
 	String Contact_tracingApp = "Contact.tracingApp";
 	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
 	String Contact_uuid = "Contact.uuid";

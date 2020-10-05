@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -34,8 +36,6 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-
-import java.util.Date;
 
 public class ContactDto extends PseudonymizableDto {
 
@@ -102,6 +102,7 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String RETURNING_TRAVELER = "returningTraveler";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -219,6 +220,7 @@ public class ContactDto extends PseudonymizableDto {
 	private String additionalDetails;
 	private EpiDataDto epiData;
 	private HealthConditionsDto healthConditions;
+	private YesNoUnknown returningTraveler;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -730,5 +732,13 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setHealthConditions(HealthConditionsDto healthConditions) {
 		this.healthConditions = healthConditions;
+	}
+
+	public YesNoUnknown getReturningTraveler() {
+		return returningTraveler;
+	}
+
+	public void setReturningTraveler(YesNoUnknown returningTraveler) {
+		this.returningTraveler = returningTraveler;
 	}
 }
