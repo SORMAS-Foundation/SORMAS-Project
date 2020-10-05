@@ -871,7 +871,11 @@ public class CaseFacadeEjb implements CaseFacade {
 						pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitSymptoms, inJurisdiction, null);
 
 						exportDto.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(visitSymptoms, true, userLanguage));
-						exportDto.setLastCooperativeVisitSymptomatic(visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+						if (visitSymptoms.getSymptomatic() == YesNoUnknown.YES)
+							exportDto.setLastCooperativeVisitSymptomatic(YesNoUnknown.YES);
+						else if (lastCooperativeVisit.getSymptoms().getSymptomatic() == YesNoUnknown.NO)
+							exportDto.setLastCooperativeVisitSymptomatic(YesNoUnknown.NO);
+						else exportDto.setLastCooperativeVisitSymptomatic(YesNoUnknown.UNKNOWN);
 					}
 				}
 
