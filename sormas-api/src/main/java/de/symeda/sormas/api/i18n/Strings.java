@@ -141,6 +141,7 @@ public interface Strings {
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPrescription = "entityPrescription";
 	String entityPrescriptions = "entityPrescriptions";
+	String entityQuarantineOrder = "entityQuarantineOrder";
 	String entityRegion = "entityRegion";
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";

@@ -14,6 +14,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class QuarantineOrderComponent extends VerticalLayout {
@@ -28,11 +31,11 @@ public class QuarantineOrderComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		Label tasksHeader = new Label("Quarantine Order"); // new Label(I18nProperties.getString(Strings.entitySamples));
+		Label tasksHeader = new Label(I18nProperties.getString(Strings.entityQuarantineOrder));
 		tasksHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(tasksHeader);
 
-		createButton = new Button("DOWNLOAD"); // new Button(I18nProperties.getCaption(Captions.sampleNewSample));
+		createButton = new Button(I18nProperties.getCaption(Captions.actionCreate));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(VaadinIcons.DOWNLOAD);
 		// createButton.addClickListener(clickListener);
