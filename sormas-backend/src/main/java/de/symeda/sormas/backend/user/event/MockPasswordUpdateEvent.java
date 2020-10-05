@@ -21,21 +21,21 @@ package de.symeda.sormas.backend.user.event;
 import de.symeda.sormas.backend.user.User;
 
 /**
- * Event fired whenever a user's password is changed.
+ * Event used for hard coded user password changes.
  *
  * @author Alex Vidrean
- * @since 15-Aug-20
+ * @since 05-Oct-20
  */
-public class PasswordResetEvent {
+public class MockPasswordUpdateEvent extends PasswordResetEvent {
 
-	private final User user;
+    private final String password;
 
-	public PasswordResetEvent(User user) {
-		this.user = user;
-	}
+    public MockPasswordUpdateEvent(User user, String password) {
+        super(user);
+        this.password = password;
+    }
 
-	public User getUser() {
-		return user;
-	}
-
+    public String getPassword() {
+        return password;
+    }
 }
