@@ -19,8 +19,10 @@
 package de.symeda.sormas.backend.user;
 
 import com.nimbusds.jose.util.JSONObjectUtils;
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
@@ -39,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
@@ -67,6 +70,9 @@ public class KeycloakService {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
+
 	private static final String OIDC_REALM = "realm";
 	private static final String OIDC_SERVER_URL = "auth-server-url";
 	private static final String OIDC_CREDENTIALS = "credentials";
@@ -83,6 +89,12 @@ public class KeycloakService {
 
 	@PostConstruct
 	public void init() {
+
+		if(!AuthProvider.KEYCLOAK.equalsIgnoreCase(configFacade.getAuthenticationProvider())) {
+			logger.info("Keycloak Auth Provider not active");
+			return;
+		}
+
 		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
 
 		if (!oidcJson.isPresent()) {
@@ -114,12 +126,17 @@ public class KeycloakService {
 			return;
 		}
 
+		User user = userCreateEvent.getUser();
 		String password = null;
 		if (userCreateEvent instanceof MockUserCreateEvent) {
 			password = ((MockUserCreateEvent) userCreateEvent).getPassword();
+			Optional<UserRepresentation> mockUser = getUserByUsername(keycloak.get(), user.getUserName());
+			if (mockUser.isPresent()) {
+				logger.info("Mock user {} already exists. Will not create a new one", user.getUserName());
+				return;
+			}
 		}
 
-		User user = userCreateEvent.getUser();
 		String userId = createUser(keycloak.get(), user, password);
 		if (StringUtils.isNotBlank(user.getUserEmail())) {
 			sendActivationEmail(keycloak.get(), userId);
