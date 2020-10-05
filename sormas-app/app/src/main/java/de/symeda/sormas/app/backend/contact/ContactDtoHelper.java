@@ -144,6 +144,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
 		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
 
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
+
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
@@ -264,6 +267,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		} else {
 			target.setHealthConditions(null);
 		}
+
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

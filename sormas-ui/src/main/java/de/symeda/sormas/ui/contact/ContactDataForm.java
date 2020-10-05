@@ -58,6 +58,7 @@ import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
@@ -125,7 +126,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 					fluidRowLocs(ContactDto.QUARANTINE_OFFICIAL_ORDER_SENT, ContactDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE) +
                     fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
-                    locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
+					fluidRowLocs(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS) +
+					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 					fluidRowLocs(ContactDto.HEALTH_CONDITIONS) +
 					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
@@ -384,6 +386,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		addFields(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.END_OF_QUARANTINE_REASON_DETAILS,
+			ContactDto.END_OF_QUARANTINE_REASON,
+			Collections.singletonList(EndOfQuarantineReason.OTHER),
+			true);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
@@ -654,7 +664,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		return HTML_LAYOUT;
 	}
 
-	private void onFollowUpUntilChanged(Property.ValueChangeEvent valueChangeEvent, DateField quarantineTo, CheckBox quarantineExtendedCheckBox, CheckBox quarantineReducedCheckBox) {
+	private void onFollowUpUntilChanged(
+		Property.ValueChangeEvent valueChangeEvent,
+		DateField quarantineTo,
+		CheckBox quarantineExtendedCheckBox,
+		CheckBox quarantineReducedCheckBox) {
 		Property<Date> followUpUntilField = valueChangeEvent.getProperty();
 		Date newFollowUpUntil = followUpUntilField.getValue();
 		ContactDto originalContact = getInternalValue();
@@ -684,12 +698,17 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	}
 
 	private boolean shouldAdjustQuarantine(DateField quarantineTo, Date newFollowUpUntil, Date oldFollowUpUntil) {
-		return newFollowUpUntil != null &&
-				(oldFollowUpUntil == null || newFollowUpUntil.after(oldFollowUpUntil)) &&
-				quarantineTo.getValue() != null && newFollowUpUntil.compareTo(quarantineTo.getValue()) != 0;
+		return newFollowUpUntil != null
+			&& (oldFollowUpUntil == null || newFollowUpUntil.after(oldFollowUpUntil))
+			&& quarantineTo.getValue() != null
+			&& newFollowUpUntil.compareTo(quarantineTo.getValue()) != 0;
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckBox, CheckBox quarantineReducedCheckBox, DateField followUpUntilField) {
+	private void onQuarantineEndChange(
+		Property.ValueChangeEvent valueChangeEvent,
+		CheckBox quarantineExtendedCheckBox,
+		CheckBox quarantineReducedCheckBox,
+		DateField followUpUntilField) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -700,7 +719,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			if (newQuarantineEnd != null) {
 				if (oldQuarantineEnd != null) {
 					if (newQuarantineEnd.after(oldQuarantineEnd)) {
-						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, oldQuarantineEnd, followUpUntilField);
+						confirmQuarantineEndExtended(
+							quarantineExtendedCheckBox,
+							quarantineReducedCheckBox,
+							quarantineEndField,
+							originalContact,
+							oldQuarantineEnd,
+							followUpUntilField);
 					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
 						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
 					}

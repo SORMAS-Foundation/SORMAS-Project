@@ -135,7 +135,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 232;
+	public static final int DATABASE_VERSION = 234;
 
 	private static DatabaseHelper instance = null;
 
@@ -1617,10 +1617,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineReasonBeforeIsolationDetails varchar(512);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN endOfIsolationReason varchar(255);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN endOfIsolationReasonDetails varchar(512);");
-          
+
         case 231:
           currentVersion = 231;
-          
+
           getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityType varchar(255);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facility_id bigint REFERENCES facility(id);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityDetails varchar(512);");
@@ -1672,6 +1672,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.createTable(connectionSource, Person.class);
 				db.execSQL("INSERT INTO person (" + personQueryColumns + ") SELECT " + personQueryColumns + " FROM person_old;");
 				db.execSQL("DROP TABLE person_old;");
+
+			case 232:
+				currentVersion = 232;
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN shivering varchar(255);");
+
+			case 233:
+				currentVersion = 233;
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN endOfQuarantineReason varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN endOfQuarantineReasonDetails varchar(512);");
 
 				// ATTENTION: break should only be done after last version
 				break;
