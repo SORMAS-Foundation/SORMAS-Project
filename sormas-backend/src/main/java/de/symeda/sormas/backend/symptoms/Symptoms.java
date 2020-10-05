@@ -200,7 +200,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState inabilityToWalk;
 	private SymptomState inDrawingOfChestWall;
 	private SymptomState respiratoryDiseaseVentilation;
-	private SymptomState generalSignsOfDisease;
+	private SymptomState feelingIll;
+	private SymptomState shivering;
 	private SymptomState fastHeartRate;
 	private SymptomState oxygenSaturationLower94;
 
@@ -1680,12 +1681,21 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public SymptomState getGeneralSignsOfDisease() {
-		return generalSignsOfDisease;
+	public SymptomState getFeelingIll() {
+		return feelingIll;
 	}
 
-	public void setGeneralSignsOfDisease(SymptomState generalSignsOfDisease) {
-		this.generalSignsOfDisease = generalSignsOfDisease;
+	public void setFeelingIll(SymptomState feelingIll) {
+		this.feelingIll = feelingIll;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getShivering() {
+		return shivering;
+	}
+
+	public void setShivering(SymptomState shivering) {
+		this.shivering = shivering;
 	}
 
 	@Enumerated(EnumType.STRING)

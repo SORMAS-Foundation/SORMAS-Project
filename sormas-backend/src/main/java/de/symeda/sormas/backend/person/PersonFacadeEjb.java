@@ -17,12 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -71,27 +93,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -395,7 +396,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	 */
 	private void cleanUp(Person person) {
 
-		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE) {
+		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE || person.getPresentCondition() == PresentCondition.UNKNOWN) {
 			person.setDeathDate(null);
 			person.setCauseOfDeath(null);
 			person.setCauseOfDeathDisease(null);
@@ -533,11 +534,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
-		target.setOccupationRegion(regionService.getByReferenceDto(source.getOccupationRegion()));
-		target.setOccupationDistrict(districtService.getByReferenceDto(source.getOccupationDistrict()));
-		target.setOccupationCommunity(communityService.getByReferenceDto(source.getOccupationCommunity()));
-		target.setOccupationFacility(facilityService.getByReferenceDto(source.getOccupationFacility()));
-		target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
 
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());
@@ -553,7 +549,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
-		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
@@ -695,11 +690,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
-		target.setOccupationRegion(RegionFacadeEjb.toReferenceDto(source.getOccupationRegion()));
-		target.setOccupationDistrict(DistrictFacadeEjb.toReferenceDto(source.getOccupationDistrict()));
-		target.setOccupationCommunity(CommunityFacadeEjb.toReferenceDto(source.getOccupationCommunity()));
-		target.setOccupationFacility(FacilityFacadeEjb.toReferenceDto(source.getOccupationFacility()));
-		target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
 
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());
@@ -715,7 +705,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
-		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 

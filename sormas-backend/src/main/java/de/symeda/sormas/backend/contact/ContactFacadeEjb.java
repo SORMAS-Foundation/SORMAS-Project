@@ -440,13 +440,13 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getAddress().get(Location.HOUSE_NUMBER),
 					joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 					joins.getAddress().get(Location.POSTAL_CODE),
+					joins.getAddressFacility().get(Facility.NAME),
+					joins.getAddressFacility().get(Facility.UUID),
+					joins.getAddress().get(Location.FACILITY_DETAILS),
 					joins.getPerson().get(Person.PHONE),
 					joins.getPerson().get(Person.PHONE_OWNER),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
-					joins.getOccupationFacility().get(Facility.NAME),
-					joins.getOccupationFacility().get(Facility.UUID),
-					joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
 					joins.getRegion().get(Region.NAME),
 					joins.getDistrict().get(District.NAME),
 					joins.getCommunity().get(Community.NAME),
@@ -1009,6 +1009,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
 		target.setReturningTraveler(source.getReturningTraveler());
 
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
+
 		return target;
 	}
 
@@ -1242,6 +1245,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
 		target.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(source.getHealthConditions()));
 		target.setReturningTraveler(source.getReturningTraveler());
+
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		return target;
 	}

@@ -93,6 +93,9 @@ public class ContactExportDto implements Serializable {
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
+	@PersonalData
+	@SensitiveData
+	private String facility;
 	@SensitiveData
 	private String phone;
 	private String occupationType;
@@ -142,8 +145,8 @@ public class ContactExportDto implements Serializable {
 							boolean quarantineExtended, boolean quarantineReduced, boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String city, String street, String houseNumber, String additionalInformation, String postalCode,
+							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
-							String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
 							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler,
@@ -197,11 +200,9 @@ public class ContactExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
+		this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility, facilityDetails);
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
-		this.occupationType = PersonHelper.buildOccupationString(
-			occupationType,
-			occupationDetails,
-			FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
+		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
 		this.region = region;
 		this.district = district;
 		this.community = community;
@@ -489,36 +490,41 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(50)
+	public String getFacility() {
+		return facility;
+	}
+
+	@Order(51)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(51)
+	@Order(52)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(52)
+	@Order(53)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(53)
+	@Order(54)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(54)
+	@Order(55)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(55)
+	@Order(56)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
 
-	@Order(56)
+	@Order(57)
 	public YesNoUnknown getTraveled() {
 		return traveled;
 	}
@@ -527,7 +533,7 @@ public class ContactExportDto implements Serializable {
 		this.traveled = traveled;
 	}
 
-	@Order(57)
+	@Order(58)
 	public String getTravelHistory() {
 		return travelHistory;
 	}
@@ -536,7 +542,7 @@ public class ContactExportDto implements Serializable {
 		this.travelHistory = travelHistory;
 	}
 
-	@Order(58)
+	@Order(59)
 	public YesNoUnknown getBurialAttended() {
 		return burialAttended;
 	}
@@ -545,7 +551,7 @@ public class ContactExportDto implements Serializable {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(59)
+	@Order(60)
 	public YesNoUnknown getDirectContactConfirmedCase() {
 		return directContactConfirmedCase;
 	}
@@ -554,7 +560,7 @@ public class ContactExportDto implements Serializable {
 		this.directContactConfirmedCase = directContactConfirmedCase;
 	}
 
-	@Order(60)
+	@Order(61)
 	public YesNoUnknown getDirectContactProbableCase() {
 		return directContactProbableCase;
 	}
@@ -563,7 +569,7 @@ public class ContactExportDto implements Serializable {
 		this.directContactProbableCase = directContactProbableCase;
 	}
 
-	@Order(61)
+	@Order(62)
 	public YesNoUnknown getContactWithRodent() {
 		return contactWithRodent;
 	}
@@ -731,5 +737,9 @@ public class ContactExportDto implements Serializable {
 
 	public ContactJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public void setFacility(String facility) {
+		this.facility = facility;
 	}
 }

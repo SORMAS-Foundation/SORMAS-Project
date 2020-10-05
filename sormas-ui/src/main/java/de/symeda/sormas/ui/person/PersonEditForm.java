@@ -17,6 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfFourCol;
+import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
+
+import java.time.Month;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -24,13 +43,13 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -60,24 +79,6 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
-import org.apache.commons.lang3.StringUtils;
-
-import java.time.Month;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfFourCol;
-import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
@@ -99,8 +100,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox causeOfDeathField;
 	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
-	private ComboBox occupationFacility;
-	private TextField occupationFacilityDetails;
 	private final ViewMode viewMode;
 	private ComboBox birthDateDay;
 	private ComboBox cbPlaceOfBirthFacility;
@@ -144,8 +143,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
-                            fluidRowLocs(PersonDto.OCCUPATION_REGION, PersonDto.OCCUPATION_DISTRICT, PersonDto.OCCUPATION_COMMUNITY),
-                            fluidRowLocs(PersonDto.OCCUPATION_FACILITY_TYPE, PersonDto.OCCUPATION_FACILITY, PersonDto.OCCUPATION_FACILITY_DETAILS),
                             fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
                     ) +
 
@@ -287,23 +284,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
 		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
-		ComboBox facilityRegion = addInfrastructureField(PersonDto.OCCUPATION_REGION);
-		facilityRegion.setImmediate(true);
-		facilityRegion.setNullSelectionAllowed(true);
-		ComboBox facilityDistrict = addInfrastructureField(PersonDto.OCCUPATION_DISTRICT);
-		facilityDistrict.setImmediate(true);
-		facilityDistrict.setNullSelectionAllowed(true);
-		ComboBox facilityCommunity = addInfrastructureField(PersonDto.OCCUPATION_COMMUNITY);
-		facilityCommunity.setImmediate(true);
-		facilityCommunity.setNullSelectionAllowed(true);
-		ComboBox occupationFacilityType = addField(PersonDto.OCCUPATION_FACILITY_TYPE);
-		FieldHelper.removeItems(occupationFacilityType);
-		occupationFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
-		occupationFacilityType.addItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY));
-		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
-		occupationFacility.setImmediate(true);
-		occupationFacility.setNullSelectionAllowed(true);
-		occupationFacilityDetails = addField(PersonDto.OCCUPATION_FACILITY_DETAILS, TextField.class);
 
 		addField(PersonDto.GENERAL_PRACTITIONER_DETAILS, TextField.class);
 
@@ -314,12 +294,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		setVisible(
 			false,
 			PersonDto.OCCUPATION_DETAILS,
-			PersonDto.OCCUPATION_FACILITY_TYPE,
-			PersonDto.OCCUPATION_FACILITY,
-			PersonDto.OCCUPATION_FACILITY_DETAILS,
-			PersonDto.OCCUPATION_REGION,
-			PersonDto.OCCUPATION_DISTRICT,
-			PersonDto.OCCUPATION_COMMUNITY,
 			PersonDto.DEATH_DATE,
 			PersonDto.DEATH_PLACE_TYPE,
 			PersonDto.DEATH_PLACE_DESCRIPTION,
@@ -401,16 +375,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			cbPlaceOfBirthFacility,
 			tfPlaceOfBirthFacilityDetails,
 			true);
-		addListenersToInfrastructureFields(
-			facilityRegion,
-			facilityDistrict,
-			facilityCommunity,
-			occupationFacilityType,
-			occupationFacility,
-			occupationFacilityDetails,
-			false);
 		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
 
@@ -482,9 +447,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
-			if (facilityField.equals(occupationFacility)) {
-				this.getValue().setOccupationFacilityType((FacilityType) typeField.getValue());
-			} else if (facilityField.equals(cbPlaceOfBirthFacility)) {
+			if (facilityField.equals(cbPlaceOfBirthFacility)) {
 				this.getValue().setPlaceOfBirthFacilityType((FacilityType) typeField.getValue());
 			}
 		});
@@ -598,49 +561,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			case BUSINESSMAN_WOMAN:
 			case TRANSPORTER:
 			case OTHER:
-				setVisible(
-					false,
-					PersonDto.OCCUPATION_FACILITY_TYPE,
-					PersonDto.OCCUPATION_FACILITY,
-					PersonDto.OCCUPATION_FACILITY_DETAILS,
-					PersonDto.OCCUPATION_REGION,
-					PersonDto.OCCUPATION_DISTRICT,
-					PersonDto.OCCUPATION_COMMUNITY);
 				setVisible(true, PersonDto.OCCUPATION_DETAILS);
 				break;
 			case HEALTHCARE_WORKER:
-				setVisible(
-					true,
-					PersonDto.OCCUPATION_DETAILS,
-					PersonDto.OCCUPATION_REGION,
-					PersonDto.OCCUPATION_DISTRICT,
-					PersonDto.OCCUPATION_COMMUNITY,
-					PersonDto.OCCUPATION_FACILITY_TYPE,
-					PersonDto.OCCUPATION_FACILITY);
-				updateFacilityDetailsVisibility(occupationFacilityDetails, (FacilityReferenceDto) occupationFacility.getValue());
+				setVisible(true, PersonDto.OCCUPATION_DETAILS);
 				break;
 			default:
-				setVisible(
-					false,
-					PersonDto.OCCUPATION_DETAILS,
-					PersonDto.OCCUPATION_FACILITY_TYPE,
-					PersonDto.OCCUPATION_FACILITY,
-					PersonDto.OCCUPATION_FACILITY_DETAILS,
-					PersonDto.OCCUPATION_REGION,
-					PersonDto.OCCUPATION_DISTRICT,
-					PersonDto.OCCUPATION_COMMUNITY);
+				setVisible(false, PersonDto.OCCUPATION_DETAILS);
 				break;
 			}
 		} else {
-			setVisible(
-				false,
-				PersonDto.OCCUPATION_DETAILS,
-				PersonDto.OCCUPATION_FACILITY_TYPE,
-				PersonDto.OCCUPATION_FACILITY,
-				PersonDto.OCCUPATION_FACILITY_DETAILS,
-				PersonDto.OCCUPATION_REGION,
-				PersonDto.OCCUPATION_DISTRICT,
-				PersonDto.OCCUPATION_COMMUNITY);
+			setVisible(false, PersonDto.OCCUPATION_DETAILS);
 		}
 	}
 

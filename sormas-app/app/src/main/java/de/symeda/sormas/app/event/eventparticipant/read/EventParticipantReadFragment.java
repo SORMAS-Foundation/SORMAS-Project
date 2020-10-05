@@ -34,7 +34,6 @@ import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.util.AppFieldAccessCheckers;
-import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class EventParticipantReadFragment extends BaseReadFragment<FragmentEventParticipantReadLayoutBinding, EventParticipant, EventParticipant> {
 
@@ -76,8 +75,6 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 
 	private void setUpPersonFragmentFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
 		PersonReadFragment.setUpFieldVisibilities(this, contentBinding, record.getEvent());
-		InfrastructureHelper
-			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
 		PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(
 			contentBinding.personCauseOfDeath,
 			contentBinding.personCauseOfDeathDisease,

@@ -49,6 +49,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
@@ -210,6 +211,9 @@ public class Contact extends CoreAdo {
 	private Set<Visit> visits = new HashSet<>();
 	private HealthConditions healthConditions;
 	private YesNoUnknown returningTraveler;
+
+	private EndOfQuarantineReason endOfQuarantineReason;
+	private String endOfQuarantineReasonDetails;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -804,11 +808,29 @@ public class Contact extends CoreAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getReturningTraveler() {
+	public EndOfQuarantineReason getEndOfQuarantineReason() {
+		return endOfQuarantineReason;
+	}
+
+	public void setEndOfQuarantineReason(EndOfQuarantineReason endOfQuarantineReason) {
+		this.endOfQuarantineReason = endOfQuarantineReason;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getEndOfQuarantineReasonDetails() {
+		return endOfQuarantineReasonDetails;
+	}
+
+	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
+		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
+	}
+  
+  @Enumerated(EnumType.STRING)
+  public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
 	}
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
-	}
+  }
 }
