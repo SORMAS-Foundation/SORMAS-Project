@@ -112,7 +112,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ComboBox caseClassificationField = addField(FieldConfiguration.pixelSized(ContactIndexDto.CASE_CLASSIFICATION, 140));
 		caseClassificationField.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
 
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(FieldConfiguration.pixelSized(ContactIndexDto.CONTACT_CATEGORY, 140));
 		}
 
@@ -176,12 +176,15 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL),
 				200));
 		followUpUntilTo.removeAllValidators();
-		addField(
-				moreFiltersContainer,
-				FieldConfiguration.withCaptionAndPixelSized(
-						ContactCriteria.SYMPTOM_JOURNAL_STATUS,
-						I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
-						240));
+
+		if (FacadeProvider.getConfigFacade().isExternalJournalActive()) {
+			addField(
+					moreFiltersContainer,
+					FieldConfiguration.withCaptionAndPixelSized(
+							ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+							I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
+							240));
+		}
 		addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(

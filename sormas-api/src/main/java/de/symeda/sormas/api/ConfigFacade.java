@@ -105,4 +105,6 @@ public interface ConfigFacade {
 	Sormas2SormasConfig getSormas2SormasConfig();
 
 	String getAuthenticationProvider();
+
+	public boolean isExternalJournalActive();
 }

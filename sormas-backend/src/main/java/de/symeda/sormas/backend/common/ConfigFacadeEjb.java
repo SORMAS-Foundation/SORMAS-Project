@@ -412,6 +412,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public boolean isExternalJournalActive() {
+		return !StringUtils.isAllBlank(
+				getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null),
+				getProperty(INTERFACE_PATIENT_DIARY_URL, null));
+	}
+
+	@Override
 	public void validateAppUrls() {
 
 		String appUrl = getAppUrl();
