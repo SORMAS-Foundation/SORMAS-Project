@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -28,8 +31,6 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 
@@ -61,7 +62,7 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 				travelDateFrom,
 				false,
 				true,
-				I18nProperties.getValidationError(Validations.afterDate,travelDateTo.getCaption(),travelDateFrom.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, travelDateTo.getCaption(), travelDateFrom.getCaption())));
 		addField(EpiDataTravelDto.TRAVEL_TYPE, ComboBox.class);
 		addField(EpiDataTravelDto.TRAVEL_DESTINATION, TextField.class);
 
