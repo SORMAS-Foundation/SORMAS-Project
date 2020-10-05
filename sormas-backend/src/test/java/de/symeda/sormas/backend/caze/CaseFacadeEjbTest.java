@@ -1064,7 +1064,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// and symptoms
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAbdominalPain());
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAnorexiaAppetiteLoss());
-		assertTrue(mergedCase.getSymptoms().getSymptomatic());
+		assertEquals(YesNoUnknown.YES, mergedCase.getSymptoms().getSymptomatic());
 	}
 
 	@Test
@@ -1123,7 +1123,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getChestPain());
 		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getAbdominalPain());
 		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getAcuteRespiratoryDistressSyndrome());
-		assertTrue(updatedCase.getSymptoms().getSymptomatic());
+		assertEquals(YesNoUnknown.YES, updatedCase.getSymptoms().getSymptomatic());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
