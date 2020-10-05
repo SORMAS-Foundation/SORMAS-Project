@@ -927,6 +927,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
+
 		DtoHelper.validateDto(source, target);
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
