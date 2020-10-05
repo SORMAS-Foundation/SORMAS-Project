@@ -3,8 +3,8 @@ package de.symeda.sormas.backend.docgeneration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -13,7 +13,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.EntityDtoAccessHelper.CachedReferenceDtoResolver;
 import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
@@ -77,8 +76,8 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	@Override
 	public byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties) {
 		// 1. Read template from custom directory
-		String workflowTemplateDir = configFacade.getCustomFilesPath() + File.separator + "docgeneration" + File.separator + "quarantine";
-		String templateFileName = workflowTemplateDir + File.separator + templateName;
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
 		File templateFile = new File(templateFileName);
 
 		if (!templateFile.exists()) {
@@ -146,33 +145,47 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		}
 	}
 
-	private IReferenceDtoResolver getReferenceDtoResolver() {
-		IReferenceDtoResolver referenceDtoResolver = new IReferenceDtoResolver() {
+	@Override
+	public List<String> getAvailableTemplates() {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		File workflowTemplateDir = new File(workflowTemplateDirPath);
+		if (!workflowTemplateDir.exists() || !workflowTemplateDir.isDirectory()) {
+			return Collections.emptyList();
+		}
+		File[] availableTemplates = workflowTemplateDir.listFiles((d, name) -> name.endsWith(".docx"));
+		if (availableTemplates == null) {
+			return Collections.emptyList();
+		}
+		return Arrays.stream(availableTemplates).map(File::getName).collect(Collectors.toList());
+	}
 
-			@Override
-			public EntityDto resolve(ReferenceDto referenceDto) {
-				if (referenceDto == null) {
-					return null;
-				} else {
-					String uuid = referenceDto.getUuid();
-					Class<? extends ReferenceDto> referenceDtoClass = referenceDto.getClass();
-					if (PersonReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-						return personFacade.getPersonByUuid(uuid);
-					} else if (UserReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-						return userFacade.getByUuid(uuid);
-					} else if (RegionReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-						return regionFacade.getRegionByUuid(uuid);
-					} else if (DistrictReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-						return districtFacade.getDistrictByUuid(uuid);
-					} else if (CommunityReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-						return communityFacade.getByUuid(uuid);
-					} else if (FacilityReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-						return facilityFacade.getByUuid(uuid);
-					} else if (PointOfEntryReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-						return pointOfEntryFacade.getByUuid(uuid);
-					}
-					return null;
+	private String getWorkflowTemplateDirPath() {
+		return configFacade.getCustomFilesPath() + File.separator + "docgeneration" + File.separator + "quarantine";
+	}
+
+	private IReferenceDtoResolver getReferenceDtoResolver() {
+		IReferenceDtoResolver referenceDtoResolver = referenceDto -> {
+			if (referenceDto == null) {
+				return null;
+			} else {
+				String uuid = referenceDto.getUuid();
+				Class<? extends ReferenceDto> referenceDtoClass = referenceDto.getClass();
+				if (PersonReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return personFacade.getPersonByUuid(uuid);
+				} else if (UserReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return userFacade.getByUuid(uuid);
+				} else if (RegionReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return regionFacade.getRegionByUuid(uuid);
+				} else if (DistrictReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return districtFacade.getDistrictByUuid(uuid);
+				} else if (CommunityReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return communityFacade.getByUuid(uuid);
+				} else if (FacilityReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return facilityFacade.getByUuid(uuid);
+				} else if (PointOfEntryReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return pointOfEntryFacade.getByUuid(uuid);
 				}
+				return null;
 			}
 		};
 		return new CachedReferenceDtoResolver(referenceDtoResolver);

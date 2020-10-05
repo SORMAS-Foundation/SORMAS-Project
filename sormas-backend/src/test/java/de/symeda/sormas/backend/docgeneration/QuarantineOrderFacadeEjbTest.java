@@ -1,6 +1,23 @@
 package de.symeda.sormas.backend.docgeneration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -9,19 +26,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Properties;
-
-import static org.junit.Assert.assertEquals;
 
 public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 
@@ -34,7 +38,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 	@Before
 	public void setup() throws ParseException {
 		quarantineOrderFacadeEjb = getQuarantineOrderFacade();
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, getClass().getResource("/").getPath());
+		resetCustomPath();
 
 		LocationDto locationDto = new LocationDto();
 		locationDto.setStreet("Nauwieserstraße");
@@ -63,7 +67,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void generateQuarantineOrder() throws IOException {
+	public void generateQuarantineOrderTest() throws IOException {
 		ByteArrayInputStream generatedDocument =
 			new ByteArrayInputStream(quarantineOrderFacadeEjb.getGeneratedDocument("Quarantine.docx", caseDataDto.getUuid(), new Properties()));
 
@@ -77,5 +81,23 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 		String expected = writer.toString().replaceAll("\\r\\n?", "\n");
 		assertEquals(expected, docxText);
 		System.out.println("  document generated.");
+	}
+
+	@Test
+	public void getAvailableTemplatesTest() {
+		List<String> availableTemplates = quarantineOrderFacadeEjb.getAvailableTemplates();
+		assertEquals(2, availableTemplates.size());
+		assertTrue(availableTemplates.contains("Quarantine.docx"));
+		assertTrue(availableTemplates.contains("DummyTemplate.docx"));
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, "thisDirectoryDoesNotExist");
+
+		assertTrue(quarantineOrderFacadeEjb.getAvailableTemplates().isEmpty());
+
+		resetCustomPath();
+	}
+
+	private void resetCustomPath() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, getClass().getResource("/").getPath());
 	}
 }

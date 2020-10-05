@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.docgeneneration;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.ejb.Remote;
@@ -7,6 +8,7 @@ import javax.ejb.Remote;
 @Remote
 public interface QuarantineOrderFacade {
 
-	// Serializable?
 	byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties);
+
+	List<String> getAvailableTemplates();
 }
