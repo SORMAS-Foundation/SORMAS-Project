@@ -423,6 +423,8 @@ public interface Captions {
 	String Contact_diseaseDetails = "Contact.diseaseDetails";
 	String Contact_district = "Contact.district";
 	String Contact_districtUuid = "Contact.districtUuid";
+	String Contact_endOfQuarantineReason = "Contact.endOfQuarantineReason";
+	String Contact_endOfQuarantineReasonDetails = "Contact.endOfQuarantineReasonDetails";
 	String Contact_epiData = "Contact.epiData";
 	String Contact_externalID = "Contact.externalID";
 	String Contact_firstName = "Contact.firstName";
@@ -958,6 +960,9 @@ public interface Captions {
 	String Location_addressTypeDetails = "Location.addressTypeDetails";
 	String Location_areaType = "Location.areaType";
 	String Location_details = "Location.details";
+	String Location_facility = "Location.facility";
+	String Location_facilityDetails = "Location.facilityDetails";
+	String Location_facilityType = "Location.facilityType";
 	String Location_houseNumber = "Location.houseNumber";
 	String Location_latitude = "Location.latitude";
 	String Location_latLon = "Location.latLon";
@@ -1390,13 +1395,13 @@ public interface Captions {
 	String Symptoms_fastHeartRate = "Symptoms.fastHeartRate";
 	String Symptoms_fatigue = "Symptoms.fatigue";
 	String Symptoms_fatigueWeakness = "Symptoms.fatigueWeakness";
+	String Symptoms_feelingIll = "Symptoms.feelingIll";
 	String Symptoms_fever = "Symptoms.fever";
 	String Symptoms_feverishFeeling = "Symptoms.feverishFeeling";
 	String Symptoms_firstSymptom = "Symptoms.firstSymptom";
 	String Symptoms_fluidInLungCavity = "Symptoms.fluidInLungCavity";
 	String Symptoms_fluidInLungCavityAuscultation = "Symptoms.fluidInLungCavityAuscultation";
 	String Symptoms_fluidInLungCavityXray = "Symptoms.fluidInLungCavityXray";
-	String Symptoms_generalSignsOfDisease = "Symptoms.generalSignsOfDisease";
 	String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
 	String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
 	String Symptoms_headache = "Symptoms.headache";
@@ -1489,6 +1494,7 @@ public interface Captions {
 	String Symptoms_runnyNose = "Symptoms.runnyNose";
 	String Symptoms_seizures = "Symptoms.seizures";
 	String Symptoms_sepsis = "Symptoms.sepsis";
+	String Symptoms_shivering = "Symptoms.shivering";
 	String Symptoms_shock = "Symptoms.shock";
 	String Symptoms_sidePain = "Symptoms.sidePain";
 	String Symptoms_skinBruising = "Symptoms.skinBruising";
