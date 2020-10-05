@@ -100,6 +100,12 @@ public interface ConfigFacade {
 
 	String getPatientDiaryUrl();
 
+	String getPatientDiaryAuthUrl();
+
+	String getPatientDiaryEmail();
+
+	String getPatientDiaryPassword();
+
 	String getSormasToSormasUserPassword();
 
 	void validateExternalUrls();
