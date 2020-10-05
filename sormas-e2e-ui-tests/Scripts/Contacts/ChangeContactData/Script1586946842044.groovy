@@ -31,11 +31,12 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/di
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_dist11'))
 
+WebUI.scrollToElement(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Relationship with case_v-filterselect-button'), 2)
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Relationship with case_v-filterselect-button'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/span_Live in the same household'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took pl_3ad3bd'),
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took place'),
     'this is a test')
 WebUI.delay(0.5)
 
@@ -47,7 +48,7 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/
 
 // WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Quarantine end_gwt-uid-226'), quarantineEnd)
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'))
+WebUI.scrollToElement(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'), 1)
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'),
     'this is a test')
 WebUI.delay(0.5)
@@ -77,7 +78,7 @@ if (!relation.contains("same household")) {
 	throw new StepFailedException('The relation should contain "same household". relation: ' + relation)
 }
 
-String contactDescription = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took pl_3ad3bd'), 'value')
+String contactDescription = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took place'), 'value')
 if (!contactDescription.contains("this is a test")) {
 	WebUI.closeBrowser()
 	throw new StepFailedException('The description should contain "this is a test". description: ' + contactDescription)
@@ -116,7 +117,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/di
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took pl_3ad3bd'),
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took place'),
     '')
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Quarantine_v-filterselect-button'))

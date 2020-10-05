@@ -70,7 +70,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
-		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
+		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(4);
 
 		ComboBox facilityRegion = addInfrastructureField(PreviousHospitalizationDto.REGION);
 		ComboBox facilityDistrict = addInfrastructureField(PreviousHospitalizationDto.DISTRICT);

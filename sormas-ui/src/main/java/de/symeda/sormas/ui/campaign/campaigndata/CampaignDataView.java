@@ -17,8 +17,11 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
+
+import javax.naming.NamingException;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -29,6 +32,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
@@ -49,9 +53,11 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
+import de.symeda.sormas.ui.campaign.importer.CampaignImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
@@ -61,6 +67,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	private final CampaignFormDataCriteria criteria;
 	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
+	private Button importCampaignButton;
 
 	protected OptionGroup campaignFormElementImportance;
 
@@ -151,6 +158,31 @@ public class CampaignDataView extends AbstractCampaignView {
 
 			addHeaderComponent(newFormButton);
 		}
+
+		VerticalLayout importFormLayout = new VerticalLayout();
+		importFormLayout.setSpacing(true);
+		importFormLayout.setMargin(true);
+		importFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		importFormLayout.setWidth(350, Unit.PIXELS);
+
+		importCampaignButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.PLUS_CIRCLE, importFormLayout);
+		importCampaignButton.setId("campaign-form-import");
+		for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences()) {
+
+			Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+				Window popupWindow = null;
+				try {
+					popupWindow = VaadinUiUtil.showPopupWindow(new CampaignImportLayout(campaignForm.getUuid(), filterForm.getValue().getCampaign()));
+				} catch (IOException | NamingException ioException) {
+					ioException.printStackTrace();
+				}
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
+
+			});
+			campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+			importFormLayout.addComponent(campaignFormButton);
+		}
+		addHeaderComponent(importCampaignButton);
 
 		addComponent(mainLayout);
 	}

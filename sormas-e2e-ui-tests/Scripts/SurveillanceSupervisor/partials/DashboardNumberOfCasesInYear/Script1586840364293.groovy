@@ -24,14 +24,20 @@ WebUI.click(findTestObject('Login/div_Log in'))
 
 WebUI.click(findTestObject('Login/MainView/menu_Dashboard'))
 
+WebUI.maximizeWindow()
+
 WebUI.waitForElementPresent(findTestObject('Surveillance/Dashboard/caseRangeWeek'), 3)
 
 WebUI.click(findTestObject('Surveillance/Dashboard/caseRangeWeek'))
 
 WebUI.click(findTestObject('Surveillance/Dashboard/caseRangeYear'))
 
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
+WebUI.delay(1)
+
 numberOfCases = WebUI.getText(findTestObject('Surveillance/Dashboard/numberOfCases'))
 
-// WebUI.click(findTestObject('Login/span_Logout_link'))
+// WebUI.click(findTestObject('Login/div_Logout'))
 return numberOfCases
 

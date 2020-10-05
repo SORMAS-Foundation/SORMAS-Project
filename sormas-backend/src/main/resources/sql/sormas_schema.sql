@@ -5323,6 +5323,43 @@ ALTER TABLE person_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
 
+-- 2020-09-18 Add action title
+ALTER TABLE action ADD COLUMN title character varying(512);
+ALTER TABLE action_history ADD COLUMN title character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add action.title');
+
+-- 2020-09-18 Add event title
+ALTER TABLE events ADD COLUMN eventTitle character varying(512);
+ALTER TABLE events_history ADD COLUMN eventTitle character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (256, 'Add event.eventTitle');
+
+-- 2020-09-25 Cases > Minimal Essential Data (MED) for Switzerland #2959
+ALTER TABLE cases
+    ADD COLUMN caseidism integer,
+    ADD COLUMN covidtestreason varchar(255),
+    ADD COLUMN covidtestreasondetails varchar(512),
+    ADD COLUMN contacttracingfirstcontacttype varchar(255),
+    ADD COLUMN contacttracingfirstcontactdate timestamp,
+    ADD COLUMN quarantinereasonbeforeisolation varchar(255),
+    ADD COLUMN quarantinereasonbeforeisolationdetails varchar(512),
+    ADD COLUMN endofisolationreason varchar(255),
+    ADD COLUMN endofisolationreasondetails varchar(512);
+
+ALTER TABLE cases_history
+    ADD COLUMN caseidism integer,
+    ADD COLUMN covidtestreason varchar(255),
+    ADD COLUMN covidtestreasondetails varchar(512),
+    ADD COLUMN contacttracingfirstcontacttype varchar(255),
+    ADD COLUMN contacttracingfirstcontactdate timestamp,
+    ADD COLUMN quarantinereasonbeforeisolation varchar(255),
+    ADD COLUMN quarantinereasonbeforeisolationdetails varchar(512),
+    ADD COLUMN endofisolationreason varchar(255),
+    ADD COLUMN endofisolationreasondetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (257, 'Cases > Minimal Essential Data (MED) for Switzerland #2959');
+
 -- 2020-09-22 Add facility fields to location and refactor occupation facilities for persons #2456
 ALTER TABLE location ADD COLUMN facilitytype varchar(255);
 ALTER TABLE location_history ADD COLUMN facilitytype varchar(255);
@@ -5342,5 +5379,5 @@ FROM t_id_map;
 INSERT INTO person_locations (person_id, location_id) SELECT person_id, location_id FROM t_id_map;
 ALTER TABLE person DROP COLUMN occupationregion_id, DROP COLUMN occupationdistrict_id, DROP COLUMN occupationcommunity_id, DROP COLUMN occupationfacilitytype, DROP COLUMN occupationfacility_id, DROP COLUMN occupationfacilitydetails;
 
-INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add facility fields to location and refactor occupation facilities for persons #2456');
+INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add facility fields to location and refactor occupation facilities for persons #2456');
 -- *** Insert new sql commands BEFORE this line ***

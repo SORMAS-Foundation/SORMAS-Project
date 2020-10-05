@@ -153,6 +153,9 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
+import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
+import static java.time.temporal.ChronoUnit.DAYS;
+
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
 
@@ -280,7 +283,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact entity = fromDto(dto);
 		contactService.ensurePersisted(entity);
 
-		createInvestigationTask(entity);
+		if (existingContact == null) {
+			createInvestigationTask(entity);
+		}
 
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);

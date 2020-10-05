@@ -260,7 +260,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
-			.map(this::getField)
+			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
 
 		addValueChangeListener(e -> {

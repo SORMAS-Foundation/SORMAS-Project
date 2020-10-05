@@ -135,7 +135,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 230;
+	public static final int DATABASE_VERSION = 232;
 
 	private static DatabaseHelper instance = null;
 
@@ -1603,7 +1603,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 229:
 				currentVersion = 229;
-				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityType varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventTitle varchar(512);");
+
+			case 230:
+				currentVersion = 230;
+
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN caseIdIsm integer;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN covidTestReason varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN covidTestReasonDetails varchar(512);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN contactTracingFirstContactType varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN contactTracingFirstContactDate timestamp;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineReasonBeforeIsolation varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineReasonBeforeIsolationDetails varchar(512);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN endOfIsolationReason varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN endOfIsolationReasonDetails varchar(512);");
+          
+        case 231:
+          currentVersion = 231;
+          
+          getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityType varchar(255);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facility_id bigint REFERENCES facility(id);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityDetails varchar(512);");
 

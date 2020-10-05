@@ -145,6 +145,7 @@ public class TestEntityCreator {
 	}
 
 	public static Event createEvent() {
+		String eventTitle = "FirstEventTitle";
 		String eventDesc = "FirstEventDescription";
 		Date eventDate = DateHelper.subtractDays(new Date(), 2);
 		TypeOfPlace typeOfPlace = TypeOfPlace.PUBLIC_PLACE;
@@ -153,6 +154,7 @@ public class TestEntityCreator {
 		String srcTelNo = "0150123123123";
 
 		Event event = DatabaseHelper.getEventDao().build();
+		event.setEventTitle(eventTitle);
 		event.setEventDesc(eventDesc);
 		event.setStartDate(eventDate);
 		event.setTypeOfPlace(typeOfPlace);

@@ -29,6 +29,7 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -93,6 +94,10 @@ public class CaseExportDto implements Serializable {
 	public static final String LAST_COOPERATIVE_VISIT_DATE = "lastCooperativeVisitDate";
 	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMS = "lastCooperativeVisitSymptoms";
 	public static final String FACILITY = "facility";
+	public static final String EVENT_COUNT = "eventCount";
+	public static final String LATEST_EVENT_ID = "latestEventId";
+	public static final String LATEST_EVENT_STATUS = "latestEventStatus";
+	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
 
 	private String country;
 	private long id;
@@ -221,6 +226,11 @@ public class CaseExportDto implements Serializable {
 
 	private CaseJurisdictionDto jurisdiction;
 
+	private Long eventCount;
+	private String latestEventId;
+	private String latestEventTitle;
+	private EventStatus latestEventStatus;
+
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
@@ -246,7 +256,8 @@ public class CaseExportDto implements Serializable {
 						 YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
-						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester) {
+						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
+						 long eventCount) {
 		//@formatter:on
 
 		this.id = id;
@@ -321,6 +332,7 @@ public class CaseExportDto implements Serializable {
 		this.trimester = trimester;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
+		this.eventCount = eventCount;
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -1272,6 +1284,42 @@ public class CaseExportDto implements Serializable {
 		return lastCooperativeVisitSymptoms;
 	}
 
+	@Order(137)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.EVENT_COUNT)
+	@ExportGroup(ExportGroupType.EVENT)
+	public Long getEventCount() {
+		return eventCount;
+	}
+
+	@Order(138)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LATEST_EVENT_ID)
+	@ExportGroup(ExportGroupType.EVENT)
+	public String getLatestEventId() {
+		return latestEventId;
+	}
+
+	@Order(139)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LATEST_EVENT_STATUS)
+	@ExportGroup(ExportGroupType.EVENT)
+	public EventStatus getLatestEventStatus() {
+		return latestEventStatus;
+	}
+
+	@Order(140)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LATEST_EVENT_TITLE)
+	@ExportGroup(ExportGroupType.EVENT)
+	public String getLatestEventTitle() {
+		return latestEventTitle;
+	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -1542,5 +1590,17 @@ public class CaseExportDto implements Serializable {
 
 	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
 		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
+	}
+
+	public void setLatestEventId(String latestEventId) {
+		this.latestEventId = latestEventId;
+	}
+
+	public void setLatestEventTitle(String latestEventTitle) {
+		this.latestEventTitle = latestEventTitle;
+	}
+
+	public void setLatestEventStatus(EventStatus latestEventStatus) {
+		this.latestEventStatus = latestEventStatus;
 	}
 }

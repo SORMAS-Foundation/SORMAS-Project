@@ -2,6 +2,7 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
@@ -46,20 +47,21 @@ public class ExternalVisitsResource extends EntityDtoResource {
 		//@formatter:off
 			schema = @Schema(example = "[" +
 					"  {" +
-					"    \"uuid\": \"UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M\"," +
 					"    \"pseudonymized\": false," +
 					"    \"firstName\": \"Tim\"," +
 					"    \"lastName\": \"Tahler\"," +
-					"    \"sex\": \"MALE\"," +
+					"    \"emailAddress\": \"test@test.de\"" +
+					"    \"phone\": \"0123456789\"," +
 					"    \"birthdateDD\": 6," +
 					"    \"birthdateMM\": 4," +
 					"    \"birthdateYYYY\": 1974," +
-					"    \"phone\": \"0123456789\"," +
-					"    \"emailAddress\": \"test@test.de\"" +
+					"    \"sex\": \"MALE\"," +
+					"    \"uuid\": \"UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M\"," +
+					"    \"latestFollowUpEndDate\": 1601416800000," +
 					"  }" +
 					"]")))
 	//@formatter:off
-	public PersonDto getPersonByUuid(@PathParam("personUuid") String personUuid) {
+	public JournalPersonDto getPersonByUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().getPersonForJournal(personUuid);
 	};
 

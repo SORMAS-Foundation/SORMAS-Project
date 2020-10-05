@@ -8,6 +8,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -41,6 +42,7 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	private Join<Case, Symptoms> symptoms;
 	private Join<Case, ClinicalCourse> clinicalCourse;
 	private Join<ClinicalCourse, HealthConditions> healthConditions;
+	private Join<Case, EventParticipant> eventParticipants;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -188,5 +190,13 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 
 	private void setHealthConditions(Join<ClinicalCourse, HealthConditions> healthConditions) {
 		this.healthConditions = healthConditions;
+	}
+
+	private void setEventParticipants(Join<Case, EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
+	}
+
+	public Join<Case, EventParticipant> getEventParticipants() {
+		return getOrCreate(eventParticipants, Case.EVENT_PARTICIPANTS, JoinType.LEFT, this::setEventParticipants);
 	}
 }

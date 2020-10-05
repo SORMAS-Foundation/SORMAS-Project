@@ -45,6 +45,8 @@ import java.util.regex.Pattern;
 @Stateless(name = "ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 
+	private static final String AUTHENTICATION_PROVIDER = "authentication.provider";
+
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
@@ -402,6 +404,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 				"https" }).isValid(piaUrl)) {
 			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL + "' is not a valid URL");
 		}
+	}
+
+	@Override
+	public String getAuthenticationProvider() {
+		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
 	}
 
 	@Override
