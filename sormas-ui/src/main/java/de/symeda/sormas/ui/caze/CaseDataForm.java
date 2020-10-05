@@ -535,7 +535,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DateField dfFollowUpUntil = null;
 		if (caseFollowUpEnabled) {
 			addField(CaseDataDto.FOLLOW_UP_STATUS, ComboBox.class);
-			addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
+			addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 			dfFollowUpUntil = addDateField(CaseDataDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 			dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
 			addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
@@ -568,7 +568,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
 
 		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
-		additionalDetails.setRows(3);
+		additionalDetails.setRows(6);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);

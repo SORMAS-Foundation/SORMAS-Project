@@ -102,7 +102,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			ASTHMA,
 			SICKLE_CELL_DISEASE,
 			IMMUNODEFICIENCY_INCLUDING_HIV);
-		addField(OTHER_CONDITIONS, TextArea.class).setRows(3);
+		addField(OTHER_CONDITIONS, TextArea.class).setRows(6);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();

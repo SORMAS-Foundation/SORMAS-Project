@@ -130,7 +130,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
-		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
+		addField(SampleDto.COMMENT, TextArea.class).setRows(4);
 		addField(SampleDto.SHIPPED, CheckBox.class);
 		addField(SampleDto.RECEIVED, CheckBox.class);
 

@@ -148,11 +148,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 		}
-		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
+		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(4);
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
-		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(2);
+		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		birthDateDay.addStyleName(FORCE_CAPTION);
