@@ -435,6 +435,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getPerson().get(Person.DEATH_DATE),
 					joins.getAddressRegion().get(Region.NAME),
 					joins.getAddressDistrict().get(District.NAME),
+					joins.getAddressCommunity().get(Community.NAME),
 					joins.getAddress().get(Location.CITY),
 					joins.getAddress().get(Location.STREET),
 					joins.getAddress().get(Location.HOUSE_NUMBER),

@@ -109,6 +109,7 @@ public class EventParticipantExportDto implements Serializable {
 	private BurialInfoDto burialInfo;
 	private String addressRegion;
 	private String addressDistrict;
+	private String addressCommunity;
 	@PersonalData
 	@SensitiveData
 	private String city;
@@ -144,7 +145,7 @@ public class EventParticipantExportDto implements Serializable {
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
 									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
 									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
-									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String city, String street, String houseNumber,
+									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
 									 String additionalInformation, String postalCode, String phone, String caseUuid) {
     	//@formatter:on
 
@@ -182,6 +183,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.burialInfo = new BurialInfoDto(burialDate, burialConductor, burialPlaceDescription);
 		this.addressRegion = addressRegion;
 		this.addressDistrict = addressDistrict;
+		this.addressCommunity = addressCommunity;
 		this.city = city;
 		this.street = street;
 		this.houseNumber = houseNumber;
@@ -276,6 +278,11 @@ public class EventParticipantExportDto implements Serializable {
 	@ExportProperty(EventParticipantExportDto.ADDRESS_DISTRICT)
 	public String getAddressDistrict() {
 		return addressDistrict;
+	}
+
+	@Order(32)
+	public String getAddressCommunity() {
+		return addressCommunity;
 	}
 
 	@Order(33)
