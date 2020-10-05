@@ -5,8 +5,8 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 
 public class CampaignDashboardDiagramDto {
 
-	private CampaignDashboardElement campaignDashboardElement;
-	private CampaignDiagramDefinitionDto campaignDiagramDefinitionDto;
+	private final CampaignDashboardElement campaignDashboardElement;
+	private final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto;
 
 	public CampaignDashboardDiagramDto(CampaignDashboardElement campaignDashboardElement, CampaignDiagramDefinitionDto campaignDiagramDefinitionDto) {
 		if (campaignDashboardElement == null

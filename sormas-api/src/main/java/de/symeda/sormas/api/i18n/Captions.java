@@ -617,7 +617,9 @@ public interface Captions {
 	String dashboardShowEvents = "dashboardShowEvents";
 	String dashboardShowFirstDiseases = "dashboardShowFirstDiseases";
 	String dashboardShowMinimumEntries = "dashboardShowMinimumEntries";
+	String dashboardShowPercentageValues = "dashboardShowPercentageValues";
 	String dashboardShowRegions = "dashboardShowRegions";
+	String dashboardShowTotalValues = "dashboardShowTotalValues";
 	String dashboardShowUnconfirmedContacts = "dashboardShowUnconfirmedContacts";
 	String dashboardSuspect = "dashboardSuspect";
 	String dashboardSymptomatic = "dashboardSymptomatic";
