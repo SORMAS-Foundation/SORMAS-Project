@@ -1004,4 +1004,48 @@ public final class DateHelper {
 		timestamp.setNanos(timestamp.getNanos() + 999999);
 		return timestamp;
 	}
+
+	/**
+	 * Anzahl Millisekunden pro Sekunde.
+	 */
+	private static final int MILLIES_PER_SECOND = 1000;
+
+	/**
+	 * @return Current time in milliseconds.
+	 */
+	public static long now() {
+
+		return System.currentTimeMillis();
+	}
+
+	/**
+	 * Redundant to {@link #now()} to propose {@code startTime} as variable name.
+	 * 
+	 * @return Current time in milliseconds.
+	 */
+	public static long startTime() {
+
+		return now();
+	}
+
+	/**
+	 * @return Duration from {@code startTimeMillies} to now in milliseconds.
+	 */
+	public static long durationMillies(long startTimeMillies) {
+		return now() - startTimeMillies;
+	}
+
+	/**
+	 * @return Duration from {@code startTimeMillies} to now in seconds.
+	 */
+	public static long durationSeconds(long startTimeMillies) {
+		return toSeconds(durationMillies(startTimeMillies));
+	}
+
+	/**
+	 * @return Converts milliseconds to completed seconds.
+	 */
+	public static long toSeconds(long millies) {
+		return millies / MILLIES_PER_SECOND;
+	}
 }

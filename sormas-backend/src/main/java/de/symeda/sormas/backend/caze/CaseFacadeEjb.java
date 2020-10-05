@@ -259,6 +259,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
 
+	private static final int ARCHIVE_BATCH_SIZE = 1000;
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -2899,6 +2901,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
 
+		long startTime = DateHelper.startTime();
+
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterCaseGetsArchived);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2910,13 +2914,25 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.select(from.get(Case.UUID));
 		List<String> uuids = em.createQuery(cq).getResultList();
 
-		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, e -> caseService.updateArchived(e, true));
+		IterableHelper.executeBatched(uuids, ARCHIVE_BATCH_SIZE, e -> caseService.updateArchived(e, true));
+		logger.debug(
+			"archiveAllArchivableCases() finished. caseCount = {}, daysAfterCaseGetsArchived = {}, {}ms",
+			uuids.size(),
+			daysAfterCaseGetsArchived,
+			DateHelper.durationMillies(startTime));
 	}
 
 	@Override
 	public void updateArchived(List<String> caseUuids, boolean archived) {
 
-		IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, e -> caseService.updateArchived(e, archived));
+		long startTime = DateHelper.startTime();
+
+		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, e -> caseService.updateArchived(e, archived));
+		logger.debug(
+			"updateArchived() finished. caseCount = {}, archived = {}, {}ms",
+			caseUuids.size(),
+			archived,
+			DateHelper.durationMillies(startTime));
 	}
 
 	@Override
