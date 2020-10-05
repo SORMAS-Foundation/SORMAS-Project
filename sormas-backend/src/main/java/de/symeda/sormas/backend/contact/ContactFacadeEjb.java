@@ -153,9 +153,6 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
-import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
-import static java.time.temporal.ChronoUnit.DAYS;
-
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
 
@@ -458,7 +455,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
-					joins.getEpiData().get(EpiData.RODENTS)),
+					joins.getEpiData().get(EpiData.RODENTS),
+					contact.get(Contact.RETURNING_TRAVELER)),
 				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
 		cq.distinct(true);
@@ -1009,6 +1007,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
 		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
+		target.setReturningTraveler(source.getReturningTraveler());
 
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
@@ -1245,6 +1244,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
 		target.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(source.getHealthConditions()));
+		target.setReturningTraveler(source.getReturningTraveler());
 
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());

@@ -106,7 +106,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
                     fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
-					fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
+					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
 					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE, 6, ContactDto.TRACING_APP) +
 					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, 6, ContactDto.TRACING_APP_DETAILS) +
@@ -328,6 +328,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
 
+		addField(ContactDto.RETURNING_TRAVELER, OptionGroup.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 

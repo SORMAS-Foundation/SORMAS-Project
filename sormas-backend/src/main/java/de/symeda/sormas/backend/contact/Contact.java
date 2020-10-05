@@ -136,6 +136,7 @@ public class Contact extends CoreAdo {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String RETURNING_TRAVELER = "returningTraveler";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -209,6 +210,7 @@ public class Contact extends CoreAdo {
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
 	private HealthConditions healthConditions;
+	private YesNoUnknown returningTraveler;
 
 	private EndOfQuarantineReason endOfQuarantineReason;
 	private String endOfQuarantineReasonDetails;
@@ -822,4 +824,13 @@ public class Contact extends CoreAdo {
 	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
 		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
 	}
+  
+  @Enumerated(EnumType.STRING)
+  public YesNoUnknown getReturningTraveler() {
+		return returningTraveler;
+	}
+
+	public void setReturningTraveler(YesNoUnknown returningTraveler) {
+		this.returningTraveler = returningTraveler;
+  }
 }

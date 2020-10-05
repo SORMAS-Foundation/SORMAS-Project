@@ -5414,4 +5414,9 @@ ALTER TABLE campaigndiagramdefinition_history ADD COLUMN percentagedefault boole
 
 INSERT INTO schema_version (version_number, comment) VALUES (262, 'Add possibility to set percentage visualization as default for campaign diagram definitions #2528');
 
+-- 2020-10-02 Add new field returningTraveler to contact
+ALTER TABLE contact ADD COLUMN returningtraveler varchar(255);
+ALTER TABLE contact_history ADD COLUMN returningtraveler varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (263, 'Add new field returningTraveler to contact #2603');
 -- *** Insert new sql commands BEFORE this line ***
