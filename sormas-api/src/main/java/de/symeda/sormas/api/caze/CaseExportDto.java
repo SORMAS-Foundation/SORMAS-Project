@@ -96,6 +96,7 @@ public class CaseExportDto implements Serializable {
 	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMATIC = "lastCooperativeVisitSymptomatic";
 	public static final String LAST_COOPERATIVE_VISIT_DATE = "lastCooperativeVisitDate";
 	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMS = "lastCooperativeVisitSymptoms";
+	public static final String FACILITY = "facility";
 	public static final String EVENT_COUNT = "eventCount";
 	public static final String LATEST_EVENT_ID = "latestEventId";
 	public static final String LATEST_EVENT_STATUS = "latestEventStatus";
@@ -175,6 +176,9 @@ public class CaseExportDto implements Serializable {
 	@PersonalData
 	@SensitiveData
 	private String addressGpsCoordinates;
+	@PersonalData
+	@SensitiveData
+	private String facility;
 	@SensitiveData
 	private String phone;
 	private String occupationType;
@@ -252,9 +256,9 @@ public class CaseExportDto implements Serializable {
 						 YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
 						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
 						 String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
+						 String facility, String facilityUuid, String facilityDetails,
 						 String phone, String phoneOwner, EducationType educationType, String educationDetails,
-						 OccupationType occupationType, String occupationDetails, String occupationFacility,
-						 String occupationFacilityUuid, String occupationFacilityDetails, YesNoUnknown traveled,
+						 OccupationType occupationType, String occupationDetails, YesNoUnknown traveled,
 						 YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
@@ -317,12 +321,10 @@ public class CaseExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
+		this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility, facilityDetails);
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
-		this.occupationType = PersonHelper.buildOccupationString(
-			occupationType,
-			occupationDetails,
-			FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
+		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
 		this.traveled = traveled;
 		this.burialAttended = burialAttended;
 		this.directContactConfirmedCase = directContactConfirmedCase;
@@ -742,8 +744,8 @@ public class CaseExportDto implements Serializable {
 
 	@Order(44)
 	@ExportTarget(caseExportTypes = {
-			CaseExportType.CASE_SURVEILLANCE,
-			CaseExportType.CASE_MANAGEMENT })
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineReduced() {
@@ -942,13 +944,23 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(FACILITY)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getFacility() {
+		return facility;
+	}
+
+	@Order(74)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(PersonDto.PHONE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(74)
+	@Order(75)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -962,7 +974,7 @@ public class CaseExportDto implements Serializable {
 		this.educationType = educationType;
 	}
 
-	@Order(75)
+	@Order(76)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -972,7 +984,7 @@ public class CaseExportDto implements Serializable {
 		return occupationType;
 	}
 
-	@Order(76)
+	@Order(77)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVELED)
@@ -985,7 +997,7 @@ public class CaseExportDto implements Serializable {
 		this.traveled = traveled;
 	}
 
-	@Order(77)
+	@Order(78)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVEL_HISTORY)
@@ -994,7 +1006,7 @@ public class CaseExportDto implements Serializable {
 		return travelHistory;
 	}
 
-	@Order(78)
+	@Order(79)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(EpiDataDto.BURIAL_ATTENDED)
@@ -1007,7 +1019,7 @@ public class CaseExportDto implements Serializable {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(79)
+	@Order(80)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE)
@@ -1463,6 +1475,10 @@ public class CaseExportDto implements Serializable {
 
 	public void setAddressGpsCoordinates(String addressGpsCoordinates) {
 		this.addressGpsCoordinates = addressGpsCoordinates;
+	}
+
+	public void setFacility(String facility) {
+		this.facility = facility;
 	}
 
 	public void setPhone(String phone) {

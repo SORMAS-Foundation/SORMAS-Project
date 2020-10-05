@@ -441,13 +441,13 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getAddress().get(Location.HOUSE_NUMBER),
 					joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 					joins.getAddress().get(Location.POSTAL_CODE),
+					joins.getAddressFacility().get(Facility.NAME),
+					joins.getAddressFacility().get(Facility.UUID),
+					joins.getAddress().get(Location.FACILITY_DETAILS),
 					joins.getPerson().get(Person.PHONE),
 					joins.getPerson().get(Person.PHONE_OWNER),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
-					joins.getOccupationFacility().get(Facility.NAME),
-					joins.getOccupationFacility().get(Facility.UUID),
-					joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
 					joins.getRegion().get(Region.NAME),
 					joins.getDistrict().get(District.NAME),
 					joins.getCommunity().get(Community.NAME),
@@ -456,7 +456,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
-					joins.getEpiData().get(EpiData.RODENTS)),
+					joins.getEpiData().get(EpiData.RODENTS),
+					contact.get(Contact.RETURNING_TRAVELER)),
 				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
 		cq.distinct(true);
@@ -930,6 +931,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
+
 		DtoHelper.validateDto(source, target);
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
@@ -1006,6 +1008,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
 		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
+		target.setReturningTraveler(source.getReturningTraveler());
+
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		return target;
 	}
@@ -1239,6 +1245,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
 		target.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(source.getHealthConditions()));
+		target.setReturningTraveler(source.getReturningTraveler());
+
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		return target;
 	}

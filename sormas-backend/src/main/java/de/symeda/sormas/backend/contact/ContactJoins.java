@@ -53,8 +53,9 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Contact, Community> community;
 	private Join<Contact, User> reportingUser;
 	private Join<Location, Region> addressRegion;
-	private Join<Location, Region> addressDistrict;
+	private Join<Location, District> addressDistrict;
 	private Join<Location, Community> addressCommunity;
+	private Join<Location, Facility> addressFacility;
 	private Join<Person, Facility> occupationFacility;
 	private Join<Contact, EpiData> epiData;
 
@@ -196,11 +197,11 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 		this.addressRegion = addressRegion;
 	}
 
-	public Join<Location, Region> getAddressDistrict() {
+	public Join<Location, District> getAddressDistrict() {
 		return getOrCreate(addressDistrict, Location.DISTRICT, JoinType.LEFT, getAddress(), this::setAddressDistrict);
 	}
 
-	private void setAddressDistrict(Join<Location, Region> addressDistrict) {
+	private void setAddressDistrict(Join<Location, District> addressDistrict) {
 		this.addressDistrict = addressDistrict;
 	}
 
@@ -212,12 +213,12 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 		this.addressCommunity = addressCommunity;
 	}
 
-	public Join<Person, Facility> getOccupationFacility() {
-		return getOrCreate(occupationFacility, Person.OCCUPATION_FACILITY, JoinType.LEFT, getPerson(), this::setOccupationFacility);
+	public Join<Location, Facility> getAddressFacility() {
+		return getOrCreate(addressFacility, Location.FACILITY, JoinType.LEFT, getAddress(), this::setAddressFacility);
 	}
 
-	private void setOccupationFacility(Join<Person, Facility> occupationFacility) {
-		this.occupationFacility = occupationFacility;
+	private void setAddressFacility(Join<Location, Facility> addressFacility) {
+		this.addressFacility = addressFacility;
 	}
 
 	public Join<Contact, EpiData> getEpiData() {
