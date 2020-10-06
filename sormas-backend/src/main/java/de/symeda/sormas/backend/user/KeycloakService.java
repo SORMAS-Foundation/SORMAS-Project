@@ -18,11 +18,27 @@
 
 package de.symeda.sormas.backend.user;
 
-import com.nimbusds.jose.util.JSONObjectUtils;
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.user.event.*;
-import net.minidev.json.JSONObject;
+import static java.util.Collections.singletonList;
+import static org.keycloak.representations.IDToken.LOCALE;
+
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -35,24 +51,17 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.nimbusds.jose.util.JSONObjectUtils;
 
-import static java.util.Collections.singletonList;
-import static org.keycloak.representations.IDToken.LOCALE;
+import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
+import de.symeda.sormas.backend.user.event.PasswordResetEvent;
+import de.symeda.sormas.backend.user.event.UserCreateEvent;
+import de.symeda.sormas.backend.user.event.UserUpdateEvent;
+import net.minidev.json.JSONObject;
 
 /**
  * @author Alex Vidrean
@@ -63,6 +72,9 @@ import static org.keycloak.representations.IDToken.LOCALE;
 public class KeycloakService {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	private static final String OIDC_REALM = "realm";
 	private static final String OIDC_SERVER_URL = "auth-server-url";
@@ -80,6 +92,12 @@ public class KeycloakService {
 
 	@PostConstruct
 	public void init() {
+
+		if (!AuthProvider.KEYCLOAK.equalsIgnoreCase(configFacade.getAuthenticationProvider())) {
+			logger.info("Keycloak Auth Provider not active");
+			return;
+		}
+
 		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
 
 		if (!oidcJson.isPresent()) {
@@ -111,17 +129,20 @@ public class KeycloakService {
 			return;
 		}
 
+		User user = userCreateEvent.getUser();
 		String password = null;
 		if (userCreateEvent instanceof MockUserCreateEvent) {
 			password = ((MockUserCreateEvent) userCreateEvent).getPassword();
+			Optional<UserRepresentation> mockUser = getUserByUsername(keycloak.get(), user.getUserName());
+			if (mockUser.isPresent()) {
+				logger.info("Mock user {} already exists. Will not create a new one", user.getUserName());
+				return;
+			}
 		}
 
-		User user = userCreateEvent.getUser();
 		String userId = createUser(keycloak.get(), user, password);
 		if (StringUtils.isNotBlank(user.getUserEmail())) {
 			sendActivationEmail(keycloak.get(), userId);
-		} else {
-			logger.warn("Cannot send activation email, because the user has no email");
 		}
 	}
 
@@ -158,18 +179,7 @@ public class KeycloakService {
 			logger.warn("Cannot find user to update for username {}", user.getUserName());
 			return;
 		}
-
-		String userId = userRepresentation.get().getId();
-
-		if (passwordResetEvent instanceof MockPasswordUpdateEvent) {
-			UserRepresentation existingUser = userRepresentation.get();
-			setCredentials(existingUser, ((MockPasswordUpdateEvent) passwordResetEvent).getPassword());
-			keycloak.get().realms().realm(REALM_NAME).users().get(userId).update(existingUser);
-		} else if (StringUtils.isNotBlank(user.getUserEmail())) {
-			sendPasswordResetEmail(keycloak.get(), userId);
-		} else {
-			logger.warn("Cannot send password reset email, because the user has no email");
-		}
+		userRepresentation.ifPresent(existing -> sendPasswordResetEmail(keycloak.get(), existing.getId()));
 	}
 
 	private UserRepresentation createUserRepresentation(User user, String password) {
