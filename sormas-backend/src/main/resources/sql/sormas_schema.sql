@@ -4925,7 +4925,6 @@ ALTER TABLE visit_history ADD COLUMN caze_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (237, 'Adds visit to cases');
 
-
 -- 2020-08-10 - Update app synchronization related to event participants #2596
 ALTER TABLE  eventparticipant ADD COLUMN deleted boolean;
 ALTER TABLE  eventparticipant_history ADD COLUMN deleted boolean;
@@ -5420,9 +5419,51 @@ ALTER TABLE contact_history ADD COLUMN returningtraveler varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (263, 'Add new field returningTraveler to contact #2603');
 
+-- 2020-08-13 Sormas 2 Sormas sharing information #2624
+CREATE TABLE sormastosormasorigininfo (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    organizationid varchar(512),
+    sendername varchar(512),
+    senderemail varchar(512),
+    senderphonenumber varchar(512),
+    ownershiphandedover boolean NOT NULL DEFAULT false,
+    comment varchar(4096),
+    primary key(id)
+);
+ALTER TABLE sormastosormasorigininfo OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE contact ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE sormastosormasshareinfo (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    caze_id bigint,
+    contact_id bigint,
+    organizationid varchar(512),
+    sender_id bigint,
+    ownershiphandedover boolean NOT NULL DEFAULT false,
+    comment varchar(4096),
+    primary key(id)
+);
+
+ALTER TABLE sormastosormasshareinfo OWNER TO sormas_user;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (264, 'Store Sormas 2 Sormas sharing information #2624');
+
 -- 2020-10-05 Change type of symptomatic
 ALTER TABLE symptoms ALTER COLUMN symptomatic TYPE varchar(255);
 ALTER TABLE symptoms_history ALTER COLUMN symptomatic TYPE varchar(255);
 INSERT INTO schema_version (version_number, comment) VALUES (264, 'Modify the type of symptomtic');
-
 -- *** Insert new sql commands BEFORE this line ***

@@ -22,31 +22,37 @@ import com.vaadin.ui.StyleGenerator;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizable;
 
 public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 
 	private static final long serialVersionUID = -8348150203879621498L;
 
-	public static <T extends WithJurisdiction<J>, J> FieldAccessColumnStyleGenerator<T> withCheckers(
+	public static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> getDefault(Class<T> beanType, String columnId) {
+
+		return forFieldAccessCheckers(beanType, columnId, UiFieldAccessCheckers.getDefault(true));
+	}
+
+	public static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> forSensitiveData(Class<T> beanType, String columnId) {
+
+		return forFieldAccessCheckers(beanType, columnId, UiFieldAccessCheckers.forSensitiveData(true));
+	}
+
+	private static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> forFieldAccessCheckers(
 		Class<T> beanType,
 		String columnId,
-		JurisdictionChecker<J> jurisdictionChecker,
-		FieldAccessChecker... checkers) {
-
-		FieldAccessCheckers fieldAccessCheckers = FieldAccessCheckers.withCheckers(checkers);
-		UserDto currentUser = UserProvider.getCurrent().getUser();
+		UiFieldAccessCheckers psuedonymizedDataFieldChecker) {
 
 		return new FieldAccessColumnStyleGenerator<>((t) -> {
-			boolean inJurisdiction = callJurisdictionChecker(jurisdictionChecker, currentUser, t.getJurisdiction());
+			if (t.isPseudonymized()) {
+				return psuedonymizedDataFieldChecker.isEmbedded(beanType, columnId)
+					? psuedonymizedDataFieldChecker.hasRight()
+					: psuedonymizedDataFieldChecker.isAccessible(beanType, columnId);
+			}
 
-			return fieldAccessCheckers.isEmbedded(beanType, columnId)
-				? fieldAccessCheckers.hasRights(inJurisdiction)
-				: fieldAccessCheckers.isAccessible(beanType, columnId, inJurisdiction);
+			return true;
 		});
 	}
 

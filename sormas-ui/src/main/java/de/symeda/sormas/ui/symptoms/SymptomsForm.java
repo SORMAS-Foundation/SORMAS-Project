@@ -68,6 +68,7 @@ import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
@@ -78,7 +79,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {

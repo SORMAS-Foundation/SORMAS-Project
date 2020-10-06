@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.action.ActionController;
+import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
@@ -28,10 +29,10 @@ import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
-import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
 import de.symeda.sormas.ui.samples.PathogenTestController;
 import de.symeda.sormas.ui.samples.SampleController;
+import de.symeda.sormas.ui.sormastosormas.SormasToSormasController;
 import de.symeda.sormas.ui.statistics.StatisticsController;
 import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
@@ -61,6 +62,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final ClinicalCourseController clinicalCourseController;
 	private final AggregateReportController aggregateReportController;
 	private final CampaignController campaignController;
+	private final SormasToSormasController sormasToSormasController;
 
 	public ControllerProvider() {
 		super();
@@ -85,6 +87,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		clinicalCourseController = new ClinicalCourseController();
 		aggregateReportController = new AggregateReportController();
 		campaignController = new CampaignController();
+		sormasToSormasController = new SormasToSormasController();
 	}
 
 	protected static ControllerProvider get() {
@@ -169,5 +172,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static CampaignController getCampaignController() {
 		return get().campaignController;
+	}
+
+	public static SormasToSormasController getSormasToSormasController() {
+		return get().sormasToSormasController;
 	}
 }
