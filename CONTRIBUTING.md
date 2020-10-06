@@ -87,11 +87,13 @@ The SORMAS sprint board is segmented into the following categories:
 * **In Progress:** Issues that have been assigned to a contributor and for which work has started.
 * **Waiting:** Issues for which work has started and that have been put on hold, e.g. because action or feedback by an external contributor is required.
 * **Review:** Issues that have been resolved, but not been reviewed by another contributor yet. The ticket status is usually **Open**, but **Closed** is also allowed if no code change or merge is needed.
+* **Testing:** Issues that have been reviewed and merged to **development** branch to be tested and verified on a central TEST instance. The ticket status is supposed to be **Closed**.
 * **Done:** Issues that have been resolved, reviewed and satisfy the Definition of Done. The ticket status is supposed to be **Closed**.
 
-The general workflow is that whenever a contributor starts working on an issue, they **assign** themselves to it and manually **move the issue** from **Backlog** to **In Progress**.
+The general workflow is that whenever a contributor starts working on an issue, they **assign** themselves to it and manually **move the issue** from **Backlog** to **In Progress**. 
+Transitions to **Waiting** and **Review** also need to be done manually. When the developer is done with all work (no code changes or merges needed), the ticket is supposed to be closed to go automatically to **Testing**.
 
-The GitHub project has been configured to **automatically** move issues that are closed to **Done** and issues that are reopened back to **In Progress**.
+The GitHub project has been configured to **automatically** move issues that are closed to **Testing** and issues that are reopened back to **In Progress**.
 
 ### Eclipse Troubleshooting
 
