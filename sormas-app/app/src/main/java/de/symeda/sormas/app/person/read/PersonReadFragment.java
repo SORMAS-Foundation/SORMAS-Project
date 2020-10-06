@@ -31,9 +31,11 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
@@ -86,8 +88,6 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		AbstractDomainObject rootData) {
 		fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
 
-		InfrastructureHelper
-			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.personPlaceOfBirthFacility,
 			contentBinding.personPlaceOfBirthFacilityDetails);

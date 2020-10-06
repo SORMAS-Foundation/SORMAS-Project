@@ -50,6 +50,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
@@ -139,6 +140,7 @@ public class Contact extends CoreAdo {
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String RETURNING_TRAVELER = "returningTraveler";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -212,6 +214,10 @@ public class Contact extends CoreAdo {
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
 	private HealthConditions healthConditions;
+	private YesNoUnknown returningTraveler;
+
+	private EndOfQuarantineReason endOfQuarantineReason;
+	private String endOfQuarantineReasonDetails;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -826,4 +832,31 @@ public class Contact extends CoreAdo {
 	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
 		this.sormasToSormasShares = sormasToSormasShares;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public EndOfQuarantineReason getEndOfQuarantineReason() {
+		return endOfQuarantineReason;
+	}
+
+	public void setEndOfQuarantineReason(EndOfQuarantineReason endOfQuarantineReason) {
+		this.endOfQuarantineReason = endOfQuarantineReason;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getEndOfQuarantineReasonDetails() {
+		return endOfQuarantineReasonDetails;
+	}
+
+	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
+		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
+	}
+
+  @Enumerated(EnumType.STRING)
+  public YesNoUnknown getReturningTraveler() {
+		return returningTraveler;
+	}
+
+	public void setReturningTraveler(YesNoUnknown returningTraveler) {
+		this.returningTraveler = returningTraveler;
+  }
 }

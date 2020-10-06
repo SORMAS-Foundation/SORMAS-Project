@@ -71,8 +71,6 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 
 	private void setUpPersonFragmentFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
 		PersonReadFragment.setUpFieldVisibilities(this, contentBinding, record.getEvent());
-		InfrastructureHelper
-			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
 		PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(
 			contentBinding.personCauseOfDeath,
 			contentBinding.personCauseOfDeathDisease,

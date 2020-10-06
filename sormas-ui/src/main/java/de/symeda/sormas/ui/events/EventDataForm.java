@@ -176,7 +176,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextField srcMediaWebsite = addField(EventDto.SRC_MEDIA_WEBSITE, TextField.class);
 		TextField srcMediaName = addField(EventDto.SRC_MEDIA_NAME, TextField.class);
 		TextArea srcMediaDetails = addField(EventDto.SRC_MEDIA_DETAILS, TextArea.class);
-		srcMediaDetails.setRows(2);
+		srcMediaDetails.setRows(4);
 
 		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
 			.setCaption(null);

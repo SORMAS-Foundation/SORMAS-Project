@@ -30,6 +30,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -70,6 +71,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	private List<Item> categoryList;
 	private List<Item> contactIdentificationSources;
 	private List<Item> tracingApps;
+	private List<Item> endOfQuarantineReasons;
 
 	// Instance methods
 
@@ -165,6 +167,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
 		contactIdentificationSources = DataUtils.getEnumItems(ContactIdentificationSource.class, true);
 		tracingApps = DataUtils.getEnumItems(TracingApp.class, true);
+		endOfQuarantineReasons = DataUtils.getEnumItems(EndOfQuarantineReason.class, true);
 
 		if (record.getQuarantineTo() == null) {
 			record.setQuarantineTo(record.getFollowUpUntil());
@@ -389,6 +392,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactContactCategory.initializeSpinner(categoryList);
 		contentBinding.contactContactIdentificationSource.initializeSpinner(contactIdentificationSources);
 		contentBinding.contactTracingApp.initializeSpinner(tracingApps);
+		contentBinding.contactEndOfQuarantineReason.initializeSpinner(endOfQuarantineReasons);
 
 		// Initialize ControlDateFields
 		contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());

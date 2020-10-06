@@ -11,7 +11,7 @@
       </entry>
       <entry>
          <key>BASIC</key>
-         <value>//*[@role = 'menubar' and @id = 'actionSettings' and (text() = 'Settings' or . = 'Settings')]</value>
+         <value>//*[@role = 'menuitem' and (text() = 'Settings' or . = 'Settings')]</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -38,7 +38,7 @@
       <value>v-menubar-menuitem</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>role</name>
       <type>Main</type>

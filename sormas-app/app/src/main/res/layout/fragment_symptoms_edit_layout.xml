@@ -113,10 +113,31 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_generalSignsOfDisease"
+                android:id="@+id/symptoms_feelingIll"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
-                app:value="@={data.generalSignsOfDisease}"
+                app:value="@={data.feelingIll}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_shivering"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.shivering}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_headache"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.headache}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_musclePain"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.musclePain}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -393,13 +414,6 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_headache"
-                app:enumClass="@{symptomStateClass}"
-                app:slim="true"
-                app:value="@={data.headache}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_hiccups"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -489,13 +503,6 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.microcephaly}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_musclePain"
-                app:enumClass="@{symptomStateClass}"
-                app:slim="true"
-                app:value="@={data.musclePain}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField

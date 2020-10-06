@@ -70,7 +70,7 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		addField(PrescriptionDto.DOSE, TextField.class);
 		ComboBox routeField = addField(PrescriptionDto.ROUTE, ComboBox.class);
 		addField(PrescriptionDto.ROUTE_DETAILS, TextField.class);
-		addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class).setRows(3);
+		addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class).setRows(6);
 
 		initializeAccessAndAllowedAccesses();
 

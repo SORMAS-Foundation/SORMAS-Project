@@ -125,7 +125,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		CssStyles.style(fourFoldIncrease, VSPACE_3, VSPACE_TOP_4);
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
-		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
+		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(6);
 
 		initializeAccessAndAllowedAccesses();
 

@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
+
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -38,8 +43,6 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
-
-import java.util.Date;
 
 public class ContactDto extends PseudonymizableDto {
 
@@ -106,6 +109,9 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
+	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
+  public static final String RETURNING_TRAVELER = "returningTraveler";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -186,20 +192,20 @@ public class ContactDto extends PseudonymizableDto {
 	@SensitiveData
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOrderedVerbally;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOrderedOfficialDocument;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOrderedVerballyDate;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOrderedOfficialDocumentDate;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
@@ -214,12 +220,12 @@ public class ContactDto extends PseudonymizableDto {
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private boolean quarantineOfficialOrderSent;
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
 	@SensitiveData
 	private String additionalDetails;
@@ -227,6 +233,15 @@ public class ContactDto extends PseudonymizableDto {
 	private HealthConditionsDto healthConditions;
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
+	private YesNoUnknown returningTraveler;
+
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_SWITZERLAND })
+	private EndOfQuarantineReason endOfQuarantineReason;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_SWITZERLAND })
+	@SensitiveData
+	private String endOfQuarantineReasonDetails;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -755,4 +770,28 @@ public class ContactDto extends PseudonymizableDto {
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
+
+	public EndOfQuarantineReason getEndOfQuarantineReason() {
+		return endOfQuarantineReason;
+	}
+
+	public void setEndOfQuarantineReason(EndOfQuarantineReason endOfQuarantineReason) {
+		this.endOfQuarantineReason = endOfQuarantineReason;
+	}
+
+	public String getEndOfQuarantineReasonDetails() {
+		return endOfQuarantineReasonDetails;
+	}
+
+	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
+		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
+	}
+
+  public YesNoUnknown getReturningTraveler() {
+		return returningTraveler;
+	}
+
+	public void setReturningTraveler(YesNoUnknown returningTraveler) {
+		this.returningTraveler = returningTraveler;
+  }
 }

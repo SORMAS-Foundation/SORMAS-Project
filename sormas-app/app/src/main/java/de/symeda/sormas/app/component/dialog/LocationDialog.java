@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.app.component.dialog;
 
+import static android.view.View.GONE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
@@ -94,7 +96,13 @@ public class LocationDialog extends FormDialog {
 		List<Item> initialRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		InfrastructureHelper.initializeRegionFields(
+		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
+		List<Item> facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
+
+		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.locationFacility, contentBinding.locationFacilityDetails);
+
+		InfrastructureHelper.initializeFacilityFields(
+			data,
 			this.contentBinding.locationRegion,
 			initialRegions,
 			data.getRegion(),
@@ -103,7 +111,18 @@ public class LocationDialog extends FormDialog {
 			data.getDistrict(),
 			this.contentBinding.locationCommunity,
 			initialCommunities,
-			data.getCommunity());
+			data.getCommunity(),
+			null,
+			null,
+			this.contentBinding.facilityTypeGroup,
+			facilityTypeGroupList,
+			this.contentBinding.locationFacilityType,
+			null,
+			this.contentBinding.locationFacility,
+			initialFacilities,
+			data.getFacility(),
+			this.contentBinding.locationFacilityDetails,
+			true);
 
 		setFieldVisibilitiesAndAccesses(LocationDto.class, contentBinding.mainContent);
 		if (!isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY)) {
@@ -137,6 +156,12 @@ public class LocationDialog extends FormDialog {
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);
+		}
+
+		if (data.getFacility() == null) {
+			contentBinding.locationFacilityDetails.setVisibility(GONE);
+		} else {
+			contentBinding.facilityTypeGroup.setValue(data.getFacilityType().getFacilityTypeGroup());
 		}
 	}
 

@@ -150,6 +150,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
+
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
@@ -270,6 +273,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		} else {
 			target.setHealthConditions(null);
 		}
+
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

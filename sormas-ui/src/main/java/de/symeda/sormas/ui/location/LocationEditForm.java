@@ -44,9 +44,15 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -64,6 +70,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String GEO_BUTTONS_LOC = "geoButtons";
 
 	private static final String HTML_LAYOUT =
@@ -71,6 +78,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
+			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
+			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
 			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
 			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
 			fluidRow(
@@ -124,6 +133,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			addressType,
 			Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
 			Arrays.asList(PersonAddressType.OTHER_ADDRESS));
+
+		ComboBox facilityTypeGroup = new ComboBox();
+		facilityTypeGroup.setId("typeGroup");
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
+		facilityTypeGroup.addItems(FacilityTypeGroup.values());
+		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
+		ComboBox facilityType = addField(LocationDto.FACILITY_TYPE);
+		FieldHelper.removeItems(facilityType);
+		ComboBox facility = addInfrastructureField(LocationDto.FACILITY);
+		facility.setImmediate(true);
+		TextField facilityDetails = addField(LocationDto.FACILITY_DETAILS, TextField.class);
+		facilityDetails.setVisible(false);
+
 		addField(LocationDto.STREET, TextField.class);
 		addField(LocationDto.HOUSE_NUMBER, TextField.class);
 		addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
@@ -162,12 +185,100 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			if (districtDto == null) {
+				FieldHelper.removeItems(facility);
+			} else if (facilityType.getValue() != null) {
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
+			}
+		});
+		community.addValueChangeListener(e -> {
+			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+			if (facilityType.getValue() != null) {
+				FieldHelper.updateItems(
+					facility,
+					communityDto != null
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, true)
+						: district.getValue() != null
+							? FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(
+									(DistrictReferenceDto) district.getValue(),
+									(FacilityType) facilityType.getValue(),
+									true,
+									false)
+							: null);
+			}
+		});
+		facilityTypeGroup.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			FieldHelper.updateEnumData(facilityType, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+		});
+		facilityType.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			if (facilityType.getValue() != null && district.getValue() != null) {
+				if (community.getValue() != null) {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(
+								(CommunityReferenceDto) community.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
+				} else {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) district.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
+				}
+			}
+		});
+		facility.addValueChangeListener(e -> {
+			if (facility.getValue() != null) {
+				boolean visibleAndRequired = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+
+				facilityDetails.setVisible(visibleAndRequired);
+				facilityDetails.setRequired(visibleAndRequired);
+
+				if (!visibleAndRequired) {
+					facilityDetails.clear();
+				}
+			} else {
+				facilityDetails.setVisible(false);
+				facilityDetails.setRequired(false);
+				facilityDetails.clear();
+			}
+			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+
+		addValueChangeListener(e -> {
+			if (getValue().getFacility() != null) {
+				boolean facilityTypeGroupReadOnly = facilityTypeGroup.isReadOnly();
+				facilityTypeGroup.setReadOnly(false);
+
+				FacilityType caseFacilityType = getValue().getFacilityType();
+				facilityTypeGroup.setValue(caseFacilityType.getFacilityTypeGroup());
+				if (!facilityType.isReadOnly()) {
+					facilityType.setValue(caseFacilityType);
+				}
+
+				facilityTypeGroup.setReadOnly(facilityTypeGroupReadOnly);
+				facility.setValue(getValue().getFacility());
+				facilityDetails.setValue(getValue().getFacilityDetails());
+			}
+		});
 	}
 
 	private HorizontalLayout createGeoButton() {
