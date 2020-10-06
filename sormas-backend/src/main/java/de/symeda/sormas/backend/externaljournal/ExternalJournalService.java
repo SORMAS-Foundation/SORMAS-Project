@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.externaljournal;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -20,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -28,12 +32,27 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 @LocalBean
 public class ExternalJournalService {
 
+    private static final String SYMPTOM_JOURNAL_KEY = "symptomJournal";
+    private static final String PATIENT_DIARY_KEY = "patientDiary";
+    private static final Cache<String, String> authTokenCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(6, TimeUnit.HOURS)
+            .build();
+
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @EJB
     private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
     public String getSymptomJournalAuthToken() {
+        try {
+            return authTokenCache.get(SYMPTOM_JOURNAL_KEY, this::getSymptomJournalAuthTokenInternal);
+        } catch (ExecutionException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    private String getSymptomJournalAuthTokenInternal() {
         String authenticationUrl = configFacade.getSymptomJournalAuthUrl();
         String clientId = configFacade.getSymptomJournalClientId();
         String secret = configFacade.getSymptomJournalSecret();
@@ -47,7 +66,6 @@ public class ExternalJournalService {
         if (StringUtils.isBlank(secret)) {
             throw new IllegalArgumentException("Property interface.symptomjournal.secret is not defined");
         }
-
         try {
             Client client = ClientBuilder.newClient();
             HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(clientId, secret);
@@ -67,6 +85,15 @@ public class ExternalJournalService {
     }
 
     public String getPatientDiaryAuthToken() {
+        try {
+            return authTokenCache.get(PATIENT_DIARY_KEY, this::getPatientDiaryAuthTokenInternal);
+        } catch (ExecutionException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public String getPatientDiaryAuthTokenInternal() {
         String authenticationUrl = configFacade.getPatientDiaryAuthUrl();
         String email = configFacade.getPatientDiaryEmail();
         String pass = configFacade.getPatientDiaryPassword();

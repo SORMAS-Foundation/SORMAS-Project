@@ -568,7 +568,7 @@ public class ContactController {
 	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
 	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
 	 */
-	public void openDiaryTab(PersonDto person) {
+	public void openPatientDiaryTab(PersonDto person) {
 		String url = FacadeProvider.getConfigFacade().getPatientDiaryUrl();
 		url += "/enroll?personUuid=" + person.getUuid();
 		UI.getCurrent().getPage().open(url, "_blank");
