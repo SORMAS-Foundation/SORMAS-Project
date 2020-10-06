@@ -6,12 +6,12 @@
    <elementGuidId>5ef50493-d376-4e56-8087-737b12eda700</elementGuidId>
    <selectorCollection>
       <entry>
-         <key>XPATH</key>
-         <value>//div[@id='actionSettings']/span</value>
+         <key>BASIC</key>
+         <value>//*[(text() = 'Settings' or . = 'Settings')]</value>
       </entry>
       <entry>
-         <key>BASIC</key>
-         <value>//*[@role = 'menubar' and @id = 'actionSettings' and (text() = 'Settings' or . = 'Settings')]</value>
+         <key>XPATH</key>
+         <value>//div[@id='actionSettings']/span</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
