@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.docgeneration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -157,6 +158,20 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 			return Collections.emptyList();
 		}
 		return Arrays.stream(availableTemplates).map(File::getName).collect(Collectors.toList());
+	}
+
+	@Override
+	public void writeQuarantineTemplate(String fileName, byte[] document) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		FileOutputStream fileOutputStream;
+		try {
+			fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + fileName);
+			fileOutputStream.write(document);
+			fileOutputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e.getMessage());
+		}
 	}
 
 	private String getWorkflowTemplateDirPath() {
