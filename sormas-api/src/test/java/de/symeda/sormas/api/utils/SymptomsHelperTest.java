@@ -35,7 +35,7 @@ public class SymptomsHelperTest {
 		SymptomsDto symptoms = SymptomsDto.build();
 		SymptomsHelper.updateIsSymptomatic(symptoms);
 
-		assertEquals(SymptomState.NO, symptoms.getSymptomatic());
+		assertEquals(null, symptoms.getSymptomatic());
 
 		symptoms.setBackache(SymptomState.YES);
 		SymptomsHelper.updateIsSymptomatic(symptoms);
@@ -46,9 +46,9 @@ public class SymptomsHelperTest {
 		SymptomsHelper.updateIsSymptomatic(symptoms);
 		assertEquals(SymptomState.UNKNOWN, symptoms.getSymptomatic());
 
-		symptoms.setBackache(null);
+		symptoms.setBackache(SymptomState.NO);
 		SymptomsHelper.updateIsSymptomatic(symptoms);
-		assertEquals(null, symptoms.getSymptomatic());
+		assertEquals(SymptomState.NO, symptoms.getSymptomatic());
 	}
 
 	@Test
