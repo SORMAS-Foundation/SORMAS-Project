@@ -544,7 +544,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			hcjs.append("xAxis: { categories: [");
 			if (xAxisAttribute != null) {
 				xAxisCaptions.forEach((key, value) -> {
-					hcjs.append("'").append(xAxisCaptions.get(key)).append("',");
+					hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(xAxisCaptions.get(key))).append("',");
 				});
 
 				if (appendUnknownXAxisCaption) {
@@ -628,7 +628,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					seriesValue = value.getIncidence(incidenceDivisor);
 				}
 				Object seriesId = value.getRowKey();
-				hcjs.append("['").append(seriesCaptions.get(seriesId)).append("',").append(seriesValue).append("],");
+				hcjs.append("['").append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesId))).append("',").append(seriesValue).append("],");
 			});
 			if (unknownSeriesElement != null) {
 				Object seriesValue;
@@ -1020,7 +1020,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (hasMissingPopulationData) {
 					caseIncidencePossible = false;
 					List<String> missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationDataRegionIds);
-					missingPopulationDataNames = StringEscapeUtils.escapeHtml4(String.join(", ", missingPopulationDataNamesList));
+					missingPopulationDataNames = StringEscapeUtils.escapeEcmaScript(String.join(", ", missingPopulationDataNamesList));
 				}
 			}
 
