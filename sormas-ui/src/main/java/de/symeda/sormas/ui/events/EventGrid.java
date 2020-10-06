@@ -173,6 +173,11 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			deselectAll();
 		}
 
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventsView.class).get(ViewConfiguration.class);
+		if (viewConfiguration.isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
 	}
 

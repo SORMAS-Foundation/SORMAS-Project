@@ -271,6 +271,7 @@ public interface Captions {
 	String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	String CaseData_vaccine = "CaseData.vaccine";
 	String CaseData_visits = "CaseData.visits";
+	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseEditData = "caseEditData";

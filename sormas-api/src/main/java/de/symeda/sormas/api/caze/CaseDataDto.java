@@ -161,6 +161,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String COVID_TEST_REASON_DETAILS = "covidTestReasonDetails";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_TYPE = "contactTracingFirstContactType";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
+	public static final String WAS_IN_QUARANTINE_BEFORE_ISOLATION = "wasInQuarantineBeforeIsolation";
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION = "quarantineReasonBeforeIsolation";
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS = "quarantineReasonBeforeIsolationDetails";
 	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
@@ -428,6 +429,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	private ContactTracingContactType contactTracingFirstContactType;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Date contactTracingFirstContactDate;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	private YesNoUnknown wasInQuarantineBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
@@ -1241,6 +1244,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setContactTracingFirstContactDate(Date contactTracingFirstContactDate) {
 		this.contactTracingFirstContactDate = contactTracingFirstContactDate;
+	}
+
+	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
+		return wasInQuarantineBeforeIsolation;
+	}
+
+	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
+		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
 	}
 
 	public QuarantineReason getQuarantineReasonBeforeIsolation() {

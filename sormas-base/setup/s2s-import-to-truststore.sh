@@ -52,19 +52,19 @@ else
   fi
 fi
 
-if [[ ! -d "${SORMAS_DOMAIN_PATH}" ]]; then
-  DEFAULT_SORMAS_DOMAIN_PATH="${ROOT_PREFIX}/opt/domains/sormas";
+if [[ ! -d "${SORMAS_DOMAIN_DIR}" ]]; then
+  DEFAULT_SORMAS_DOMAIN_DIR="${ROOT_PREFIX}/opt/domains/sormas";
 
-  if [[ -d "${DEFAULT_SORMAS_DOMAIN_PATH}" ]]; then
-    SORMAS_DOMAIN_PATH="${DEFAULT_SORMAS_DOMAIN_PATH}";
+  if [[ -d "${DEFAULT_SORMAS_DOMAIN_DIR}" ]]; then
+    SORMAS_DOMAIN_DIR="${DEFAULT_SORMAS_DOMAIN_DIR}";
   else
-     while [[ ! -d "${SORMAS_DOMAIN_PATH}" ]]; do
-		  read -r -p "Please specify a valid SORMAS domain path: " SORMAS_DOMAIN_PATH
+     while [[ ! -d "${SORMAS_DOMAIN_DIR}" ]]; do
+		  read -r -p "Please specify a valid SORMAS domain path: " SORMAS_DOMAIN_DIR
 	  done
   fi
 fi
 
-SORMAS_PROPERTIES="${SORMAS_DOMAIN_PATH}/sormas.properties"
+SORMAS_PROPERTIES="${SORMAS_DOMAIN_DIR}/sormas.properties"
 
 ORGANIZATION_LIST_FILE_NAME=organization-list.csv
 TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12

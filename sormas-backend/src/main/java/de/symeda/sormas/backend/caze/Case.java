@@ -307,6 +307,7 @@ public class Case extends CoreAdo {
 	private String covidTestReasonDetails;
 	private ContactTracingContactType contactTracingFirstContactType;
 	private Date contactTracingFirstContactDate;
+	private YesNoUnknown wasInQuarantineBeforeIsolation;
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	private String quarantineReasonBeforeIsolationDetails;
 	private EndOfIsolationReason endOfIsolationReason;
@@ -1287,6 +1288,15 @@ public class Case extends CoreAdo {
 
 	public void setContactTracingFirstContactDate(Date contactTracingContactDate) {
 		this.contactTracingFirstContactDate = contactTracingContactDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
+		return wasInQuarantineBeforeIsolation;
+	}
+
+	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
+		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
 	}
 
 	@Enumerated(EnumType.STRING)

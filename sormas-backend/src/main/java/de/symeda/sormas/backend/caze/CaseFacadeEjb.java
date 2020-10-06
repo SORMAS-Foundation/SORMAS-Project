@@ -49,7 +49,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -252,6 +251,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -262,6 +262,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
+
+	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -1574,9 +1576,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 
-		Case caze = caseService.getByUuid(caseUuid);
-		caze.setArchived(archive);
-		caseService.ensurePersisted(caze);
+		caseService.updateArchived(Collections.singletonList(caseUuid), archive);
 	}
 
 	/**
@@ -2116,6 +2116,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
 		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
+		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
 		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
@@ -2387,6 +2388,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setCovidTestReasonDetails(source.getCovidTestReasonDetails());
 		target.setContactTracingFirstContactType(source.getContactTracingFirstContactType());
 		target.setContactTracingFirstContactDate(source.getContactTracingFirstContactDate());
+		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
 		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
 		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
@@ -2911,6 +2913,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
 
+		long startTime = DateHelper.startTime();
+
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterCaseGetsArchived);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2922,17 +2926,25 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.select(from.get(Case.UUID));
 		List<String> uuids = em.createQuery(cq).getResultList();
 
-		if (!uuids.isEmpty()) {
+		IterableHelper.executeBatched(uuids, ARCHIVE_BATCH_SIZE, e -> caseService.updateArchived(e, true));
+		logger.debug(
+			"archiveAllArchivableCases() finished. caseCount = {}, daysAfterCaseGetsArchived = {}, {}ms",
+			uuids.size(),
+			daysAfterCaseGetsArchived,
+			DateHelper.durationMillies(startTime));
+	}
 
-			CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
-			Root<Case> root = cu.from(Case.class);
+	@Override
+	public void updateArchived(List<String> caseUuids, boolean archived) {
 
-			cu.set(root.get(Case.ARCHIVED), true);
+		long startTime = DateHelper.startTime();
 
-			cu.where(root.get(Case.UUID).in(uuids));
-
-			em.createQuery(cu).executeUpdate();
-		}
+		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, e -> caseService.updateArchived(e, archived));
+		logger.debug(
+			"updateArchived() finished. caseCount = {}, archived = {}, {}ms",
+			caseUuids.size(),
+			archived,
+			DateHelper.durationMillies(startTime));
 	}
 
 	@Override

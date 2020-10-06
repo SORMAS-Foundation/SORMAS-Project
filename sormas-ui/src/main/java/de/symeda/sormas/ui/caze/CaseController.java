@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
@@ -79,6 +80,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -422,6 +424,9 @@ public class CaseController {
 						gatheringDto.setUuid(DataHelper.createUuid());
 						gatheringDto.getGatheringAddress().setUuid(DataHelper.createUuid());
 					});
+
+					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
+
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
@@ -1148,9 +1153,8 @@ public class CaseController {
 				null,
 				e -> {
 					if (e.booleanValue() == true) {
-						for (CaseIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getCaseFacade().archiveOrDearchiveCase(selectedRow.getUuid(), true);
-						}
+						List<String> caseUuids = selectedRows.stream().map(r -> r.getUuid()).collect(Collectors.toList());
+						FacadeProvider.getCaseFacade().updateArchived(caseUuids, true);
 						callback.run();
 						new Notification(
 							I18nProperties.getString(Strings.headingCasesArchived),
@@ -1179,9 +1183,8 @@ public class CaseController {
 				null,
 				e -> {
 					if (e.booleanValue() == true) {
-						for (CaseIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getCaseFacade().archiveOrDearchiveCase(selectedRow.getUuid(), false);
-						}
+						List<String> caseUuids = selectedRows.stream().map(r -> r.getUuid()).collect(Collectors.toList());
+						FacadeProvider.getCaseFacade().updateArchived(caseUuids, false);
 						callback.run();
 						new Notification(
 							I18nProperties.getString(Strings.headingCasesDearchived),
