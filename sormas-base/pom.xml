@@ -659,6 +659,11 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
+		<repository>
+			<id>payara-patchedprojects</id>
+			<name>Payara Patched Projects</name>
+			<url>https://raw.github.com/payara/Payara_PatchedProjects/master/</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
