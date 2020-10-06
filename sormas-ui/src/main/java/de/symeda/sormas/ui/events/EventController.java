@@ -57,6 +57,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class EventController {
 
@@ -397,7 +398,7 @@ public class EventController {
 								String.format(
 									I18nProperties.getString(Strings.messageCountEventsNotDeleted),
 									String.format("<b>%s</b>", countNotDeletedEvents),
-									String.format("<b>%s</b>", nonDeletableEvents)),
+									String.format("<b>%s</b>", StringEscapeUtils.escapeHtml4(nonDeletableEvents.toString()))),
 								I18nProperties.getString(Strings.messageEventsNotDeletedReason)),
 							ContentMode.HTML);
 						response.setWidth(600, Sizeable.Unit.PIXELS);

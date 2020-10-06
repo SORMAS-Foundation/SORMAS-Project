@@ -314,7 +314,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			Notification errorNotification = null;
 			for (StatisticsFilterComponent filterComponent : filterComponents) {
 				if (filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.JURISDICTION
-				    && filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.PLACE_OF_RESIDENCE
+					&& filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.PLACE_OF_RESIDENCE
 					&& (filterComponent.getSelectedAttribute() == null
 						|| filterComponent.getSelectedAttribute().getSubAttributes().length > 0
 							&& filterComponent.getSelectedSubAttribute() == null)) {
@@ -1020,7 +1020,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (hasMissingPopulationData) {
 					caseIncidencePossible = false;
 					List<String> missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationDataRegionIds);
-					missingPopulationDataNames = String.join(", ", missingPopulationDataNamesList);
+					missingPopulationDataNames = StringEscapeUtils.escapeHtml4(String.join(", ", missingPopulationDataNamesList));
 				}
 			}
 
