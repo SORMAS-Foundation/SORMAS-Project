@@ -213,6 +213,8 @@ public class Contact extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private HealthConditions healthConditions;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown returningTraveler;
 
 	public Person getPerson() {
 		return person;
@@ -708,5 +710,13 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setHealthConditions(HealthConditions healthConditions) {
 		this.healthConditions = healthConditions;
+	}
+
+	public YesNoUnknown getReturningTraveler() {
+		return returningTraveler;
+	}
+
+	public void setReturningTraveler(YesNoUnknown returningTraveler) {
+		this.returningTraveler = returningTraveler;
 	}
 }
