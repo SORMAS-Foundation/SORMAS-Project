@@ -55,7 +55,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	protected AbstractContactView(String viewName) {
 		super(viewName);
 
-		if (FacadeProvider.getConfigFacade().getSymptomJournalUrl() != null
+		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
 			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
@@ -67,7 +67,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			getButtonsLayout().addComponent(btnCreatePIAAccount);
 		}
 
-		if (FacadeProvider.getConfigFacade().getPatientDiaryUrl() != null
+		if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
 			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);

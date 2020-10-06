@@ -76,6 +76,7 @@ import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.Location;
@@ -123,6 +124,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private LocationService locationService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ExternalJournalService externalJournalService;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -287,7 +290,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		PersonDto existingPerson = toDto(person);
 
 		if (existingPerson != null) {
-			personService.notifyExternalJournalPersonUpdate(existingPerson, source);
+			externalJournalService.notifyExternalJournalPersonUpdate(existingPerson, source);
 		}
 
 		restorePseudonymizedDto(source, person, existingPerson);

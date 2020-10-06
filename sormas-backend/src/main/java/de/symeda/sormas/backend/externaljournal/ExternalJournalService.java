@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.externaljournal;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +16,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +57,9 @@ public class ExternalJournalService {
     }
 
     private String getSymptomJournalAuthTokenInternal() {
-        String authenticationUrl = configFacade.getSymptomJournalAuthUrl();
-        String clientId = configFacade.getSymptomJournalClientId();
-        String secret = configFacade.getSymptomJournalSecret();
+        String authenticationUrl = configFacade.getSymptomJournalConfig().getAuthUrl();
+        String clientId = configFacade.getSymptomJournalConfig().getClientId();
+        String secret = configFacade.getSymptomJournalConfig().getSecret();
 
         if (StringUtils.isBlank(authenticationUrl)) {
             throw new IllegalArgumentException("Property interface.symptomjournal.authurl is not defined");
@@ -94,9 +98,9 @@ public class ExternalJournalService {
     }
 
     public String getPatientDiaryAuthTokenInternal() {
-        String authenticationUrl = configFacade.getPatientDiaryAuthUrl();
-        String email = configFacade.getPatientDiaryEmail();
-        String pass = configFacade.getPatientDiaryPassword();
+        String authenticationUrl = configFacade.getPatientDiaryConfig().getAuthUrl();
+        String email = configFacade.getPatientDiaryConfig().getEmail();
+        String pass = configFacade.getPatientDiaryConfig().getPassword();
 
         if (StringUtils.isBlank(authenticationUrl)) {
             throw new IllegalArgumentException("Property interface.patientdiary.authurl is not defined");

@@ -489,7 +489,7 @@ public class ContactController {
 	public void openSymptomJournalWindow(PersonDto person) {
 		String authToken = externalJournalFacade.getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
-			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalUrl();
+			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl();
 			Map<String, String> parameters = new LinkedHashMap<>();
 			parameters.put("token", authToken);
 			parameters.put("uuid", person.getUuid());
@@ -551,7 +551,7 @@ public class ContactController {
 	private byte[] createSymptomJournalForm(String formUrl, Map<String, String> inputs) {
 		Document document;
 		try (InputStream in = getClass().getResourceAsStream("/symptomJournal.html")) {
-			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(), FacadeProvider.getConfigFacade().getSymptomJournalUrl());
+			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(),formUrl);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -569,7 +569,7 @@ public class ContactController {
 	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
 	 */
 	public void openPatientDiaryTab(PersonDto person) {
-		String url = FacadeProvider.getConfigFacade().getPatientDiaryUrl();
+		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
 		url += "/enroll?personUuid=" + person.getUuid();
 		UI.getCurrent().getPage().open(url, "_blank");
 	}
