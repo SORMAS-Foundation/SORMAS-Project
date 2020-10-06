@@ -28,7 +28,7 @@ import de.symeda.sormas.backend.user.User;
  */
 public class UserCreateEvent {
 
-	private User user;
+	private final User user;
 
 	public UserCreateEvent(User user) {
 		this.user = user;

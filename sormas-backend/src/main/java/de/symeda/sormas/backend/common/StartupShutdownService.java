@@ -45,7 +45,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.user.event.MockPasswordUpdateEvent;
 import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
+import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,17 +126,7 @@ public class StartupShutdownService {
 	@EJB
 	private UserService userService;
 	@EJB
-	private CaseService caseService;
-	@EJB
 	private ContactService contactService;
-	@EJB
-	private EventParticipantService eventParticipantService;
-	@EJB
-	private EpiDataService epiDataService;
-	@EJB
-	private SymptomsService symptomsService;
-	@EJB
-	private PersonService personService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -150,8 +142,6 @@ public class StartupShutdownService {
 	@EJB
 	private ImportFacadeEjbLocal importFacade;
 	@EJB
-	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
-	@EJB
 	private DiseaseConfigurationService diseaseConfigurationService;
 	@EJB
 	private FeatureConfigurationService featureConfigurationService;
@@ -160,6 +150,9 @@ public class StartupShutdownService {
 
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
+
+	@Inject
+	private Event<PasswordResetEvent> passwordResetEvent;
 
 	@PostConstruct
 	public void startup() {
@@ -454,6 +447,7 @@ public class StartupShutdownService {
 					newUser.setUserName(SORMAS_TO_SORMAS_USER_NAME);
 
 					userService.persist(newUser);
+					userCreateEvent.fire(new MockUserCreateEvent(newUser, sormasToSormasUserPassword));
 				}
 			} else if (!DataHelper
 				.equal(sormasToSormasUser.getPassword(), PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()))) {
@@ -461,6 +455,7 @@ public class StartupShutdownService {
 				sormasToSormasUser.setPassword(PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()));
 
 				userService.persist(sormasToSormasUser);
+				passwordResetEvent.fire(new MockPasswordUpdateEvent(sormasToSormasUser, sormasToSormasUserPassword));
 			}
 		}));
 	}
