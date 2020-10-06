@@ -104,6 +104,10 @@ public interface Strings {
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
+	String confirmationRemoveGridRowCancel = "confirmationRemoveGridRowCancel";
+	String confirmationRemoveGridRowConfirm = "confirmationRemoveGridRowConfirm";
+	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
+	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";

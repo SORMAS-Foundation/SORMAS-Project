@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -53,6 +55,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private static final String USAGE_INFO = "usageInfo";
 	private static final String CAMPAIGN_DATA_LOC = "campaignDataLoc";
 	private static final String CAMPAIGN_DASHBOARD_LOC = "campaignDashboardLoc";
+	private static final String SPACE_LOC = "spaceLoc";
 
 	private static final String HTML_LAYOUT = loc(CAMPAIGN_BASIC_HEADING_LOC)
 		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER)
@@ -61,7 +64,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
 		+ fluidRowLocs(USAGE_INFO)
 		+ fluidRowLocs(CAMPAIGN_DATA_LOC)
-		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC);
+		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC)
+		+ fluidRowLocs(SPACE_LOC);
 
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
@@ -131,9 +135,13 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		FieldHelper.addSoftRequiredStyle(description);
 
-		Label usageInfo =
-			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableCampaignGrids), ContentMode.HTML);
-		getContent().addComponent(usageInfo, USAGE_INFO);
+		final HorizontalLayout usageLayout = new HorizontalLayout(
+			new Label(
+				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableCampaignGrids),
+				ContentMode.HTML));
+		usageLayout.setSpacing(true);
+		usageLayout.setMargin(new MarginInfo(true, false, true, false));
+		getContent().addComponent(usageLayout, USAGE_INFO);
 
 		campaignFormsGridComponent = new CampaignFormsGridComponent(
 			this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
@@ -146,6 +154,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
 			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null));
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
+
+		final Label spacer = new Label();
+		getContent().addComponent(spacer, SPACE_LOC);
 	}
 
 	@Override
