@@ -278,6 +278,7 @@ public interface Captions {
 	String caseEvents = "caseEvents";
 	String caseEventsResetDateFilter = "caseEventsResetDateFilter";
 	String CaseExport_address = "CaseExport.address";
+	String CaseExport_addressCommunity = "CaseExport.addressCommunity";
 	String CaseExport_addressDistrict = "CaseExport.addressDistrict";
 	String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
 	String CaseExport_addressRegion = "CaseExport.addressRegion";
@@ -488,6 +489,7 @@ public interface Captions {
 	String contactCreatePIAAccount = "contactCreatePIAAccount";
 	String contactDetailedOverview = "contactDetailedOverview";
 	String ContactExport_address = "ContactExport.address";
+	String ContactExport_addressCommunity = "ContactExport.addressCommunity";
 	String ContactExport_addressDistrict = "ContactExport.addressDistrict";
 	String ContactExport_addressRegion = "ContactExport.addressRegion";
 	String ContactExport_burialAttended = "ContactExport.burialAttended";
@@ -834,6 +836,7 @@ public interface Captions {
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
+	String EventParticipantExport_addressCommunity = "EventParticipantExport.addressCommunity";
 	String EventParticipantExport_addressDistrict = "EventParticipantExport.addressDistrict";
 	String EventParticipantExport_addressGpsCoordinates = "EventParticipantExport.addressGpsCoordinates";
 	String EventParticipantExport_addressRegion = "EventParticipantExport.addressRegion";
@@ -872,6 +875,7 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
+	String facility = "facility";
 	String Facility_archived = "Facility.archived";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
@@ -1115,6 +1119,7 @@ public interface Captions {
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
 	String personSelect = "personSelect";
+	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
 	String PointOfEntry_latitude = "PointOfEntry.latitude";
@@ -1317,6 +1322,22 @@ public interface Captions {
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String sex = "sex";
 	String singleDayEventDate = "singleDayEventDate";
+	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
+	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
+	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
+	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
+	String sormasToSormasListTitle = "sormasToSormasListTitle";
+	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
+	String SormasToSormasOptions_handOverOwnership = "SormasToSormasOptions.handOverOwnership";
+	String SormasToSormasOptions_organization = "SormasToSormasOptions.organization";
+	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
+	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
+	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
+	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
+	String sormasToSormasShare = "sormasToSormasShare";
+	String sormasToSormasSharedBy = "sormasToSormasSharedBy";
+	String sormasToSormasSharedDate = "sormasToSormasSharedDate";
+	String sormasToSormasSharedWith = "sormasToSormasSharedWith";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";

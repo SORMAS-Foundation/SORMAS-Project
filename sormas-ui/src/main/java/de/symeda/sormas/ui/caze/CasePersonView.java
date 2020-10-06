@@ -45,8 +45,7 @@ public class CasePersonView extends AbstractCaseView {
 				caseData.getDisease(),
 				caseData.getDiseaseDetails(),
 				UserRight.CASE_EDIT,
-				getViewMode(),
-				FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid()));
+				getViewMode());
 
 		setSubComponent(personEditComponent);
 		setCaseEditPermission(personEditComponent);

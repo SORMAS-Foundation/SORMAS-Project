@@ -249,10 +249,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public PersonDto getPersonByUuid(String uuid) {
-		final Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return Optional.of(uuid)
 			.map(u -> personService.getByUuid(u))
-			.map(p -> convertToDto(pseudonymizer, p, isPersonInJurisdiction(p)))
+			.map(p -> convertToDto(p, pseudonymizer, isPersonInJurisdiction(p)))
 			.orElse(null);
 	}
 
@@ -295,7 +295,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		onPersonChanged(existingPerson, person);
 
-		return convertToDto(new Pseudonymizer(userService::hasRight), person, isPersonInJurisdiction(person));
+		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
 	}
 
 	@Override
@@ -560,18 +560,20 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
-		final Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		final List<Long> inJurisdictionIDs = personService.getInJurisdictionIDs(persons);
-		return persons.stream().map(p -> convertToDto(pseudonymizer, p, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
+
+		return persons.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
 	}
 
-	private PersonDto convertToDto(Pseudonymizer pseudonymizer, Person p, boolean hasJurisdiction) {
+	public PersonDto convertToDto(Person p, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 		final PersonDto personDto = toDto(p);
-		pseudonymizeDto(hasJurisdiction, personDto, pseudonymizer);
+		pseudonymizeDto(personDto, pseudonymizer, inJurisdiction);
+
 		return personDto;
 	}
 
-	private void pseudonymizeDto(boolean isInJurisdiction, PersonDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonymizeDto(PersonDto dto, Pseudonymizer pseudonymizer, boolean isInJurisdiction) {
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
 				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
@@ -583,7 +585,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void restorePseudonymizedDto(PersonDto source, Person person, PersonDto existingPerson) {
 		if (person != null && existingPerson != null) {
 			boolean isInJurisdiction = isPersonInJurisdiction(person);
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
 			source.getAddresses()
