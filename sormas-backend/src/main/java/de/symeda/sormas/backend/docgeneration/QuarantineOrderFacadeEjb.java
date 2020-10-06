@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.docgeneneration.TemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.TemplateDto;
+import java.io.FileOutputStream;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.backend.region.District;
 import org.apache.commons.io.IOUtils;
@@ -179,6 +180,20 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		return getAvailableTemplates().size();
 	}
 
+	@Override
+	public void writeQuarantineTemplate(String fileName, byte[] document) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		FileOutputStream fileOutputStream;
+		try {
+			fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + fileName);
+			fileOutputStream.write(document);
+			fileOutputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
 	private String getWorkflowTemplateDirPath() {
 		return configFacade.getCustomFilesPath() + File.separator + "docgeneration" + File.separator + "quarantine";
 	}
@@ -210,4 +225,5 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		};
 		return new CachedReferenceDtoResolver(referenceDtoResolver);
 	}
+
 }

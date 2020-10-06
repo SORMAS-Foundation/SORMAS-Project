@@ -15,6 +15,8 @@ public interface QuarantineOrderFacade {
 
 	List<String> getAvailableTemplates();
 
+	void writeQuarantineTemplate(String fileName, byte[] document);
+
 	// new Functions
 	List<TemplateDto> getAvailableTemplateDtos();
 	long count(TemplateCriteria criteria);
