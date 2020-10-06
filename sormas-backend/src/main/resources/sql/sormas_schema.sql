@@ -5461,4 +5461,13 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_se
 
 INSERT INTO schema_version (version_number, comment) VALUES (264, 'Store Sormas 2 Sormas sharing information #2624');
 
+-- 2020-10-05 Add new field: Quarantine before isolation #2977
+ALTER TABLE cases
+    ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);
+
+ALTER TABLE cases_history
+    ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (265, 'Add new field: Quarantine before isolation #2977');
+
 -- *** Insert new sql commands BEFORE this line ***

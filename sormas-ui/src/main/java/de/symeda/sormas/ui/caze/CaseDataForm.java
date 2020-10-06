@@ -176,6 +176,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT, CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_HELP_NEEDED) +
+					fluidRowLocs(CaseDataDto.WAS_IN_QUARANTINE_BEFORE_ISOLATION) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION, CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS) +
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS) +
@@ -601,6 +602,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addFields(CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_DATE);
 		}
 
+		addField(CaseDataDto.WAS_IN_QUARANTINE_BEFORE_ISOLATION).setStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		addFields(CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION, CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

@@ -324,6 +324,8 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private Date contactTracingFirstContactDate;
 	@Enumerated(EnumType.STRING)
+	private YesNoUnknown wasInQuarantineBeforeIsolation;
+	@Enumerated(EnumType.STRING)
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineReasonBeforeIsolationDetails;
@@ -1059,6 +1061,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setContactTracingFirstContactDate(Date contactTracingFirstContactDate) {
 		this.contactTracingFirstContactDate = contactTracingFirstContactDate;
+	}
+
+	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
+		return wasInQuarantineBeforeIsolation;
+	}
+
+	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
+		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
 	}
 
 	public QuarantineReason getQuarantineReasonBeforeIsolation() {
