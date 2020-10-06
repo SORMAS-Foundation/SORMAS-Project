@@ -17,14 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import java.util.Date;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventActionIndexDto;
@@ -39,6 +35,9 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+
+import java.util.Date;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCriteria> {
@@ -116,7 +115,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 		getDataProvider().refreshAll();
 	}
 
-	private void setLazyDataProvider() {
+	public void setLazyDataProvider() {
 
 		DataProvider<EventActionIndexDto, EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getActionFacade()
