@@ -315,12 +315,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			PersonDto.FIRST_NAME,
 			PersonDto.LAST_NAME,
 			CaseDataDto.DISEASE,
+			PersonDto.SEX,
 			CaseDataDto.REGION,
 			CaseDataDto.DISTRICT,
 			FACILITY_OR_HOME_LOC,
 			FACILITY_TYPE_GROUP_LOC,
 			CaseDataDto.FACILITY_TYPE);
-		FieldHelper.addSoftRequiredStyle(plagueType, community, facilityDetails, sex);
+		FieldHelper.addSoftRequiredStyle(plagueType, community, facilityDetails);
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);

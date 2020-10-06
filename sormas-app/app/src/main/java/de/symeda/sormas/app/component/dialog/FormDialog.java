@@ -4,13 +4,12 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.FragmentActivity;
 
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 public abstract class FormDialog extends AbstractDialog {
 
-	protected AppFieldAccessCheckers fieldAccessCheckers;
+	protected UiFieldAccessCheckers fieldAccessCheckers;
 
 	public FormDialog(
 		FragmentActivity activity,
@@ -19,7 +18,7 @@ public abstract class FormDialog extends AbstractDialog {
 		int buttonPanelLayoutResourceId,
 		int headingResourceId,
 		int subHeadingResourceId,
-		AppFieldAccessCheckers fieldAccessCheckers) {
+		UiFieldAccessCheckers fieldAccessCheckers) {
 		this(
 			activity,
 			rootLayoutId,
@@ -39,7 +38,7 @@ public abstract class FormDialog extends AbstractDialog {
 		int headingResourceId,
 		int subHeadingResourceId,
 		boolean closeOnPositiveButtonClick,
-		AppFieldAccessCheckers fieldAccessCheckers) {
+		UiFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			activity,
 			rootLayoutId,

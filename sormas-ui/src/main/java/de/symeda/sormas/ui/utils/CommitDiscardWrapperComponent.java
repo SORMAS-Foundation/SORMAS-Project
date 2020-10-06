@@ -50,7 +50,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 
-public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements Buffered {
+public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
 
@@ -93,6 +93,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Button deleteButton;
 
 	private boolean commited = false;
+	private boolean dirty = false;
 
 	private boolean shortcutsEnabled = false;
 	protected transient List<ClickShortcut> actions;
@@ -168,6 +169,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			if (wrappedComponent instanceof AbstractLegacyComponent && ((AbstractLegacyComponent) wrappedComponent).isReadOnly()) {
 				setReadOnly(true);
 			}
+		}
+
+		dirty = false;
+		if (fieldGroups != null) {
+			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
+				dirty = true;
+			})));
 		}
 	}
 
@@ -344,10 +352,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} else {
 			// NOOP
 		}
+		dirty = false;
 
 		onCommit();
 		commited = true;
-
 		onDone();
 	}
 
@@ -421,6 +429,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} else {
 			// NOOP
 		}
+		dirty = false;
+
 		onDiscard();
 		onDone();
 	}
@@ -626,5 +636,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} else {
 			contentPanel.setHeight(100, Unit.PERCENTAGE);
 		}
+	}
+
+	@Override
+	public boolean isDirty() {
+		return dirty;
 	}
 }

@@ -42,9 +42,11 @@ WebUI.click(findTestObject('Events/NewEventView/td_TypeOfPlace_Festivities_DDIte
 /*WebUI.click(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'))
 WebUI.setText(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'), 'Am Klammerberg 3')*/
 
-WebUI.setText(findTestObject('Events/NewEventView/input_Street'), 'newton street')
+WebUI.setText(findTestObject('Events/NewEventView/input_Street'), 'Alpha street')
 
-WebUI.setText(findTestObject('Events/NewEventView/input_House number'), '777')
+WebUI.click(findTestObject('Events/NewEventView/input_House number'))
+
+WebUI.setText(findTestObject('Events/NewEventView/input_House number'), '198')
 
 WebUI.setText(findTestObject('Events/NewEventView/input_PostalCode_inptBox'), '12345')
 

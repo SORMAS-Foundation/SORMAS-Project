@@ -17,10 +17,11 @@ WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPer
         ' ') + lastName], FailureHandling.STOP_ON_FAILURE)
 
 // Switch to tab "Symttoms"
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Symptoms_tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Symptoms_tab'))
 
 // Set random text in "comment" field
-WebUI.click(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'))
+WebUI.scrollToElement(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'), 2)
+
 WebUI.setText(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'), Helper.generateString(
         'comment', 8))
 

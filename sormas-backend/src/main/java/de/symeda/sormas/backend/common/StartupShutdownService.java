@@ -40,9 +40,15 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.user.event.MockPasswordUpdateEvent;
+import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
+import de.symeda.sormas.backend.user.event.PasswordResetEvent;
+import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,11 +85,13 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Singleton(name = "StartupShutdownService")
 @Startup
@@ -96,6 +104,8 @@ public class StartupShutdownService {
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
 
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
+
+	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
 
 	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
@@ -116,17 +126,7 @@ public class StartupShutdownService {
 	@EJB
 	private UserService userService;
 	@EJB
-	private CaseService caseService;
-	@EJB
 	private ContactService contactService;
-	@EJB
-	private EventParticipantService eventParticipantService;
-	@EJB
-	private EpiDataService epiDataService;
-	@EJB
-	private SymptomsService symptomsService;
-	@EJB
-	private PersonService personService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -142,11 +142,17 @@ public class StartupShutdownService {
 	@EJB
 	private ImportFacadeEjbLocal importFacade;
 	@EJB
-	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
-	@EJB
 	private DiseaseConfigurationService diseaseConfigurationService;
 	@EJB
 	private FeatureConfigurationService featureConfigurationService;
+	@EJB
+	private ServerAccessDataService serverAccessDataService;
+
+	@Inject
+	private Event<UserCreateEvent> userCreateEvent;
+
+	@Inject
+	private Event<PasswordResetEvent> passwordResetEvent;
 
 	@PostConstruct
 	public void startup() {
@@ -168,6 +174,8 @@ public class StartupShutdownService {
 		createConstantPointsOfEntry();
 
 		createDefaultUsers();
+
+		createOrUpdateSormasToSormasUser();
 
 		upgrade();
 
@@ -341,52 +349,61 @@ public class StartupShutdownService {
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
 			admin.setUserName("admin");
 			userService.persist(admin);
+			userCreateEvent.fire(new MockUserCreateEvent(admin, "sadmin"));
 
 			// Create Surveillance Supervisor
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");
 			surveillanceSupervisor.setUserName("SurvSup");
 			surveillanceSupervisor.setRegion(region);
 			userService.persist(surveillanceSupervisor);
+			userCreateEvent.fire(new MockUserCreateEvent(surveillanceSupervisor, "SurvSup"));
 
 			// Create Case Supervisor
 			User caseSupervisor = MockDataGenerator.createUser(UserRole.CASE_SUPERVISOR, "Case", "Supervisor", "CaseSup");
 			caseSupervisor.setUserName("CaseSup");
 			caseSupervisor.setRegion(region);
 			userService.persist(caseSupervisor);
+			userCreateEvent.fire(new MockUserCreateEvent(caseSupervisor, "CaseSup"));
 
 			// Create Contact Supervisor
 			User contactSupervisor = MockDataGenerator.createUser(UserRole.CONTACT_SUPERVISOR, "Contact", "Supervisor", "ContSup");
 			contactSupervisor.setUserName("ContSup");
 			contactSupervisor.setRegion(region);
 			userService.persist(contactSupervisor);
+			userCreateEvent.fire(new MockUserCreateEvent(contactSupervisor, "ContSup"));
 
 			// Create Point of Entry Supervisor
 			User poeSupervisor = MockDataGenerator.createUser(UserRole.POE_SUPERVISOR, "Point of Entry", "Supervisor", "PoeSup");
 			poeSupervisor.setUserName("PoeSup");
 			poeSupervisor.setRegion(region);
 			userService.persist(poeSupervisor);
+			userCreateEvent.fire(new MockUserCreateEvent(poeSupervisor, "PoeSup"));
 
 			// Create Laboratory Officer
 			User laboratoryOfficer = MockDataGenerator.createUser(UserRole.LAB_USER, "Laboratory", "Officer", "LabOff");
 			laboratoryOfficer.setUserName("LabOff");
 			laboratoryOfficer.setLaboratory(laboratory);
 			userService.persist(laboratoryOfficer);
+			userCreateEvent.fire(new MockUserCreateEvent(laboratoryOfficer, "LabOff"));
 
 			// Create Event Officer
 			User eventOfficer = MockDataGenerator.createUser(UserRole.EVENT_OFFICER, "Event", "Officer", "EveOff");
 			eventOfficer.setUserName("EveOff");
 			eventOfficer.setRegion(region);
 			userService.persist(eventOfficer);
+			userCreateEvent.fire(new MockUserCreateEvent(eventOfficer, "EveOff"));
 
 			// Create National User
 			User nationalUser = MockDataGenerator.createUser(UserRole.NATIONAL_USER, "National", "User", "NatUser");
 			nationalUser.setUserName("NatUser");
 			userService.persist(nationalUser);
+			userCreateEvent.fire(new MockUserCreateEvent(nationalUser, "NatUser"));
 
 			// Create National Clinician
 			User nationalClinician = MockDataGenerator.createUser(UserRole.NATIONAL_CLINICIAN, "National", "Clinician", "NatClin");
 			nationalClinician.setUserName("NatClin");
 			userService.persist(nationalClinician);
+			userCreateEvent.fire(new MockUserCreateEvent(nationalClinician, "NatClin"));
 
 			// Create Surveillance Officer
 			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance", "Officer", "SurvOff");
@@ -394,6 +411,7 @@ public class StartupShutdownService {
 			surveillanceOfficer.setRegion(region);
 			surveillanceOfficer.setDistrict(district);
 			userService.persist(surveillanceOfficer);
+			userCreateEvent.fire(new MockUserCreateEvent(surveillanceOfficer, "SurvOff"));
 
 			// Create Hospital Informant
 			User hospitalInformant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Hospital", "Informant", "HospInf");
@@ -403,6 +421,7 @@ public class StartupShutdownService {
 			hospitalInformant.setHealthFacility(facility);
 			hospitalInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(hospitalInformant);
+			userCreateEvent.fire(new MockUserCreateEvent(hospitalInformant, "HospInf"));
 
 			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
 			poeInformant.setUserName("PoeInf");
@@ -411,7 +430,34 @@ public class StartupShutdownService {
 			poeInformant.setPointOfEntry(pointOfEntry);
 			poeInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(poeInformant);
+			userCreateEvent.fire(new MockUserCreateEvent(poeInformant, "PoeInf"));
 		}
+	}
+
+	private void createOrUpdateSormasToSormasUser() {
+		final User sormasToSormasUser = userService.getByUserName(SORMAS_TO_SORMAS_USER_NAME);
+
+		serverAccessDataService.getServerAccessData().ifPresent((serverAccessData -> {
+			String sormasToSormasUserPassword = serverAccessData.getRestUserPassword();
+
+			if (sormasToSormasUser == null) {
+				if (!DataHelper.isNullOrEmpty(sormasToSormasUserPassword)) {
+					User newUser =
+						MockDataGenerator.createUser(UserRole.SORMAS_TO_SORMAS_CLIENT, "Sormas to Sormas", "Client", sormasToSormasUserPassword);
+					newUser.setUserName(SORMAS_TO_SORMAS_USER_NAME);
+
+					userService.persist(newUser);
+					userCreateEvent.fire(new MockUserCreateEvent(newUser, sormasToSormasUserPassword));
+				}
+			} else if (!DataHelper
+				.equal(sormasToSormasUser.getPassword(), PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()))) {
+				sormasToSormasUser.setSeed(PasswordHelper.createPass(16));
+				sormasToSormasUser.setPassword(PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()));
+
+				userService.persist(sormasToSormasUser);
+				passwordResetEvent.fire(new MockPasswordUpdateEvent(sormasToSormasUser, sormasToSormasUserPassword));
+			}
+		}));
 	}
 
 	/**

@@ -17,24 +17,46 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.location;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMarker;
@@ -43,23 +65,12 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-import org.apache.commons.lang3.ObjectUtils;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String GEO_BUTTONS_LOC = "geoButtons";
 
 	private static final String HTML_LAYOUT =
@@ -67,6 +78,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
+			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
+			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
 			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
 			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
 			fluidRow(
@@ -109,7 +122,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		if (!isConfiguredServer("ch")) {
 			addressType.removeAllItems();
 			addressType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
-			addressType.addItems(PersonAddressType.getValues());
+			addressType.addItems(PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode()));
 		}
 		TextField addressTypeDetails = addField(LocationDto.ADDRESS_TYPE_DETAILS, TextField.class);
 		addressTypeDetails.setVisible(false);
@@ -120,6 +133,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			addressType,
 			Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
 			Arrays.asList(PersonAddressType.OTHER_ADDRESS));
+
+		ComboBox facilityTypeGroup = new ComboBox();
+		facilityTypeGroup.setId("typeGroup");
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
+		facilityTypeGroup.addItems(FacilityTypeGroup.values());
+		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
+		ComboBox facilityType = addField(LocationDto.FACILITY_TYPE);
+		FieldHelper.removeItems(facilityType);
+		ComboBox facility = addInfrastructureField(LocationDto.FACILITY);
+		facility.setImmediate(true);
+		TextField facilityDetails = addField(LocationDto.FACILITY_DETAILS, TextField.class);
+		facilityDetails.setVisible(false);
+
 		addField(LocationDto.STREET, TextField.class);
 		addField(LocationDto.HOUSE_NUMBER, TextField.class);
 		addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
@@ -158,12 +185,100 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			if (districtDto == null) {
+				FieldHelper.removeItems(facility);
+			} else if (facilityType.getValue() != null) {
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
+			}
+		});
+		community.addValueChangeListener(e -> {
+			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+			if (facilityType.getValue() != null) {
+				FieldHelper.updateItems(
+					facility,
+					communityDto != null
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, true)
+						: district.getValue() != null
+							? FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(
+									(DistrictReferenceDto) district.getValue(),
+									(FacilityType) facilityType.getValue(),
+									true,
+									false)
+							: null);
+			}
+		});
+		facilityTypeGroup.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			FieldHelper.updateEnumData(facilityType, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+		});
+		facilityType.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			if (facilityType.getValue() != null && district.getValue() != null) {
+				if (community.getValue() != null) {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(
+								(CommunityReferenceDto) community.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
+				} else {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) district.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
+				}
+			}
+		});
+		facility.addValueChangeListener(e -> {
+			if (facility.getValue() != null) {
+				boolean visibleAndRequired = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+
+				facilityDetails.setVisible(visibleAndRequired);
+				facilityDetails.setRequired(visibleAndRequired);
+
+				if (!visibleAndRequired) {
+					facilityDetails.clear();
+				}
+			} else {
+				facilityDetails.setVisible(false);
+				facilityDetails.setRequired(false);
+				facilityDetails.clear();
+			}
+			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
-			.map(this::getField)
+			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+
+		addValueChangeListener(e -> {
+			if (getValue().getFacility() != null) {
+				boolean facilityTypeGroupReadOnly = facilityTypeGroup.isReadOnly();
+				facilityTypeGroup.setReadOnly(false);
+
+				FacilityType caseFacilityType = getValue().getFacilityType();
+				facilityTypeGroup.setValue(caseFacilityType.getFacilityTypeGroup());
+				if (!facilityType.isReadOnly()) {
+					facilityType.setValue(caseFacilityType);
+				}
+
+				facilityTypeGroup.setReadOnly(facilityTypeGroupReadOnly);
+				facility.setValue(getValue().getFacility());
+				facilityDetails.setValue(getValue().getFacilityDetails());
+			}
+		});
 	}
 
 	private HorizontalLayout createGeoButton() {
@@ -293,5 +408,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		public void setCoordinates(GeoLatLon coordinates) {
 			this.coordinates = coordinates;
 		}
+	}
+
+	@Override
+	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
+		field.addValueChangeListener(e -> fireValueChange(false));
+
+		return super.addFieldToLayout(layout, propertyId, field);
 	}
 }

@@ -18,16 +18,14 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import com.vaadin.navigator.ViewChangeListener;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
-import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 
 @SuppressWarnings("serial")
 public class SurveillanceDashboardView extends AbstractDashboardView {

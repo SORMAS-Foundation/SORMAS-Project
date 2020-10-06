@@ -62,6 +62,7 @@ public interface Validations {
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
 	String importRegionNotUnique = "importRegionNotUnique";
 	String importUnexpectedError = "importUnexpectedError";
+	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
@@ -78,6 +79,12 @@ public interface Validations {
 	String required = "required";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
+	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
+	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
+	String sormasToSormasContactExists = "sormasToSormasContactExists";
+	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
+	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
+	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String specifyFirstName = "specifyFirstName";
 	String specifyLastName = "specifyLastName";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";

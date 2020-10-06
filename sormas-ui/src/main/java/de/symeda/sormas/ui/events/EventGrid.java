@@ -17,15 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import java.util.Date;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
-
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -38,17 +34,18 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+
+import java.util.Date;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
@@ -100,7 +97,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			EventIndexDto.EVENT_STATUS,
 			createEventDateColumn(this, userLanguage),
 			DISEASE_SHORT,
-			EventIndexDto.EVENT_DESC,
+			EventIndexDto.EVENT_TITLE,
 			EventIndexDto.EVENT_LOCATION,
 			EventIndexDto.SRC_TYPE,
 			INFORMATION_SOURCE,
@@ -108,20 +105,18 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			NUMBER_OF_PENDING_TASKS,
 			EventIndexDto.PARTICIPANT_COUNT);
 
+		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
+
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		for (Column<EventIndexDto, ?> column : getColumns()) {
 			String columnId = column.getId();
-			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, columnId.toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, columnId, column.getCaption()));
 			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					getBeanType(),
-					INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId,
-					EventJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				FieldAccessColumnStyleGenerator
+					.getDefault(getBeanType(), INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId));
 		}
 
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
@@ -176,6 +171,11 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
+		}
+
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventsView.class).get(ViewConfiguration.class);
+		if (viewConfiguration.isInEagerMode()) {
+			setEagerDataProvider();
 		}
 
 		getDataProvider().refreshAll();

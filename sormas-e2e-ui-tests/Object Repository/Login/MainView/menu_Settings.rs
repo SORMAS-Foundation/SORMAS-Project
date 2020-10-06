@@ -6,12 +6,12 @@
    <elementGuidId>5ef50493-d376-4e56-8087-737b12eda700</elementGuidId>
    <selectorCollection>
       <entry>
-         <key>BASIC</key>
-         <value>//*[(text() = 'Settings' or . = 'Settings')]</value>
-      </entry>
-      <entry>
          <key>XPATH</key>
          <value>//div[@id='actionSettings']/span</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//*[@role = 'menuitem' and (text() = 'Settings' or . = 'Settings')]</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -38,7 +38,7 @@
       <value>v-menubar-menuitem</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>role</name>
       <type>Main</type>

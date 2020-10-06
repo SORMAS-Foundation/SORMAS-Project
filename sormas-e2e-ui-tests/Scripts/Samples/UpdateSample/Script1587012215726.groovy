@@ -21,6 +21,8 @@ println('searching for case: ' + caseName)
 
 WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_Export_caseCodeIdLike'), caseName)
 
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
 WebUI.delay(1)
 
 println('test-files-db: ' + GlobalVariable.gSamplesTestDataName)
@@ -49,11 +51,13 @@ WebUI.sendKeys(findTestObject('Samples/SampleInformation/input_TypeOfSample'), K
 
 // the sendKeys-Tab adds some strange characters to the comment field - this cleans it up
 WebUI.click(findTestObject('Samples/SampleInformation/textarea_Comment_comment'))
-WebUI.setText(findTestObject('Samples/SampleInformation/textarea_Comment_comment'), '')
+WebUI.setText(findTestObject('Samples/SampleInformation/textarea_Comment_comment'), 'Sample is edited')
 
+WebUI.scrollToElement(findTestObject('Object Repository/Samples/SampleInformation/save_Sample'), 2)
 WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/save_Sample'))
 
-WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/link_SamplesList'))
+WebUI.scrollToElement(findTestObject('Object Repository/Samples/SampleInformation/div_Samples list'), 2)
+WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/div_Samples list'))
 
 // CHECK
 WebUI.click(findTestObject('Samples/MainView/edit_sample_from_table'))

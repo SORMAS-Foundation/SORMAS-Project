@@ -22,7 +22,6 @@ import java.util.function.Supplier;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -36,6 +35,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
@@ -43,9 +43,9 @@ import de.symeda.sormas.ui.contact.ContactInfoLayout;
 import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class SampleDataView extends AbstractSampleView {
 
@@ -59,6 +59,8 @@ public class SampleDataView extends AbstractSampleView {
 	public static final String EVENT_PARTICIPANT_LOC = "eventParticipant";
 	public static final String PATHOGEN_TESTS_LOC = "pathogenTests";
 	public static final String ADDITIONAL_TESTS_LOC = "additionalTests";
+
+	private CommitDiscardWrapperComponent<SampleEditForm> editComponent;
 
 	public SampleDataView() {
 		super(VIEW_NAME);
@@ -77,7 +79,7 @@ public class SampleDataView extends AbstractSampleView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, PATHOGEN_TESTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ADDITIONAL_TESTS_LOC));
 
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
@@ -94,32 +96,20 @@ public class SampleDataView extends AbstractSampleView {
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
 		if (associatedCase != null) {
 			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
-			boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(associatedCase.getUuid());
-
 			disease = caseDto.getDisease();
 
-			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(
-				caseDto,
-				UiFieldAccessCheckers.withCheckers(
-					isInJurisdiction,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
 			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(caseInfoLayout, CASE_LOC);
 		}
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
 		if (associatedContact != null) {
 			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
-			boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(contactDto.getUuid());
 
 			disease = contactDto.getDisease();
 
-			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(
-				contactDto,
-				UiFieldAccessCheckers.withCheckers(
-					isInJurisdiction,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+			final ContactInfoLayout contactInfoLayout =
+				new ContactInfoLayout(contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
 
@@ -136,17 +126,13 @@ public class SampleDataView extends AbstractSampleView {
 			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(
 				eventParticipantDto,
 				eventDto,
-				UiFieldAccessCheckers.withCheckers(
-					isInJurisdiction,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				UiFieldAccessCheckers.getDefault(eventParticipantDto.isPseudonymized()));
 
 			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
-		CommitDiscardWrapperComponent<SampleEditForm> editComponent =
-			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), isSampleEditAllowed());
+		editComponent = ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized());
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

@@ -28,4 +28,6 @@ import java.lang.annotation.Target;
 public @interface EmbeddedAdo {
 
 	String parentAccessor() default "";
+
+	boolean nullable() default false;
 }
