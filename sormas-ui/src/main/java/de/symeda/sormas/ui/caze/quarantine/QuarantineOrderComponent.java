@@ -49,8 +49,8 @@ public class QuarantineOrderComponent extends VerticalLayout {
 			String templateFile = e.getValue();
 			boolean isValidTemplateFile = templateFile != null && !templateFile.isEmpty();
 			createButton.setEnabled(isValidTemplateFile);
-			if (isValidTemplateFile(templateFile)) {
-				setDownloadFile(templateFile);
+			if (isValidTemplateFile) {
+				setStreamResource(templateFile);
 			}
 		});
 		addComponent(templateSelector);
@@ -58,11 +58,7 @@ public class QuarantineOrderComponent extends VerticalLayout {
 		componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 	}
 
-	private boolean isValidTemplateFile(String templateFile) {
-		return templateFile != null && !templateFile.isEmpty();
-	}
-
-	private void setDownloadFile(String templateFile) {
+	private void setStreamResource(String templateFile) {
 		StreamResource streamResource = new StreamResource((StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 			return new ByteArrayInputStream(quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto.getUuid(), new Properties()));
