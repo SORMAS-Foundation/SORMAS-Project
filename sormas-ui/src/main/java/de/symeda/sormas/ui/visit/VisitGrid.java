@@ -66,14 +66,15 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			VisitIndexDto.VISIT_REMARKS,
 			VisitIndexDto.DISEASE,
 			VisitIndexDto.SYMPTOMATIC,
-			VisitIndexDto.TEMPERATURE);
+			VisitIndexDto.TEMPERATURE,
+			VisitIndexDto.ORIGIN);
 
 		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new BooleanRenderer());
 
 		for (Column<VisitIndexDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(VisitIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(VisitIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 
 			column.setStyleGenerator(
 				FieldAccessColumnStyleGenerator.withCheckers(

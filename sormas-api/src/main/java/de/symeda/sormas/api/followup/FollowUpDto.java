@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 
 public abstract class FollowUpDto implements Serializable {
 
@@ -25,7 +27,7 @@ public abstract class FollowUpDto implements Serializable {
 	private Date reportDate;
 	private Date followUpUntil;
 	private Disease disease;
-	private VisitResult[] visitResults;
+	private VisitResultDto[] visitResults;
 
 	//@formatter:off
 	protected FollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
@@ -39,8 +41,8 @@ public abstract class FollowUpDto implements Serializable {
 	}
 
 	public void initVisitSize(int i) {
-		visitResults = new VisitResult[i];
-		Arrays.fill(visitResults, VisitResult.NOT_PERFORMED);
+		visitResults = new VisitResultDto[i];
+		Arrays.fill(visitResults, new VisitResultDto(VisitOrigin.USER, VisitResult.NOT_PERFORMED));
 	}
 
 	public String getUuid() {
@@ -83,11 +85,11 @@ public abstract class FollowUpDto implements Serializable {
 		this.disease = disease;
 	}
 
-	public VisitResult[] getVisitResults() {
+	public VisitResultDto[] getVisitResults() {
 		return visitResults;
 	}
 
-	public void setVisitResults(VisitResult[] visitResults) {
+	public void setVisitResults(VisitResultDto[] visitResults) {
 		this.visitResults = visitResults;
 	}
 }
