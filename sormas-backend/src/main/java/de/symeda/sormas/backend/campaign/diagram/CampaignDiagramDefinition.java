@@ -1,19 +1,17 @@
 package de.symeda.sormas.backend.campaign.diagram;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
-import org.hibernate.annotations.Type;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import java.util.List;
 
 @Entity
 @Audited
@@ -25,6 +23,8 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 	private String diagramCaption;
 	private DiagramType diagramType;
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
+	private List<CampaignDiagramSeries> campaignSeriesTotal;
+	private boolean percentageDefault;
 
 	@Column
 	public String getDiagramId() {
@@ -62,5 +62,25 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 
 	public void setCampaignDiagramSeries(List<CampaignDiagramSeries> campaignDiagramSeries) {
 		this.campaignDiagramSeries = campaignDiagramSeries;
+	}
+
+	@AuditedIgnore
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	public List<CampaignDiagramSeries> getCampaignSeriesTotal() {
+		return campaignSeriesTotal;
+	}
+
+	public void setCampaignSeriesTotal(List<CampaignDiagramSeries> campaignSeriesTotal) {
+		this.campaignSeriesTotal = campaignSeriesTotal;
+	}
+
+	@Column
+	public boolean isPercentageDefault() {
+		return percentageDefault;
+	}
+
+	public void setPercentageDefault(boolean percentageDefault) {
+		this.percentageDefault = percentageDefault;
 	}
 }

@@ -115,7 +115,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public List<String> getAllActiveUuids() {
+	public List<String>  getAllActiveUuids() {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
@@ -344,6 +344,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 			address.join(Location.REGION, JoinType.LEFT).get(Region.NAME),
 			address.join(Location.DISTRICT, JoinType.LEFT).get(District.NAME),
+			address.join(Location.COMMUNITY, JoinType.LEFT).get(Community.NAME),
 			address.get(Location.CITY),
 			address.get(Location.STREET),
 			address.get(Location.HOUSE_NUMBER),

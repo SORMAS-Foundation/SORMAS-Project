@@ -17,6 +17,26 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -36,25 +56,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity
 @Audited
@@ -89,11 +90,6 @@ public class Person extends AbstractDomainObject {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
-	public static final String OCCUPATION_REGION = "occupationRegion";
-	public static final String OCCUPATION_DISTRICT = "occupationDistrict";
-	public static final String OCCUPATION_COMMUNITY = "occupationCommunity";
-	public static final String OCCUPATION_FACILITY = "occupationFacility";
-	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String FATHERS_NAME = "fathersName";
@@ -109,7 +105,6 @@ public class Person extends AbstractDomainObject {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
-	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
 
@@ -161,15 +156,9 @@ public class Person extends AbstractDomainObject {
 
 	private OccupationType occupationType;
 	private String occupationDetails;
-	private Region occupationRegion;
-	private District occupationDistrict;
-	private Community occupationCommunity;
-	private Facility occupationFacility;
-	private String occupationFacilityDetails;
 	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
-	private FacilityType occupationFacilityType;
 	private FacilityType placeOfBirthFacilityType;
 	private Set<Location> addresses = new HashSet<>();
 	private Date changeDateOfEmbeddedLists;
@@ -425,50 +414,6 @@ public class Person extends AbstractDomainObject {
 		this.occupationDetails = occupationDetails;
 	}
 
-	@ManyToOne(cascade = {})
-	public Facility getOccupationFacility() {
-		return occupationFacility;
-	}
-
-	public void setOccupationFacility(Facility occupationFacility) {
-		this.occupationFacility = occupationFacility;
-	}
-
-	@ManyToOne(cascade = {})
-	public Region getOccupationRegion() {
-		return occupationRegion;
-	}
-
-	public void setOccupationRegion(Region occupationRegion) {
-		this.occupationRegion = occupationRegion;
-	}
-
-	@ManyToOne(cascade = {})
-	public District getOccupationDistrict() {
-		return occupationDistrict;
-	}
-
-	public void setOccupationDistrict(District occupationDistrict) {
-		this.occupationDistrict = occupationDistrict;
-	}
-
-	@ManyToOne(cascade = {})
-	public Community getOccupationCommunity() {
-		return occupationCommunity;
-	}
-
-	public void setOccupationCommunity(Community occupationCommunity) {
-		this.occupationCommunity = occupationCommunity;
-	}
-
-	public String getOccupationFacilityDetails() {
-		return occupationFacilityDetails;
-	}
-
-	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
-		this.occupationFacilityDetails = occupationFacilityDetails;
-	}
-
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getMothersName() {
 		return mothersName;
@@ -582,15 +527,6 @@ public class Person extends AbstractDomainObject {
 
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public FacilityType getOccupationFacilityType() {
-		return occupationFacilityType;
-	}
-
-	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
-		this.occupationFacilityType = occupationFacilityType;
 	}
 
 	@Enumerated(EnumType.STRING)

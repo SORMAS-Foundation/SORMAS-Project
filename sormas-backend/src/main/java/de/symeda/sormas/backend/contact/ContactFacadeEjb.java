@@ -17,6 +17,47 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
+import static java.time.temporal.ChronoUnit.DAYS;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -111,45 +152,6 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
@@ -433,18 +435,19 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getPerson().get(Person.DEATH_DATE),
 					joins.getAddressRegion().get(Region.NAME),
 					joins.getAddressDistrict().get(District.NAME),
+					joins.getAddressCommunity().get(Community.NAME),
 					joins.getAddress().get(Location.CITY),
 					joins.getAddress().get(Location.STREET),
 					joins.getAddress().get(Location.HOUSE_NUMBER),
 					joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 					joins.getAddress().get(Location.POSTAL_CODE),
+					joins.getAddressFacility().get(Facility.NAME),
+					joins.getAddressFacility().get(Facility.UUID),
+					joins.getAddress().get(Location.FACILITY_DETAILS),
 					joins.getPerson().get(Person.PHONE),
 					joins.getPerson().get(Person.PHONE_OWNER),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
-					joins.getOccupationFacility().get(Facility.NAME),
-					joins.getOccupationFacility().get(Facility.UUID),
-					joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
 					joins.getRegion().get(Region.NAME),
 					joins.getDistrict().get(District.NAME),
 					joins.getCommunity().get(Community.NAME),
@@ -453,7 +456,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
-					joins.getEpiData().get(EpiData.RODENTS)),
+					joins.getEpiData().get(EpiData.RODENTS),
+					contact.get(Contact.RETURNING_TRAVELER)),
 				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
 		cq.distinct(true);
@@ -927,6 +931,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
+
 		DtoHelper.validateDto(source, target);
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
@@ -1003,6 +1008,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
 		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
+		target.setReturningTraveler(source.getReturningTraveler());
+
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		return target;
 	}
@@ -1236,6 +1245,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
 		target.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(source.getHealthConditions()));
+		target.setReturningTraveler(source.getReturningTraveler());
+
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		return target;
 	}

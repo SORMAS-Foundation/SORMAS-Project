@@ -58,7 +58,7 @@ public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
 		addField(TreatmentDto.DOSE, TextField.class);
 		ComboBox routeField = addField(TreatmentDto.ROUTE, ComboBox.class);
 		addField(TreatmentDto.ROUTE_DETAILS, TextField.class);
-		addField(TreatmentDto.ADDITIONAL_NOTES, TextArea.class).setRows(3);
+		addField(TreatmentDto.ADDITIONAL_NOTES, TextArea.class).setRows(6);
 
 		initializeAccessAndAllowedAccesses();
 
