@@ -66,7 +66,6 @@ public interface Validations {
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
-	String noFacilityDetails = "noFacilityDetails";
 	String noFacilityInCommunity = "noFacilityInCommunity";
 	String noFacilityInDistrict = "noFacilityInDistrict";
 	String noFacilityInRegion = "noFacilityInRegion";

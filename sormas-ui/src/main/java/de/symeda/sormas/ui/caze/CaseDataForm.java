@@ -1193,7 +1193,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
 
 			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(visibleAndRequired);
+			if (otherHealthFacility) {
+				tfFacilityDetails.setRequired(visibleAndRequired);
+			}
 
 			if (otherHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));

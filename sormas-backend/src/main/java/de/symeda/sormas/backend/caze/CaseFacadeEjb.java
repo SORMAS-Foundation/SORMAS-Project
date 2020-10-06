@@ -1568,10 +1568,6 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (healthFacility.getRegion() != null && !caze.getRegion().equals(healthFacility.getRegion())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInRegion));
 			}
-			if (FacilityHelper.isOtherOrNoneHealthFacility(caze.getHealthFacility().getUuid())
-				&& StringUtils.isEmpty(caze.getHealthFacilityDetails())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityDetails));
-			}
 		}
 	}
 
