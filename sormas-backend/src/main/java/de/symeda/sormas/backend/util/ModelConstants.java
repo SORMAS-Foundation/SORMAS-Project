@@ -25,7 +25,7 @@ public interface ModelConstants {
 
 	/**
 	 * Hard limit how much parameter can be allowed in a query.<br />
-	 * Typically this is an issue when an IN clause becomes to big for an SQL-Statement in PostgreSQL.
+	 * Typically this is an issue when an IN clause becomes too big for an SQL statement in PostgreSQL.
 	 */
 	int PARAMETER_LIMIT = 32_000;
 }

@@ -1005,10 +1005,7 @@ public final class DateHelper {
 		return timestamp;
 	}
 
-	/**
-	 * Anzahl Millisekunden pro Sekunde.
-	 */
-	private static final int MILLIES_PER_SECOND = 1000;
+	private static final int MILLISECONDS_PER_SECOND = 1000;
 
 	/**
 	 * @return Current time in milliseconds.
@@ -1031,21 +1028,21 @@ public final class DateHelper {
 	/**
 	 * @return Duration from {@code startTimeMillies} to now in milliseconds.
 	 */
-	public static long durationMillies(long startTimeMillies) {
-		return now() - startTimeMillies;
+	public static long durationMillies(long startTimeMilliseconds) {
+		return now() - startTimeMilliseconds;
 	}
 
 	/**
 	 * @return Duration from {@code startTimeMillies} to now in seconds.
 	 */
-	public static long durationSeconds(long startTimeMillies) {
-		return toSeconds(durationMillies(startTimeMillies));
+	public static long durationSeconds(long startTimeMilliseconds) {
+		return toSeconds(durationMillies(startTimeMilliseconds));
 	}
 
 	/**
 	 * @return Converts milliseconds to completed seconds.
 	 */
-	public static long toSeconds(long millies) {
-		return millies / MILLIES_PER_SECOND;
+	public static long toSeconds(long milliseconds) {
+		return milliseconds / MILLISECONDS_PER_SECOND;
 	}
 }
