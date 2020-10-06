@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
@@ -1152,9 +1153,8 @@ public class CaseController {
 				null,
 				e -> {
 					if (e.booleanValue() == true) {
-						for (CaseIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getCaseFacade().archiveOrDearchiveCase(selectedRow.getUuid(), true);
-						}
+						List<String> caseUuids = selectedRows.stream().map(r -> r.getUuid()).collect(Collectors.toList());
+						FacadeProvider.getCaseFacade().updateArchived(caseUuids, true);
 						callback.run();
 						new Notification(
 							I18nProperties.getString(Strings.headingCasesArchived),
@@ -1183,9 +1183,8 @@ public class CaseController {
 				null,
 				e -> {
 					if (e.booleanValue() == true) {
-						for (CaseIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getCaseFacade().archiveOrDearchiveCase(selectedRow.getUuid(), false);
-						}
+						List<String> caseUuids = selectedRows.stream().map(r -> r.getUuid()).collect(Collectors.toList());
+						FacadeProvider.getCaseFacade().updateArchived(caseUuids, false);
 						callback.run();
 						new Notification(
 							I18nProperties.getString(Strings.headingCasesDearchived),
