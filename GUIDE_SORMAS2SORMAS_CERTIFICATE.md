@@ -14,7 +14,7 @@ See [Installing Java](SERVER_SETUP.md#java-11)
 
 ### Using the certificate generation script
 
-1. Run ``bash ./generate-cert.sh``
+1. Run ``bash ./s2s-generate-cert.sh``
 2. If the ``SORMAS2SORMAS_DIR`` environment variable is not available, the script will search for ``/opt/sormas2sormas`` by default. 
 If it is not found there, you will be prompted to provide the pat to the *sormas2sormas* directory.
 3. If the ``SORMAS_DOMAIN_DIR`` environment variable is not available, the script will search for ``/opt/domains/sormas`` by default.<br>
@@ -62,7 +62,7 @@ If it is not found there, you will be prompted to provide the pat to the *sormas
 To enable other SORMAS instances to send and receive data from this instance, their certificate must be added to the 
 truststore of this instance. Furthermore, the access data of other instances must be added to the local server
 list. To complete this setup, please follow the next steps:
-1. Run ``bash ./import-to-truststore.sh``
+1. Run ``bash ./s2s-import-to-truststore.sh``
 2. If the ``SORMAS2SORMAS_DIR`` environment variable is not available, the script will search for ``/opt/sormas2sormas`` by default. 
 If it is not found there, you will be prompted to provide the path to the *sormas2sormas* directory.
 3. If the ``SORMAS_DOMAIN_DIR`` environment variable is not available, the script will search for ``/opt/domains/sormas`` by default.
@@ -79,7 +79,7 @@ If it is not found there, you will be prompted to provide the path to the *sorma
     * The relevant properties will be automatically set by the script in the ``sormas.properties`` file.
 5. If the server address list file ``server-list.csv`` is not found in the folder ``/sormas2sormas``, it will also be created.
 6. You will be prompted to provide the *host name* of the organization that's certificate is being imported. 
-   If the certificate was generated with the `generate-cert.sh` script, the identifier can be found at the beginning of the file.
+   If the certificate was generated with the `s2s-generate-cert.sh` script, the identifier can be found at the beginning of the file.
    This certificate should be located in the ``/sormas2sormas`` folder. 
 7. After providing the requested data, the certificate will be imported to the truststore.
 8. The content of the ``server-access-data.csv`` provided together with the certificate will be copied to the ``server-list.csv`` file.  
