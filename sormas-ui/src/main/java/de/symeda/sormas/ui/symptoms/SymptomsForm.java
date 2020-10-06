@@ -50,7 +50,6 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -76,6 +75,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -808,7 +808,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return HTML_LAYOUT;
 	}
 
-	public void initializeSymptomRequirementsForVisit(OptionGroup visitStatus) {
+	public void initializeSymptomRequirementsForVisit(NullableOptionGroup visitStatus) {
 		FieldHelper.addSoftRequiredStyleWhen(
 			getFieldGroup(),
 			visitStatus,
@@ -901,7 +901,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Object targetPropertyId,
 		List<String> sourcePropertyIds,
 		List<Object> sourceValues,
-		OptionGroup visitStatusField) {
+		NullableOptionGroup visitStatusField) {
 
 		for (Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);

@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
-import static com.vaadin.server.Sizeable.Unit;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,7 +34,6 @@ import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
@@ -49,17 +46,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class CampaignFormBuilder {
 
@@ -197,7 +187,7 @@ public class CampaignFormBuilder {
 
 		T field;
 		if (type == CampaignFormElementType.YES_NO) {
-			field = fieldFactory.createField(Boolean.class, (Class<T>) OptionGroup.class);
+			field = fieldFactory.createField(Boolean.class, (Class<T>) NullableOptionGroup.class);
 		} else if (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER) {
 			field = fieldFactory.createField(String.class, (Class<T>) TextField.class);
 		} else {
@@ -281,10 +271,10 @@ public class CampaignFormBuilder {
 	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
-			((OptionGroup) field).setValue(value instanceof Boolean ? (Boolean) value : null);
+			((NullableOptionGroup) field).setValue(value instanceof Boolean ? (Boolean) value : null);
 			break;
 		case TEXT:
-			case NUMBER:
+		case NUMBER:
 			((TextField) field).setValue(value != null ? value.toString() : null);
 			break;
 		default:
@@ -318,7 +308,7 @@ public class CampaignFormBuilder {
 			return false;
 		}
 
-		if (dependingOnField instanceof OptionGroup) {
+		if (dependingOnField instanceof NullableOptionGroup) {
 			String booleanValue = Boolean.TRUE.equals(dependingOnField.getValue()) ? "true" : "false";
 			String stringValue = Boolean.TRUE.equals(dependingOnField.getValue()) ? "yes" : "no";
 

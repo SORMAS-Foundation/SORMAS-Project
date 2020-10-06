@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.epidata;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
@@ -31,6 +30,7 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
@@ -72,8 +72,8 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 				I18nProperties.getValidationError(Validations.afterDate, burialDateFrom.getCaption(), burialDateTo.getCaption())));
 		addField(EpiDataBurialDto.BURIAL_PERSON_NAME, TextField.class);
 		addField(EpiDataBurialDto.BURIAL_RELATION, TextField.class);
-		addField(EpiDataBurialDto.BURIAL_ILL, OptionGroup.class);
-		addField(EpiDataBurialDto.BURIAL_TOUCHING, OptionGroup.class);
+		addField(EpiDataBurialDto.BURIAL_ILL, NullableOptionGroup.class);
+		addField(EpiDataBurialDto.BURIAL_TOUCHING, NullableOptionGroup.class);
 		addField(EpiDataBurialDto.BURIAL_ADDRESS, LocationEditForm.class).setCaption(null);
 
 		initializeAccessAndAllowedAccesses();

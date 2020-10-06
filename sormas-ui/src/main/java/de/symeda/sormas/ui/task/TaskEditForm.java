@@ -27,7 +27,6 @@ import java.util.List;
 
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -51,6 +50,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
 
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
@@ -98,8 +98,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		DateTimeField dueDate = addDateField(TaskDto.DUE_DATE, DateTimeField.class, -1);
 		dueDate.setImmediate(true);
 		addField(TaskDto.PRIORITY, ComboBox.class);
-		OptionGroup taskStatus = addField(TaskDto.TASK_STATUS, OptionGroup.class);
-		OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);
+		NullableOptionGroup taskStatus = addField(TaskDto.TASK_STATUS, NullableOptionGroup.class);
+		NullableOptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, NullableOptionGroup.class);
 		taskContext.setImmediate(true);
 		taskContext.addValueChangeListener(event -> updateByTaskContext());
 

@@ -31,7 +31,6 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -53,6 +52,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -66,7 +66,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
 
-	private OptionGroup intensiveCareUnit;
+	private NullableOptionGroup intensiveCareUnit;
 	private DateField intensiveCareUnitStart;
 	private DateField intensiveCareUnitEnd;
 
@@ -116,19 +116,19 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		facilityField.setValue(noneFacility || !FacilityType.HOSPITAL.equals(caze.getFacilityType()) ? null : healthFacility.toString());
 		facilityField.setReadOnly(true);
 
-		final OptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
+		final NullableOptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, NullableOptionGroup.class);
 		final DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
 		final DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
-		intensiveCareUnit = addField(HospitalizationDto.INTENSIVE_CARE_UNIT, OptionGroup.class);
+		intensiveCareUnit = addField(HospitalizationDto.INTENSIVE_CARE_UNIT, NullableOptionGroup.class);
 		intensiveCareUnit.addValueChangeListener(e -> setDateFieldVisibilties());
 		intensiveCareUnitStart = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_START, DateField.class);
 		intensiveCareUnitStart.setVisible(false);
 		intensiveCareUnitEnd = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
 		intensiveCareUnitEnd.setVisible(false);
 		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
-		final OptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, OptionGroup.class);
-		final OptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, OptionGroup.class);
-		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);
+		final NullableOptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, NullableOptionGroup.class);
+		final NullableOptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, NullableOptionGroup.class);
+		NullableOptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, NullableOptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField =
 			addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
@@ -234,7 +234,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		intensiveCareUnitEnd.setVisible(visible);
 	}
 
-	private void updatePrevHospHint(OptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
+	private void updatePrevHospHint(NullableOptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
 
 		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();

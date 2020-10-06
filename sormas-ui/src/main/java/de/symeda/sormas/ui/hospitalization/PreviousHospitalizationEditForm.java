@@ -21,7 +21,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -40,6 +39,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
@@ -69,7 +69,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	protected void addFields() {
 		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
-		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
+		addField(PreviousHospitalizationDto.ISOLATED, NullableOptionGroup.class);
 		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(4);
 
 		ComboBox facilityRegion = addInfrastructureField(PreviousHospitalizationDto.REGION);

@@ -54,7 +54,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		if (type.isEnum()) {
 			if (fieldType.isAssignableFrom(Field.class) // no specific fieldType defined?
 				&& (SymptomState.class.isAssignableFrom(type) || YesNoUnknown.class.isAssignableFrom(type))) {
-				OptionGroup field = super.createField(type, OptionGroup.class);
+				NullableOptionGroup field = new NullableOptionGroup();
+				field.setImmediate(true);
+				populateWithEnumData(field, (Class<? extends Enum>) type);
 				CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 				return (T) field;
 			} else {
@@ -73,6 +75,12 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 					T field = super.createField(type, fieldType);
 					if (field instanceof OptionGroup) {
 						CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
+					} else if (fieldType.isAssignableFrom(NullableOptionGroup.class)) {
+						NullableOptionGroup select = new NullableOptionGroup();
+						select.setImmediate(true);
+						populateWithEnumData(select, (Class<? extends Enum>) type);
+						CssStyles.style(select, ValoTheme.OPTIONGROUP_HORIZONTAL);
+						field = (T) select;
 					} else if (field instanceof ComboBox) {
 						((ComboBox) field).setFilteringMode(FilteringMode.CONTAINS);
 						((ComboBox) field).setNullSelectionAllowed(true);
@@ -81,7 +89,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				}
 			}
 		} else if (Boolean.class.isAssignableFrom(type)) {
-			fieldType = CheckBox.class.isAssignableFrom(fieldType) ? (Class<T>) CheckBox.class : (Class<T>) OptionGroup.class;
+			fieldType = CheckBox.class.isAssignableFrom(fieldType) ? (Class<T>) CheckBox.class : (Class<T>) NullableOptionGroup.class;
 
 			return createBooleanField(fieldType);
 		} else if (ComboBox.class.isAssignableFrom(fieldType) || ComboBoxWithPlaceholder.class.isAssignableFrom(fieldType)) {
@@ -146,8 +154,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		"rawtypes" })
 	@Override
 	protected <T extends Field> T createBooleanField(Class<T> fieldType) {
-		if (OptionGroup.class.isAssignableFrom(fieldType)) {
-			AbstractSelect s = createCompatibleSelect(OptionGroup.class);
+		if (NullableOptionGroup.class.isAssignableFrom(fieldType)) {
+			AbstractSelect s = createCompatibleSelect(NullableOptionGroup.class);
 			s.addItem(Boolean.TRUE);
 			s.setItemCaption(Boolean.TRUE, I18nProperties.getEnumCaption(YesNoUnknown.YES));
 			s.addItem(Boolean.FALSE);

@@ -30,7 +30,6 @@ import java.util.List;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -48,6 +47,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
@@ -123,9 +123,9 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
 		disease.setEnabled(false);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
-		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
-		addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
+		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 
 		if (isVisibleAllowed(CaseDataDto.DISEASE_DETAILS)) {
 			FieldHelper
@@ -156,11 +156,11 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		getContent().addComponent(investigationStatusCheckBox, INVESTIGATION_STATUS_CHECKBOX);
 		outcomeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseOutcome));
 		getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
-		OptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, OptionGroup.class);
+		NullableOptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, NullableOptionGroup.class);
 		caseClassification.setEnabled(false);
-		OptionGroup investigationStatus = addField(CaseBulkEditData.INVESTIGATION_STATUS, OptionGroup.class);
+		NullableOptionGroup investigationStatus = addField(CaseBulkEditData.INVESTIGATION_STATUS, NullableOptionGroup.class);
 		investigationStatus.setEnabled(false);
-		OptionGroup outcome = addField(CaseBulkEditData.OUTCOME, OptionGroup.class);
+		NullableOptionGroup outcome = addField(CaseBulkEditData.OUTCOME, NullableOptionGroup.class);
 		outcome.setEnabled(false);
 
 		if (singleSelectedDistrict != null) {

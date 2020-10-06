@@ -6,7 +6,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.Arrays;
 
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -18,6 +17,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
@@ -52,7 +52,7 @@ public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
 		ComboBox treatmentTypeField = addField(TreatmentDto.TREATMENT_TYPE, ComboBox.class);
 		treatmentTypeField.setImmediate(true);
 		TextField treatmentDetailsField = addField(TreatmentDto.TREATMENT_DETAILS, TextField.class);
-		addField(TreatmentDto.TYPE_OF_DRUG, OptionGroup.class);
+		addField(TreatmentDto.TYPE_OF_DRUG, NullableOptionGroup.class);
 		addField(TreatmentDto.TREATMENT_DATE_TIME, DateTimeField.class);
 		addField(TreatmentDto.EXECUTING_CLINICIAN, TextField.class);
 		addField(TreatmentDto.DOSE, TextField.class);

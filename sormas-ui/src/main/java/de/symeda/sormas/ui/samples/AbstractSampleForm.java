@@ -1,5 +1,16 @@
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.utils.CssStyles.HSPACE_RIGHT_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+
+import java.util.Arrays;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -10,9 +21,9 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -41,18 +52,8 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-
-import java.util.Arrays;
-
-import static de.symeda.sormas.ui.utils.CssStyles.HSPACE_RIGHT_4;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
@@ -110,7 +111,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	protected void addCommonFields() {
 
-		final OptionGroup samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, OptionGroup.class);
+		final NullableOptionGroup samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, NullableOptionGroup.class);
 		samplePurpose.addValueChangeListener(e -> updateRequestedTestFields());
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		final DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
@@ -139,7 +140,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	protected void defaultValueChangeListener() {
 
-		final OptionGroup samplePurposeField = (OptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
+		final NullableOptionGroup samplePurposeField = (NullableOptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
 		final Field<?> receivedField = getField(SampleDto.RECEIVED);
 		final Field<?> shippedField = getField(SampleDto.SHIPPED);
 
@@ -352,14 +353,14 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		additionalTestingRequestedField.addValueChangeListener(e -> updateRequestedTestFields());
 
 		// CheckBox groups to select the requested pathogen/additional tests
-		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
+		NullableOptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, NullableOptionGroup.class);
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
 		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
 		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
 		requestedPathogenTestsField.setCaption(null);
 
-		OptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, OptionGroup.class);
+		NullableOptionGroup requestedAdditionalTestsField = addField(SampleDto.REQUESTED_ADDITIONAL_TESTS, NullableOptionGroup.class);
 		CssStyles.style(requestedAdditionalTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedAdditionalTestsField.setMultiSelect(true);
 		requestedAdditionalTestsField.addItems((Object[]) AdditionalTestType.values());

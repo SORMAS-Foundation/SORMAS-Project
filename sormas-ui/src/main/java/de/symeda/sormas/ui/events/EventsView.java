@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.Date;
+import java.util.HashMap;
+
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
@@ -33,6 +38,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionStatus;
@@ -62,10 +68,6 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.util.Date;
-import java.util.HashMap;
 
 public class EventsView extends AbstractView {
 

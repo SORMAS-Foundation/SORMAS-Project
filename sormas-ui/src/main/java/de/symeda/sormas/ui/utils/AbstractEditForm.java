@@ -34,7 +34,6 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -243,7 +242,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected void styleAsOptionGroupHorizontal(List<String> fields) {
 		for (String field : fields) {
-			CssStyles.style((OptionGroup) getFieldGroup().getField(field), ValoTheme.OPTIONGROUP_HORIZONTAL);
+			CssStyles.style((NullableOptionGroup) getFieldGroup().getField(field), ValoTheme.OPTIONGROUP_HORIZONTAL);
 		}
 	}
 

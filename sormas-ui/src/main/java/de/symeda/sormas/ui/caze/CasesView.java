@@ -17,6 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
+
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
@@ -36,6 +46,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -75,15 +86,6 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
 /**
  * A view for performing create-read-update-delete operations on products.

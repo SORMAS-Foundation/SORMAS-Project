@@ -29,6 +29,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
@@ -186,7 +187,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     @SuppressWarnings("unchecked")
     private void updateFieldsByUserRole() {
 
-		final OptionGroup userRolesField = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+		final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
 		final Set<UserRole> userRoles = (Set<UserRole>) userRolesField.getValue();
 
 		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(userRoles);

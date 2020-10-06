@@ -8,7 +8,6 @@ import java.util.Collections;
 
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -21,6 +20,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
@@ -60,7 +60,7 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		ComboBox prescriptionTypeField = addField(PrescriptionDto.PRESCRIPTION_TYPE, ComboBox.class);
 		prescriptionTypeField.setImmediate(true);
 		TextField prescriptionDetailsField = addField(PrescriptionDto.PRESCRIPTION_DETAILS, TextField.class);
-		addField(PrescriptionDto.TYPE_OF_DRUG, OptionGroup.class);
+		addField(PrescriptionDto.TYPE_OF_DRUG, NullableOptionGroup.class);
 		addField(PrescriptionDto.PRESCRIPTION_DATE, DateField.class);
 		addField(PrescriptionDto.PRESCRIBING_CLINICIAN, TextField.class);
 		DateField prescriptionStartField = addDateField(PrescriptionDto.PRESCRIPTION_START, DateField.class, -1);

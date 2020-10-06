@@ -31,7 +31,6 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -56,6 +55,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
@@ -156,12 +156,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
-		addField(EventDto.EVENT_STATUS, OptionGroup.class);
+		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
 		title.addStyleName(CssStyles.SOFT_REQUIRED);
 		addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
 
-		addField(EventDto.NOSOCOMIAL, OptionGroup.class);
+		addField(EventDto.NOSOCOMIAL, NullableOptionGroup.class);
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
