@@ -20,4 +20,5 @@ public interface QuarantineOrderFacade {
 	// new Functions
 	List<TemplateDto> getAvailableTemplateDtos();
 	long count(TemplateCriteria criteria);
+
 }
