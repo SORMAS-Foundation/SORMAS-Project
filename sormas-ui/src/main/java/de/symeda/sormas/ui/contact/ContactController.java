@@ -27,16 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -45,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -89,6 +81,8 @@ import de.symeda.sormas.ui.utils.ViewMode;
 public class ContactController {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private final ExternalJournalFacade externalJournalFacade = FacadeProvider.getExternalJournalFacade();
 
 	public ContactController() {
 
@@ -493,7 +487,7 @@ public class ContactController {
 	 * 3. The form is automatically submitted and replaced by the iFrame
 	 */
 	public void openSymptomJournalWindow(PersonDto person) {
-		String authToken = getSymptomJournalAuthToken();
+		String authToken = externalJournalFacade.getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
 			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalUrl();
 			Map<String, String> parameters = new LinkedHashMap<>();
@@ -516,16 +510,6 @@ public class ContactController {
 		window.setHeight(80, Unit.PERCENTAGE);
 
 		UI.getCurrent().addWindow(window);
-	}
-
-	/**
-	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
-	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
-	 */
-	public void openDiaryTab(PersonDto person) {
-		String url = FacadeProvider.getConfigFacade().getPatientDiaryUrl();
-		url += "/enroll?personUuid=" + person.getUuid();
-		UI.getCurrent().getPage().open(url, "_blank");
 	}
 
 	private String getSymptomJournalAuthToken() {
@@ -578,6 +562,16 @@ public class ContactController {
 
 		inputs.forEach((k, v) -> parametersElement.appendChild(new Element("input").attr("type", "hidden").attr("name", k).attr("value", v)));
 		return document.toString().getBytes(StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
+	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
+	 */
+	public void openDiaryTab(PersonDto person) {
+		String url = FacadeProvider.getConfigFacade().getPatientDiaryUrl();
+		url += "/enroll?personUuid=" + person.getUuid();
+		UI.getCurrent().getPage().open(url, "_blank");
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {

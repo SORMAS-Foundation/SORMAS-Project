@@ -286,6 +286,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		PersonDto existingPerson = toDto(person);
 
+		if (existingPerson != null) {
+			personService.notifyExternalJournalPersonUpdate(existingPerson, source);
+		}
+
 		restorePseudonymizedDto(source, person, existingPerson);
 
 		validate(source);
