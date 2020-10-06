@@ -660,7 +660,7 @@
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
 		<repository>
-			<id>payara-patchedprojects</id>
+			<id>payara-patched-externals</id>
 			<name>Payara Patched Projects</name>
 			<url>https://raw.github.com/payara/Payara_PatchedProjects/master/</url>
 		</repository>
