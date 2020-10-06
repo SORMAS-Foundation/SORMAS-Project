@@ -17,16 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.AreaType;
-import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.person.PersonAddressType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,8 +26,18 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 
 @Entity
 @Audited
@@ -59,6 +61,9 @@ public class Location extends AbstractDomainObject {
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String ADDRESS_TYPE = "addressType";
 	public static final String ADDRESS_TYPE_DETAILS = "addressTypeDetails";
+	public static final String FACILITY_TYPE = "facilityType";
+	public static final String FACILITY = "facility";
+	public static final String FACILITY_DETAILS = "facilityDetails";
 
 	private String details;
 	private String city;
@@ -78,6 +83,9 @@ public class Location extends AbstractDomainObject {
 	private String additionalInformation;
 	private PersonAddressType addressType;
 	private String addressTypeDetails;
+	private FacilityType facilityType;
+	private Facility facility;
+	private String facilityDetails;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDetails() {
@@ -209,6 +217,33 @@ public class Location extends AbstractDomainObject {
 
 	public void setAddressTypeDetails(String addressTypeDetails) {
 		this.addressTypeDetails = addressTypeDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	@ManyToOne(cascade = {})
+	public Facility getFacility() {
+		return facility;
+	}
+
+	public void setFacility(Facility facility) {
+		this.facility = facility;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getFacilityDetails() {
+		return facilityDetails;
+	}
+
+	public void setFacilityDetails(String facilityDetails) {
+		this.facilityDetails = facilityDetails;
 	}
 
 	public String buildGpsCoordinatesCaption() {

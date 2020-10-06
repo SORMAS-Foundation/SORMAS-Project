@@ -66,6 +66,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ContactCriteria.BIRTHDATE_MM,
 		ContactCriteria.BIRTHDATE_DD)
 		+ filterLocs(
+			ContactCriteria.RETURNING_TRAVELER,
 			ContactCriteria.QUARANTINE_TYPE,
 			ContactDto.QUARANTINE_TO,
 			ContactCriteria.QUARANTINE_ORDERED_VERBALLY,
@@ -171,6 +172,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL),
 				200));
 		followUpUntilTo.removeAllValidators();
+		addField(moreFiltersContainer, ComboBox.class, FieldConfiguration.pixelSized(ContactCriteria.RETURNING_TRAVELER, 200));
 		addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(

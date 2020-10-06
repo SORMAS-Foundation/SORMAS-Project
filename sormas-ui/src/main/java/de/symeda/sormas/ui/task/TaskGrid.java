@@ -40,7 +40,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.jurisdiction.CaseJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
@@ -49,7 +49,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ReferenceDtoHtmlProvider;
 import de.symeda.sormas.ui.utils.ShortStringRenderer;
@@ -160,19 +159,16 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			column.setCaption(I18nProperties.getPrefixCaption(TaskIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
 
-		FieldAccessCheckers fieldAccessCheckers =
-			FieldAccessCheckers.withCheckers(FieldHelper.createPersonalDataFieldAccessChecker(), FieldHelper.createSensitiveDataFieldAccessChecker());
 		getColumn(TaskIndexDto.CONTEXT_REFERENCE).setStyleGenerator(new FieldAccessColumnStyleGenerator<>(task -> {
 
 			UserDto currentUser = UserProvider.getCurrent().getUser();
 			boolean isInJurisdiction = true;
 			switch (task.getTaskContext()) {
 			case CASE:
-				isInJurisdiction = FieldAccessColumnStyleGenerator
-					.callJurisdictionChecker(
-						CaseJurisdictionHelper::isInJurisdictionOrOwned,
-						currentUser,
-						task.getJurisdiction().getCaseJurisdiction());
+				isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
+					CaseJurisdictionHelper::isInJurisdictionOrOwned,
+					currentUser,
+					task.getJurisdiction().getCaseJurisdiction());
 				break;
 			case CONTACT:
 				isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
@@ -181,15 +177,14 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 					task.getJurisdiction().getContactJurisdiction());
 				break;
 			case EVENT:
-				isInJurisdiction = FieldAccessColumnStyleGenerator
-					.callJurisdictionChecker(
-						EventJurisdictionHelper::isInJurisdictionOrOwned,
-						currentUser,
-						task.getJurisdiction().getEventJurisdiction());
+				isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
+					EventJurisdictionHelper::isInJurisdictionOrOwned,
+					currentUser,
+					task.getJurisdiction().getEventJurisdiction());
 				break;
 			}
 
-			return fieldAccessCheckers.hasRights(isInJurisdiction);
+			return UiFieldAccessCheckers.getDefault(!isInJurisdiction).hasRight();
 		}));
 
 		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, e -> navigateToData(e)));

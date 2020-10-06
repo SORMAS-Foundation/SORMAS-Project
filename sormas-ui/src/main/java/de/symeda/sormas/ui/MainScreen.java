@@ -64,6 +64,7 @@ import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.user.UsersView;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Content of the UI when the user is logged in.
@@ -228,6 +229,12 @@ public class MainScreen extends HorizontalLayout {
 
 		addComponent(menu);
 		addComponent(viewContainer);
+
+		// Add some css for printable version
+		menu.addStyleName(CssStyles.PRINT_MENU);
+		viewContainer.addStyleName(CssStyles.PRINT_VIEW_CONTAINER);
+		addStyleName(CssStyles.PRINT_CONTAINER);
+
 		setExpandRatio(viewContainer, 1);
 		setSpacing(false);
 		setMargin(false);

@@ -245,12 +245,6 @@ public class ActionService extends AbstractAdoService<Action> {
 		ActionJoins actionJoins = new ActionJoins(action);
 		Join<Action, User> replyingUser = actionJoins.getReplyingUser();
 		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
-		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
-		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
-		Join<Event, User> surveillanceOfficer = event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT);
-		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
 
 		// Add filters
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
@@ -277,12 +271,7 @@ public class ActionService extends AbstractAdoService<Action> {
 			action.get(Action.PRIORITY),
 			replyingUser.get(User.UUID),
 			replyingUser.get(User.FIRST_NAME),
-			replyingUser.get(User.LAST_NAME),
-			region.get(Region.UUID),
-			district.get(District.UUID),
-			community.get(Community.UUID),
-			reportingUser.get(User.UUID),
-			surveillanceOfficer.get(User.UUID));
+			replyingUser.get(User.LAST_NAME));
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<>(sortProperties.size());

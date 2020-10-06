@@ -170,7 +170,7 @@ public class EventController {
 			caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
 
-		EventDataForm eventCreateForm = new EventDataForm(true, true);
+		EventDataForm eventCreateForm = new EventDataForm(true, false);
 		if (caseRef != null) {
 			eventCreateForm.setValue(createNewEvent(caseDataDto.getDisease()));
 			eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
@@ -207,10 +207,10 @@ public class EventController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, boolean inJurisdiction) {
+	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
 
 		EventDto event = findEvent(eventUuid);
-		EventDataForm eventEditForm = new EventDataForm(false, inJurisdiction);
+		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventEditForm,

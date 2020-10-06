@@ -100,8 +100,6 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 				accessToken.setClaims(accessTokenClaims);
 			}
 
-			logger.info("Access Token: " + accessToken.getToken());
-
 			context.setAccessToken(accessToken);
 			JsonObject userInfo = userInfoController.getUserInfo(configuration, accessToken);
 			context.setClaims(userInfo);

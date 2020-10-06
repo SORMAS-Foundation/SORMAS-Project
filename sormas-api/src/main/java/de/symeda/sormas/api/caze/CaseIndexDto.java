@@ -29,9 +29,9 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class CaseIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Serializable, Cloneable {
+public class CaseIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 

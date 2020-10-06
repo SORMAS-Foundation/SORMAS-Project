@@ -80,6 +80,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 							fluidRowLocs(PersonDto.SEX)) +
 					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
 					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
+					LayoutUtil.fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
 					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
@@ -136,6 +137,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
 		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
 		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
+		addField(ContactDto.RETURNING_TRAVELER, OptionGroup.class);
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
 		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);

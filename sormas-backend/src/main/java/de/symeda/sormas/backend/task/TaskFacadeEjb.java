@@ -304,7 +304,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 		}
 
-		return toDto(ado, new Pseudonymizer(userService::hasRight));
+		return toDto(ado, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -326,7 +326,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return taskService.getAllActiveTasksAfter(date, user).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -459,8 +459,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			tasks = em.createQuery(cq).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		Pseudonymizer emptyValuePseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		pseudonymizer.pseudonymizeDtoCollection(
 			TaskIndexDto.class,
 			tasks,
@@ -517,7 +517,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return taskService.findBy(new TaskCriteria().caze(caseRef), false).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -528,7 +528,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return taskService.findBy(new TaskCriteria().contact(contactRef), false)
 			.stream()
 			.map(c -> toDto(c, pseudonymizer))
@@ -542,13 +542,13 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return taskService.findBy(new TaskCriteria().event(eventRef), false).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<TaskDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return taskService.getByUuids(uuids).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -559,7 +559,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return taskService.findBy(new TaskCriteria().caze(caseRef).taskStatus(TaskStatus.PENDING), false)
 			.stream()
 			.map(c -> toDto(c, pseudonymizer))
@@ -593,7 +593,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	public TaskDto getByUuid(String uuid) {
-		return toDto(taskService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return toDto(taskService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override

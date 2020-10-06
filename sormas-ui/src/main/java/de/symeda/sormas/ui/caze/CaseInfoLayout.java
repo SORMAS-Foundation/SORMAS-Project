@@ -31,18 +31,18 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 @SuppressWarnings("serial")
 public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 
 	private final CaseDataDto caseDto;
 
-	public CaseInfoLayout(CaseDataDto caseDto, UiFieldAccessCheckers fieldAccessCheckers) {
-		super(CaseDataDto.class, fieldAccessCheckers);
+	public CaseInfoLayout(CaseDataDto caseDto) {
+		super(CaseDataDto.class, UiFieldAccessCheckers.getDefault(caseDto.isPseudonymized()));
 
 		this.caseDto = caseDto;
 		setSpacing(true);
