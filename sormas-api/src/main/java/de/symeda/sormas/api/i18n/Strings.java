@@ -470,6 +470,7 @@ public interface Strings {
 	String labelNumberOfFacilities = "labelNumberOfFacilities";
 	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
 	String labelNumberOfRegions = "labelNumberOfRegions";
+	String labelNumberOfTemplates = "labelNumberOfTemplates";
 	String labelNumberOfUsers = "labelNumberOfUsers";
 	String lastTwoDays = "lastTwoDays";
 	String lastTwoWeeks = "lastTwoWeeks";

@@ -8,7 +8,15 @@ import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.docgeneneration.TemplateCriteria;
+import de.symeda.sormas.api.docgeneneration.TemplateDto;
+import de.symeda.sormas.api.region.DistrictCriteria;
+import de.symeda.sormas.backend.region.District;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,6 +165,18 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 			return Collections.emptyList();
 		}
 		return Arrays.stream(availableTemplates).map(File::getName).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<TemplateDto> getAvailableTemplateDtos(){
+		// For now this simply converts all strings into a List of TemplateDto
+		List<TemplateDto> collect = getAvailableTemplates().stream().map(x -> new TemplateDto(x)).collect(Collectors.toList());
+		return collect;
+	}
+
+	@Override
+	public long count(TemplateCriteria criteria) {
+		return getAvailableTemplates().size();
 	}
 
 	private String getWorkflowTemplateDirPath() {

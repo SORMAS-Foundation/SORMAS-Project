@@ -1622,6 +1622,8 @@ public interface Captions {
 	String View_configuration_populationdata_short = "View.configuration.populationdata.short";
 	String View_configuration_regions = "View.configuration.regions";
 	String View_configuration_regions_short = "View.configuration.regions.short";
+	String View_configuration_templates = "View.configuration.templates";
+	String View_configuration_templates_short = "View.configuration.templates.short";
 	String View_configuration_userrights = "View.configuration.userrights";
 	String View_configuration_userrights_short = "View.configuration.userrights.short";
 	String View_contacts = "View.contacts";
