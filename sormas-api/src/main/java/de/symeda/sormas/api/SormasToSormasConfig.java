@@ -3,31 +3,34 @@ package de.symeda.sormas.api;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Sormas2SormasConfig implements Serializable, Cloneable {
+import javax.enterprise.inject.Alternative;
+
+@Alternative
+public class SormasToSormasConfig implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7981351672462016280L;
 
-	private String filePath;
-	private String keyAlias;
+	private String path;
+	private String serverAccessDataFileName;
 	private String keystoreName;
 	private String keystorePass;
 	private String truststoreName;
 	private String truststorePass;
 
-	public String getFilePath() {
-		return filePath;
+	public String getPath() {
+		return path;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setPath(String path) {
+		this.path = path;
 	}
 
-	public String getKeyAlias() {
-		return keyAlias;
+	public String getServerAccessDataFileName() {
+		return serverAccessDataFileName;
 	}
 
-	public void setKeyAlias(String keyAlias) {
-		this.keyAlias = keyAlias;
+	public void setServerAccessDataFileName(String serverAccessDataFileName) {
+		this.serverAccessDataFileName = serverAccessDataFileName;
 	}
 
 	public String getKeystoreName() {
@@ -68,9 +71,9 @@ public class Sormas2SormasConfig implements Serializable, Cloneable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		Sormas2SormasConfig that = (Sormas2SormasConfig) o;
-		return Objects.equals(filePath, that.filePath)
-			&& Objects.equals(keyAlias, that.keyAlias)
+		SormasToSormasConfig that = (SormasToSormasConfig) o;
+		return Objects.equals(path, that.path)
+			&& Objects.equals(serverAccessDataFileName, that.serverAccessDataFileName)
 			&& Objects.equals(keystorePass, that.keystorePass)
 			&& Objects.equals(truststoreName, that.truststoreName)
 			&& Objects.equals(truststorePass, that.truststorePass);
@@ -78,13 +81,13 @@ public class Sormas2SormasConfig implements Serializable, Cloneable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(filePath, keyAlias, keystorePass, truststoreName, truststorePass);
+		return Objects.hash(path, serverAccessDataFileName, keystorePass, truststoreName, truststorePass);
 	}
 
 	@Override
-	public Sormas2SormasConfig clone() {
+	public SormasToSormasConfig clone() {
 		try {
-			return (Sormas2SormasConfig) super.clone();
+			return (SormasToSormasConfig) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException("Clone failed", e);
 		}

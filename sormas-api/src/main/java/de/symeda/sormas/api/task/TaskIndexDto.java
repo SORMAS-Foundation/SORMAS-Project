@@ -32,11 +32,11 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Serializable {
+public class TaskIndexDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 
@@ -283,7 +283,6 @@ public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Seri
 		this.uuid = uuid;
 	}
 
-	@Override
 	public TaskJurisdictionDto getJurisdiction() {
 		return jurisdiction;
 	}

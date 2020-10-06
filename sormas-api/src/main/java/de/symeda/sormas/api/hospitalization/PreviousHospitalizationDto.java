@@ -19,7 +19,6 @@ package de.symeda.sormas.api.hospitalization;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -28,6 +27,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PreviousHospitalizationDto extends PseudonymizableDto {
 

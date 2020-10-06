@@ -68,6 +68,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -77,7 +78,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
@@ -162,7 +162,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                                     loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 	//@formatter:on
 
-	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isInJurisdiction) {
+	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
 		super(
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
@@ -170,10 +170,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-			UiFieldAccessCheckers.withCheckers(
-				isInJurisdiction,
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(isPseudonymized));
 
 		this.personContext = personContext;
 		this.disease = disease;

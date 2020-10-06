@@ -39,6 +39,7 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -47,13 +48,10 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleEditAuthorization;
 import de.symeda.sormas.app.barcode.BarcodeActivity;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
@@ -78,8 +76,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			null,
 			activityRootData,
 			null,
-			AppFieldAccessCheckers
-				.withCheckers(SampleEditAuthorization.isSampleEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
 	private void setUpControlListeners(FragmentSampleEditLayoutBinding contentBinding) {

@@ -24,7 +24,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
@@ -42,6 +41,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -55,6 +55,12 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
+import java.util.Date;
 
 public class CaseDataDto extends PseudonymizableDto {
 
@@ -232,12 +238,13 @@ public class CaseDataDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private CommunityReferenceDto community;
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private FacilityType facilityType;
 	@Outbreaks
 	@Required
-	@PersonalData
-	@SensitiveData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	@PersonalData
@@ -330,8 +337,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private UserReferenceDto caseOfficer;
 	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
 	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 	private HospitalizationDto hospitalization;
@@ -344,8 +353,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
-	@PersonalData
-	@SensitiveData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
 	@SensitiveData
@@ -405,6 +414,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Integer caseIdIsm;
@@ -1262,5 +1273,21 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }
