@@ -468,7 +468,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							(String) result[3],
 							(Number) result[4],
 							(String) result[5],
-							(String) result[6]))
+							(String) result[6],
+							series.getStack()))
 					.collect(Collectors.toList()));
 		}
 		return resultData;

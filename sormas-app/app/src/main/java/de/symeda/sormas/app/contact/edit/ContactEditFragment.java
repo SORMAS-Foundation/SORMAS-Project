@@ -180,6 +180,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
 		contentBinding.setData(record);
 		contentBinding.setCaze(sourceCase);
+		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
 		InfrastructureHelper.initializeRegionFields(
 			contentBinding.contactRegion,

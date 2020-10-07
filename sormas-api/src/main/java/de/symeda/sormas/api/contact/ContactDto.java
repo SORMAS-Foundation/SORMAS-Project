@@ -754,7 +754,7 @@ public class ContactDto extends PseudonymizableDto {
 	public void setHealthConditions(HealthConditionsDto healthConditions) {
 		this.healthConditions = healthConditions;
 	}
-
+  
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
