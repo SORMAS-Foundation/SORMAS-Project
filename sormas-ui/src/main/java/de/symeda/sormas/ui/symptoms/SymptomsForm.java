@@ -1026,7 +1026,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					} else if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.UNKNOWN)) {
 						onsetDateField.setEnabled(false);
 						symptom.setEnabled(true);
-						symptom.setValue(null);
 					} else {
 						onsetDateField.setEnabled(true);
 						symptom.setEnabled(true);
