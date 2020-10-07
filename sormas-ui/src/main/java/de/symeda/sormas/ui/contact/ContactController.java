@@ -529,13 +529,17 @@ public class ContactController {
 	}
 
 	/**
-	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
-	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
+	 * Attempts to register the person with the given Uuid as a new patient in CLIMEDO
+	 * Displays the result in a popup
 	 */
-	public void openPatientDiaryTab(PersonDto person) {
-		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
-		url += "/enroll?personUuid=" + person.getUuid();
-		UI.getCurrent().getPage().open(url, "_blank");
+	public void registerPatientDiaryPerson(String personUuid) {
+		//show loading popup
+		boolean success = externalJournalFacade.registerPatientDiaryPerson(personUuid);
+		//hide loading popup
+		showPatientRegisterResultPopup(success);
+	}
+
+	private void showPatientRegisterResultPopup(boolean success) {
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {

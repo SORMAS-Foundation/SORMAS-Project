@@ -231,4 +231,39 @@ public class ExternalJournalService {
 			logger.error(e.getMessage());
 		}
 	}
+
+	//TODO: implement get from CLIMEDO
+
+	/**
+	 * Attempts to register a new patient in the CLIMEDO patient diary
+	 * 
+	 * @param personUuid
+	 *            the Uuid of the person to register as a patient in CLIMEDO
+	 * @return true if the registration was successful, false otherwise
+	 */
+	public boolean registerPatientDiaryPerson(String personUuid) {
+		try {
+			String registerUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl()  + '/' + personUuid;
+			Client client = ClientBuilder.newClient();
+			WebTarget webTarget = client.target(registerUrl);
+			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+			invocationBuilder.header("x-access-token", getPatientDiaryAuthToken());
+			Response response = invocationBuilder.post(Entity.json(""));
+
+			String responseJson = response.readEntity(String.class);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
+			boolean success = node.get("success").booleanValue();
+			if (!success) {
+				String message = node.get("message").textValue();
+				//TODO: should throw an exception?
+				logger.error("Could not create new patient diary person: " + message);
+				return false;
+			}
+			return true;
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			return false;
+		}
+	}
 }
