@@ -18,8 +18,4 @@ public interface QuarantineOrderFacade {
 
 	boolean deleteQuarantineTemplate(String fileName);
 
-	// new Functions
-	List<TemplateDto> getAvailableTemplateDtos();
-
-	long count(TemplateCriteria criteria);
 }

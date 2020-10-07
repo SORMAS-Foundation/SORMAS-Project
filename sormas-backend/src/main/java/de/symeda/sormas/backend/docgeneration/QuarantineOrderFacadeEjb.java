@@ -26,8 +26,6 @@ import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
-import de.symeda.sormas.api.docgeneneration.TemplateCriteria;
-import de.symeda.sormas.api.docgeneneration.TemplateDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -156,21 +154,10 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	}
 
 	@Override
-	public List<TemplateDto> getAvailableTemplateDtos() {
-		// For now this simply converts all strings into a List of TemplateDto
-		return getAvailableTemplates().stream().map(TemplateDto::new).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<String> getAdditionalVariables(String templateName) {
 		File templateFile = getTemplateFile(templateName);
 		Set<String> propertyKeys = getTemplateVariables(templateFile);
 		return propertyKeys.stream().filter(e -> !isEntityVariable(e)).sorted(String::compareTo).collect(Collectors.toList());
-	}
-
-	@Override
-	public long count(TemplateCriteria criteria) {
-		return getAvailableTemplates().size();
 	}
 
 	@Override
