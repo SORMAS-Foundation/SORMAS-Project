@@ -21,6 +21,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
+        <import type="de.symeda.sormas.api.VisitOrigin"/>
         <variable name="data" type="de.symeda.sormas.app.backend.visit.Visit"/>
     </data>
 
@@ -134,11 +136,23 @@
                 android:layout_marginRight="8dp"
                 >
 
+                <ImageView
+                    android:id="@+id/img_smartphone"
+                    android:visibility="@{data.origin.equals(VisitOrigin.EXTERNAL_JOURNAL) ? View.VISIBLE : View.GONE }"
+                    android:layout_width="@dimen/listGoToIconWidth"
+                    android:layout_height="@dimen/listGoToIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/smartphone"
+                    android:layout_marginStart="-7dp"
+                    />
+
                 <TextView
                     android:id="@+id/visit_visitDateTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="bottom|left"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="start"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif-medium"
@@ -151,7 +165,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="bottom|right"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="end"
                     android:textSize="@dimen/row_entry_date_text_size"
                     android:textColor="@color/listActivityRowDateText"
                     android:fontFamily="sans-serif"

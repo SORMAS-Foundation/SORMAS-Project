@@ -5469,4 +5469,11 @@ ALTER TABLE cases_history
     ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (265, 'Add new field: Quarantine before isolation #2977');
+
+-- 2020-09-28 - Store visit source #2083
+ALTER TABLE visit ADD COLUMN origin varchar(255);
+ALTER TABLE visit_history ADD COLUMN origin varchar(255);
+UPDATE visit SET origin='USER';
+
+INSERT INTO schema_version (version_number, comment) VALUES (266, 'Add new field origin to visits as per feature #2083');
 -- *** Insert new sql commands BEFORE this line ***

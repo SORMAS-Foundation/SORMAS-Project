@@ -25,6 +25,7 @@ import android.view.Menu;
 
 import androidx.annotation.NonNull;
 
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -112,6 +113,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
 		}
 
 		final Visit visitToSave = getStoredRootEntity();
+		visitToSave.setOrigin(VisitOrigin.USER);
 		VisitEditFragment fragment = (VisitEditFragment) getActiveFragment();
 
 		fragment.setLiveValidationDisabled(false);

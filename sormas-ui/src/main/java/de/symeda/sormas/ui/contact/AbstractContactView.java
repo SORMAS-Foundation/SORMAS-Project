@@ -120,7 +120,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		} else if (FacadeProvider.getPersonFacade().isValidPersonUuid(uuid)) {
 			PersonReferenceDto person = FacadeProvider.getPersonFacade().getReferenceByUuid(uuid);
 			ContactCriteria criteria = new ContactCriteria();
-			criteria.person(person);
+			criteria.setPerson(person);
 			List<ContactIndexDto> personContacts = FacadeProvider.getContactFacade().getIndexList(criteria, null, null, Collections.emptyList());
 			if (personContacts != null) {
 				reference = FacadeProvider.getContactFacade().getReferenceByUuid(personContacts.get(0).getUuid());

@@ -29,6 +29,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -68,16 +69,21 @@ public class VisitController {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
 		editForm.setValue(visit);
-		editVisit(editForm, visit.toReference(), doneConsumer);
+		boolean canEdit = VisitOrigin.USER.equals(visit.getOrigin());
+		editVisit(editForm, visit.toReference(), doneConsumer, canEdit);
 	}
 
-	private void editVisit(VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer) {
+	private void editVisit(VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer, boolean canEdit) {
 
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
 			editForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT),
 			editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
+
+		if (!canEdit) {
+			editView.setEnabled(false);
+		}
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
 		// visit form is too big for typical screens
@@ -147,7 +153,7 @@ public class VisitController {
 	}
 
 	private VisitDto createNewVisit(PersonReferenceDto personRef, Disease disease) {
-		VisitDto visit = VisitDto.build(personRef, disease);
+		VisitDto visit = VisitDto.build(personRef, disease, VisitOrigin.USER);
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		visit.setVisitUser(userReference);
 		return visit;

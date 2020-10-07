@@ -29,6 +29,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.person.Person;
@@ -48,6 +49,7 @@ public class Visit extends PseudonymizableAdo {
 	public static final String VISIT_DATE_TIME = "visitDateTime";
 	public static final String VISIT_USER = "visitUser";
 	public static final String VISIT_STATUS = "visitStatus";
+	public static final String ORIGIN = "origin";
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String SYMPTOMS = "symptoms";
 
@@ -65,6 +67,9 @@ public class Visit extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private VisitStatus visitStatus;
+
+	@Enumerated(EnumType.STRING)
+	private VisitOrigin origin;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String visitRemarks;
@@ -117,6 +122,14 @@ public class Visit extends PseudonymizableAdo {
 
 	public void setVisitStatus(VisitStatus visitStatus) {
 		this.visitStatus = visitStatus;
+	}
+
+	public VisitOrigin getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(VisitOrigin visitOrigin) {
+		this.origin = visitOrigin;
 	}
 
 	public String getVisitRemarks() {
