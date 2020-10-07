@@ -137,7 +137,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 236;
+	public static final int DATABASE_VERSION = 237;
 
 	private static DatabaseHelper instance = null;
 
@@ -1621,10 +1621,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN endOfIsolationReason varchar(255);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN endOfIsolationReasonDetails varchar(512);");
 
-        case 231:
-          currentVersion = 231;
+			case 231:
+				currentVersion = 231;
 
-          getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityType varchar(255);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityType varchar(255);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facility_id bigint REFERENCES facility(id);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityDetails varchar(512);");
 
@@ -1700,6 +1700,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 235:
 				currentVersion = 235;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);");
+
+			case 236:
+				currentVersion = 236;
+				getDao(Contact.class).executeRaw("ALTER TABLE contact ADD COLUMN returningTraveler varchar(255);");
 
 				// ATTENTION: break should only be done after last version
 				break;
