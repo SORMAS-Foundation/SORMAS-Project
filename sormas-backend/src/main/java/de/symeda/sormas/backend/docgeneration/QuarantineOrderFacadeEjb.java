@@ -84,6 +84,8 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@Override
 	public byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties) {
+		logger.trace("Generate {} for case {}", templateName, caseUuid);
+
 		// 1. Read template from custom directory
 		File templateFile = getTemplateFile(templateName);
 
@@ -107,7 +109,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 				if (isEntityVariable(propertyKey)) {
 					String propertyPath = propertyKey.replace("case.", "");
 					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(caseData, propertyPath, referenceDtoResolver);
-					System.out.println(propertyKey + ":" + propertyValue);
+					logger.trace(propertyKey + ":" + propertyValue);
 					properties.setProperty(propertyKey, propertyValue);
 				}
 			}
@@ -118,7 +120,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		if (extraProperties != null) {
 			for (String extraPropertyKey : extraProperties.stringPropertyNames()) {
 				String propertyValue = extraProperties.getProperty(extraPropertyKey);
-				System.out.println(extraPropertyKey + ":" + propertyValue);
+				logger.trace(extraPropertyKey + ":" + propertyValue);
 				properties.setProperty(extraPropertyKey, propertyValue);
 			}
 		}
@@ -126,7 +128,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		// 4. fill null properties
 		for (String propertyKey : propertyKeys) {
 			if (properties.getProperty(propertyKey) == null || properties.getProperty(propertyKey).isEmpty()) {
-				System.out.println(propertyKey + ":" + DEFAULT_NULL_REPLACEMENT);
+				logger.trace(propertyKey + ":" + DEFAULT_NULL_REPLACEMENT);
 				properties.setProperty(propertyKey, DEFAULT_NULL_REPLACEMENT);
 			}
 		}
