@@ -215,7 +215,6 @@ public class Contact extends CoreAdo {
 	private Set<Visit> visits = new HashSet<>();
 	private HealthConditions healthConditions;
 	private YesNoUnknown returningTraveler;
-
 	private EndOfQuarantineReason endOfQuarantineReason;
 	private String endOfQuarantineReasonDetails;
 
@@ -858,5 +857,5 @@ public class Contact extends CoreAdo {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
-  }
+	}
 }

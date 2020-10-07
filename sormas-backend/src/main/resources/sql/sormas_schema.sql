@@ -5469,5 +5469,4 @@ ALTER TABLE cases_history
     ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (265, 'Add new field: Quarantine before isolation #2977');
-
 -- *** Insert new sql commands BEFORE this line ***

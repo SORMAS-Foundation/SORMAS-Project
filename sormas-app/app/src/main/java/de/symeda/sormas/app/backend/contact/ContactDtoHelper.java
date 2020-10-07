@@ -154,6 +154,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		target.setPseudonymized(source.isPseudonymized());
+		target.setReturningTraveler(source.getReturningTraveler());
 	}
 
 	@Override
@@ -278,6 +279,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		target.setPseudonymized(source.isPseudonymized());
+		target.setReturningTraveler(source.getReturningTraveler());
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {
