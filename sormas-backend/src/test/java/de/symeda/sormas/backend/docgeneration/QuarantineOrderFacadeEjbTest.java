@@ -106,7 +106,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, testDirectory);
 		quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToBeDeleted.docx", new byte[0]);
 		assertTrue(quarantineOrderFacadeEjb.getAvailableTemplates().contains("TemplateFileToBeDeleted.docx"));
-		quarantineOrderFacadeEjb.deleteQuarantineTemplate("TemplateFileToBeDeleted.docx");
+		assertTrue(quarantineOrderFacadeEjb.deleteQuarantineTemplate("TemplateFileToBeDeleted.docx"));
 		assertFalse(quarantineOrderFacadeEjb.getAvailableTemplates().contains("TemplateFileToBeDeleted.docx"));
 		FileUtils.deleteDirectory(new File(testDirectory));
 		resetCustomPath();
