@@ -166,11 +166,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
 
-		Predicate dateFilter = greaterThanAndNotNull(cb, from.get(AbstractDomainObject.CHANGE_DATE), date);
-		Predicate epiDataDateFilter = epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date);
-		Predicate healthConditionsDateFilter =
-			healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date);
-		return cb.or(dateFilter, epiDataDateFilter, healthConditionsDateFilter);
+		Predicate dateFilter = changeDateFilter(cb, date, from);
+		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
+		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
+
+		return dateFilter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -1092,6 +1093,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getBirthdateDD() != null) {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
 			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), contactCriteria.getBirthdateDD()));
+		}
+		if (contactCriteria.getReturningTraveler() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.RETURNING_TRAVELER), contactCriteria.getReturningTraveler()));
 		}
 
 		return filter;

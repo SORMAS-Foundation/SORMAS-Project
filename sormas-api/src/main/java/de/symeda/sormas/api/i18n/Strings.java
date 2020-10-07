@@ -163,6 +163,14 @@ public interface Strings {
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorSetFeverRequired = "errorSetFeverRequired";
+	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
+	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
+	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
+	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
+	String errorSormasToSormasResult = "errorSormasToSormasResult";
+	String errorSormasToSormasSend = "errorSormasToSormasSend";
+	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
@@ -211,6 +219,7 @@ public interface Strings {
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
+	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateEntry = "headingCreateEntry";

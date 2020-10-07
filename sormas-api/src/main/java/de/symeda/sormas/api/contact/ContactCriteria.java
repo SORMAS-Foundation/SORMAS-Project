@@ -33,6 +33,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class ContactCriteria extends BaseCriteria implements Serializable {
 
@@ -54,6 +55,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
+	public static final String RETURNING_TRAVELER = "returningTraveler";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -99,6 +101,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
+	private YesNoUnknown returningTraveler;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -452,5 +455,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setBirthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
+	}
+
+	public YesNoUnknown getReturningTraveler() {
+		return returningTraveler;
+	}
+
+	public void setReturningTraveler(YesNoUnknown returningTraveler) {
+		this.returningTraveler = returningTraveler;
 	}
 }

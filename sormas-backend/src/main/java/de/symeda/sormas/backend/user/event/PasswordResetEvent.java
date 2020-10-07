@@ -28,7 +28,7 @@ import de.symeda.sormas.backend.user.User;
  */
 public class PasswordResetEvent {
 
-	private User user;
+	private final User user;
 
 	public PasswordResetEvent(User user) {
 		this.user = user;

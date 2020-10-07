@@ -23,9 +23,8 @@ import java.util.Date;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class EventActionIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
+public class EventActionIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 8231951545991794808L;
 
@@ -54,7 +53,6 @@ public class EventActionIndexDto implements WithJurisdiction<EventJurisdictionDt
 	private ActionStatus actionStatus;
 	private ActionPriority actionPriority;
 	private UserReferenceDto actionReplyingUser;
-	private EventJurisdictionDto jurisdiction;
 
 	public EventActionIndexDto(
 		String eventUuid,
@@ -69,12 +67,7 @@ public class EventActionIndexDto implements WithJurisdiction<EventJurisdictionDt
 		ActionPriority actionPriority,
 		String actionReplyingUserUuid,
 		String actionReplyingUserFirstName,
-		String actionReplyingUserLastName,
-		String eventRegionUuid,
-		String eventDistrictUuid,
-		String eventCommunityUuid,
-		String eventReportingUserUuid,
-		String eventSurveillanceOfficerUuid) {
+		String actionReplyingUserLastName) {
 
 		this.eventUuid = eventUuid;
 		this.eventTitle = eventTitle;
@@ -87,8 +80,6 @@ public class EventActionIndexDto implements WithJurisdiction<EventJurisdictionDt
 		this.actionStatus = actionStatus;
 		this.actionPriority = actionPriority;
 		this.actionReplyingUser = new UserReferenceDto(actionReplyingUserUuid, actionReplyingUserFirstName, actionReplyingUserLastName, null);
-		this.jurisdiction =
-			new EventJurisdictionDto(eventReportingUserUuid, eventSurveillanceOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid);
 	}
 
 	public String getEventUuid() {
@@ -177,9 +168,5 @@ public class EventActionIndexDto implements WithJurisdiction<EventJurisdictionDt
 
 	public void setActionReplyingUser(UserReferenceDto actionReplyingUser) {
 		this.actionReplyingUser = actionReplyingUser;
-	}
-
-	public EventJurisdictionDto getJurisdiction() {
-		return jurisdiction;
 	}
 }

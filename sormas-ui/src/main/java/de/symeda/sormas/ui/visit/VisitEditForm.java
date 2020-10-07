@@ -38,13 +38,13 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
@@ -60,14 +60,9 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	private final PersonDto person;
 	private SymptomsForm symptomsForm;
 
-	public VisitEditForm(Disease disease, ContactDto contact, CaseDataDto caze, PersonDto person, boolean create, boolean isInJurisdiction) {
+	public VisitEditForm(Disease disease, ContactDto contact, CaseDataDto caze, PersonDto person, boolean create, boolean isPseudonymized) {
 
-		super(
-			VisitDto.class,
-			VisitDto.I18N_PREFIX,
-			false,
-			null,
-			UiFieldAccessCheckers.withCheckers(create || isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+		super(VisitDto.class, VisitDto.I18N_PREFIX, false, null, UiFieldAccessCheckers.forSensitiveData(create ? false : isPseudonymized));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -87,11 +82,11 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	}
 
 	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, boolean isInJurisdiction) {
-		this(disease, contact, null, person, create, isInJurisdiction);
+		this(disease, contact, null, person, create, contact.isPseudonymized());
 	}
 
 	public VisitEditForm(Disease disease, CaseDataDto caze, PersonDto person, boolean create, boolean isInJurisdiction) {
-		this(disease, null, caze, person, create, isInJurisdiction);
+		this(disease, null, caze, person, create, caze.isPseudonymized());
 	}
 
 	@Override

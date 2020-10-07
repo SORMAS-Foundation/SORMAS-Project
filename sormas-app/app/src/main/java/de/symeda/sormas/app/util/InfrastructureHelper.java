@@ -402,14 +402,18 @@ public final class InfrastructureHelper {
 				String caption = I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS);
 				healthFacilityDetailsField.setCaption(caption);
 				if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
-					((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);
+					ControlPropertyEditField healthFacilityDetailsEditField = (ControlPropertyEditField) healthFacilityDetailsField;
+					healthFacilityDetailsEditField.setHint(caption);
+					healthFacilityDetailsEditField.setRequired(true);
 				}
 			} else if (noneHealthFacility) {
 				healthFacilityDetailsField.setVisibility(VISIBLE);
 				String caption = I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails);
 				healthFacilityDetailsField.setCaption(caption);
 				if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
-					((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);
+					ControlPropertyEditField healthFacilityDetailsEditField = (ControlPropertyEditField) healthFacilityDetailsField;
+					healthFacilityDetailsEditField.setHint(caption);
+					healthFacilityDetailsEditField.setRequired(false);
 				}
 			} else {
 				healthFacilityDetailsField.setVisibility(GONE);

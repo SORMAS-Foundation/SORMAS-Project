@@ -99,7 +99,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		addField(CampaignDto.NAME);
 		TextArea description = addField(CampaignDto.DESCRIPTION, TextArea.class);
-		description.setRows(3);
+		description.setRows(6);
 
 		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER);
 		setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);

@@ -28,12 +28,18 @@ String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_e
 
 String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_event_community')
 
+WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'Edited Event')
+
+WebUI.scrollToElement(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'), 2)
+
 WebUI.click(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'))
 WebUI.setText(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'), (firstName + ' ') + lastName)
 
 WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
 
 WebUI.delay(1)
+
+WebUI.scrollToElement(findTestObject('Events/EditEventView/div_Event participants'), 2)
 
 WebUI.click(findTestObject('Events/EditEventView/div_Event participants'))
 

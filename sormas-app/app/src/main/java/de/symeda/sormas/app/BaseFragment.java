@@ -27,11 +27,10 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 public class BaseFragment extends Fragment {
@@ -39,7 +38,7 @@ public class BaseFragment extends Fragment {
 	private FirebaseAnalytics firebaseAnalytics;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
-	private AppFieldAccessCheckers fieldAccessCheckers;
+	private UiFieldAccessCheckers fieldAccessCheckers;
 
 	public BaseActivity getBaseActivity() {
 		return (BaseActivity) getActivity();
@@ -84,11 +83,11 @@ public class BaseFragment extends Fragment {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 	}
 
-	public AppFieldAccessCheckers getFieldAccessCheckers() {
+	public UiFieldAccessCheckers getFieldAccessCheckers() {
 		return fieldAccessCheckers;
 	}
 
-	public void setFieldAccessCheckers(AppFieldAccessCheckers fieldAccessCheckers) {
+	public void setFieldAccessCheckers(UiFieldAccessCheckers fieldAccessCheckers) {
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 

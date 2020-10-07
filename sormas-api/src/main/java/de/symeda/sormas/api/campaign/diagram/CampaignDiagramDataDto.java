@@ -10,7 +10,7 @@ public class CampaignDiagramDataDto implements Serializable {
 	private String formId;
 	private String fieldId;
 	private String fieldCaption;
-	private Object valueSum;
+	private Number valueSum;
 	private Object groupingKey;
 	private String groupingCaption;
 
@@ -19,7 +19,7 @@ public class CampaignDiagramDataDto implements Serializable {
 		String formId,
 		String fieldId,
 		String fieldCaption,
-		Object valueSum,
+		Number valueSum,
 		Object groupingKey,
 		String groupingCaption) {
 		this.formMetaUuid = formMetaUuid;
@@ -64,11 +64,11 @@ public class CampaignDiagramDataDto implements Serializable {
 		this.fieldCaption = fieldCaption;
 	}
 
-	public Object getValueSum() {
+	public Number getValueSum() {
 		return valueSum;
 	}
 
-	public void setValueSum(Object valueSum) {
+	public void setValueSum(Number valueSum) {
 		this.valueSum = valueSum;
 	}
 

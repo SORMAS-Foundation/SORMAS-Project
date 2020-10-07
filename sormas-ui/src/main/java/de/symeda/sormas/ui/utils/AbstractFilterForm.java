@@ -71,6 +71,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			onChange();
 		});
 
+		addStyleName(CssStyles.FILTER_FORM);
+
 	}
 
 	private void addApplyButton() {
