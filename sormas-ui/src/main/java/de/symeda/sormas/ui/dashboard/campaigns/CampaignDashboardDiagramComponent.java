@@ -7,6 +7,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.highcharts.HighChart;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -49,7 +50,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		setMargin(false);
 		addComponent(campaignColumnChart);
-//		setExpandRatio(campaignColumnChart, 1);
 
 		for (CampaignDiagramDataDto diagramData : diagramDataList) {
 			if (!axisKeys.contains(diagramData.getGroupingKey())) {
@@ -106,10 +106,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 
 		//@formatter:off
-		hcjs.append("} } }," 
+		hcjs.append("} } },"
 				+ "legend: { backgroundColor: 'transparent', margin: 30 },"
 				+ "colors: ['#4472C4', '#ED7D31', '#A5A5A5', '#FFC000', '#5B9BD5', '#70AD47', '#FF0000', '#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],"
-				+ "title:{ text: '" + title + "', style: { fontSize: '15px' } },");
+				+ "title:{ text: '" + StringEscapeUtils.escapeEcmaScript(title) + "', style: { fontSize: '15px' } },");
 		//@formatter:on
 
 		Map<String, Long> stackMap = diagramDefinition.getCampaignDiagramSeries()
@@ -124,7 +124,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		hcjs.append("categories: [");
 		for (Object axisKey : axisKeys) {
-			hcjs.append("'").append(axisCaptions.get(axisKey)).append("',");
+			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(axisCaptions.get(axisKey))).append("',");
 		}
 		hcjs.append("]},");
 
@@ -166,7 +166,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			Collection<CampaignDiagramDataDto> values = seriesData.values();
 			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
 			final String fieldName = iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey;
-			hcjs.append("{ name:'").append(fieldName).append("', data: [");
+			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {
 					if (showPercentages && totalValuesMap != null) {
@@ -189,7 +189,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				}
 			}
 			if (series.getStack() != null) {
-				hcjs.append("],stack:'").append(series.getStack()).append("'},");
+				hcjs.append("],stack:'").append(StringEscapeUtils.escapeEcmaScript(series.getStack())).append("'},");
 			} else {
 				hcjs.append("]},");
 			}
