@@ -145,7 +145,6 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.origin = origin;
 	}
 
-	@Override
 	public ContactJurisdictionDto getJurisdiction() {
 		return contactJurisdiction;
 	}

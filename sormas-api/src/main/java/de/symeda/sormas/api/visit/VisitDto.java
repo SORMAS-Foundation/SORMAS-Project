@@ -20,7 +20,6 @@ package de.symeda.sormas.api.visit;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
