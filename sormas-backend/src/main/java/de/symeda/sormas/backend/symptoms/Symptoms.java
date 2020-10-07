@@ -650,6 +650,7 @@ public class Symptoms extends AbstractDomainObject {
         return seizures;
     }
 
+    @Enumerated(EnumType.STRING)
     public YesNoUnknown getSymptomatic() {
         return symptomatic;
     }

@@ -19,6 +19,7 @@ package de.symeda.sormas.api.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -35,20 +36,12 @@ public class SymptomsHelperTest {
 		SymptomsDto symptoms = SymptomsDto.build();
 		SymptomsHelper.updateIsSymptomatic(symptoms);
 
-		assertEquals(null, symptoms.getSymptomatic());
+		assertNull(symptoms.getSymptomatic());
 
 		symptoms.setBackache(SymptomState.YES);
 		SymptomsHelper.updateIsSymptomatic(symptoms);
 
-		assertEquals(SymptomState.YES, symptoms.getSymptomatic());
-
-		symptoms.setBackache(SymptomState.UNKNOWN);
-		SymptomsHelper.updateIsSymptomatic(symptoms);
-		assertEquals(SymptomState.UNKNOWN, symptoms.getSymptomatic());
-
-		symptoms.setBackache(SymptomState.NO);
-		SymptomsHelper.updateIsSymptomatic(symptoms);
-		assertEquals(SymptomState.NO, symptoms.getSymptomatic());
+		assertEquals(YesNoUnknown.YES, symptoms.getSymptomatic());
 	}
 
 	@Test
