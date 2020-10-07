@@ -93,9 +93,11 @@ public interface Validations {
 	String validCommunity = "validCommunity";
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
+	String validEmailAddress = "validEmailAddress";
 	String validFacility = "validFacility";
 	String validFacilityType = "validFacilityType";
 	String validPerson = "validPerson";
+	String validPhoneNumber = "validPhoneNumber";
 	String validPointOfEntry = "validPointOfEntry";
 	String validRegion = "validRegion";
 	String validReportDateTime = "validReportDateTime";
