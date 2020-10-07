@@ -23,6 +23,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.renderers.DateRenderer;
 
+import com.vaadin.ui.renderers.TextRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -69,7 +70,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 
 		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
-		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new BooleanRenderer());
+		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new TextRenderer());
 
 		for (Column<VisitIndexDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(VisitIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));

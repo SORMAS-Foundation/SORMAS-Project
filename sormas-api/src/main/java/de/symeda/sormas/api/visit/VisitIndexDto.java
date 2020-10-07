@@ -7,6 +7,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class VisitIndexDto extends PseudonymizableIndexDto implements Serializable {
@@ -32,7 +33,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 	@SensitiveData
 	private String visitRemarks;
 	private Disease disease;
-	private Boolean symptomatic;
+	private YesNoUnknown symptomatic;
 	private Float temperature;
 	private TemperatureSource temperatureSource;
 
@@ -45,7 +46,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		VisitStatus visitStatus,
 		String visitRemarks,
 		Disease disease,
-		Boolean symptomatic,
+		YesNoUnknown symptomatic,
 		Float temperature,
 		TemperatureSource temperatureSource) {
 
@@ -104,11 +105,11 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.disease = disease;
 	}
 
-	public Boolean getSymptomatic() {
+	public YesNoUnknown getSymptomatic() {
 		return symptomatic;
 	}
 
-	public void setSymptomatic(boolean symptomatic) {
+	public void setSymptomatic(YesNoUnknown symptomatic) {
 		this.symptomatic = symptomatic;
 	}
 
