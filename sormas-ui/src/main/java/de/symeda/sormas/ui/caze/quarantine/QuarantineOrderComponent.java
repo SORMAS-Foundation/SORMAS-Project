@@ -1,5 +1,9 @@
 package de.symeda.sormas.ui.caze.quarantine;
 
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.Properties;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
@@ -13,6 +17,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -20,10 +25,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
-
-import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.Properties;
 
 public class QuarantineOrderComponent extends VerticalLayout {
 
@@ -65,6 +66,7 @@ public class QuarantineOrderComponent extends VerticalLayout {
 			additionalVariablesComponent.removeAllComponents();
 			for (String variable : additionalVariables) {
 				TextField variableInput = new TextField(variable);
+				variableInput.setWidth(80F, Unit.PERCENTAGE);
 				additionalVariablesComponent.addComponent(variableInput);
 			}
 			if (isValidTemplateFile) {
