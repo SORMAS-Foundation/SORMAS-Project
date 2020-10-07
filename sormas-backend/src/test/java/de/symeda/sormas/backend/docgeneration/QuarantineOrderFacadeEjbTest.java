@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -71,8 +72,16 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void generateQuarantineOrderTest() throws IOException {
+		List<String> additionalVariables = quarantineOrderFacadeEjb.getAdditionalVariables("Quarantine.docx");
+		assertEquals(Arrays.asList("other", "supervisor.name", "supervisor.phone", "supervisor.roomNumber"), additionalVariables);
+
+		Properties properties = new Properties();
+		properties.setProperty("supervisor.name", "Marcel Mariën");
+		properties.setProperty("supervisor.phone", "+49 681 56789");
+		properties.setProperty("supervisor.roomNumber", "17");
+
 		ByteArrayInputStream generatedDocument =
-			new ByteArrayInputStream(quarantineOrderFacadeEjb.getGeneratedDocument("Quarantine.docx", caseDataDto.getUuid(), new Properties()));
+			new ByteArrayInputStream(quarantineOrderFacadeEjb.getGeneratedDocument("Quarantine.docx", caseDataDto.getUuid(), properties));
 
 		XWPFDocument xwpfDocument = new XWPFDocument(generatedDocument);
 		XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(xwpfDocument);
