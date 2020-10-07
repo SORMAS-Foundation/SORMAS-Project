@@ -17,7 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
-import de.symeda.sormas.api.PseudonymizableDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -25,7 +26,10 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
 public class LocationDto extends PseudonymizableDto {
@@ -49,6 +53,9 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String ADDRESS_TYPE = "addressType";
 	public static final String ADDRESS_TYPE_DETAILS = "addressTypeDetails";
+	public static final String FACILITY_TYPE = "facilityType";
+	public static final String FACILITY = "facility";
+	public static final String FACILITY_DETAILS = "facilityDetails";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -66,9 +73,11 @@ public class LocationDto extends PseudonymizableDto {
 	private AreaType areaType;
 	@PersonalData
 	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double latitude;
 	@PersonalData
 	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double longitude;
 	private Float latLonAccuracy;
 	@PersonalData()
@@ -86,6 +95,14 @@ public class LocationDto extends PseudonymizableDto {
 	private String additionalInformation;
 	private PersonAddressType addressType;
 	private String addressTypeDetails;
+	@PersonalData
+	private FacilityType facilityType;
+	@PersonalData
+	@SensitiveData
+	private FacilityReferenceDto facility;
+	@PersonalData
+	@SensitiveData
+	private String facilityDetails;
 
 	public String getDetails() {
 		return details;
@@ -205,6 +222,30 @@ public class LocationDto extends PseudonymizableDto {
 
 	public void setAddressTypeDetails(String addressTypeDetails) {
 		this.addressTypeDetails = addressTypeDetails;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public FacilityReferenceDto getFacility() {
+		return facility;
+	}
+
+	public void setFacility(FacilityReferenceDto facility) {
+		this.facility = facility;
+	}
+
+	public String getFacilityDetails() {
+		return facilityDetails;
+	}
+
+	public void setFacilityDetails(String facilityDetails) {
+		this.facilityDetails = facilityDetails;
 	}
 
 	@Override

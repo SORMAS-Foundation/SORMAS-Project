@@ -33,6 +33,7 @@
         <import type="de.symeda.sormas.api.contact.QuarantineType" />
         <import type="de.symeda.sormas.api.contact.ContactIdentificationSource" />
         <import type="de.symeda.sormas.api.contact.TracingApp" />
+        <import type="de.symeda.sormas.api.contact.EndOfQuarantineReason" />
 
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
@@ -265,6 +266,18 @@
                     app:dependencyParentValue="@{QuarantineType.HOME}"
                     app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
                     app:value="@={data.quarantineHelpNeeded}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_endOfQuarantineReason"
+                    app:value="@={data.endOfQuarantineReason}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_endOfQuarantineReasonDetails"
+                    app:dependencyParentField="@{contactEndOfQuarantineReason}"
+                    app:dependencyParentValue="@{EndOfQuarantineReason.OTHER}"
+                    app:value="@={data.endOfQuarantineReasonDetails}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

@@ -58,6 +58,7 @@ import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
@@ -72,6 +73,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -80,7 +82,6 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -125,7 +126,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 					fluidRowLocs(ContactDto.QUARANTINE_OFFICIAL_ORDER_SENT, ContactDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE) +
                     fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
-                    locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
+					fluidRowLocs(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS) +
+					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 					fluidRowLocs(ContactDto.HEALTH_CONDITIONS) +
 					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
@@ -151,13 +153,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private OptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 
-	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
+	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 
 		this.viewMode = viewMode;
 		this.disease = disease;
@@ -385,6 +387,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		addFields(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.END_OF_QUARANTINE_REASON_DETAILS,
+			ContactDto.END_OF_QUARANTINE_REASON,
+			Collections.singletonList(EndOfQuarantineReason.OTHER),
+			true);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();

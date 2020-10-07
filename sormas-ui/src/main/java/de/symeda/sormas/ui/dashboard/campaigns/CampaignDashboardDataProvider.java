@@ -1,12 +1,5 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
@@ -17,6 +10,14 @@ import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 public class CampaignDashboardDataProvider {
 
 	private CampaignReferenceDto campaign;
@@ -25,9 +26,11 @@ public class CampaignDashboardDataProvider {
 	private DistrictReferenceDto district;
 
 	private final Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap = new HashMap<>();
+	private final Map<CampaignDashboardDiagramDto, Map<Object, Double>> campaignFormTotalValues = new HashMap<>();
 
 	public void refreshData() {
 		campaignFormDataMap.clear();
+		campaignFormTotalValues.clear();
 
 		final List<CampaignDashboardElement> campaignDashboardElements =
 			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign != null ? campaign.getUuid() : null);
@@ -48,9 +51,22 @@ public class CampaignDashboardDataProvider {
 		campaignDashboardDiagramDtos.forEach(campaignDashboardDiagramDto -> {
 			List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
 				.getDiagramData(
-					campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeriesList(),
+					campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries(),
 					new CampaignDiagramCriteria(campaign, area, region, district));
 			campaignFormDataMap.put(campaignDashboardDiagramDto, diagramData);
+
+			if (campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal() != null) {
+				List<CampaignDiagramDataDto> percentageDiagramData = FacadeProvider.getCampaignFormDataFacade()
+					.getDiagramData(
+						campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal(),
+						new CampaignDiagramCriteria(campaign, area, region, district));
+				Map<Object, List<CampaignDiagramDataDto>> percentageDiagramDataMap =
+					percentageDiagramData.stream().collect(Collectors.groupingBy(CampaignDiagramDataDto::getGroupingKey));
+				Map<Object, Double> percentageDiagramPercentageMap = new HashMap<>();
+				percentageDiagramDataMap
+					.forEach((k, v) -> percentageDiagramPercentageMap.put(k, v.stream().mapToDouble(d -> d.getValueSum().doubleValue()).sum()));
+				campaignFormTotalValues.put(campaignDashboardDiagramDto, percentageDiagramPercentageMap);
+			}
 		});
 	}
 
@@ -92,5 +108,9 @@ public class CampaignDashboardDataProvider {
 
 	public Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> getCampaignFormDataMap() {
 		return campaignFormDataMap;
+	}
+
+	public Map<CampaignDashboardDiagramDto, Map<Object, Double>> getCampaignFormTotalValues() {
+		return campaignFormTotalValues;
 	}
 }

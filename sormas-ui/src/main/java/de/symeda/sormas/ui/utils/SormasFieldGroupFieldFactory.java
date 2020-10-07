@@ -22,6 +22,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
@@ -94,7 +95,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			field.setNullSelectionAllowed(true);
 			return (T) field;
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationEditForm(fieldVisibilityCheckers, new UiFieldAccessCheckers(true));
+			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {

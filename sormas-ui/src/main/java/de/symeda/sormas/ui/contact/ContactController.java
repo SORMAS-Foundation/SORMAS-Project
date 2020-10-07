@@ -261,11 +261,11 @@ public class ContactController {
 	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(
 		String contactUuid,
 		final ViewMode viewMode,
-		boolean isInJurisdiction) {
+		boolean isPsuedonymized) {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isInJurisdiction);
+		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
 			editForm,
@@ -580,10 +580,10 @@ public class ContactController {
 		return document.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, boolean inJuridiction) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), inJuridiction);
+		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), contact.getEpiData().isPseudonymized());
 		epiDataForm.setValue(contact.getEpiData());
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
