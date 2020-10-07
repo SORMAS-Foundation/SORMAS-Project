@@ -1703,7 +1703,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 236:
 				currentVersion = 236;
-				getDao(Contact.class).executeRaw("ALTER TABLE contact ADD COLUMN returningTraveler varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN returningTraveler varchar(255);");
 
 				// ATTENTION: break should only be done after last version
 				break;
