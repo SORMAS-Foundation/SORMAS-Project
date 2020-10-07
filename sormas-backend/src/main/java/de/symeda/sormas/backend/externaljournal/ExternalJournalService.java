@@ -155,7 +155,7 @@ public class ExternalJournalService {
 			!= 0;
 		return relevantPerson && relevantFieldsUpdated;
 	}
-	
+
 //	private boolean equalOrNull(Object field1, Object field2) {}
 
 	private void notifySymptomJournal(String personUuid) {
@@ -177,7 +177,8 @@ public class ExternalJournalService {
 			boolean success = node.get("success").booleanValue();
 			if (!success) {
 				String message = node.get("message").textValue();
-				throw new ExternalJournalException("Could not notify patient diary of person update: " + message);
+				//TODO: should throw an exception? in this case, we can't update person data if something prevents us from accessing CLIMEDO API
+				logger.error("Could not notify patient diary of person update: " + message);
 			}
 		} catch (IOException e) {
 			logger.error(e.getMessage());

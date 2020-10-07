@@ -27,16 +27,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -58,6 +54,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -512,46 +509,13 @@ public class ContactController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private String getSymptomJournalAuthToken() {
-		String authenticationUrl = FacadeProvider.getConfigFacade().getSymptomJournalAuthUrl();
-		String clientId = FacadeProvider.getConfigFacade().getSymptomJournalClientId();
-		String secret = FacadeProvider.getConfigFacade().getSymptomJournalSecret();
-
-		if (StringUtils.isBlank(authenticationUrl)) {
-			throw new IllegalArgumentException("Property interface.symptomjournal.authurl is not defined");
-		}
-		if (StringUtils.isBlank(clientId)) {
-			throw new IllegalArgumentException("Property interface.symptomjournal.clientid is not defined");
-		}
-		if (StringUtils.isBlank(secret)) {
-			throw new IllegalArgumentException("Property interface.symptomjournal.secret is not defined");
-		}
-
-		try {
-			Client client = ClientBuilder.newClient();
-			HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(clientId, secret);
-			client.register(feature);
-			WebTarget webTarget = client.target(authenticationUrl);
-			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-			Response response = invocationBuilder.post(Entity.json(""));
-			String responseJson = response.readEntity(String.class);
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
-			return node.get("auth").textValue();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return null;
-		}
-	}
-
 	/**
 	 * @return An HTML page containing a form that is automatically submitted in order to display the symptom journal iFrame
 	 */
 	private byte[] createSymptomJournalForm(String formUrl, Map<String, String> inputs) {
 		Document document;
 		try (InputStream in = getClass().getResourceAsStream("/symptomJournal.html")) {
-			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(),formUrl);
+			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(), formUrl);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}

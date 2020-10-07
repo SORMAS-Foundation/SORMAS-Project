@@ -5,7 +5,7 @@ import javax.ejb.Remote;
 @Remote
 public interface ExternalJournalFacade {
 
-    String getSymptomJournalAuthToken();
+	String getSymptomJournalAuthToken();
 
-    String getPatientDiaryAuthToken();
+	String getPatientDiaryAuthToken();
 }

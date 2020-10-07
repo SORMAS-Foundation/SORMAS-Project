@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -43,9 +46,6 @@ import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
-
-import java.util.Collections;
-import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractContactView extends AbstractDetailView<ContactReferenceDto> {
