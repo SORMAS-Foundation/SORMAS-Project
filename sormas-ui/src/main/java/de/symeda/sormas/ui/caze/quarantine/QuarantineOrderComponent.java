@@ -61,15 +61,14 @@ public class QuarantineOrderComponent extends VerticalLayout {
 			String templateFile = e.getValue();
 			boolean isValidTemplateFile = templateFile != null && !templateFile.isEmpty();
 			createButton.setEnabled(isValidTemplateFile);
-			List<String> additionalVariables = FacadeProvider.getQuarantineOrderFacade().getAdditionalVariables(templateFile);
-
 			additionalVariablesComponent.removeAllComponents();
-			for (String variable : additionalVariables) {
-				TextField variableInput = new TextField(variable);
-				variableInput.setWidth(80F, Unit.PERCENTAGE);
-				additionalVariablesComponent.addComponent(variableInput);
-			}
 			if (isValidTemplateFile) {
+				List<String> additionalVariables = FacadeProvider.getQuarantineOrderFacade().getAdditionalVariables(templateFile);
+				for (String variable : additionalVariables) {
+					TextField variableInput = new TextField(variable);
+					variableInput.setWidth(80F, Unit.PERCENTAGE);
+					additionalVariablesComponent.addComponent(variableInput);
+				}
 				setStreamResource(templateFile);
 			}
 		});
