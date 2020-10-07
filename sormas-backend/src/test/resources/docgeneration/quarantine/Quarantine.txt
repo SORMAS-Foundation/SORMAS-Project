@@ -1,4 +1,4 @@
-${case.person.lastName}, Guy
+Debord, Guy
 geb. am:
 28.12.1931
 
@@ -28,4 +28,5 @@ Aus diesem Grund empfehlen wir Ihnen als zuständige Behörde gem. § 30 IfSG i.
 Sollte die erkrankte Person stationär behandelt worden sein, endet die Quarantänezeit frühestens 10 Tage nach Entlassung. Der o.g. Passus bez. der Symptomfreiheit gilt entsprechend.
 
 Der Person ist die beabsichtigte Maßnahme bekannt gemacht worden.
+
 Weiterhin bitten wir die beigefügten Erläuterungen mit zu berücksichtigen.

@@ -1,15 +1,18 @@
 package de.symeda.sormas.ui.caze.quarantine;
 
-import java.io.ByteArrayInputStream;
-import java.util.Properties;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -18,14 +21,22 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
 
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.Properties;
+
 public class QuarantineOrderComponent extends VerticalLayout {
 
-	private final Button createButton;
 	private final CaseReferenceDto caseReferenceDto;
+
+	private final Button createButton;
+	private VerticalLayout additionalVariablesComponent;
+	private FileDownloader fileDownloader;
 
 	public QuarantineOrderComponent(CaseReferenceDto caseReferenceDto) {
 		super();
 		this.caseReferenceDto = caseReferenceDto;
+
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setMargin(false);
 		componentHeader.setSpacing(false);
@@ -49,20 +60,49 @@ public class QuarantineOrderComponent extends VerticalLayout {
 			String templateFile = e.getValue();
 			boolean isValidTemplateFile = templateFile != null && !templateFile.isEmpty();
 			createButton.setEnabled(isValidTemplateFile);
+			List<String> additionalVariables = FacadeProvider.getQuarantineOrderFacade().getAdditionalVariables(templateFile);
+
+			additionalVariablesComponent.removeAllComponents();
+			for (String variable : additionalVariables) {
+				TextField variableInput = new TextField(variable);
+				additionalVariablesComponent.addComponent(variableInput);
+			}
 			if (isValidTemplateFile) {
 				setStreamResource(templateFile);
 			}
 		});
 		addComponent(templateSelector);
 
+		additionalVariablesComponent = new VerticalLayout();
+		additionalVariablesComponent.setSpacing(false);
+		addComponent(additionalVariablesComponent);
+
 		componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+	}
+
+	private Properties readAdditionalVariables() {
+		Properties properties = new Properties();
+		for (int i = 0; i < additionalVariablesComponent.getComponentCount(); i++) {
+			Component component = additionalVariablesComponent.getComponent(i);
+			if (component instanceof TextField) {
+				TextField textField = (TextField) component;
+				properties.setProperty(textField.getCaption(), textField.getValue());
+			}
+		}
+		return properties;
 	}
 
 	private void setStreamResource(String templateFile) {
 		StreamResource streamResource = new StreamResource((StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
-			return new ByteArrayInputStream(quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto.getUuid(), new Properties()));
+			return new ByteArrayInputStream(
+				quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto.getUuid(), readAdditionalVariables()));
 		}, caseReferenceDto.getUuid() + templateFile);
-		new FileDownloader(streamResource).extend(createButton);
+		if (fileDownloader == null) {
+			fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(createButton);
+		} else {
+			fileDownloader.setFileDownloadResource(streamResource);
+		}
 	}
 }
