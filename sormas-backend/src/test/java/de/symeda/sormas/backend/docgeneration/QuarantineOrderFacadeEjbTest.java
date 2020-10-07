@@ -1,9 +1,11 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
@@ -16,6 +18,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.auth0.jwt.internal.org.apache.commons.io.FileUtils;
 import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -94,6 +97,18 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 
 		assertTrue(quarantineOrderFacadeEjb.getAvailableTemplates().isEmpty());
 
+		resetCustomPath();
+	}
+
+	@Test
+	public void writeAndDeleteTemplateTest() throws IOException {
+		String testDirectory = "target" + File.separator + "doctest";
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, testDirectory);
+		quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToBeDeleted.docx", new byte[0]);
+		assertTrue(quarantineOrderFacadeEjb.getAvailableTemplates().contains("TemplateFileToBeDeleted.docx"));
+		quarantineOrderFacadeEjb.deleteQuarantineTemplate("TemplateFileToBeDeleted.docx");
+		assertFalse(quarantineOrderFacadeEjb.getAvailableTemplates().contains("TemplateFileToBeDeleted.docx"));
+		FileUtils.deleteDirectory(new File(testDirectory));
 		resetCustomPath();
 	}
 

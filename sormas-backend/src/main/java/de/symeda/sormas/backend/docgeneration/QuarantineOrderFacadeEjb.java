@@ -4,21 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.docgeneneration.TemplateCriteria;
-import de.symeda.sormas.api.docgeneneration.TemplateDto;
-import java.io.FileOutputStream;
-import de.symeda.sormas.api.region.DistrictCriteria;
-import de.symeda.sormas.backend.region.District;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +26,8 @@ import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.docgeneneration.TemplateCriteria;
+import de.symeda.sormas.api.docgeneneration.TemplateDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -86,23 +85,10 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	@Override
 	public byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties) {
 		// 1. Read template from custom directory
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
-		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
-		File templateFile = new File(templateFileName);
-
-		if (!templateFile.exists()) {
-			throw new IllegalArgumentException("Template file '" + templateName + "' not found.");
-		}
+		File templateFile = getTemplateFile(templateName);
 
 		// 2. Extract document variables
-		Set<String> propertyKeys;
-		try {
-			propertyKeys = templateEngineService.extractTemplateVariables(new FileInputStream(templateFile));
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Could not read template file '" + templateName + "'.");
-		} catch (XDocReportException e) {
-			throw new IllegalArgumentException("Could not process template file '" + templateName + "'.");
-		}
+		Set<String> propertyKeys = getTemplateVariables(templateFile);
 
 		Properties properties = new Properties();
 
@@ -118,7 +104,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		CaseDataDto caseData = caseFacade.getCaseDataByUuid(caseUuid);
 		if (caseData != null) {
 			for (String propertyKey : propertyKeys) {
-				if (propertyKey.startsWith("case.")) {
+				if (isEntityVariable(propertyKey)) {
 					String propertyPath = propertyKey.replace("case.", "");
 					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(caseData, propertyPath, referenceDtoResolver);
 					System.out.println(propertyKey + ":" + propertyValue);
@@ -166,14 +152,20 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		if (availableTemplates == null) {
 			return Collections.emptyList();
 		}
-		return Arrays.stream(availableTemplates).map(File::getName).collect(Collectors.toList());
+		return Arrays.stream(availableTemplates).map(File::getName).sorted(String::compareTo).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<TemplateDto> getAvailableTemplateDtos(){
+	public List<TemplateDto> getAvailableTemplateDtos() {
 		// For now this simply converts all strings into a List of TemplateDto
-		List<TemplateDto> collect = getAvailableTemplates().stream().map(x -> new TemplateDto(x)).collect(Collectors.toList());
-		return collect;
+		return getAvailableTemplates().stream().map(TemplateDto::new).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAdditionalVariables(String templateName) {
+		File templateFile = getTemplateFile(templateName);
+		Set<String> propertyKeys = getTemplateVariables(templateFile);
+		return propertyKeys.stream().filter(e -> !isEntityVariable(e)).sorted(String::compareTo).collect(Collectors.toList());
 	}
 
 	@Override
@@ -184,9 +176,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	@Override
 	public void writeQuarantineTemplate(String fileName, byte[] document) {
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
-		FileOutputStream fileOutputStream;
 		try {
-			fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + fileName);
+			Files.createDirectories(Paths.get(workflowTemplateDirPath));
+			FileOutputStream fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + fileName);
 			fileOutputStream.write(document);
 			fileOutputStream.close();
 		} catch (IOException e) {
@@ -195,8 +187,44 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		}
 	}
 
+	@Override
+	public boolean deleteQuarantineTemplate(String fileName) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		File templateFile = new File(workflowTemplateDirPath + File.separator + fileName);
+		if (templateFile.exists() && templateFile.isFile()) {
+			return templateFile.delete();
+		} else {
+			throw new IllegalArgumentException("File " + fileName + " does not extist");
+		}
+	}
+
+	private Set<String> getTemplateVariables(File templateFile) {
+		try {
+			return templateEngineService.extractTemplateVariables(new FileInputStream(templateFile));
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Could not read template file '" + templateFile.getName() + "'.");
+		} catch (XDocReportException e) {
+			throw new IllegalArgumentException("Could not process template file '" + templateFile.getName() + "'.");
+		}
+	}
+
+	private File getTemplateFile(String templateName) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
+		File templateFile = new File(templateFileName);
+
+		if (!templateFile.exists()) {
+			throw new IllegalArgumentException("Template file '" + templateName + "' not found.");
+		}
+		return templateFile;
+	}
+
 	private String getWorkflowTemplateDirPath() {
 		return configFacade.getCustomFilesPath() + File.separator + "docgeneration" + File.separator + "quarantine";
+	}
+
+	private boolean isEntityVariable(String propertyKey) {
+		return propertyKey.startsWith("case.");
 	}
 
 	private IReferenceDtoResolver getReferenceDtoResolver() {
@@ -226,5 +254,4 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		};
 		return new CachedReferenceDtoResolver(referenceDtoResolver);
 	}
-
 }

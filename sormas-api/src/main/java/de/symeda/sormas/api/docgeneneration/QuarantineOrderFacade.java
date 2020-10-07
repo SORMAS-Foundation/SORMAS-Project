@@ -1,8 +1,5 @@
 package de.symeda.sormas.api.docgeneneration;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Template;
-import de.symeda.sormas.api.region.DistrictCriteria;
-
 import java.util.List;
 import java.util.Properties;
 
@@ -15,10 +12,14 @@ public interface QuarantineOrderFacade {
 
 	List<String> getAvailableTemplates();
 
+	List<String> getAdditionalVariables(String templateName);
+
 	void writeQuarantineTemplate(String fileName, byte[] document);
+
+	boolean deleteQuarantineTemplate(String fileName);
 
 	// new Functions
 	List<TemplateDto> getAvailableTemplateDtos();
-	long count(TemplateCriteria criteria);
 
+	long count(TemplateCriteria criteria);
 }
