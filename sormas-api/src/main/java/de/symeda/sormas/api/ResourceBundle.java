@@ -1,5 +1,7 @@
 package de.symeda.sormas.api;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 public class ResourceBundle {
 
 	private java.util.ResourceBundle resourceBundle;
@@ -20,7 +22,7 @@ public class ResourceBundle {
 
 		}
 
-		return value;
+		return StringEscapeUtils.escapeHtml4(value);
 	}
 
 	public String getString(String key) {

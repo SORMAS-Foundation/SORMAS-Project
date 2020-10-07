@@ -75,7 +75,7 @@
 
 		<copy todir="${collect.root.path}">
 			<fileset dir="setup">
-				<include name="*" />
+				<include name="**/**" />
 			</fileset>
 		</copy>
 	</target>

@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.visualization;
 
 import java.util.Collection;
+import java.util.Date;
 
 import javax.ejb.Remote;
 
@@ -29,5 +30,13 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 @Remote
 public interface VisualizationFacade {
 
-	String buildTransmissionChainJson(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases, Language language);
+	String buildTransmissionChainJson(
+		Date fromDate,
+		Date toDate,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Collection<Disease> diseases,
+		Language language);
+
+	Long getContactCount(Date fromDate, Date toDate, RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases);
 }

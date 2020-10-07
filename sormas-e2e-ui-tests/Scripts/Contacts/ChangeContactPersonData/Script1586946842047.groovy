@@ -40,9 +40,9 @@ WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/Ch
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_Nursery'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'))
+/*WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'))
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'), 
-    'this is a test')
+    'this is a test')*/
 
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Postal code_postalCode'), 
     '456')
@@ -59,13 +59,13 @@ WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/Ch
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Nickname_nickname'), 
     'Pete')
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s maiden name)_mothers_787cb7'),
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mothers maiden name)_mothers'),
 	'maiden')
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s name)_mothersName'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mothers name)_mothersName'), 
     'mom')
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Father  s name)_fathersName'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Fathers name)_fathersName'), 
     'dad')
 
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Phone number_phone'), 
@@ -77,7 +77,7 @@ WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Email address_emailAddress'), 
     'somemail')
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact_e27f79'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 
     'practitioner')
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Save'))
@@ -113,10 +113,10 @@ if (!education.equalsIgnoreCase('Nursery')) {
 	throw new StepFailedException('The occupation should be "Nursery". education: ' + education )
 }
 
-String landmark = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'), 'value')
+/*String landmark = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'), 'value')
 if (!landmark.contains('this is a test')) {
 	throw new StepFailedException('The address or landmark should be "This is a test". landmark: ' + landmark )
-}
+}*/
 
 String postalCode = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Postal code_postalCode'), 'value')
 if (!postalCode.contains('456')) {
@@ -138,17 +138,17 @@ if (!contactNickname.contains('Pete')) {
 	throw new StepFailedException('The contact nickname should be "Pete". contactNickname: ' + contactNickname )
 }
 
-String mothersName = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s name)_mothersName'), 'value')
+String mothersName = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mothers name)_mothersName'), 'value')
 if (!mothersName.contains('mom')) {
 	throw new StepFailedException('The contact mothers name should be "mom". mothersName: ' + mothersName )
 }
 
-String fathersName = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Father  s name)_fathersName'), 'value')
+String fathersName = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Fathers name)_fathersName'), 'value')
 if (!fathersName.contains('dad')) {
 	throw new StepFailedException('The contact fathers name should be "dad". fathersName: ' + fathersName )
 }
 
-String maidenName = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s maiden name)_mothers_787cb7'), 'value')
+String maidenName = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mothers maiden name)_mothers'), 'value')
 if (!maidenName.contains('maiden')) {
 	throw new StepFailedException('The contact mothers maiden name should be "maiden". maidenName: ' + maidenName )
 }
@@ -168,7 +168,7 @@ if (!email.contains('somemail')) {
 	throw new StepFailedException('The email should be "somemail". email: ' + email )
 }
 
-String practitioner = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact_e27f79'), 'value')
+String practitioner = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 'value')
 if (!practitioner.contains('practitioner')) {
 	throw new StepFailedException('The practitioner should be "practitioner". practitioner: ' + practitioner )
 }
@@ -201,8 +201,8 @@ WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/Ch
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_'))
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'), 
-    '')
+/*WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'), 
+    '')*/
 
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Postal code_postalCode'), 
     '')
@@ -221,13 +221,13 @@ WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/Ch
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Nickname_nickname'), 
     '')
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s maiden name)_mothers_787cb7'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mothers maiden name)_mothers'), 
     '')
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Father  s name)_fathersName'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Fathers name)_fathersName'), 
     '')
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s name)_mothersName'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mothers name)_mothersName'), 
     '')
 
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Phone number_phone'), 
@@ -239,7 +239,7 @@ WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Email address_emailAddress'), 
     '')
 
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact_e27f79'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 
     '')
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Save'))

@@ -17,7 +17,6 @@ package de.symeda.sormas.api.utils.jurisdiction;
 
 import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.utils.DataHelper;
 
 public class EventParticipantJurisdictionHelper {
 
@@ -27,12 +26,15 @@ public class EventParticipantJurisdictionHelper {
 		UserJurisdiction userJurisdiction,
 		EventParticipantJurisdictionDto eventParticipantJurisdiction) {
 
-		if (eventParticipantJurisdiction.getReportingUserUuid() != null
-			&& DataHelper.equal(eventParticipantJurisdiction.getReportingUserUuid(), userJurisdiction.getUuid())) {
-			return true;
-		}
+		/*
+		 * if (eventParticipantJurisdiction.getReportingUserUuid() != null
+		 * && DataHelper.equal(eventParticipantJurisdiction.getReportingUserUuid(), userJurisdiction.getUuid())) {
+		 * return true;
+		 * }
+		 * return false;
+		 */
 
-		return false;
+		return true;
 
 	}
 }

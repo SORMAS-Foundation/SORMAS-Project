@@ -36,11 +36,11 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
@@ -70,7 +70,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
-		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
+		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(4);
 
 		ComboBox facilityRegion = addInfrastructureField(PreviousHospitalizationDto.REGION);
 		ComboBox facilityDistrict = addInfrastructureField(PreviousHospitalizationDto.DISTRICT);

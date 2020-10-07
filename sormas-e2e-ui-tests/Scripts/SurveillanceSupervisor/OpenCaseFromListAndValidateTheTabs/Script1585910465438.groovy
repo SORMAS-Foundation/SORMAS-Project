@@ -12,25 +12,27 @@ WebUI.click(findTestObject('Surveillance/SearchView/a_Search_Entry_link'))
 
 WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Case/input_Case_CaseIdUuid_inputBox'), 3)
 
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_CasePerson_tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Case Person_tab'))
 
 WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Person/input_Person_PassportNumber_inputBox'), 3)
 
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Hospitalization_tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Hospitalization_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Hospitatation/div_Date of visit or admission'), 
-    3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Hospitatation/div_Date of visit or admission'), 3)
 
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Symptoms_tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Symptoms_tab'))
 
 WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'), 3)
 
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_EpidemiologicalData_tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Epidemiological data_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/i_EpidemiologicalData_description_text'), 
-    3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/i_EpidemiologicalData_description_text'), 3)
 
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Contacts_tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Follow-up tab for cases'))
+
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/div_Export'), 3)
+
+WebUI.click(findTestObject('Contacts/CasesView/div_Contacts tab'))
 
 WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/div_New contact'), 3)
 

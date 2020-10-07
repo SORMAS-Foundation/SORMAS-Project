@@ -307,8 +307,8 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState coma;
 	@Enumerated(EnumType.STRING)
 	private SymptomState respiratoryDiseaseVentilation;
-	@Enumerated(EnumType.STRING)
-	private SymptomState generalSignsOfDisease;
+	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "generalSignsOfDisease")
+	private SymptomState feelingIll;
 	@Enumerated(EnumType.STRING)
 	private SymptomState fastHeartRate;
 	@Enumerated(EnumType.STRING)
@@ -423,6 +423,8 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState highOrLowBloodPressure;
 	@Enumerated(EnumType.STRING)
 	private SymptomState urinaryRetention;
+	@Enumerated(EnumType.STRING)
+	private SymptomState shivering;
 
 	@Override
 	public String getI18nPrefix() {
@@ -1741,12 +1743,12 @@ public class Symptoms extends PseudonymizableAdo {
 		this.respiratoryDiseaseVentilation = respiratoryDiseaseVentilation;
 	}
 
-	public SymptomState getGeneralSignsOfDisease() {
-		return generalSignsOfDisease;
+	public SymptomState getFeelingIll() {
+		return feelingIll;
 	}
 
-	public void setGeneralSignsOfDisease(SymptomState generalSignsOfDisease) {
-		this.generalSignsOfDisease = generalSignsOfDisease;
+	public void setFeelingIll(SymptomState feelingIll) {
+		this.feelingIll = feelingIll;
 	}
 
 	public SymptomState getFastHeartRate() {
@@ -1859,5 +1861,13 @@ public class Symptoms extends PseudonymizableAdo {
 
 	public void setUrinaryRetention(SymptomState urinaryRetention) {
 		this.urinaryRetention = urinaryRetention;
+	}
+
+	public SymptomState getShivering() {
+		return shivering;
+	}
+
+	public void setShivering(SymptomState shivering) {
+		this.shivering = shivering;
 	}
 }

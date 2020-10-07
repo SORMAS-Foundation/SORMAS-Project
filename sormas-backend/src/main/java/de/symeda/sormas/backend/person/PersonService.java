@@ -271,11 +271,13 @@ public class PersonService extends AbstractAdoService<Person> {
 		final Root<EventParticipant> eventParticipantRoot = eventParticipantJurisdictionSubQuery.from(EventParticipant.class);
 		eventParticipantJurisdictionSubQuery.select(eventParticipantRoot.get(EventParticipant.ID));
 
-		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(eventParticipantRoot.get(EventParticipant.REPORTING_USER)),
-			cb.equal(eventParticipantRoot.get(EventParticipant.REPORTING_USER), getCurrentUser()));
-		eventParticipantJurisdictionSubQuery
-			.where(cb.and(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId), reportedByCurrentUser));
+//		final Predicate reportedByCurrentUser = cb.and(
+//			cb.isNotNull(eventParticipantRoot.get(EventParticipant.REPORTING_USER)),
+//			cb.equal(eventParticipantRoot.get(EventParticipant.REPORTING_USER), getCurrentUser()));
+//		eventParticipantJurisdictionSubQuery
+//			.where(cb.and(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId), reportedByCurrentUser));
+		eventParticipantJurisdictionSubQuery.where(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId));
+
 		final Predicate isEventParticipantInJurisdiction = cb.exists(eventParticipantJurisdictionSubQuery);
 
 		return cb.or(isCaseInJurisdiction, isContactInJurisdiction, isEventParticipantInJurisdiction);
@@ -453,7 +455,7 @@ public class PersonService extends AbstractAdoService<Person> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Person, Person> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
 	}

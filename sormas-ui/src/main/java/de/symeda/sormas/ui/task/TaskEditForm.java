@@ -120,7 +120,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		TextArea creatorComment = addField(TaskDto.CREATOR_COMMENT, TextArea.class);
 		creatorComment.setRows(2);
 		creatorComment.setImmediate(true);
-		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(2);
+		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(4);
 
 		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
 		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);

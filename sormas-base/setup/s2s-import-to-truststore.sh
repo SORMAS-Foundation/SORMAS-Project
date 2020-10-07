@@ -23,8 +23,8 @@ echo "# SORMAS TO SORMAS CERTIFICATE IMPORT"
 echo "# This script imports a certificate into the local truststore, to be used for SORMAS2SORMAS communication"
 echo "# If anything goes wrong, please consult the sormas to sormas import guide or get in touch with the developers."
 
-if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
-	LINUX=true
+if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+  LINUX=true
 else
 	LINUX=false
 fi
@@ -52,27 +52,24 @@ else
   fi
 fi
 
-if [[ -z "${SORMAS_PROPERTIES}" ]]; then
-  DEFAULT_SORMAS_PROPERTIES_PATH="${ROOT_PREFIX}/opt/domains/sormas/sormas.properties"
-  if [[ -f "${DEFAULT_SORMAS_PROPERTIES_PATH}" ]]; then
-    SORMAS_PROPERTIES="${DEFAULT_SORMAS_PROPERTIES_PATH}"
+if [[ ! -d "${SORMAS_DOMAIN_DIR}" ]]; then
+  DEFAULT_SORMAS_DOMAIN_DIR="${ROOT_PREFIX}/opt/domains/sormas";
+
+  if [[ -d "${DEFAULT_SORMAS_DOMAIN_DIR}" ]]; then
+    SORMAS_DOMAIN_DIR="${DEFAULT_SORMAS_DOMAIN_DIR}";
   else
-    while [[ ! -f "${SORMAS_PROPERTIES}" ]]; do
-		  read -r -p "Please specify a valid sormas properties path: " SORMAS_PROPERTIES
+     while [[ ! -d "${SORMAS_DOMAIN_DIR}" ]]; do
+		  read -r -p "Please specify a valid SORMAS domain path: " SORMAS_DOMAIN_DIR
 	  done
-	  export SORMAS_PROPERTIES
-  fi
-else
-  if [[ ! -f "${SORMAS_PROPERTIES}" ]]; then
-    echo "sormas properties file not found: ${SORMAS_PROPERTIES}"
-    exit 1
   fi
 fi
 
-SERVER_LIST_FILE_NAME=server-list.csv
+SORMAS_PROPERTIES="${SORMAS_DOMAIN_DIR}/sormas.properties"
+
+ORGANIZATION_LIST_FILE_NAME=organization-list.csv
 TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12
 TRUSTSTORE_FILE=${SORMAS2SORMAS_DIR}/${TRUSTSTORE_FILE_NAME}
-SERVER_LIST_FILE=${SORMAS2SORMAS_DIR}/${SERVER_LIST_FILE_NAME}
+ORGANIZATION_LIST_FILE=${SORMAS2SORMAS_DIR}/${ORGANIZATION_LIST_FILE_NAME}
 NEW_TRUSTSTORE=false
 
 if [ ! -f "${TRUSTSTORE_FILE}" ]; then
@@ -80,9 +77,9 @@ if [ ! -f "${TRUSTSTORE_FILE}" ]; then
   echo "${TRUSTSTORE_FILE_NAME} not found. A new truststore file will be created."
 fi
 
-if [ ! -f "${SERVER_LIST_FILE}" ]; then
-  echo "${SERVER_LIST_FILE_NAME} not found. A new server list file will be created."
-  touch "${SERVER_LIST_FILE}"
+if [ ! -f "${ORGANIZATION_LIST_FILE}" ]; then
+  echo "${ORGANIZATION_LIST_FILE_NAME} not found. A new server list file will be created."
+  touch "${ORGANIZATION_LIST_FILE}"
 fi
 
 while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PASS} -lt 6 ]]; do
@@ -97,20 +94,31 @@ while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PA
   echo
 done
 
-read -p "Please provide the file name of the certificate to import. It should be located inside the sormas2sormas folder: " CRT_FILE_NAME
-CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
-while [[ -z "${CRT_FILE_NAME}" ]] || [ ! -f "${CRT_FILE}" ]; do
-  echo "File not found in ${SORMAS2SORMAS_DIR} folder."
-  read -p "Please provide the file name of the certificate to import. It should be located inside the sormas2sormas folder: " CRT_FILE_NAME
-  CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
+while [[ -z "${SORMAS_S2S_HOST_NAME}" ]]; do
+  read -p "Please provide the Hostname of the certificate owner: " SORMAS_S2S_HOST_NAME
 done
 
-# get new certificate alias, which is the same as the Common Name (CN)
-ALIAS=$(openssl x509 -noout -subject -nameopt multiline -in "${CRT_FILE}" | sed -n 's/ *commonName *= //p')
+CRT_FILE_NAME=${SORMAS_S2S_HOST_NAME}.sormas2sormas.cert.crt;
+CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
+
+if [[ ! -f "${CRT_FILE}" ]]; then
+  echo "The file ${CRT_FILE_NAME} not found in ${SORMAS2SORMAS_DIR} folder."
+
+  exit 1;
+fi
+
+CSV_FILE_NAME=${SORMAS_S2S_HOST_NAME}-server-access-data.csv;
+CSV_FILE=${SORMAS2SORMAS_DIR}/${CSV_FILE_NAME};
+if [[ ! -f "${CSV_FILE}" ]]; then
+  echo "The file ${CSV_FILE_NAME} not found in ${SORMAS2SORMAS_DIR} folder."
+
+  exit 1;
+fi
 
 # import crt
 echo "Importing certificate into truststore..."
-keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias ${ALIAS} -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
+ALIAS=$(openssl x509 -noout -subject -nameopt multiline -in "${CRT_FILE}" | sed -n 's/ *commonName *= //p')
+keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias "${ALIAS}" -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
 
 if [[ ${NEW_TRUSTSTORE} = true ]]; then
   # remove existing properties and empty spaces at end of file
@@ -126,5 +134,9 @@ if [[ ${NEW_TRUSTSTORE} = true ]]; then
     echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}";
   } >> "${SORMAS_PROPERTIES}"
 fi
+
+echo "Updating server list CSV"
+
+( head -1 "$CSV_FILE" ) >> "${ORGANIZATION_LIST_FILE}"
 
 echo "The script finished executing. Please check for any errors."

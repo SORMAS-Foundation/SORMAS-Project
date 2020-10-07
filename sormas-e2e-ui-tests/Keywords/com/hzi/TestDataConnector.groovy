@@ -3,6 +3,10 @@ package com.hzi
 import static com.kms.katalon.core.testdata.TestDataFactory.findTestData
 
 import com.kms.katalon.core.testdata.TestData
+import com.kms.katalon.core.testobject.TestObject
+import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+
 
 public class TestDataConnector {
 

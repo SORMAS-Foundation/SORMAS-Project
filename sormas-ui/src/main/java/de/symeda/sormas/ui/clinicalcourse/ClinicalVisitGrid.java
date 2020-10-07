@@ -17,11 +17,10 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -31,11 +30,8 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 	private static final String EDIT_BTN_ID = "edit";
 
 	private ClinicalVisitCriteria clinicalVisitCriteria = new ClinicalVisitCriteria();
-	private boolean isInJurisdiction;
 
-	public ClinicalVisitGrid(CaseReferenceDto caseRef, boolean isInJurisdiction) {
-
-		this.isInJurisdiction = isInJurisdiction;
+	public ClinicalVisitGrid(CaseReferenceDto caseRef, boolean isPseudonymized) {
 
 		setSizeFull();
 
@@ -70,14 +66,13 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 		}
 
 		setCellStyleGenerator(
-			FieldAccessCellStyleGenerator.withFieldAccessCheckers(
-				ClinicalVisitIndexDto.class,
-				UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker())));
+			FieldAccessCellStyleGenerator
+				.withFieldAccessCheckers(ClinicalVisitIndexDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
 		addItemClickListener(e -> {
 			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getClinicalCourseController()
-					.openClinicalVisitEditForm((ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload, isInJurisdiction);
+					.openClinicalVisitEditForm((ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload);
 			}
 		});
 	}

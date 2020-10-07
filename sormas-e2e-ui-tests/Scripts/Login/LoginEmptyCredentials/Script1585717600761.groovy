@@ -7,7 +7,7 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : '', ('Username') : ''], FailureHandling.STOP_ON_FAILURE)
 
 try {
-    WebUI.verifyElementNotPresent(findTestObject('Login/span_Logout_link'), 2)
+    WebUI.verifyElementNotPresent(findTestObject('Login/div_Logout'), 2)
 }
 finally { 
     WebUI.closeBrowser()

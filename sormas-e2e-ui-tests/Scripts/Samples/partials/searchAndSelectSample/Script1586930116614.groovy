@@ -11,6 +11,8 @@ println('searching for case: ' + caseName)
 
 WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_Export_caseCodeIdLike'), caseName)
 
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
 WebUI.delay(1)
 
 WebUI.click(findTestObject('Samples/MainView/edit_sample_from_table'))

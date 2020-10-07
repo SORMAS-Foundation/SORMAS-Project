@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -235,7 +236,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	@Override
-	protected void setSubComponent(Component newComponent) {
+	protected void setSubComponent(DirtyStateComponent newComponent) {
 
 		super.setSubComponent(newComponent);
 

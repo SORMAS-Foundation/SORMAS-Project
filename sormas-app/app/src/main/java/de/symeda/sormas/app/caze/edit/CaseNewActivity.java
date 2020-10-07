@@ -204,24 +204,33 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 			return;
 		}
 
-		SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), person -> {
-			if (person != null) {
-				caze.setPerson(person);
-				CasePickOrCreateDialog.pickOrCreateCase(caze, pickedCase -> {
-					if (pickedCase.getUuid().equals(caze.getUuid())) {
-						saveDataInner(caze);
-					} else {
-						if (lineListingDiseases.contains(caze.getDisease())
-								&& Boolean.TRUE.equals(fragment.getContentBinding().rapidCaseEntryCheckBox.getValue())) {
-							setStoredRootEntity(buildRootEntity());
-							fragment.setActivityRootData(getStoredRootEntity());
-							fragment.updateForRapidCaseEntry(caze);
-						} else {
-							finish();
-							CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
-						}
-					}
-				});
+		// Person selection can be skipped if the case was created from a contact
+		if (contactUuid == null) {
+			SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), person -> {
+				if (person != null) {
+					caze.setPerson(person);
+					pickOrCreateCaseAndSave(caze, fragment);
+				}
+			});
+		} else {
+			pickOrCreateCaseAndSave(caze, fragment);
+		}
+	}
+
+	private void pickOrCreateCaseAndSave(Case caze, CaseNewFragment fragment) {
+		CasePickOrCreateDialog.pickOrCreateCase(caze, pickedCase -> {
+			if (pickedCase.getUuid().equals(caze.getUuid())) {
+				saveDataInner(caze);
+			} else {
+				if (lineListingDiseases.contains(caze.getDisease())
+					&& Boolean.TRUE.equals(fragment.getContentBinding().rapidCaseEntryCheckBox.getValue())) {
+					setStoredRootEntity(buildRootEntity());
+					fragment.setActivityRootData(getStoredRootEntity());
+					fragment.updateForRapidCaseEntry(caze);
+				} else {
+					finish();
+					CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
+				}
 			}
 		});
 	}

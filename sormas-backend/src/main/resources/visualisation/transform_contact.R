@@ -51,11 +51,11 @@ con = dbConnect(PostgreSQL(), user = DB_USER, dbname = DB_NAME, password = DB_PA
 #query contact table and ratin only contacts parsed from Sys.getenv
 if (CONTACT_IDS == "") {
   #for testing: get all valid contacts
-  idContString = as.character(dbGetQuery(con, "select ct.id
+  idContString = paste(dbGetQuery(con, "select ct.id
 from public.contact ct
 	join public.cases cs on (ct.caze_id = cs.id)
 where ct.deleted = FALSE and ct.contactclassification != 'NO_CONTACT'
-	and cs.caseclassification != 'NO_CASE' and cs.deleted = FALSE")$id)
+	and cs.caseclassification != 'NO_CASE' and cs.deleted = FALSE")$id, collapse=",")
 } else {
   idContString = CONTACT_IDS
 }
@@ -65,7 +65,7 @@ if (idContString == "") idContString = "NULL"
 #query all relevant contacts
 sql_edge = "select distinct cs.person_id case_pid, ct.person_id contact_pid,
 	'ContactProximity.' || ct.contactproximity as contactproximity, 'ContactStatus.' || ct.contactstatus as contactstatus
-from public.contact ct 
+from public.contact ct
 	join public.cases cs on ct.caze_id = cs.id
 where ct.id in (%s)"
 
@@ -80,7 +80,7 @@ sql_node = "with clean_ct as (
 clean_cs as (
 	select *
 	from public.cases
-	where deleted = FALSE 
+	where deleted = FALSE
 		and caseclassification != 'NO_CASE'
 ),
 node as (
@@ -92,7 +92,7 @@ node as (
 union
 	--caze
 	select distinct p.id, cs.reportdate, cs.uuid, cs.caseclassification
-	from clean_ct ct 
+	from clean_ct ct
 		join public.cases cs on ct.caze_id = cs.id
 		join public.person p on cs.person_id = p.id
 )

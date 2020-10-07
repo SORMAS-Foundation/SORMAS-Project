@@ -48,6 +48,7 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String EVENT_TYPE_OF_PLACE = "eventTypeOfPlace";
 	public static final String EVENT_START_DATE = "eventStartDate";
 	public static final String EVENT_END_DATE = "eventEndDate";
+	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESCRIPTION = "eventDescription";
 	public static final String EVENT_REGION = "eventRegion";
 	public static final String EVENT_DISTRICT = "eventDistrict";
@@ -63,6 +64,7 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String SAMPLE_INFORMATION = "sampleInformation";
 	public static final String PERSON_NATIONAL_HEALTH_ID = "personNationalHealthId";
 	public static final String EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION = "eventParticipantInvolvmentDescription";
+	public static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
 
 	private long id;
 	private long personId;
@@ -75,6 +77,7 @@ public class EventParticipantExportDto implements Serializable {
 	private TypeOfPlace typeOfPlace;
 	private final Date eventStartDate;
 	private final Date eventEndDate;
+	private final String eventTitle;
 	private final String eventDesc;
 
 	private final String eventRegion;
@@ -85,6 +88,7 @@ public class EventParticipantExportDto implements Serializable {
 	private final String eventHouseNumber;
 
 	private final String personUuid;
+	private final String eventParticipantUuid;
 
 	private final String involvmentDescription;
 
@@ -105,6 +109,7 @@ public class EventParticipantExportDto implements Serializable {
 	private BurialInfoDto burialInfo;
 	private String addressRegion;
 	private String addressDistrict;
+	private String addressCommunity;
 	@PersonalData
 	@SensitiveData
 	private String city;
@@ -134,19 +139,20 @@ public class EventParticipantExportDto implements Serializable {
 	private EventParticipantJurisdictionDto jurisdiction;
 
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid, 
+    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid, 
 									 
-									 EventStatus eventStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventDesc,
+									 EventStatus eventStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
 									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
 									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
-									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String city, String street, String houseNumber,
+									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
 									 String additionalInformation, String postalCode, String phone, String caseUuid) {
     	//@formatter:on
 
 		this.id = id;
 		this.personId = personId;
 		this.personUuid = personUuid;
+		this.eventParticipantUuid = eventParticipantUuid;
 		this.personNationalHealthId = personNationalHealthId;
 		this.personAddressId = personAddressId;
 		this.eventUuid = eventUuid;
@@ -156,6 +162,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.typeOfPlace = typeOfPlace;
 		this.eventStartDate = eventStartDate;
 		this.eventEndDate = eventEndDate;
+		this.eventTitle = eventTitle;
 		this.eventDesc = eventDesc;
 		this.eventRegion = eventRegion;
 		this.eventDistrict = eventDistrict;
@@ -176,6 +183,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.burialInfo = new BurialInfoDto(burialDate, burialConductor, burialPlaceDescription);
 		this.addressRegion = addressRegion;
 		this.addressDistrict = addressDistrict;
+		this.addressCommunity = addressCommunity;
 		this.city = city;
 		this.street = street;
 		this.houseNumber = houseNumber;
@@ -187,227 +195,133 @@ public class EventParticipantExportDto implements Serializable {
 		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}
 
-	@Order(0)
-	@ExportProperty(EventDto.UUID)
-	public String getEventUuid() {
-		return eventUuid;
-	}
-
-	@Order(1)
-	@ExportProperty(EventDto.EVENT_STATUS)
-	public EventStatus getEventStatus() {
-		return eventStatus;
-	}
-
-	@Order(2)
-	@ExportProperty(EventParticipantExportDto.EVENT_DISEASE)
-	public Disease getEventDisease() {
-		return eventDisease;
-	}
-
-	@Order(3)
-	@ExportProperty(EventParticipantExportDto.EVENT_TYPE_OF_PLACE)
-	public TypeOfPlace getTypeOfPlace() {
-		return typeOfPlace;
-	}
-
-	@Order(4)
-	@ExportProperty(EventParticipantExportDto.EVENT_START_DATE)
-	public Date getEventStartDate() {
-		return eventStartDate;
-	}
-
-	@Order(5)
-	@ExportProperty(EventParticipantExportDto.EVENT_END_DATE)
-	public Date getEventEndDate() {
-		return eventEndDate;
-	}
-
-	@Order(6)
-	@ExportProperty(EventParticipantExportDto.EVENT_DESCRIPTION)
-	public String getEventDesc() {
-		return eventDesc;
-	}
-
-	@Order(7)
-	@ExportProperty(EventParticipantExportDto.EVENT_REGION)
-	public String getEventRegion() {
-		return eventRegion;
-	}
-
-	@Order(8)
-	@ExportProperty(EventParticipantExportDto.EVENT_DISTRICT)
-	public String getEventDistrict() {
-		return eventDistrict;
-	}
-
 	@Order(9)
-	@ExportProperty(EventParticipantExportDto.EVENT_COMMUNITY)
-	public String getEventCommunity() {
-		return eventCommunity;
-	}
-
-	@Order(10)
-	@ExportProperty(EventParticipantExportDto.EVENT_CITY)
-	public String getEventCity() {
-		return eventCity;
-	}
-
-	@Order(11)
-	@ExportProperty(EventParticipantExportDto.EVENT_STREET)
-	public String getEventStreet() {
-		return eventStreet;
-	}
-
-	@Order(12)
-	@ExportProperty(EventParticipantExportDto.EVENT_HOUSE_NUMBER)
-	public String getEventHouseNumber() {
-		return eventHouseNumber;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public long getPersonId() {
-		return personId;
+	@ExportProperty(EventParticipantExportDto.EVENT_PARTICIPANT_UUID)
+	public String getEventParticipantUuid() {
+		return eventParticipantUuid;
 	}
 
 	public long getPersonAddressId() {
 		return personAddressId;
 	}
 
-	@Order(21)
+	@Order(10)
 	public String getPersonUuid() {
 		return personUuid;
 	}
 
-	@Order(22)
+	@Order(11)
 	@ExportProperty(EventParticipantExportDto.PERSON_NATIONAL_HEALTH_ID)
 	public String getPersonNationalHealthId() {
 		return personNationalHealthId;
 	}
 
-	@Order(23)
+	@Order(12)
+	public String getCaseUuid() {
+		return caseUuid;
+	}
+
+	@Order(13)
 	public String getFirstName() {
 		return firstName;
 	}
 
-	@Order(24)
+	@Order(14)
 	public String getLastName() {
 		return lastName;
 	}
 
-	@Order(25)
+	@Order(15)
 	public Sex getSex() {
 		return sex;
 	}
 
-	@Order(26)
-	@ExportProperty(EventParticipantExportDto.EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION)
-	public String getInvolvmentDescription() {
-		return involvmentDescription;
-	}
-
-	@Order(27)
+	@Order(17)
 	public String getApproximateAge() {
 		return approximateAge;
 	}
 
-	@Order(28)
+	@Order(18)
 	@ExportProperty(EventParticipantExportDto.AGE_GROUP)
 	public String getAgeGroup() {
 		return ageGroup;
 	}
 
-	@Order(29)
+	@Order(19)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
 	}
 
-	@Order(30)
+	@Order(20)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(31)
+	@Order(21)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(32)
+	@Order(22)
 	@ExportProperty(EventParticipantExportDto.BURIAL_INFO)
 	public BurialInfoDto getBurialInfo() {
 		return burialInfo;
 	}
 
-	@Order(41)
+	@Order(31)
 	@ExportProperty(EventParticipantExportDto.ADDRESS_REGION)
 	public String getAddressRegion() {
 		return addressRegion;
 	}
 
-	@Order(42)
+	@Order(32)
 	@ExportProperty(EventParticipantExportDto.ADDRESS_DISTRICT)
 	public String getAddressDistrict() {
 		return addressDistrict;
 	}
 
-	@Order(43)
+	@Order(32)
+	public String getAddressCommunity() {
+		return addressCommunity;
+	}
+
+	@Order(33)
 	public String getCity() {
 		return city;
 	}
 
-	@Order(44)
+	@Order(34)
 	public String getStreet() {
 		return street;
 	}
 
-	@Order(45)
+	@Order(35)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
 
-	@Order(46)
+	@Order(36)
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
 
-	@Order(47)
+	@Order(37)
 	public String getPostalCode() {
 		return postalCode;
 	}
 
-	@Order(48)
+	@Order(38)
 	@ExportProperty(EventParticipantExportDto.ADDRESS_GPS_COORDINATES)
 	public String getAddressGpsCoordinates() {
 		return addressGpsCoordinates;
 	}
 
-	@Order(49)
-	public void setAdditionalInformation(String additionalInformation) {
-		this.additionalInformation = additionalInformation;
-	}
-
-	@Order(50)
+	@Order(40)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(60)
-	public String getCaseUuid() {
-		return caseUuid;
-	}
-
-	public List<EmbeddedSampleExportDto> getEventParticipantSamples() {
-		return eventParticipantSamples;
-	}
-
-	public void addEventParticipantSample(EmbeddedSampleExportDto exportSampleDto) {
-		this.eventParticipantSamples.add(exportSampleDto);
-	}
-
-	@Order(61)
+	@Order(42)
 	@ExportProperty(EventParticipantExportDto.SAMPLE_INFORMATION)
 	public String getOtherSamplesString() {
 		StringBuilder samples = new StringBuilder();
@@ -418,6 +332,112 @@ public class EventParticipantExportDto implements Serializable {
 		}
 
 		return samples.length() > 0 ? samples.substring(0, samples.length() - separator.length()) : "";
+	}
+
+	@Order(43)
+	@ExportProperty(EventParticipantExportDto.EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION)
+	public String getInvolvmentDescription() {
+		return involvmentDescription;
+	}
+
+	@Order(50)
+	@ExportProperty(EventDto.UUID)
+	public String getEventUuid() {
+		return eventUuid;
+	}
+
+	@Order(51)
+	@ExportProperty(EventDto.EVENT_STATUS)
+	public EventStatus getEventStatus() {
+		return eventStatus;
+	}
+
+	@Order(52)
+	@ExportProperty(EventParticipantExportDto.EVENT_DISEASE)
+	public Disease getEventDisease() {
+		return eventDisease;
+	}
+
+	@Order(53)
+	@ExportProperty(EventParticipantExportDto.EVENT_TYPE_OF_PLACE)
+	public TypeOfPlace getTypeOfPlace() {
+		return typeOfPlace;
+	}
+
+	@Order(54)
+	@ExportProperty(EventParticipantExportDto.EVENT_START_DATE)
+	public Date getEventStartDate() {
+		return eventStartDate;
+	}
+
+	@Order(55)
+	@ExportProperty(EventParticipantExportDto.EVENT_END_DATE)
+	public Date getEventEndDate() {
+		return eventEndDate;
+	}
+
+	@Order(56)
+	@ExportProperty(EventParticipantExportDto.EVENT_TITLE)
+	public String getEventTitle() {
+		return eventTitle;
+	}
+
+	@Order(57)
+	@ExportProperty(EventParticipantExportDto.EVENT_DESCRIPTION)
+	public String getEventDesc() {
+		return eventDesc;
+	}
+
+	@Order(58)
+	@ExportProperty(EventParticipantExportDto.EVENT_REGION)
+	public String getEventRegion() {
+		return eventRegion;
+	}
+
+	@Order(59)
+	@ExportProperty(EventParticipantExportDto.EVENT_DISTRICT)
+	public String getEventDistrict() {
+		return eventDistrict;
+	}
+
+	@Order(60)
+	@ExportProperty(EventParticipantExportDto.EVENT_COMMUNITY)
+	public String getEventCommunity() {
+		return eventCommunity;
+	}
+
+	@Order(61)
+	@ExportProperty(EventParticipantExportDto.EVENT_CITY)
+	public String getEventCity() {
+		return eventCity;
+	}
+
+	@Order(62)
+	@ExportProperty(EventParticipantExportDto.EVENT_STREET)
+	public String getEventStreet() {
+		return eventStreet;
+	}
+
+	@Order(63)
+	@ExportProperty(EventParticipantExportDto.EVENT_HOUSE_NUMBER)
+	public String getEventHouseNumber() {
+		return eventHouseNumber;
+	}
+
+	public List<EmbeddedSampleExportDto> getEventParticipantSamples() {
+		return eventParticipantSamples;
+	}
+
+	public void addEventParticipantSample(EmbeddedSampleExportDto exportSampleDto) {
+		this.eventParticipantSamples.add(exportSampleDto);
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public long getPersonId() {
+		return personId;
 	}
 
 	public void setId(long id) {
@@ -490,6 +510,10 @@ public class EventParticipantExportDto implements Serializable {
 
 	public void setHouseNumber(String houseNumber) {
 		this.houseNumber = houseNumber;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
 	}
 
 	public void setPostalCode(String postalCode) {

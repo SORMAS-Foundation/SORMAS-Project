@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -32,21 +31,19 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBinding, Case, Case> {
@@ -60,10 +57,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			AppFieldAccessCheckers.withCheckers(
-				CaseEditAuthorization.isCaseEditAllowed(activityRootData),
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
 	private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
@@ -135,6 +129,18 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
+		}
+
+		contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
+		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
+
+		if(isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)){
+			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
+		}
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactType)
+			|| isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactDate)) {
+			contentBinding.caseDataContactTracingDivider.setVisibility(VISIBLE);
+			contentBinding.caseDataContactTracingFirstContactHeading.setVisibility(VISIBLE);
 		}
 	}
 

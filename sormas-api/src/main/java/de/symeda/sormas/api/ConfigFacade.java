@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.region.GeoLatLon;
-
 import javax.ejb.Remote;
+
+import de.symeda.sormas.api.region.GeoLatLon;
 
 @Remote
 public interface ConfigFacade {
@@ -27,6 +27,8 @@ public interface ConfigFacade {
 	String getCountryName();
 
 	String getCountryLocale();
+
+	String getCountryCode();
 
 	boolean isConfiguredCountry(String countryCode);
 
@@ -98,7 +100,11 @@ public interface ConfigFacade {
 
 	String getPatientDiaryUrl();
 
+	String getSormasToSormasUserPassword();
+
 	void validateExternalUrls();
 
-	Sormas2SormasConfig getSormas2SormasConfig();
+	SormasToSormasConfig getSormasToSormasConfig();
+
+	String getAuthenticationProvider();
 }
