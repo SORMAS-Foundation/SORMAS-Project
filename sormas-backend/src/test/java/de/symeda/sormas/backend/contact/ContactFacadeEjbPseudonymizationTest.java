@@ -20,7 +20,9 @@ package de.symeda.sormas.backend.contact;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -361,8 +363,12 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(contact.getReportingUser(), is(nullValue()));
 		assertThat(contact.getContactOfficer(), is(nullValue()));
 		assertThat(contact.getResultingCaseUser(), is(nullValue()));
-		assertThat(contact.getReportLat(), is(nullValue()));
-		assertThat(contact.getReportLon(), is(nullValue()));
+
+		assertThat(contact.getReportLat(), is(not(46.432)));
+		assertThat(contact.getReportLat().toString(), startsWith("46."));
+		assertThat(contact.getReportLon(), is(not(23.234)));
+		assertThat(contact.getReportLon().toString(), startsWith("23."));
+
 		assertThat(contact.getReportLatLonAccuracy(), is(10F));
 	}
 

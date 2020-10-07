@@ -19,6 +19,7 @@
 
 ## Related
 * [Creating an App for a Demo Server](DEMO_APP.md)
+* [SORMAS Docker Repository](https://github.com/hzi-braunschweig/SORMAS-Docker)
 
 ## Prerequisites
 
@@ -74,7 +75,7 @@
 
 ## Keycloak Server
 
-By default Keycloak is ran as a Docker container, which can be setup in two ways:
+By default Keycloak is run as a Docker container, which can be set up in two ways:
 * As a Docker container
 * As a Standalone installation
 

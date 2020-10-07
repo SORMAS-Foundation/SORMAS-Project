@@ -21,14 +21,16 @@ package de.symeda.sormas.backend.user.event;
 import de.symeda.sormas.backend.user.User;
 
 /**
+ * Event fired when an existing user is updated.
+ *
  * @author Alex Vidrean
  * @since 27-Aug-20
  */
 public class UserUpdateEvent {
 
-	private User oldUser;
+	private final User oldUser;
 
-	private User newUser;
+	private final User newUser;
 
 	public UserUpdateEvent(User oldUser, User newUser) {
 		this.oldUser = oldUser;
@@ -39,15 +41,7 @@ public class UserUpdateEvent {
 		return oldUser;
 	}
 
-	public void setOldUser(User oldUser) {
-		this.oldUser = oldUser;
-	}
-
 	public User getNewUser() {
 		return newUser;
-	}
-
-	public void setNewUser(User newUser) {
-		this.newUser = newUser;
 	}
 }

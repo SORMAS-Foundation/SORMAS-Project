@@ -6,8 +6,12 @@
    <elementGuidId>a85d7e49-6998-46d9-bc0b-3679d5bec0d6</elementGuidId>
    <selectorCollection>
       <entry>
+         <key>BASIC</key>
+         <value>//*[@type = 'text' and @id = 'gwt-uid-30']</value>
+      </entry>
+      <entry>
          <key>XPATH</key>
-         <value>//input[@id='gwt-uid-30']</value>
+         <value>//div[@id='reportDate']/input</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>

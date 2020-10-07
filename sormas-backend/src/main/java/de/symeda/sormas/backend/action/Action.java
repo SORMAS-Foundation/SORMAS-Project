@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.action;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -40,9 +41,11 @@ import de.symeda.sormas.backend.user.User;
 @Entity
 @Audited
 public class Action extends AbstractDomainObject {
+
 	private static final long serialVersionUID = -4754578341242164661L;
 
 	public static final String TABLE_NAME = "action";
+	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
 	public static final String REPLY = "reply";
 	public static final String REPLYING_USER = "replyingUser";
@@ -63,6 +66,7 @@ public class Action extends AbstractDomainObject {
 	private Date statusChangeDate;
 
 	private User creatorUser;
+	private String title;
 	private String description;
 	private String reply;
 	private User replyingUser;
@@ -128,6 +132,15 @@ public class Action extends AbstractDomainObject {
 
 	public void setPriority(ActionPriority priority) {
 		this.priority = priority;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	@Column(length = COLUMN_LENGTH_BIG)

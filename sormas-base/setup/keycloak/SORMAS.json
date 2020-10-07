@@ -54,6 +54,15 @@
         "attributes": {}
       },
       {
+        "id": "f3d27036-07fb-469c-8bf4-acecf6ea70b0",
+        "name": "REST_EXTERNAL_VISITS_USER",
+        "description": "Used to pre-validate access to the API",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "SORMAS",
+        "attributes": {}
+      },
+      {
         "id": "b40b55b3-a4b1-4f5e-95eb-224f21a40b5a",
         "name": "offline_access",
         "description": "${role_offline-access}",
@@ -850,6 +859,7 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "clientId",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientId",
@@ -864,6 +874,7 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "clientAddress",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientAddress",
@@ -878,6 +889,7 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "clientHost",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientHost",

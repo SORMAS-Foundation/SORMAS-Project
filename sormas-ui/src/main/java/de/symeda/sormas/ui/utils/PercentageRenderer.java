@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.utils;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import elemental.json.JsonValue;
+import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class PercentageRenderer extends HtmlRenderer {
@@ -27,7 +28,7 @@ public class PercentageRenderer extends HtmlRenderer {
 	@Override
 	public JsonValue encode(String value) {
 		if (value != null && !value.isEmpty()) {
-			return super.encode(value + "%");
+			return super.encode(StringEscapeUtils.escapeHtml4(value) + "%");
 		} else {
 			return null;
 		}

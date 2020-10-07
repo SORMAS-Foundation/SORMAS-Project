@@ -21,12 +21,14 @@ package de.symeda.sormas.backend.user.event;
 import de.symeda.sormas.backend.user.User;
 
 /**
+ * Event fired whenever a user's password is changed.
+ *
  * @author Alex Vidrean
  * @since 15-Aug-20
  */
 public class PasswordResetEvent {
 
-	private User user;
+	private final User user;
 
 	public PasswordResetEvent(User user) {
 		this.user = user;

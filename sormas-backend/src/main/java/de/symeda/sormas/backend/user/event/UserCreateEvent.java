@@ -21,12 +21,14 @@ package de.symeda.sormas.backend.user.event;
 import de.symeda.sormas.backend.user.User;
 
 /**
+ * Event fired when a user is created and persisted.
+ *
  * @author Alex Vidrean
  * @since 15-Aug-20
  */
 public class UserCreateEvent {
 
-	private User user;
+	private final User user;
 
 	public UserCreateEvent(User user) {
 		this.user = user;

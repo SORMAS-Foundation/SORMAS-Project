@@ -169,7 +169,6 @@ public class UserController {
 					dto = FacadeProvider.getUserFacade().saveUser(dto);
 					refreshView();
 					makeInitialPassword(dto.getUuid());
-					showAccountCreatedSuccessful();
 				}
 			}
 		});
@@ -184,6 +183,8 @@ public class UserController {
 		if (isSormasAuthentication) {
 			String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 			showPasswordResetInternalSuccessPopup(newPassword);
+		} else {
+			showAccountCreatedSuccessful();
 		}
 	}
 

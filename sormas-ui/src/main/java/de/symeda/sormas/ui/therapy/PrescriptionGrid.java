@@ -19,14 +19,13 @@ import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridButtonRenderer;
 import de.symeda.sormas.ui.utils.PeriodDtoConverter;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -37,10 +36,8 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 	private static final String DOCUMENT_TREATMENT_BTN_ID = "documentTreatment";
 
 	private PrescriptionCriteria prescriptionCriteria = new PrescriptionCriteria();
-	private boolean isInJurisdiction;
 
-	public PrescriptionGrid(TherapyView parentView, boolean isInJurisdiction) {
-		this.isInJurisdiction = isInJurisdiction;
+	public PrescriptionGrid(TherapyView parentView, boolean isPseudonymized) {
 
 		setSizeFull();
 
@@ -81,7 +78,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
 
-		if (isInJurisdiction) {
+		if (isPseudonymized) {
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		} else {
@@ -96,9 +93,8 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 				I18nProperties.getPrefixCaption(PrescriptionIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 
 			setCellStyleGenerator(
-				FieldAccessCellStyleGenerator.withFieldAccessCheckers(
-					PrescriptionIndexDto.class,
-					UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker())));
+				FieldAccessCellStyleGenerator
+					.withFieldAccessCheckers(PrescriptionIndexDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 		}
 
 		addItemClickListener(e -> {
@@ -111,8 +107,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 					FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, (Runnable) () -> parentView.reloadTreatmentGrid());
 			} else if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController()
-					.openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, false, isInJurisdiction);
+				ControllerProvider.getTherapyController().openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, false);
 			}
 		});
 	}

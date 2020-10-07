@@ -58,6 +58,7 @@ import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
@@ -72,6 +73,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -80,7 +82,6 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -105,7 +106,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
                     fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
-					fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
+					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
 					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE, 6, ContactDto.TRACING_APP) +
 					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, 6, ContactDto.TRACING_APP_DETAILS) +
@@ -125,7 +126,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 					fluidRowLocs(ContactDto.QUARANTINE_OFFICIAL_ORDER_SENT, ContactDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE) +
                     fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
-                    locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
+					fluidRowLocs(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS) +
+					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 					fluidRowLocs(ContactDto.HEALTH_CONDITIONS) +
 					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
@@ -151,13 +153,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private OptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 
-	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
+	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 
 		this.viewMode = viewMode;
 		this.disease = disease;
@@ -195,7 +197,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		tracingAppDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 //		tracingApp.setVisible(false);
 //		tracingAppDetails.setVisible(false);
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS,
@@ -213,7 +215,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 
@@ -324,14 +326,16 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
+		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
 
+		addField(ContactDto.RETURNING_TRAVELER, OptionGroup.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
-		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(2);
+		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
 		addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
-		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
+		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
+		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
 		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil));
 		this.addValueChangeListener(e -> onValueChange());
 
@@ -371,9 +375,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, TextField.class);
 		OptionGroup ogCareForPeopleOver60 = addField(ContactDto.CARE_FOR_PEOPLE_OVER_60, OptionGroup.class);
 
-		cbDisease.addValueChangeListener(e -> {
-			updateDiseaseConfiguration((Disease) e.getProperty().getValue());
-		});
+		cbDisease.addValueChangeListener(e -> updateDiseaseConfiguration((Disease) e.getProperty().getValue()));
 
 		HealthConditionsForm clinicalCourseForm = addField(ContactDto.HEALTH_CONDITIONS, HealthConditionsForm.class);
 		clinicalCourseForm.setCaption(null);
@@ -383,8 +385,16 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
 
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
-		additionalDetails.setRows(3);
+		additionalDetails.setRows(6);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		addFields(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.END_OF_QUARANTINE_REASON_DETAILS,
+			ContactDto.END_OF_QUARANTINE_REASON,
+			Collections.singletonList(EndOfQuarantineReason.OTHER),
+			true);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
@@ -469,7 +479,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					}
 				}
 
-				if (!isConfiguredServer("de")) {
+				if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 					setVisible(
 						false,
 						ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE,
@@ -491,7 +501,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						minimumFollowUpUntilDate,
 						null,
 						Resolution.DAY));
-				dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended));
 			}
 
 			// Overwrite visibility for quarantine fields
@@ -656,29 +665,51 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		return HTML_LAYOUT;
 	}
 
-	private void onFollowUpUntilChanged(Property.ValueChangeEvent valueChangeEvent, DateField quarantineTo, CheckBox quarantineExtendedCheckBox) {
+	private void onFollowUpUntilChanged(
+		Property.ValueChangeEvent valueChangeEvent,
+		DateField quarantineTo,
+		CheckBox quarantineExtendedCheckBox,
+		CheckBox quarantineReducedCheckBox) {
 		Property<Date> followUpUntilField = valueChangeEvent.getProperty();
-		Date followUpUntil = followUpUntilField.getValue();
-		if (quarantineTo.getValue() != null && (followUpUntil == null || followUpUntil.compareTo(quarantineTo.getValue()) != 0)) {
+		Date newFollowUpUntil = followUpUntilField.getValue();
+		ContactDto originalContact = getInternalValue();
+		Date oldFollowUpUntil = originalContact.getFollowUpUntil();
+		Date oldQuarantineEnd = originalContact.getQuarantineTo();
+		if (shouldAdjustQuarantine(quarantineTo, newFollowUpUntil, oldFollowUpUntil)) {
 			VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingExtendQuarantine),
-					new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					640,
-					confirmed -> {
-						if (confirmed) {
-							quarantineChangedByFollowUpUntilChange = true;
-							quarantineTo.setValue(followUpUntil);
-							if (followUpUntil.after(getInternalValue().getFollowUpUntil())) {
-								quarantineExtendedCheckBox.setValue(true);
-							}
+				I18nProperties.getString(Strings.headingAdjustQuarantine),
+				new Label(I18nProperties.getString(Strings.confirmationAlsoAdjustQuarantine)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						quarantineChangedByFollowUpUntilChange = true;
+						quarantineTo.setValue(newFollowUpUntil);
+						if (oldQuarantineEnd != null) {
+							boolean quarantineExtended = quarantineTo.getValue().after(oldQuarantineEnd);
+							quarantineExtendedCheckBox.setValue(quarantineExtended);
+							quarantineReducedCheckBox.setValue(!quarantineExtended);
+							setVisible(quarantineExtended, ContactDto.QUARANTINE_EXTENDED);
+							setVisible(!quarantineExtended, ContactDto.QUARANTINE_REDUCED);
 						}
-					});
+					}
+				});
 		}
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckBox, CheckBox quarantineReducedCheckBox, DateField followUpUntilField) {
+	private boolean shouldAdjustQuarantine(DateField quarantineTo, Date newFollowUpUntil, Date oldFollowUpUntil) {
+		return newFollowUpUntil != null
+			&& (oldFollowUpUntil == null || newFollowUpUntil.after(oldFollowUpUntil))
+			&& quarantineTo.getValue() != null
+			&& newFollowUpUntil.compareTo(quarantineTo.getValue()) != 0;
+	}
+
+	private void onQuarantineEndChange(
+		Property.ValueChangeEvent valueChangeEvent,
+		CheckBox quarantineExtendedCheckBox,
+		CheckBox quarantineReducedCheckBox,
+		DateField followUpUntilField) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -689,7 +720,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			if (newQuarantineEnd != null) {
 				if (oldQuarantineEnd != null) {
 					if (newQuarantineEnd.after(oldQuarantineEnd)) {
-						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, oldQuarantineEnd, followUpUntilField);
+						confirmQuarantineEndExtended(
+							quarantineExtendedCheckBox,
+							quarantineReducedCheckBox,
+							quarantineEndField,
+							originalContact,
+							oldQuarantineEnd,
+							followUpUntilField);
 					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
 						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
 					}

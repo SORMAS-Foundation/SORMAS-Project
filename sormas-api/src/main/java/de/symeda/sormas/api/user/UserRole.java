@@ -59,7 +59,8 @@ public enum UserRole
 	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION),
 	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
 	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NONE),
-	REST_USER(false, false, false, false, JurisdictionLevel.NONE);
+	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
+	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NONE);
 
 	/*
 	 * Hint for SonarQube issues:
@@ -89,6 +90,7 @@ public enum UserRole
 	public static final String _IMPORT_USER = IMPORT_USER.name();
 	public static final String _REST_EXTERNAL_VISITS_USER = REST_EXTERNAL_VISITS_USER.name();
 	public static final String _REST_USER = REST_USER.name();
+	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
 
 	private Set<UserRight> defaultUserRights = null;
 
@@ -213,6 +215,9 @@ public enum UserRole
 			break;
 		case REST_USER:
 			collection.add(REST_USER);
+			break;
+		case SORMAS_TO_SORMAS_CLIENT:
+			collection.add(SORMAS_TO_SORMAS_CLIENT);
 			break;
 		default:
 			break;

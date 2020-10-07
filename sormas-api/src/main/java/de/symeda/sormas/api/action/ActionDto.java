@@ -29,9 +29,11 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 
 public class ActionDto extends EntityDto {
+
 	private static final long serialVersionUID = 2439546041916003652L;
 
 	public static final String I18N_PREFIX = "Action";
+	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
 	public static final String REPLY = "reply";
 	public static final String PRIORITY = "priority";
@@ -51,6 +53,7 @@ public class ActionDto extends EntityDto {
 	private Date statusChangeDate;
 
 	private UserReferenceDto creatorUser;
+	private String title;
 	private String description;
 	private String reply;
 	private UserReferenceDto replyingUser;
@@ -117,6 +120,14 @@ public class ActionDto extends EntityDto {
 
 	public void setCreatorUser(UserReferenceDto creatorUser) {
 		this.creatorUser = creatorUser;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getDescription() {
