@@ -5379,7 +5379,7 @@ INSERT INTO person_locations (person_id, location_id) SELECT person_id, location
 ALTER TABLE person DROP COLUMN occupationregion_id, DROP COLUMN occupationdistrict_id, DROP COLUMN occupationcommunity_id, DROP COLUMN occupationfacilitytype, DROP COLUMN occupationfacility_id, DROP COLUMN occupationfacilitydetails;
 
 INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add facility fields to location and refactor occupation facilities for persons #2456');
-
+                                                                                                                                          
 -- 202-10-01 Split general signs of disease #2916
 ALTER TABLE symptoms ADD COLUMN shivering character varying(255);
 ALTER TABLE symptoms RENAME generalsignsofdisease to feelingill;
@@ -5469,4 +5469,23 @@ ALTER TABLE cases_history
     ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (265, 'Add new field: Quarantine before isolation #2977');
+-- 2020-09-23 CampaignFormMeta to Campaigns relation #2855
+
+CREATE TABLE campaign_campaignformmeta(
+                                campaign_id bigint NOT NULL,
+                                campaignformmeta_id bigint NOT NULL,
+                                sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE campaign_campaignformmeta OWNER TO sormas_user;
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT unq_campaign_campaignformmeta_0 UNIQUE (campaign_id, campaignformmeta_id);
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT fk_campaign_campaignformmeta_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT fk_campaign_campaignformmeta_meta_id FOREIGN KEY (campaignformmeta_id) REFERENCES campaignformmeta(id);
+
+CREATE TABLE campaign_campaignformmeta_history (LIKE campaign_campaignformmeta);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaign_campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaign_campaignformmeta_history', true);
+ALTER TABLE campaign_campaignformmeta_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (266, 'CampaignFormMeta to Campaigns relation #2855');
 -- *** Insert new sql commands BEFORE this line ***

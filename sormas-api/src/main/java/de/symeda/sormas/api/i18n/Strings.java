@@ -104,6 +104,10 @@ public interface Strings {
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
+	String confirmationRemoveGridRowCancel = "confirmationRemoveGridRowCancel";
+	String confirmationRemoveGridRowConfirm = "confirmationRemoveGridRowConfirm";
+	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
+	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
@@ -185,6 +189,8 @@ public interface Strings {
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
+	String headingCampaignBasics = "headingCampaignBasics";
+	String headingCampaignDashboard = "headingCampaignDashboard";
 	String headingCampaignData = "headingCampaignData";
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseData = "headingCaseData";
@@ -468,6 +474,7 @@ public interface Strings {
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
+	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
