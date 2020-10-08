@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.externaljournal;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +30,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.externaljournal.ExternalPatientDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -41,6 +43,7 @@ public class ExternalJournalService {
 	private static final String SYMPTOM_JOURNAL_KEY = "symptomJournal";
 	private static final String PATIENT_DIARY_KEY = "patientDiary";
 	private static final Cache<String, String> authTokenCache = CacheBuilder.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).build();
+	private static final int NOT_FOUND_STATUS = 404;
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -211,13 +214,8 @@ public class ExternalJournalService {
 
 	private void notifyPatientDiary(String personUuid) {
 		try {
-			String updateUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + personUuid;
-			Client client = ClientBuilder.newClient();
-			WebTarget webTarget = client.target(updateUrl);
-			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-			invocationBuilder.header("x-access-token", getPatientDiaryAuthToken());
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(personUuid);
 			Response response = invocationBuilder.put(Entity.json(""));
-
 			String responseJson = response.readEntity(String.class);
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
@@ -232,7 +230,32 @@ public class ExternalJournalService {
 		}
 	}
 
-	//TODO: implement get from CLIMEDO
+	/**
+	 * Retrieves the person from the external patient diary with the given uuid
+	 * @param personUuid the uuid of the person to be retrieved
+	 * @return optional containing the person
+	 */
+	public Optional<ExternalPatientDto> getPatientDiaryPerson(String personUuid) {
+		try {
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(personUuid);
+			Response response = invocationBuilder.get();
+			if (response.getStatus() == NOT_FOUND_STATUS) {
+				return Optional.empty();
+			}
+			String responseJson = response.readEntity(String.class);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
+			String idatData = node.get("idatData").textValue();
+			ExternalPatientDto externalPatientDto = mapper.readValue(idatData, ExternalPatientDto.class);
+			String endDate = node.get("endDate").textValue();
+			//TODO: refactor to use actual data after date format is fixed
+			externalPatientDto.setEndDate(new Date());
+			return Optional.of(externalPatientDto);
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			return Optional.empty();
+		}
+	}
 
 	/**
 	 * Attempts to register a new patient in the CLIMEDO patient diary.
@@ -243,13 +266,8 @@ public class ExternalJournalService {
 	 */
 	public boolean registerPatientDiaryPerson(PersonDto person) {
 		try {
-			String registerUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + person.getUuid();
-			Client client = ClientBuilder.newClient();
-			WebTarget webTarget = client.target(registerUrl);
-			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-			invocationBuilder.header("x-access-token", getPatientDiaryAuthToken());
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
 			Response response = invocationBuilder.post(Entity.json(""));
-
 			String responseJson = response.readEntity(String.class);
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
@@ -267,5 +285,14 @@ public class ExternalJournalService {
 			logger.error(e.getMessage());
 			return false;
 		}
+	}
+
+	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
+		String updateUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + personUuid;
+		Client client = ClientBuilder.newClient();
+		WebTarget webTarget = client.target(updateUrl);
+		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+		invocationBuilder.header("x-access-token", getPatientDiaryAuthToken());
+		return invocationBuilder;
 	}
 }

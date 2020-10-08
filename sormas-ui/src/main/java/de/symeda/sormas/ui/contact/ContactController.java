@@ -533,6 +533,9 @@ public class ContactController {
 	 * Displays the result in a popup
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
+		if (externalJournalFacade.getPatientDiaryPerson(person.getUuid()) != null) {
+			//show already registered popup
+		}
 		//show loading popup
 		boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
 		//hide loading popup
