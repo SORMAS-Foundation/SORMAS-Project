@@ -1549,7 +1549,7 @@ public interface Captions {
 	String symptomsLesionsLocations = "symptomsLesionsLocations";
 	String symptomsMaxTemperature = "symptomsMaxTemperature";
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";
-	String symptomsSetClearedToUnknown="symptomsSetClearedToUnknown";
+	String symptomsSetClearedToUnknown = "symptomsSetClearedToUnknown";
 	String system = "system";
 	String Task = "Task";
 	String Task_assigneeReply = "Task.assigneeReply";
