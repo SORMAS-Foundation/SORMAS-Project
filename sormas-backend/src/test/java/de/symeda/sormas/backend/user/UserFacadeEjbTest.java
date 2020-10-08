@@ -5,12 +5,15 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.FacadeProvider;
 import org.junit.Test;
 
 import de.symeda.sormas.api.user.UserCriteria;
@@ -22,6 +25,8 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class UserFacadeEjbTest extends AbstractBeanTest {
 
@@ -76,6 +81,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetValidLoginRoles() {
+
+		AuthProvider authProvider = mock(AuthProvider.class);
+
+		MockedStatic<AuthProvider> mockAuthProvider = mockStatic(AuthProvider.class);
+		mockAuthProvider.when(AuthProvider::getProvider).thenReturn(authProvider);
+		when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
 
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
