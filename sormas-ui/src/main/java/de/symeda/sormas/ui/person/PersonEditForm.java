@@ -78,7 +78,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.PhoneNumberValidator;
+import de.symeda.sormas.ui.utils.UserPhoneNumberValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -410,7 +410,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
 
 		phoneNumber.addValidator(
-			new PhoneNumberValidator(
+			new UserPhoneNumberValidator(
 				I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
 
 		emailAddress.addValidator(

@@ -20,19 +20,19 @@ package de.symeda.sormas.ui.utils;
 import com.vaadin.v7.data.validator.AbstractValidator;
 
 @SuppressWarnings("serial")
-public class PhoneNumberValidator extends AbstractValidator<String> {
+public class UserPhoneNumberValidator extends AbstractValidator<String> {
 
-	public PhoneNumberValidator(String errorMessage) {
-		super(errorMessage);
-	}
+    public UserPhoneNumberValidator(String errorMessage) {
+        super(errorMessage);
+    }
 
-	@Override
-	protected boolean isValidValue(String phoneNumber) {
-		return phoneNumber == null || phoneNumber.isEmpty() || phoneNumber.startsWith("+");
-	}
+    @Override
+    protected boolean isValidValue(String phoneNumber) {
+        return phoneNumber == null || phoneNumber.isEmpty() || !phoneNumber.matches(".*[a-zA-Z].*");
+    }
 
-	@Override
-	public Class<String> getType() {
-		return String.class;
-	}
+    @Override
+    public Class<String> getType() {
+        return String.class;
+    }
 }
