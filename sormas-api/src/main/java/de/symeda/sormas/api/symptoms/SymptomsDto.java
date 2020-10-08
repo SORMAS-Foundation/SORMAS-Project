@@ -691,7 +691,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@HideForCountries
 	private SymptomState headache;
 
 	@Diseases({
@@ -1041,7 +1040,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@HideForCountries
 	private SymptomState musclePain;
 
 	@Diseases({
