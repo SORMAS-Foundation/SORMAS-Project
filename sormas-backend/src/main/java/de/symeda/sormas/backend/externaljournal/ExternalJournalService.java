@@ -44,6 +44,10 @@ public class ExternalJournalService {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
+	/**
+	 * Retrieves a token used for authenticating in the symptom journal. The token will be cached.
+	 * @return the authentication token
+	 */
 	public String getSymptomJournalAuthToken() {
 		try {
 			return authTokenCache.get(SYMPTOM_JOURNAL_KEY, this::getSymptomJournalAuthTokenInternal);
@@ -85,6 +89,10 @@ public class ExternalJournalService {
 		}
 	}
 
+	/**
+	 * Retrieves a token used for authenticating in the patient diary. The token will be cached.
+	 * @return the authentication token
+	 */
 	public String getPatientDiaryAuthToken() {
 		try {
 			return authTokenCache.get(PATIENT_DIARY_KEY, this::getPatientDiaryAuthTokenInternal);
@@ -94,7 +102,7 @@ public class ExternalJournalService {
 		}
 	}
 
-	public String getPatientDiaryAuthTokenInternal() {
+	private String getPatientDiaryAuthTokenInternal() {
 		String authenticationUrl = configFacade.getPatientDiaryConfig().getAuthUrl();
 		String email = configFacade.getPatientDiaryConfig().getEmail();
 		String pass = configFacade.getPatientDiaryConfig().getPassword();
@@ -129,6 +137,11 @@ public class ExternalJournalService {
 		}
 	}
 
+	/**
+	 * Notify external journals that a person has been updated
+	 * @param existingPerson the person already available in the external journal
+	 * @param updatedPerson the updated person in SORMAS
+	 */
 	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
 		if (shouldNotify(existingPerson, updatedPerson)) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
@@ -155,8 +168,6 @@ public class ExternalJournalService {
 			!= 0;
 		return relevantPerson && relevantFieldsUpdated;
 	}
-
-//	private boolean equalOrNull(Object field1, Object field2) {}
 
 	private void notifySymptomJournal(String personUuid) {
 		// agree with PIA how this should be done

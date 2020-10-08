@@ -260,8 +260,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public JournalPersonDto getPersonForJournal(String Uuid) {
-		PersonDto detailedPerson = getPersonByUuid(Uuid);
+	public JournalPersonDto getPersonForJournal(String uuid) {
+		PersonDto detailedPerson = getPersonByUuid(uuid);
 		//only specific attributes of the person shall be returned:
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
@@ -275,7 +275,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			exportPerson.setBirthdateMM(detailedPerson.getBirthdateMM());
 			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
 			exportPerson.setSex(detailedPerson.getSex());
-			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(Uuid));
+			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(uuid));
 			return exportPerson;
 		} else {
 			return null;
@@ -365,7 +365,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public Date getLatestFollowUpEndDateByUuid(String Uuid) {
+	public Date getLatestFollowUpEndDateByUuid(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
 		Root<Contact> contactRoot = cq.from(Contact.class);
@@ -373,8 +373,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
 
-		if (Uuid != null) {
-			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.UUID), Uuid));
+		if (uuid != null) {
+			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
 		}
 
 		if (filter != null) {

@@ -85,7 +85,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 		//@formatter:off
 		description = "status may be one of the following:<br/>" +
 				"UNREGISTERED: User has not yet sent any state<br/>" +
-				"REGISTERED: After succesfull registration in SymptomJournal<br/>" +
+				"REGISTERED: After successful registration in SymptomJournal<br/>" +
 				"ACCEPTED: User has accepted a confirmation<br/>" +
 				"REJECTED: User has rejected (declined) a confirmation<br/>" +
 				"DELETED: User was deleted",
