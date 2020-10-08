@@ -119,7 +119,7 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 		plateletsField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, plateletsField.getCaption()));
 		TextField prothrombinTimeField = addField(AdditionalTestDto.PROTHROMBIN_TIME, TextField.class);
 		prothrombinTimeField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, prothrombinTimeField.getCaption()));
-		addField(AdditionalTestDto.OTHER_TEST_RESULTS, TextArea.class).setRows(3);
+		addField(AdditionalTestDto.OTHER_TEST_RESULTS, TextArea.class).setRows(6);
 	}
 
 	@Override

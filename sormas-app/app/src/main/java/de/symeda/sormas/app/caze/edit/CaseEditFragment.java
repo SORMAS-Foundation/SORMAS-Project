@@ -31,9 +31,13 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.ContactTracingContactType;
+import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
@@ -47,13 +51,13 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -63,10 +67,8 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -95,6 +97,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> reportingTypeList;
 	private List<Item> facilityOrHomeList;
 	private List<Item> facilityTypeGroupList;
+	private List<Item> quarantineReasonList;
+	private List<Item> endOfIsolationReasonList;
+	private List<Item> covidTestReasonList;
+	private List<Item> contactTracingContactTypeList;
 
 	// Static methods
 
@@ -105,10 +111,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			AppFieldAccessCheckers.withCheckers(
-				CaseEditAuthorization.isCaseEditAllowed(activityRootData),
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
 	// Instance methods
@@ -259,6 +262,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
 		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
 		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
+
+		quarantineReasonList = DataUtils.getEnumItems(QuarantineReason.class, true);
+		endOfIsolationReasonList = DataUtils.getEnumItems(EndOfIsolationReason.class, true);
+		covidTestReasonList = DataUtils.getEnumItems(CovidTestReason.class, true);
+		contactTracingContactTypeList = DataUtils.getEnumItems(ContactTracingContactType.class, true);
 	}
 
 	@Override
@@ -335,8 +343,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataHealthFacilityDetails,
 			false);
 
-		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
-			contentBinding.caseDataHealthFacility.setRequired(false);
+		if (record.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY && isFieldAccessible(CaseDataDto.class, contentBinding.caseDataHealthFacility)) {
+			contentBinding.caseDataHealthFacility.setRequired(true);
 		}
 
 		contentBinding.caseDataQuarantine.addValueChangedListener(e -> {
@@ -480,6 +488,23 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		} else {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 			contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
+		}
+
+		// Swiss fields
+		contentBinding.caseDataQuarantineReasonBeforeIsolation.initializeSpinner(quarantineReasonList);
+		contentBinding.caseDataEndOfIsolationReason.initializeSpinner(endOfIsolationReasonList);
+
+		if(isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)){
+			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
+			contentBinding.caseDataCovidTestReason.initializeSpinner(covidTestReasonList);
+		}
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactType)
+			|| isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataContactTracingFirstContactDate)) {
+			contentBinding.caseDataContactTracingDivider.setVisibility(VISIBLE);
+			contentBinding.caseDataContactTracingFirstContactHeading.setVisibility(VISIBLE);
+
+			contentBinding.caseDataContactTracingFirstContactType.initializeSpinner(contactTracingContactTypeList);
+			contentBinding.caseDataContactTracingFirstContactDate.initializeDateField(getChildFragmentManager());
 		}
 	}
 

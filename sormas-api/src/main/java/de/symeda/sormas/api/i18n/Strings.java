@@ -163,6 +163,14 @@ public interface Strings {
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorSetFeverRequired = "errorSetFeverRequired";
+	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
+	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
+	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
+	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
+	String errorSormasToSormasResult = "errorSormasToSormasResult";
+	String errorSormasToSormasSend = "errorSormasToSormasSend";
+	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
@@ -211,6 +219,7 @@ public interface Strings {
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
+	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateEntry = "headingCreateEntry";
@@ -283,6 +292,7 @@ public interface Strings {
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
 	String headingImportAreas = "headingImportAreas";
+	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCaseContacts = "headingImportCaseContacts";
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
@@ -312,6 +322,7 @@ public interface Strings {
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
 	String headingNetworkDiagramTooManyContacts = "headingNetworkDiagramTooManyContacts";
+	String headingNewAccount = "headingNewAccount";
 	String headingNewCases = "headingNewCases";
 	String headingNewEvents = "headingNewEvents";
 	String headingNewPassword = "headingNewPassword";
@@ -473,6 +484,7 @@ public interface Strings {
 	String lastWeek = "lastWeek";
 	String lastYear = "lastYear";
 	String max = "max";
+	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregateReportFound = "messageAggregateReportFound";
@@ -613,6 +625,7 @@ public interface Strings {
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
 	String messageOutbreakSaved = "messageOutbreakSaved";
+	String messagePasswordReset = "messagePasswordReset";
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";
@@ -712,9 +725,14 @@ public interface Strings {
 	String or = "or";
 	String pleaseSpecify = "pleaseSpecify";
 	String previousPeriod = "previousPeriod";
+	String promptActionDateFrom = "promptActionDateFrom";
+	String promptActionDateTo = "promptActionDateTo";
+	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
+	String promptActionEpiWeekTo = "promptActionEpiWeekTo";
 	String promptArea = "promptArea";
 	String promptCampaign = "promptCampaign";
 	String promptCampaignSearch = "promptCampaignSearch";
+	String promptCaseOrContactEventSearchField = "promptCaseOrContactEventSearchField";
 	String promptCasesDateFrom = "promptCasesDateFrom";
 	String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";

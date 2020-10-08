@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//input[@id='gwt-uid-24']</value>
+         <value>//div[@id='onsetDate']/input</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>

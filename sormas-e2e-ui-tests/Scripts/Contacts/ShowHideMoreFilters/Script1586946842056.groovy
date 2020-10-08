@@ -1,5 +1,6 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+
 import com.kms.katalon.core.exception.StepFailedException as StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
@@ -14,8 +15,7 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters
 
 WebUI.delay(1)
 
-if ((((((((((!(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_Apply date filter'), 1)) || !(WebUI.verifyElementPresent(
-    findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
+if ((((((((((!(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
         'Contacts/ContactsOverview/input_ResponsibleContact'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
         'Contacts/ContactsOverview/input_ReportedBy'), 1))) || !(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_FollowUpUntil'), 
     1))) || !(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_Quarantine'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
@@ -32,8 +32,7 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters
 
 WebUI.delay(1)
 
-if ((((((((((!(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/div_Apply date filter'), 1)) || !(WebUI.verifyElementNotPresent(
-    findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
+if ((((((((((!(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_ResponsibleContact'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/input_ReportedBy'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_FollowUpUntil'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_Quarantine'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(

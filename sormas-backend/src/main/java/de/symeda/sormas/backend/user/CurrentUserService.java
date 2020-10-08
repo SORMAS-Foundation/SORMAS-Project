@@ -50,9 +50,9 @@ public class CurrentUserService {
 		final ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
 		final CriteriaQuery<User> cq = cb.createQuery(User.class);
 		final Root<User> from = cq.from(User.class);
-		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
+		cq.where(cb.equal(cb.lower(from.get(User.USER_NAME)), userNameParam));
 
-		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName);
+		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName.toLowerCase());
 
 		final User user = q.getResultList().stream().findFirst().orElse(null);
 

@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
-import static com.vaadin.server.Sizeable.Unit;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,19 +45,11 @@ import de.symeda.sormas.api.campaign.form.CampaignFormTranslation;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class CampaignFormBuilder {
 
@@ -193,7 +183,7 @@ public class CampaignFormBuilder {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Field<?>> T createField(String fieldId, String caption, CampaignFormElementType type, List<CampaignFormElementStyle> styles) {
-		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(), new UiFieldAccessCheckers(true));
+		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(), UiFieldAccessCheckers.getNoop());
 
 		T field;
 		if (type == CampaignFormElementType.YES_NO) {
@@ -281,13 +271,11 @@ public class CampaignFormBuilder {
 	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
-			((OptionGroup) field).setValue(value == null ? null : (Boolean) value);
+			((OptionGroup) field).setValue(value instanceof Boolean ? (Boolean) value : null);
 			break;
 		case TEXT:
-			((TextField) field).setValue(value == null ? null : (String) value);
-			break;
-		case NUMBER:
-			((TextField) field).setValue(value == null ? null : value.toString());
+			case NUMBER:
+			((TextField) field).setValue(value != null ? value.toString() : null);
 			break;
 		default:
 			throw new IllegalArgumentException(type.toString());

@@ -41,10 +41,10 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> {
 
@@ -102,7 +102,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			ASTHMA,
 			SICKLE_CELL_DISEASE,
 			IMMUNODEFICIENCY_INCLUDING_HIV);
-		addField(OTHER_CONDITIONS, TextArea.class).setRows(3);
+		addField(OTHER_CONDITIONS, TextArea.class).setRows(6);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();

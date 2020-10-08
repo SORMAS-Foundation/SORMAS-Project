@@ -20,18 +20,11 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -163,18 +156,6 @@ public class Person extends PseudonymizableAdo {
 	private OccupationType occupationType;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String occupationDetails;
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-	private Region occupationRegion;
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-	private District occupationDistrict;
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-	private Community occupationCommunity;
-	@Enumerated(EnumType.STRING)
-	private FacilityType occupationFacilityType;
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-	private Facility occupationFacility;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String occupationFacilityDetails;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String generalPractitionerDetails;
@@ -371,46 +352,6 @@ public class Person extends PseudonymizableAdo {
 		this.occupationDetails = occupationDetails;
 	}
 
-	public Region getOccupationRegion() {
-		return occupationRegion;
-	}
-
-	public void setOccupationRegion(Region occupationRegion) {
-		this.occupationRegion = occupationRegion;
-	}
-
-	public District getOccupationDistrict() {
-		return occupationDistrict;
-	}
-
-	public void setOccupationDistrict(District occupationDistrict) {
-		this.occupationDistrict = occupationDistrict;
-	}
-
-	public Community getOccupationCommunity() {
-		return occupationCommunity;
-	}
-
-	public void setOccupationCommunity(Community occupationCommunity) {
-		this.occupationCommunity = occupationCommunity;
-	}
-
-	public Facility getOccupationFacility() {
-		return occupationFacility;
-	}
-
-	public void setOccupationFacility(Facility occupationFacility) {
-		this.occupationFacility = occupationFacility;
-	}
-
-	public String getOccupationFacilityDetails() {
-		return occupationFacilityDetails;
-	}
-
-	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
-		this.occupationFacilityDetails = occupationFacilityDetails;
-	}
-
 	public CauseOfDeath getCauseOfDeath() {
 		return causeOfDeath;
 	}
@@ -581,14 +522,6 @@ public class Person extends PseudonymizableAdo {
 
 	public void setPlaceOfBirthFacilityType(FacilityType placeOfBirthFacilityType) {
 		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
-	}
-
-	public FacilityType getOccupationFacilityType() {
-		return occupationFacilityType;
-	}
-
-	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
-		this.occupationFacilityType = occupationFacilityType;
 	}
 
 	public List<Location> getAddresses() {
