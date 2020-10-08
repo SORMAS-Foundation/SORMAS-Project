@@ -17,6 +17,21 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -37,20 +52,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskFacadeEjbTest extends AbstractBeanTest {
@@ -182,19 +183,29 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testFilterTasksByUserJurisdiction() {
 		RDCF rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		UserDto survOff = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), null,
-				"Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
+		UserDto survOff = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), null, "Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
 
-
-		creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.community.getUuid(), null,
-				"Comm", "Inf", UserRole.COMMUNITY_INFORMANT);
+		creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.community.getUuid(),
+			null,
+			"Comm",
+			"Inf",
+			UserRole.COMMUNITY_INFORMANT);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("CommInf");
 
 		CaseDataDto caze = creator.createCase(survOff.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
-		creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
-				caze.toReference(),
-				null, null, new Date(), survOff.toReference());
+		creator.createTask(
+			TaskContext.CASE,
+			TaskType.CASE_INVESTIGATION,
+			TaskStatus.PENDING,
+			caze.toReference(),
+			null,
+			null,
+			new Date(),
+			survOff.toReference());
 
 		List<TaskIndexDto> indexTasks = getTaskFacade().getIndexList(null, 0, 100, null);
 		assertThat(indexTasks.size(), is(0));
