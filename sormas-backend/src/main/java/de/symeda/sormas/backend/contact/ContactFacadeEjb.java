@@ -53,6 +53,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -125,6 +126,8 @@ import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -404,6 +407,20 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		ContactJoins joins = new ContactJoins(contact);
 
+		// Events count subquery
+		Subquery<Long> eventCountSq = cq.subquery(Long.class);
+		Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
+		Join<EventParticipant, Event> eventJoin = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
+		Join<Person, Contact> contactJoin = eventCountRoot.join(EventParticipant.PERSON, JoinType.INNER).join(Person.CONTACTS, JoinType.INNER);
+
+		eventCountSq.where(
+			cb.and(
+				cb.equal(contactJoin.get(Contact.UUID), contact.get(Contact.UUID)),
+				cb.isFalse(eventJoin.get(Event.DELETED)),
+				cb.isFalse(eventJoin.get(Event.ARCHIVED)),
+				cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
+		eventCountSq.select(cb.countDistinct(eventJoin.get(Event.ID)));
+
 		cq.multiselect(
 			Stream.concat(
 				Stream.of(
@@ -472,7 +489,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
 					joins.getEpiData().get(EpiData.RODENTS),
-					contact.get(Contact.RETURNING_TRAVELER)),
+					contact.get(Contact.RETURNING_TRAVELER),
+					eventCountSq),
 				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
 		cq.distinct(true);
@@ -486,6 +504,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
 
 		List<ContactExportDto> exportContacts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<String> resultContactsUuids = exportContacts.stream().map(ContactExportDto::getUuid).collect(Collectors.toList());
 
 		if (!exportContacts.isEmpty()) {
 			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
@@ -519,6 +538,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
 			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 			travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
+
+			// Load latest events info
+			// Adding a second query here is not perfect, but selecting the last event with a criteria query
+			// doesn't seem to be possible and using a native query is not an option because of user filters
+			List<ContactEventSummaryDetails> eventSummaries = eventService.getEventSummaryDetailsByContacts(resultContactsUuids);
 
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
@@ -565,6 +589,16 @@ public class ContactFacadeEjb implements ContactFacade {
 						}
 						exportContact.setTravelHistory(travelHistoryBuilder.toString());
 					});
+				}
+
+				if (eventSummaries != null && exportContact.getEventCount() != 0) {
+					eventSummaries.stream()
+						.filter(v -> v.getContactUuid().equals(exportContact.getUuid()))
+						.max(Comparator.comparing(ContactEventSummaryDetails::getEventDate))
+						.ifPresent(eventSummary -> {
+							exportContact.setLatestEventId(eventSummary.getEventUuid());
+							exportContact.setLatestEventTitle(eventSummary.getEventTitle());
+						});
 				}
 
 				pseudonymizer.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, null);
