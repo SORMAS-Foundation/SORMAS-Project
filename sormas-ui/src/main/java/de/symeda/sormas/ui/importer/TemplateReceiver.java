@@ -71,6 +71,7 @@ public class TemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 		byte[] filecontent;
 		try {
 			filecontent = Files.readAllBytes(file.toPath());
+			// This should be more general for reusability
 			FacadeProvider.getQuarantineOrderFacade().writeQuarantineTemplate(fName, filecontent);
 		} catch (IOException e) {
 			e.printStackTrace();

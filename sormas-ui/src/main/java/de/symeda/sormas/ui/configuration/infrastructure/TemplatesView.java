@@ -17,17 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
@@ -46,8 +45,7 @@ public class TemplatesView extends AbstractConfigurationView {
 	private ViewConfiguration viewConfiguration;
 
 	private VerticalLayout gridLayout;
-	private Grid<String> Tgrid;
-	protected Button createButton;
+	private QuarantineTemplatesGrid Qgrid;
 	protected Button importButton;
 
 	private MenuBar bulkOperationsDropdown;
@@ -58,25 +56,19 @@ public class TemplatesView extends AbstractConfigurationView {
 
 		viewConfiguration = ViewModelProviders.of(TemplatesView.class).get(ViewConfiguration.class);
 
-		Tgrid = new Grid<>(String.class);
 		gridLayout = new VerticalLayout();
-		ListDataProvider<String> dataProvider = DataProvider.fromStream(FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates().stream());
-		Tgrid.setDataProvider(dataProvider);
-		Tgrid.removeAllColumns();
-		Tgrid.addColumn(x -> x.toString()).setCaption("Document Title");
-		Tgrid.addItemClickListener(elem -> {
-			VaadinUiUtil.showDeleteConfirmationWindow("Permanently delete this Template? (i18n required)", () -> {
-				FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(elem.getItem().toString());
-				Tgrid.getDataProvider().refreshAll();
-			});
-		});
-		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(Tgrid);
+
+		// Add Quarantine Template Grid
+		Qgrid = new QuarantineTemplatesGrid();
+		Label QuarantineTemplatesLabel = new Label("Quarantine Templates (i18n required)");
+		QuarantineTemplatesLabel.addStyleName(H3);
+		gridLayout.addComponent(QuarantineTemplatesLabel);
+		gridLayout.addComponent(Qgrid);
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
-		gridLayout.setExpandRatio(Tgrid, 1);
+		gridLayout.setExpandRatio(Qgrid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
@@ -85,7 +77,7 @@ public class TemplatesView extends AbstractConfigurationView {
 				Window window = VaadinUiUtil.showPopupWindow(new TemplateImportLayout());
 				window.setCaption("i18n string");
 				window.addCloseListener(c -> {
-					Tgrid.getDataProvider().refreshAll();
+					Qgrid.reload();
 				});
 			}, ValoTheme.BUTTON_PRIMARY);
 
