@@ -10,6 +10,8 @@ public interface QuarantineOrderFacade {
 
 	byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties);
 
+	byte[] getTemplate(String templateName);
+
 	List<String> getAvailableTemplates();
 
 	List<String> getAdditionalVariables(String templateName);
@@ -17,5 +19,4 @@ public interface QuarantineOrderFacade {
 	void writeQuarantineTemplate(String fileName, byte[] document);
 
 	boolean deleteQuarantineTemplate(String fileName);
-
 }

@@ -121,6 +121,12 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 		resetCustomPath();
 	}
 
+	@Test
+	public void readTemplateTest() {
+		byte[] template = quarantineOrderFacadeEjb.getTemplate("Quarantine.docx");
+		assertEquals(5416, template.length);
+	}
+
 	private void resetCustomPath() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, getClass().getResource("/").getPath());
 	}
