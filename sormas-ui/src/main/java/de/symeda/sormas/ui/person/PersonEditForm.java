@@ -257,7 +257,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.EDUCATION_DETAILS);
 
 		TextField phoneNumber = addField(PersonDto.PHONE, TextField.class);
-		TextField phoneOwner = addField(PersonDto.PHONE_OWNER, TextField.class);
+		addField(PersonDto.PHONE_OWNER, TextField.class);
 		TextField emailAddress = addField(PersonDto.EMAIL_ADDRESS, TextField.class);
 
 		addFields(
@@ -410,15 +410,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		phoneNumber.addValidator(
 			new PhoneNumberValidator(
-				I18nProperties.getValidationError(Validations.validPhoneNumber)));
-
-		phoneOwner.addValidator(
-			new PhoneNumberValidator(
-				I18nProperties.getValidationError(Validations.validPhoneNumber)));
+				I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
 
 		emailAddress.addValidator(
 			new EmailValidator(
-				I18nProperties.getValidationError(Validations.validEmailAddress)));
+				I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
 
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
