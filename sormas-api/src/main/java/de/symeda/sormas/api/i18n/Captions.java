@@ -139,11 +139,18 @@ public interface Captions {
 	String Campaign_name = "Campaign.name";
 	String Campaign_startDate = "Campaign.startDate";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
+	String campaignAdditionalChart = "campaignAdditionalChart";
+	String campaignAdditionalForm = "campaignAdditionalForm";
 	String campaignAllCampaigns = "campaignAllCampaigns";
 	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
 	String campaignCampaignData = "campaignCampaignData";
 	String campaignCampaignDataForm = "campaignCampaignDataForm";
 	String campaignCampaignForm = "campaignCampaignForm";
+	String campaignDashboardChart = "campaignDashboardChart";
+	String campaignDashboardChartHeight = "campaignDashboardChartHeight";
+	String campaignDashboardChartWidth = "campaignDashboardChartWidth";
+	String campaignDashboardOrder = "campaignDashboardOrder";
+	String campaignDashboardTabName = "campaignDashboardTabName";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
@@ -1184,6 +1191,7 @@ public interface Captions {
 	String regionAllRegions = "regionAllRegions";
 	String regionArchivedRegions = "regionArchivedRegions";
 	String regionName = "regionName";
+	String remove = "remove";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_associatedCase = "Sample.associatedCase";
