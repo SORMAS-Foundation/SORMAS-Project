@@ -16,6 +16,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -30,6 +32,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -51,7 +55,13 @@ public class ContactListCriteriaBuilder {
 	private ContactService contactService;
 
 	public CriteriaQuery<ContactIndexDto> buildIndexCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
-		return buildIndexCriteria(ContactIndexDto.class, this::getContactIndexSelections, contactCriteria, this::getIndexOrders, sortProperties);
+		return buildIndexCriteria(
+			ContactIndexDto.class,
+			this::getContactIndexSelections,
+			contactCriteria,
+			this::getIndexOrders,
+			sortProperties,
+			false);
 	}
 
 	public CriteriaQuery<ContactIndexDetailedDto> buildIndexDetailedCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
@@ -61,7 +71,8 @@ public class ContactListCriteriaBuilder {
 			this::getContactIndexDetailedSelections,
 			contactCriteria,
 			this::getIndexDetailOrders,
-			sortProperties);
+			sortProperties,
+			true);
 	}
 
 	public Stream<Selection<?>> getJurisdictionSelections(ContactJoins joins) {
@@ -109,7 +120,8 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseDistrict().get(District.UUID),
 			joins.getCaseCommunity().get(Community.UUID),
 			joins.getCaseHealthFacility().get(Facility.UUID),
-			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
+			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
+			contact.get(Contact.CHANGE_DATE));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
@@ -196,7 +208,8 @@ public class ContactListCriteriaBuilder {
 		BiFunction<Root<Contact>, ContactJoins, List<Selection<?>>> selectionProvider,
 		ContactCriteria contactCriteria,
 		OrderExpressionProvider orderExpressionProvider,
-		List<SortProperty> sortProperties) {
+		List<SortProperty> sortProperties,
+		boolean withEventInfo) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(type);
@@ -211,13 +224,32 @@ public class ContactListCriteriaBuilder {
 
 		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, joins));
 		selections.add(visitCountSq);
-		cq.multiselect(selections);
 
 		Predicate filter = buildContactFilter(contactCriteria, cb, contact, cq, joins);
 
 		if (filter != null) {
 			cq.where(filter);
 		}
+
+		if (withEventInfo) {
+			// Events count subquery
+			Subquery<Long> eventCountSq = cq.subquery(Long.class);
+			Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
+			Join<EventParticipant, Event> eventJoin = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
+			Join<Person, Contact> contactJoin = eventCountRoot.join(EventParticipant.PERSON, JoinType.INNER).join(Person.CONTACTS, JoinType.INNER);
+
+			eventCountSq.where(
+				cb.and(
+					cb.equal(contactJoin.get(Contact.UUID), contact.get(Contact.UUID)),
+					cb.isFalse(eventJoin.get(Event.DELETED)),
+					cb.isFalse(eventJoin.get(Event.ARCHIVED)),
+					cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
+			eventCountSq.select(cb.countDistinct(eventJoin.get(Event.ID)));
+			selections.add(eventCountSq);
+		}
+
+		cq.multiselect(selections);
+		cq.distinct(true);
 
 		if (sortProperties == null || sortProperties.size() == 0) {
 			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));

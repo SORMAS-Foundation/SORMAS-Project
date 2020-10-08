@@ -124,6 +124,8 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -208,6 +210,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private EventService eventService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -859,6 +863,25 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
 			dtos = em.createQuery(query).getResultList();
+		}
+
+		// Load latest events info
+		// Adding a second query here is not perfect, but selecting the last event with a criteria query
+		// doesn't seem to be possible and using a native query is not an option because of user filters
+		List<ContactEventSummaryDetails> eventSummaries =
+			eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()));
+		for (ContactIndexDetailedDto contact : dtos) {
+			if (contact.getEventCount() == 0) {
+				continue;
+			}
+
+			eventSummaries.stream()
+				.filter(v -> v.getContactUuid().equals(contact.getUuid()))
+				.max(Comparator.comparing(ContactEventSummaryDetails::getEventDate))
+				.ifPresent(eventSummary -> {
+					contact.setLatestEventId(eventSummary.getEventUuid());
+					contact.setLatestEventTitle(eventSummary.getEventTitle());
+				});
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));

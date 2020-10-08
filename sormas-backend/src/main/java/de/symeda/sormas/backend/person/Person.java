@@ -51,6 +51,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -109,6 +110,7 @@ public class Person extends AbstractDomainObject {
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
+	public static final String CONTACTS = "contacts";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
@@ -172,6 +174,7 @@ public class Person extends AbstractDomainObject {
 	private String externalId;
 
 	private Set<EventParticipant> eventParticipants = new HashSet<>();
+	private Set<Contact> contacts = new HashSet<>();
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -610,6 +613,15 @@ public class Person extends AbstractDomainObject {
 	@OneToMany(cascade = {}, mappedBy = EventParticipant.PERSON, fetch = FetchType.LAZY)
 	public Set<EventParticipant> getEventParticipants() {
 		return eventParticipants;
+	}
+
+	public void setContacts(Set<Contact> contacts) {
+		this.contacts = contacts;
+	}
+
+	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
+	public Set<Contact> getContacts() {
+		return contacts;
 	}
 
 	@Override
