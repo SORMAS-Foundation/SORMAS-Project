@@ -104,10 +104,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					loc(SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					fluidRowCss(VSPACE_3,
 							//XXX #1620 fluidColumnLoc?
-							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC)),
-							fluidColumn(4, 0, locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
+							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
+					fluidRow(fluidColumn(6,6, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
 					fluidRow(
-							fluidColumn(6, 0,
+							fluidColumn(6, -1,
 									locsCss(VSPACE_3,
 											FEELING_ILL, SHIVERING, HEADACHE, MUSCLE_PAIN, ABDOMINAL_PAIN, ABNORMAL_LUNG_XRAY_FINDINGS,
 											ACUTE_RESPIRATORY_DISTRESS_SYNDROME, HEARINGLOSS, ANOREXIA_APPETITE_LOSS,
@@ -762,32 +762,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		}, ValoTheme.BUTTON_LINK);
 
-		Button setEmptyToNoButton = ButtonHelper.createButton(Captions.symptomsSetClearedToNo, event -> {
-			for (Object symptomId : unconditionalSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.NO);
-				}
-			}
-			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.NO);
-				}
-			}
-			for (Object symptomId : lesionsFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.NO);
-				}
-			}
-			for (Object symptomId : monkeypoxImageFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.NO);
-				}
-			}
-		}, ValoTheme.BUTTON_LINK);
+		Button setEmptyToNoButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToNo, SymptomState.NO);
+
+		Button setEmptyToUnknownButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToUnknown, SymptomState.UNKNOWN);
 
 		// Complications heading - not displayed for Rubella (dirty, should be made generic)
 		Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
@@ -799,7 +776,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.addComponent(clearAllButton);
 		buttonsLayout.addComponent(setEmptyToNoButton);
-		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+		buttonsLayout.addComponent(setEmptyToUnknownButton);
+		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+		buttonsLayout.setMargin(true);
+
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
 	}
 
@@ -1047,4 +1027,37 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	public List<String> getUnconditionalSymptomFieldIds() {
 		return unconditionalSymptomFieldIds;
 	}
+
+	public Button createButtonSetClearedToSymptomState(String caption, SymptomState symptomState) {
+
+		Button button = ButtonHelper.createButton(caption, event -> {
+			for (Object symptomId : unconditionalSymptomFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(symptomState);
+				}
+			}
+			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(symptomState);
+				}
+			}
+			for (Object symptomId : lesionsFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(symptomState);
+				}
+			}
+			for (Object symptomId : monkeypoxImageFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(symptomState);
+				}
+			}
+		}, ValoTheme.BUTTON_LINK);
+
+		return button;
+	}
+
 }
