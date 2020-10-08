@@ -68,14 +68,15 @@
 - Open the Ant window, click on the "+" icon and select the build.xml file from the sormas-base project
 - Execute the "install" and "deploy-serverlibs" scripts in this order
 - Set the default working directory for run configurations: Run -> Edit Configurations -> Templates -> Application -> set the value for *Working directory* to ``$MODULE_WORKING_DIR$``
-- Configure code formatting:
+- **Configure code formatting:**
+	- disable "Optimize imports on the fly" (Editor -> General -> Auto Import)
 	- install Eclipse Code Formatter for IntelliJ (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
 	- open the plugin settings (Other Settings -> Eclipse Code Formatter) and select "Use the Eclipse Code Formatter"
 	- under "Eclipse Formatter config file", select ``sormas-base/java-formatter-profile.xml``
 	- check optimize imports and, for "Import order", select ``sormas-base/java-importorder-profile.importorder``
 	- **Important:** select "Do not format other file types by IntelliJ formatter"
 	- go to Preferences -> Editor -> Code style -> Java -> Imports: set class and static names counts for import with * to 99
-	- for IntelliJ, code formatting is usually done with Ctrl+Alt+L. For automatic formatting, it's recommended to use the plugin Save Actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
+	- for IntelliJ, code formatting is usually done with Ctrl+Alt+L. For automatic formatting, it's recommended to use the plugin Save Actions and check the first three checkboxes in "General" and the first two checkboxes in "Formatting Actions" (https://plugins.jetbrains.com/plugin/7642-save-actions)
 
 ## Android Studio
 **Note: This is only needed for development of the SORMAS Android app

@@ -22,7 +22,7 @@ public class ResourceBundle {
 
 		}
 
-		return StringEscapeUtils.escapeHtml4(value);
+		return value;
 	}
 
 	public String getString(String key) {

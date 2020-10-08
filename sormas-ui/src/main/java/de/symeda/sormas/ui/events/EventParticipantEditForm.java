@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonContext;
@@ -26,8 +29,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 public class EventParticipantEditForm extends AbstractEditForm<EventParticipantDto> {
 
@@ -62,7 +63,8 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			return;
 		}
 
-		PersonEditForm pef = new PersonEditForm(PersonContext.EVENT_PARTICIPANT, event.getDisease(), event.getDiseaseDetails(), null, isPseudonymized);
+		PersonEditForm pef =
+			new PersonEditForm(PersonContext.EVENT_PARTICIPANT, event.getDisease(), event.getDiseaseDetails(), null, isPseudonymized);
 		pef.setWidth(100, Unit.PERCENTAGE);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
