@@ -22,6 +22,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskContext;
@@ -46,6 +47,7 @@ public class EventDataView extends AbstractEventView {
 	public static final String TASKS_LOC = "tasks";
 	public static final String ACTIONS_LOC = "actions";
 	public static final String CASES_LINK_LOC = "cases";
+	public static final String CONTACTS_LINK_LOC = "contacts";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
 
@@ -62,7 +64,8 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LINK_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LINK_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LINK_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -98,6 +101,17 @@ public class EventDataView extends AbstractEventView {
 					event -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().eventLike(getEventRef().getUuid())),
 					ValoTheme.BUTTON_PRIMARY),
 				CASES_LINK_LOC);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			layout.addComponent(
+				ButtonHelper.createButtonWithCaption(
+					"eventLinkToContacts",
+					I18nProperties.getCaption(Captions.eventLinkToContacts),
+					event -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().eventLike(getEventRef().getUuid())),
+					ValoTheme.BUTTON_PRIMARY,
+					CssStyles.VSPACE_TOP_2),
+				CONTACTS_LINK_LOC);
 		}
 
 		setEventEditPermission(container);

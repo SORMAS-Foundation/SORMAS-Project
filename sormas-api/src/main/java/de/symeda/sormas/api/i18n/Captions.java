@@ -835,6 +835,7 @@ public interface Captions {
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventLinkToCases = "eventLinkToCases";
+	String eventLinkToContacts = "eventLinkToContacts";
 	String eventNewEvent = "eventNewEvent";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
 	String EventParticipant = "EventParticipant";
