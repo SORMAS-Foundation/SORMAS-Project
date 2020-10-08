@@ -105,6 +105,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Integer birthdateDD;
 	private YesNoUnknown returningTraveler;
 	private String eventLike;
+	private String eventUuid;
 	private Boolean onlyContactsWithSourceCaseInEvent;
 
 	public UserRole getReportingUserRole() {
@@ -479,6 +480,19 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria eventLike(String eventLike) {
 		setEventLike(eventLike);
+		return this;
+	}
+
+	public void setEventUuid(String eventUuid) {
+		this.eventUuid = eventUuid;
+	}
+
+	public String getEventUuid() {
+		return eventUuid;
+	}
+
+	public ContactCriteria eventUuid(String eventUuid) {
+		setEventUuid(eventUuid);
 		return this;
 	}
 

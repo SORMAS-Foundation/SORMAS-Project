@@ -108,7 +108,7 @@ public class EventDataView extends AbstractEventView {
 				ButtonHelper.createButtonWithCaption(
 					"eventLinkToContacts",
 					I18nProperties.getCaption(Captions.eventLinkToContacts),
-					event -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().eventLike(getEventRef().getUuid())),
+					event -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().eventUuid(getEventRef().getUuid())),
 					ValoTheme.BUTTON_PRIMARY,
 					CssStyles.VSPACE_TOP_2),
 				CONTACTS_LINK_LOC);
