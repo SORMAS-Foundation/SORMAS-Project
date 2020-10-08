@@ -25,10 +25,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -232,5 +234,26 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getTaskFacade().getPendingTaskCountPerUser(userUuids).entrySet(), is(empty()));
 		userUuids = Collections.singletonList(DataHelper.createUuid());
 		assertThat(getTaskFacade().getPendingTaskCountPerUser(userUuids).entrySet(), is(empty()));
+
+		// 1. one user with tasks, one without
+		RDCF rdcf = new RDCF(creator.createRDCFEntities());
+		UserDto user1 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user2 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+
+		creator.createTask(user1.toReference());
+
+		userUuids = Arrays.asList(user1.getUuid(), user2.getUuid());
+		Map<String, Long> taskCounts = getTaskFacade().getPendingTaskCountPerUser(userUuids);
+		assertThat(taskCounts.size(), is(1));
+		assertThat(taskCounts.get(user1.getUuid()), is(1L));
+
+		// 2. both users have tasks
+		creator.createTask(user1.toReference());
+		creator.createTask(user2.toReference());
+
+		taskCounts = getTaskFacade().getPendingTaskCountPerUser(userUuids);
+		assertThat(taskCounts.size(), is(2));
+		assertThat(taskCounts.get(user1.getUuid()), is(2L));
+		assertThat(taskCounts.get(user2.getUuid()), is(1L));
 	}
 }
