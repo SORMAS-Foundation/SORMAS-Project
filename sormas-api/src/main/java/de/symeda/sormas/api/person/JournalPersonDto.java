@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.person;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.symeda.sormas.api.JsonUnixTimestampDateSerializer;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
@@ -29,6 +31,7 @@ public class JournalPersonDto implements Serializable {
 
 	private Sex sex;
 	@SensitiveData
+	@JsonSerialize(using = JsonUnixTimestampDateSerializer.class)
 	private Date latestFollowUpEndDate;
 
 	public String getUuid() {
