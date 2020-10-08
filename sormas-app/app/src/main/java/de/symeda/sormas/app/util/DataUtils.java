@@ -21,6 +21,7 @@ import java.util.List;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
@@ -32,23 +33,33 @@ import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 
 public class DataUtils {
 
-	public static <E> List<Item> getEnumItems(Class<E> clazz) {
+	public static <E extends Enum<?>> List<Item> getEnumItems(Class<E> clazz) {
 		return getEnumItems(clazz, true);
 	}
 
-	public static <E> List<Item> getEnumItems(Class<E> clazz, boolean withNull) {
+	public static <E extends Enum<?>> List<Item> getEnumItems(Class<E> clazz, boolean withNull) {
+		return getEnumItems(clazz, withNull, null);
+	}
+
+	public static <E extends Enum<?>> List<Item> getEnumItems(Class<E> clazz, boolean withNull, FieldVisibilityCheckers checkers) {
 		E[] enumConstants = clazz.getEnumConstants();
 		if (!clazz.isEnum()) {
 			throw new IllegalArgumentException(clazz.toString() + " is not an enum");
 		}
-		List<Item> list = new ArrayList<Item>();
+		List<Item> list = new ArrayList<>();
 
 		if (withNull) {
 			list.add(new Item<E>("", null));
 		}
 
-		for (int i = 0; i < enumConstants.length; i++) {
-			list.add(new Item<E>(enumConstants[i].toString(), enumConstants[i]));
+		for (E enumConstant: enumConstants) {
+			boolean visible = true;
+			if (checkers != null) {
+				visible = checkers.isVisible(clazz, enumConstant.name());
+			}
+			if (visible) {
+				list.add(new Item<>(enumConstant.toString(), enumConstant));
+			}
 		}
 		return list;
 	}
