@@ -88,7 +88,6 @@ public class CaseDataView extends AbstractCaseView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 		//		if (getViewMode() == ViewMode.SIMPLE) {
 		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
 		//					ViewMode.SIMPLE);

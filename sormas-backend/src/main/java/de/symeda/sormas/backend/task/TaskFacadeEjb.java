@@ -17,6 +17,35 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
@@ -70,33 +99,6 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -466,10 +468,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		if (!tasks.isEmpty()) {
 			List<String> assigneeUserUuids = tasks.stream().map(t -> t.getAssigneeUser().getUuid()).collect(Collectors.toList());
-			Map<String, Long> pendingTaskCounts = new HashMap<>();
-			IterableHelper.executeBatched(assigneeUserUuids, ModelConstants.PARAMETER_LIMIT, e -> {
-				pendingTaskCounts.putAll(getPendingTaskCountPerUser(e));
-			});
+			Map<String, Long> pendingTaskCounts = getPendingTaskCountPerUser(assigneeUserUuids);
 
 			for (TaskIndexDto singleTask : tasks) {
 				// Workaround for Vaadin renderers not having access to their row reference; we therefore update the caption
@@ -609,17 +608,24 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	public Map<String, Long> getPendingTaskCountPerUser(List<String> userUuids) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Task> from = cq.from(Task.class);
-		Join<Task, User> userJoin = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
-		cq.where(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING));
-		cq.multiselect(userJoin.get(User.UUID), cb.count(from));
-		cq.groupBy(userJoin.get(User.UUID));
+		Map<String, Long> taskCountMap = new HashMap<>();
 
-		List<Object[]> resultList = em.createQuery(cq).getResultList();
-		return resultList.stream().collect(Collectors.toMap(r -> (String) r[0], r -> (Long) r[1]));
+		IterableHelper.executeBatched(userUuids, ModelConstants.PARAMETER_LIMIT, e -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			Root<Task> from = cq.from(Task.class);
+			Join<Task, User> userJoin = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
+
+			cq.where(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING), userJoin.get(User.UUID).in(userUuids));
+			cq.multiselect(userJoin.get(User.UUID), cb.count(from));
+			cq.groupBy(userJoin.get(User.UUID));
+
+			List<Object[]> resultList = em.createQuery(cq).getResultList();
+			resultList.forEach(r -> taskCountMap.put((String) r[0], (Long) r[1]));
+		});
+
+		return taskCountMap;
 	}
 
 	@Override

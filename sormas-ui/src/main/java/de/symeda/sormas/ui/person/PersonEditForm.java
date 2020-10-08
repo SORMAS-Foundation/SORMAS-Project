@@ -36,6 +36,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -764,5 +765,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		if (burialPlaceDesc.isVisible() && StringUtils.isBlank(burialPlaceDesc.getValue())) {
 			burialPlaceDesc.setValue(getValue().getAddress().toString());
 		}
+	}
+
+	@Override
+	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
+		field.addValueChangeListener(e -> fireValueChange(false));
+
+		return super.addFieldToLayout(layout, propertyId, field);
 	}
 }
