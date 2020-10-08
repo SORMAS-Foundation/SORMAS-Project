@@ -17,15 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.Remote;
-
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+
+import javax.ejb.Remote;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Remote
 public interface TaskFacade {
@@ -48,7 +48,7 @@ public interface TaskFacade {
 
 	long getPendingTaskCountByEvent(EventReferenceDto eventDto);
 
-	long getPendingTaskCount(String userUuid);
+	Map<String, Long> getPendingTaskCountPerUser(List<String> userUuids);
 
 	TaskDto getByUuid(String uuid);
 

@@ -139,6 +139,14 @@ public interface CaseFacade {
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
 
+	/**
+	 * @param caseUuids
+	 *            Cases identified by {@code uuid} to be archived or not.
+	 * @param archived
+	 *            {@code true} archives the Case, {@code false} unarchives it.
+	 */
+	void updateArchived(List<String> caseUuids, boolean archived);
+
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
 
 	Boolean isCaseEditAllowed(String caseUuid);

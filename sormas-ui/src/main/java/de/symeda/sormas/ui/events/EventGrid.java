@@ -34,13 +34,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -115,14 +113,10 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		for (Column<EventIndexDto, ?> column : getColumns()) {
 			String columnId = column.getId();
-			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, columnId.toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, columnId, column.getCaption()));
 			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					getBeanType(),
-					INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId,
-					EventJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				FieldAccessColumnStyleGenerator
+					.getDefault(getBeanType(), INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId));
 		}
 
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
@@ -177,6 +171,11 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
+		}
+
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventsView.class).get(ViewConfiguration.class);
+		if (viewConfiguration.isInEagerMode()) {
+			setEagerDataProvider();
 		}
 
 		getDataProvider().refreshAll();

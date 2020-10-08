@@ -35,6 +35,7 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -45,6 +46,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
 	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
+	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
 
 	public ContactDtoHelper() {
 	}
@@ -144,10 +146,15 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
 		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
 
+		target.setSormasToSormasOriginInfo(
+			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		target.setPseudonymized(source.isPseudonymized());
+		target.setReturningTraveler(source.getReturningTraveler());
 	}
 
 	@Override
@@ -272,6 +279,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		target.setPseudonymized(source.isPseudonymized());
+		target.setReturningTraveler(source.getReturningTraveler());
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {

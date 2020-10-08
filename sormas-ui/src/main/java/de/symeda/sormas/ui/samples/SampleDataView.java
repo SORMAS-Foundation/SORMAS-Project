@@ -35,6 +35,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
@@ -45,7 +46,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class SampleDataView extends AbstractSampleView {
 
@@ -96,32 +96,20 @@ public class SampleDataView extends AbstractSampleView {
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
 		if (associatedCase != null) {
 			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
-			boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(associatedCase.getUuid());
-
 			disease = caseDto.getDisease();
 
-			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(
-				caseDto,
-				UiFieldAccessCheckers.withCheckers(
-					isInJurisdiction,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
 			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(caseInfoLayout, CASE_LOC);
 		}
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
 		if (associatedContact != null) {
 			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
-			boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(contactDto.getUuid());
 
 			disease = contactDto.getDisease();
 
-			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(
-				contactDto,
-				UiFieldAccessCheckers.withCheckers(
-					isInJurisdiction,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+			final ContactInfoLayout contactInfoLayout =
+				new ContactInfoLayout(contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
 
@@ -138,16 +126,13 @@ public class SampleDataView extends AbstractSampleView {
 			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(
 				eventParticipantDto,
 				eventDto,
-				UiFieldAccessCheckers.withCheckers(
-					isInJurisdiction,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				UiFieldAccessCheckers.getDefault(eventParticipantDto.isPseudonymized()));
 
 			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
-		editComponent = ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), isSampleEditAllowed());
+		editComponent = ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized());
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

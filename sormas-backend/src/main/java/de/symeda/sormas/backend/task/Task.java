@@ -17,18 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -39,6 +27,17 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.User;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 
 @Entity
 @Audited
@@ -65,7 +64,6 @@ public class Task extends AbstractDomainObject {
 	public static final String TASK_TYPE = "taskType";
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
-	public static final String ARCHIVED = "archived";
 
 	private TaskContext taskContext;
 	private Case caze;

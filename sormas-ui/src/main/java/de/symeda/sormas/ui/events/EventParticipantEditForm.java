@@ -17,18 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 public class EventParticipantEditForm extends AbstractEditForm<EventParticipantDto> {
 
@@ -38,20 +38,17 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 
 	private final EventDto event;
 
-	private final boolean inJurisdiction;
+	private final boolean isPseudonymized;
 
-	public EventParticipantEditForm(EventDto event, boolean inJurisdiction) {
+	public EventParticipantEditForm(EventDto event, boolean isPseudonymized) {
 		super(
 			EventParticipantDto.class,
 			EventParticipantDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers(),
-			UiFieldAccessCheckers.withCheckers(
-				inJurisdiction,
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(isPseudonymized));
 		this.event = event;
-		this.inJurisdiction = inJurisdiction;
+		this.isPseudonymized = isPseudonymized;
 
 		if (event == null) {
 			throw new IllegalArgumentException("Event cannot be null");
@@ -66,7 +63,8 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			return;
 		}
 
-		PersonEditForm pef = new PersonEditForm(PersonContext.EVENT_PARTICIPANT, event.getDisease(), event.getDiseaseDetails(), null, inJurisdiction);
+		PersonEditForm pef =
+			new PersonEditForm(PersonContext.EVENT_PARTICIPANT, event.getDisease(), event.getDiseaseDetails(), null, isPseudonymized);
 		pef.setWidth(100, Unit.PERCENTAGE);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);

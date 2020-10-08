@@ -1,12 +1,12 @@
 package de.symeda.sormas.api.clinicalcourse;
 
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class HealthConditionsDto extends PseudonymizableDto {
 

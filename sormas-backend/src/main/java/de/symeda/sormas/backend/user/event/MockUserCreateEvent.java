@@ -28,7 +28,7 @@ import de.symeda.sormas.backend.user.User;
  */
 public class MockUserCreateEvent extends UserCreateEvent {
 
-	private String password;
+	private final String password;
 
 	public MockUserCreateEvent(User user, String password) {
 		super(user);
