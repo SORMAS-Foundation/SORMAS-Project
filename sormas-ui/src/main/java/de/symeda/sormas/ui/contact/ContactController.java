@@ -529,12 +529,12 @@ public class ContactController {
 	}
 
 	/**
-	 * Attempts to register the person with the given Uuid as a new patient in CLIMEDO
+	 * Attempts to register the given person as a new patient in CLIMEDO
 	 * Displays the result in a popup
 	 */
-	public void registerPatientDiaryPerson(String personUuid) {
+	public void registerPatientDiaryPerson(PersonDto person) {
 		//show loading popup
-		boolean success = externalJournalFacade.registerPatientDiaryPerson(personUuid);
+		boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
 		//hide loading popup
 		showPatientRegisterResultPopup(success);
 	}

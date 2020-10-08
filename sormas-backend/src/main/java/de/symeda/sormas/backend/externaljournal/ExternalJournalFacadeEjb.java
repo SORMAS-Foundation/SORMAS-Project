@@ -23,7 +23,7 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	}
 
 	@Override
-	public boolean registerPatientDiaryPerson(String personUuid) {
-		return externalJournalService.registerPatientDiaryPerson(personUuid);
+	public boolean registerPatientDiaryPerson(PersonDto person) {
+		return externalJournalService.registerPatientDiaryPerson(person);
 	}
 }

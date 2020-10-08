@@ -73,8 +73,8 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
 			btnClimedoAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
-				String contactPersonUuid = contact.getPerson().getUuid();
-				ControllerProvider.getContactController().registerPatientDiaryPerson(contactPersonUuid);
+				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+				ControllerProvider.getContactController().registerPatientDiaryPerson(contactPerson);
 			});
 			getButtonsLayout().addComponent(btnClimedoAccount);
 		}

@@ -17,8 +17,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
@@ -30,9 +28,11 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 
 @Stateless
 @LocalBean
@@ -149,7 +149,7 @@ public class ExternalJournalService {
 	 *
 	 * @param contact
 	 *            a contact assigned to a person already available in the external journal
-	 * 
+	 *
 	 */
 	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact) {
 		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
@@ -235,15 +235,15 @@ public class ExternalJournalService {
 	//TODO: implement get from CLIMEDO
 
 	/**
-	 * Attempts to register a new patient in the CLIMEDO patient diary
-	 * 
-	 * @param personUuid
-	 *            the Uuid of the person to register as a patient in CLIMEDO
+	 * Attempts to register a new patient in the CLIMEDO patient diary.
+	 * Sets the person symptom journal status to ACCEPTED if successful.
+	 * @param person
+	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
 	 */
-	public boolean registerPatientDiaryPerson(String personUuid) {
+	public boolean registerPatientDiaryPerson(PersonDto person) {
 		try {
-			String registerUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl()  + '/' + personUuid;
+			String registerUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + person.getUuid();
 			Client client = ClientBuilder.newClient();
 			WebTarget webTarget = client.target(registerUrl);
 			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
@@ -260,6 +260,8 @@ public class ExternalJournalService {
 				logger.error("Could not create new patient diary person: " + message);
 				return false;
 			}
+			person.setSymptomJournalStatus(SymptomJournalStatus.ACCEPTED);
+			personFacade.savePerson(person);
 			return true;
 		} catch (IOException e) {
 			logger.error(e.getMessage());
