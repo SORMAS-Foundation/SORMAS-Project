@@ -522,6 +522,7 @@ public interface Captions {
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
+	String contactOnlyWithSourceCaseInEvent = "contactOnlyWithSourceCaseInEvent";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";

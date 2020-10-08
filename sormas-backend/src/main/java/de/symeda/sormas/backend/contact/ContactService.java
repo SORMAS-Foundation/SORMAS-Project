@@ -44,6 +44,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -75,6 +76,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -118,8 +121,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
+		ContactJoins joins = new ContactJoins(from);
 
-		Predicate filter = buildCriteriaFilter(contactCriteria, cb, from);
+		Predicate filter = buildCriteriaFilter(contactCriteria, cb, from, joins);
 
 		if (user != null) {
 			filter = and(cb, filter, createUserFilter(cb, cq, from));
@@ -598,9 +602,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
+		ContactJoins joins = new ContactJoins(contact);
 
 		Predicate filter = createUserFilter(cb, cq, contact);
-		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
+		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact, joins);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -624,9 +629,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
+		ContactJoins joins = new ContactJoins(contact);
 
 		Predicate filter = createUserFilter(cb, cq, contact);
-		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
+		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact, joins);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -650,9 +656,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
+		ContactJoins joins = new ContactJoins(contact);
 
 		Predicate filter = createUserFilter(cb, cq, contact);
-		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
+		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact, joins);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -676,9 +683,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(getElementClass());
+		ContactJoins joins = new ContactJoins(contact);
 
 		Predicate filter = createUserFilter(cb, cq, contact);
-		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
+		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact, joins);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -901,16 +909,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return filter;
 	}
 
-	public Predicate buildCriteriaFilter(ContactCriteria contactCriteria, CriteriaBuilder cb, Root<Contact> from) {
+	public Predicate buildCriteriaFilter(ContactCriteria contactCriteria, CriteriaBuilder cb, Root<Contact> from, ContactJoins joins) {
 
 		Predicate filter = null;
-		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+		Join<Contact, Case> caze = joins.getCaze();
 
 		if (contactCriteria.getReportingUserRole() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.isMember(contactCriteria.getReportingUserRole(), from.join(Contact.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
+			filter = and(cb, filter, cb.isMember(contactCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
 		}
 		if (contactCriteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.DISEASE), contactCriteria.getDisease()));
@@ -923,7 +928,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb,
 				filter,
 				cb.or(
-					cb.equal(from.join(Contact.REGION, JoinType.LEFT).get(Region.UUID), contactCriteria.getRegion().getUuid()),
+					cb.equal(joins.getRegion().get(Region.UUID), contactCriteria.getRegion().getUuid()),
 					cb.and(
 						cb.isNull(from.get(Contact.REGION)),
 						cb.equal(caze.join(Case.REGION, JoinType.LEFT).get(Region.UUID), contactCriteria.getRegion().getUuid()))));
@@ -933,7 +938,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb,
 				filter,
 				cb.or(
-					cb.equal(from.join(Contact.DISTRICT, JoinType.LEFT).get(District.UUID), contactCriteria.getDistrict().getUuid()),
+					cb.equal(joins.getDistrict().get(District.UUID), contactCriteria.getDistrict().getUuid()),
 					cb.and(
 						cb.isNull(from.get(Contact.DISTRICT)),
 						cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), contactCriteria.getDistrict().getUuid()))));
@@ -943,16 +948,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb,
 				filter,
 				cb.or(
-					cb.equal(from.join(Contact.COMMUNITY, JoinType.LEFT).get(Community.UUID), contactCriteria.getCommunity().getUuid()),
+					cb.equal(joins.getCommunity().get(Community.UUID), contactCriteria.getCommunity().getUuid()),
 					cb.and(
 						cb.isNull(from.get(Contact.COMMUNITY)),
 						cb.equal(caze.join(Case.COMMUNITY, JoinType.LEFT).get(Community.UUID), contactCriteria.getCommunity().getUuid()))));
 		}
 		if (contactCriteria.getContactOfficer() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.equal(from.join(Contact.CONTACT_OFFICER, JoinType.LEFT).get(User.UUID), contactCriteria.getContactOfficer().getUuid()));
+			filter = and(cb, filter, cb.equal(joins.getContactOfficer().get(User.UUID), contactCriteria.getContactOfficer().getUuid()));
 		}
 		if (contactCriteria.getContactClassification() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.CONTACT_CLASSIFICATION), contactCriteria.getContactClassification()));
@@ -1048,8 +1050,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), contactCriteria.getDeleted()));
 		}
 		if (contactCriteria.getNameUuidCaseLike() != null) {
-			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
-			Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+			Join<Contact, Person> person = joins.getPerson();
+			Join<Person, Location> location = joins.getAddress();
 			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 			String[] textFilters = contactCriteria.getNameUuidCaseLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
@@ -1079,23 +1081,49 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), contactCriteria.getCaseClassification()));
 		}
 		if (contactCriteria.getPerson() != null) {
-			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
-			filter = and(cb, filter, cb.equal(person.get(Person.UUID), contactCriteria.getPerson().getUuid()));
+			filter = and(cb, filter, cb.equal(joins.getPerson().get(Person.UUID), contactCriteria.getPerson().getUuid()));
 		}
 		if (contactCriteria.getBirthdateYYYY() != null) {
-			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), contactCriteria.getBirthdateYYYY()));
+			filter = and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_YYYY), contactCriteria.getBirthdateYYYY()));
 		}
 		if (contactCriteria.getBirthdateMM() != null) {
-			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), contactCriteria.getBirthdateMM()));
+			filter = and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_MM), contactCriteria.getBirthdateMM()));
 		}
 		if (contactCriteria.getBirthdateDD() != null) {
-			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), contactCriteria.getBirthdateDD()));
+			filter = and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_DD), contactCriteria.getBirthdateDD()));
 		}
 		if (contactCriteria.getReturningTraveler() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.RETURNING_TRAVELER), contactCriteria.getReturningTraveler()));
+		}
+		boolean hasEventLikeCriteria = StringUtils.isNotBlank(contactCriteria.getEventLike());
+		boolean hasOnlyContactsWithSourceCaseInEvent = Boolean.TRUE.equals(contactCriteria.getOnlyContactsWithSourceCaseInEvent());
+		if (hasEventLikeCriteria || hasOnlyContactsWithSourceCaseInEvent) {
+			Join<Person, EventParticipant> eventParticipant = joins.getEventParticipants();
+			Join<EventParticipant, Event> event = joins.getEvent();
+
+			filter = and(
+				cb,
+				filter,
+				cb.isFalse(event.get(Event.DELETED)),
+				cb.isFalse(event.get(Event.ARCHIVED)),
+				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+
+			if (hasEventLikeCriteria) {
+				String[] textFilters = contactCriteria.getEventLike().trim().split("\\s+");
+				for (String s : textFilters) {
+					String textFilter = formatForLike(s);
+					if (!DataHelper.isNullOrEmpty(textFilter)) {
+						Predicate likeFilters = cb.or(
+							cb.like(cb.lower(event.get(Event.EVENT_DESC)), textFilter),
+							cb.like(cb.lower(event.get(Event.EVENT_TITLE)), textFilter),
+							cb.like(cb.lower(event.get(Event.UUID)), textFilter));
+						filter = and(cb, filter, likeFilters);
+					}
+				}
+			}
+			if (hasOnlyContactsWithSourceCaseInEvent) {
+				filter = and(cb, filter, cb.equal(event.get(Event.UUID), joins.getCaseEvent().get(Event.UUID)));
+			}
 		}
 
 		return filter;

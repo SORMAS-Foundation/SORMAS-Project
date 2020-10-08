@@ -473,7 +473,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		cq.distinct(true);
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq, joins);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -576,7 +576,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
-		final Join<Contact, Person> contactPerson = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+		final ContactJoins contactJoins = new ContactJoins(contactRoot);
+		final Join<Contact, Person> contactPerson = contactJoins.getPerson();
 
 		cq.multiselect(
 			contactRoot.get(Contact.UUID),
@@ -591,7 +592,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		cq.where(
 			AbstractAdoService.and(
 				cb,
-				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq),
+				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, contactJoins),
 				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
@@ -649,9 +650,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
-		contactRoot.join(Contact.VISITS, JoinType.LEFT);
+		final ContactJoins joins = new ContactJoins(contactRoot);
+		joins.getVisits();
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, joins);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -678,8 +680,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> root = cq.from(Contact.class);
+		ContactJoins joins = new ContactJoins(root);
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, root, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, root, cq, joins);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -726,7 +729,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				.collect(Collectors.toList()));
 
 		// Only use user filter if no restricting case is specified
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq, joins);
 
 		if (filter != null) {
 			cq.where(filter);

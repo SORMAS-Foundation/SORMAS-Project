@@ -64,6 +64,9 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.epidata.TravelType;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
@@ -218,9 +221,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().generateContactFollowUpTasks();
 
 		// task should have been generated
-		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference()).stream()
-				.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
-				.collect(Collectors.toList());
+		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference())
+			.stream()
+			.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
+			.collect(Collectors.toList());
 		assertEquals(1, tasks.size());
 		TaskDto task = tasks.get(0);
 		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
@@ -230,9 +234,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// task should not be generated multiple times 
 		getContactFacade().generateContactFollowUpTasks();
-		tasks = getTaskFacade().getAllByContact(contact.toReference()).stream()
-				.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
-				.collect(Collectors.toList());
+		tasks = getTaskFacade().getAllByContact(contact.toReference())
+			.stream()
+			.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
+			.collect(Collectors.toList());
 		assertEquals(1, tasks.size());
 	}
 
@@ -362,6 +367,59 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, getContactFacade().getIndexList(null, 0, 100, null).size());
+	}
+
+	@Test
+	public void testGetIndexListByEventFreeText() {
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		useSurveillanceOfficerLogin(rdcf);
+
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+
+		EventDto event1 = creator.createEvent(EventStatus.SIGNAL, "Signal foo", "A long description for this event", user.toReference(), eventDto -> {
+		});
+
+		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
+		creator.createEventParticipant(event1.toReference(), person2, user.toReference());
+
+		CaseDataDto case1 = creator.createCase(
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		CaseDataDto case2 = creator.createCase(
+			user.toReference(),
+			person2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		event1Participant1.setResultingCase(case1.toReference());
+		getEventParticipantFacade().saveEventParticipant(event1Participant1);
+
+		creator.createContact(user.toReference(), person1.toReference(), case1);
+		creator.createContact(user.toReference(), person1.toReference(), case2);
+
+		Assert.assertEquals(2, getContactFacade().getIndexList(null, 0, 100, null).size());
+		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria().eventLike("signal"), 0, 100, null).size());
+		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria().eventLike(event1.getUuid()), 0, 100, null).size());
+		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria().eventLike("signal description"), 0, 100, null).size());
+		Assert.assertEquals(
+			1,
+			getContactFacade()
+				.getIndexList(new ContactCriteria().eventLike("signal description").onlyContactsWithSourceCaseInEvent(true), 0, 100, null)
+				.size());
 	}
 
 	@Test
@@ -846,7 +904,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testSearchContactsWithReducedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		ContactDto contact =
-				creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
+			creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
 		contact.setQuarantineReduced(true);
 		getContactFacade().saveContact(contact);
 
