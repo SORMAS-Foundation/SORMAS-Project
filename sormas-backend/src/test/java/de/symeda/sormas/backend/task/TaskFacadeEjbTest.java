@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,6 +26,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +50,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -217,5 +220,17 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskDto> tasksByCase = getTaskFacade().getAllByCase(caze.toReference());
 		assertThat(tasksByCase.size(), is(0));
+	}
+
+	@Test
+	public void testGetPendingTaskCountPerUser() {
+
+		List<String> userUuids;
+
+		// 0. empty or not present uuid
+		userUuids = Collections.emptyList();
+		assertThat(getTaskFacade().getPendingTaskCountPerUser(userUuids).entrySet(), is(empty()));
+		userUuids = Collections.singletonList(DataHelper.createUuid());
+		assertThat(getTaskFacade().getPendingTaskCountPerUser(userUuids).entrySet(), is(empty()));
 	}
 }
