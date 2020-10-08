@@ -67,7 +67,6 @@ public interface Validations {
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
-	String noFacilityDetails = "noFacilityDetails";
 	String noFacilityInCommunity = "noFacilityInCommunity";
 	String noFacilityInDistrict = "noFacilityInDistrict";
 	String noFacilityInRegion = "noFacilityInRegion";
@@ -80,6 +79,12 @@ public interface Validations {
 	String required = "required";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
+	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
+	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
+	String sormasToSormasContactExists = "sormasToSormasContactExists";
+	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
+	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
+	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String specifyFirstName = "specifyFirstName";
 	String specifyLastName = "specifyLastName";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";

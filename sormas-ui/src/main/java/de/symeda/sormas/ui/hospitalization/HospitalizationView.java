@@ -34,7 +34,7 @@ public class HospitalizationView extends AbstractCaseView {
 	protected void initView(String params) {
 
 		CommitDiscardWrapperComponent<HospitalizationForm> hospitalizationForm =
-			ControllerProvider.getCaseController().getHospitalizationComponent(getCaseRef().getUuid(), getViewMode(), isCaseEditAllowed());
+			ControllerProvider.getCaseController().getHospitalizationComponent(getCaseRef().getUuid(), getViewMode());
 		setSubComponent(hospitalizationForm);
 		setCaseEditPermission(hospitalizationForm);
 	}
