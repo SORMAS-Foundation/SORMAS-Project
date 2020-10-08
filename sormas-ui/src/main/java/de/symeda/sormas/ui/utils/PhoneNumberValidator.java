@@ -28,7 +28,7 @@ public class PhoneNumberValidator extends AbstractValidator<String> {
 
 	@Override
 	protected boolean isValidValue(String phoneNumber) {
-		return phoneNumber == null || phoneNumber.isEmpty() || phoneNumber.startsWith("+");
+		return (phoneNumber == null || phoneNumber.isEmpty() || phoneNumber.startsWith("+")) && !phoneNumber.matches(".*[a-zA-Z].*");
 	}
 
 	@Override
