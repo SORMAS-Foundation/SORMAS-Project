@@ -138,11 +138,6 @@ public class AreaFacadeEjb implements AreaFacade {
 		return service.getByName(name, includeArchivedAreas).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	@Override
-	public List<AreaReferenceDto> getAreasByRegion(String uuid) {
-	return service.getByRegion(uuid).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
-	}
-
 	public Area fromDto(@NotNull AreaDto source, Area target) {
 		if (target == null) {
 			target = new Area();
