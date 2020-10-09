@@ -104,7 +104,7 @@ public class AbstractImportLayout extends VerticalLayout {
 
 	protected void addImportTemplateComponent(int step, TemplateReceiver receiver) {
 		String headline = "i18nheadline";
-		String infoText = "i18nInfotext";
+		String infoText = "i18nInfotext WARNING: Importing new Documents might override existing Documents with identical Names!";
 		ImportLayoutComponent importTemplateComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
 		addComponent(importTemplateComponent);
 		upload = new Upload("", receiver);
