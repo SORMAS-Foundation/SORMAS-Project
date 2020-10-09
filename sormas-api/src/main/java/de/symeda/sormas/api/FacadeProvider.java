@@ -60,6 +60,7 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
+import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -288,6 +289,10 @@ public class FacadeProvider {
 
 	public static SormasToSormasFacade getSormasToSormasFacade() {
 		return get().lookupEjbRemote(SormasToSormasFacade.class);
+	}
+
+	public static SurvnetGatewayFacade getSurvnetGatewayFacade() {
+		return get().lookupEjbRemote(SurvnetGatewayFacade.class);
 	}
 
 	public static AreaFacade getAreaFacade() {
