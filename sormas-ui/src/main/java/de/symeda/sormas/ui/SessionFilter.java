@@ -69,6 +69,7 @@ public class SessionFilter implements Filter {
 
 		final HttpServletResponse res = (HttpServletResponse)response;
 		res.addHeader("X-Content-Type-Options", "nosniff" );
+		res.addHeader("X-Frame-Options", "SAMEORIGIN" );
 		res.addHeader("Referrer-Policy", "same-origin" );
 
 		try {
