@@ -17,6 +17,35 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
@@ -66,32 +95,10 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -370,19 +377,19 @@ public class TaskFacadeEjb implements TaskFacade {
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
 				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.START_DATE),
-				joins.getContact().get(Contact.UUID), joins.getContactPerson().get(Person.FIRST_NAME), joins.getContactPerson().get(Person.LAST_NAME),
-				joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
-				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY),
-				task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
+				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), 
+				joins.getEvent().get(Event.START_DATE), joins.getContact().get(Contact.UUID), joins.getContactPerson().get(Person.FIRST_NAME), 
+				joins.getContactPerson().get(Person.LAST_NAME), joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
+				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY), task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
 				joins.getCreator().get(User.UUID), joins.getCreator().get(User.FIRST_NAME), joins.getCreator().get(User.LAST_NAME), task.get(Task.CREATOR_COMMENT),
 				joins.getAssignee().get(User.UUID), joins.getAssignee().get(User.FIRST_NAME), joins.getAssignee().get(User.LAST_NAME), task.get(Task.ASSIGNEE_REPLY),
 				joins.getCaseReportingUser().get(User.UUID), joins.getCaseRegion().get(Region.UUID), joins.getCaseDistrict().get(Region.UUID),
 				joins.getCaseCommunity().get(Community.UUID), joins.getCaseFacility().get(Community.UUID), joins.getCasePointOfEntry().get(Community.UUID),
-				joins.getContactReportingUser().get(User.UUID), joins.getContactRegion().get(Region.UUID), joins.getContactDistrict().get(District.UUID), joins.getContactCommunity().get(Community.UUID),
-				joins.getContactCaseReportingUser().get(User.UUID), joins.getContactCaseRegion().get(User.UUID), joins.getContactCaseDistrict().get(User.UUID),
-				joins.getContactCaseCommunity().get(User.UUID), joins.getContactCaseHealthFacility().get(User.UUID), joins.getContactCasePointOfEntry().get(User.UUID),
-				joins.getEventReportingUser().get(User.UUID), joins.getEventSurveillanceOfficer().get(User.UUID), joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID)
+				joins.getContactReportingUser().get(User.UUID), joins.getContactRegion().get(Region.UUID), joins.getContactDistrict().get(District.UUID), 
+				joins.getContactCommunity().get(Community.UUID), joins.getContactCaseReportingUser().get(User.UUID), joins.getContactCaseRegion().get(User.UUID), 
+				joins.getContactCaseDistrict().get(User.UUID), joins.getContactCaseCommunity().get(User.UUID), joins.getContactCaseHealthFacility().get(User.UUID), 
+				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventSurveillanceOfficer().get(User.UUID), 
+				joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID)
 		);
 		//@formatter:on
 
@@ -459,34 +466,47 @@ public class TaskFacadeEjb implements TaskFacade {
 			tasks = em.createQuery(cq).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(
-			TaskIndexDto.class,
-			tasks,
-			t -> taskJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction()),
-			(t, ignored) -> {
-				if (t.getCaze() != null) {
-					emptyValuePseudonymizer.pseudonymizeDto(
-						CaseReferenceDto.class,
-						t.getCaze(),
-						caseJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction().getCaseJurisdiction()),
-						null);
-				}
+		if (!tasks.isEmpty()) {
+			List<String> assigneeUserUuids = tasks.stream().map(t -> t.getAssigneeUser().getUuid()).collect(Collectors.toList());
+			Map<String, Long> pendingTaskCounts = getPendingTaskCountPerUser(assigneeUserUuids);
 
-				if (t.getContact() != null) {
-					pseudonymizeContactReference(emptyValuePseudonymizer, t.getContact(), t.getJurisdiction().getContactJurisdiction());
-				}
+			for (TaskIndexDto singleTask : tasks) {
+				// Workaround for Vaadin renderers not having access to their row reference; we therefore update the caption
+				// directly instead of storing the task count in TaskIndexDto
+				UserReferenceDto assigneeUser = singleTask.getAssigneeUser();
+				Long taskCount = pendingTaskCounts.get(assigneeUser.getUuid());
+				assigneeUser.setCaption(assigneeUser.getCaption() + " (" + (taskCount != null ? taskCount.toString() : "") + ")");
+			}
 
-				if (t.getEvent() != null) {
-					emptyValuePseudonymizer.pseudonymizeDto(
-						EventReferenceDto.class,
-						t.getEvent(),
-						eventJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction().getEventJurisdiction()),
-						null);
-				}
-			},
-			true);
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			pseudonymizer.pseudonymizeDtoCollection(
+				TaskIndexDto.class,
+				tasks,
+				t -> taskJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction()),
+				(t, ignored) -> {
+					if (t.getCaze() != null) {
+						emptyValuePseudonymizer.pseudonymizeDto(
+							CaseReferenceDto.class,
+							t.getCaze(),
+							caseJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction().getCaseJurisdiction()),
+							null);
+					}
+
+					if (t.getContact() != null) {
+						pseudonymizeContactReference(emptyValuePseudonymizer, t.getContact(), t.getJurisdiction().getContactJurisdiction());
+					}
+
+					if (t.getEvent() != null) {
+						emptyValuePseudonymizer.pseudonymizeDto(
+							EventReferenceDto.class,
+							t.getEvent(),
+							eventJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction().getEventJurisdiction()),
+							null);
+					}
+				},
+				true);
+		}
 
 		return tasks;
 	}
@@ -587,8 +607,25 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public long getPendingTaskCount(String userUuid) {
-		return taskService.getCount(new TaskCriteria().taskStatus(TaskStatus.PENDING).assigneeUser(new UserReferenceDto(userUuid)));
+	public Map<String, Long> getPendingTaskCountPerUser(List<String> userUuids) {
+
+		Map<String, Long> taskCountMap = new HashMap<>();
+
+		IterableHelper.executeBatched(userUuids, ModelConstants.PARAMETER_LIMIT, e -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			Root<Task> from = cq.from(Task.class);
+			Join<Task, User> userJoin = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
+
+			cq.where(cb.equal(from.get(Task.TASK_STATUS), TaskStatus.PENDING), userJoin.get(User.UUID).in(userUuids));
+			cq.multiselect(userJoin.get(User.UUID), cb.count(from));
+			cq.groupBy(userJoin.get(User.UUID));
+
+			List<Object[]> resultList = em.createQuery(cq).getResultList();
+			resultList.forEach(r -> taskCountMap.put((String) r[0], (Long) r[1]));
+		});
+
+		return taskCountMap;
 	}
 
 	@Override

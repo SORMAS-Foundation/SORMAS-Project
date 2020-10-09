@@ -23,11 +23,6 @@ public class DataUtilsTest {
 		assertThat(enumItems.size(), is(YesNoUnknown.values().length));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void getEnumItemsIllegalArgument() {
-		DataUtils.getEnumItems(Object.class, false);
-	}
-
 	@Test(expected = NullPointerException.class)
 	public void getEnumItemsNullPointer() {
 		DataUtils.getEnumItems(null, false);
