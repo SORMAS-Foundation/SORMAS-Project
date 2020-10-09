@@ -444,7 +444,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			HIGH_OR_LOW_BLOOD_PRESSURE,
 			URINARY_RETENTION);
 
-		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
+		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
+			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
 
 		addField(LESIONS_ONSET_DATE, DateField.class);
 

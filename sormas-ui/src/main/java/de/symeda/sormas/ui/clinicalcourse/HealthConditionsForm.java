@@ -105,7 +105,9 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			IMMUNODEFICIENCY_INCLUDING_HIV);
 		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
 		otherConditions.setRows(6);
-		otherConditions.setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
+		otherConditions.setDescription(
+			I18nProperties.getPrefixDescription(HealthConditionsDto.I18N_PREFIX, OTHER_CONDITIONS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();

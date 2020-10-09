@@ -568,7 +568,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
-		additionalDetails.setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
+		additionalDetails.setDescription(
+			I18nProperties.getPrefixDescription(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);

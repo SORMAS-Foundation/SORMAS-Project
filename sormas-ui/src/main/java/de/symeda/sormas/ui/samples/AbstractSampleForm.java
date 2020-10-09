@@ -134,7 +134,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		TextArea comment = addField(SampleDto.COMMENT, TextArea.class);
 		comment.setRows(2);
-		comment.setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
+		comment.setDescription(
+			I18nProperties.getPrefixDescription(SampleDto.I18N_PREFIX, SampleDto.COMMENT, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		addField(SampleDto.SHIPPED, CheckBox.class);
 		addField(SampleDto.RECEIVED, CheckBox.class);
 

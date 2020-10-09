@@ -58,7 +58,7 @@ public class UserDto extends EntityDto {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String LIMITED_DISEASE = "limitedDisease";
 	public static final String LANGUAGE = "language";
-	public static final String GDPR_STANDARDS = "gdprStandards";
+	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 
 	private boolean active = true;
 
@@ -90,7 +90,7 @@ public class UserDto extends EntityDto {
 
 	private Language language;
 
-	private boolean gdprStandardsActive;
+	private boolean hasConsentedToGdpr;
 
 	public static UserDto build() {
 		UserDto user = new UserDto();
@@ -256,11 +256,11 @@ public class UserDto extends EntityDto {
 		this.language = language;
 	}
 
-	public boolean isGdprStandardsActive() {
-		return gdprStandardsActive;
+	public boolean getHasConsentedToGdpr() {
+		return hasConsentedToGdpr;
 	}
 
-	public void setGdprStandardsActive(boolean gdprStandardsActive) {
-		this.gdprStandardsActive = gdprStandardsActive;
+	public void setHasConsentedToGdpr(boolean hasConsentedToGdpr) {
+		this.hasConsentedToGdpr = hasConsentedToGdpr;
 	}
 }

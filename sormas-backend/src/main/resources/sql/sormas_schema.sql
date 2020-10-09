@@ -5490,8 +5490,8 @@ ALTER TABLE campaign_campaignformmeta_history OWNER TO sormas_user;
 INSERT INTO schema_version (version_number, comment) VALUES (266, 'CampaignFormMeta to Campaigns relation #2855');
 
 --2020-10-09 Add boolean to users to active window GDPR
-ALTER TABLE users ADD COLUMN gdprStandardsActive boolean default true;
-ALTER TABLE users_history ADD COLUMN gdprStandardsActive boolean default true;
+ALTER TABLE users ADD COLUMN hasConsentedToGdpr boolean default true;
+ALTER TABLE users_history ADD COLUMN hasConsentedToGdpr boolean default true;
 INSERT INTO schema_version (version_number, comment) VALUES (267, 'Add gdpr popup to user');
 
 -- *** Insert new sql commands BEFORE this line ***

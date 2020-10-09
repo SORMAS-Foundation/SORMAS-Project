@@ -58,7 +58,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -160,7 +159,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
 		descriptionField.setRows(2);
 		descriptionField.setDescription(
-			I18nProperties.getPrefixDescription(EventDto.I18N_PREFIX, EventDto.EVENT_DESC) + "\n"
+			I18nProperties.getPrefixDescription(EventDto.I18N_PREFIX, EventDto.EVENT_DESC, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		addField(EventDto.NOSOCOMIAL, OptionGroup.class);
 

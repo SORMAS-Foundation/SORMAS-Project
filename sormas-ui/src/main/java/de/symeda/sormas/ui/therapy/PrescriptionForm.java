@@ -73,7 +73,9 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		addField(PrescriptionDto.ROUTE_DETAILS, TextField.class);
 		TextArea additionalNotes = addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class);
 		additionalNotes.setRows(6);
-		additionalNotes.setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
+		additionalNotes.setDescription(
+			I18nProperties.getPrefixDescription(PrescriptionDto.I18N_PREFIX, PrescriptionDto.ADDITIONAL_NOTES, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		initializeAccessAndAllowedAccesses();
 

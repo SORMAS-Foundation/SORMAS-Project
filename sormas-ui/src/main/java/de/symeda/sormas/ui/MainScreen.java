@@ -239,8 +239,8 @@ public class MainScreen extends HorizontalLayout {
 		// Add GDPR window
 		// possible to desactivate it with check
 		UserDto user = UserProvider.getCurrent().getUser();
-		if (user.isGdprStandardsActive()) {
-			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.GDPR_STANDARDS));
+		if (user.getHasConsentedToGdpr()) {
+			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
 			VerticalLayout subContentGdpr = new VerticalLayout();
 			subWindowGdpR.setContent(subContentGdpr);
 			subWindowGdpR.center();
@@ -262,7 +262,7 @@ public class MainScreen extends HorizontalLayout {
 			buttonLayout.setWidth(100, Unit.PERCENTAGE);
 			Button buttonGdpr = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionConfirm), event -> {
 				if (checkBoxGdpr.getValue()) {
-					user.setGdprStandardsActive(false);
+					user.setHasConsentedToGdpr(false);
 					FacadeProvider.getUserFacade().saveUser(user);
 					navigator.getUI().removeWindow(subWindowGdpR);
 				}
