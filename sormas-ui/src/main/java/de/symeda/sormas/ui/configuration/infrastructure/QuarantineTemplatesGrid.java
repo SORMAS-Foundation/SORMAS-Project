@@ -6,13 +6,17 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -44,7 +48,15 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 	private Button buildDeleteButton(String s) {
 		Button deleteButton = ButtonHelper.createIconButton(Captions.actionDelete, VaadinIcons.TRASH, e -> {
 			VaadinUiUtil.showDeleteConfirmationWindow("Permanently delete \"" + s.toString() + "\"? (i18n required)", () -> {
-				FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(s.toString());
+				try {
+					FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(s.toString());
+				} catch (ValidationException ex) {
+					new Notification(
+						I18nProperties.getString("header i18n delete failed"),
+						I18nProperties.getString("content i18n" + ex.getMessage()),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
 				reload();
 			});
 		});
@@ -53,12 +65,25 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 
 	private Button buildViewDocumentButton(String s) {
 		Button viewButton = ButtonHelper.createButton("View (i18n)", e -> {
-			FacadeProvider.getQuarantineOrderFacade().getTemplate(s.toString());
+			try {
+				FacadeProvider.getQuarantineOrderFacade().getTemplate(s.toString());
+			} catch (ValidationException ex) {
+				new Notification(
+					I18nProperties.getString("header i18n view failed"),
+					I18nProperties.getString("content i18n " + ex.getMessage()),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			}
 		});
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
-			return new ByteArrayInputStream(quarantineOrderFacade.getTemplate(s));
+			try {
+				return new ByteArrayInputStream(quarantineOrderFacade.getTemplate(s));
+			} catch (ValidationException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}, s);
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(viewButton);

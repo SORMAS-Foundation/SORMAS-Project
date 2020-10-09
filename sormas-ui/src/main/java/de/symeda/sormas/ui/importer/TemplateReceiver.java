@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 import com.vaadin.server.Page;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -19,6 +20,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -68,20 +70,62 @@ public class TemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 		if (file == null) {
 			return;
 		}
-		byte[] filecontent;
-		try {
-			filecontent = Files.readAllBytes(file.toPath());
-			// This should be more general for reusability
-			FacadeProvider.getQuarantineOrderFacade().writeQuarantineTemplate(fName, filecontent);
-		} catch (IOException e) {
-			e.printStackTrace();
-			new Notification(
-				I18nProperties.getString(Strings.headingImportFailed),
-				I18nProperties.getString(Strings.messageImportFailed),
-				Notification.Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
+
+		// Check for duplicate files
+		if (FacadeProvider.getQuarantineOrderFacade().isExistingTemplate(fName)) {
+			VaadinUiUtil.showConfirmationPopup("i18n File already exists", new Label("Override File? i18n"), "Continue", "Cancel", null, ok -> {
+				if (ok.booleanValue() == true) {
+					byte[] filecontent;
+					try {
+						filecontent = Files.readAllBytes(file.toPath());
+						// This should be more general for reusability
+						FacadeProvider.getQuarantineOrderFacade().writeQuarantineTemplate(fName, filecontent);
+					} catch (IOException e) {
+						e.printStackTrace();
+						new Notification(
+							I18nProperties.getString(Strings.headingImportFailed),
+							I18nProperties.getString(Strings.messageImportFailed),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+						return;
+					} catch (ValidationException e) {
+						e.printStackTrace();
+						new Notification(
+							I18nProperties.getString("i18n import failed"),
+							I18nProperties.getString("e.getMessage() <- doesnt work :("),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+						return;
+					}
+
+					VaadinUiUtil.showSimplePopupWindow("Success! i18n required", "Template has been uploaded successfully.");
+				}
+			});
+		} else {
+			byte[] filecontent;
+			try {
+				filecontent = Files.readAllBytes(file.toPath());
+				// This should be more general for reusability
+				FacadeProvider.getQuarantineOrderFacade().writeQuarantineTemplate(fName, filecontent);
+			} catch (IOException e) {
+				e.printStackTrace();
+				new Notification(
+					I18nProperties.getString(Strings.headingImportFailed),
+					I18nProperties.getString(Strings.messageImportFailed),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+				return;
+			} catch (ValidationException e) {
+				e.printStackTrace();
+				new Notification(
+					I18nProperties.getString("i18n import failed"),
+					I18nProperties.getString("e.getMessage() <- doesnt work :("),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+				return;
+			}
+
+			VaadinUiUtil.showSimplePopupWindow("Success! i18n required", "Template has been uploaded successfully.");
 		}
-		// Maybe add some kind of confirmation message here
-		VaadinUiUtil.showSimplePopupWindow("Success! i18n required", "Template has been uploaded successfully.");
 	}
 }
