@@ -1,12 +1,17 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.io.ByteArrayInputStream;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -48,7 +53,18 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 
 	private Button buildViewDocumentButton(String s) {
 		Button viewButton = ButtonHelper.createButton("View (i18n)", e -> {
+			FacadeProvider.getQuarantineOrderFacade().getTemplate(s.toString());
 		});
+
+		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
+			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
+			return new ByteArrayInputStream(quarantineOrderFacade.getTemplate(s));
+		}, s);
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(viewButton);
+		fileDownloader.setFileDownloadResource(streamResource);
+
 		return viewButton;
 	}
+
 }
