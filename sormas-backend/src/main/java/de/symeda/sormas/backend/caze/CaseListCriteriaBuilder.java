@@ -41,6 +41,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean

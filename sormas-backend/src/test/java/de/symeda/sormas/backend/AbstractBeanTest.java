@@ -32,6 +32,7 @@ import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.action.ActionFacade;
+import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
@@ -74,6 +75,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.action.ActionFacadeEjb;
+import de.symeda.sormas.backend.bagexport.BAGExportFacadeEjb;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb.CampaignFacadeEjbLocal;
 import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
@@ -454,5 +456,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
+	}
+
+	public BAGExportFacade getBAGExportFacade() {
+		return getBean(BAGExportFacadeEjb.BAGExportFacadeEjbLocal.class);
 	}
 }
