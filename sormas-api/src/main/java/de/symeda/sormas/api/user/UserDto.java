@@ -256,7 +256,7 @@ public class UserDto extends EntityDto {
 		this.language = language;
 	}
 
-	public boolean getHasConsentedToGdpr() {
+	public boolean isHasConsentedToGdpr() {
 		return hasConsentedToGdpr;
 	}
 

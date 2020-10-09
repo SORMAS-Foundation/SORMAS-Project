@@ -133,7 +133,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		TextArea comment = addField(SampleDto.COMMENT, TextArea.class);
-		comment.setRows(2);
+		comment.setRows(4);
 		comment.setDescription(
 			I18nProperties.getPrefixDescription(SampleDto.I18N_PREFIX, SampleDto.COMMENT, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));

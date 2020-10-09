@@ -313,7 +313,7 @@ public class User extends AbstractDomainObject {
 		this.language = language;
 	}
 
-	public boolean getHasConsentedToGdpr() {
+	public boolean isHasConsentedToGdpr() {
 		return hasConsentedToGdpr;
 	}
 
