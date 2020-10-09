@@ -43,6 +43,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.ValidationException;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -80,7 +82,6 @@ import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PasswordHelper;
-import org.apache.commons.beanutils.BeanUtils;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -313,6 +314,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
+		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		source.getUserRoles().size();
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
@@ -359,6 +361,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
+		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
 

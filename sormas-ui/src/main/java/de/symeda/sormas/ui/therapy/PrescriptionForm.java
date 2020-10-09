@@ -12,6 +12,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
@@ -70,7 +71,11 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		addField(PrescriptionDto.DOSE, TextField.class);
 		ComboBox routeField = addField(PrescriptionDto.ROUTE, ComboBox.class);
 		addField(PrescriptionDto.ROUTE_DETAILS, TextField.class);
-		addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class).setRows(6);
+		TextArea additionalNotes = addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class);
+		additionalNotes.setRows(6);
+		additionalNotes.setDescription(
+			I18nProperties.getPrefixDescription(PrescriptionDto.I18N_PREFIX, PrescriptionDto.ADDITIONAL_NOTES, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		initializeAccessAndAllowedAccesses();
 

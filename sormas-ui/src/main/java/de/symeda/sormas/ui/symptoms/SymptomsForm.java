@@ -51,12 +51,14 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -116,7 +118,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 											BILATERAL_CATARACTS, UNILATERAL_CATARACTS, CHEST_PAIN, CHILLS_SWEATS,
 											CONGENITAL_GLAUCOMA, CONGENITAL_HEART_DISEASE,
 											CONGENITAL_HEART_DISEASE_TYPE, CONGENITAL_HEART_DISEASE_DETAILS,
-											CONJUNCTIVITIS, CONJUNCTIVAL_INJECTION, COUGH, COUGH_WITHOUT_SPUTUM, COUGH_WITH_SPUTUM, 
+											CONJUNCTIVITIS, CONJUNCTIVAL_INJECTION, COUGH, COUGH_WITHOUT_SPUTUM, COUGH_WITH_SPUTUM,
 											COUGH_WITH_HEAMOPTYSIS, RESPIRATORY_DISEASE_VENTILATION,
 											DARK_URINE, DEHYDRATION, DEVELOPMENTAL_DELAY, DIARRHEA,
 											CHEST_PRESSURE, DIFFICULTY_BREATHING, LYMPHADENOPATHY, LYMPHADENOPATHY_AXILLARY,
@@ -160,7 +162,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 											PARESIS, AGITATION,
 											ASCENDING_FLACCID_PARALYSIS, ERRATIC_BEHAVIOUR, COMA, LOSS_OF_TASTE,
 											LOSS_OF_SMELL, WHEEZING, SKIN_ULCERS, INABILITY_TO_WALK,
-											IN_DRAWING_OF_CHEST_WALL, OXYGEN_SATURATION_LOWER_94, 
+											IN_DRAWING_OF_CHEST_WALL, OXYGEN_SATURATION_LOWER_94,
 											BREATHLESSNESS, BLUE_LIPS, BLOOD_CIRCULATION_PROBLEMS, PALPITATIONS,
 											DIZZINESS_STANDING_UP, HIGH_OR_LOW_BLOOD_PRESSURE, URINARY_RETENTION,
 											OTHER_NON_HEMORRHAGIC_SYMPTOMS, OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT) +
@@ -327,7 +329,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			STOMACH_BLEEDING,
 			RAPID_BREATHING,
 			SWOLLEN_GLANDS,
-			SYMPTOMS_COMMENTS,
 			UNEXPLAINED_BLEEDING,
 			GUMS_BLEEDING,
 			INJECTION_SITE_BLEEDING,
@@ -442,6 +443,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			DIZZINESS_STANDING_UP,
 			HIGH_OR_LOW_BLOOD_PRESSURE,
 			URINARY_RETENTION);
+
+		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
+			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
 
 		addField(LESIONS_ONSET_DATE, DateField.class);
 
