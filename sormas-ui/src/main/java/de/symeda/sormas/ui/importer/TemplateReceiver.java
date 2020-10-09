@@ -46,6 +46,7 @@ public class TemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 		}
 
 		try {
+			// this seems wrong
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_template_import" + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".docx";
 			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
@@ -66,7 +67,6 @@ public class TemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 
 	@Override
 	public void uploadSucceeded(com.vaadin.v7.ui.Upload.SucceededEvent succeededEvent) {
-		// Success! Do something here
 		if (file == null) {
 			return;
 		}
@@ -90,11 +90,8 @@ public class TemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 						return;
 					} catch (ValidationException e) {
 						e.printStackTrace();
-						new Notification(
-							I18nProperties.getString("i18n import failed"),
-							I18nProperties.getString("e.getMessage() <- doesnt work :("),
-							Notification.Type.ERROR_MESSAGE,
-							false).show(Page.getCurrent());
+						new Notification("i18n import failed", "Exception: " + e.getMessage(), Notification.Type.ERROR_MESSAGE, false)
+							.show(Page.getCurrent());
 						return;
 					}
 
@@ -117,11 +114,8 @@ public class TemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 				return;
 			} catch (ValidationException e) {
 				e.printStackTrace();
-				new Notification(
-					I18nProperties.getString("i18n import failed"),
-					I18nProperties.getString("e.getMessage() <- doesnt work :("),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
+				new Notification("Error writing Template File i18n", "Exception: " + e.getMessage(), Notification.Type.ERROR_MESSAGE, false)
+					.show(Page.getCurrent());
 				return;
 			}
 

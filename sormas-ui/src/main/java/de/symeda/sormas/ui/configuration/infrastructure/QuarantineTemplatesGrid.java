@@ -15,7 +15,6 @@ import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -51,11 +50,8 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 				try {
 					FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(s.toString());
 				} catch (ValidationException ex) {
-					new Notification(
-						I18nProperties.getString("header i18n delete failed"),
-						I18nProperties.getString("content i18n" + ex.getMessage()),
-						Notification.Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
+					new Notification("header i18n delete failed", "content i18n" + ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)
+						.show(Page.getCurrent());
 				}
 				reload();
 			});
@@ -68,11 +64,8 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 			try {
 				FacadeProvider.getQuarantineOrderFacade().getTemplate(s.toString());
 			} catch (ValidationException ex) {
-				new Notification(
-					I18nProperties.getString("header i18n view failed"),
-					I18nProperties.getString("content i18n " + ex.getMessage()),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
+				new Notification("header i18n view failed", "content i18n " + ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)
+					.show(Page.getCurrent());
 			}
 		});
 
