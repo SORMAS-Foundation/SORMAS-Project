@@ -226,7 +226,8 @@ public class ExternalJournalService {
 				logger.error("Could not notify patient diary of person update: " + message);
 			}
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+		    logger.error("Could not notify patient diary: {}", e.getMessage());
+            throw new RuntimeException(e);
 		}
 	}
 
@@ -245,21 +246,21 @@ public class ExternalJournalService {
 			String responseJson = response.readEntity(String.class);
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
-			String idatData = node.get("idatData").textValue();
-			ExternalPatientDto externalPatientDto = mapper.readValue(idatData, ExternalPatientDto.class);
+			JsonNode idatData = node.get("idatData");
+			ExternalPatientDto externalPatientDto = mapper.treeToValue(idatData, ExternalPatientDto.class);
 			String endDate = node.get("endDate").textValue();
 			//TODO: refactor to use actual data after date format is fixed
 			externalPatientDto.setEndDate(new Date());
 			return Optional.of(externalPatientDto);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
-			return Optional.empty();
+			logger.error("Could not retrieve patient: {}", e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 
 	/**
 	 * Attempts to register a new patient in the CLIMEDO patient diary.
-	 * Sets the person symptom journal status to ACCEPTED if successful.
+	 * Sets the person symptom journal status to REGISTERED if successful.
 	 * @param person
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise

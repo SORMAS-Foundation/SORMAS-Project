@@ -63,7 +63,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	//@formatter:off
 	public JournalPersonDto getPersonByUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().getPersonForJournal(personUuid);
-	};
+	}
 
 	@GET
 	@Path("/person/{personUuid}/isValid")
@@ -108,8 +108,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 		responses = @ApiResponse(description = "OK when visit was successfully saved, ERROR otherwise.",
 			content = @Content(schema = @Schema(name = "processing", example = "OK"))))
 	public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
-		return result;
+		return savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
 	}
 
 	@GET

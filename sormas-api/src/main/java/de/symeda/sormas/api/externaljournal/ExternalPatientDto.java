@@ -1,7 +1,5 @@
 package de.symeda.sormas.api.externaljournal;
 
-import de.symeda.sormas.api.person.Sex;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,7 +9,7 @@ public class ExternalPatientDto implements Serializable {
 
     private String firstName;
     private String lastName;
-    private Sex gender;
+    private String gender;
     private String birthday;
     private ExternalPatientContactInformation contactInformation;
     private Date endDate;
@@ -32,11 +30,11 @@ public class ExternalPatientDto implements Serializable {
         this.lastName = lastName;
     }
 
-    public Sex getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(Sex gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
