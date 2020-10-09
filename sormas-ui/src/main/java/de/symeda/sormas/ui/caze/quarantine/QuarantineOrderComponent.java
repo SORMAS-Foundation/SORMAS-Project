@@ -24,6 +24,7 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class QuarantineOrderComponent extends VerticalLayout {
@@ -63,13 +64,18 @@ public class QuarantineOrderComponent extends VerticalLayout {
 			createButton.setEnabled(isValidTemplateFile);
 			additionalVariablesComponent.removeAllComponents();
 			if (isValidTemplateFile) {
-				List<String> additionalVariables = FacadeProvider.getQuarantineOrderFacade().getAdditionalVariables(templateFile);
-				for (String variable : additionalVariables) {
-					TextField variableInput = new TextField(variable);
-					variableInput.setWidth(80F, Unit.PERCENTAGE);
-					additionalVariablesComponent.addComponent(variableInput);
+				try {
+					List<String> additionalVariables = FacadeProvider.getQuarantineOrderFacade().getAdditionalVariables(templateFile);
+					for (String variable : additionalVariables) {
+						TextField variableInput = new TextField(variable);
+						variableInput.setWidth(80F, Unit.PERCENTAGE);
+						additionalVariablesComponent.addComponent(variableInput);
+					}
+					setStreamResource(templateFile);
+				} catch (ValidationException validationException) {
+					validationException.printStackTrace();
+					// Notification
 				}
-				setStreamResource(templateFile);
 			}
 		});
 		addComponent(templateSelector);
@@ -96,8 +102,14 @@ public class QuarantineOrderComponent extends VerticalLayout {
 	private void setStreamResource(String templateFile) {
 		StreamResource streamResource = new StreamResource((StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
-			return new ByteArrayInputStream(
-				quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto.getUuid(), readAdditionalVariables()));
+			try {
+				return new ByteArrayInputStream(
+					quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto.getUuid(), readAdditionalVariables()));
+			} catch (ValidationException e) {
+				e.printStackTrace();
+				// Notification
+				return null;
+			}
 		}, caseReferenceDto.getUuid() + templateFile);
 		if (fileDownloader == null) {
 			fileDownloader = new FileDownloader(streamResource);
