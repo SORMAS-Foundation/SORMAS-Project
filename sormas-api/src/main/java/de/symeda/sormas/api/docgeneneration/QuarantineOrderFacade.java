@@ -5,20 +5,22 @@ import java.util.Properties;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.utils.ValidationException;
+
 @Remote
 public interface QuarantineOrderFacade {
 
-	byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties);
+	byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties) throws ValidationException;
 
-	byte[] getTemplate(String templateName);
+	byte[] getTemplate(String templateName) throws ValidationException;
 
 	List<String> getAvailableTemplates();
 
 	boolean isExistingTemplate(String templateName);
 
-	List<String> getAdditionalVariables(String templateName);
+	List<String> getAdditionalVariables(String templateName) throws ValidationException;
 
-	void writeQuarantineTemplate(String fileName, byte[] document);
+	void writeQuarantineTemplate(String fileName, byte[] document) throws ValidationException;
 
-	boolean deleteQuarantineTemplate(String fileName);
+	boolean deleteQuarantineTemplate(String fileName) throws ValidationException;
 }
