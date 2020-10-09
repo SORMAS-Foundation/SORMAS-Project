@@ -1,5 +1,28 @@
 package de.symeda.sormas.backend.docgeneration;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.EntityDtoAccessHelper.CachedReferenceDtoResolver;
 import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
@@ -23,25 +46,6 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import fr.opensagres.xdocreport.core.XDocReportException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
@@ -163,7 +167,11 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@Override
 	public void writeQuarantineTemplate(String fileName, byte[] document) {
+		if (!"docx".equalsIgnoreCase(FilenameUtils.getExtension(fileName))) {
+			throw new IllegalArgumentException("Template must be a .docx file.");
+		}
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		templateEngineService.validateTemplate(new ByteArrayInputStream(document));
 		try {
 			Files.createDirectories(Paths.get(workflowTemplateDirPath));
 			FileOutputStream fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + fileName);

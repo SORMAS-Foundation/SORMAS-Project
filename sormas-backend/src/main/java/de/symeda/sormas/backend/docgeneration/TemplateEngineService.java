@@ -77,6 +77,16 @@ public class TemplateEngineService {
 		return new ByteArrayInputStream(outputStream.toByteArray());
 	}
 
+	public void validateTemplate(InputStream templateFile) {
+		try {
+			IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
+			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
+			report.extractFields(extractor);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+	}
+
 	public String getTempDir() {
 		return configFacade.getCustomFilesPath();
 	}
