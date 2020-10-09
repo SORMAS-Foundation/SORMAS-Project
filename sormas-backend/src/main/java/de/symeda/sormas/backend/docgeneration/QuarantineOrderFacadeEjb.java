@@ -159,6 +159,14 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	}
 
 	@Override
+	public boolean isExistingTemplate(String templateName) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
+		File templateFile = new File(templateFileName);
+		return templateFile.exists();
+	}
+
+	@Override
 	public List<String> getAdditionalVariables(String templateName) {
 		File templateFile = getTemplateFile(templateName);
 		Set<String> propertyKeys = getTemplateVariables(templateFile);

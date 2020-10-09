@@ -111,6 +111,12 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void isExistingTemplateTest() {
+		assertTrue(quarantineOrderFacadeEjb.isExistingTemplate("Quarantine.docx"));
+		assertFalse(quarantineOrderFacadeEjb.isExistingTemplate("ThisTemplateDoesNotExist.docx"));
+	}
+
+	@Test
 	public void writeAndDeleteTemplateTest() throws IOException {
 		String testDirectory = "target" + File.separator + "doctest";
 		byte[] document = IOUtils.toByteArray(getClass().getResourceAsStream("/docgeneration/quarantine/Quarantine.docx"));

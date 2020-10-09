@@ -14,6 +14,8 @@ public interface QuarantineOrderFacade {
 
 	List<String> getAvailableTemplates();
 
+	boolean isExistingTemplate(String templateName);
+
 	List<String> getAdditionalVariables(String templateName);
 
 	void writeQuarantineTemplate(String fileName, byte[] document);
