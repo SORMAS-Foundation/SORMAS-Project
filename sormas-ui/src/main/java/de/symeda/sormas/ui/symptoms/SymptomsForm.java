@@ -25,7 +25,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
@@ -110,7 +109,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
 					fluidRow(fluidColumn(6,6, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
-					fluidRowLocs(SYMPTOMATIC, ONSET_DATE) +
+					fluidRowLocs(SYMPTOMATIC, ONSET_DATE, ONSET_SYMPTOM) +
 					fluidRow(
 							fluidColumn(6, -1,
 									locsCss(VSPACE_3,
@@ -172,7 +171,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS)
 							)
 					) +
-					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM) +
 					loc(COMPLICATIONS_HEADING) +
 					fluidRow(
 							fluidColumn(6, 0,
@@ -196,7 +194,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private List<String> lesionsFieldIds;
 	private List<String> lesionsLocationFieldIds;
 	private List<String> monkeypoxImageFieldIds;
-	private String symptomaticFieldId;
 
 	public SymptomsForm(
 		CaseDataDto caze,
@@ -498,8 +495,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Initialize lists
 
-		symptomaticFieldId = SYMPTOMATIC;
-
 		conditionalBleedingSymptomFieldIds = Arrays.asList(
 			GUMS_BLEEDING,
 			INJECTION_SITE_BLEEDING,
@@ -756,7 +751,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addListenerForOnsetFields(onsetSymptom, onsetDateField);
 
-		addListenerForOnsetSymptomaticField(onsetDateField);
+		addListenerForSymptomatic(onsetDateField);
 
 		Button clearAllButton = ButtonHelper.createButton(Captions.actionClearAll, event -> {
 			for (Object symptomId : unconditionalSymptomFieldIds) {
@@ -774,7 +769,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			for (Object symptomId : monkeypoxImageFieldIds) {
 				getFieldGroup().getField(symptomId).setValue(null);
 			}
-			Object symptomaticId = symptomaticFieldId;
+			Object symptomaticId = SYMPTOMATIC;
 			getFieldGroup().getField(symptomaticId).setValue(null);
 		}, ValoTheme.BUTTON_LINK);
 
@@ -990,7 +985,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		allPropertyIds.add(LESIONS_THAT_ITCH);
 
 		for (Object sourcePropertyId : allPropertyIds) {
-			Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(symptomaticFieldId);
+			Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(SYMPTOMATIC);
 			Field sourceField = getFieldGroup().getField(sourcePropertyId);
 			sourceField.addValueChangeListener(event -> {
 				if (sourceField.getValue() == SymptomState.YES) {
@@ -1009,10 +1004,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	// event for the symptomatic field
-	private void addListenerForOnsetSymptomaticField(DateField onsetDateField) {
-		Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(symptomaticFieldId);
+	private void addListenerForSymptomatic(DateField onsetDateField) {
+		Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(SYMPTOMATIC);
 		List<String> allPropertyIds =
-				Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
+			Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
 		allPropertyIds.add(LESIONS_THAT_ITCH);
 
 		sourceFieldSymptomatic.addValueChangeListener(event -> {

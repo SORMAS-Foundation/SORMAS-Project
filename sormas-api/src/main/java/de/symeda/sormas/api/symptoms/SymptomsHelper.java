@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
@@ -37,6 +36,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public final class SymptomsHelper {
 
@@ -200,8 +200,7 @@ public final class SymptomsHelper {
 			dto.setSymptomatic(YesNoUnknown.UNKNOWN);
 		} else if (dto.getSymptomatic() == YesNoUnknown.NO) {
 			dto.setSymptomatic(YesNoUnknown.NO);
-		}
-		else {
+		} else {
 			dto.setSymptomatic(null);
 		}
 	}
@@ -234,15 +233,11 @@ public final class SymptomsHelper {
 					if (result == SymptomState.YES) {
 						pd.getWriteMethod().invoke(targetSymptoms, result);
 					}
-				} else if (pd.getReadMethod().getReturnType() == YesNoUnknown.class) {
+				} else if (pd.getReadMethod().getReturnType() == Boolean.class) {
 					// Booleans are carried over when they are TRUE
-					if (pd.getName().equals(SymptomsDto.SYMPTOMATIC)) {
-						continue;
-					} else {
-						YesNoUnknown result = (YesNoUnknown) pd.getReadMethod().invoke(sourceSymptoms);
-						if (result == YesNoUnknown.YES) {
-							pd.getWriteMethod().invoke(targetSymptoms, result);
-						}
+					YesNoUnknown result = (YesNoUnknown) pd.getReadMethod().invoke(sourceSymptoms);
+					if (result == YesNoUnknown.YES) {
+						pd.getWriteMethod().invoke(targetSymptoms, result);
 					}
 				} else if (pd.getName().equals(SymptomsDto.TEMPERATURE)) {
 					// Temperature is carried over when it's higher than the targetSymptoms temperature

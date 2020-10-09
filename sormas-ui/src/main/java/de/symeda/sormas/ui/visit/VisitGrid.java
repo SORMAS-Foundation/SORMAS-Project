@@ -23,7 +23,6 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.renderers.DateRenderer;
 
-import com.vaadin.ui.renderers.TextRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -32,7 +31,6 @@ import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
@@ -70,7 +68,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 
 		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
-		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new TextRenderer());
+		getColumn(VisitIndexDto.SYMPTOMATIC);
 
 		for (Column<VisitIndexDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(VisitIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
