@@ -278,7 +278,7 @@ public class ExternalJournalService {
 				logger.error("Could not create new patient diary person: " + message);
 				return false;
 			}
-			person.setSymptomJournalStatus(SymptomJournalStatus.ACCEPTED);
+			person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
 			personFacade.savePerson(person);
 			return true;
 		} catch (IOException e) {

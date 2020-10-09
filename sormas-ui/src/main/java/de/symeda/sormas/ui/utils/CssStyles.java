@@ -127,6 +127,7 @@ public final class CssStyles {
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE = "bg-follow-up-unavailable";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNCOOPERATIVE = "bg-follow-up-uncooperative";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED = "bg-follow-up-not-performed";
+	public static final String LABEL_WHITE_SPACE_NORMAL = "white-space-normal";
 
 	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";

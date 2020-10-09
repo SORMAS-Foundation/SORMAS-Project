@@ -27,6 +27,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.ui.utils.CssStyles;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -534,15 +539,60 @@ public class ContactController {
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
 		if (externalJournalFacade.getPatientDiaryPerson(person.getUuid()) != null) {
-			//show already registered popup
+			showPatientAlreadyRegisteredPopup();
+		} else {
+			boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
+			showPatientRegisterResultPopup(success);
 		}
-		//show loading popup
-		boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
-		//hide loading popup
-		showPatientRegisterResultPopup(success);
+	}
+
+	private void showPatientAlreadyRegisteredPopup() {
+		VerticalLayout alreadyRegisteredLayout = new VerticalLayout();
+		alreadyRegisteredLayout.setMargin(true);
+		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
+		warningIcon.setHeight(35, Unit.PIXELS);
+		warningIcon.setWidth(35, Unit.PIXELS);
+		alreadyRegisteredLayout.addComponentAsFirst(warningIcon);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(alreadyRegisteredLayout);
+		Label infoLabel = new Label(I18nProperties.getCaption(Captions.patientDiaryPatientAlreadyExists));
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		alreadyRegisteredLayout.addComponent(infoLabel);
+		CssStyles.style(alreadyRegisteredLayout, CssStyles.ALIGN_CENTER);
+		popupWindow.addCloseListener(e -> {
+			popupWindow.close();
+		});
+		popupWindow.setWidth(300, Unit.PIXELS);
+		popupWindow.setHeight(200, Unit.PIXELS);
 	}
 
 	private void showPatientRegisterResultPopup(boolean success) {
+		VerticalLayout registrationResultLayout = new VerticalLayout();
+		registrationResultLayout.setMargin(true);
+		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
+		errorIcon.setHeight(35, Unit.PIXELS);
+		errorIcon.setWidth(35, Unit.PIXELS);
+		Image successIcon = new Image(null, new ThemeResource("img/success-icon.png"));
+		successIcon.setHeight(35, Unit.PIXELS);
+		successIcon.setWidth(35, Unit.PIXELS);
+		Label infoLabel = new Label();
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		registrationResultLayout.addComponent(infoLabel);
+		CssStyles.style(registrationResultLayout, CssStyles.ALIGN_CENTER);
+		if (success) {
+			registrationResultLayout.removeComponent(errorIcon);
+			registrationResultLayout.addComponentAsFirst(successIcon);
+			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationSuccess));
+		} else {
+			registrationResultLayout.removeComponent(successIcon);
+			registrationResultLayout.addComponentAsFirst(errorIcon);
+			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
+		}
+		Window popupWindow = VaadinUiUtil.showPopupWindow(registrationResultLayout);
+		popupWindow.addCloseListener(e -> {
+			popupWindow.close();
+		});
+		popupWindow.setWidth(300, Unit.PIXELS);
+		popupWindow.setHeight(200, Unit.PIXELS);
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
