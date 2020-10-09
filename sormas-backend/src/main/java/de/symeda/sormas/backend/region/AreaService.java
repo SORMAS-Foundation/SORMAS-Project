@@ -46,23 +46,6 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Area> getByRegion(String uuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Area> cq = cb.createQuery(getElementClass());
-		Root<Area> from = cq.from(getElementClass());
-		Join<Area,Region> join= from.join(Region.AREA);
-		cq.select(from).where(cb.equal(join.get(Region.AREA),Area.ID));
-
-	/*	Predicate filter =
-				(Predicate) cq.select(from).where(cb.equal( Region.UUID,uuid)) */
-
-		Predicate filter = cb.and((Predicate) cq.select(from).where(cb.equal(join.get(Region.AREA),Area.ID),cb.equal(cb.trim(from.get(Area.NAME)), uuid.trim())));
-
-		cq.where(filter);
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	public Predicate buildCriteriaFilter(AreaCriteria criteria, CriteriaBuilder cb, Root<Area> areaRoot) {
 		Predicate filter = null;
 		if (StringUtils.isNotBlank(criteria.getTextFilter())) {
