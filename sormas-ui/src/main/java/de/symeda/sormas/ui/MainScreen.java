@@ -31,14 +31,14 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.VerticalLayout;
+
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -74,8 +74,8 @@ import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.user.UsersView;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Content of the UI when the user is logged in.
@@ -238,9 +238,9 @@ public class MainScreen extends HorizontalLayout {
 
 		// Add GDPR window
 		// possible to desactivate it with check
-		UserDto user = FacadeProvider.getUserFacade().getCurrentUser();
-		if (user.isGdpr()) {
-			Window subWindowGdpR = new Window(I18nProperties.getCaption(Captions.User_gdpr));
+		UserDto user = UserProvider.getCurrent().getUser();
+		if (user.isGdprStandardsActive()) {
+			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.GDPR_STANDARDS));
 			VerticalLayout subContentGdpr = new VerticalLayout();
 			subWindowGdpR.setContent(subContentGdpr);
 			subWindowGdpR.center();
@@ -254,26 +254,22 @@ public class MainScreen extends HorizontalLayout {
 			textGdpr.setValue(I18nProperties.getString(Strings.messageGdpr));
 			subContentGdpr.addComponent(textGdpr);
 
-			CheckBox checkBoxRgpd = new CheckBox(I18nProperties.getString(Strings.messageGdprCheck));
+			CheckBox checkBoxGdpr = new CheckBox(I18nProperties.getString(Strings.messageGdprCheck));
 
 			HorizontalLayout buttonLayout = new HorizontalLayout();
 			buttonLayout.setMargin(false);
 			buttonLayout.setSpacing(true);
 			buttonLayout.setWidth(100, Unit.PERCENTAGE);
-			Button buttonGdpr = ButtonHelper.createButton(
-					I18nProperties.getCaption(Captions.actionConfirm),
-					event -> {
-						boolean isCheck = checkBoxRgpd.getValue();
-						if (isCheck) {
-							user.setGdpr(false);
-							FacadeProvider.getUserFacade().saveUser(user);
-							navigator.getUI().removeWindow(subWindowGdpR);
-						}
-						navigator.getUI().removeWindow(subWindowGdpR);
-					},
-					ValoTheme.BUTTON_PRIMARY);
+			Button buttonGdpr = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionConfirm), event -> {
+				if (checkBoxGdpr.getValue()) {
+					user.setGdprStandardsActive(false);
+					FacadeProvider.getUserFacade().saveUser(user);
+					navigator.getUI().removeWindow(subWindowGdpR);
+				}
+				navigator.getUI().removeWindow(subWindowGdpR);
+			}, ValoTheme.BUTTON_PRIMARY);
 			buttonLayout.addComponent(buttonGdpr);
-			subContentGdpr.addComponent(checkBoxRgpd);
+			subContentGdpr.addComponent(checkBoxGdpr);
 			subContentGdpr.addComponent(buttonLayout);
 			buttonLayout.setComponentAlignment(buttonGdpr, Alignment.BOTTOM_RIGHT);
 			buttonLayout.setExpandRatio(buttonGdpr, 0);

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import java.awt.geom.Area;
 import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
@@ -59,7 +58,7 @@ public class UserDto extends EntityDto {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String LIMITED_DISEASE = "limitedDisease";
 	public static final String LANGUAGE = "language";
-	public static final String GDPR = "gdpr";
+	public static final String GDPR_STANDARDS = "gdprStandards";
 
 	private boolean active = true;
 
@@ -91,7 +90,7 @@ public class UserDto extends EntityDto {
 
 	private Language language;
 
-	private boolean gdpr;
+	private boolean gdprStandardsActive;
 
 	public static UserDto build() {
 		UserDto user = new UserDto();
@@ -257,7 +256,11 @@ public class UserDto extends EntityDto {
 		this.language = language;
 	}
 
-	public boolean isGdpr() { return gdpr; }
+	public boolean isGdprStandardsActive() {
+		return gdprStandardsActive;
+	}
 
-	public void setGdpr(boolean gdpr) { this.gdpr = gdpr; }
+	public void setGdprStandardsActive(boolean gdprStandardsActive) {
+		this.gdprStandardsActive = gdprStandardsActive;
+	}
 }

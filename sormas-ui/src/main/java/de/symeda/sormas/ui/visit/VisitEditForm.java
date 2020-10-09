@@ -52,8 +52,9 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	private static final long serialVersionUID = 4265377973842591202L;
 	private static final String CONTACT_PERSON_PHONE_NUMBER_LOC = "contactPersonPhoneNumberLoc";
 
-	private static final String HTML_LAYOUT =
-		fluidRowLocs(VisitDto.VISIT_STATUS, CONTACT_PERSON_PHONE_NUMBER_LOC)  + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
+	private static final String HTML_LAYOUT = fluidRowLocs(VisitDto.VISIT_STATUS, CONTACT_PERSON_PHONE_NUMBER_LOC)
+		+ fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS)
+		+ fluidRowLocs(VisitDto.SYMPTOMS);
 
 	private final Disease disease;
 	private final ContactDto contact;
@@ -116,7 +117,9 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
-		addField(VisitDto.VISIT_REMARKS, TextField.class).setDescription(I18nProperties.getDescription(Captions.Visit_visitRemarks) + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));;
+		addField(VisitDto.VISIT_REMARKS, TextField.class).setDescription(
+			I18nProperties.getPrefixDescription(VisitDto.I18N_PREFIX, VisitDto.VISIT_REMARKS) + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);

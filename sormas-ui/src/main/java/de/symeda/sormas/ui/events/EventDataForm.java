@@ -159,8 +159,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		title.addStyleName(CssStyles.SOFT_REQUIRED);
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
 		descriptionField.setRows(2);
-		descriptionField.setDescription(I18nProperties.getDescription(Captions.Event_eventDesc) + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
-
+		descriptionField.setDescription(
+			I18nProperties.getPrefixDescription(EventDto.I18N_PREFIX, EventDto.EVENT_DESC) + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		addField(EventDto.NOSOCOMIAL, OptionGroup.class);
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);

@@ -1606,7 +1606,7 @@ public interface Captions {
 	String User_active = "User.active";
 	String User_address = "User.address";
 	String User_associatedOfficer = "User.associatedOfficer";
-	String User_gdpr = "User.gdpr";
+	String User_gdprStandards = "User.gdprStandards";
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";
 	String User_limitedDisease = "User.limitedDisease";
