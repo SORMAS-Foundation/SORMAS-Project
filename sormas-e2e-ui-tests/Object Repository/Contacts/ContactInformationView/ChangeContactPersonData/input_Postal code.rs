@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>input_Postal code_postalCode</name>
+   <name>input_Postal code</name>
    <tag></tag>
    <elementGuidId>513607ac-435b-4dfa-acf8-34d980ce8499</elementGuidId>
    <selectorCollection>
