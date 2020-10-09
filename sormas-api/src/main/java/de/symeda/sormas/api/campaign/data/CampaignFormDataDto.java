@@ -20,6 +20,7 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import de.symeda.sormas.api.region.AreaReferenceDto;
 import java.util.Date;
 import java.util.List;
 
@@ -143,4 +144,6 @@ public class CampaignFormDataDto extends EntityDto {
 	public void setCreatingUser(UserReferenceDto creatingUser) {
 		this.creatingUser = creatingUser;
 	}
+
+
 }

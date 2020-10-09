@@ -144,6 +144,7 @@ public interface Captions {
 	String campaignCampaignData = "campaignCampaignData";
 	String campaignCampaignDataForm = "campaignCampaignDataForm";
 	String campaignCampaignForm = "campaignCampaignForm";
+	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";

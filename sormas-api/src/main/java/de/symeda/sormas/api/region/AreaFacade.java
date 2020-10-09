@@ -28,4 +28,5 @@ public interface AreaFacade {
 
 	List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas);
 
+	List<AreaReferenceDto> getAreasByRegion(String uuid);
 }

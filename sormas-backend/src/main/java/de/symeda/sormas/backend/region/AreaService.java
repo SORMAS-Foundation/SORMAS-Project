@@ -7,6 +7,8 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -33,12 +35,28 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Area> cq = cb.createQuery(getElementClass());
 		Root<Area> from = cq.from(getElementClass());
-
 		Predicate filter =
 			cb.or(cb.equal(cb.trim(from.get(Area.NAME)), name.trim()), cb.equal(cb.lower(cb.trim(from.get(Area.NAME))), name.trim().toLowerCase()));
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Area> getByRegion(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Area> cq = cb.createQuery(getElementClass());
+		Root<Area> from = cq.from(getElementClass());
+		Join<Area,Region> join= from.join(Region.AREA);
+		cq.select(from).where(cb.equal(join.get(Region.AREA),Area.ID));
+
+	/*	Predicate filter =
+				(Predicate) cq.select(from).where(cb.equal( Region.UUID,uuid)) */
+
+		Predicate filter = cb.and((Predicate) cq.select(from).where(cb.equal(join.get(Region.AREA),Area.ID),cb.equal(cb.trim(from.get(Area.NAME)), uuid.trim())));
 
 		cq.where(filter);
 
