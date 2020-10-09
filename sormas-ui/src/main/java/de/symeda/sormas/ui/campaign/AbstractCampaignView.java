@@ -26,6 +26,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
+import de.symeda.sormas.ui.campaign.campaigns.CampaignView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
@@ -54,6 +55,7 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 
 	public static void registerViews(Navigator navigator) {
 		navigator.addView(CampaignsView.VIEW_NAME, CampaignsView.class);
+		navigator.addView(CampaignView.VIEW_NAME, CampaignView.class);
 		navigator.addView(CampaignDataView.VIEW_NAME, CampaignDataView.class);
 		navigator.addView(CampaignFormDataView.VIEW_NAME, CampaignFormDataView.class);
 	}
