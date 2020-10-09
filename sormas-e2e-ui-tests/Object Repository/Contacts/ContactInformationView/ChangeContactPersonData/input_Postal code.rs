@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>input_Phone number_phone</name>
+   <name>input_Postal code</name>
    <tag></tag>
-   <elementGuidId>d882aa8f-6980-49c5-beed-5c4848d76f03</elementGuidId>
+   <elementGuidId>513607ac-435b-4dfa-acf8-34d980ce8499</elementGuidId>
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//input[@id='phone']</value>
+         <value>//input[@id='postalCode']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -38,14 +38,14 @@
       <matchCondition>equals</matchCondition>
       <name>id</name>
       <type>Main</type>
-      <value>phone</value>
+      <value>postalCode</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>aria-labelledby</name>
       <type>Main</type>
-      <value>gwt-uid-101</value>
+      <value>gwt-uid-119</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -59,27 +59,27 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;phone&quot;)</value>
+      <value>id(&quot;postalCode&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>//input[@id='phone']</value>
+      <value>//input[@id='postalCode']</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[3]/div/div/div/div[2]/div/div/div[16]/div/div[3]/div/div/input</value>
+      <value>//div[@id='address']/div/div/div/div/div[2]/div/div/div/div/div/div/input</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[16]/div/div[3]/div/div/input</value>
+      <value>//div[14]/div/div/div/div/div/div/div/div/div[2]/div/div/div/div/div/div/input</value>
    </webElementXpaths>
 </WebElementEntity>

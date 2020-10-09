@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>input_Owner of phone_phoneOwner</name>
+   <name>input_Area type (urbanrural)</name>
    <tag></tag>
-   <elementGuidId>df9d610d-2f9d-4302-97a0-3923b2751e0c</elementGuidId>
+   <elementGuidId>92229982-a8b0-4cfc-9c6b-08e87e9fed6b</elementGuidId>
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//input[@id='phoneOwner']</value>
+         <value>//div[@id='areaType']/input</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -31,21 +31,28 @@
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>
-      <value>v-textfield v-widget v-has-width v-textfield-focus</value>
+      <value>v-filterselect-input</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>autocomplete</name>
+      <type>Main</type>
+      <value>0.2902379136760086</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>id</name>
       <type>Main</type>
-      <value>phoneOwner</value>
+      <value>gwt-uid-122</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>aria-labelledby</name>
       <type>Main</type>
-      <value>gwt-uid-83</value>
+      <value>gwt-uid-121</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -59,27 +66,27 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;phoneOwner&quot;)</value>
+      <value>id(&quot;gwt-uid-122&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>//input[@id='phoneOwner']</value>
+      <value>//input[@id='gwt-uid-122']</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[3]/div/div/div/div[2]/div/div/div[16]/div/div[3]/div[2]/div/input</value>
+      <value>//div[@id='areaType']/input</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[3]/div[2]/div/input</value>
+      <value>//div[2]/div/div/div/div/div[2]/div/div[2]/input</value>
    </webElementXpaths>
 </WebElementEntity>
