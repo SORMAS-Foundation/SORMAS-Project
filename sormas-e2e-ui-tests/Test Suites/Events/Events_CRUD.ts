@@ -55,7 +55,7 @@
          <testDataLinkId></testDataLinkId>
          <type>DEFAULT</type>
          <value></value>
-         <variableId>96214ee0-bc17-4028-b0ab-38d444bbdf60</variableId>
+         <variableId>1196e56b-f1c9-47d3-aec9-697d8a8528a9</variableId>
       </variableLink>
    </testCaseLink>
 </TestSuiteEntity>
