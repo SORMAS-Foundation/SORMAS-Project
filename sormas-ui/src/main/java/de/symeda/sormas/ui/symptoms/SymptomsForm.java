@@ -751,7 +751,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addListenerForOnsetFields(onsetSymptom, onsetDateField);
 
-		addListenerForSymptomatic(onsetDateField);
+		addListenerForSymptomatic(onsetSymptom, onsetDateField);
 
 		Button clearAllButton = ButtonHelper.createButton(Captions.actionClearAll, event -> {
 			for (Object symptomId : unconditionalSymptomFieldIds) {
@@ -769,8 +769,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			for (Object symptomId : monkeypoxImageFieldIds) {
 				getFieldGroup().getField(symptomId).setValue(null);
 			}
-			Object symptomaticId = SYMPTOMATIC;
-			getFieldGroup().getField(symptomaticId).setValue(null);
+			getFieldGroup().getField(SYMPTOMATIC).setValue(null);
 		}, ValoTheme.BUTTON_LINK);
 
 		Button setEmptyToNoButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToNo, SymptomState.NO);
@@ -1004,7 +1003,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	// event for the symptomatic field
-	private void addListenerForSymptomatic(DateField onsetDateField) {
+	private void addListenerForSymptomatic(ComboBox onsetSymptom, DateField onsetDateField) {
 		Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(SYMPTOMATIC);
 		List<String> allPropertyIds =
 			Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
@@ -1014,20 +1013,24 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			for (Object sourcePropertyId : allPropertyIds) {
 				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(sourcePropertyId);
 				if (sourceFieldSymptomatic.getValue() != null) {
-					if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.NO)) {
-						symptom.setValue(SymptomState.NO);
-						symptom.setEnabled(false);
-						onsetDateField.setEnabled(false);
-					} else if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.UNKNOWN)) {
-						onsetDateField.setEnabled(false);
+					if (!sourceFieldSymptomatic.getValue().equals(YesNoUnknown.NO)) {
 						symptom.setEnabled(true);
 					} else {
-						onsetDateField.setEnabled(true);
-						symptom.setEnabled(true);
+						symptom.setValue(SymptomState.NO);
+						symptom.setEnabled(false);
 					}
 				} else {
 					symptom.setEnabled(true);
-					onsetDateField.setEnabled(true);
+				}
+			}
+			if (sourceFieldSymptomatic.getValue() != null) {
+				if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.NO) || sourceFieldSymptomatic.getValue().equals(YesNoUnknown.UNKNOWN)) {
+					onsetDateField.setVisible(false);
+					onsetSymptom.setVisible(false);
+					onsetDateField.setValue(null);
+				} else {
+					onsetDateField.setVisible(true);
+					onsetSymptom.setVisible(true);
 				}
 			}
 		});

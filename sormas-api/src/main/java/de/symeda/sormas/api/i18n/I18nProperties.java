@@ -33,6 +33,11 @@ import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.ResourceBundle;
+
 public final class I18nProperties {
 
 	public static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
