@@ -106,17 +106,18 @@ public class CreateQuarantineOrderLayout extends VerticalLayout {
 	}
 
 	private void setStreamResource(String templateFile) {
+		String uuid = caseReferenceDto.getUuid();
+		String filename = uuid.substring(0, Math.min(5, uuid.length())) + "_" + templateFile;
 		StreamResource streamResource = new StreamResource((StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 			try {
 				return new ByteArrayInputStream(
 					quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto, readAdditionalVariables()));
 			} catch (ValidationException e) {
-				e.printStackTrace();
-				// Notification
+				new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 				return null;
 			}
-		}, caseReferenceDto.getUuid() + templateFile);
+		}, filename);
 		if (fileDownloader == null) {
 			fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(createButton);
