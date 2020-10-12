@@ -289,7 +289,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		PersonDto existingPerson = toDto(person);
 
 		if (existingPerson != null) {
-			externalJournalService.notifyExternalJournalPersonUpdate(existingPerson, source);
+			handleExternalJournalPerson(existingPerson, source);
 		}
 
 		restorePseudonymizedDto(source, person, existingPerson);
@@ -303,6 +303,16 @@ public class PersonFacadeEjb implements PersonFacade {
 		onPersonChanged(existingPerson, person);
 
 		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
+	}
+
+	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
+		externalJournalService.notifyExternalJournalPersonUpdate(existingPerson, updatedPerson);
+		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
+		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
+			if (!externalJournalService.isPersonExportable(updatedPerson)) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.externalJournalPersonValidation));
+			}
+		}
 	}
 
 	@Override

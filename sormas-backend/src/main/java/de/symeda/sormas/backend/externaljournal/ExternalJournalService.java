@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.externaljournal;
 
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.externaljournal.ExternalPatientDto;
@@ -226,14 +229,16 @@ public class ExternalJournalService {
 				logger.error("Could not notify patient diary of person update: " + message);
 			}
 		} catch (IOException e) {
-		    logger.error("Could not notify patient diary: {}", e.getMessage());
-            throw new RuntimeException(e);
+			logger.error("Could not notify patient diary: {}", e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 
 	/**
 	 * Retrieves the person from the external patient diary with the given uuid
-	 * @param personUuid the uuid of the person to be retrieved
+	 * 
+	 * @param personUuid
+	 *            the uuid of the person to be retrieved
 	 * @return optional containing the person
 	 */
 	public Optional<ExternalPatientDto> getPatientDiaryPerson(String personUuid) {
@@ -249,8 +254,7 @@ public class ExternalJournalService {
 			JsonNode idatData = node.get("idatData");
 			ExternalPatientDto externalPatientDto = mapper.treeToValue(idatData, ExternalPatientDto.class);
 			String endDate = node.get("endDate").textValue();
-			//TODO: refactor to use actual data after date format is fixed
-			externalPatientDto.setEndDate(new Date());
+			externalPatientDto.setEndDate(endDate);
 			return Optional.of(externalPatientDto);
 		} catch (IOException e) {
 			logger.error("Could not retrieve patient: {}", e.getMessage());
@@ -289,11 +293,39 @@ public class ExternalJournalService {
 	}
 
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
-		String updateUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + personUuid;
+		String externalDataUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + personUuid;
 		Client client = ClientBuilder.newClient();
-		WebTarget webTarget = client.target(updateUrl);
+		WebTarget webTarget = client.target(externalDataUrl);
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		invocationBuilder.header("x-access-token", getPatientDiaryAuthToken());
 		return invocationBuilder;
+	}
+
+	/**
+	 * Check whether a person has the necessary data to be exported to the patient diary
+	 * 
+	 * @param person
+	 *            the person to check
+	 * @return true if the person has the necessary data, false otherwise
+	 */
+	public boolean isPersonExportable(PersonDto person) {
+		String email = person.getEmailAddress();
+		String phone = person.getPhone();
+		boolean validEmail = false;
+		boolean validPhone = false;
+		if (StringUtils.isNotEmpty(email)) {
+			EmailValidator validator = EmailValidator.getInstance();
+			validEmail = validator.isValid(email);
+		}
+		if (StringUtils.isNotEmpty(phone)) {
+			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+			try {
+				Phonenumber.PhoneNumber germanNumberProto = phoneUtil.parse(phone, "DE");
+				validPhone = phoneUtil.isValidNumber(germanNumberProto);
+			} catch (NumberParseException e) {
+				logger.warn("NumberParseException was thrown: " + e.toString());
+			}
+		}
+		return validEmail || validPhone;
 	}
 }

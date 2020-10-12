@@ -7,12 +7,21 @@ public class ExternalPatientDto implements Serializable {
 
     private static final long serialVersionUID = 1300043011538769976L;
 
+    private String personUUID;
     private String firstName;
     private String lastName;
     private String gender;
     private String birthday;
     private ExternalPatientContactInformation contactInformation;
-    private Date endDate;
+    private String endDate;
+
+    public String getPersonUUID() {
+        return personUUID;
+    }
+
+    public void setPersonUUID(String personUUID) {
+        this.personUUID = personUUID;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -54,11 +63,11 @@ public class ExternalPatientDto implements Serializable {
         this.contactInformation = contactInformation;
     }
 
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 }

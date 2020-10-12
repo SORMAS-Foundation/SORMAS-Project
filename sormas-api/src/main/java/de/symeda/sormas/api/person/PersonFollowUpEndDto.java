@@ -1,9 +1,5 @@
 package de.symeda.sormas.api.person;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.symeda.sormas.api.JsonUnixTimestampDateSerializer;
-
-import javax.json.bind.annotation.JsonbTypeSerializer;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -11,7 +7,6 @@ import java.util.Objects;
 public class PersonFollowUpEndDto implements Serializable {
 
 	private String personUuid;
-	@JsonSerialize(using = JsonUnixTimestampDateSerializer.class)
 	private Date latestFollowUpEndDate;
 
 	public PersonFollowUpEndDto(String personUuid, Date latestFollowUpEndDate) {

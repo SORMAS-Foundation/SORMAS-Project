@@ -538,15 +538,19 @@ public class ContactController {
 	 * Displays the result in a popup
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
-		if (externalJournalFacade.getPatientDiaryPerson(person.getUuid()) != null) {
-			showPatientAlreadyRegisteredPopup();
+		if (!externalJournalFacade.isPersonExportable(person)) {
+			showWarningPopup(I18nProperties.getCaption(Captions.patientDiaryPersonNotExportable));
 		} else {
-			boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
-			showPatientRegisterResultPopup(success);
+			if (externalJournalFacade.getPatientDiaryPerson(person.getUuid()) != null) {
+				showWarningPopup(I18nProperties.getCaption(Captions.patientDiaryPatientAlreadyExists));
+			} else {
+				boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
+				showPatientRegisterResultPopup(success);
+			}
 		}
 	}
 
-	private void showPatientAlreadyRegisteredPopup() {
+	private void showWarningPopup(String message) {
 		VerticalLayout alreadyRegisteredLayout = new VerticalLayout();
 		alreadyRegisteredLayout.setMargin(true);
 		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
@@ -554,15 +558,15 @@ public class ContactController {
 		warningIcon.setWidth(35, Unit.PIXELS);
 		alreadyRegisteredLayout.addComponentAsFirst(warningIcon);
 		Window popupWindow = VaadinUiUtil.showPopupWindow(alreadyRegisteredLayout);
-		Label infoLabel = new Label(I18nProperties.getCaption(Captions.patientDiaryPatientAlreadyExists));
+		Label infoLabel = new Label(message);
 		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		alreadyRegisteredLayout.addComponent(infoLabel);
 		CssStyles.style(alreadyRegisteredLayout, CssStyles.ALIGN_CENTER);
 		popupWindow.addCloseListener(e -> {
 			popupWindow.close();
 		});
-		popupWindow.setWidth(300, Unit.PIXELS);
-		popupWindow.setHeight(200, Unit.PIXELS);
+		popupWindow.setWidth(350, Unit.PIXELS);
+		popupWindow.setHeight(250, Unit.PIXELS);
 	}
 
 	private void showPatientRegisterResultPopup(boolean success) {

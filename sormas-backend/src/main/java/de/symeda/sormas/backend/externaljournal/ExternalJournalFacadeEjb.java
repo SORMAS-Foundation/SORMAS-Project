@@ -32,4 +32,11 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	public boolean registerPatientDiaryPerson(PersonDto person) {
 		return externalJournalService.registerPatientDiaryPerson(person);
 	}
+
+	@Override
+	public boolean isPersonExportable(PersonDto person) {
+		return externalJournalService.isPersonExportable(person);
+	}
+
+
 }

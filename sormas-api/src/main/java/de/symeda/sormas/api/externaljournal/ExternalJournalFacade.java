@@ -14,4 +14,6 @@ public interface ExternalJournalFacade {
 	ExternalPatientDto getPatientDiaryPerson(String uuid);
 
 	boolean registerPatientDiaryPerson(PersonDto person);
+
+	boolean isPersonExportable(PersonDto person);
 }
