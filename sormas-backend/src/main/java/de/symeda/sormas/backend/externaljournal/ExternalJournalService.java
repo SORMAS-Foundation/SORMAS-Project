@@ -17,6 +17,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -326,6 +327,7 @@ public class ExternalJournalService {
 				logger.warn("NumberParseException was thrown: " + e.toString());
 			}
 		}
-		return validEmail || validPhone;
+		boolean validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+		return (validEmail || validPhone) && validBirthdate;
 	}
 }
