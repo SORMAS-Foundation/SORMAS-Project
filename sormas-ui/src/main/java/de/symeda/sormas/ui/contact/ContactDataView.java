@@ -211,9 +211,12 @@ public class ContactDataView extends AbstractContactView {
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
-		QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getContactRef());
-		quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(quarantineOrderComponent, QUARANTINE_LOC);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+			QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getContactRef());
+			quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(quarantineOrderComponent, QUARANTINE_LOC);
+		}
 
 		setContactEditPermission(container);
 	}

@@ -141,15 +141,17 @@ public class CaseDataView extends AbstractCaseView {
 
 		// quarantine information component on right side of the case details screen
 
-		VerticalLayout quarantineLayout = new VerticalLayout();
-		quarantineLayout.setMargin(false);
-		quarantineLayout.setSpacing(false);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+			VerticalLayout quarantineLayout = new VerticalLayout();
+			quarantineLayout.setMargin(false);
+			quarantineLayout.setSpacing(false);
 
-		QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getCaseRef());
-		quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-		quarantineLayout.addComponent(quarantineOrderComponent);
-		layout.addComponent(quarantineLayout, QUARANTINE_LOC);
+			QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getCaseRef());
+			quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+			quarantineLayout.addComponent(quarantineOrderComponent);
+			layout.addComponent(quarantineLayout, QUARANTINE_LOC);
 
-		setCaseEditPermission(container);
+			setCaseEditPermission(container);
+		}
 	}
 }
