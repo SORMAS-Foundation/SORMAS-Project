@@ -89,6 +89,7 @@ public interface Strings {
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
 	String confirmationDeleteEventParticipants = "confirmationDeleteEventParticipants";
 	String confirmationDeleteEvents = "confirmationDeleteEvents";
+	String confirmationDeleteFile = "confirmationDeleteFile";
 	String confirmationDeletePathogenTests = "confirmationDeletePathogenTests";
 	String confirmationDeletePrescriptions = "confirmationDeletePrescriptions";
 	String confirmationDeleteSamples = "confirmationDeleteSamples";
@@ -166,6 +167,7 @@ public interface Strings {
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
+	String fileName = "fileName";
 	String forCase = "forCase";
 	String forContact = "forContact";
 	String forEventParticipant = "forEventParticipant";
@@ -243,6 +245,7 @@ public interface Strings {
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
+	String headingDownloadDocumentTemplateGuide = "headingDownloadDocumentTemplateGuide";
 	String headingDownloadErrorReport = "headingDownloadErrorReport";
 	String headingDownloadImportGuide = "headingDownloadImportGuide";
 	String headingDownloadImportTemplate = "headingDownloadImportTemplate";
@@ -275,6 +278,7 @@ public interface Strings {
 	String headingExportFailed = "headingExportFailed";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
 	String headingFollowUpCanceled = "headingFollowUpCanceled";
 	String headingFollowUpStatus = "headingFollowUpStatus";
@@ -375,6 +379,7 @@ public interface Strings {
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUpdatePassword = "headingUpdatePassword";
+	String headingUploadSuccess = "headingUploadSuccess";
 	String headingUserData = "headingUserData";
 	String headingUserSettings = "headingUserSettings";
 	String headingViewNotFound = "headingViewNotFound";
@@ -412,7 +417,9 @@ public interface Strings {
 	String infoDetailedExport = "infoDetailedExport";
 	String infoDeveloperOptions = "infoDeveloperOptions";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
+	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
+	String infoDownloadDocumentTemplateImportGuide = "infoDownloadDocumentTemplateImportGuide";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
 	String infoDownloadExport = "infoDownloadExport";
 	String infoDownloadImportGuide = "infoDownloadImportGuide";
@@ -461,6 +468,7 @@ public interface Strings {
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
+	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
@@ -589,6 +597,7 @@ public interface Strings {
 	String messageImportInvalidColumn = "messageImportInvalidColumn";
 	String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	String messageImportSuccessful = "messageImportSuccessful";
+	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	String messageLaboratoriesArchived = "messageLaboratoriesArchived";
@@ -607,6 +616,7 @@ public interface Strings {
 	String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	String messageNoContactsSelected = "messageNoContactsSelected";
 	String messageNoCsvFile = "messageNoCsvFile";
+	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";

@@ -26,6 +26,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -36,7 +38,7 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -4759099406008618416L;
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/templates";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/documentTemplates";
 
 	private ViewConfiguration viewConfiguration;
 
@@ -55,11 +57,10 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 		// Add Quarantine Template Section
 		Qgrid = new QuarantineTemplatesGrid();
 		Qgrid.setWidth("500px"); // Remove this line to fit whole page
-		Label QuarantineTemplatesLabel = new Label("Quarantine Templates (i18n required)");
+		Label QuarantineTemplatesLabel = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_templates));
 		QuarantineTemplatesLabel.addStyleName(H3);
 		gridLayout.addComponent(QuarantineTemplatesLabel);
 		gridLayout.addComponent(Qgrid);
-		gridLayout.addComponent(buildUploadButton());
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
 		gridLayout.setMargin(true);
@@ -74,9 +75,9 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 	}
 
 	Button buildUploadButton() {
-		Button newBut = ButtonHelper.createIconButton("i18n upload", VaadinIcons.UPLOAD, e -> {
+		Button newBut = ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate), VaadinIcons.UPLOAD, e -> {
 			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout());
-			window.setCaption("i18n string");
+			window.setCaption(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate));
 			window.addCloseListener(c -> {
 				Qgrid.reload();
 			});

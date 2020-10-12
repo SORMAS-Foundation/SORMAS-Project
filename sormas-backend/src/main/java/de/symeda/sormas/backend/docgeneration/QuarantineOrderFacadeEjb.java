@@ -30,6 +30,8 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -177,7 +179,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	@Override
 	public void writeQuarantineTemplate(String fileName, byte[] document) throws ValidationException {
 		if (!"docx".equalsIgnoreCase(FilenameUtils.getExtension(fileName))) {
-			throw new ValidationException("Template must be a .docx file.");
+			throw new ValidationException(I18nProperties.getString(Strings.headingWrongFileType));
 		}
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
 		templateEngineService.validateTemplate(new ByteArrayInputStream(document));

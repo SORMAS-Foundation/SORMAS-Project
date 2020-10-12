@@ -15,6 +15,9 @@ import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -31,8 +34,10 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 		setDataProvider(dataProvider);
 
 		removeAllColumns();
-		addColumn(x -> x.toString()).setCaption("Document Title i18n").setExpandRatio(1);
-		addComponentColumn(this::buildActionButtons).setCaption("Actions i18n").setWidth(100).setStyleGenerator(item -> "v-align-center");
+		addColumn(x -> x.toString()).setCaption(I18nProperties.getString(Strings.fileName)).setExpandRatio(1);
+		addComponentColumn(this::buildActionButtons).setCaption(I18nProperties.getCaption(Captions.eventActionsView))
+			.setWidth(100)
+			.setStyleGenerator(item -> "v-align-center");
 
 		setSelectionMode(SelectionMode.NONE);
 	}
@@ -45,7 +50,7 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 
 	private Button buildDeleteButton(String s) {
 		Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> {
-			VaadinUiUtil.showDeleteConfirmationWindow("Permanently delete \"" + s.toString() + "\"? (i18n required)", () -> {
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), s), () -> {
 				try {
 					FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(s.toString());
 				} catch (ValidationException ex) {

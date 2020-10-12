@@ -54,7 +54,7 @@ public class CreateQuarantineOrderlayout extends VerticalLayout {
 			}
 		});
 
-		ComboBox<String> templateSelector = new ComboBox<>("Document Template I18N");
+		ComboBox<String> templateSelector = new ComboBox<>(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder));
 		templateSelector.setItems(FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates());
 		templateSelector.addValueChangeListener(e -> {
 			String templateFile = e.getValue();

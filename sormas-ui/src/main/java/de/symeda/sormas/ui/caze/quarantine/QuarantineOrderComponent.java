@@ -13,7 +13,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -28,7 +27,7 @@ public class QuarantineOrderComponent extends VerticalLayout {
 		super();
 		this.caseReferenceDto = caseReferenceDto;
 
-		Label headerDocgeneration = new Label("Case Documents I18N");
+		Label headerDocgeneration = new Label(I18nProperties.getCaption(Captions.caseDocuments));
 		headerDocgeneration.addStyleName(CssStyles.H3);
 		addComponent(headerDocgeneration);
 
@@ -38,7 +37,7 @@ public class QuarantineOrderComponent extends VerticalLayout {
 		lineQuarantineOrder.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lineQuarantineOrder);
 
-		Label labelQuarantineOrder = new Label(I18nProperties.getString(Strings.entityQuarantineOrder));
+		Label labelQuarantineOrder = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder));
 		lineQuarantineOrder.addComponent(labelQuarantineOrder);
 
 		createButton = new Button(I18nProperties.getCaption(Captions.actionCreate));
@@ -47,7 +46,7 @@ public class QuarantineOrderComponent extends VerticalLayout {
 		createButton.addClickListener((Button.ClickListener) clickEvent -> {
 			Window window = VaadinUiUtil.showPopupWindow(new CreateQuarantineOrderlayout(caseReferenceDto));
 			window.setWidth(800, Unit.PIXELS);
-			window.setCaption("Create Quarantine Order I18N");
+			window.setCaption(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_create));
 		});
 
 		lineQuarantineOrder.addComponent(createButton);
