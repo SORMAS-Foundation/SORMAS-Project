@@ -4,16 +4,16 @@ import com.vaadin.server.ClassResource;
 import com.vaadin.v7.ui.Upload;
 
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
+import de.symeda.sormas.ui.importer.DocumentTemplateReceiver;
 import de.symeda.sormas.ui.importer.ImportLayoutComponent;
-import de.symeda.sormas.ui.importer.TemplateReceiver;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 /*
  * Layout for Uploading Templates
  */
-public class TemplateUploadLayout extends AbstractImportLayout {
+public class DocumentTemplateUploadLayout extends AbstractImportLayout {
 
-	public TemplateUploadLayout() {
+	public DocumentTemplateUploadLayout() {
 
 		super();
 
@@ -22,7 +22,7 @@ public class TemplateUploadLayout extends AbstractImportLayout {
 			new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"),
 			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 
-		TemplateReceiver receiver = new TemplateReceiver();
+		DocumentTemplateReceiver receiver = new DocumentTemplateReceiver();
 
 		String headline = "i18nheadline";
 		String infoText = "i18nInfotext WARNING: Uploading new Documents might override existing Documents with identical Names!";

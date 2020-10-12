@@ -34,11 +34,11 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
+import de.symeda.sormas.ui.configuration.infrastructure.DocumentTemplatesView;
 import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.PopulationDataView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
-import de.symeda.sormas.ui.configuration.infrastructure.TemplatesView;
 import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
@@ -121,8 +121,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			menu.addView(
-				TemplatesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", TemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				DocumentTemplatesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				null,
 				false);
 		}
@@ -161,7 +161,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
-			navigator.addView(TemplatesView.VIEW_NAME, TemplatesView.class);
+			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
 		}
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);

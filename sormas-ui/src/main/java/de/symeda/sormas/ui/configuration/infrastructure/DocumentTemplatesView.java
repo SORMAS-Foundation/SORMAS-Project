@@ -32,7 +32,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public class TemplatesView extends AbstractConfigurationView {
+public class DocumentTemplatesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -4759099406008618416L;
 
@@ -44,11 +44,11 @@ public class TemplatesView extends AbstractConfigurationView {
 	private QuarantineTemplatesGrid Qgrid;
 	protected Button uploadButton;
 
-	public TemplatesView() {
+	public DocumentTemplatesView() {
 
 		super(VIEW_NAME);
 
-		viewConfiguration = ViewModelProviders.of(TemplatesView.class).get(ViewConfiguration.class);
+		viewConfiguration = ViewModelProviders.of(DocumentTemplatesView.class).get(ViewConfiguration.class);
 
 		gridLayout = new VerticalLayout();
 
@@ -75,7 +75,7 @@ public class TemplatesView extends AbstractConfigurationView {
 
 	Button buildUploadButton() {
 		Button newBut = ButtonHelper.createIconButton("i18n upload", VaadinIcons.UPLOAD, e -> {
-			Window window = VaadinUiUtil.showPopupWindow(new TemplateUploadLayout());
+			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout());
 			window.setCaption("i18n string");
 			window.addCloseListener(c -> {
 				Qgrid.reload();
