@@ -44,7 +44,7 @@ public class QuarantineOrderComponent extends VerticalLayout {
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(VaadinIcons.FILE_TEXT);
 		createButton.addClickListener((Button.ClickListener) clickEvent -> {
-			Window window = VaadinUiUtil.showPopupWindow(new CreateQuarantineOrderlayout(caseReferenceDto));
+			Window window = VaadinUiUtil.showPopupWindow(new CreateQuarantineOrderLayout(caseReferenceDto));
 			window.setWidth(800, Unit.PIXELS);
 			window.setCaption(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_create));
 		});

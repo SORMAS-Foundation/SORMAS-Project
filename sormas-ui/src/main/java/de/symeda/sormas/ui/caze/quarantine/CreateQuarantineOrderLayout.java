@@ -27,7 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
 
-public class CreateQuarantineOrderlayout extends VerticalLayout {
+public class CreateQuarantineOrderLayout extends VerticalLayout {
 
 	private final CaseReferenceDto caseReferenceDto;
 
@@ -35,7 +35,7 @@ public class CreateQuarantineOrderlayout extends VerticalLayout {
 	private final VerticalLayout additionalVariablesComponent;
 	private FileDownloader fileDownloader;
 
-	public CreateQuarantineOrderlayout(CaseReferenceDto caseReferenceDto) {
+	public CreateQuarantineOrderLayout(CaseReferenceDto caseReferenceDto) {
 		super();
 		this.caseReferenceDto = caseReferenceDto;
 
