@@ -104,6 +104,17 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 		generateQuarantineOrderTest(contactDto.toReference());
 	}
 
+	@Test
+	public void generateQuarantineOrderWrongRefernceTypeTest() throws IOException {
+		try {
+			generateQuarantineOrderTest(new ReferenceDto() {
+			});
+			fail("Wrong ReferenceDto not recognized");
+		} catch (ValidationException e) {
+			assertEquals("Quarantine can only be issued for cases or contacts.", e.getMessage());
+		}
+	}
+
 	private void generateQuarantineOrderTest(ReferenceDto rootEntityReference) throws ValidationException, IOException {
 		List<String> additionalVariables = quarantineOrderFacadeEjb.getAdditionalVariables("Quarantine.docx");
 		assertEquals(Arrays.asList("other", "supervisor.name", "supervisor.phone", "supervisor.roomNumber"), additionalVariables);
