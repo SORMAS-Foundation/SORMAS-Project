@@ -642,7 +642,7 @@ public class CaseController {
 		bulkEditData.setRegion(region);
 		bulkEditData.setDistrict(district);
 
-		BulkCaseDataForm form = new BulkCaseDataForm(district);
+		BulkCaseDataForm form = new BulkCaseDataForm(district,selectedCases);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView =
 			new CommitDiscardWrapperComponent<BulkCaseDataForm>(form, form.getFieldGroup());

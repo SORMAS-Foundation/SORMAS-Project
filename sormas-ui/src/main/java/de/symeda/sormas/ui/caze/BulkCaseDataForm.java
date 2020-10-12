@@ -17,10 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WARNING;
+import static de.symeda.sormas.ui.utils.CssStyles.TEXTFIELD_ROW;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
@@ -30,6 +38,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,9 +76,9 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String TYPE_LOC = "typeLoc";
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
-	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-
+	private static final String WARNING_ICON = "warningIcon";
+	private static final String WARNING_LABEL = "warningLabel";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
@@ -94,7 +103,9 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 					CaseBulkEditData.DISTRICT,
 					CaseBulkEditData.COMMUNITY) +
 			fluidRowLocs(FACILITY_OR_HOME_LOC,TYPE_GROUP_LOC, TYPE_LOC)+
-			fluidRowLocs(CaseDataDto.HEALTH_FACILITY,CaseBulkEditData.HEALTH_FACILITY_DETAILS);
+					fluidRowLocs(WARNING_ICON)+
+					fluidRowLocs(WARNING_LABEL)+
+					fluidRowLocs(CaseDataDto.HEALTH_FACILITY,BulkCaseDataForm.HEALTH_FACILITY_DETAILS);
 	//@formatter:on
 
 	private final DistrictReferenceDto singleSelectedDistrict;
@@ -110,16 +121,21 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
 	private TextField healthFacilityDetails;
+	private Label warningLabel;
+	private Collection selectedCases;
+	private Image warningIcon;
 
-	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict) {
+
+	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict, Collection<? extends CaseIndexDto> selectedCases) {
 		super(CaseBulkEditData.class, CaseDataDto.I18N_PREFIX);
 		this.singleSelectedDistrict = singleSelectedDistrict;
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 		initialized = true;
+		this.selectedCases = selectedCases;
 		addFields();
 	}
-
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 		if (!initialized) {
@@ -299,7 +315,12 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				}
 			}
 		});
-
+		warningLabel = new Label(I18nProperties.getString(Strings.pseudonymisedCasesSelectedWarning));
+		warningLabel.setContentMode(ContentMode.HTML);
+		CssStyles.style(warningLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE,LABEL_WARNING);
+		warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
+		warningIcon.setHeight(35, Unit.PIXELS);
+		warningIcon.setWidth(35, Unit.PIXELS);
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
@@ -313,7 +334,14 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				if (facilityType.getValue() != null) {
 					updateFacility((DistrictReferenceDto) district.getValue(), (CommunityReferenceDto) community.getValue(), facility);
 				}
+				this.getContent().removeComponent(warningLabel);
 			} else {
+		long pseudonymizedCount = selectedCases.stream().filter(caze->
+								((CaseIndexDto)caze).isPseudonymized()).count();
+		if(pseudonymizedCount>0){
+			this.getContent().addComponent(warningIcon,WARNING_ICON);
+			this.getContent().addComponent(warningLabel,WARNING_LABEL);
+		}
 				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 				facility.addItem(noFacilityRef);
 				facility.setValue(noFacilityRef);
@@ -431,10 +459,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
 
 			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(visibleAndRequired);
 
 			if (otherHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+				tfFacilityDetails.setRequired(visibleAndRequired);
 			}
 			if (noneHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));

@@ -34,7 +34,6 @@ public class CaseBulkEditData extends EntityDto {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
-	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 
 	private Disease disease;
 	private String diseaseDetails;
