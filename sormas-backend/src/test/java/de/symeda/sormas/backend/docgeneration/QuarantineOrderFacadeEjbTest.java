@@ -153,7 +153,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 					+ "Was expecting one of:\n" //
 					+ "    \"[\" ...\n" //
 					+ "    \"}\" ...\n    ";
-			assertEquals(message, e.getMessage());
+			assertEquals(message, e.getMessage().replaceAll("\\r\\n?", "\n"));
 		}
 	}
 
