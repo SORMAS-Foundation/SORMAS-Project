@@ -25,6 +25,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
@@ -170,12 +172,16 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	@Override
 	public void setValue(CampaignDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
-		campaignFormsGridComponent.setSavedItems(new ArrayList<>(newFieldValue.getCampaignFormMetas()));
-		campaignDashboardGridComponent.setSavedItems(
-			newFieldValue.getCampaignDashboardElements()
-				.stream()
-				.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
-				.collect(Collectors.toList()));
+		campaignFormsGridComponent
+			.setSavedItems(newFieldValue.getCampaignFormMetas() != null ? new ArrayList<>(newFieldValue.getCampaignFormMetas()) : new ArrayList<>());
+
+		if (CollectionUtils.isNotEmpty(newFieldValue.getCampaignDashboardElements())) {
+			campaignDashboardGridComponent.setSavedItems(
+				newFieldValue.getCampaignDashboardElements()
+					.stream()
+					.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
+					.collect(Collectors.toList()));
+		}
 	}
 
 	@Override
