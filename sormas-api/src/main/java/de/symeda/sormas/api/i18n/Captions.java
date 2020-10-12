@@ -161,7 +161,6 @@ public interface Captions {
 	String caseConfirmCase = "caseConfirmCase";
 	String caseContacts = "caseContacts";
 	String caseCreateCase = "caseCreateCase";
-	String caseDocuments = "caseDocuments";
 	String CaseData = "CaseData";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_caseClassification = "CaseData.caseClassification";
@@ -276,6 +275,7 @@ public interface Captions {
 	String CaseData_visits = "CaseData.visits";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
+	String caseDocuments = "caseDocuments";
 	String caseEditData = "caseEditData";
 	String caseEvents = "caseEvents";
 	String caseEventsResetDateFilter = "caseEventsResetDateFilter";

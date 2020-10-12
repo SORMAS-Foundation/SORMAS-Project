@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.caze.quarantine;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -10,7 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -18,14 +17,12 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class QuarantineOrderComponent extends VerticalLayout {
 
-	private final CaseReferenceDto caseReferenceDto;
-
+	private final ReferenceDto referenceDto;
 	private final Button createButton;
-	private FileDownloader fileDownloader;
 
-	public QuarantineOrderComponent(CaseReferenceDto caseReferenceDto) {
+	public QuarantineOrderComponent(ReferenceDto caseReferenceDto) {
 		super();
-		this.caseReferenceDto = caseReferenceDto;
+		this.referenceDto = caseReferenceDto;
 
 		Label headerDocgeneration = new Label(I18nProperties.getCaption(Captions.caseDocuments));
 		headerDocgeneration.addStyleName(CssStyles.H3);
@@ -44,7 +41,7 @@ public class QuarantineOrderComponent extends VerticalLayout {
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(VaadinIcons.FILE_TEXT);
 		createButton.addClickListener((Button.ClickListener) clickEvent -> {
-			Window window = VaadinUiUtil.showPopupWindow(new CreateQuarantineOrderLayout(caseReferenceDto));
+			Window window = VaadinUiUtil.showPopupWindow(new CreateQuarantineOrderLayout(referenceDto));
 			window.setWidth(800, Unit.PIXELS);
 			window.setCaption(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_create));
 		});

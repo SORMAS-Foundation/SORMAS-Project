@@ -597,7 +597,6 @@ public interface Strings {
 	String messageImportInvalidColumn = "messageImportInvalidColumn";
 	String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	String messageImportSuccessful = "messageImportSuccessful";
-	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	String messageLaboratoriesArchived = "messageLaboratoriesArchived";
@@ -668,6 +667,7 @@ public interface Strings {
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
+	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRoleCombination = "messageUserRoleCombination";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";

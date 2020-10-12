@@ -41,6 +41,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
+import de.symeda.sormas.ui.caze.quarantine.QuarantineOrderComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -64,6 +65,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String CASE_BUTTONS_LOC = "caseButtons";
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
+	public static final String QUARANTINE_LOC = "quarantine";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
@@ -81,7 +83,8 @@ public class ContactDataView extends AbstractContactView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -208,6 +211,9 @@ public class ContactDataView extends AbstractContactView {
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
+		QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getContactRef());
+		quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(quarantineOrderComponent, QUARANTINE_LOC);
 
 		setContactEditPermission(container);
 	}

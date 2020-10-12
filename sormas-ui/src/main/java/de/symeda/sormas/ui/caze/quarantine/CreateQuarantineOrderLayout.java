@@ -21,7 +21,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -29,15 +29,15 @@ import de.symeda.sormas.api.utils.ValidationException;
 
 public class CreateQuarantineOrderLayout extends VerticalLayout {
 
-	private final CaseReferenceDto caseReferenceDto;
+	private final ReferenceDto caseReferenceDto;
 
 	private final Button createButton;
 	private final VerticalLayout additionalVariablesComponent;
 	private FileDownloader fileDownloader;
 
-	public CreateQuarantineOrderLayout(CaseReferenceDto caseReferenceDto) {
+	public CreateQuarantineOrderLayout(ReferenceDto referenceDto) {
 		super();
-		this.caseReferenceDto = caseReferenceDto;
+		this.caseReferenceDto = referenceDto;
 
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
@@ -110,7 +110,7 @@ public class CreateQuarantineOrderLayout extends VerticalLayout {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 			try {
 				return new ByteArrayInputStream(
-					quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto.getUuid(), readAdditionalVariables()));
+					quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto, readAdditionalVariables()));
 			} catch (ValidationException e) {
 				e.printStackTrace();
 				// Notification

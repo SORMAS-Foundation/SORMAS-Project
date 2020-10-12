@@ -5,12 +5,13 @@ import java.util.Properties;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.ValidationException;
 
 @Remote
 public interface QuarantineOrderFacade {
 
-	byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties) throws ValidationException;
+	byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws ValidationException;
 
 	byte[] getTemplate(String templateName) throws ValidationException;
 

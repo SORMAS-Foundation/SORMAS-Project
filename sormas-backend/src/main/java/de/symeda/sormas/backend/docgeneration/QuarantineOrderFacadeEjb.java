@@ -23,11 +23,13 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.EntityDtoAccessHelper.CachedReferenceDtoResolver;
 import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,6 +43,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -61,6 +64,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
 
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
@@ -87,8 +93,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 
 	@Override
-	public byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties) throws ValidationException {
-		logger.trace("Generate {} for case {}", templateName, caseUuid);
+	public byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws ValidationException {
+		String rootEntityUuid = rootEntityReference.getUuid();
+		logger.trace("Generate {} for case {}{}", templateName, rootEntityReference.getClass().getSimpleName(), rootEntityUuid);
 
 		// 1. Read template from custom directory
 		File templateFile = getTemplateFile(templateName);
@@ -107,7 +114,15 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 		IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
 
-		CaseDataDto caseData = caseFacade.getCaseDataByUuid(caseUuid);
+		EntityDto caseData;
+		if (rootEntityReference instanceof CaseReferenceDto) {
+			caseData = caseFacade.getCaseDataByUuid(rootEntityUuid);
+		} else if (rootEntityReference instanceof ContactReferenceDto) {
+			caseData = contactFacade.getContactByUuid(rootEntityUuid);
+		} else {
+			throw new ValidationException("Quarantine can only be issued for cases or contacts.");
+		}
+
 		if (caseData != null) {
 			for (String propertyKey : propertyKeys) {
 				if (isEntityVariable(propertyKey)) {
