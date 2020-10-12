@@ -770,6 +770,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				getFieldGroup().getField(symptomId).setValue(null);
 			}
 			getFieldGroup().getField(SYMPTOMATIC).setValue(null);
+			onsetDateField.setValue(null);
 		}, ValoTheme.BUTTON_LINK);
 
 		Button setEmptyToNoButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToNo, SymptomState.NO);
@@ -1032,6 +1033,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					onsetDateField.setVisible(true);
 					onsetSymptom.setVisible(true);
 				}
+			} else {
+				onsetDateField.setVisible(true);
+				onsetSymptom.setVisible(true);
 			}
 		});
 	}

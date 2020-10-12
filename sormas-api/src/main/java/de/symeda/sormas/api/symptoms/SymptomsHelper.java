@@ -197,9 +197,9 @@ public final class SymptomsHelper {
 		}
 
 		if (dto.getSymptomatic() == YesNoUnknown.UNKNOWN) {
-			dto.setSymptomatic(YesNoUnknown.UNKNOWN);
+			return;
 		} else if (dto.getSymptomatic() == YesNoUnknown.NO) {
-			dto.setSymptomatic(YesNoUnknown.NO);
+			return;
 		} else {
 			dto.setSymptomatic(null);
 		}
