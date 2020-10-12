@@ -30,7 +30,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 
 		addDownloadResourcesComponent(
 			1,
-			new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"),
+			new ClassResource("/SORMAS_Document_Template_Guide.pdf"),
 			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 
 		DocumentTemplateReceiver receiver = new DocumentTemplateReceiver();
