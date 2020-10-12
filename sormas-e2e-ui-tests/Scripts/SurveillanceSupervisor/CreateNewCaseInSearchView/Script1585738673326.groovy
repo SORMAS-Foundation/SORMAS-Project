@@ -3,10 +3,11 @@ import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 
 import org.openqa.selenium.Keys
 
-import com.hzi.Table
-import com.hzi.TableContent
+import org.openqa.selenium.Keys as Keys
+import com.hzi.Table as Table
+import com.hzi.TableContent as TableContent
 import com.hzi.TestDataConnector as TestDataConnector
-import com.kms.katalon.core.exception.StepFailedException
+import com.kms.katalon.core.exception.StepFailedException as StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
@@ -29,7 +30,9 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/td_Voreingestellter Landkre
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCaseView/td_Voreingestellte Gesundheitseinrichtung'))
+WebUI.check(findTestObject('Surveillance/NewCaseView/span_Home'))
+
+WebUI.setText(findTestObject('Surveillance/NewCaseView/input_Place description_healthFacilityDetails'), 'own home')
 
 String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_case')
 

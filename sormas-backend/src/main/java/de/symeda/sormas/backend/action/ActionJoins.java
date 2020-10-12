@@ -29,13 +29,14 @@ public class ActionJoins extends AbstractDomainObjectJoins<Action, Action> {
 
 	private Join<Action, Event> event;
 	private Join<Action, User> creator;
+	private Join<Action, User> replyingUser;
 
 	public ActionJoins(From<Action, Action> root) {
 		super(root);
 	}
 
-	public Join<Action, Event> getEvent() {
-		return getOrCreate(event, Action.EVENT, JoinType.LEFT, this::setEvent);
+	public Join<Action, Event> getEvent(JoinType joinType) {
+		return getOrCreate(event, Action.EVENT, joinType, this::setEvent);
 	}
 
 	private void setEvent(Join<Action, Event> event) {
@@ -48,5 +49,13 @@ public class ActionJoins extends AbstractDomainObjectJoins<Action, Action> {
 
 	private void setCreator(Join<Action, User> creator) {
 		this.creator = creator;
+	}
+
+	public Join<Action, User> getReplyingUser() {
+		return getOrCreate(creator, Action.REPLYING_USER, JoinType.LEFT, this::setReplyingUser);
+	}
+
+	private void setReplyingUser(Join<Action, User> replyingUser) {
+		this.replyingUser = replyingUser;
 	}
 }

@@ -39,6 +39,9 @@
         <import type="de.symeda.sormas.api.caze.HospitalWardType" />
         <import type="de.symeda.sormas.api.contact.QuarantineType" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
+        <import type="de.symeda.sormas.api.caze.QuarantineReason" />
+        <import type="de.symeda.sormas.api.caze.CovidTestReason" />
+        <import type="de.symeda.sormas.api.caze.EndOfIsolationReason" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
@@ -78,6 +81,12 @@
                         android:id="@+id/caseData_externalID"
                         app:value="@={data.externalID}"
                         style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_caseIdIsm"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.caseIdIsm}"
+                    app:inputType="number" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                         android:id="@+id/caseData_clinicalConfirmation"
@@ -285,7 +294,6 @@
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/facilityOrHome"
                         app:caption="@string/caption_facility_or_home"
-                        app:required="true"
                         app:userEditRight="@{UserRight.CASE_TRANSFER}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
@@ -329,7 +337,6 @@
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_healthFacilityDetails"
                     app:value="@={data.healthFacilityDetails}"
-                    app:required="true"
                     app:userEditRight="@{UserRight.CASE_TRANSFER}"
                     style="@style/ControlSingleColumnStyle" />
 
@@ -469,6 +476,77 @@
                     app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
                     app:value="@={data.quarantineHelpNeeded}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_quarantineReasonBeforeIsolation"
+                    app:value="@={data.quarantineReasonBeforeIsolation}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_quarantineReasonBeforeIsolationDetails"
+                    app:dependencyParentField="@{caseDataQuarantineReasonBeforeIsolation}"
+                    app:dependencyParentValue="@{QuarantineReason.OTHER_REASON}"
+                    app:value="@={data.quarantineReasonBeforeIsolationDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_endOfIsolationReason"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.endOfIsolationReason}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_endOfIsolationReasonDetails"
+                    app:dependencyParentField="@{caseDataEndOfIsolationReason}"
+                    app:dependencyParentValue="@{EndOfIsolationReason.OTHER}"
+                    app:value="@={data.endOfIsolationReasonDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView
+                    android:id="@+id/caseData_covidTestReasonDivider"
+                    style="@style/FullHorizontalDividerStyle"
+                    android:visibility="gone" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_covidTestReason"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.covidTestReason}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_covidTestReasonDetails"
+                    app:dependencyParentField="@{caseDataCovidTestReason}"
+                    app:dependencyParentValue="@{CovidTestReason.OTHER_REASON}"
+                    app:value="@={data.covidTestReasonDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView
+                    android:id="@+id/caseData_contactTracingDivider"
+                    style="@style/FullHorizontalDividerStyle"
+                    android:visibility="gone" />
+
+                <TextView
+                    style="@style/SubHeadingStyle"
+                    android:id="@+id/caseData_contactTracingFirstContactHeading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_contact_tracing_first_contact"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/caseData_contactTracingFirstContactType"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@={data.contactTracingFirstContactType}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/caseData_contactTracingFirstContactDate"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@={data.contactTracingFirstContactDate}" />
+
+                </LinearLayout>
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import elemental.json.JsonValue;
+import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class GridButtonRenderer extends HtmlRenderer {
@@ -33,7 +34,7 @@ public class GridButtonRenderer extends HtmlRenderer {
 			//@formatter:off
     		value = "<div class='v-button v-widget primary v-button-primary' tabindex='0' role='button'>"
     				+ "<span class='v-button-wrap'>"
-    				+ "<span class='v-button-caption'>" + value + "</span></span></div>";
+    				+ "<span class='v-button-caption'>" + StringEscapeUtils.escapeHtml4(value) + "</span></span></div>";
 //	    	value = "<a class='v-button v-button-primary' title='" + value + "'>" + value + "</a>";
     		//@formatter:on
 

@@ -17,20 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
-
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -45,13 +37,22 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
@@ -120,7 +121,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		TextArea creatorComment = addField(TaskDto.CREATOR_COMMENT, TextArea.class);
 		creatorComment.setRows(2);
 		creatorComment.setImmediate(true);
-		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(2);
+		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(4);
 
 		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
 		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
@@ -187,10 +188,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					false,
 					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
 
-			TaskController taskController = ControllerProvider.getTaskController();
+			Map<String, Long> userTaskCounts = FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(users.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 			for (UserReferenceDto user : users) {
 				assigneeUser.addItem(user);
-				assigneeUser.setItemCaption(user, taskController.getUserCaptionWithPendingTaskCount(user));
+				Long userTaskCount = userTaskCounts.get(user.getUuid());
+				assigneeUser.setItemCaption(user, user.getCaption() + " (" + (userTaskCount != null ? userTaskCount.toString() : "0") + ")");
 			}
 		});
 	}

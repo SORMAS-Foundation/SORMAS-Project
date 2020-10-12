@@ -1,6 +1,10 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import com.vaadin.ui.renderers.TextRenderer;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -8,9 +12,9 @@ import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-
-import java.util.List;
-import java.util.stream.Stream;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
@@ -28,6 +32,15 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	@Override
 	protected Stream<String> getGridColumns() {
 		return Stream.concat(super.getGridColumns(), Stream.of(CaseIndexDetailedDto.REPORTING_USER));
+	}
+
+	@Override
+	public Stream<String> getEventColumns() {
+		return Stream.of(
+			CaseIndexDetailedDto.EVENT_COUNT,
+			CaseIndexDetailedDto.LATEST_EVENT_ID,
+			CaseIndexDetailedDto.LATEST_EVENT_STATUS,
+			CaseIndexDetailedDto.LATEST_EVENT_TITLE);
 	}
 
 	@Override
@@ -59,6 +72,16 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 		getColumn(CaseIndexDetailedDto.ADDITIONAL_INFORMATION).setWidth(200);
 		getColumn(CaseIndexDetailedDto.POSTAL_CODE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.PHONE).setWidth(100);
+		getColumn(CaseIndexDetailedDto.EVENT_COUNT).setWidth(80).setSortable(false);
+		getColumn(CaseIndexDetailedDto.LATEST_EVENT_ID).setWidth(80).setSortable(false);
+		getColumn(CaseIndexDetailedDto.LATEST_EVENT_STATUS).setWidth(80).setSortable(false);
+		getColumn(CaseIndexDetailedDto.LATEST_EVENT_TITLE).setWidth(150).setSortable(false);
+
+		((Column<CaseIndexDetailedDto, String>) getColumn(CaseIndexDetailedDto.LATEST_EVENT_ID)).setRenderer(new UuidRenderer());
+		addItemClickListener(
+			new ShowDetailsListener<>(
+				CaseIndexDetailedDto.LATEST_EVENT_ID,
+				c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
 
 		((Column<CaseIndexDetailedDto, AgeAndBirthDateDto>) getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE)).setRenderer(
 			value -> value == null

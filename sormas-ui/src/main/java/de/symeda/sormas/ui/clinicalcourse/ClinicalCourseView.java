@@ -140,13 +140,13 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 		container.addComponent(createClinicalVisitsHeader());
 
-		clinicalVisitGrid = new ClinicalVisitGrid(getCaseRef(), isCaseEditAllowed());
+		clinicalVisitGrid = new ClinicalVisitGrid(getCaseRef(), caze.isPseudonymized());
 		clinicalVisitGrid.setCriteria(clinicalVisitCriteria);
 		clinicalVisitGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
 		container.addComponent(clinicalVisitGrid);
 
-		editComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid(), isCaseEditAllowed());
+		editComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid());
 		editComponent.setMargin(false);
 		container.addComponent(editComponent);
 
