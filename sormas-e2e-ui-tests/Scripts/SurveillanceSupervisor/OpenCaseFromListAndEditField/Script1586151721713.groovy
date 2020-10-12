@@ -17,7 +17,7 @@ String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_cas
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPersonName'), [('personName') : (firstName + 
         ' ') + lastName], FailureHandling.STOP_ON_FAILURE)
 
-// Switch to tab "Symttoms"
+// Switch to tab "Symptoms"
 WebUI.click(findTestObject('Surveillance/CaseView/div_Symptoms_tab'))
 
 // Set random text in "comment" field
