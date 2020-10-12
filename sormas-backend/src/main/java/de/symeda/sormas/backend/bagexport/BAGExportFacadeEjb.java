@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -39,6 +40,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.location.Location;
@@ -71,7 +73,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 
 		Join<Case, Person> person = caseCaseJoins.getPerson();
 
-		Expression<String> TODO = cb.literal(TODO_VALUE);
+		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
 
 		cq.multiselect(
 			caseRoot.get(Case.CASE_ID_ISM),
@@ -80,7 +82,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.LAST_NAME),
 			person.get(Person.FIRST_NAME),
 			person.get(Person.PHONE),
-			TODO,
+			mobileNumber,
 			person.get(Person.EMAIL_ADDRESS),
 			person.get(Person.SEX),
 			person.get(Person.BIRTHDATE_DD),
@@ -136,7 +138,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			Root<Sample> samplesRoot = samplesCq.from(Sample.class);
 
 			Path<Object> caseIdExpr = samplesRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(Case.ID);
-			samplesCq.where(caseIdExpr.in(caseIdIds)).orderBy(cb.desc(samplesRoot.get(Sample.REPORT_DATE_TIME)));
+			samplesCq.where(caseIdExpr.in(caseIdIds)).orderBy(cb.asc(samplesRoot.get(Sample.REPORT_DATE_TIME)));
 
 			List<Sample> samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 			samples.putAll(samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId())));
@@ -181,17 +183,29 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 
 			List<Sample> caseSamples = samples.get(caze.getCaseId());
 			if (caseSamples != null && caseSamples.size() > 0) {
-				Sample newestSample = caseSamples.get(0);
-				caze.setSampleDate(newestSample.getSampleDateTime());
-				newestSample.getPathogenTests().stream().max(Comparator.comparing(PathogenTest::getTestDateTime)).ifPresent(pathogenTest -> {
-					caze.setLabReportDate(pathogenTest.getTestDateTime());
-					caze.setTestType(pathogenTest.getTestType());
-					caze.setTestResult(pathogenTest.getTestResult());
-				});
+				Sample firstSample = caseSamples.get(0);
+				caze.setSampleDate(firstSample.getSampleDateTime());
+
+				List<PathogenTest> sortedTests =
+					firstSample.getPathogenTests().stream().sorted(Comparator.comparing(PathogenTest::getTestDateTime)).collect(Collectors.toList());
+
+				Optional<PathogenTest> positiveTest =
+					sortedTests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE).findFirst();
+				if (positiveTest.isPresent()) {
+					setExportTestData(caze, positiveTest.get());
+				} else if (sortedTests.size() > 0) {
+					setExportTestData(caze, sortedTests.get(0));
+				}
 			}
 		});
 
 		return exportList;
+	}
+
+	private void setExportTestData(BAGExportCaseDto caze, PathogenTest test) {
+		caze.setLabReportDate(test.getTestDateTime());
+		caze.setTestType(test.getTestType());
+		caze.setTestResult(test.getTestResult());
 	}
 
 	@LocalBean
