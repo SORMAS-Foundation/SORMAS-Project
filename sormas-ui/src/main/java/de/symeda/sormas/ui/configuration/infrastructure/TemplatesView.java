@@ -22,13 +22,10 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -47,8 +44,6 @@ public class TemplatesView extends AbstractConfigurationView {
 	private QuarantineTemplatesGrid Qgrid;
 	protected Button uploadButton;
 
-	private MenuBar bulkOperationsDropdown;
-
 	public TemplatesView() {
 
 		super(VIEW_NAME);
@@ -64,9 +59,6 @@ public class TemplatesView extends AbstractConfigurationView {
 		QuarantineTemplatesLabel.addStyleName(H3);
 		gridLayout.addComponent(QuarantineTemplatesLabel);
 		gridLayout.addComponent(Qgrid);
-		Label emptyRow = new Label(" ");
-		emptyRow.setHeight("10px");
-		gridLayout.addComponent(emptyRow); // add some spacing
 		gridLayout.addComponent(buildUploadButton());
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
@@ -76,17 +68,7 @@ public class TemplatesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		// maybe use another permission here
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
-			uploadButton = ButtonHelper.createIconButton("i18n upload", VaadinIcons.UPLOAD, e -> {
-				Window window = VaadinUiUtil.showPopupWindow(new TemplateUploadLayout());
-				window.setCaption("i18n string");
-				window.addCloseListener(c -> {
-					Qgrid.reload();
-				});
-			}, ValoTheme.BUTTON_PRIMARY);
-			addHeaderComponent(uploadButton);
-		}
+		addHeaderComponent(buildUploadButton());
 
 		addComponent(gridLayout);
 	}

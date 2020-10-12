@@ -119,8 +119,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				region != null ? region.getUuid() : null,
 				false);
 		}
-		// Add permission checks here
-		if (true) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			menu.addView(
 				TemplatesView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", TemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -158,11 +157,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
 		//		}
 
-		// check permissions here!
 		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
 		}
-		if (true) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(TemplatesView.VIEW_NAME, TemplatesView.class);
 		}
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {

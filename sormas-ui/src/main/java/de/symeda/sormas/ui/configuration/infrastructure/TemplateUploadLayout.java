@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import com.vaadin.server.ClassResource;
-import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Upload;
 
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
@@ -17,10 +16,6 @@ public class TemplateUploadLayout extends AbstractImportLayout {
 	public TemplateUploadLayout() {
 
 		super();
-
-		DateField dfCollectionDate = new DateField();
-
-		String fileNameAddition = "_district_import_";
 
 		addDownloadResourcesComponent(
 			1,
