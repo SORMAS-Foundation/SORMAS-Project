@@ -31,7 +31,14 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.configuration.infrastructure.*;
+import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
+import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
+import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
+import de.symeda.sormas.ui.configuration.infrastructure.PopulationDataView;
+import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.infrastructure.TemplatesView;
 import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
@@ -89,11 +96,6 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				I18nProperties.getPrefixCaption("View", PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				null,
 				false);
-			menu.addView(
-					TemplatesView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", TemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
 				menu.addView(
@@ -109,19 +111,27 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		//		}
 
-		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			menu.addView(
-				DevModeView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
-		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
 			menu.addView(
 				LineListingConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				region != null ? region.getUuid() : null,
+				false);
+		}
+		// Add permission checks here
+		if (true) {
+			menu.addView(
+				TemplatesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", TemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+		}
+		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+			menu.addView(
+				DevModeView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
 				false);
 		}
 	}
@@ -138,7 +148,6 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
 			navigator.addView(FacilitiesView.VIEW_NAME, FacilitiesView.class);
 			navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
-			navigator.addView(TemplatesView.VIEW_NAME, TemplatesView.class);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
 				navigator.addView(PopulationDataView.VIEW_NAME, PopulationDataView.class);
@@ -149,12 +158,15 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
 		//		}
 
-		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
-		}
-
+		// check permissions here!
 		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
+		}
+		if (true) {
+			navigator.addView(TemplatesView.VIEW_NAME, TemplatesView.class);
+		}
+		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
 		}
 	}
 

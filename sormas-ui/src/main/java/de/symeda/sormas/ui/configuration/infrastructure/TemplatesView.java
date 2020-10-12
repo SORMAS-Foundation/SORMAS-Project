@@ -27,7 +27,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -46,7 +45,7 @@ public class TemplatesView extends AbstractConfigurationView {
 
 	private VerticalLayout gridLayout;
 	private QuarantineTemplatesGrid Qgrid;
-	protected Button importButton;
+	protected Button uploadButton;
 
 	private MenuBar bulkOperationsDropdown;
 
@@ -58,33 +57,49 @@ public class TemplatesView extends AbstractConfigurationView {
 
 		gridLayout = new VerticalLayout();
 
-		// Add Quarantine Template Grid
+		// Add Quarantine Template Section
 		Qgrid = new QuarantineTemplatesGrid();
+		Qgrid.setWidth("500px"); // Remove this line to fit whole page
 		Label QuarantineTemplatesLabel = new Label("Quarantine Templates (i18n required)");
 		QuarantineTemplatesLabel.addStyleName(H3);
 		gridLayout.addComponent(QuarantineTemplatesLabel);
 		gridLayout.addComponent(Qgrid);
+		Label emptyRow = new Label(" ");
+		emptyRow.setHeight("10px");
+		gridLayout.addComponent(emptyRow); // add some spacing
+		gridLayout.addComponent(buildUploadButton());
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
-		gridLayout.setExpandRatio(Qgrid, 1);
+		gridLayout.setExpandRatio(Qgrid, 1); // Ensure that everything stays at the top
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
+		// maybe use another permission here
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
-			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
-				Window window = VaadinUiUtil.showPopupWindow(new TemplateImportLayout());
+			uploadButton = ButtonHelper.createIconButton("i18n upload", VaadinIcons.UPLOAD, e -> {
+				Window window = VaadinUiUtil.showPopupWindow(new TemplateUploadLayout());
 				window.setCaption("i18n string");
 				window.addCloseListener(c -> {
 					Qgrid.reload();
 				});
 			}, ValoTheme.BUTTON_PRIMARY);
-
-			addHeaderComponent(importButton);
+			addHeaderComponent(uploadButton);
 		}
 
 		addComponent(gridLayout);
+	}
+
+	Button buildUploadButton() {
+		Button newBut = ButtonHelper.createIconButton("i18n upload", VaadinIcons.UPLOAD, e -> {
+			Window window = VaadinUiUtil.showPopupWindow(new TemplateUploadLayout());
+			window.setCaption("i18n string");
+			window.addCloseListener(c -> {
+				Qgrid.reload();
+			});
+		}, ValoTheme.BUTTON_PRIMARY);
+		return newBut;
 	}
 
 }

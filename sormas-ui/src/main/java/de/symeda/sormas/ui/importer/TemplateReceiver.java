@@ -36,28 +36,21 @@ public class TemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 		// Reject empty files
 		if (fileName == null || fileName.isEmpty()) {
 			file = null;
-			new Notification(
-				I18nProperties.getString(Strings.headingNoFile),
-				I18nProperties.getString(Strings.messageNoCsvFile), // i18n required
-				Notification.Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
+			new Notification("i18n error", "i18n error", Notification.Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 			// Workaround because returning null here throws an uncatchable UploadException
 			return new ByteArrayOutputStream();
 		}
 
 		try {
 			// this seems wrong
-			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_template_import" + DateHelper.formatDateForExport(new Date()) + "_"
+			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_template_upload" + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".docx";
 			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 			fos = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
 			file = null;
-			new Notification(
-				I18nProperties.getString(Strings.headingImportError),
-				I18nProperties.getString(Strings.messageImportFailed),
-				Notification.Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
+			new Notification("i18n import failed header", "i18n import failed content", Notification.Type.ERROR_MESSAGE, false)
+				.show(Page.getCurrent());
 			// Workaround because returning null here throws an uncatchable UploadException
 			return new ByteArrayOutputStream();
 		}
@@ -107,8 +100,8 @@ public class TemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 			} catch (IOException e) {
 				e.printStackTrace();
 				new Notification(
-					I18nProperties.getString(Strings.headingImportFailed),
-					I18nProperties.getString(Strings.messageImportFailed),
+					"I18nProperties.getString(Strings.headingImportFailed)",
+					"I18nProperties.getString(Strings.messageImportFailed)",
 					Notification.Type.ERROR_MESSAGE,
 					false).show(Page.getCurrent());
 				return;

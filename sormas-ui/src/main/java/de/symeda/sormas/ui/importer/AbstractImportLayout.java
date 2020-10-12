@@ -102,18 +102,6 @@ public class AbstractImportLayout extends VerticalLayout {
 		addComponent(upload);
 	}
 
-	protected void addImportTemplateComponent(int step, TemplateReceiver receiver) {
-		String headline = "i18nheadline";
-		String infoText = "i18nInfotext WARNING: Importing new Documents might override existing Documents with identical Names!";
-		ImportLayoutComponent importTemplateComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
-		addComponent(importTemplateComponent);
-		upload = new Upload("", receiver);
-		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
-		CssStyles.style(upload, CssStyles.VSPACE_2);
-		upload.addSucceededListener(receiver);
-		addComponent(upload);
-	}
-
 	protected void addDownloadErrorReportComponent(int step) {
 		String headline = I18nProperties.getString(Strings.headingDownloadErrorReport);
 		String infoText = I18nProperties.getString(Strings.infoDownloadErrorReport);
