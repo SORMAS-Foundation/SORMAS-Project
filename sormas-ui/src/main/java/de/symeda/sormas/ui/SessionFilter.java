@@ -28,6 +28,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -65,6 +66,11 @@ public class SessionFilter implements Filter {
 		}
 		I18nProperties.setUserLanguage(userLanguage);
 		BaseControllerProvider.requestStart(controllerProvider);
+
+		final HttpServletResponse res = (HttpServletResponse)response;
+		res.addHeader("X-Content-Type-Options", "nosniff" );
+		res.addHeader("X-Frame-Options", "SAMEORIGIN" );
+		res.addHeader("Referrer-Policy", "same-origin" );
 
 		try {
 			sessionFilterBean.doFilter(chain, request, response);

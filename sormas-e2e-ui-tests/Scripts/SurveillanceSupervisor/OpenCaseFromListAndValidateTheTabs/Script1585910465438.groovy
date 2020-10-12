@@ -1,6 +1,5 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
@@ -26,13 +25,14 @@ WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/SymptomsTab/inp
 
 WebUI.click(findTestObject('Surveillance/CaseView/div_Epidemiological data_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/i_EpidemiologicalData_description_text'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/i_EpidemiologicalData_description_text'), 
+    3)
 
-WebUI.click(findTestObject('Surveillance/CaseView/div_Follow-up tab for cases'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Follow-up_tab'))
 
 WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/div_Export'), 3)
 
-WebUI.click(findTestObject('Contacts/CasesView/div_Contacts tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Contacts_tab'))
 
 WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/div_New contact'), 3)
 
