@@ -403,7 +403,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	 */
 	private void cleanUp(Person person) {
 
-		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE || person.getPresentCondition() == PresentCondition.UNKNOWN) {
+		if (person.getPresentCondition() == null
+			|| person.getPresentCondition() == PresentCondition.ALIVE
+			|| person.getPresentCondition() == PresentCondition.UNKNOWN) {
 			person.setDeathDate(null);
 			person.setCauseOfDeath(null);
 			person.setCauseOfDeathDisease(null);

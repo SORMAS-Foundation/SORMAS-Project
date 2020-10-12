@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.externaljournal;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +17,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.person.PersonFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
@@ -30,6 +33,7 @@ import com.google.common.collect.ImmutableMap;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.api.person.PersonFacade;
 
 @Stateless
 @LocalBean
@@ -43,9 +47,12 @@ public class ExternalJournalService {
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private PersonFacade personFacade;
 
 	/**
 	 * Retrieves a token used for authenticating in the symptom journal. The token will be cached.
+	 * 
 	 * @return the authentication token
 	 */
 	public String getSymptomJournalAuthToken() {
@@ -91,6 +98,7 @@ public class ExternalJournalService {
 
 	/**
 	 * Retrieves a token used for authenticating in the patient diary. The token will be cached.
+	 * 
 	 * @return the authentication token
 	 */
 	public String getPatientDiaryAuthToken() {
@@ -138,9 +146,31 @@ public class ExternalJournalService {
 	}
 
 	/**
+	 * Notify external journals that a followUpUntilDate has been updated
+	 *
+	 * @param contact
+	 *            a contact assigned to a person already available in the external journal
+	 * 
+	 */
+	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact) {
+		Date latestSavedFollowUpUntilDate = personFacade.getLatestFollowUpEndDateByUuid(contact.getPerson().getUuid());
+		if (contact.getFollowUpUntil().after(latestSavedFollowUpUntilDate)) {
+			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+				notifySymptomJournal(contact.getPerson().getUuid());
+			}
+			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+				notifyPatientDiary(contact.getPerson().getUuid());
+			}
+		}
+	}
+
+	/**
 	 * Notify external journals that a person has been updated
-	 * @param existingPerson the person already available in the external journal
-	 * @param updatedPerson the updated person in SORMAS
+	 * 
+	 * @param existingPerson
+	 *            the person already available in the external journal
+	 * @param updatedPerson
+	 *            the updated person in SORMAS
 	 */
 	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
 		if (shouldNotify(existingPerson, updatedPerson)) {
@@ -153,6 +183,10 @@ public class ExternalJournalService {
 		}
 	}
 
+	/**
+	 * Note: This method just checks for changes in the Person data.
+	 * It can not check for Contact related data such as FollowUpUntil dates.
+	 */
 	private boolean shouldNotify(PersonDto existingPerson, PersonDto updatedPerson) {
 		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(existingPerson.getSymptomJournalStatus())
 			|| SymptomJournalStatus.REGISTERED.equals(existingPerson.getSymptomJournalStatus());
