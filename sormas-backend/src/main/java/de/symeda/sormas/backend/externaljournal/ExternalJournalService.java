@@ -327,7 +327,10 @@ public class ExternalJournalService {
 				logger.warn("NumberParseException was thrown: " + e.toString());
 			}
 		}
-		boolean validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+		boolean validBirthdate = true;
+		if (ObjectUtils.anyNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY())) {
+			validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+		}
 		return (validEmail || validPhone) && validBirthdate;
 	}
 }
