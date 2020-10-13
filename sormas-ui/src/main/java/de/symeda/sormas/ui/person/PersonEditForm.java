@@ -44,6 +44,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.data.validator.EmailValidator;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -77,6 +78,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -253,10 +255,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.OCCUPATION_TYPE,
 			PersonDto.OCCUPATION_DETAILS,
 			PersonDto.EDUCATION_TYPE,
-			PersonDto.EDUCATION_DETAILS,
-			PersonDto.PHONE,
-			PersonDto.PHONE_OWNER,
-			PersonDto.EMAIL_ADDRESS,
+			PersonDto.EDUCATION_DETAILS);
+
+		TextField phoneNumber = addField(PersonDto.PHONE, TextField.class);
+		addField(PersonDto.PHONE_OWNER, TextField.class);
+		TextField emailAddress = addField(PersonDto.EMAIL_ADDRESS, TextField.class);
+
+		addFields(
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.NATIONAL_HEALTH_ID,
 			PersonDto.EXTERNAL_ID);
@@ -403,6 +408,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
+
+		phoneNumber.addValidator(
+			new PhoneNumberValidator(
+				I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
+
+		emailAddress.addValidator(
+			new EmailValidator(
+				I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
 
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
