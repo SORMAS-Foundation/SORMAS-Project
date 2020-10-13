@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
@@ -33,7 +33,6 @@ import com.google.common.collect.ImmutableMap;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.api.person.PersonFacade;
 
 @Stateless
 @LocalBean
@@ -48,7 +47,7 @@ public class ExternalJournalService {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
-	private PersonFacade personFacade;
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 
 	/**
 	 * Retrieves a token used for authenticating in the symptom journal. The token will be cached.
