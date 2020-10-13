@@ -21,6 +21,7 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
@@ -79,6 +80,9 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setAdditionalInformation(source.getAdditionalInformation());
 		target.setAddressType(source.getAddressType());
 		target.setAddressTypeDetails(source.getAddressTypeDetails());
+		target.setFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getFacility()));
+		target.setFacilityDetails(source.getFacilityDetails());
+		target.setFacilityType(source.getFacilityType());
 	}
 
 	@Override
@@ -115,5 +119,8 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setAdditionalInformation(source.getAdditionalInformation());
 		target.setAddressType(source.getAddressType());
 		target.setAddressTypeDetails(source.getAddressTypeDetails());
+		target.setFacility(FacilityDtoHelper.toReferenceDto(source.getFacility()));
+		target.setFacilityDetails(source.getFacilityDetails());
+		target.setFacilityType(source.getFacilityType());
 	}
 }

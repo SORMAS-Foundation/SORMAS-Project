@@ -143,4 +143,6 @@ public class CampaignFormDataDto extends EntityDto {
 	public void setCreatingUser(UserReferenceDto creatingUser) {
 		this.creatingUser = creatingUser;
 	}
+
+
 }

@@ -105,6 +105,10 @@ public interface Strings {
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
+	String confirmationRemoveGridRowCancel = "confirmationRemoveGridRowCancel";
+	String confirmationRemoveGridRowConfirm = "confirmationRemoveGridRowConfirm";
+	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
+	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
@@ -142,7 +146,6 @@ public interface Strings {
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPrescription = "entityPrescription";
 	String entityPrescriptions = "entityPrescriptions";
-	String entityQuarantineOrder = "entityQuarantineOrder";
 	String entityRegion = "entityRegion";
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
@@ -165,6 +168,14 @@ public interface Strings {
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorSetFeverRequired = "errorSetFeverRequired";
+	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
+	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
+	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
+	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
+	String errorSormasToSormasResult = "errorSormasToSormasResult";
+	String errorSormasToSormasSend = "errorSormasToSormasSend";
+	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String fileName = "fileName";
@@ -180,6 +191,8 @@ public interface Strings {
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
+	String headingCampaignBasics = "headingCampaignBasics";
+	String headingCampaignDashboard = "headingCampaignDashboard";
 	String headingCampaignData = "headingCampaignData";
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseData = "headingCaseData";
@@ -469,6 +482,7 @@ public interface Strings {
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
+	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
@@ -589,6 +603,8 @@ public interface Strings {
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
 	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
+	String messageGdpr = "messageGdpr";
+	String messageGdprCheck = "messageGdprCheck";
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
 	String messageImportError = "messageImportError";
@@ -667,7 +683,6 @@ public interface Strings {
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
-	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRoleCombination = "messageUserRoleCombination";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
@@ -778,6 +793,9 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
+	String SurvnetGateway_notificationEntryNotSent = "SurvnetGateway.notificationEntryNotSent";
+	String SurvnetGateway_notificationEntrySent = "SurvnetGateway.notificationEntrySent";
+	String SurvnetGateway_notificationErrorSending = "SurvnetGateway.notificationErrorSending";
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";

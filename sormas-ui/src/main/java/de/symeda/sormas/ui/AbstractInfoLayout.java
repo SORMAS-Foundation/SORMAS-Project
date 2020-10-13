@@ -21,8 +21,8 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public abstract class AbstractInfoLayout<T> extends HorizontalLayout {
 

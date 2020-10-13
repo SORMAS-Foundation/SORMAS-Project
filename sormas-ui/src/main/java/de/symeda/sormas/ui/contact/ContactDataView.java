@@ -44,6 +44,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.caze.quarantine.QuarantineOrderComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
+import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -51,7 +52,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -66,6 +66,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String CASE_BUTTONS_LOC = "caseButtons";
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
+	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 	public static final String QUARANTINE_LOC = "quarantine";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
@@ -85,6 +86,7 @@ public class ContactDataView extends AbstractContactView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -98,16 +100,16 @@ public class ContactDataView extends AbstractContactView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		Boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
-		editComponent =
-			ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, isInJurisdiction);
+		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+
+		editComponent = ControllerProvider.getContactController()
+			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 		if (contactDto.getCaze() != null) {
 			layout.addComponent(createCaseInfoLayout(contactDto.getCaze().getUuid()), CASE_LOC);
 		}
@@ -213,8 +215,21 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
+		VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+		sormasToSormasLocLayout.setMargin(false);
+		sormasToSormasLocLayout.setSpacing(false);
+
+		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null) {
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, sormasToSormasfeatureEnabled);
+			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
+
+			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+		}
+
 		if ((contactDto.getQuarantine() == QuarantineType.HOME || contactDto.getQuarantine() == QuarantineType.INSTITUTIONELL)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+				&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
 			QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getContactRef());
 			quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(quarantineOrderComponent, QUARANTINE_LOC);
@@ -226,14 +241,9 @@ public class ContactDataView extends AbstractContactView {
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {
 
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(caseUuid);
-		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(
-			caseDto,
-			UiFieldAccessCheckers.withCheckers(
-				isInJurisdiction,
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
+
 		return caseInfoLayout;
 	}
 }

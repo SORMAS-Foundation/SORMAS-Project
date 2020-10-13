@@ -15,12 +15,32 @@
 
 package de.symeda.sormas.ui.campaign.campaigns;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
+
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -28,32 +48,41 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
 public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 	private static final long serialVersionUID = 7762204114905664597L;
 
 	private static final String STATUS_CHANGE = "statusChange";
-	private static final String CAMPAIGN_DATA_HEADING_LOC = "campaignDataHeadingLoc";
+	private static final String CAMPAIGN_BASIC_HEADING_LOC = "campaignBasicHeadingLoc";
+	private static final String USAGE_INFO = "usageInfo";
+	private static final String CAMPAIGN_DATA_LOC = "campaignDataLoc";
+	private static final String CAMPAIGN_DASHBOARD_LOC = "campaignDashboardLoc";
+	private static final String SPACE_LOC = "spaceLoc";
 
-	private static final String HTML_LAYOUT = loc(CAMPAIGN_DATA_HEADING_LOC)
+	private static final String HTML_LAYOUT = loc(CAMPAIGN_BASIC_HEADING_LOC)
 		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER)
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.NAME)
-		+ fluidRowLocs(CampaignDto.DESCRIPTION);
+		+ fluidRowLocs(CampaignDto.DESCRIPTION)
+		+ fluidRowLocs(USAGE_INFO)
+		+ fluidRowLocs(CAMPAIGN_DATA_LOC)
+		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC)
+		+ fluidRowLocs(SPACE_LOC);
 
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
+	private CampaignDto campaignDto;
 
-	public CampaignEditForm(boolean create) {
+	private CampaignFormsGridComponent campaignFormsGridComponent;
+	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent;
+
+	public CampaignEditForm(CampaignDto campaignDto) {
 
 		super(CampaignDto.class, CampaignDto.I18N_PREFIX);
 
-		isCreateForm = create;
-		if (create) {
+		this.campaignDto = campaignDto;
+		isCreateForm = campaignDto == null;
+		if (isCreateForm) {
 			hideValidationUntilNextCommit();
 		}
 		statusChangeLayout = new VerticalLayout();
@@ -71,9 +100,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			return;
 		}
 
-		Label campaignDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingCampaignData));
-		campaignDataHeadingLabel.addStyleName(H3);
-		getContent().addComponent(campaignDataHeadingLabel, CAMPAIGN_DATA_HEADING_LOC);
+		Label campaignBasicHeadingLabel = new Label(I18nProperties.getString(Strings.headingCampaignBasics));
+		campaignBasicHeadingLabel.addStyleName(H3);
+		getContent().addComponent(campaignBasicHeadingLabel, CAMPAIGN_BASIC_HEADING_LOC);
 
 		addField(CampaignDto.UUID, TextField.class);
 		addField(CampaignDto.CREATING_USER);
@@ -107,6 +136,59 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		setRequired(true, CampaignDto.UUID, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.NAME);
 
 		FieldHelper.addSoftRequiredStyle(description);
+
+		final HorizontalLayout usageLayout = new HorizontalLayout(
+			new Label(
+				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableCampaignGrids),
+				ContentMode.HTML));
+		usageLayout.setSpacing(true);
+		usageLayout.setMargin(new MarginInfo(true, false, true, false));
+		getContent().addComponent(usageLayout, USAGE_INFO);
+
+		campaignFormsGridComponent = new CampaignFormsGridComponent(
+			this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
+			FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+		getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
+
+		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
+			this.campaignDto == null
+				? Collections.EMPTY_LIST
+				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
+			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null));
+		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
+
+		final Label spacer = new Label();
+		getContent().addComponent(spacer, SPACE_LOC);
+	}
+
+	@Override
+	public CampaignDto getValue() {
+		final CampaignDto campaignDto = super.getValue();
+		campaignDto.setCampaignFormMetas(new HashSet<>(campaignFormsGridComponent.getItems()));
+		campaignDto.setCampaignDashboardElements(campaignDashboardGridComponent.getItems());
+		return campaignDto;
+	}
+
+	@Override
+	public void setValue(CampaignDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		campaignFormsGridComponent
+			.setSavedItems(newFieldValue.getCampaignFormMetas() != null ? new ArrayList<>(newFieldValue.getCampaignFormMetas()) : new ArrayList<>());
+
+		if (CollectionUtils.isNotEmpty(newFieldValue.getCampaignDashboardElements())) {
+			campaignDashboardGridComponent.setSavedItems(
+				newFieldValue.getCampaignDashboardElements()
+					.stream()
+					.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
+					.collect(Collectors.toList()));
+		}
+	}
+
+	@Override
+	public void discard() throws SourceException {
+		super.discard();
+		campaignFormsGridComponent.discardGrid();
+		campaignDashboardGridComponent.discardGrid();
 	}
 
 	@Override

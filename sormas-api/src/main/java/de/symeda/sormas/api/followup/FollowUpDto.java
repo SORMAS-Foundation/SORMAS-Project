@@ -7,9 +7,10 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.visit.VisitResult;
 
-public abstract class FollowUpDto implements Serializable {
+public abstract class FollowUpDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 8562530147842271464L;
 

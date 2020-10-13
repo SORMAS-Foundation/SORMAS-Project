@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
@@ -32,11 +29,14 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Serializable {
+import java.io.Serializable;
+import java.util.Date;
+
+public class TaskIndexDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 
@@ -93,10 +93,11 @@ public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Seri
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
 			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
-			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
-			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
-			String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid) {
+			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, 
+			String casePointOfEntryUuid, String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
+			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, 
+			String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, 
+			String eventDistrictUuid, String eventCommunityUuid) {
 	//@formatter:on
 
 		this.setUuid(uuid);
@@ -283,8 +284,8 @@ public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Seri
 		this.uuid = uuid;
 	}
 
-	@Override
 	public TaskJurisdictionDto getJurisdiction() {
 		return jurisdiction;
 	}
+
 }

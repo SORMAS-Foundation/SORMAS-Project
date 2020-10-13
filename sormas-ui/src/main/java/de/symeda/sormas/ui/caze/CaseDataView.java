@@ -35,6 +35,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
 import de.symeda.sormas.ui.caze.quarantine.QuarantineOrderComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
+import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
+import de.symeda.sormas.ui.survnet.SurvnetGateway;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -56,7 +58,6 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String EVENTS_LOC = "events";
-	public static final String QUARANTINE_LOC = "quarantine";
 
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -76,7 +77,9 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -89,13 +92,11 @@ public class CaseDataView extends AbstractCaseView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		Boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
-
 		//		if (getViewMode() == ViewMode.SIMPLE) {
 		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
 		//					ViewMode.SIMPLE);
 		//		} else {
-		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL, isInJurisdiction);
+		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
 		//		}
 
 		// setSubComponent(editComponent);
@@ -140,10 +141,23 @@ public class CaseDataView extends AbstractCaseView {
 		eventLayout.addComponent(eventList);
 		layout.addComponent(eventLayout, EVENTS_LOC);
 
-		// quarantine information component on right side of the case details screen
+		VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+		sormasToSormasLocLayout.setMargin(false);
+		sormasToSormasLocLayout.setSpacing(false);
+
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(caze, sormasToSormasEnabled);
+			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
+
+			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+		}
+
+		SurvnetGateway.addComponentToLayout(layout, () -> Arrays.asList(caze.getUuid()));
 
 		if ((caze.getQuarantine() == QuarantineType.HOME || caze.getQuarantine() == QuarantineType.INSTITUTIONELL)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+				&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
 			VerticalLayout quarantineLayout = new VerticalLayout();
 			quarantineLayout.setMargin(false);
 			quarantineLayout.setSpacing(false);
@@ -155,5 +169,7 @@ public class CaseDataView extends AbstractCaseView {
 
 			setCaseEditPermission(container);
 		}
+
+		setCaseEditPermission(container);
 	}
 }

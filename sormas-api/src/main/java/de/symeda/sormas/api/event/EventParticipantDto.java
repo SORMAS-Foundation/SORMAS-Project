@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -25,6 +24,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class EventParticipantDto extends PseudonymizableDto {
 

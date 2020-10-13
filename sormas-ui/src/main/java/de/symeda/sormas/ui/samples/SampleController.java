@@ -177,9 +177,9 @@ public class SampleController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized) {
 
-		SampleEditForm form = new SampleEditForm(isInJurisdiction);
+		SampleEditForm form = new SampleEditForm(isPseudonymized);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);

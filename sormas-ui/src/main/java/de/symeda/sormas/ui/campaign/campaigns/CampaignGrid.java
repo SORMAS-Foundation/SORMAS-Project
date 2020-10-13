@@ -62,9 +62,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			setCriteria(criteria);
 		}
 
-		addEditColumn(e -> {
-			ControllerProvider.getCampaignController().createOrEditCampaign(e.getUuid());
-		});
+		addEditColumn(e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid()));
 
 		Column<CampaignIndexDto, String> viewFormsColumn = addColumn(entry -> VaadinIcons.EYE.getHtml(), new HtmlRenderer());
 		viewFormsColumn.setId(VIEW_FORMS_BTN_ID);

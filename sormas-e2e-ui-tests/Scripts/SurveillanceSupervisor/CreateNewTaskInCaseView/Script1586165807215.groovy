@@ -1,5 +1,6 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+
 import com.hzi.Helper as Helper
 import com.hzi.TestDataConnector as TestDataConnector
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
@@ -15,6 +16,8 @@ String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_cas
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPersonName'), [('personName') : (firstName + 
         ' ') + lastName], FailureHandling.STOP_ON_FAILURE)
+
+WebUI.maximizeWindow()
 
 WebUI.click(findTestObject('Tasks/button_div_New task'))
 

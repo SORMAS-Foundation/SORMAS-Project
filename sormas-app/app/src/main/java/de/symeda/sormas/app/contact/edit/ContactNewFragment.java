@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
@@ -31,6 +30,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -91,6 +91,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 	@Override
 	public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
 		contentBinding.setData(record);
+		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
 		InfrastructureHelper.initializeRegionFields(
 			contentBinding.contactRegion,

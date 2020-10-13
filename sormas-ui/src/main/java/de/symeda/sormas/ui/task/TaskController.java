@@ -17,14 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import java.util.Collection;
-
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -34,7 +31,6 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
@@ -42,6 +38,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.Collection;
 
 public class TaskController {
 
@@ -144,11 +142,6 @@ public class TaskController {
 		TaskDto task = TaskDto.build(context, entityRef);
 		task.setCreatorUser(UserProvider.getCurrent().getUserReference());
 		return task;
-	}
-
-	public String getUserCaptionWithPendingTaskCount(UserReferenceDto user) {
-		long taskCount = FacadeProvider.getTaskFacade().getPendingTaskCount(user.getUuid());
-		return user.getCaption() + " (" + taskCount + ")";
 	}
 
 	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, Runnable callback) {

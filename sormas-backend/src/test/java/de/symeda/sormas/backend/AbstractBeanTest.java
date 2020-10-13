@@ -124,6 +124,8 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -412,6 +414,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CampaignFormMetaFacade getCampaignFormFacade() {
 		return getBean(CampaignFormMetaFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasFacadeEjbLocal getSormasToSormasFacade() {
+		return getBean(SormasToSormasFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasEncryptionService getSormasToSormasEncryptionService() {
+		return getBean(SormasToSormasEncryptionService.class);
 	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
