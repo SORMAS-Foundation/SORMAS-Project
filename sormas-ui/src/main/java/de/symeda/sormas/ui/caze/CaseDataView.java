@@ -17,17 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Arrays;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
@@ -35,7 +31,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
-import de.symeda.sormas.ui.caze.quarantine.QuarantineOrderComponent;
+import de.symeda.sormas.ui.docgeneration.DocGenerationComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.survnet.SurvnetGateway;
@@ -45,6 +41,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import java.util.Arrays;
 
 /**
  * CaseDataView for reading and editing the case data fields. Contains the
@@ -61,7 +59,6 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String SAMPLES_LOC = "samples";
 	public static final String EVENTS_LOC = "events";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
-	public static final String QUARANTINE_LOC = "quarantine";
 
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -83,7 +80,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DocGenerationComponent.QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -160,19 +157,7 @@ public class CaseDataView extends AbstractCaseView {
 
 		SurvnetGateway.addComponentToLayout(layout, () -> Arrays.asList(caze.getUuid()));
 
-		if ((caze.getQuarantine() == QuarantineType.HOME || caze.getQuarantine() == QuarantineType.INSTITUTIONELL)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
-			VerticalLayout quarantineLayout = new VerticalLayout();
-			quarantineLayout.setMargin(false);
-			quarantineLayout.setSpacing(false);
-
-			QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getCaseRef());
-			quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-			quarantineLayout.addComponent(quarantineOrderComponent);
-			layout.addComponent(quarantineLayout, QUARANTINE_LOC);
-
-			setCaseEditPermission(container);
-		}
+		DocGenerationComponent.addComponentToLayout(layout, getCaseRef());
 
 		setCaseEditPermission(container);
 	}

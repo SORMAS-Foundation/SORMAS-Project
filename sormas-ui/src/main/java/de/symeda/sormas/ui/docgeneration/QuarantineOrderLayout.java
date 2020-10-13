@@ -1,9 +1,4 @@
-package de.symeda.sormas.ui.caze.quarantine;
-
-import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.Properties;
-import java.util.function.Function;
+package de.symeda.sormas.ui.docgeneration;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -19,7 +14,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -27,7 +21,12 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
 
-public class CreateQuarantineOrderLayout extends VerticalLayout {
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.Properties;
+import java.util.function.Function;
+
+public class QuarantineOrderLayout extends VerticalLayout {
 
 	private final ReferenceDto caseReferenceDto;
 
@@ -35,7 +34,7 @@ public class CreateQuarantineOrderLayout extends VerticalLayout {
 	private final VerticalLayout additionalVariablesComponent;
 	private FileDownloader fileDownloader;
 
-	public CreateQuarantineOrderLayout(ReferenceDto referenceDto) {
+	public QuarantineOrderLayout(ReferenceDto referenceDto) {
 		super();
 		this.caseReferenceDto = referenceDto;
 
