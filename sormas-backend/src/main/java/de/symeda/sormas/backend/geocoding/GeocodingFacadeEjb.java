@@ -78,7 +78,7 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 			return null;
 		}
 
-		String textValue = join(", ", houseNumber.replaceAll("\\s", " "), join(" ", postalCode, city));
+		String textValue = join(", ", join(" ", street, houseNumber.replaceAll("\\s", " ")), join(" ", postalCode, city));
 
 		String query = textValue;
 //		Stream.of(
