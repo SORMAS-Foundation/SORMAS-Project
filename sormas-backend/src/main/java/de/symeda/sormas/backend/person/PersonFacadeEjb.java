@@ -288,10 +288,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		PersonDto existingPerson = toDto(person);
 
-		if (existingPerson != null) {
-			handleExternalJournalPerson(existingPerson, source);
-		}
-
 		restorePseudonymizedDto(source, person, existingPerson);
 
 		validate(source);
@@ -299,6 +295,10 @@ public class PersonFacadeEjb implements PersonFacade {
 		person = fillOrBuildEntity(source, person);
 
 		personService.ensurePersisted(person);
+
+		if (existingPerson != null) {
+			handleExternalJournalPerson(existingPerson, source);
+		}
 
 		onPersonChanged(existingPerson, person);
 
