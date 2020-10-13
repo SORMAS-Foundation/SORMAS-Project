@@ -1,5 +1,12 @@
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Date;
+import java.util.stream.Stream;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.CustomLayout;
@@ -12,6 +19,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -43,13 +51,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
-
-import java.util.Date;
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
@@ -161,9 +162,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
-		if (user.getRegion() != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
-		}
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
@@ -302,6 +301,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			RegionReferenceDto region = user.getRegion() != null ? user.getRegion() : (RegionReferenceDto) event.getProperty().getValue();
 
 			if (!DataHelper.equal(region, criteria.getRegion())) {
+				final ComboBox officerField = getField(CaseDataDto.SURVEILLANCE_OFFICER);
+				officerField.removeAllItems();
 				if (region != null) {
 					enableFields(CaseDataDto.DISTRICT);
 					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
@@ -321,6 +322,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					if (pointOfEntryField != null) {
 						pointOfEntryField.setEnabled(false);
 					}
+					officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_OFFICER));
 				} else {
 					clearAndDisableFields(CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY);
 
@@ -337,6 +339,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					if (pointOfEntryField != null) {
 						pointOfEntryField.setEnabled(false);
 					}
+
+					officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 				}
 			}
 
@@ -346,6 +350,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			DistrictReferenceDto newDistrict = (DistrictReferenceDto) event.getProperty().getValue();
 
 			if (!DataHelper.equal(newDistrict, criteria.getDistrict())) {
+				final ComboBox officerField = getField(CaseDataDto.SURVEILLANCE_OFFICER);
+				officerField.removeAllItems();
 				if (newDistrict != null) {
 					communityField.setEnabled(true);
 					if (facilityTypeGroupField != null) {
@@ -365,6 +371,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 							pointOfEntryField,
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
 					}
+
+					officerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, UserRole.SURVEILLANCE_OFFICER));
 				} else {
 					clearAndDisableFields(CaseDataDto.COMMUNITY);
 
@@ -381,6 +389,16 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					if (pointOfEntryField != null) {
 						clearAndDisableFields(CaseDataDto.POINT_OF_ENTRY);
 					}
+
+					final Object region = getField(CaseDataDto.REGION).getValue();
+					if (region != null) {
+						officerField.addItems(
+							FacadeProvider.getUserFacade().getUsersByRegionAndRoles((RegionReferenceDto) region, UserRole.SURVEILLANCE_OFFICER));
+					} else {
+						officerField
+							.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
+					}
+
 				}
 			}
 
