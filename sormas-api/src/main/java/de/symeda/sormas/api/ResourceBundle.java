@@ -1,7 +1,5 @@
 package de.symeda.sormas.api;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 public class ResourceBundle {
 
 	private java.util.ResourceBundle resourceBundle;

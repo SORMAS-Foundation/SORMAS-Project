@@ -151,6 +151,7 @@ public interface Captions {
 	String campaignDashboardChartWidth = "campaignDashboardChartWidth";
 	String campaignDashboardOrder = "campaignDashboardOrder";
 	String campaignDashboardTabName = "campaignDashboardTabName";
+	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
@@ -1367,6 +1368,8 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
+	String SurvnetGateway_send = "SurvnetGateway.send";
+	String SurvnetGateway_title = "SurvnetGateway.title";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
 	String Symptoms_abnormalLungXrayFindings = "Symptoms.abnormalLungXrayFindings";
@@ -1606,6 +1609,7 @@ public interface Captions {
 	String User_active = "User.active";
 	String User_address = "User.address";
 	String User_associatedOfficer = "User.associatedOfficer";
+	String User_hasConsentedToGdpr = "User.hasConsentedToGdpr";
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";
 	String User_limitedDisease = "User.limitedDisease";

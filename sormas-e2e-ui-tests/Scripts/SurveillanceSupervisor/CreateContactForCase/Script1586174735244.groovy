@@ -15,7 +15,7 @@ String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_cas
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPersonName'), [('personName') : (firstName + 
         ' ') + lastName], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Contacts/CasesView/div_Contacts tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Contacts_tab'))
 
 WebUI.click(findTestObject('Contacts/CasesView/NewContact/div_New contact'))
 

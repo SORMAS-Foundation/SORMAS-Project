@@ -1,13 +1,7 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
-import org.openqa.selenium.Keys
-
 import org.openqa.selenium.Keys as Keys
-import com.hzi.Table as Table
-import com.hzi.TableContent as TableContent
 import com.hzi.TestDataConnector as TestDataConnector
-import com.kms.katalon.core.exception.StepFailedException as StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
@@ -18,6 +12,7 @@ WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases')
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_NewCase_btn'))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_Disease_v-filterselect-button'))
+
 WebUI.click(findTestObject('Surveillance/NewCaseView/td_COVID-19'))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_Region_DDBox'))
@@ -28,7 +23,7 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/div_District_DDBox'))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/td_Voreingestellter Landkreis'))
 
-WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_DDBox'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_FacilityorHome'))
 
 WebUI.check(findTestObject('Surveillance/NewCaseView/span_Home'))
 
@@ -47,12 +42,15 @@ WebUI.setText(findTestObject('Surveillance/NewCaseView/dateOfReport_inputBox'), 
 WebUI.setText(findTestObject('Surveillance/NewCaseView/dateOfSymptomOnset_inputBox'), '03/26/2020')
 
 WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthYear_inputBox'), '2000')
+
 WebUI.sendKeys(findTestObject('Surveillance/NewCaseView/div_DateOfBirthYear_inputBox'), Keys.chord(Keys.ENTER))
 
 WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthMonth_inputBox'), 'June')
+
 WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthMonth_inputBox'), Keys.chord(Keys.ENTER))
 
 WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthDay_inputBox'), '7')
+
 WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthDay_inputBox'), Keys.chord(Keys.ENTER))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_Sex_DDBox'))
@@ -68,9 +66,10 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/div_Save_btn'))
 WebUI.delay(3)
 
 if (WebUI.verifyElementPresent(findTestObject('Surveillance/NewCaseView/Comfirmation/div_check_confimation_lbl'), 5)) {
-    //WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_PickanExistingCase'))
-	WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_Select a matching person'))
-	
+    
+    WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_Select a matching person'))
+    //WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/select_firstcell'))
+
     WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_confirm_btn'))
 
     WebUI.delay(3)

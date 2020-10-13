@@ -79,19 +79,36 @@ If you're interested in participating in the development of SORMAS, you can use 
    > #61 - added model to define classification, apply automatic case classification whenever a field value changes
 6. Each pull request should be related to a single issue (if possible). 
 
-### SORMAS Sprint Board
+### SORMAS Product Backlog
 
-The SORMAS sprint board is segmented into the following categories:
+The board **Product Backlog** is used to plan, refine and prioritize the tickets for the upcoming sprints. 
+The sorting from top to bottom in every column reflects the priority for the product. The Product Owner is responsible to put tickets into the Backlog and keep the ticket information updated.
 
-* **Backlog:** Issues that have been selected to be done in the current sprint, but for which work has not yet started.
+The Product Backlog contains the following columns:
+* **Backlog:** Issues that have been identified by the Product Owner to be done in the next sprints. There can be a column for each Scrum Team if it fits the need.
+* **Sprint n:** Contain tickets picked by the Product Owner to be done in the named sprint. Text notes or separate columns are used to separate issues between Scrum Teams. It gives a forecast what might come in the upcoming sprint and it is the starting point for the Sprint Planning. Every ticket the Development Team do not pick into their Sprint Backlog needs to be moved back to the Backlog column or one sprint further.
+* **Done:** Tickets that are closed (usually resolved within the running sprint) are moved here **automatically**. The sorting does not represent the priority here any more.
+
+
+### SORMAS Sprint Backlog
+
+The board **Sprint Backlog** exists for each Scrum Team and is segmented into the following categories:
+
+* **Backlog:** Issues that have been selected by the Development Team to be done in the current sprint, but for which work has not yet started. The sorting top to bottom on this column reflects the priority given by the Product Owner at the time of the Sprint Planning.
 * **In Progress:** Issues that have been assigned to a contributor and for which work has started.
 * **Waiting:** Issues for which work has started and that have been put on hold, e.g. because action or feedback by an external contributor is required.
 * **Review:** Issues that have been resolved, but not been reviewed by another contributor yet. The ticket status is usually **Open**, but **Closed** is also allowed if no code change or merge is needed.
+* **Testing:** Issues that have been reviewed and merged to **development** branch to be tested and verified on a central TEST instance. The ticket status is supposed to be **Closed**.
 * **Done:** Issues that have been resolved, reviewed and satisfy the Definition of Done. The ticket status is supposed to be **Closed**.
 
-The general workflow is that whenever a contributor starts working on an issue, they **assign** themselves to it and manually **move the issue** from **Backlog** to **In Progress**.
+The general workflow is that whenever a contributor starts working on an issue, they **assign** themselves to it and manually **move the issue** from **Backlog** to **In Progress**. 
+Transitions to **Waiting** and **Review** also need to be done manually. When the developer is done with all work (no code changes or merges needed, milestone is set), the ticket is supposed to be closed to go automatically to **Testing**.
+Approved tickets are supposed to be moved manually from **Testing** to **Done*.
 
-The GitHub project has been configured to **automatically** move issues that are closed to **Done** and issues that are reopened back to **In Progress**.
+The GitHub project has been configured to **automatically** move issues that are closed to **Testing** and issues that are reopened back to **In Progress**.
+
+The Development Team is responsible to keep the tickets up to date on this board and to assign the appropriate milestone in which the work is going to be released.
+
 
 ### Eclipse Troubleshooting
 
