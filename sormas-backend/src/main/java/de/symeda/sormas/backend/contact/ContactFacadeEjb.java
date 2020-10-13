@@ -56,6 +56,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.visit.VisitResultDto;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,6 +191,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private CommunityService communityService;
 	@EJB
+	private ExternalJournalService externalJournalService;
+	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
@@ -275,7 +278,9 @@ public class ContactFacadeEjb implements ContactFacade {
 	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);
-
+		if (existingContact != null) {
+			externalJournalService.notifyExternalJournalFollowUpUntilUpdate(dto);
+		}
 		restorePseudonymizedDto(dto, existingContact, existingContactDto);
 
 		validate(dto);
