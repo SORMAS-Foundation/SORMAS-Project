@@ -33,6 +33,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -117,6 +118,11 @@ public class TaskController {
 				if (!form.getFieldGroup().isModified()) {
 					TaskDto dto = form.getValue();
 					FacadeProvider.getTaskFacade().saveTask(dto);
+
+					if (dto.getCaze() != null) {
+						ControllerProvider.getCaseController().navigateToCase(dto.getCaze().getUuid());
+					}
+
 					popupWindow.close();
 					callback.run();
 				}
