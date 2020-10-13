@@ -27,12 +27,15 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
+import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.QuarantineReason;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.location.LocationDto;
@@ -43,6 +46,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -51,6 +55,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.facility.Facility;
 
 public class BAGExportFacadeEjbTest extends AbstractBeanTest {
@@ -240,5 +245,167 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(dateFormat.format(firstCase.getEndOfIsolationDate()), is(dateFormat.format(quarantineToDate)));
 		assertThat(firstCase.getEndOfIsolationReason(), is(EndOfIsolationReason.OTHER));
 		assertThat(firstCase.getEndOfIsolationReasonDetails(), is("Test end of iso"));
+	}
+
+	@Test
+	public void testContactExport() {
+		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
+			LocationDto homeAddress = LocationDto.build();
+			homeAddress.setAddressType(PersonAddressType.HOME);
+			homeAddress.setStreet("Home street");
+			homeAddress.setHouseNumber("11A");
+			homeAddress.setCity("Home city");
+			homeAddress.setPostalCode("12345");
+
+			p.setPhone("12345678");
+			p.setEmailAddress("test@email.com");
+			p.setSex(Sex.MALE);
+
+			p.getAddresses().add(homeAddress);
+
+			p.setBirthdateYYYY(1978);
+			p.setBirthdateMM(10);
+			p.setBirthdateDD(22);
+
+			p.setOccupationType(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES);
+
+			LocationDto workPlaceAddress = LocationDto.build();
+			workPlaceAddress.setAddressType(PersonAddressType.PLACE_OF_WORK);
+			workPlaceAddress.setStreet("Work street");
+			workPlaceAddress.setHouseNumber("12W");
+			workPlaceAddress.setCity("Work city");
+			workPlaceAddress.setPostalCode("54321");
+
+			p.getAddresses().add(workPlaceAddress);
+
+			LocationDto exposureAddress = LocationDto.build();
+			exposureAddress.setAddressType(PersonAddressType.PLACE_OF_EXPOSURE);
+			exposureAddress.setStreet("Exposure street");
+			exposureAddress.setHouseNumber("13E");
+			exposureAddress.setCity("Exposure city");
+			exposureAddress.setPostalCode("098765");
+
+			p.getAddresses().add(exposureAddress);
+
+			LocationDto isolationAddress = LocationDto.build();
+			isolationAddress.setAddressType(PersonAddressType.PLACE_OF_ISOLATION);
+			isolationAddress.setStreet("Isolation street");
+			isolationAddress.setHouseNumber("14I");
+			isolationAddress.setCity("Isolation city");
+			isolationAddress.setPostalCode("76543");
+
+			p.getAddresses().add(isolationAddress);
+		});
+
+		Date symptomDate = new Date();
+		Date contactTracingDate = DateHelper.subtractDays(new Date(), 10);
+		Date quarantineFromDate = DateHelper.subtractDays(new Date(), 11);
+		Date quarantineToDate = DateHelper.subtractDays(new Date(), 1);
+		Date followupDate = DateHelper.addDays(new Date(), 10);
+
+		ContactDto contactDto = creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			personDto.toReference(),
+			creator.createCase(user.toReference(), personDto.toReference(), rdcf),
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf,
+			c -> {
+				c.setQuarantineFrom(quarantineFromDate);
+
+				c.setQuarantine(QuarantineType.OTHER);
+				c.setQuarantineTypeDetails("Test quarantine");
+
+				c.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+				c.setOverwriteFollowUpUntil(true);
+				c.setFollowUpUntil(followupDate);
+				c.setQuarantineTo(quarantineToDate);
+				c.setEndOfQuarantineReason(EndOfQuarantineReason.OTHER);
+				c.setEndOfQuarantineReasonDetails("Test end of iso");
+			});
+
+		Date sampleDate = DateHelper.subtractDays(new Date(), 5);
+
+		SampleDto sample =
+			creator.createSample(contactDto.toReference(), sampleDate, new Date(), user.toReference(), SampleMaterial.BLOOD, new Facility());
+
+		Date testDate = DateHelper.subtractDays(new Date(), 4);
+		creator.createPathogenTest(
+			sample.toReference(),
+			PathogenTestType.RAPID_TEST,
+			Disease.CORONAVIRUS,
+			testDate,
+			new Facility(),
+			user.toReference(),
+			PathogenTestResultType.POSITIVE,
+			"",
+			true);
+
+		Contact contact = getContactService().getByUuid(contactDto.getUuid());
+
+		List<BAGExportContactDto> contactList = getBAGExportFacade().getContactExportList(0, 100);
+
+		BAGExportContactDto firstContact = contactList.get(0);
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+		assertThat(firstContact.getContactId(), is(contact.getId()));
+		assertThat(firstContact.getLastName(), is("Smith"));
+		assertThat(firstContact.getFirstName(), is("James"));
+		assertThat(firstContact.getHomeAddressStreet(), is("Home street"));
+		assertThat(firstContact.getHomeAddressHouseNumber(), is("11A"));
+		assertThat(firstContact.getHomeAddressCity(), is("Home city"));
+		assertThat(firstContact.getHomeAddressPostalCode(), is("12345"));
+		assertThat(firstContact.getHomeAddressCountry(), isEmptyOrNullString());
+		assertThat(firstContact.getPhoneNumber(), is("12345678"));
+		assertThat(firstContact.getMobileNumber(), isEmptyOrNullString());
+		assertThat(firstContact.getEmailAddress(), is("test@email.com"));
+		assertThat(firstContact.getSex(), is(Sex.MALE));
+
+		assertThat(firstContact.getBirthDate().getBirthdateYYYY(), is(1978));
+		assertThat(firstContact.getBirthDate().getBirthdateMM(), is(10));
+		assertThat(firstContact.getBirthDate().getBirthdateDD(), is(22));
+
+		assertThat(firstContact.getOccupationType(), is(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES));
+
+		assertThat(firstContact.getWorkPlaceName(), isEmptyOrNullString());
+		assertThat(firstContact.getWorkPlaceStreet(), is("Work street"));
+		assertThat(firstContact.getWorkPlaceStreetNumber(), is("12W"));
+		assertThat(firstContact.getWorkPlaceLocation(), is("Work city"));
+		assertThat(firstContact.getWorkPlacePostalCode(), is("54321"));
+		assertThat(firstContact.getWorkPlaceCountry(), isEmptyOrNullString());
+
+		assertThat(dateFormat.format(firstContact.getSampleDate()), is(dateFormat.format(sampleDate)));
+		assertThat(dateFormat.format(firstContact.getLabReportDate()), is(dateFormat.format(testDate)));
+		assertThat(firstContact.getTestType(), is(PathogenTestType.RAPID_TEST));
+		assertThat(firstContact.getTestResult(), is(PathogenTestResultType.POSITIVE));
+
+		assertThat(firstContact.getExposureLocationYn(), is(YesNoUnknown.YES));
+		assertThat(firstContact.getOtherExposureLocation(), isEmptyOrNullString());
+		assertThat(firstContact.getExposureLocationName(), isEmptyOrNullString());
+		assertThat(firstContact.getExposureLocationStreet(), is("Exposure street"));
+		assertThat(firstContact.getExposureLocationStreetNumber(), is("13E"));
+		assertThat(firstContact.getExposureLocationCity(), is("Exposure city"));
+		assertThat(firstContact.getExposureLocationPostalCode(), is("098765"));
+		assertThat(firstContact.getExposureLocationCountry(), isEmptyOrNullString());
+
+		assertThat(firstContact.getQuarantineType(), is(QuarantineType.OTHER));
+		assertThat(firstContact.getQuarantineDetails(), is("Test quarantine"));
+
+		assertThat(firstContact.getQuarantineLocationStreet(), is("Isolation street"));
+		assertThat(firstContact.getQuarantineLocationStreetNumber(), is("14I"));
+		assertThat(firstContact.getQuarantineLocationCity(), is("Isolation city"));
+		assertThat(firstContact.getQuarantineLocationPostalCode(), is("76543"));
+		assertThat(firstContact.getQuarantineLocationCountry(), isEmptyOrNullString());
+
+		assertThat(dateFormat.format(firstContact.getFollowUpUntilDate()), is(dateFormat.format(followupDate)));
+		assertThat(dateFormat.format(firstContact.getEndOfQuarantineDate()), is(dateFormat.format(quarantineToDate)));
+		assertThat(firstContact.getEndOfQuarantineReason(), is(EndOfQuarantineReason.OTHER));
+		assertThat(firstContact.getEndOfQuarantineReasonDetails(), is("Test end of iso"));
 	}
 }

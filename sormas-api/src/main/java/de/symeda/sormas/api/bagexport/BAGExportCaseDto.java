@@ -154,7 +154,6 @@ public class BAGExportCaseDto implements Serializable {
 		this.caseIdIsm = caseIdIsm;
 	}
 
-//	@Order(2)
 	public Long getCaseId() {
 		return caseId;
 	}

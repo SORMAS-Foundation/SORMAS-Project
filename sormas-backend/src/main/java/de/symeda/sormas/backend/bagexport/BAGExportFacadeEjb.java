@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -38,13 +37,15 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
+import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
@@ -60,18 +61,15 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	@EJB
-	private LocationService locationService;
-
 	@Override
 	public List<BAGExportCaseDto> getCaseExportList(int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BAGExportCaseDto> cq = cb.createQuery(BAGExportCaseDto.class);
 		Root<Case> caseRoot = cq.from(Case.class);
 
-		CaseJoins<Case> caseCaseJoins = new CaseJoins<>(caseRoot);
+		CaseJoins<Case> caseJoins = new CaseJoins<>(caseRoot);
 
-		Join<Case, Person> person = caseCaseJoins.getPerson();
+		Join<Case, Person> person = caseJoins.getPerson();
 
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
 
@@ -89,10 +87,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.BIRTHDATE_MM),
 			person.get(Person.BIRTHDATE_YYYY),
 			person.get(Person.OCCUPATION_TYPE),
-			caseCaseJoins.getSymptoms().get(Symptoms.SYMPTOMATIC),
+			caseJoins.getSymptoms().get(Symptoms.SYMPTOMATIC),
 			caseRoot.get(Case.COVID_TEST_REASON),
 			caseRoot.get(Case.COVID_TEST_REASON_DETAILS),
-			caseCaseJoins.getSymptoms().get(Symptoms.ONSET_DATE),
+			caseJoins.getSymptoms().get(Symptoms.ONSET_DATE),
 			caseRoot.get(Case.CONTACT_TRACING_FIRST_CONTACT_DATE),
 			caseRoot.get(Case.QUARANTINE),
 			caseRoot.get(Case.QUARANTINE_TYPE_DETAILS),
@@ -108,7 +106,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		Map<Long, List<Sample>> samples = new HashMap<>();
 
 		if (exportList.size() > 0) {
-			List<Long> caseIdIds = exportList.stream().map(BAGExportCaseDto::getCaseId).collect(Collectors.toList());
+			List<Long> caseIds = exportList.stream().map(BAGExportCaseDto::getCaseId).collect(Collectors.toList());
 			List<Long> personIds = exportList.stream().map(BAGExportCaseDto::getPersonId).collect(Collectors.toList());
 
 			// get addresses
@@ -138,7 +136,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			Root<Sample> samplesRoot = samplesCq.from(Sample.class);
 
 			Path<Object> caseIdExpr = samplesRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(Case.ID);
-			samplesCq.where(caseIdExpr.in(caseIdIds)).orderBy(cb.asc(samplesRoot.get(Sample.REPORT_DATE_TIME)));
+			samplesCq.where(caseIdExpr.in(caseIds)).orderBy(cb.asc(samplesRoot.get(Sample.REPORT_DATE_TIME)));
 
 			List<Sample> samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 			samples.putAll(samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId())));
@@ -192,9 +190,9 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 				Optional<PathogenTest> positiveTest =
 					sortedTests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE).findFirst();
 				if (positiveTest.isPresent()) {
-					setExportTestData(caze, positiveTest.get());
+					setCasePathogenTestData(caze, positiveTest.get());
 				} else if (sortedTests.size() > 0) {
-					setExportTestData(caze, sortedTests.get(0));
+					setCasePathogenTestData(caze, sortedTests.get(0));
 				}
 			}
 		});
@@ -202,10 +200,149 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		return exportList;
 	}
 
-	private void setExportTestData(BAGExportCaseDto caze, PathogenTest test) {
+	@Override
+	public List<BAGExportContactDto> getContactExportList(int first, int max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BAGExportContactDto> cq = cb.createQuery(BAGExportContactDto.class);
+		Root<Contact> contactRoot = cq.from(Contact.class);
+
+		ContactJoins contactJoins = new ContactJoins(contactRoot);
+
+		Join<Contact, Person> person = contactJoins.getPerson();
+
+		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
+
+		cq.multiselect(
+			contactRoot.get(Contact.ID),
+			person.get(Person.ID),
+			person.get(Person.LAST_NAME),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.PHONE),
+			mobileNumber,
+			person.get(Person.EMAIL_ADDRESS),
+			person.get(Person.SEX),
+			person.get(Person.BIRTHDATE_DD),
+			person.get(Person.BIRTHDATE_MM),
+			person.get(Person.BIRTHDATE_YYYY),
+			person.get(Person.OCCUPATION_TYPE),
+			contactRoot.get(Contact.QUARANTINE),
+			contactRoot.get(Contact.QUARANTINE_TYPE_DETAILS),
+			contactRoot.get(Contact.FOLLOW_UP_UNTIL),
+			contactRoot.get(Contact.QUARANTINE_TO),
+			contactRoot.get(Contact.END_OF_QUARANTINE_REASON),
+			contactRoot.get(Contact.END_OF_QUARANTINE_REASON_DETAILS));
+
+		List<BAGExportContactDto> exportList =
+			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
+
+		Map<Long, List<Location>> personAddresses = new HashMap<>();
+		Map<Long, List<Sample>> samples = new HashMap<>();
+
+		if (exportList.size() > 0) {
+			List<Long> contactIds = exportList.stream().map(BAGExportContactDto::getContactId).collect(Collectors.toList());
+			List<Long> personIds = exportList.stream().map(BAGExportContactDto::getPersonId).collect(Collectors.toList());
+
+			// get addresses
+			CriteriaQuery<Object[]> addressesCq = cb.createQuery(Object[].class);
+			Root<Location> addressesRoot = addressesCq.from(Location.class);
+
+			addressesCq.where(addressesRoot.get(Location.PERSON).get(Person.ID).in(personIds));
+
+			addressesCq.multiselect(addressesRoot.get(Location.PERSON).get(Person.ID), addressesRoot);
+			List<Object[]> personIdLocationList = em.createQuery(addressesCq).getResultList();
+
+			personIdLocationList.forEach(personIdLocation -> {
+				Long personId = (Long) personIdLocation[0];
+				Location location = (Location) personIdLocation[1];
+
+				List<Location> personLocations = personAddresses.get(personId);
+				if (personLocations == null) {
+					personLocations = new ArrayList<>();
+				}
+
+				personLocations.add(location);
+				personAddresses.put(personId, personLocations);
+			});
+
+			// get samples
+			CriteriaQuery<Sample> samplesCq = cb.createQuery(Sample.class);
+			Root<Sample> samplesRoot = samplesCq.from(Sample.class);
+
+			Path<Object> contactIdExpr = samplesRoot.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT).get(Contact.ID);
+			samplesCq.where(contactIdExpr.in(contactIds)).orderBy(cb.asc(samplesRoot.get(Sample.REPORT_DATE_TIME)));
+
+			List<Sample> samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			samples.putAll(samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedContact().getId())));
+		}
+
+		exportList.forEach(contact -> {
+			List<Location> addresses = personAddresses.getOrDefault(contact.getPersonId(), Collections.emptyList());
+
+			addresses.stream().filter(a -> PersonAddressType.HOME.equals(a.getAddressType())).findFirst().ifPresent(homeAddress -> {
+				contact.setHomeAddressStreet(homeAddress.getStreet());
+				contact.setHomeAddressHouseNumber(homeAddress.getHouseNumber());
+				contact.setHomeAddressCity(homeAddress.getCity());
+				contact.setHomeAddressPostalCode(homeAddress.getPostalCode());
+			});
+
+			addresses.stream().filter(a -> PersonAddressType.PLACE_OF_WORK.equals(a.getAddressType())).findFirst().ifPresent(workAddress -> {
+				contact.setWorkPlaceStreet(workAddress.getStreet());
+				contact.setWorkPlaceStreetNumber(workAddress.getHouseNumber());
+				contact.setWorkPlaceLocation(workAddress.getCity());
+				contact.setWorkPlacePostalCode(workAddress.getPostalCode());
+			});
+
+			contact.setExposureLocationYn(YesNoUnknown.NO);
+			addresses.stream().filter(a -> PersonAddressType.PLACE_OF_EXPOSURE.equals(a.getAddressType())).findFirst().ifPresent(exposureAddress -> {
+				contact.setExposureLocationYn(YesNoUnknown.YES);
+
+				contact.setExposureLocationStreet(exposureAddress.getStreet());
+				contact.setExposureLocationStreetNumber(exposureAddress.getHouseNumber());
+				contact.setExposureLocationCity(exposureAddress.getCity());
+				contact.setExposureLocationPostalCode(exposureAddress.getPostalCode());
+			});
+
+			addresses.stream()
+				.filter(a -> PersonAddressType.PLACE_OF_ISOLATION.equals(a.getAddressType()))
+				.findFirst()
+				.ifPresent(isolationAddress -> {
+					contact.setQuarantineLocationStreet(isolationAddress.getStreet());
+					contact.setQuarantineLocationStreetNumber(isolationAddress.getHouseNumber());
+					contact.setQuarantineLocationCity(isolationAddress.getCity());
+					contact.setQuarantineLocationPostalCode(isolationAddress.getPostalCode());
+				});
+
+			List<Sample> contactSamples = samples.get(contact.getContactId());
+			if (contactSamples != null && contactSamples.size() > 0) {
+				Sample firstSample = contactSamples.get(0);
+				contact.setSampleDate(firstSample.getSampleDateTime());
+
+				List<PathogenTest> sortedTests =
+					firstSample.getPathogenTests().stream().sorted(Comparator.comparing(PathogenTest::getTestDateTime)).collect(Collectors.toList());
+
+				Optional<PathogenTest> positiveTest =
+					sortedTests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE).findFirst();
+				if (positiveTest.isPresent()) {
+					setContactPathogenTestData(contact, positiveTest.get());
+				} else if (sortedTests.size() > 0) {
+					setContactPathogenTestData(contact, sortedTests.get(0));
+				}
+			}
+		});
+
+		return exportList;
+	}
+
+	private void setCasePathogenTestData(BAGExportCaseDto caze, PathogenTest test) {
 		caze.setLabReportDate(test.getTestDateTime());
 		caze.setTestType(test.getTestType());
 		caze.setTestResult(test.getTestResult());
+	}
+
+	private void setContactPathogenTestData(BAGExportContactDto contact, PathogenTest test) {
+		contact.setLabReportDate(test.getTestDateTime());
+		contact.setTestType(test.getTestType());
+		contact.setTestResult(test.getTestResult());
 	}
 
 	@LocalBean

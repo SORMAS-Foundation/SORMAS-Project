@@ -23,4 +23,6 @@ import javax.ejb.Remote;
 public interface BAGExportFacade {
 
 	List<BAGExportCaseDto> getCaseExportList(int first, int max);
+
+	List<BAGExportContactDto> getContactExportList(int first, int max);
 }

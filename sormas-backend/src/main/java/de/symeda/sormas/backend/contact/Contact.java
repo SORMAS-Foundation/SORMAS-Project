@@ -141,6 +141,8 @@ public class Contact extends CoreAdo {
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
+	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
+	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
 
 	private Date reportDateTime;
 	private User reportingUser;

@@ -338,7 +338,7 @@ public class CasesView extends AbstractView {
 						}
 						return caption;
 					},
-					createFileNameWithCurrentDate("sormas_BAG_", ".csv"),
+					createFileNameWithCurrentDate("sormas_BAG_cases_", ".csv"),
 					null);
 
 				addExportButton(bagExportResource, exportPopupButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
