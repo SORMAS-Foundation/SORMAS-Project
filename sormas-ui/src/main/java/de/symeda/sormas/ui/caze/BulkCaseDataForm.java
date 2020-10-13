@@ -17,6 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
@@ -42,36 +55,25 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final String DISEASE_CHECKBOX = "diseaseCheckbox";
-    private static final String CLASSIFICATION_CHECKBOX = "classificationCheckbox";
-    private static final String INVESTIGATION_STATUS_CHECKBOX = "investigationStatusCheckbox";
-    private static final String OUTCOME_CHECKBOX = "outcomeCheckbox";
-    private static final String SURVEILLANCE_OFFICER_CHECKBOX = "surveillanceOfficerCheckbox";
-    private static final String HEALTH_FACILITY_CHECKBOX = "healthFacilityCheckbox";
-    private static final String TYPE_GROUP_LOC = "typeGroupLoc";
-    private static final String TYPE_LOC = "typeLoc";
-    private static final String WARNING_LAYOUT = "warningLayout";
-    public static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
+	private static final String DISEASE_CHECKBOX = "diseaseCheckbox";
+	private static final String CLASSIFICATION_CHECKBOX = "classificationCheckbox";
+	private static final String INVESTIGATION_STATUS_CHECKBOX = "investigationStatusCheckbox";
+	private static final String OUTCOME_CHECKBOX = "outcomeCheckbox";
+	private static final String SURVEILLANCE_OFFICER_CHECKBOX = "surveillanceOfficerCheckbox";
+	private static final String HEALTH_FACILITY_CHECKBOX = "healthFacilityCheckbox";
+	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
+	private static final String TYPE_LOC = "typeLoc";
+	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
+	private static final String WARNING_LAYOUT = "warningLayout";
 
-    //@formatter:off
+	//@formatter:off
     private static final String HTML_LAYOUT =
             fluidRowLocsCss(VSPACE_4, DISEASE_CHECKBOX) +
                     fluidRow(
@@ -98,188 +100,188 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                     fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS);
     //@formatter:on
 
-    private final DistrictReferenceDto singleSelectedDistrict;
+	private final DistrictReferenceDto singleSelectedDistrict;
 
-    private boolean initialized = false;
+	private boolean initialized = false;
 
-    private CheckBox diseaseCheckBox;
-    private CheckBox classificationCheckBox;
-    private CheckBox investigationStatusCheckBox;
-    private CheckBox outcomeCheckBox;
-    private CheckBox surveillanceOfficerCheckBox;
-    private CheckBox healthFacilityCheckbox;
-    private ComboBox facilityTypeGroup;
-    private ComboBox facilityType;
-    private TextField healthFacilityDetails;
-    private Collection<? extends CaseIndexDto> selectedCases;
-    OptionGroup facilityOrHome;
-    private HorizontalLayout warningLayout;
+	private CheckBox diseaseCheckBox;
+	private CheckBox classificationCheckBox;
+	private CheckBox investigationStatusCheckBox;
+	private CheckBox outcomeCheckBox;
+	private CheckBox surveillanceOfficerCheckBox;
+	private CheckBox healthFacilityCheckbox;
+	private ComboBox facilityTypeGroup;
+	private ComboBox facilityType;
+	private TextField healthFacilityDetails;
+	private Collection<? extends CaseIndexDto> selectedCases;
+	OptionGroup facilityOrHome;
+	private HorizontalLayout warningLayout;
 
-    public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict, Collection<? extends CaseIndexDto> selectedCases) {
-        super(CaseBulkEditData.class, CaseDataDto.I18N_PREFIX);
-        this.singleSelectedDistrict = singleSelectedDistrict;
-        setWidth(680, Unit.PIXELS);
-        hideValidationUntilNextCommit();
-        initialized = true;
-        this.selectedCases = selectedCases;
-        addFields();
-    }
+	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict, Collection<? extends CaseIndexDto> selectedCases) {
+		super(CaseBulkEditData.class, CaseDataDto.I18N_PREFIX);
+		this.singleSelectedDistrict = singleSelectedDistrict;
+		setWidth(680, Unit.PIXELS);
+		hideValidationUntilNextCommit();
+		initialized = true;
+		this.selectedCases = selectedCases;
+		addFields();
+	}
 
-    @SuppressWarnings("deprecation")
-    @Override
-    protected void addFields() {
-        if (!initialized) {
-            return;
-        }
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void addFields() {
+		if (!initialized) {
+			return;
+		}
 
-        diseaseCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkDisease));
-        getContent().addComponent(diseaseCheckBox, DISEASE_CHECKBOX);
-        ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
-        disease.setEnabled(false);
-        addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-        addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
-        addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
-        addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
+		diseaseCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkDisease));
+		getContent().addComponent(diseaseCheckBox, DISEASE_CHECKBOX);
+		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
+		disease.setEnabled(false);
+		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
+		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
+		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
+		addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
 
-        if (isVisibleAllowed(CaseDataDto.DISEASE_DETAILS)) {
-            FieldHelper
-                    .setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
-            FieldHelper
-                    .setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
-        }
-        if (isVisibleAllowed(CaseDataDto.PLAGUE_TYPE)) {
-            FieldHelper
-                    .setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
-        }
-        if (isVisibleAllowed(CaseDataDto.DENGUE_FEVER_TYPE)) {
-            FieldHelper.setVisibleWhen(
-                    getFieldGroup(),
-                    Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE),
-                    CaseDataDto.DISEASE,
-                    Arrays.asList(Disease.DENGUE),
-                    true);
-        }
-        if (isVisibleAllowed(CaseDataDto.RABIES_TYPE)) {
-            FieldHelper
-                    .setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
-        }
+		if (isVisibleAllowed(CaseDataDto.DISEASE_DETAILS)) {
+			FieldHelper
+				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
+			FieldHelper
+				.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		}
+		if (isVisibleAllowed(CaseDataDto.PLAGUE_TYPE)) {
+			FieldHelper
+				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
+		}
+		if (isVisibleAllowed(CaseDataDto.DENGUE_FEVER_TYPE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE),
+				CaseDataDto.DISEASE,
+				Arrays.asList(Disease.DENGUE),
+				true);
+		}
+		if (isVisibleAllowed(CaseDataDto.RABIES_TYPE)) {
+			FieldHelper
+				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
+		}
 
-        classificationCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseClassification));
-        getContent().addComponent(classificationCheckBox, CLASSIFICATION_CHECKBOX);
-        investigationStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkInvestigationStatus));
-        getContent().addComponent(investigationStatusCheckBox, INVESTIGATION_STATUS_CHECKBOX);
-        outcomeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseOutcome));
-        getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
-        OptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, OptionGroup.class);
-        caseClassification.setEnabled(false);
-        OptionGroup investigationStatus = addField(CaseBulkEditData.INVESTIGATION_STATUS, OptionGroup.class);
-        investigationStatus.setEnabled(false);
-        OptionGroup outcome = addField(CaseBulkEditData.OUTCOME, OptionGroup.class);
-        outcome.setEnabled(false);
+		classificationCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseClassification));
+		getContent().addComponent(classificationCheckBox, CLASSIFICATION_CHECKBOX);
+		investigationStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkInvestigationStatus));
+		getContent().addComponent(investigationStatusCheckBox, INVESTIGATION_STATUS_CHECKBOX);
+		outcomeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseOutcome));
+		getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
+		OptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, OptionGroup.class);
+		caseClassification.setEnabled(false);
+		OptionGroup investigationStatus = addField(CaseBulkEditData.INVESTIGATION_STATUS, OptionGroup.class);
+		investigationStatus.setEnabled(false);
+		OptionGroup outcome = addField(CaseBulkEditData.OUTCOME, OptionGroup.class);
+		outcome.setEnabled(false);
 
-        if (singleSelectedDistrict != null) {
-            surveillanceOfficerCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkSurveillanceOfficer));
-            getContent().addComponent(surveillanceOfficerCheckBox, SURVEILLANCE_OFFICER_CHECKBOX);
-            ComboBox surveillanceOfficer = addField(CaseBulkEditData.SURVEILLANCE_OFFICER, ComboBox.class);
-            surveillanceOfficer.setEnabled(false);
-            FieldHelper.addSoftRequiredStyleWhen(
-                    getFieldGroup(),
-                    surveillanceOfficerCheckBox,
-                    Arrays.asList(CaseBulkEditData.SURVEILLANCE_OFFICER),
-                    Arrays.asList(true),
-                    null);
-            List<UserReferenceDto> assignableSurveillanceOfficers =
-                    FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, UserRole.SURVEILLANCE_OFFICER);
-            FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
+		if (singleSelectedDistrict != null) {
+			surveillanceOfficerCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkSurveillanceOfficer));
+			getContent().addComponent(surveillanceOfficerCheckBox, SURVEILLANCE_OFFICER_CHECKBOX);
+			ComboBox surveillanceOfficer = addField(CaseBulkEditData.SURVEILLANCE_OFFICER, ComboBox.class);
+			surveillanceOfficer.setEnabled(false);
+			FieldHelper.addSoftRequiredStyleWhen(
+				getFieldGroup(),
+				surveillanceOfficerCheckBox,
+				Arrays.asList(CaseBulkEditData.SURVEILLANCE_OFFICER),
+				Arrays.asList(true),
+				null);
+			List<UserReferenceDto> assignableSurveillanceOfficers =
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, UserRole.SURVEILLANCE_OFFICER);
+			FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
 
-            surveillanceOfficerCheckBox.addValueChangeListener(e -> {
-                surveillanceOfficer.setEnabled((boolean) e.getProperty().getValue());
-            });
-        }
+			surveillanceOfficerCheckBox.addValueChangeListener(e -> {
+				surveillanceOfficer.setEnabled((boolean) e.getProperty().getValue());
+			});
+		}
 
-        healthFacilityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkFacility));
-        getContent().addComponent(healthFacilityCheckbox, HEALTH_FACILITY_CHECKBOX);
+		healthFacilityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkFacility));
+		getContent().addComponent(healthFacilityCheckbox, HEALTH_FACILITY_CHECKBOX);
 
-        ComboBox region = addInfrastructureField(CaseBulkEditData.REGION);
-        region.setEnabled(false);
-        ComboBox district = addInfrastructureField(CaseBulkEditData.DISTRICT);
-        district.setEnabled(false);
-        ComboBox community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
-        community.setNullSelectionAllowed(true);
-        community.setEnabled(false);
-        facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
-        facilityOrHome.setId("facilityOrHome");
-        facilityOrHome.setWidth(100, Unit.PERCENTAGE);
-        facilityOrHome.setEnabled(false);
-        CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
-        getContent().addComponent(facilityOrHome, FACILITY_OR_HOME_LOC);
+		ComboBox region = addInfrastructureField(CaseBulkEditData.REGION);
+		region.setEnabled(false);
+		ComboBox district = addInfrastructureField(CaseBulkEditData.DISTRICT);
+		district.setEnabled(false);
+		ComboBox community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
+		community.setNullSelectionAllowed(true);
+		community.setEnabled(false);
+		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome.setId("facilityOrHome");
+		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
+		facilityOrHome.setEnabled(false);
+		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
+		getContent().addComponent(facilityOrHome, FACILITY_OR_HOME_LOC);
 
-        healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
-        healthFacilityDetails.setVisible(false);
+		healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+		healthFacilityDetails.setVisible(false);
 
-        facilityTypeGroup = new ComboBox();
-        facilityTypeGroup.setId("typeGroup");
-        facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
-        facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
-        facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
-        facilityTypeGroup.setEnabled(false);
-        getContent().addComponent(facilityTypeGroup, TYPE_GROUP_LOC);
-        facilityType = new ComboBox();
-        facilityType.setId(CaseDataDto.FACILITY_TYPE);
-        facilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
-        facilityType.setWidth(100, Unit.PERCENTAGE);
-        facilityType.setEnabled(false);
-        getContent().addComponent(facilityType, TYPE_LOC);
-        ComboBox facility = addInfrastructureField(CaseBulkEditData.HEALTH_FACILITY);
-        facility.setImmediate(true);
-        facility.setEnabled(false);
-        region.addValueChangeListener(e -> {
-            RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
-            FieldHelper
-                    .updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
-        });
-        healthFacilityDetails.addValueChangeListener(e -> {
-            this.getValue().setHealthFacilityDetails(healthFacilityDetails.getValue());
-            updateFacilityFields(facility, healthFacilityDetails);
-        });
-        district.addValueChangeListener(e -> {
-            FieldHelper.removeItems(facility);
-            FieldHelper.removeItems(community);
-            DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-            FieldHelper.updateItems(
-                    community,
-                    districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-            if (districtDto != null && facilityType.getValue() != null) {
-                FieldHelper.updateItems(
-                        facility,
-                        FacadeProvider.getFacilityFacade()
-                                .getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
-            }
-        });
-        community.addValueChangeListener(e -> {
-            FieldHelper.removeItems(facility);
-            CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-            if (facilityType.getValue() != null) {
-                FieldHelper.updateItems(
-                        facility,
-                        communityDto != null
-                                ? FacadeProvider.getFacilityFacade()
-                                .getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, false)
-                                : district.getValue() != null
-                                ? FacadeProvider.getFacilityFacade()
-                                .getActiveFacilitiesByDistrictAndType(
-                                        (DistrictReferenceDto) district.getValue(),
-                                        (FacilityType) facilityType.getValue(),
-                                        true,
-                                        false)
-                                : null);
-            }
-        });
-        facilityTypeGroup.addValueChangeListener(e -> {
-            FieldHelper.removeItems(facility);
-            FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
-        });
-        facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY); // default value
+		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup.setId("typeGroup");
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
+		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+		facilityTypeGroup.setEnabled(false);
+		getContent().addComponent(facilityTypeGroup, TYPE_GROUP_LOC);
+		facilityType = new ComboBox();
+		facilityType.setId(CaseDataDto.FACILITY_TYPE);
+		facilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+		facilityType.setWidth(100, Unit.PERCENTAGE);
+		facilityType.setEnabled(false);
+		getContent().addComponent(facilityType, TYPE_LOC);
+		ComboBox facility = addInfrastructureField(CaseBulkEditData.HEALTH_FACILITY);
+		facility.setImmediate(true);
+		facility.setEnabled(false);
+		region.addValueChangeListener(e -> {
+			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
+			FieldHelper
+				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+		});
+		healthFacilityDetails.addValueChangeListener(e -> {
+			this.getValue().setHealthFacilityDetails(healthFacilityDetails.getValue());
+			updateFacilityFields(facility, healthFacilityDetails);
+		});
+		district.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			FieldHelper.removeItems(community);
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				community,
+				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			if (districtDto != null && facilityType.getValue() != null) {
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
+			}
+		});
+		community.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+			if (facilityType.getValue() != null) {
+				FieldHelper.updateItems(
+					facility,
+					communityDto != null
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, false)
+						: district.getValue() != null
+							? FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(
+									(DistrictReferenceDto) district.getValue(),
+									(FacilityType) facilityType.getValue(),
+									true,
+									false)
+							: null);
+			}
+		});
+		facilityTypeGroup.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+		});
+		facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY); // default value
 
         facilityType.addValueChangeListener(e -> {
             FieldHelper.removeItems(facility);
@@ -316,31 +318,30 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                     facilityType.setValue(FacilityType.HOSPITAL);
                 }
 
-                if (facilityType.getValue() != null) {
-                    updateFacility((DistrictReferenceDto) district.getValue(), (CommunityReferenceDto) community.getValue(), facility);
-                }
-                this.getContent().removeComponent(warningLayout);
-                healthFacilityDetails.setVisible(false);
-            } else {
-                long pseudonymizedCount = selectedCases.stream().filter(caze ->
-                        caze.isPseudonymized()).count();
-                if (pseudonymizedCount > 0) {
-                    this.getContent().addComponent(warningLayout, WARNING_LAYOUT);
+				if (facilityType.getValue() != null) {
+					updateFacility((DistrictReferenceDto) district.getValue(), (CommunityReferenceDto) community.getValue(), facility);
+				}
+				this.getContent().removeComponent(warningLayout);
+				healthFacilityDetails.setVisible(false);
+			} else {
+				long pseudonymizedCount = selectedCases.stream().filter(caze -> caze.isPseudonymized()).count();
+				if (pseudonymizedCount > 0) {
+					this.getContent().addComponent(warningLayout, WARNING_LAYOUT);
 
-                    healthFacilityDetails.setVisible(true);
-                }
-                FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
-                facility.addItem(noFacilityRef);
-                facility.setValue(noFacilityRef);
-            }
-        });
+					healthFacilityDetails.setVisible(true);
+				}
+				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+				facility.addItem(noFacilityRef);
+				facility.setValue(noFacilityRef);
+			}
+		});
 
-        facility.addValueChangeListener(e -> {
-            updateFacilityFields(facility, healthFacilityDetails);
-        });
-        facilityType.setValue(FacilityType.HOSPITAL); // default
+		facility.addValueChangeListener(e -> {
+			updateFacilityFields(facility, healthFacilityDetails);
+		});
+		facilityType.setValue(FacilityType.HOSPITAL); // default
 
-        region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
         FieldHelper.setRequiredWhen(getFieldGroup(), diseaseCheckBox, Arrays.asList(CaseBulkEditData.DISEASE), Arrays.asList(true));
         FieldHelper
@@ -395,77 +396,77 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
         });
     }
 
-    @Override
-    protected String createHtmlLayout() {
-        return HTML_LAYOUT;
-    }
+	@Override
+	protected String createHtmlLayout() {
+		return HTML_LAYOUT;
+	}
 
-    public CheckBox getDiseaseCheckBox() {
-        return diseaseCheckBox;
-    }
+	public CheckBox getDiseaseCheckBox() {
+		return diseaseCheckBox;
+	}
 
-    public CheckBox getClassificationCheckBox() {
-        return classificationCheckBox;
-    }
+	public CheckBox getClassificationCheckBox() {
+		return classificationCheckBox;
+	}
 
-    public CheckBox getInvestigationStatusCheckBox() {
-        return investigationStatusCheckBox;
-    }
+	public CheckBox getInvestigationStatusCheckBox() {
+		return investigationStatusCheckBox;
+	}
 
-    public CheckBox getOutcomeCheckBox() {
-        return outcomeCheckBox;
-    }
+	public CheckBox getOutcomeCheckBox() {
+		return outcomeCheckBox;
+	}
 
-    public CheckBox getSurveillanceOfficerCheckBox() {
-        return surveillanceOfficerCheckBox;
-    }
+	public CheckBox getSurveillanceOfficerCheckBox() {
+		return surveillanceOfficerCheckBox;
+	}
 
-    public CheckBox getHealthFacilityCheckbox() {
-        return healthFacilityCheckbox;
-    }
+	public CheckBox getHealthFacilityCheckbox() {
+		return healthFacilityCheckbox;
+	}
 
-    private void updateFacility(DistrictReferenceDto district, CommunityReferenceDto community, ComboBox facility) {
-        FieldHelper.removeItems(facility);
-        if (facilityType.getValue() != null && district != null) {
-            if (community != null) {
-                FieldHelper.updateItems(
-                        facility,
-                        FacadeProvider.getFacilityFacade()
-                                .getActiveFacilitiesByCommunityAndType(community, (FacilityType) facilityType.getValue(), true, false));
-            } else {
-                FieldHelper.updateItems(
-                        facility,
-                        FacadeProvider.getFacilityFacade()
-                                .getActiveFacilitiesByDistrictAndType(district, (FacilityType) facilityType.getValue(), true, false));
-            }
-        }
-    }
+	private void updateFacility(DistrictReferenceDto district, CommunityReferenceDto community, ComboBox facility) {
+		FieldHelper.removeItems(facility);
+		if (facilityType.getValue() != null && district != null) {
+			if (community != null) {
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByCommunityAndType(community, (FacilityType) facilityType.getValue(), true, false));
+			} else {
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(district, (FacilityType) facilityType.getValue(), true, false));
+			}
+		}
+	}
 
-    private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
+	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
 
-        if (cbFacility.getValue() != null) {
-            boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-            boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-            boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+		if (cbFacility.getValue() != null) {
+			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
 
-            tfFacilityDetails.setVisible(visibleAndRequired);
+			tfFacilityDetails.setVisible(visibleAndRequired);
 
-            if (otherHealthFacility) {
-                tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
-                tfFacilityDetails.setRequired(visibleAndRequired);
-            }
-            if (noneHealthFacility) {
-                tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
-            }
-            if (!visibleAndRequired) {
-                tfFacilityDetails.clear();
-            }
-        } else {
-            if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
-                tfFacilityDetails.setVisible(false);
-                tfFacilityDetails.setRequired(false);
-                tfFacilityDetails.clear();
-            }
-        }
-    }
+			if (otherHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+				tfFacilityDetails.setRequired(visibleAndRequired);
+			}
+			if (noneHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
+			}
+			if (!visibleAndRequired) {
+				tfFacilityDetails.clear();
+			}
+		} else {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
+				tfFacilityDetails.setVisible(false);
+				tfFacilityDetails.setRequired(false);
+				tfFacilityDetails.clear();
+			}
+		}
+	}
 }
