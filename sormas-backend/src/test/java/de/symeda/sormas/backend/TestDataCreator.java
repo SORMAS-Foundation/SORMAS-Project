@@ -474,6 +474,10 @@ public class TestDataCreator {
 		return contact;
 	}
 
+	public TaskDto createTask(UserReferenceDto assigneeUser) {
+		return createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, new Date(), assigneeUser);
+	}
+
 	public TaskDto createTask(
 		TaskContext context,
 		TaskType type,
@@ -552,6 +556,7 @@ public class TestDataCreator {
 
 		return createEvent(
 			EventStatus.SIGNAL,
+			"title",
 			"Description",
 			"FirstName",
 			"LastName",
@@ -567,6 +572,7 @@ public class TestDataCreator {
 
 	public EventDto createEvent(
 		EventStatus eventStatus,
+		String eventTitle,
 		String eventDesc,
 		String srcFirstName,
 		String srcLastName,
@@ -579,7 +585,7 @@ public class TestDataCreator {
 		Disease disease,
 		DistrictReferenceDto district) {
 
-		return createEvent(eventStatus, eventDesc, reportingUser, (event) -> {
+		return createEvent(eventStatus, eventTitle, eventDesc, reportingUser, (event) -> {
 			event.setSrcFirstName(srcFirstName);
 			event.setSrcLastName(srcLastName);
 			event.setSrcTelNo(srcTelNo);
@@ -593,10 +599,16 @@ public class TestDataCreator {
 		});
 	}
 
-	public EventDto createEvent(EventStatus eventStatus, String eventDesc, UserReferenceDto reportingUser, Consumer<EventDto> customSettings) {
+	public EventDto createEvent(
+		EventStatus eventStatus,
+		String eventTitle,
+		String eventDesc,
+		UserReferenceDto reportingUser,
+		Consumer<EventDto> customSettings) {
 
 		EventDto event = EventDto.build();
 		event.setEventStatus(eventStatus);
+		event.setEventTitle(eventTitle);
 		event.setEventDesc(eventDesc);
 		event.setReportingUser(reportingUser);
 

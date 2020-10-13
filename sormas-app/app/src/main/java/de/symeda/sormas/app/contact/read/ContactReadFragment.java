@@ -16,10 +16,10 @@
 package de.symeda.sormas.app.contact.read;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import android.os.Bundle;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -83,6 +83,9 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 			contentBinding.contactExternalID.setVisibility(GONE);
 			contentBinding.contactContactIdentificationSource.setVisibility(GONE);
 		}
+
+		contentBinding.contactQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
+		contentBinding.contactQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
 	}
 
 	// Overrides

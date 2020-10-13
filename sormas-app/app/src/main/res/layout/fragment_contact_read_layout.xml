@@ -107,6 +107,11 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_returningTraveler"
+                    app:value="@{data.returningTraveler}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -218,11 +223,19 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextImageField
-                    android:id="@+id/caseData_quarantineExtended"
+                    android:id="@+id/contact_quarantineExtended"
                     app:dependencyParentField="@{contactQuarantine}"
                     app:dependencyParentValue="@{QuarantineType.HOME}"
                     app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
                     app:value="@{data.quarantineExtended}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/contact_quarantineReduced"
+                    app:dependencyParentField="@{contactQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@{data.quarantineReduced}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextImageField
@@ -275,6 +288,12 @@
                     app:dependencyParentValue="@{QuarantineType.HOME}"
                     app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
                     app:value="@{data.quarantineHelpNeeded}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_endOfQuarantineReason"
+                    app:appendValue="@{data.endOfQuarantineReasonDetails}"
+                    app:value="@{data.endOfQuarantineReason}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

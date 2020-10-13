@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -90,15 +91,15 @@ public class PersonController {
 	}
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
+		PersonContext personContext,
 		String personUuid,
 		Disease disease,
 		String diseaseDetails,
 		UserRight editUserRight,
-		final ViewMode viewMode,
-		boolean isInJurisdiction) {
-		PersonEditForm editForm = new PersonEditForm(disease, diseaseDetails, viewMode, isInJurisdiction);
-
+		final ViewMode viewMode) {
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
+
+		PersonEditForm editForm = new PersonEditForm(personContext, disease, diseaseDetails, viewMode, personDto.isPseudonymized());
 		editForm.setValue(personDto);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(

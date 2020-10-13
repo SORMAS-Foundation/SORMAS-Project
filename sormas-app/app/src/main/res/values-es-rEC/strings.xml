@@ -229,6 +229,8 @@
     <string name="confirmation_delete">¿Estás seguro de que deseas borrar este registro?</string>
     <string name="confirmation_pick_gps">¿Te encuentras en este lugar ahora?</string>
     <string name="confirmation_extend_quarantine">Are you sure you want to extend the quarantine?</string>
+    <string name="confirmation_reduce_quarantine">Are you sure you want to reduce the quarantine?</string>
+    <string name="confirmation_extend_followup">Would you also want the follow-up period to be extended accordingly?</string>
     <string name="description_epi_week">Semana EPI</string>
     <string name="description_first_name">Nombres</string>
     <string name="description_last_name">Apellidos</string>
@@ -255,6 +257,7 @@
     <string name="error_no_pathogentest_labuser">la prueba del patógeno no tiene usuario de laboratorio</string>
     <string name="heading_additional_details">General comment</string>
     <string name="heading_additional_medical_information">Información médica adicional</string>
+    <string name="heading_addresses">Addresses</string>
     <string name="heading_animal_contacts">Contactos animales</string>
     <string name="heading_app_download_failed">Descarga de la aplicación fallida</string>
     <string name="heading_app_downloading">Descargando</string>
@@ -359,6 +362,9 @@
     <string name="heading_change_laboratory_result">Cambiar resultado de laboratorio</string>
     <string name="heading_change_case_disease">Cambiar enfermedad del caso</string>
     <string name="heading_extend_quarantine">Extend quarantine</string>
+    <string name="heading_reduce_quarantine">Reduce quarantine</string>
+    <string name="heading_extend_followup">Extend follow-up period</string>
+    <string name="heading_contact_tracing_first_contact">First contact with Contact Tracing</string>
     <string name="hint_add_to_empty_list">Añade una nueva entrada pulsando el símbolo \"+\" en la parte superior derecha.</string>
     <string name="hint_clear">Limpiar</string>
     <string name="hint_create_pin">Por favor, elija un PIN de cuatro dígitos que utilizará para autenticarse cuando abra la aplicación SORMAS.</string>

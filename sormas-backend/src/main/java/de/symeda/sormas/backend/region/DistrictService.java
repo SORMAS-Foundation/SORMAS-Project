@@ -86,7 +86,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, District> from) {
 		// no filter by user needed
 		return null;
 	}

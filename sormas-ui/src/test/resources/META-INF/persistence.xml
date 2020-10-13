@@ -55,6 +55,8 @@
 		<class>de.symeda.sormas.backend.region.Area</class>
 		<class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
 		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
+		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo</class>
+		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

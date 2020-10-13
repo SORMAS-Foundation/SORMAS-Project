@@ -29,7 +29,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.ui.SubMenu;
 
 @SuppressWarnings("serial")
-public abstract class AbstractSubNavigationView extends AbstractView {
+public abstract class AbstractSubNavigationView<SC extends Component> extends AbstractView {
 
 	private String params;
 
@@ -38,7 +38,7 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 	private VerticalLayout infoLayout;
 	private Label infoLabel;
 	private Label infoLabelSub;
-	private Component subComponent;
+	protected SC subComponent;
 
 	protected AbstractSubNavigationView(String viewName) {
 		super(viewName);
@@ -91,7 +91,7 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 
 	public abstract void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params);
 
-	protected void setSubComponent(Component newComponent) {
+	protected void setSubComponent(SC newComponent) {
 
 		if (subComponent != null) {
 			removeComponent(subComponent);

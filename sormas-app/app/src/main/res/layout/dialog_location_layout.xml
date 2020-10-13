@@ -26,6 +26,7 @@
 
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.person.PersonAddressType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.location.Location" />
     </data>
@@ -44,6 +45,21 @@
             android:id="@+id/main_content">
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/location_addressType"
+                style="@style/ControlSingleColumnStyle"
+                android:visibility="gone"
+                app:required="true"
+                app:value="@={data.addressType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_addressTypeDetails"
+                style="@style/ControlSingleColumnStyle"
+                android:visibility="gone"
+                app:value="@={data.addressTypeDetails}"
+                app:dependencyParentField="@{locationAddressType}"
+                app:dependencyParentValue="@{PersonAddressType.OTHER_ADDRESS}" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/location_region"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.region}" />
@@ -57,6 +73,27 @@
                 android:id="@+id/location_community"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.community}" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/facilityTypeGroup"
+                style="@style/ControlSingleColumnStyle"
+                app:caption="@string/caption_facility_type_group"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/location_facilityType"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.facilityType}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/location_facility"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.facility}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_facilityDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:required="true"
+                app:value="@={data.facilityDetails}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/location_postalCode"

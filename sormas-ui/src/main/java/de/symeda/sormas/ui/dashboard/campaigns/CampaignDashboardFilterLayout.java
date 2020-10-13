@@ -57,6 +57,11 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignFilter);
+
+		final CampaignReferenceDto lastStartedCampaign = dashboardDataProvider.getLastStartedCampaign();
+		if (lastStartedCampaign != null) {
+			campaignFilter.setValue(lastStartedCampaign);
+		}
 		dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
 	}
 

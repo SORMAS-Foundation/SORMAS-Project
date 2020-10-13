@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.caze;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
@@ -39,12 +40,12 @@ public class CasePersonView extends AbstractCaseView {
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
+				PersonContext.CASE,
 				caseData.getPerson().getUuid(),
 				caseData.getDisease(),
 				caseData.getDiseaseDetails(),
 				UserRight.CASE_EDIT,
-				getViewMode(),
-				FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid()));
+				getViewMode());
 
 		setSubComponent(personEditComponent);
 		setCaseEditPermission(personEditComponent);

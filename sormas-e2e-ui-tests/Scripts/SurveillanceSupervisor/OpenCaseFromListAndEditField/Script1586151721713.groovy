@@ -1,5 +1,6 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+
 import com.hzi.Helper as Helper
 import com.hzi.TestDataConnector as TestDataConnector
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
@@ -16,11 +17,12 @@ String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_cas
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPersonName'), [('personName') : (firstName + 
         ' ') + lastName], FailureHandling.STOP_ON_FAILURE)
 
-// Switch to tab "Symttoms"
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Symptoms_tab'))
+// Switch to tab "Symptoms"
+WebUI.click(findTestObject('Surveillance/CaseView/div_Symptoms_tab'))
 
 // Set random text in "comment" field
-WebUI.click(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'))
+WebUI.scrollToElement(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'), 2)
+
 WebUI.setText(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'), Helper.generateString(
         'comment', 8))
 

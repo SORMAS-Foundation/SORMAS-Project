@@ -17,33 +17,37 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import java.util.Locale;
+import java.util.Properties;
+import java.util.regex.Pattern;
+
+import javax.annotation.Resource;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.Sormas2SormasConfig;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.regex.Pattern;
 
 /**
  * Provides the application configuration settings
  */
 @Stateless(name = "ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
+
+	private static final String AUTHENTICATION_PROVIDER = "authentication.provider";
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
@@ -87,17 +91,23 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID = "interface.symptomjournal.clientid";
 	public static final String INTERFACE_SYMPTOM_JOURNAL_SECRET = "interface.symptomjournal.secret";
 
+	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
+
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
 	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
 
 	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
-	private static final String SORMAS2SORMAS_KEY_ALIAS = "sormas2sormas.keyAlias";
+	private static final String SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME = "sormas2sormas.serverAccessDataFileName";
 	private static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
 	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
+
+	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
+
+	private static final String SURVNET_GATEWAY_URL = "survnet.url";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -162,6 +172,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 		String locale = getProperty(COUNTRY_LOCALE, Language.EN.getLocale().toString());
 		return normalizeLocaleString(locale);
+	}
+
+	@Override
+	public String getCountryCode() {
+		String locale = getProperty(COUNTRY_LOCALE, Language.EN.getLocale().toString());
+		String normalizedLocale = normalizeLocaleString(locale);
+
+		if (normalizedLocale.contains("-")) {
+			return normalizedLocale.substring(normalizedLocale.lastIndexOf("-") + 1);
+		} else {
+			return normalizedLocale;
+		}
 	}
 
 	static String normalizeLocaleString(String locale) {
@@ -356,15 +378,30 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public Sormas2SormasConfig getSormas2SormasConfig() {
-		Sormas2SormasConfig config = new Sormas2SormasConfig();
-		config.setFilePath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
-		config.setKeyAlias(getProperty(SORMAS2SORMAS_KEY_ALIAS, null));
+	public SormasToSormasConfig getSormasToSormasConfig() {
+		SormasToSormasConfig config = new SormasToSormasConfig();
+		config.setPath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
+		config.setServerAccessDataFileName(getProperty(SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME, null));
 		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));
 		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
 		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
 		return config;
+	}
+
+	@Override
+	public String getPatientDiaryUrl() {
+		return getProperty(INTERFACE_PATIENT_DIARY_URL, null);
+	}
+
+	@Override
+	public String getSormasToSormasUserPassword() {
+		return getProperty(SORMAS_TO_SORMAS_USER_PASSWORD, null);
+	}
+
+	@Override
+	public String getSurvnetGatewayUrl() {
+		return getProperty(SURVNET_GATEWAY_URL, null);
 	}
 
 	@Override
@@ -383,6 +420,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 				"https" }).isValid(piaUrl)) {
 			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL + "' is not a valid URL");
 		}
+	}
+
+	@Override
+	public String getAuthenticationProvider() {
+		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
 	}
 
 	@Override

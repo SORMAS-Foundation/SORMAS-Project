@@ -11,9 +11,14 @@ public class ContactEditAuthorization {
 	public static boolean isContactEditAllowed(Contact contact) {
 		User user = ConfigProvider.getUser();
 
-		return ContactJurisdictionHelper.isInJurisdictionOrOwned(
-			UserRole.getJurisdictionLevel(user.getUserRoles()),
-			JurisdictionHelper.createUserJurisdiction(user),
-			JurisdictionHelper.createContactJurisdictionDto(contact));
+		if (contact.getSormasToSormasOriginInfo() != null) {
+			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return !contact.isOwnershipHandedOver()
+			&& ContactJurisdictionHelper.isInJurisdictionOrOwned(
+				UserRole.getJurisdictionLevel(user.getUserRoles()),
+				JurisdictionHelper.createUserJurisdiction(user),
+				JurisdictionHelper.createContactJurisdictionDto(contact));
 	}
 }

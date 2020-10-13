@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -27,7 +28,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
-public class AbstractStatisticsView extends AbstractSubNavigationView {
+public class AbstractStatisticsView extends AbstractSubNavigationView<Component> {
 
 	public static final String ROOT_VIEW_NAME = "statistics";
 

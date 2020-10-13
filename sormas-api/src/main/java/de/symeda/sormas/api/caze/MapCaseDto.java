@@ -42,9 +42,11 @@ public class MapCaseDto implements Serializable {
 	private PersonReferenceDto person;
 	@PersonalData
 	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double healthFacilityLat;
 	@PersonalData
 	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double healthFacilityLon;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)

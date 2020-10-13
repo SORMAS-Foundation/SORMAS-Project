@@ -18,7 +18,7 @@ public class CampaignDiagramDefinitionService extends AbstractAdoService<Campaig
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<CampaignDiagramDefinition, CampaignDiagramDefinition> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignDiagramDefinition> from) {
 		return null;
 	}
 }

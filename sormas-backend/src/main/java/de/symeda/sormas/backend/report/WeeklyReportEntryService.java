@@ -57,7 +57,7 @@ public class WeeklyReportEntryService extends AbstractAdoService<WeeklyReportEnt
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReportEntry, WeeklyReportEntry> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReportEntry> from) {
 		return weeklyReportService.createUserFilter(cb, cq, from.join(WeeklyReportEntry.WEEKLY_REPORT, JoinType.LEFT));
 	}
 }

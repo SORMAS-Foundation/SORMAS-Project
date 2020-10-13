@@ -1,0 +1,127 @@
+@mixin print {
+  @media print {
+    // Adapt global layout : change scroll, …
+    body, html {
+      overflow: unset !important;
+      height: auto !important;
+    }
+    .v-app {
+      position: relative !important;
+      display: block !important;
+      height: auto !important;
+    }
+    .print-container {
+      padding: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      position: relative !important;
+    }
+    .print-container > .v-expand {
+      padding: 0 !important;
+    }
+    .v-app > .v-scrollable {
+      overflow: unset !important;
+    }
+    // Hide some components
+    .v-button {
+      display: none !important;
+    }
+    .v-slot-print-menu {
+      display: none !important;
+    }
+    .v-slot-print-view-container {
+      maring: 10px !important;
+    }
+    // Ensure block display for multipage print on Firefox
+    .v-widget, .v-slot {
+      display: block;
+    }
+    // but set some exceptions
+    .v-customcomponent .v-horizontal > .v-expand > .v-slot,
+    .side-component .v-horizontal > .v-expand > .v-slot {
+      display: inline-block;
+    }
+    // Navigation
+    .v-slot-view-header + .v-slot > .v-tabsheet {
+      display: none !important;
+    }
+    // Callout
+    .callout {
+      display: none !important;
+    }
+    // Side
+    .side-component {
+      width: auto !important;
+      min-width: unset !important;
+      height: auto !important;
+    }
+    .side-component .v-horizontal .v-slot {
+      display: inline-block;
+    }
+     // list
+    .v-slot-s-list-entry .s-list-entry {
+      height: auto !important;
+    }
+    // Filter form
+    .v-slot-filter-form {
+      width: unset !important;
+    }
+    .filter-form {
+      .v-button {
+        display: inline-block !important;
+      }
+      .v-widget, .v-slot {
+        display: inline-block !important;
+      }
+    }
+    .v-slot-filter {
+      display: inline-block !important;
+    }
+    .v-slot-filter .v-button {
+      display: inline-block !important;
+    }
+    .v-menubar {
+      display: none !important;
+    }
+    // Grid
+    .v-grid-scroller {
+      display: none !important;
+    }
+    .v-grid-tablewrapper {
+      height: unset !important;
+      display: contents !important;
+    }
+    .v-grid-tablewrapper {
+      width: 100% !important;
+    }
+    .v-grid-tablewrapper > table {
+      table-layout: auto !important;
+      display: table !important;
+      thead, tbody, tfoot {
+        display: table-row-group !important;
+        position: relative !important;
+        margin-top: 0 !important;
+        float: none !important;
+        transform: unset !important;
+      }
+      tr {
+        position: relative !important;
+        display: table-row !important;
+        float: none !important;
+        transform: unset !important;
+        td, th {
+          position: relative !important;
+          display: table-cell !important;
+          float: none !important;
+          width: unset !important;
+          height: unset !important;
+        }
+      }
+    }
+    .v-grid-select-all-checkbox,
+    .v-grid-selection-checkbox {
+      display: none !important;
+    }
+    // TODO: a lot of things…
+  }
+}

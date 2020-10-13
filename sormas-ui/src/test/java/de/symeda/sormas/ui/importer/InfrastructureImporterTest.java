@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -28,12 +28,15 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+//Using Silent Runner to ignore unnecessary stubbing exception
+//which is a side effect of extending AbstractBeanTest
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testUmlautsInInfrastructureImport() throws IOException, InvalidColumnException, InterruptedException {
+	public void testUmlautsInInfrastructureImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
@@ -60,10 +63,16 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user.toReference(), InfrastructureType.FACILITY);
 		importer.runImport();
 		getFacilityFacade().getByNameAndType("Facility with ü", district, community, null, false).get(0);
+
+		// Import point of entry from commented CSV file
+		File commentedPoeCsvFile = new File(getClass().getClassLoader().getResource("sormas_poe_import_test_comment.csv").getFile());
+		importer = new InfrastructureImporterExtension(commentedPoeCsvFile, user.toReference(), InfrastructureType.POINT_OF_ENTRY);
+		importer.runImport();
+		getPointOfEntryFacade().getByName("Airport A", district, false).get(0);
 	}
 
 	@Test
-	public void testDontImportDuplicateInfrastructure() throws IOException, InvalidColumnException, InterruptedException {
+	public void testDontImportDuplicateInfrastructure() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 

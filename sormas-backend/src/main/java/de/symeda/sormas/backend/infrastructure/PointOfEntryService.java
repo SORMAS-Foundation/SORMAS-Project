@@ -118,7 +118,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PointOfEntry, PointOfEntry> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PointOfEntry> from) {
 		return null;
 	}
 }

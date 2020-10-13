@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.campaign;
 
-import de.symeda.sormas.api.utils.SortProperty;
+import java.util.List;
 
 import javax.ejb.Remote;
-import java.util.List;
+
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface CampaignFacade {
@@ -12,11 +14,15 @@ public interface CampaignFacade {
 
 	List<CampaignReferenceDto> getAllCampaignsAsReference();
 
+	CampaignReferenceDto getLastStartedCampaign();
+
 	long count(CampaignCriteria campaignCriteria);
 
 	CampaignDto saveCampaign(CampaignDto dto);
 
 	CampaignDto getByUuid(String uuid);
+
+	List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid);
 
 	boolean isArchived(String uuid);
 
@@ -24,4 +30,7 @@ public interface CampaignFacade {
 
 	void archiveOrDearchiveCampaign(String campaignUuid, boolean archive);
 
+	CampaignReferenceDto getReferenceByUuid(String uuid);
+
+	boolean exists(String uuid);
 }

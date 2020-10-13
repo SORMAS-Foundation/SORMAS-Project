@@ -28,11 +28,15 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.JoinTableReference;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -47,6 +51,7 @@ public class Location extends PseudonymizableAdo {
 	public static final String TABLE_NAME = "location";
 	public static final String I18N_PREFIX = "Location";
 	public static final String COMMUNITY = "community";
+	public static final String PERSON = "person";
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String details;
@@ -81,6 +86,20 @@ public class Location extends PseudonymizableAdo {
 	private PersonAddressType addressType;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String addressTypeDetails;
+	@Column
+	private FacilityType facilityType;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Facility facility;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String facilityDetails;
+
+	/**
+	 * Dirty fix for person-location association; doing this with a JoinTable is not
+	 * easy in SQLite; only locations that are part of the addresses field of a person
+	 * have this association.
+	 */
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Person person;
 
 	@Bindable
 	public String getDetails() {
@@ -197,6 +216,39 @@ public class Location extends PseudonymizableAdo {
 
 	public void setAddressTypeDetails(String addressTypeDetails) {
 		this.addressTypeDetails = addressTypeDetails;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public Facility getFacility() {
+		return facility;
+	}
+
+	public void setFacility(Facility facility) {
+		this.facility = facility;
+	}
+
+	public String getFacilityDetails() {
+		return facilityDetails;
+	}
+
+	public void setFacilityDetails(String facilityDetails) {
+		this.facilityDetails = facilityDetails;
+	}
+
+	@JoinTableReference
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	public String getCompleteString() {
@@ -326,4 +378,5 @@ public class Location extends PseudonymizableAdo {
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
 	}
+
 }

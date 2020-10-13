@@ -17,6 +17,28 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
+import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
+import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.style;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.inlineLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
@@ -38,6 +60,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -46,8 +69,11 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CovidTestReason;
+import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -59,6 +85,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -72,43 +99,20 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
-import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
-import static de.symeda.sormas.ui.utils.CssStyles.style;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.inlineLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
@@ -128,6 +132,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
+	private static final String CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC = "contactTracingFirstContact";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -143,6 +148,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, ASSIGN_NEW_EPID_NUMBER_LOC) +
 					loc(EPID_NUMBER_WARNING_LOC) +
 					fluidRowLocs(6, CaseDataDto.EXTERNAL_ID, 6, null) +
+					fluidRowLocs(6, CaseDataDto.CASE_ID_ISM, 6, null) +
 					fluidRow(
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 							fluidColumn(6, 0, locs(
@@ -165,11 +171,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
 					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3, CaseDataDto.QUARANTINE_TO) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_EXTENDED) +
+					fluidRowLocs(CaseDataDto.QUARANTINE_REDUCED) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_TYPE_DETAILS) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT, CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_HELP_NEEDED) +
+					fluidRowLocs(CaseDataDto.WAS_IN_QUARANTINE_BEFORE_ISOLATION) +
+					fluidRowLocs(CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION, CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS) +
+					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
+					fluidRowLocs(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "")
@@ -181,7 +192,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE) +
 					fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME) +
 					fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
-					fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
+					fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
+					loc(CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC) +
+					fluidRowLocs(CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_DATE)
+
+			;
 
 	private static final String FOLLOWUP_LAYOUT =
 			loc(FOLLOW_UP_STATUS_HEADING_LOC) +
@@ -203,6 +218,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
+	private CheckBox quarantineExtended;
+	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	private OptionGroup facilityOrHome;
@@ -210,7 +227,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityType;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 
-	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isInJurisdiction) {
+	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
 
 		super(
 			CaseDataDto.class,
@@ -219,10 +236,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-			UiFieldAccessCheckers.withCheckers(
-				isInJurisdiction,
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(isPseudonymized));
 
 		this.caseUuid = caseUuid;
 		this.person = person;
@@ -274,9 +288,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		style(epidField, ERROR_COLOR_PRIMARY);
 
 		// Button to automatically assign a new epid number
-		Button assignNewEpidNumberButton = ButtonHelper.createButton(Captions.actionAssignNewEpidNumber, e -> {
-			epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue().toReference()));
-		}, ValoTheme.BUTTON_DANGER, FORCE_CAPTION);
+		Button assignNewEpidNumberButton = ButtonHelper.createButton(
+			Captions.actionAssignNewEpidNumber,
+			e -> epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue().toReference())),
+			ValoTheme.BUTTON_DANGER,
+			FORCE_CAPTION);
 
 		getContent().addComponent(assignNewEpidNumberButton, ASSIGN_NEW_EPID_NUMBER_LOC);
 		assignNewEpidNumberButton.setVisible(false);
@@ -288,7 +304,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
 		addField(CaseDataDto.OUTCOME, OptionGroup.class);
 		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(CaseDataDto.REPORTING_TYPE);
 		}
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
@@ -302,10 +318,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
 		quarantine = addField(CaseDataDto.QUARANTINE);
+		quarantine.addValueChangeListener(e -> onValueChange());
 		quarantineFrom = addField(CaseDataDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
 			cbCaseClassification.addValidator(
 				new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
@@ -336,11 +353,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		CheckBox quarantineExtended = addField(CaseDataDto.QUARANTINE_EXTENDED, CheckBox.class);
+		quarantineExtended = addField(CaseDataDto.QUARANTINE_EXTENDED, CheckBox.class);
 		quarantineExtended.setEnabled(false);
 		quarantineExtended.setVisible(false);
 		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
-		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended));
+
+		quarantineReduced = addField(CaseDataDto.QUARANTINE_REDUCED, CheckBox.class);
+		quarantineReduced.setEnabled(false);
+		quarantineReduced.setVisible(false);
+		CssStyles.style(quarantineReduced, CssStyles.FORCE_CAPTION);
 
 		TextField quarantineHelpNeeded = addField(CaseDataDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -354,8 +375,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays
-				.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_EXTENDED, CaseDataDto.QUARANTINE_HELP_NEEDED),
+			Arrays.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
 			CaseDataDto.QUARANTINE,
 			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
 			true);
@@ -447,13 +467,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				(FacilityType) facilityType.getValue(),
 				facility);
 		});
-		community.addValueChangeListener(e -> {
-			updateFacility(
+		community.addValueChangeListener(
+			e -> updateFacility(
 				(DistrictReferenceDto) district.getValue(),
 				(CommunityReferenceDto) community.getValue(),
 				(FacilityType) facilityType.getValue(),
-				facility);
-		});
+				facility));
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
@@ -480,25 +499,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				}
 				updateFacilityDetails(facility, facilityDetails);
 			} else {
-
-				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
-				facility.addItem(noFacilityRef);
-				facility.setValue(noFacilityRef);
+				if (facility.getValue() == null && !facility.isReadOnly()) {
+					FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+					facility.addItem(noFacilityRef);
+					facility.setValue(noFacilityRef);
+				}
 			}
 		});
-		facilityTypeGroup.addValueChangeListener(e -> {
-			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
-		});
-		facilityType.addValueChangeListener(e -> {
-			updateFacility(
+		facilityTypeGroup.addValueChangeListener(
+			e -> FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue())));
+		facilityType.addValueChangeListener(
+			e -> updateFacility(
 				(DistrictReferenceDto) district.getValue(),
 				(CommunityReferenceDto) community.getValue(),
 				(FacilityType) facilityType.getValue(),
-				facility);
-		});
-		facility.addValueChangeListener(e -> {
-			updateFacilityDetails(facility, facilityDetails);
-		});
+				facility));
+		facility.addValueChangeListener(e -> updateFacilityDetails(facility, facilityDetails));
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
@@ -518,9 +534,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DateField dfFollowUpUntil = null;
 		if (caseFollowUpEnabled) {
 			addField(CaseDataDto.FOLLOW_UP_STATUS, ComboBox.class);
-			addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
+			addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 			dfFollowUpUntil = addDateField(CaseDataDto.FOLLOW_UP_UNTIL, DateField.class, -1);
-			dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended));
+			dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
 			addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
 
 			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS);
@@ -544,13 +560,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(Boolean.TRUE));
 		}
 		final DateField finalFollowUpUntil = dfFollowUpUntil;
-
+		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, finalFollowUpUntil));
+		this.addValueChangeListener(e -> onValueChange());
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
 
 		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
-		additionalDetails.setRows(3);
+		additionalDetails.setRows(6);
+		additionalDetails.setDescription(
+			I18nProperties.getPrefixDescription(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		addField(CaseDataDto.PREGNANT, OptionGroup.class);
@@ -567,13 +587,47 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
 			CaseDataDto.VACCINATION_DATE);
 
-		// Set initial visibilities & accesses
+		// Swiss fields
+		TextField caseIdIsmField = addField(CaseDataDto.CASE_ID_ISM);
+		caseIdIsmField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caseIdIsmField.getCaption()));
+		addFields(CaseDataDto.COVID_TEST_REASON, CaseDataDto.COVID_TEST_REASON_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			CaseDataDto.COVID_TEST_REASON_DETAILS,
+			CaseDataDto.COVID_TEST_REASON,
+			Arrays.asList(CovidTestReason.OTHER_REASON),
+			true);
 
+		if (fieldVisibilityCheckers.isVisible(CaseDataDto.class, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE)) {
+			Label contactTracingFirstContactHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactTracingFirstContact));
+			contactTracingFirstContactHeadingLabel.addStyleName(H3);
+			getContent().addComponent(contactTracingFirstContactHeadingLabel, CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC);
+
+			addFields(CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_DATE);
+		}
+
+		addField(CaseDataDto.WAS_IN_QUARANTINE_BEFORE_ISOLATION).setStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		addFields(CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION, CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS,
+			CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION,
+			Arrays.asList(QuarantineReason.OTHER_REASON),
+			true);
+
+		addFields(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			CaseDataDto.END_OF_ISOLATION_REASON_DETAILS,
+			CaseDataDto.END_OF_ISOLATION_REASON,
+			Arrays.asList(EndOfIsolationReason.OTHER),
+			true);
+
+		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
 		// Set requirements that don't need visibility changes and read only status
-
 		setRequired(
 			true,
 			CaseDataDto.REPORT_DATE,
@@ -630,7 +684,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
 		// dynamically setting the visibility
-
 		if (isVisibleAllowed(CaseDataDto.PREGNANT)) {
 			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM);
 		}
@@ -759,7 +812,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		// Other initializations
-
 		if (disease == Disease.MONKEYPOX) {
 			Image smallpoxVaccinationScarImg = new Image(null, new ThemeResource("img/smallpox-vaccination-scar.jpg"));
 			style(smallpoxVaccinationScarImg, VSPACE_3);
@@ -770,9 +822,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				.setVisible(getFieldGroup().getField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED).getValue() == YesNoUnknown.YES);
 
 			// Set up image visibility listener
-			getFieldGroup().getField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED).addValueChangeListener(e -> {
-				getContent().getComponent(SMALLPOX_VACCINATION_SCAR_IMG).setVisible(e.getProperty().getValue() == YesNoUnknown.YES);
-			});
+			getFieldGroup().getField(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED)
+				.addValueChangeListener(
+					e -> getContent().getComponent(SMALLPOX_VACCINATION_SCAR_IMG).setVisible(e.getProperty().getValue() == YesNoUnknown.YES));
 		}
 
 		List<String> medicalInformationFields =
@@ -794,9 +846,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Automatic case classification rules button - invisible for other diseases
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
 		if (disease != Disease.OTHER && diseaseClassificationCriteria != null) {
-			Button classificationRulesButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
-				ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria);
-			}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
+			Button classificationRulesButton = ButtonHelper.createIconButton(
+				Captions.info,
+				VaadinIcons.INFO_CIRCLE,
+				e -> ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria),
+				ValoTheme.BUTTON_PRIMARY,
+				FORCE_CAPTION);
 
 			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 		}
@@ -878,12 +933,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
 
-			if (isConfiguredServer("de")) {
-				setVisible(false, CaseDataDto.EPID_NUMBER);
-			} else {
-				setVisible(false, CaseDataDto.EXTERNAL_ID);
-			}
-
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
 				Date minimumFollowUpUntilDate = DateHelper.addDays(
@@ -911,29 +960,51 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 	}
 
-	private void onFollowUpUntilChanged(Property.ValueChangeEvent valueChangeEvent, DateField quarantineTo, CheckBox quarantineExtendedCheckBox) {
+	private void onFollowUpUntilChanged(
+		Property.ValueChangeEvent valueChangeEvent,
+		DateField quarantineTo,
+		CheckBox quarantineExtendedCheckBox,
+		CheckBox quarantineReducedCheckBox) {
 		Property<Date> followUpUntilField = valueChangeEvent.getProperty();
-		Date followUpUntil = followUpUntilField.getValue();
-		if (quarantineTo.getValue() != null && (followUpUntil == null || followUpUntil.compareTo(quarantineTo.getValue()) != 0)) {
+		Date newFollowUpUntil = followUpUntilField.getValue();
+		CaseDataDto originalCase = getInternalValue();
+		Date oldFollowUpUntil = originalCase.getFollowUpUntil();
+		Date oldQuarantineEnd = originalCase.getQuarantineTo();
+		if (shouldAdjustQuarantine(quarantineTo, newFollowUpUntil, oldFollowUpUntil)) {
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingExtendQuarantine),
-				new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
+				I18nProperties.getString(Strings.headingAdjustQuarantine),
+				new Label(I18nProperties.getString(Strings.confirmationAlsoAdjustQuarantine)),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				640,
 				confirmed -> {
 					if (confirmed) {
 						quarantineChangedByFollowUpUntilChange = true;
-						quarantineTo.setValue(followUpUntil);
-						if (followUpUntil.compareTo(getInternalValue().getFollowUpUntil()) > 0) {
-							quarantineExtendedCheckBox.setValue(true);
+						quarantineTo.setValue(newFollowUpUntil);
+						if (oldQuarantineEnd != null) {
+							boolean quarantineExtended = quarantineTo.getValue().after(oldQuarantineEnd);
+							quarantineExtendedCheckBox.setValue(quarantineExtended);
+							quarantineReducedCheckBox.setValue(!quarantineExtended);
+							setVisible(quarantineExtended, CaseDataDto.QUARANTINE_EXTENDED);
+							setVisible(!quarantineExtended, CaseDataDto.QUARANTINE_REDUCED);
 						}
 					}
 				});
 		}
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
+	private boolean shouldAdjustQuarantine(DateField quarantineTo, Date newFollowUpUntil, Date oldFollowUpUntil) {
+		return newFollowUpUntil != null
+			&& (oldFollowUpUntil == null || newFollowUpUntil.after(oldFollowUpUntil))
+			&& quarantineTo.getValue() != null
+			&& newFollowUpUntil.compareTo(quarantineTo.getValue()) != 0;
+	}
+
+	private void onQuarantineEndChange(
+		Property.ValueChangeEvent valueChangeEvent,
+		CheckBox quarantineExtendedCheckBox,
+		CheckBox quarantineReducedCheckBox,
+		DateField followUpUntilField) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -941,26 +1012,99 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Date newQuarantineEnd = quarantineEndField.getValue();
 			CaseDataDto originalCase = getInternalValue();
 			Date oldQuarantineEnd = originalCase.getQuarantineTo();
-			if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
-				VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingExtendQuarantine),
-					new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					640,
-					confirmed -> {
-						if (confirmed) {
-							if (!originalCase.isQuarantineExtended()) {
-								quarantineExtendedCheckbox.setValue(true);
-							}
-						} else {
-							quarantineEndField.setValue(oldQuarantineEnd);
-						}
-					});
-			} else if (!originalCase.isQuarantineExtended()) {
-				quarantineExtendedCheckbox.setValue(false);
+			if (newQuarantineEnd != null) {
+				if (oldQuarantineEnd != null) {
+					if (newQuarantineEnd.after(oldQuarantineEnd)) {
+						confirmQuarantineEndExtended(
+							quarantineExtendedCheckBox,
+							quarantineReducedCheckBox,
+							quarantineEndField,
+							originalCase,
+							oldQuarantineEnd,
+							followUpUntilField);
+					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
+						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
+					}
+				}
+			} else if (!originalCase.isQuarantineExtended() && !originalCase.isQuarantineReduced()) {
+				setVisible(false, quarantineExtendedCheckBox.getId(), quarantineReducedCheckBox.getId());
+				quarantineExtendedCheckBox.setValue(false);
+				quarantineReducedCheckBox.setValue(false);
 			}
 		}
+	}
+
+	private void confirmQuarantineEndExtended(
+		CheckBox quarantineExtendedCheckbox,
+		CheckBox quarantineReducedCheckbox,
+		Property<Date> quarantineEndField,
+		CaseDataDto originalCase,
+		Date oldQuarantineEnd,
+		DateField followUpUntil) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingExtendQuarantine),
+			new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					quarantineExtendedCheckbox.setValue(true);
+					quarantineReducedCheckbox.setValue(false);
+					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
+					setVisible(false, CaseDataDto.QUARANTINE_REDUCED);
+					if (caseFollowUpEnabled && originalCase.getFollowUpUntil() != null) {
+						confirmExtendFollowUpPeriod(originalCase, quarantineEndField.getValue(), followUpUntil);
+					}
+				} else {
+					quarantineEndField.setValue(oldQuarantineEnd);
+				}
+			});
+	}
+
+	private void confirmExtendFollowUpPeriod(CaseDataDto originalCase, Date quarantineEnd, DateField followUpUntil) {
+		if (quarantineEnd.after(originalCase.getFollowUpUntil())) {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingExtendFollowUp),
+				new Label(I18nProperties.getString(Strings.confirmationExtendFollowUp)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						if (followUpUntil.isReadOnly()) {
+							followUpUntil.setReadOnly(false);
+							followUpUntil.setValue(quarantineEnd);
+							followUpUntil.setReadOnly(true);
+						} else {
+							followUpUntil.setValue(quarantineEnd);
+						}
+					}
+				});
+		}
+	}
+
+	private void confirmQuarantineEndReduced(
+		CheckBox quarantineExtendedCheckbox,
+		CheckBox quarantineReducedCheckbox,
+		Property<Date> quarantineEndField,
+		Date oldQuarantineEnd) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingReduceQuarantine),
+			new Label(I18nProperties.getString(Strings.confirmationReduceQuarantine)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					quarantineExtendedCheckbox.setValue(false);
+					quarantineReducedCheckbox.setValue(true);
+					setVisible(false, CaseDataDto.QUARANTINE_EXTENDED);
+					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
+				} else {
+					quarantineEndField.setValue(oldQuarantineEnd);
+				}
+			});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1019,7 +1163,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		super.setValue(newFieldValue);
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
-		// this hopefully resets everything to it's correct value
+		// this hopefully resets everything to its correct value
 		discard();
 	}
 
@@ -1055,7 +1199,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
 
 			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(visibleAndRequired);
+			tfFacilityDetails.setRequired(otherHealthFacility);
 
 			if (otherHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
@@ -1081,7 +1225,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel, String fieldValue) {
-		if (!isConfiguredServer("de")
+		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(), getValue().getDisease())) {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);
@@ -1089,8 +1233,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		} else {
 			epidField.setComponentError(null);
 			getContent().removeComponent(epidNumberWarningLabel);
-			assignNewEpidNumberButton
-				.setVisible(!isConfiguredServer("de") && !CaseLogic.isEpidNumberPrefix(fieldValue) && !CaseLogic.isCompleteEpidNumber(fieldValue));
+			assignNewEpidNumberButton.setVisible(
+				!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+					&& !CaseLogic.isEpidNumberPrefix(fieldValue)
+					&& !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}
 	}
 
@@ -1099,6 +1245,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		private static final long serialVersionUID = -5339850320902885768L;
 
 		private final AbstractSelect diseaseField;
+
 		private final Disease currentDisease;
 
 		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
@@ -1131,15 +1278,44 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(confirmDiseaseChangeComponent);
 				CloseListener closeListener = ce -> diseaseField.setValue(currentDisease);
 				popupWindow.addCloseListener(closeListener);
-				confirmDiseaseChangeComponent.addDoneListener(new DoneListener() {
-
-					public void onDone() {
-						popupWindow.removeCloseListener(closeListener);
-						popupWindow.close();
-					}
+				confirmDiseaseChangeComponent.addDoneListener(() -> {
+					popupWindow.removeCloseListener(closeListener);
+					popupWindow.close();
 				});
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingChangeCaseDisease));
 			}
+		}
+
+	}
+
+	private void onValueChange() {
+		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
+		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+			CaseDataDto caze = this.getInternalValue();
+			if (caze != null) {
+				quarantineFrom.setValue(caze.getQuarantineFrom());
+				if (caze.getQuarantineTo() == null) {
+					if (caseFollowUpEnabled) {
+						quarantineTo.setValue(caze.getFollowUpUntil());
+					}
+				} else {
+					quarantineTo.setValue(caze.getQuarantineTo());
+				}
+				if (caze.isQuarantineExtended()) {
+					quarantineExtended.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
+				}
+				if (caze.isQuarantineReduced()) {
+					quarantineReduced.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
+				}
+			}
+		} else {
+			quarantineFrom.clear();
+			quarantineTo.clear();
+			quarantineExtended.setValue(false);
+			quarantineReduced.setValue(false);
+			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
 		}
 	}
 }

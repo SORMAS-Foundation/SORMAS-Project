@@ -42,12 +42,15 @@ import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 
 @SuppressWarnings("serial")
 public class ClinicalCourseView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/clinicalcourse";
+
+	private CommitDiscardWrapperComponent<ClinicalCourseForm> editComponent;
 
 	private ClinicalVisitCriteria clinicalVisitCriteria;
 	private ClinicalVisitGrid clinicalVisitGrid;
@@ -131,22 +134,21 @@ public class ClinicalCourseView extends AbstractCaseView {
 			caze = FacadeProvider.getCaseFacade().saveCase(caze);
 		}
 
-		VerticalLayout container = new VerticalLayout();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 
 		container.addComponent(createClinicalVisitsHeader());
 
-		clinicalVisitGrid = new ClinicalVisitGrid(getCaseRef(), isCaseEditAllowed());
+		clinicalVisitGrid = new ClinicalVisitGrid(getCaseRef(), caze.isPseudonymized());
 		clinicalVisitGrid.setCriteria(clinicalVisitCriteria);
 		clinicalVisitGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
 		container.addComponent(clinicalVisitGrid);
 
-		CommitDiscardWrapperComponent<ClinicalCourseForm> clinicalCourseComponent =
-			ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid(), isCaseEditAllowed());
-		clinicalCourseComponent.setMargin(false);
-		container.addComponent(clinicalCourseComponent);
+		editComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid());
+		editComponent.setMargin(false);
+		container.addComponent(editComponent);
 
 		setSubComponent(container);
 

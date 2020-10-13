@@ -12,16 +12,17 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 
@@ -35,13 +36,13 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		+ fluidRowLocs(PrescriptionDto.ROUTE, PrescriptionDto.ROUTE_DETAILS)
 		+ loc(PrescriptionDto.ADDITIONAL_NOTES);
 
-	public PrescriptionForm(boolean create, boolean readOnly, boolean isInJurisdiction) {
+	public PrescriptionForm(boolean create, boolean readOnly, boolean isPseudonymized) {
 		super(
 			PrescriptionDto.class,
 			PrescriptionDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers(),
-			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 
 		getFieldGroup().setReadOnly(readOnly);
 
@@ -70,7 +71,11 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		addField(PrescriptionDto.DOSE, TextField.class);
 		ComboBox routeField = addField(PrescriptionDto.ROUTE, ComboBox.class);
 		addField(PrescriptionDto.ROUTE_DETAILS, TextField.class);
-		addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class).setRows(3);
+		TextArea additionalNotes = addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class);
+		additionalNotes.setRows(6);
+		additionalNotes.setDescription(
+			I18nProperties.getPrefixDescription(PrescriptionDto.I18N_PREFIX, PrescriptionDto.ADDITIONAL_NOTES, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		initializeAccessAndAllowedAccesses();
 

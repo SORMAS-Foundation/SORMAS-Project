@@ -189,6 +189,8 @@ public class ContactController {
 				person.setBirthdateMM(createForm.getBirthdateMM());
 				person.setBirthdateDD(createForm.getBirthdateDD());
 				person.setSex(createForm.getSex());
+				person.setPhone(createForm.getPhone());
+				person.setEmailAddress(createForm.getEmailAddress());
 
 				ControllerProvider.getPersonController()
 					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
@@ -259,11 +261,11 @@ public class ContactController {
 	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(
 		String contactUuid,
 		final ViewMode viewMode,
-		boolean isInJurisdiction) {
+		boolean isPsuedonymized) {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isInJurisdiction);
+		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
 			editForm,
@@ -516,6 +518,16 @@ public class ContactController {
 		UI.getCurrent().addWindow(window);
 	}
 
+	/**
+	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
+	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
+	 */
+	public void openDiaryTab(PersonDto person) {
+		String url = FacadeProvider.getConfigFacade().getPatientDiaryUrl();
+		url += "/enroll?personUuid=" + person.getUuid();
+		UI.getCurrent().getPage().open(url, "_blank");
+	}
+
 	private String getSymptomJournalAuthToken() {
 		String authenticationUrl = FacadeProvider.getConfigFacade().getSymptomJournalAuthUrl();
 		String clientId = FacadeProvider.getConfigFacade().getSymptomJournalClientId();
@@ -568,10 +580,10 @@ public class ContactController {
 		return document.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, boolean inJuridiction) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), inJuridiction);
+		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), contact.getEpiData().isPseudonymized());
 		epiDataForm.setValue(contact.getEpiData());
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(

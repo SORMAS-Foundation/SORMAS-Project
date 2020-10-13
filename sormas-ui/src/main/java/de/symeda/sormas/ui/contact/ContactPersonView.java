@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.contact;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
@@ -40,13 +41,7 @@ public class ContactPersonView extends AbstractContactView {
 		ContactDto dto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 
 		CommitDiscardWrapperComponent<PersonEditForm> contactPersonComponent = ControllerProvider.getPersonController()
-			.getPersonEditComponent(
-				dto.getPerson().getUuid(),
-				dto.getDisease(),
-				dto.getDiseaseDetails(),
-				UserRight.CONTACT_EDIT,
-				null,
-				FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid()));
+			.getPersonEditComponent(PersonContext.CONTACT,dto.getPerson().getUuid(), dto.getDisease(), dto.getDiseaseDetails(), UserRight.CONTACT_EDIT, null);
 		setSubComponent(contactPersonComponent);
 
 		setContactEditPermission(contactPersonComponent);

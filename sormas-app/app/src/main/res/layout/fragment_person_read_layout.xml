@@ -31,6 +31,9 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person" />
         <variable name="birthDayVisibility" type="Boolean" />
+        <variable name="addressList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.location.Location&gt;" />
+        <variable name="addressItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="addressBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
     </data>
 
     <ScrollView
@@ -265,6 +268,51 @@
                 app:value="@{data.address}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <LinearLayout
+                android:id="@+id/addresses_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/formListSectionBackground"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/parentLayoutHorizontalPadding"
+                android:paddingEnd="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalPadding">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:alternateBottomMarginIfEmpty="@{addressList}"
+                    app:emptyBottomMargin="@{@dimen/parentLayoutVerticalMargin}"
+                    app:nonEmptyBottomMargin="@{@dimen/closelyRelatedControlMarginBottom}">
+
+                    <TextView
+                        android:id="@+id/addresses_headline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/heading_addresses"
+                        style="@style/SubHeadingCompactStyle" />
+
+                </RelativeLayout>
+
+                <ImageView
+                    style="@style/FullHorizontalDividerStyle"
+                    app:goneIfEmpty="@{addressList}"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:padding="@dimen/rowListItemParentPadding"
+                    app:callback="@{addressItemClickCallback}"
+                    app:entries="@{addressList}"
+                    app:layout="@{@layout/row_person_address_layout}"
+                    app:bindCallback="@{addressBindCallback}" />
+
+            </LinearLayout>
+
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -279,60 +327,6 @@
                 app:value="@{data.occupationType}"
                 app:appendValue="@{data.occupationDetails}"
                 app:valueFormat="@string/two_strings_with_hyphen_format"
-                style="@style/ControlSingleColumnStyle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_occupationRegion"
-                    app:value="@{data.occupationRegion}"
-                    app:dependencyParentField="@{personOccupationType}"
-                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_occupationDistrict"
-                    app:value="@{data.occupationDistrict}"
-                    app:dependencyParentField="@{personOccupationType}"
-                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                    style="@style/ControlSecondOfTwoColumnsStyle" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_occupationCommunity"
-                    app:value="@{data.occupationCommunity}"
-                    app:dependencyParentField="@{personOccupationType}"
-                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_occupationFacilityType"
-                    style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:dependencyParentField="@{personOccupationType}"
-                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                    app:value="@{data.occupationFacilityType}"/>
-
-            </LinearLayout>
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/person_occupationFacility"
-                app:value="@{data.occupationFacility}"
-                app:dependencyParentField="@{personOccupationType}"
-                app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/person_occupationFacilityDetails"
-                app:value="@{data.occupationFacilityDetails}"
                 style="@style/ControlSingleColumnStyle" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>

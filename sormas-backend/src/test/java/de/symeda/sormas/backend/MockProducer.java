@@ -29,6 +29,7 @@ import java.util.Properties;
 import javax.ejb.SessionContext;
 import javax.ejb.TimerService;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Specializes;
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
@@ -36,6 +37,8 @@ import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClientProducer;
 
 /**
  * Creates mocks for resources needed in bean test / external services. <br />
@@ -52,6 +55,7 @@ public class MockProducer {
 	private static final TimerService timerService = mock(TimerService.class);
 	public static final Properties properties = new Properties();
 	private static final UserTransaction userTransaction = mock(UserTransaction.class);
+	private static final SormasToSormasRestClient SORMAS_TO_SORMAS_REST_CLIENT = mock(SormasToSormasRestClient.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -78,7 +82,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, SORMAS_TO_SORMAS_REST_CLIENT);
 		wireMocks();
 	}
 
@@ -125,5 +129,19 @@ public class MockProducer {
 	@Produces
 	public static Principal getPrincipal() {
 		return principal;
+	}
+
+	public static SormasToSormasRestClient getSormasToSormasClient() {
+		return SORMAS_TO_SORMAS_REST_CLIENT;
+	}
+
+	@Specializes
+	public static class MockRestClientBuilderProducer extends SormasToSormasRestClientProducer {
+
+		@Override
+		@Produces
+		public SormasToSormasRestClient sormasToSormasClient() {
+			return SORMAS_TO_SORMAS_REST_CLIENT;
+		}
 	}
 }
