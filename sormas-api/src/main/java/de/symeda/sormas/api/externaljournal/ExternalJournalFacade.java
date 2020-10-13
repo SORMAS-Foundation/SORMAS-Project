@@ -11,7 +11,7 @@ public interface ExternalJournalFacade {
 
 	String getPatientDiaryAuthToken();
 
-	ExternalPatientDto getPatientDiaryPerson(String uuid);
+	ExternalPatientDto getPatientDiaryPerson(String personUuid);
 
 	boolean registerPatientDiaryPerson(PersonDto person);
 

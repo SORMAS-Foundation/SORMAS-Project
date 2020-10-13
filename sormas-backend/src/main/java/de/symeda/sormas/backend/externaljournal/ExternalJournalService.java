@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.externaljournal;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;

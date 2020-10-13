@@ -31,6 +31,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.ui.utils.CssStyles;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -541,13 +542,20 @@ public class ContactController {
 		if (!externalJournalFacade.isPersonExportable(person)) {
 			showWarningPopup(I18nProperties.getCaption(Captions.patientDiaryPersonNotExportable));
 		} else {
-			if (externalJournalFacade.getPatientDiaryPerson(person.getUuid()) != null) {
-				showWarningPopup(I18nProperties.getCaption(Captions.patientDiaryPatientAlreadyExists));
+			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
+					|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
+				openPatientDiaryEnrollPage(person.getUuid());
 			} else {
 				boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
 				showPatientRegisterResultPopup(success);
 			}
 		}
+	}
+
+	private void openPatientDiaryEnrollPage(String personUuid) {
+		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
+		url += "/enroll?personUuid=" + personUuid;
+		UI.getCurrent().getPage().open(url, "_blank");
 	}
 
 	private void showWarningPopup(String message) {

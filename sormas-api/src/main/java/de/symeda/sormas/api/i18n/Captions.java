@@ -1054,7 +1054,6 @@ public interface Captions {
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";
-	String patientDiaryPatientAlreadyExists = "patientDiaryPatientAlreadyExists";
 	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
 	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
 	String patientDiaryRegistrationSuccess = "patientDiaryRegistrationSuccess";
