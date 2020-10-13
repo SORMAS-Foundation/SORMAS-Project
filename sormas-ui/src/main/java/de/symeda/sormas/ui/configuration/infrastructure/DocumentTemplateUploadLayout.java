@@ -51,7 +51,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		String headline = I18nProperties.getString(Strings.headingDownloadDocumentTemplateGuide);
 		String infoText = I18nProperties.getString(Strings.infoDownloadDocumentTemplateImportGuide);
 		Resource buttonIcon = VaadinIcons.FILE_PRESENTATION;
-		String buttonCaption = I18nProperties.getCaption(Captions.DocumentTemplate_downloadUploadGuide);
+		String buttonCaption = I18nProperties.getCaption(Captions.DocumentTemplate_documentTemplateGuide);
 		ImportLayoutComponent importGuideComponent = new ImportLayoutComponent(step, headline, infoText, buttonIcon, buttonCaption);
 		FileDownloader importGuideDownloader = new FileDownloader(importGuideResource);
 		importGuideDownloader.extend(importGuideComponent.getButton());

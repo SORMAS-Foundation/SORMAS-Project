@@ -27,7 +27,6 @@ public interface Captions {
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String Action_title = "Action.title";
-	String actionAbort = "actionAbort";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
@@ -40,7 +39,6 @@ public interface Captions {
 	String actionCompare = "actionCompare";
 	String actionConfirm = "actionConfirm";
 	String actionConfirmFilters = "actionConfirmFilters";
-	String actionContinue = "actionContinue";
 	String actionCreate = "actionCreate";
 	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
@@ -679,7 +677,7 @@ public interface Captions {
 	String districtArchivedDistricts = "districtArchivedDistricts";
 	String districtName = "districtName";
 	String DocumentTemplate = "DocumentTemplate";
-	String DocumentTemplate_downloadUploadGuide = "DocumentTemplate.downloadUploadGuide";
+	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
 	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
 	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";

@@ -76,11 +76,11 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingFileExists),
 				new Label(String.format(I18nProperties.getString(Strings.infoDocumentAlreadyExists), fName)),
-				I18nProperties.getCaption(Captions.actionContinue),
-				I18nProperties.getCaption(Captions.actionAbort),
+				I18nProperties.getCaption(Captions.actionConfirm),
+				I18nProperties.getCaption(Captions.actionCancel),
 				null,
 				ok -> {
-					if (ok.booleanValue() == true) {
+					if (ok.booleanValue()) {
 						byte[] filecontent;
 						try {
 							filecontent = Files.readAllBytes(file.toPath());
