@@ -153,13 +153,16 @@ public class ExternalJournalService {
 	 * 
 	 */
 	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact) {
-		Date latestSavedFollowUpUntilDate = personFacade.getLatestFollowUpEndDateByUuid(contact.getPerson().getUuid());
-		if (contact.getFollowUpUntil().after(latestSavedFollowUpUntilDate)) {
-			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
-				notifySymptomJournal(contact.getPerson().getUuid());
-			}
-			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
-				notifyPatientDiary(contact.getPerson().getUuid());
+		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
+		if (SymptomJournalStatus.REGISTERED.equals(savedStatus) || SymptomJournalStatus.ACCEPTED.equals(savedStatus)) {
+			Date latestSavedFollowUpUntilDate = personFacade.getLatestFollowUpEndDateByUuid(contact.getPerson().getUuid());
+			if (contact.getFollowUpUntil().after(latestSavedFollowUpUntilDate)) {
+				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
+					notifySymptomJournal(contact.getPerson().getUuid());
+				}
+				if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+					notifyPatientDiary(contact.getPerson().getUuid());
+				}
 			}
 		}
 	}
