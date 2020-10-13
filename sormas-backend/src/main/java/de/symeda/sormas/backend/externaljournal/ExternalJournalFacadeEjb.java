@@ -4,6 +4,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
+import de.symeda.sormas.api.externaljournal.ExternalPatientDto;
+import de.symeda.sormas.api.person.PersonDto;
 
 @Stateless(name = "ExternalJournalFacade")
 public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
@@ -20,4 +22,21 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	public String getPatientDiaryAuthToken() {
 		return externalJournalService.getPatientDiaryAuthToken();
 	}
+
+	@Override
+	public ExternalPatientDto getPatientDiaryPerson(String personUuid) {
+		return externalJournalService.getPatientDiaryPerson(personUuid).orElse(null);
+	}
+
+	@Override
+	public boolean registerPatientDiaryPerson(PersonDto person) {
+		return externalJournalService.registerPatientDiaryPerson(person);
+	}
+
+	@Override
+	public boolean isPersonExportable(PersonDto person) {
+		return externalJournalService.isPersonExportable(person);
+	}
+
+
 }

@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.externaljournal;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -17,9 +18,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +30,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.externaljournal.ExternalPatientDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 
 @Stateless
 @LocalBean
@@ -41,6 +48,7 @@ public class ExternalJournalService {
 	private static final String SYMPTOM_JOURNAL_KEY = "symptomJournal";
 	private static final String PATIENT_DIARY_KEY = "patientDiary";
 	private static final Cache<String, String> authTokenCache = CacheBuilder.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).build();
+	private static final int NOT_FOUND_STATUS = 404;
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -149,7 +157,7 @@ public class ExternalJournalService {
 	 *
 	 * @param contact
 	 *            a contact assigned to a person already available in the external journal
-	 * 
+	 *
 	 */
 	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact) {
 		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
@@ -211,13 +219,8 @@ public class ExternalJournalService {
 
 	private void notifyPatientDiary(String personUuid) {
 		try {
-			String updateUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + personUuid;
-			Client client = ClientBuilder.newClient();
-			WebTarget webTarget = client.target(updateUrl);
-			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-			invocationBuilder.header("x-access-token", getPatientDiaryAuthToken());
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(personUuid);
 			Response response = invocationBuilder.put(Entity.json(""));
-
 			String responseJson = response.readEntity(String.class);
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
@@ -228,7 +231,107 @@ public class ExternalJournalService {
 				logger.error("Could not notify patient diary of person update: " + message);
 			}
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error("Could not notify patient diary: {}", e.getMessage());
+			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Retrieves the person from the external patient diary with the given uuid
+	 * 
+	 * @param personUuid
+	 *            the uuid of the person to be retrieved
+	 * @return optional containing the person
+	 */
+	public Optional<ExternalPatientDto> getPatientDiaryPerson(String personUuid) {
+		try {
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(personUuid);
+			Response response = invocationBuilder.get();
+			if (response.getStatus() == NOT_FOUND_STATUS) {
+				return Optional.empty();
+			}
+			String responseJson = response.readEntity(String.class);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
+			JsonNode idatData = node.get("idatData");
+			ExternalPatientDto externalPatientDto = mapper.treeToValue(idatData, ExternalPatientDto.class);
+			String endDate = node.get("endDate").textValue();
+			externalPatientDto.setEndDate(endDate);
+			return Optional.of(externalPatientDto);
+		} catch (IOException e) {
+			logger.error("Could not retrieve patient: {}", e.getMessage());
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Attempts to register a new patient in the CLIMEDO patient diary.
+	 * Sets the person symptom journal status to REGISTERED if successful.
+	 * @param person
+	 *            the person to register as a patient in CLIMEDO
+	 * @return true if the registration was successful, false otherwise
+	 */
+	public boolean registerPatientDiaryPerson(PersonDto person) {
+		try {
+			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
+			Response response = invocationBuilder.post(Entity.json(""));
+			String responseJson = response.readEntity(String.class);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
+			boolean success = node.get("success").booleanValue();
+			if (!success) {
+				String message = node.get("message").textValue();
+				//TODO: should throw an exception?
+				logger.error("Could not create new patient diary person: " + message);
+				return false;
+			}
+			person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
+			personFacade.savePerson(person);
+			return true;
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			return false;
+		}
+	}
+
+	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
+		String externalDataUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + personUuid;
+		Client client = ClientBuilder.newClient();
+		WebTarget webTarget = client.target(externalDataUrl);
+		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+		invocationBuilder.header("x-access-token", getPatientDiaryAuthToken());
+		return invocationBuilder;
+	}
+
+	/**
+	 * Check whether a person has the necessary data to be exported to the patient diary
+	 * 
+	 * @param person
+	 *            the person to check
+	 * @return true if the person has the necessary data, false otherwise
+	 */
+	public boolean isPersonExportable(PersonDto person) {
+		String email = person.getEmailAddress();
+		String phone = person.getPhone();
+		boolean validEmail = false;
+		boolean validPhone = false;
+		if (StringUtils.isNotEmpty(email)) {
+			EmailValidator validator = EmailValidator.getInstance();
+			validEmail = validator.isValid(email);
+		}
+		if (StringUtils.isNotEmpty(phone)) {
+			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+			try {
+				Phonenumber.PhoneNumber germanNumberProto = phoneUtil.parse(phone, "DE");
+				validPhone = phoneUtil.isValidNumber(germanNumberProto);
+			} catch (NumberParseException e) {
+				logger.warn("NumberParseException was thrown: " + e.toString());
+			}
+		}
+		boolean validBirthdate = true;
+		if (ObjectUtils.anyNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY())) {
+			validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+		}
+		return (validEmail || validPhone) && validBirthdate;
 	}
 }

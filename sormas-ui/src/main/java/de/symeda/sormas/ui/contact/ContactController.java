@@ -27,6 +27,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.ui.utils.CssStyles;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -529,13 +535,76 @@ public class ContactController {
 	}
 
 	/**
-	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
-	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
+	 * Attempts to register the given person as a new patient in CLIMEDO
+	 * Displays the result in a popup
 	 */
-	public void openPatientDiaryTab(PersonDto person) {
+	public void registerPatientDiaryPerson(PersonDto person) {
+		if (!externalJournalFacade.isPersonExportable(person)) {
+			showWarningPopup(I18nProperties.getCaption(Captions.patientDiaryPersonNotExportable));
+		} else {
+			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
+					|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
+				openPatientDiaryEnrollPage(person.getUuid());
+			} else {
+				boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
+				showPatientRegisterResultPopup(success);
+			}
+		}
+	}
+
+	private void openPatientDiaryEnrollPage(String personUuid) {
 		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
-		url += "/enroll?personUuid=" + person.getUuid();
+		url += "/enroll?personUuid=" + personUuid;
 		UI.getCurrent().getPage().open(url, "_blank");
+	}
+
+	private void showWarningPopup(String message) {
+		VerticalLayout alreadyRegisteredLayout = new VerticalLayout();
+		alreadyRegisteredLayout.setMargin(true);
+		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
+		warningIcon.setHeight(35, Unit.PIXELS);
+		warningIcon.setWidth(35, Unit.PIXELS);
+		alreadyRegisteredLayout.addComponentAsFirst(warningIcon);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(alreadyRegisteredLayout);
+		Label infoLabel = new Label(message);
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		alreadyRegisteredLayout.addComponent(infoLabel);
+		CssStyles.style(alreadyRegisteredLayout, CssStyles.ALIGN_CENTER);
+		popupWindow.addCloseListener(e -> {
+			popupWindow.close();
+		});
+		popupWindow.setWidth(350, Unit.PIXELS);
+		popupWindow.setHeight(250, Unit.PIXELS);
+	}
+
+	private void showPatientRegisterResultPopup(boolean success) {
+		VerticalLayout registrationResultLayout = new VerticalLayout();
+		registrationResultLayout.setMargin(true);
+		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
+		errorIcon.setHeight(35, Unit.PIXELS);
+		errorIcon.setWidth(35, Unit.PIXELS);
+		Image successIcon = new Image(null, new ThemeResource("img/success-icon.png"));
+		successIcon.setHeight(35, Unit.PIXELS);
+		successIcon.setWidth(35, Unit.PIXELS);
+		Label infoLabel = new Label();
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		registrationResultLayout.addComponent(infoLabel);
+		CssStyles.style(registrationResultLayout, CssStyles.ALIGN_CENTER);
+		if (success) {
+			registrationResultLayout.removeComponent(errorIcon);
+			registrationResultLayout.addComponentAsFirst(successIcon);
+			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationSuccess));
+		} else {
+			registrationResultLayout.removeComponent(successIcon);
+			registrationResultLayout.addComponentAsFirst(errorIcon);
+			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
+		}
+		Window popupWindow = VaadinUiUtil.showPopupWindow(registrationResultLayout);
+		popupWindow.addCloseListener(e -> {
+			popupWindow.close();
+		});
+		popupWindow.setWidth(300, Unit.PIXELS);
+		popupWindow.setHeight(200, Unit.PIXELS);
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {

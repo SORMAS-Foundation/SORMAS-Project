@@ -1,8 +1,5 @@
 package de.symeda.sormas.api.person;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.symeda.sormas.api.JsonUnixTimestampDateSerializer;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -10,7 +7,6 @@ import java.util.Objects;
 public class PersonQuarantineEndDto implements Serializable {
 
 	private String personUuid;
-	@JsonSerialize(using = JsonUnixTimestampDateSerializer.class)
 	private Date latestQuarantineEndDate;
 
 	public PersonQuarantineEndDto(String personUuid, Date latestQuarantineEndDate) {

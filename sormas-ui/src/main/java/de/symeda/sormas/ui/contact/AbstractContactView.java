@@ -74,7 +74,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			btnClimedoAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
 				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ControllerProvider.getContactController().openPatientDiaryTab(contactPerson);
+				ControllerProvider.getContactController().registerPatientDiaryPerson(contactPerson);
 			});
 			getButtonsLayout().addComponent(btnClimedoAccount);
 		}

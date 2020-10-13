@@ -1054,6 +1054,9 @@ public interface Captions {
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";
+	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
+	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
+	String patientDiaryRegistrationSuccess = "patientDiaryRegistrationSuccess";
 	String Person = "Person";
 	String Person_address = "Person.address";
 	String Person_addresses = "Person.addresses";
