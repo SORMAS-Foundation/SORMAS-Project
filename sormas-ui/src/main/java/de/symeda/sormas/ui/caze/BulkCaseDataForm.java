@@ -68,8 +68,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
     private static final String HEALTH_FACILITY_CHECKBOX = "healthFacilityCheckbox";
     private static final String TYPE_GROUP_LOC = "typeGroupLoc";
     private static final String TYPE_LOC = "typeLoc";
-    private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
     private static final String WARNING_LAYOUT = "warningLayout";
+    public static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 
     //@formatter:off
     private static final String HTML_LAYOUT =
@@ -305,7 +305,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                 }
             }
         });
-        warningLayout = VaadinUiUtil.createGenericComponent(I18nProperties.getString(Strings.pseudonymizedCasesSelectedWarning), "img/warning-icon.png");
+        warningLayout = VaadinUiUtil.createWarningComponent(I18nProperties.getString(Strings.pseudonymizedCasesSelectedWarning));
         facilityOrHome.addValueChangeListener(e -> {
             FieldHelper.removeItems(facility);
             if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
@@ -348,15 +348,12 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
         FieldHelper
                 .setRequiredWhen(getFieldGroup(), investigationStatusCheckBox, Arrays.asList(CaseBulkEditData.INVESTIGATION_STATUS), Arrays.asList(true));
         FieldHelper.setRequiredWhen(getFieldGroup(), outcomeCheckBox, Arrays.asList(CaseBulkEditData.OUTCOME), Arrays.asList(true));
-        FieldHelper.setRequiredWhen(healthFacilityCheckbox,
-                Arrays.asList(facilityOrHome),
-                Arrays.asList(true), false, null);
         FieldHelper.setRequiredWhen(
                 getFieldGroup(),
                 healthFacilityCheckbox,
                 Arrays.asList(CaseBulkEditData.REGION, CaseBulkEditData.DISTRICT, CaseBulkEditData.HEALTH_FACILITY),
                 Arrays.asList(true));
-        FieldHelper.setRequiredWhen(healthFacilityCheckbox, Arrays.asList(facilityTypeGroup, facilityType), Arrays.asList(true), false, null);
+        FieldHelper.setRequiredWhen(healthFacilityCheckbox, Arrays.asList(facilityTypeGroup, facilityType, facilityOrHome), Arrays.asList(true), false, null);
         FieldHelper.setVisibleWhen(
                 facilityOrHome,
                 Arrays.asList(facilityTypeGroup, facilityType, facility),
