@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.cert.CertStore;
 import java.security.cert.Certificate;
@@ -15,17 +16,40 @@ import java.util.Collection;
 
 import org.bouncycastle.cms.jcajce.JcaSignerId;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class CmsReaderTest {
 
+	private static final String PASSWORD = "pass";
+	private static final String ALICE_ALIAS = "alice";
+	private static final String BOB_ALIAS = "bob";
+	private static KeyStore aliceKs;
+	private static KeyStore bobKs;
+	private static X509Certificate aliceCert;
+	private static X509Certificate bobCert;
+
+	@BeforeClass
+	public static void createCertificates() throws KeyStoreException {
+		aliceKs = X509CertBuilder.createTemporaryCert("cn1", ALICE_ALIAS, PASSWORD);
+		bobKs = X509CertBuilder.createTemporaryCert("cn2", BOB_ALIAS, PASSWORD);
+		aliceCert = (X509Certificate) aliceKs.getCertificate(ALICE_ALIAS);
+		bobCert = (X509Certificate) bobKs.getCertificate(BOB_ALIAS);
+	}
+
+	@AfterClass
+	public static void cleanup() {
+		aliceKs = null;
+		bobKs = null;
+		aliceCert = null;
+		bobCert = null;
+	}
+
 	@Test
 	public void testCreateCertStore() throws Exception {
 
-		X509Certificate c1 = (X509Certificate) X509CertBuilder.createTemporaryCert("cn1", "a1", "pass").getCertificate("a1");
-		X509Certificate c2 = (X509Certificate) X509CertBuilder.createTemporaryCert("cn2", "a2", "pass").getCertificate("a2");
-
-		CertStore certStore = CmsReader.createCertStore(Arrays.asList(c1, c2));
+		CertStore certStore = CmsReader.createCertStore(Arrays.asList(aliceCert, bobCert));
 
 		Collection<? extends Certificate> certs = certStore.getCertificates(new X509CertSelector() {
 
@@ -34,40 +58,38 @@ public class CmsReaderTest {
 				return true;
 			}
 		});
-		assertThat(certs, Matchers.containsInAnyOrder(c1, c2));
+		assertThat(certs, Matchers.containsInAnyOrder(aliceCert, bobCert));
 
 	}
 
 	@Test
 	public void testGetCertificates() throws Exception {
-		X509Certificate c1 = (X509Certificate) X509CertBuilder.createTemporaryCert("cn1", "a1", "pass").getCertificate("a1");
-		X509Certificate c2 = (X509Certificate) X509CertBuilder.createTemporaryCert("cn2", "a2", "pass").getCertificate("a2");
 
-		CertStore certStore = CmsReader.createCertStore(Arrays.asList(c1, c2));
+		CertStore certStore = CmsReader.createCertStore(Arrays.asList(aliceCert, bobCert));
 
-		assertThat(CmsReader.getCertificates(certStore, new JcaSignerId(c1)), Matchers.contains(c1));
-		assertThat(CmsReader.getCertificates(certStore, new JcaSignerId(c2)), Matchers.contains(c2));
+		assertThat(CmsReader.getCertificates(certStore, new JcaSignerId(aliceCert)), Matchers.contains(aliceCert));
+		assertThat(CmsReader.getCertificates(certStore, new JcaSignerId(bobCert)), Matchers.contains(bobCert));
 	}
 
 	@Test
 	public void testDecryptAndVerify() throws Exception {
-		KeyStore alice = X509CertBuilder.createTemporaryCert("cn1", "alice", "pass");
-		KeyStore bob = X509CertBuilder.createTemporaryCert("cn2", "bob", "pass");
+
+		final String helloWorld = "Hello World!";
 
 		byte[] signedAndEncrypted = CmsCreator.signAndEncrypt(
-			"Hello World!".getBytes(StandardCharsets.UTF_8),
-			(X509Certificate) alice.getCertificate("alice"),
-			(PrivateKey) alice.getKey("alice", "pass".toCharArray()),
-			(X509Certificate) bob.getCertificate("bob"),
+			helloWorld.getBytes(StandardCharsets.UTF_8),
+			(X509Certificate) aliceKs.getCertificate(ALICE_ALIAS),
+			(PrivateKey) aliceKs.getKey(ALICE_ALIAS, PASSWORD.toCharArray()),
+			(X509Certificate) bobKs.getCertificate(BOB_ALIAS),
 			true);
 
 		byte[] plain = CmsReader.decryptAndVerify(
 			signedAndEncrypted,
-			Arrays.asList((X509Certificate) alice.getCertificate("alice")),
-			(X509Certificate) bob.getCertificate("bob"),
-			(PrivateKey) bob.getKey("bob", "pass".toCharArray()));
+			Arrays.asList((X509Certificate) aliceKs.getCertificate(ALICE_ALIAS)),
+			(X509Certificate) bobKs.getCertificate(BOB_ALIAS),
+			(PrivateKey) bobKs.getKey(BOB_ALIAS, PASSWORD.toCharArray()));
 
-		assertEquals(new String(plain, StandardCharsets.UTF_8), "Hello World!");
+		assertEquals(new String(plain, StandardCharsets.UTF_8), helloWorld);
 
 	}
 

@@ -784,6 +784,9 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
+	String SurvnetGateway_notificationEntryNotSent = "SurvnetGateway.notificationEntryNotSent";
+	String SurvnetGateway_notificationEntrySent = "SurvnetGateway.notificationEntrySent";
+	String SurvnetGateway_notificationErrorSending = "SurvnetGateway.notificationErrorSending";
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";
