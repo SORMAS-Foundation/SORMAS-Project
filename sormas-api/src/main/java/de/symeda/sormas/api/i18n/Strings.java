@@ -776,7 +776,7 @@ public interface Strings {
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";
 	String promtSampleDataType = "promtSampleDataType";
-	String pseudonymisedCasesSelectedWarning = "pseudonymisedCasesSelectedWarning";
+	String pseudonymizedCasesSelectedWarning = "pseudonymizedCasesSelectedWarning";
 	String quarantineEnd = "quarantineEnd";
 	String quarterShort = "quarterShort";
 	String reportedBy = "reportedBy";

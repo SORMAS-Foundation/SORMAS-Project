@@ -18,8 +18,6 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -71,8 +69,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
     private static final String TYPE_GROUP_LOC = "typeGroupLoc";
     private static final String TYPE_LOC = "typeLoc";
     private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
-    private static final String WARNING_ICON = "warningIcon";
-    private static final String WARNING_LABEL = "warningLabel";
+    private static final String WARNING_LAYOUT = "warningLayout";
 
     //@formatter:off
     private static final String HTML_LAYOUT =
@@ -97,7 +94,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                             CaseBulkEditData.DISTRICT,
                             CaseBulkEditData.COMMUNITY) +
                     fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, TYPE_LOC) +
-                    fluidRowLocs(WARNING_LABEL) +
+                    fluidRowLocs(WARNING_LAYOUT) +
                     fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS);
     //@formatter:on
 
@@ -114,9 +111,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
     private ComboBox facilityTypeGroup;
     private ComboBox facilityType;
     private TextField healthFacilityDetails;
-    private Label warningLabel;
-    private Collection selectedCases;
-    private Image warningIcon;
+    private Collection<? extends CaseIndexDto> selectedCases;
     OptionGroup facilityOrHome;
     private HorizontalLayout warningLayout;
 
@@ -310,7 +305,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                 }
             }
         });
-        warningLayout = VaadinUiUtil.createGenericComponent(I18nProperties.getString(Strings.pseudonymisedCasesSelectedWarning), "img/warning-icon.png");
+        warningLayout = VaadinUiUtil.createGenericComponent(I18nProperties.getString(Strings.pseudonymizedCasesSelectedWarning), "img/warning-icon.png");
         facilityOrHome.addValueChangeListener(e -> {
             FieldHelper.removeItems(facility);
             if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
@@ -325,11 +320,14 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                     updateFacility((DistrictReferenceDto) district.getValue(), (CommunityReferenceDto) community.getValue(), facility);
                 }
                 this.getContent().removeComponent(warningLayout);
+                healthFacilityDetails.setVisible(false);
             } else {
                 long pseudonymizedCount = selectedCases.stream().filter(caze ->
-                        ((CaseIndexDto) caze).isPseudonymized()).count();
+                        caze.isPseudonymized()).count();
                 if (pseudonymizedCount > 0) {
-                    this.getContent().addComponent(warningLayout, WARNING_LABEL);
+                    this.getContent().addComponent(warningLayout, WARNING_LAYOUT);
+
+                    healthFacilityDetails.setVisible(true);
                 }
                 FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
                 facility.addItem(noFacilityRef);
