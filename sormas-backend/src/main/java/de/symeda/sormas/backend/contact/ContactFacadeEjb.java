@@ -278,9 +278,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);
-		if (existingContact != null) {
-			externalJournalService.notifyExternalJournalFollowUpUntilUpdate(dto);
-		}
 		restorePseudonymizedDto(dto, existingContact, existingContactDto);
 
 		validate(dto);
@@ -294,6 +291,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		Contact entity = fromDto(dto);
 		contactService.ensurePersisted(entity);
+
+		if (existingContact != null) {
+			externalJournalService.notifyExternalJournalFollowUpUntilUpdate(dto);
+		}
 
 		if (existingContact == null) {
 			createInvestigationTask(entity);
