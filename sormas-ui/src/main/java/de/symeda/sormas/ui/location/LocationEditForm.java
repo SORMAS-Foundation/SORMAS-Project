@@ -214,12 +214,16 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityTypeGroup.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			FieldHelper.updateEnumData(facilityType, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+			if (facilityTypeGroup.getValue() != null) {
+				facilityType.setRequired(true);
+			} else {
+				facilityType.setRequired(false);
+			}
 		});
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			if (facilityType.getValue() != null && facilityTypeGroup.getValue() == null) {
-				FacilityType temp = (FacilityType) facilityType.getValue();
-				facilityTypeGroup.setValue(temp.getFacilityTypeGroup());
+				facilityTypeGroup.setValue(((FacilityType) facilityType.getValue()).getFacilityTypeGroup());
 			}
 			if (facilityType.getValue() != null && district.getValue() != null) {
 				if (community.getValue() != null) {
