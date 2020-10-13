@@ -2,7 +2,7 @@
 # SORMAS Development Environment
 
 ## Server
-- Use this guide as Dev-Setup **or** refer to [SERVER_SETUP](SERVER_SETUP.md) for a more production-like setup.
+- Use this guide as Dev-Setup **or** refer to [SERVER_SETUP](SERVER_SETUP.md) for a more production-like setup (recommended for core team developers).
 
 ## Basics
 
@@ -20,7 +20,7 @@
 		sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
 		sudo apt-get update
 		sudo apt-get install zulu11
-  - **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
+  - **Windows**: For testing and development environments we suggest downloading and running the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 
 ###### SORMAS just recently moved to Java 11. We still need to support Java 8 for a transition period. Therefore, please just use Java 8 language features for now.
 
@@ -34,7 +34,7 @@
 # IDE
 
 This is enough for CLI based development using `mvn` and friends.
-Depending on the IDE of your choice, you can achive further integration and improve the developer
+Depending on the IDE of your choice, you can achieve further integration and improve the developer
 experience.
 
  * [Eclipse](#Eclipse)
@@ -49,6 +49,7 @@ experience.
 - Install [Payara Tools](https://marketplace.eclipse.org/content/payara-tools)
 - Install the [Vaadin Plugin for Eclipse](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse) (no need to install the commercial UI designer)
 - Add a Payara server to Eclipse 
+    - if you've chosen the setup based on [SERVER_SETUP](SERVER_SETUP.md), you'll have to adapt the following paths accordingly
     - In the **Servers**-Tab create a new server and select **Payara/Payara**
     - Add a **Server runtime environment** 
         - **Payara location** is `sormas-cargoserver/target/cargo/installs/payara-5.194/payara5`
@@ -70,6 +71,7 @@ experience.
 - Make sure under "File -> Settings -> Plugins" Glassfish integration is enabled (look into the "Installed" tab)
 - Install the Vaadin Designer plugin
 - Add a Payara server to IntelliJ:
+    - if you've chosen the setup based on [SERVER_SETUP](SERVER_SETUP.md), you'll have to adapt the following paths accordingly
 	- go to "Run -> Edit configurations"
 	- add **new configuration** and choose from the templates **"Glassfish Server local"**
 	    - **Configure** the payara5 directory for application server from the cargo with **Glassfish Home**: `sormas-cargoserver/target/cargo/installs/payara-5.194/payara5` (find the current version in [pom.xml](sormas-cargoserver/pom.xml))

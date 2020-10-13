@@ -73,6 +73,16 @@ This is the manual guide to install SORMAS for development. Please consider the 
 * Adjust the logging configuration in ``/opt/domains/sormas/config/logback.xml`` based on your needs (e.g. configure and activate email appender)
 * Linux: [Update the SORMAS domain](SERVER_UPDATE.md)
 
+##### Additional Steps
+- Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
+- Drag the "build.xml" file contained in "sormas-base" into the Ant view in Eclipse
+  - Either: Run "Maven install" on the sormas-base project
+  - Or: Execute the "install [default]" ant script (this needs a maven installation on your system with the M2_HOME variable set)
+  - Then: Execute the "deploy-serverlibs" ant script
+- Highlight all Eclipse projects and choose "Maven -> Update Project" from the right click menu; perform the update for all projects
+- Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it, or use the "Add and Remove..."-function by right clicking on the server.
+- Open your browser and type in "http://localhost:6080/sormas-ui" or "https://localhost:6081/sormas-ui" to test whether everything has been set up correctly (and to use the application)
+
 ## Web Server Setup
 
 ### Apache Web Server
