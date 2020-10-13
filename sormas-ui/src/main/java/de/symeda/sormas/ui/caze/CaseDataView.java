@@ -25,6 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
@@ -141,7 +142,8 @@ public class CaseDataView extends AbstractCaseView {
 
 		// quarantine information component on right side of the case details screen
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+		if ((caze.getQuarantine() == QuarantineType.HOME || caze.getQuarantine() == QuarantineType.INSTITUTIONELL)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
 			VerticalLayout quarantineLayout = new VerticalLayout();
 			quarantineLayout.setMargin(false);
 			quarantineLayout.setSpacing(false);

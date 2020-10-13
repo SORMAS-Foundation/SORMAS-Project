@@ -47,12 +47,6 @@ public class CreateQuarantineOrderLayout extends VerticalLayout {
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		createButton.setIcon(VaadinIcons.FILE_TEXT);
 		createButton.setEnabled(false);
-		createButton.addClickListener(e -> {
-			HasComponents parent = this.getParent();
-			if (parent instanceof Window && ((Window) parent).isClosable()) {
-				((Window) parent).close();
-			}
-		});
 
 		ComboBox<String> templateSelector = new ComboBox<>(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder));
 		templateSelector.setItems(FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates());
@@ -111,8 +105,10 @@ public class CreateQuarantineOrderLayout extends VerticalLayout {
 		StreamResource streamResource = new StreamResource((StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 			try {
-				return new ByteArrayInputStream(
-					quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto, readAdditionalVariables()));
+				ByteArrayInputStream byteArrayInputStream =
+					new ByteArrayInputStream(quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto, readAdditionalVariables()));
+				closeWindow();
+				return byteArrayInputStream;
 			} catch (ValidationException e) {
 				new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 				return null;
@@ -123,6 +119,13 @@ public class CreateQuarantineOrderLayout extends VerticalLayout {
 			fileDownloader.extend(createButton);
 		} else {
 			fileDownloader.setFileDownloadResource(streamResource);
+		}
+	}
+
+	private void closeWindow() {
+		HasComponents parent = this.getParent();
+		if (parent instanceof Window && ((Window) parent).isClosable()) {
+			((Window) parent).close();
 		}
 	}
 }

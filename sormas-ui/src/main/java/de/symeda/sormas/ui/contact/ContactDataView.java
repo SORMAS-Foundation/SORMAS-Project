@@ -33,6 +33,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -212,7 +213,8 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+		if ((contactDto.getQuarantine() == QuarantineType.HOME || contactDto.getQuarantine() == QuarantineType.INSTITUTIONELL)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
 			QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getContactRef());
 			quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(quarantineOrderComponent, QUARANTINE_LOC);
