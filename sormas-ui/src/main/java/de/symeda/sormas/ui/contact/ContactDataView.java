@@ -50,7 +50,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -86,7 +85,7 @@ public class ContactDataView extends AbstractContactView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -229,7 +228,7 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		if ((contactDto.getQuarantine() == QuarantineType.HOME || contactDto.getQuarantine() == QuarantineType.INSTITUTIONELL)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+			&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
 			QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getContactRef());
 			quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(quarantineOrderComponent, QUARANTINE_LOC);

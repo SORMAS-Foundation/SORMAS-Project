@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.util.Arrays;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
@@ -58,6 +60,8 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String EVENTS_LOC = "events";
+	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
+	public static final String QUARANTINE_LOC = "quarantine";
 
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -79,7 +83,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -157,7 +161,7 @@ public class CaseDataView extends AbstractCaseView {
 		SurvnetGateway.addComponentToLayout(layout, () -> Arrays.asList(caze.getUuid()));
 
 		if ((caze.getQuarantine() == QuarantineType.HOME || caze.getQuarantine() == QuarantineType.INSTITUTIONELL)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+			&& UserProvider.getCurrent().hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
 			VerticalLayout quarantineLayout = new VerticalLayout();
 			quarantineLayout.setMargin(false);
 			quarantineLayout.setSpacing(false);

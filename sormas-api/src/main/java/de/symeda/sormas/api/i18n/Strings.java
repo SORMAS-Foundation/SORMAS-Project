@@ -146,6 +146,7 @@ public interface Strings {
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPrescription = "entityPrescription";
 	String entityPrescriptions = "entityPrescriptions";
+	String entityQuarantineOrder = "entityQuarantineOrder";
 	String entityRegion = "entityRegion";
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
@@ -683,6 +684,7 @@ public interface Strings {
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
+	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRoleCombination = "messageUserRoleCombination";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
