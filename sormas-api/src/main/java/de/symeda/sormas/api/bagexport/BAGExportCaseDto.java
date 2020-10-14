@@ -105,6 +105,7 @@ public class BAGExportCaseDto implements Serializable {
 
 	//@formatter:off
 	public BAGExportCaseDto(Integer caseIdIsm, Long caseId, Long personId, String lastName, String firstName,
+							String homeAddressStreet, String homeAddressHouseNumber, String homeAddressCity, String homeAddressPostalCode,
 							String phoneNumber, String mobileNumber, String emailAddress, Sex sex,
 							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 							OccupationType occupationType, Boolean symptomatic,
@@ -123,6 +124,10 @@ public class BAGExportCaseDto implements Serializable {
 		this.personId = personId;
 		this.lastName = lastName;
 		this.firstName = firstName;
+		this.homeAddressStreet = homeAddressStreet;
+		this.homeAddressHouseNumber = homeAddressHouseNumber;
+		this.homeAddressCity = homeAddressCity;
+		this.homeAddressPostalCode = homeAddressPostalCode;
 		this.phoneNumber = phoneNumber;
 		this.mobileNumber = mobileNumber;
 		this.emailAddress = emailAddress;

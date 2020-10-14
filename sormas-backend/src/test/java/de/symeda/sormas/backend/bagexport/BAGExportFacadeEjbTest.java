@@ -66,8 +66,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
-			LocationDto homeAddress = LocationDto.build();
-			homeAddress.setAddressType(PersonAddressType.HOME);
+			LocationDto homeAddress = p.getAddress();
 			homeAddress.setStreet("Home street");
 			homeAddress.setHouseNumber("11A");
 			homeAddress.setCity("Home city");
@@ -76,8 +75,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			p.setPhone("12345678");
 			p.setEmailAddress("test@email.com");
 			p.setSex(Sex.MALE);
-
-			p.getAddresses().add(homeAddress);
 
 			p.setBirthdateYYYY(1978);
 			p.setBirthdateMM(10);
@@ -253,7 +250,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
-			LocationDto homeAddress = LocationDto.build();
+			LocationDto homeAddress = p.getAddress();
 			homeAddress.setAddressType(PersonAddressType.HOME);
 			homeAddress.setStreet("Home street");
 			homeAddress.setHouseNumber("11A");
@@ -263,8 +260,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			p.setPhone("12345678");
 			p.setEmailAddress("test@email.com");
 			p.setSex(Sex.MALE);
-
-			p.getAddresses().add(homeAddress);
 
 			p.setBirthdateYYYY(1978);
 			p.setBirthdateMM(10);
@@ -300,8 +295,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			p.getAddresses().add(isolationAddress);
 		});
 
-		Date symptomDate = new Date();
-		Date contactTracingDate = DateHelper.subtractDays(new Date(), 10);
 		Date quarantineFromDate = DateHelper.subtractDays(new Date(), 11);
 		Date quarantineToDate = DateHelper.subtractDays(new Date(), 1);
 		Date followupDate = DateHelper.addDays(new Date(), 10);

@@ -70,6 +70,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		CaseJoins<Case> caseJoins = new CaseJoins<>(caseRoot);
 
 		Join<Case, Person> person = caseJoins.getPerson();
+		Join<Person, Location> homeAddress = caseJoins.getPersonAddress();
 
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
 
@@ -79,6 +80,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.ID),
 			person.get(Person.LAST_NAME),
 			person.get(Person.FIRST_NAME),
+			homeAddress.get(Location.STREET),
+			homeAddress.get(Location.HOUSE_NUMBER),
+			homeAddress.get(Location.CITY),
+			homeAddress.get(Location.POSTAL_CODE),
 			person.get(Person.PHONE),
 			mobileNumber,
 			person.get(Person.EMAIL_ADDRESS),
@@ -145,13 +150,6 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		exportList.forEach(caze -> {
 			List<Location> addresses = personAddresses.getOrDefault(caze.getPersonId(), Collections.emptyList());
 
-			addresses.stream().filter(a -> PersonAddressType.HOME.equals(a.getAddressType())).findFirst().ifPresent(homeAddress -> {
-				caze.setHomeAddressStreet(homeAddress.getStreet());
-				caze.setHomeAddressHouseNumber(homeAddress.getHouseNumber());
-				caze.setHomeAddressCity(homeAddress.getCity());
-				caze.setHomeAddressPostalCode(homeAddress.getPostalCode());
-			});
-
 			addresses.stream().filter(a -> PersonAddressType.PLACE_OF_WORK.equals(a.getAddressType())).findFirst().ifPresent(workAddress -> {
 				caze.setWorkPlaceStreet(workAddress.getStreet());
 				caze.setWorkPlaceStreetNumber(workAddress.getHouseNumber());
@@ -209,6 +207,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		ContactJoins contactJoins = new ContactJoins(contactRoot);
 
 		Join<Contact, Person> person = contactJoins.getPerson();
+		Join<Person, Location> homeAddress = contactJoins.getPersonAddress();
 
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
 
@@ -217,6 +216,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.ID),
 			person.get(Person.LAST_NAME),
 			person.get(Person.FIRST_NAME),
+			homeAddress.get(Location.STREET),
+			homeAddress.get(Location.HOUSE_NUMBER),
+			homeAddress.get(Location.CITY),
+			homeAddress.get(Location.POSTAL_CODE),
 			person.get(Person.PHONE),
 			mobileNumber,
 			person.get(Person.EMAIL_ADDRESS),
@@ -277,13 +280,6 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 
 		exportList.forEach(contact -> {
 			List<Location> addresses = personAddresses.getOrDefault(contact.getPersonId(), Collections.emptyList());
-
-			addresses.stream().filter(a -> PersonAddressType.HOME.equals(a.getAddressType())).findFirst().ifPresent(homeAddress -> {
-				contact.setHomeAddressStreet(homeAddress.getStreet());
-				contact.setHomeAddressHouseNumber(homeAddress.getHouseNumber());
-				contact.setHomeAddressCity(homeAddress.getCity());
-				contact.setHomeAddressPostalCode(homeAddress.getPostalCode());
-			});
 
 			addresses.stream().filter(a -> PersonAddressType.PLACE_OF_WORK.equals(a.getAddressType())).findFirst().ifPresent(workAddress -> {
 				contact.setWorkPlaceStreet(workAddress.getStreet());
