@@ -24,6 +24,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -306,13 +309,16 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
-		externalJournalService.notifyExternalJournalPersonUpdate(existingPerson, updatedPerson);
 		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
 		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
 			if (!externalJournalService.isPersonExportable(updatedPerson)) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.externalJournalPersonValidation));
 			}
 		}
+		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
+		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson, updatedPerson);
+		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
