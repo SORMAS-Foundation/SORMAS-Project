@@ -99,7 +99,7 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 
-	public void edit(TaskIndexDto dto, Runnable callback) {
+	public void edit(TaskIndexDto dto, Runnable callback, boolean fromCase) {
 
 		// get fresh data
 		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
@@ -119,7 +119,7 @@ public class TaskController {
 					TaskDto dto = form.getValue();
 					FacadeProvider.getTaskFacade().saveTask(dto);
 
-					if (dto.getCaze() != null) {
+					if (fromCase && dto.getCaze() != null) {
 						ControllerProvider.getCaseController().navigateToCase(dto.getCaze().getUuid());
 					}
 
