@@ -157,13 +157,13 @@ public class ExternalJournalService {
 	 *
 	 * @param contact
 	 *            a contact assigned to a person already available in the external journal
-	 *
+	 * @param previousFollowUpUntilDate
+	 * 			the follow-up end date before the update
 	 */
-	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact) {
+	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
 		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
 		if (SymptomJournalStatus.REGISTERED.equals(savedStatus) || SymptomJournalStatus.ACCEPTED.equals(savedStatus)) {
-			Date latestSavedFollowUpUntilDate = personFacade.getLatestFollowUpEndDateByUuid(contact.getPerson().getUuid());
-			if (contact.getFollowUpUntil().after(latestSavedFollowUpUntilDate)) {
+			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
 				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 					notifySymptomJournal(contact.getPerson().getUuid());
 				}
