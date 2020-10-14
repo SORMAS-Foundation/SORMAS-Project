@@ -17,11 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.util.Arrays;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,8 +44,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-
-import java.util.Arrays;
 
 /**
  * CaseDataView for reading and editing the case data fields. Contains the
@@ -157,7 +158,7 @@ public class CaseDataView extends AbstractCaseView {
 
 		SurvnetGateway.addComponentToLayout(layout, () -> Arrays.asList(caze.getUuid()));
 
-		DocGenerationComponent.addComponentToLayout(layout, getCaseRef());
+		DocGenerationComponent.addComponentToLayout(layout, getCaseRef(), caze.getQuarantine());
 
 		setCaseEditPermission(container);
 	}

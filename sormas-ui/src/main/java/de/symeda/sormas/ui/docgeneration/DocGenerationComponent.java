@@ -11,6 +11,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -25,9 +26,11 @@ public class DocGenerationComponent extends VerticalLayout {
 	private final ReferenceDto referenceDto;
 	private final Button createButton;
 
-	public static void addComponentToLayout(CustomLayout targetLayout, ReferenceDto referenceDto) {
+	public static void addComponentToLayout(CustomLayout targetLayout, ReferenceDto referenceDto, QuarantineType quarantineType) {
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
+		if (QuarantineType.isQuarantineInEffect(quarantineType)
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.QUARANTINE_ORDER_CREATE)) {
 			DocGenerationComponent docgenerationComponent = new DocGenerationComponent(referenceDto);
 			docgenerationComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			targetLayout.addComponent(docgenerationComponent, QUARANTINE_LOC);

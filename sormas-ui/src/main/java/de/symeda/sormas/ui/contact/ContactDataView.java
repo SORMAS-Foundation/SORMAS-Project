@@ -225,7 +225,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		DocGenerationComponent.addComponentToLayout(layout, getContactRef());
+		DocGenerationComponent.addComponentToLayout(layout, getContactRef(), contactDto.getQuarantine());
 
 		setContactEditPermission(container);
 	}
