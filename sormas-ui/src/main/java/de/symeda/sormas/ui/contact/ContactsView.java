@@ -268,6 +268,7 @@ public class ContactsView extends AbstractView {
 					Descriptions.descFollowUpExportButton);
 			}
 
+			//TODO - enable after 1.50 release
 //			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
 //				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
 //				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
