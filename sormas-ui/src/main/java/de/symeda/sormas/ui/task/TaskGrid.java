@@ -72,7 +72,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			setCriteria(criteria);
 		}
 
-		addEditColumn(e -> ControllerProvider.getTaskController().edit(e, this::reload, false));
+		addEditColumn(e -> ControllerProvider.getTaskController().edit(e, this::reload, true));
 
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {

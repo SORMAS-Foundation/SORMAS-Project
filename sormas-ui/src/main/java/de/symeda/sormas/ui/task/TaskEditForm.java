@@ -82,11 +82,15 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	//@formatter:off
 
 	private UserRight editOrCreateUserRight;
+	private boolean editedFromTaskGrid;
 
-	public TaskEditForm(boolean create) {
+	public TaskEditForm(boolean create, boolean editedFromTaskGrid) {
 
 		super(TaskDto.class, TaskDto.I18N_PREFIX);
+
+		this.editedFromTaskGrid = editedFromTaskGrid;	
 		this.editOrCreateUserRight = editOrCreateUserRight;
+
 		addValueChangeListener(e -> {
 			updateByTaskContext();
 			updateByCreatingAndAssignee();
@@ -113,14 +117,6 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);
 		taskContext.setImmediate(true);
 		taskContext.addValueChangeListener(event -> updateByTaskContext());
-
-		final HorizontalLayout saveInfoLayout = new HorizontalLayout(
-				new Label(
-						VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoSaveOfTask),
-						ContentMode.HTML));
-		saveInfoLayout.setSpacing(true);
-		saveInfoLayout.setMargin(new MarginInfo(true, false, true, false));
-		getContent().addComponent(saveInfoLayout, SAVE_INFO);
 
 		ComboBox taskTypeField = addField(TaskDto.TASK_TYPE, ComboBox.class);
 		taskTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
@@ -152,6 +148,16 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					new TaskStatusValidator(
 						taskDto.getCaze().getUuid(),
 						I18nProperties.getValidationError(Validations.investigationStatusUnclassifiedCase)));
+
+				if (!editedFromTaskGrid) {
+					final HorizontalLayout saveInfoLayout = new HorizontalLayout(
+							new Label(
+									VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoSaveOfTask),
+									ContentMode.HTML));
+					saveInfoLayout.setSpacing(true);
+					saveInfoLayout.setMargin(new MarginInfo(true, false, true, false));
+					getContent().addComponent(saveInfoLayout, SAVE_INFO);
+				}
 			}
 
 			DistrictReferenceDto district = null;
