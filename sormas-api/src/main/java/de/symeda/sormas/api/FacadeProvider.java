@@ -21,6 +21,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.action.ActionFacade;
+import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
@@ -289,6 +290,10 @@ public class FacadeProvider {
 
 	public static SormasToSormasFacade getSormasToSormasFacade() {
 		return get().lookupEjbRemote(SormasToSormasFacade.class);
+	}
+
+	public static BAGExportFacade getBAGExportFacade() {
+		return get().lookupEjbRemote(BAGExportFacade.class);
 	}
 
 	public static SurvnetGatewayFacade getSurvnetGatewayFacade() {

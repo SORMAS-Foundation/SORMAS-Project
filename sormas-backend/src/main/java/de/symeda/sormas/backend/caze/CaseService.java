@@ -111,6 +111,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean

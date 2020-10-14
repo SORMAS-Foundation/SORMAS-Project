@@ -400,6 +400,7 @@ public interface Strings {
 	String infoAddTestsToSample = "infoAddTestsToSample";
 	String infoArchivedCases = "infoArchivedCases";
 	String infoArchivedEvents = "infoArchivedEvents";
+	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
 	String infoCampaignsDashboard = "infoCampaignsDashboard";
