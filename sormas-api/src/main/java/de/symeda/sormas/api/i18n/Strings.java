@@ -475,6 +475,7 @@ public interface Strings {
 	String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	String infoSampleExport = "infoSampleExport";
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
+	String infoSaveOfTask = "infoSaveOfTask";
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
 	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
@@ -797,6 +798,7 @@ public interface Strings {
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";
 	String promtSampleDataType = "promtSampleDataType";
+	String pseudonymizedCasesSelectedWarning = "pseudonymizedCasesSelectedWarning";
 	String quarantineEnd = "quarantineEnd";
 	String quarterShort = "quarterShort";
 	String reportedBy = "reportedBy";

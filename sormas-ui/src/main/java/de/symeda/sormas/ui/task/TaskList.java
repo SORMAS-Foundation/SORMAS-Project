@@ -87,7 +87,7 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT)) {
 				listEntry.addEditListener(
 					i,
-					(ClickListener) event -> ControllerProvider.getTaskController().edit(listEntry.getTask(), TaskList.this::reload));
+					(ClickListener) event -> ControllerProvider.getTaskController().edit(listEntry.getTask(), TaskList.this::reload, false));
 			}
 			listLayout.addComponent(listEntry);
 		}

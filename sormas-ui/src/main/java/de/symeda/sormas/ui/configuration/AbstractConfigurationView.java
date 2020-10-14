@@ -111,7 +111,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		//		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LINE_LISTING)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
 			menu.addView(
 				LineListingConfigurationView.VIEW_NAME,
@@ -121,17 +122,17 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			menu.addView(
-				DocumentTemplatesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
+					DocumentTemplatesView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
 		}
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			menu.addView(
-				DevModeView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
+					DevModeView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
 		}
 	}
 
@@ -157,14 +158,12 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
 		//		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
-			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
-		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
-			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
-		}
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
 		}
 	}
 

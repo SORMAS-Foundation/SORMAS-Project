@@ -31,6 +31,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.DateRangeValidator;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -64,6 +65,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
@@ -137,6 +139,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
 		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
 		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
+
+		phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phone.getCaption())));
+		email.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, email.getCaption())));
+
 		addField(ContactDto.RETURNING_TRAVELER, OptionGroup.class);
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
