@@ -13,7 +13,7 @@ public interface ExternalJournalFacade {
 
 	ExternalPatientDto getPatientDiaryPerson(String personUuid);
 
-	boolean registerPatientDiaryPerson(PersonDto person);
+	RegisterResult registerPatientDiaryPerson(PersonDto person);
 
 	boolean isPersonExportable(PersonDto person);
 }

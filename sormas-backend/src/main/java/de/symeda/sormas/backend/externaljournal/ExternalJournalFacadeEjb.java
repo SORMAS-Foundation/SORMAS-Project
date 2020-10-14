@@ -5,6 +5,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externaljournal.ExternalPatientDto;
+import de.symeda.sormas.api.externaljournal.RegisterResult;
 import de.symeda.sormas.api.person.PersonDto;
 
 @Stateless(name = "ExternalJournalFacade")
@@ -29,7 +30,7 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	}
 
 	@Override
-	public boolean registerPatientDiaryPerson(PersonDto person) {
+	public RegisterResult registerPatientDiaryPerson(PersonDto person) {
 		return externalJournalService.registerPatientDiaryPerson(person);
 	}
 
