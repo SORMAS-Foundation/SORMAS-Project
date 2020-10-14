@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -79,8 +80,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -641,7 +642,7 @@ public class CaseController {
 		bulkEditData.setRegion(region);
 		bulkEditData.setDistrict(district);
 
-		BulkCaseDataForm form = new BulkCaseDataForm(district);
+		BulkCaseDataForm form = new BulkCaseDataForm(district, selectedCases);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView =
 			new CommitDiscardWrapperComponent<BulkCaseDataForm>(form, form.getFieldGroup());
@@ -760,6 +761,7 @@ public class CaseController {
 			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
 			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
 			updatedCase.setHealthFacility(updatedCaseBulkEditData.getHealthFacility());
+			updatedCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 			CaseLogic.handleHospitalization(updatedCase, caseFacade.getCaseDataByUuid(indexDto.getUuid()), doTransfer);
 			caseFacade.saveCase(updatedCase);
 		}
@@ -794,6 +796,10 @@ public class CaseController {
 		// the same district
 		if (surveillanceOfficerChange) {
 			caseDto.setSurveillanceOfficer(updatedCaseBulkEditData.getSurveillanceOfficer());
+		}
+
+		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
+			caseDto.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 		}
 
 		return caseDto;
