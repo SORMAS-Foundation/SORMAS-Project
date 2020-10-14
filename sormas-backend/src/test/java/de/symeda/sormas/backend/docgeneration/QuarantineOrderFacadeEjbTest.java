@@ -1,25 +1,7 @@
 package de.symeda.sormas.backend.docgeneration;
 
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.auth0.jwt.internal.org.apache.commons.io.FileUtils;
 import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -35,6 +17,22 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+
+import static org.junit.Assert.*;
 
 public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 
@@ -184,7 +182,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 			quarantineOrderFacadeEjb.writeQuarantineTemplate("../TemplateFileToValidated.docx", new byte[0]);
 			fail("Invalid file extension not recognized.");
 		} catch (ValidationException e) {
-			assertEquals("Illegal Filename", e.getMessage());
+			assertEquals("Illegal file name: ../TemplateFileToValidated.docx", e.getMessage());
 		}
 		try {
 			quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToValidated.docx", new byte[0]);

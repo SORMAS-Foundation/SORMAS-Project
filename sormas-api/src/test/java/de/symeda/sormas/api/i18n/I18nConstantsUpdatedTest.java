@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.i18n;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
@@ -52,7 +53,7 @@ public class I18nConstantsUpdatedTest {
 			String fileContent = sb.toString();
 
 			// For debugging to check where the difference is if needed
-//			assertEquals(generator.getOutputClassName(), expectedContent, fileContent);
+			assertEquals(generator.getOutputClassName(), expectedContent, fileContent);
 			return expectedContent.equals(fileContent);
 		}
 	}

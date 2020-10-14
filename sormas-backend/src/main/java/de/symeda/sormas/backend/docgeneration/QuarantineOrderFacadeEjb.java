@@ -56,7 +56,7 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
-	public static final String ROOT_ENTITY = "case";
+	public static final String ROOT_ENTITY_NAME = "case";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private static String DEFAULT_NULL_REPLACEMENT = "./.";
@@ -121,13 +121,13 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		} else if (rootEntityReference instanceof ContactReferenceDto) {
 			caseData = contactFacade.getContactByUuid(rootEntityUuid);
 		} else {
-			throw new ValidationException("Quarantine can only be issued for cases or contacts.");
+			throw new ValidationException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
 		}
 
 		if (caseData != null) {
 			for (String propertyKey : propertyKeys) {
 				if (isEntityVariable(propertyKey)) {
-					String propertyPath = propertyKey.replace(ROOT_ENTITY + ".", "");
+					String propertyPath = propertyKey.replace(ROOT_ENTITY_NAME + ".", "");
 					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(caseData, propertyPath, referenceDtoResolver);
 					logger.trace(propertyKey + ":" + propertyValue);
 					properties.setProperty(propertyKey, propertyValue);
@@ -159,7 +159,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 			return IOUtils.toByteArray(templateEngineService.generateDocument(properties, new FileInputStream(templateFile)));
 		} catch (IOException | XDocReportException e) {
 			logger.warn("Error while generating document", e);
-			throw new ValidationException("Error while generating document. " + e.getMessage());
+			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), e.getMessage()));
 		}
 	}
 
@@ -199,7 +199,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		}
 		String path = FilenameUtils.getPath(fileName);
 		if (path != null && !path.isEmpty()) {
-			throw new ValidationException("Illegal Filename");
+			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), fileName));
 		}
 
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
@@ -222,7 +222,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		if (templateFile.exists() && templateFile.isFile()) {
 			return templateFile.delete();
 		} else {
-			throw new ValidationException("File " + fileName + " does not extist");
+			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorFileNotFound), fileName));
 		}
 	}
 
@@ -231,7 +231,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		try {
 			return FileUtils.readFileToByteArray(getTemplateFile(templateName));
 		} catch (IOException e) {
-			throw new ValidationException("Could not read template file '" + templateName + "'.");
+			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateName));
 		}
 	}
 
@@ -239,9 +239,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		try {
 			return templateEngineService.extractTemplateVariables(new FileInputStream(templateFile));
 		} catch (IOException e) {
-			throw new ValidationException("Could not read template file '" + templateFile.getName() + "'.");
+			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFile.getName()));
 		} catch (XDocReportException e) {
-			throw new ValidationException("Could not process template file '" + templateFile.getName() + "'.");
+			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
 		}
 	}
 
@@ -251,7 +251,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		File templateFile = new File(templateFileName);
 
 		if (!templateFile.exists()) {
-			throw new ValidationException("Template file '" + templateName + "' not found.");
+			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorFileNotFound), templateName));
 		}
 		return templateFile;
 	}
