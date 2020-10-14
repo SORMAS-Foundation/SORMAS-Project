@@ -461,6 +461,7 @@ public interface Strings {
 	String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	String infoSampleExport = "infoSampleExport";
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
+	String infoSaveOfTask = "infoSaveOfTask";
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
 	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";

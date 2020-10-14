@@ -33,6 +33,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -49,7 +50,7 @@ public class TaskController {
 
 	public void create(TaskContext context, ReferenceDto entityRef, Runnable callback) {
 
-		TaskEditForm createForm = new TaskEditForm(true);
+		TaskEditForm createForm = new TaskEditForm(true, false);
 		createForm.setValue(createNewTask(context, entityRef));
 		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(
 			createForm,
@@ -73,7 +74,7 @@ public class TaskController {
 
 	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample) {
 
-		TaskEditForm createForm = new TaskEditForm(true);
+		TaskEditForm createForm = new TaskEditForm(true, false);
 		TaskDto taskDto = createNewTask(context, entityRef);
 		taskDto.setTaskType(TaskType.SAMPLE_COLLECTION);
 		taskDto.setCreatorComment(sample.getNoTestPossibleReason());
@@ -98,12 +99,12 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 
-	public void edit(TaskIndexDto dto, Runnable callback) {
+	public void edit(TaskIndexDto dto, Runnable callback, boolean editedFromTaskGrid) {
 
 		// get fresh data
 		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
 
-		TaskEditForm form = new TaskEditForm(false);
+		TaskEditForm form = new TaskEditForm(false, editedFromTaskGrid);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<TaskEditForm> editView =
 			new CommitDiscardWrapperComponent<TaskEditForm>(form, UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT), form.getFieldGroup());
@@ -117,6 +118,11 @@ public class TaskController {
 				if (!form.getFieldGroup().isModified()) {
 					TaskDto dto = form.getValue();
 					FacadeProvider.getTaskFacade().saveTask(dto);
+
+					if (!editedFromTaskGrid && dto.getCaze() != null) {
+						ControllerProvider.getCaseController().navigateToCase(dto.getCaze().getUuid());
+					}
+
 					popupWindow.close();
 					callback.run();
 				}
