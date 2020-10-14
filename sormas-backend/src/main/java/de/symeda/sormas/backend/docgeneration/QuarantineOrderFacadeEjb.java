@@ -56,6 +56,8 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
+	public static final String ROOT_ENTITY = "case";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private static String DEFAULT_NULL_REPLACEMENT = "./.";
 
@@ -110,7 +112,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		// Case.person.firstName
 		// Case.quarantineFrom
 		// Generic access as implemented in DataDictionaryGenerator.java
-		// see also: DownloadUtil.createCsvExportStreamResource
 
 		IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
 
@@ -126,7 +127,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		if (caseData != null) {
 			for (String propertyKey : propertyKeys) {
 				if (isEntityVariable(propertyKey)) {
-					String propertyPath = propertyKey.replace("case.", "");
+					String propertyPath = propertyKey.replace(ROOT_ENTITY + ".", "");
 					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(caseData, propertyPath, referenceDtoResolver);
 					logger.trace(propertyKey + ":" + propertyValue);
 					properties.setProperty(propertyKey, propertyValue);
@@ -196,11 +197,16 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		if (!"docx".equalsIgnoreCase(FilenameUtils.getExtension(fileName))) {
 			throw new ValidationException(I18nProperties.getString(Strings.headingWrongFileType));
 		}
+		String path = FilenameUtils.getPath(fileName);
+		if (path != null && !path.isEmpty()) {
+			throw new ValidationException("Illegal Filename");
+		}
+
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
 		templateEngineService.validateTemplate(new ByteArrayInputStream(document));
 		try {
 			Files.createDirectories(Paths.get(workflowTemplateDirPath));
-			FileOutputStream fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + fileName);
+			FileOutputStream fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + FilenameUtils.getName(fileName));
 			fileOutputStream.write(document);
 			fileOutputStream.close();
 		} catch (IOException e) {
