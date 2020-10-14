@@ -242,7 +242,6 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		healthFacilityDetails.addValueChangeListener(e -> {
-			this.getValue().setHealthFacilityDetails(healthFacilityDetails.getValue());
 			updateFacilityFields(facility, healthFacilityDetails);
 		});
 		district.addValueChangeListener(e -> {
