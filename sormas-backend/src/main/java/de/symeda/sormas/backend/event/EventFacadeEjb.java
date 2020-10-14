@@ -17,33 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.DashboardEventDto;
-import de.symeda.sormas.api.event.EventCriteria;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventExportDto;
-import de.symeda.sormas.api.event.EventFacade;
-import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.Pseudonymizer;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -63,14 +44,35 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventExportDto;
+import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -152,7 +154,8 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public EventReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(eventService.getByUuid(uuid));
+		I18nProperties.setUserLanguage(userService.getCurrentUser().getLanguage());
+		return toReferenceDtoWithCaption(eventService.getByUuid(uuid));
 	}
 
 	@Override
@@ -504,6 +507,17 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		EventReferenceDto dto = new EventReferenceDto(entity.getUuid(), entity.toString());
+		return dto;
+	}
+
+	public EventReferenceDto toReferenceDtoWithCaption(Event entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		EventReferenceDto dto =
+			new EventReferenceDto(entity.getUuid(), entity.getDisease(), entity.getDiseaseDetails(), entity.getEventStatus(), entity.getStartDate());
 		return dto;
 	}
 

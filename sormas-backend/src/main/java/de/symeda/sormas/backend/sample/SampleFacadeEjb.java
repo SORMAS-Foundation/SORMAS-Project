@@ -253,7 +253,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(sampleService.getByUuid(uuid));
+		I18nProperties.setUserLanguage(userService.getCurrentUser().getLanguage());
+		return toReferenceDtoWithCaption(sampleService.getByUuid(uuid));
 	}
 
 	@Override
@@ -915,6 +916,21 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
+		return dto;
+	}
+
+	public SampleReferenceDto toReferenceDtoWithCaption(Sample entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		SampleReferenceDto dto = new SampleReferenceDto(
+			entity.getUuid(),
+			entity.getSampleMaterial(),
+			entity.getAssociatedCase() != null ? entity.getAssociatedCase().getUuid() : null,
+			entity.getAssociatedContact() != null ? entity.getAssociatedContact().getUuid() : null,
+			entity.getAssociatedEventParticipant() != null ? entity.getAssociatedEventParticipant().getUuid() : null);
 		return dto;
 	}
 
