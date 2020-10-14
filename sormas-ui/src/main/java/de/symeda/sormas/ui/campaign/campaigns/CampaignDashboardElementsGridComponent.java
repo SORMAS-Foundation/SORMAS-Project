@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.campaign.campaigns;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +50,10 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 				.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getTabId())
 				.distinct()
 				.collect(Collectors.toList()));
+
+		tabIdCombo.setTextInputAllowed(true);
+		tabIdCombo.setNewItemProvider((ComboBox.NewItemProvider<String>) s -> Optional.of(s));
+
 		Binder.Binding<CampaignDashboardElement, String> tabIdBind =
 			binder.bind(tabIdCombo, CampaignDashboardElement::getTabId, CampaignDashboardElement::setTabId);
 		Grid.Column<CampaignDashboardElement, String> tabIdColumn = grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getTabId())
