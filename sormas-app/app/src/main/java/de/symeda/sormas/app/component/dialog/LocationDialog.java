@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.component.dialog;
 
+import static android.view.View.GONE;
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,12 +30,13 @@ import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
@@ -41,13 +45,9 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
-import de.symeda.sormas.app.epidata.EpiDataBurialDialog;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class LocationDialog extends FormDialog {
 
@@ -58,7 +58,7 @@ public class LocationDialog extends FormDialog {
 
 	// Constructor
 
-	public LocationDialog(final FragmentActivity activity, Location location, AppFieldAccessCheckers fieldAccessCheckers) {
+	public LocationDialog(final FragmentActivity activity, Location location, UiFieldAccessCheckers fieldAccessCheckers) {
 		this(activity, location, true, fieldAccessCheckers);
 	}
 
@@ -66,7 +66,7 @@ public class LocationDialog extends FormDialog {
 		final FragmentActivity activity,
 		Location location,
 		boolean closeOnPositiveButtonClick,
-		AppFieldAccessCheckers fieldAccessCheckers) {
+		UiFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
@@ -96,7 +96,13 @@ public class LocationDialog extends FormDialog {
 		List<Item> initialRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		InfrastructureHelper.initializeRegionFields(
+		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
+		List<Item> facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
+
+		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.locationFacility, contentBinding.locationFacilityDetails);
+
+		InfrastructureHelper.initializeFacilityFields(
+			data,
 			this.contentBinding.locationRegion,
 			initialRegions,
 			data.getRegion(),
@@ -105,7 +111,18 @@ public class LocationDialog extends FormDialog {
 			data.getDistrict(),
 			this.contentBinding.locationCommunity,
 			initialCommunities,
-			data.getCommunity());
+			data.getCommunity(),
+			null,
+			null,
+			this.contentBinding.facilityTypeGroup,
+			facilityTypeGroupList,
+			this.contentBinding.locationFacilityType,
+			null,
+			this.contentBinding.locationFacility,
+			initialFacilities,
+			data.getFacility(),
+			this.contentBinding.locationFacilityDetails,
+			true);
 
 		setFieldVisibilitiesAndAccesses(LocationDto.class, contentBinding.mainContent);
 		if (!isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY)) {
@@ -139,6 +156,12 @@ public class LocationDialog extends FormDialog {
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);
+		}
+
+		if (data.getFacility() == null) {
+			contentBinding.locationFacilityDetails.setVisibility(GONE);
+		} else {
+			contentBinding.facilityTypeGroup.setValue(data.getFacilityType().getFacilityTypeGroup());
 		}
 	}
 

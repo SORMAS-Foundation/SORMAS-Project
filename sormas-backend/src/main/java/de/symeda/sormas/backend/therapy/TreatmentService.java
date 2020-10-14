@@ -150,7 +150,7 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Treatment, Treatment> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Treatment> from) {
 		Join<Treatment, Therapy> therapy = from.join(Treatment.THERAPY, JoinType.LEFT);
 		return caseService.createUserFilter(cb, cq, therapy.join(Therapy.CASE, JoinType.LEFT));
 	}

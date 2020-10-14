@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.49.1</version>
+		<version>1.50.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -50,6 +50,29 @@
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2</artifactId>
+		</dependency>
+
+		<!-- Keycloak -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-servlet-filter-adapter</artifactId>
+			<version>${keycloak.version}</version>
+		</dependency>
+
+		<!-- OpenID -->
+		<dependency>
+			<groupId>fish.payara.api</groupId>
+			<artifactId>payara-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>fish.payara.security.connectors</groupId>
+			<artifactId>security-connector-oidc-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.microprofile.config</groupId>
+			<artifactId>microprofile-config-api</artifactId>
 		</dependency>
 
 	</dependencies>

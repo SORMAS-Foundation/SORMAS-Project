@@ -3,13 +3,14 @@ package de.symeda.sormas.app.util;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import java.util.Set;
+
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Set;
-
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -21,7 +22,7 @@ public class FieldVisibilityAndAccessHelper {
 		Class<?> dtoClass,
 		ViewGroup viewGroup,
 		FieldVisibilityCheckers visibilityCheckers,
-		AppFieldAccessCheckers accessCheckers) {
+		UiFieldAccessCheckers accessCheckers) {
 		for (int i = 0; i < viewGroup.getChildCount(); i++) {
 			View child = viewGroup.getChildAt(i);
 			if (child instanceof ControlPropertyField) {
@@ -38,7 +39,7 @@ public class FieldVisibilityAndAccessHelper {
 		}
 	}
 
-	public static void setFieldsInaccessible(ViewGroup viewGroup, Set<String> fieldIds){
+	public static void setFieldsInaccessible(ViewGroup viewGroup, Set<String> fieldIds) {
 		for (int i = 0; i < viewGroup.getChildCount(); i++) {
 			View child = viewGroup.getChildAt(i);
 			if (child instanceof ControlPropertyField) {
@@ -55,9 +56,8 @@ public class FieldVisibilityAndAccessHelper {
 	private static void setFieldInaccessibleValue(View child) {
 		child.setEnabled(false);
 		if (child instanceof ControlPropertyEditField) {
-			((ControlPropertyEditField)child).setHint(I18nProperties.getCaption(Captions.inaccessibleValue));
-		}
-		else if(child instanceof ControlTextReadField){
+			((ControlPropertyEditField) child).setHint(I18nProperties.getCaption(Captions.inaccessibleValue));
+		} else if (child instanceof ControlTextReadField) {
 			((ControlTextReadField) child).setInaccessibleValue(I18nProperties.getCaption(Captions.inaccessibleValue));
 		}
 	}
@@ -70,7 +70,7 @@ public class FieldVisibilityAndAccessHelper {
 		return visibilityCheckers.isVisible(dtoClass, propertyId);
 	}
 
-	public static boolean isFieldAccessible(Class<?> dtoClass, String propertyId, AppFieldAccessCheckers accessCheckers) {
+	public static boolean isFieldAccessible(Class<?> dtoClass, String propertyId, UiFieldAccessCheckers accessCheckers) {
 		if (accessCheckers == null) {
 			return true;
 		}

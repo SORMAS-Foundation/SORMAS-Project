@@ -19,7 +19,7 @@ public class TherapyService extends AbstractAdoService<Therapy> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Therapy, Therapy> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Therapy> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

@@ -23,7 +23,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
@@ -39,6 +38,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonDto extends PseudonymizableDto {
 
@@ -82,11 +82,6 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
-	public static final String OCCUPATION_REGION = "occupationRegion";
-	public static final String OCCUPATION_DISTRICT = "occupationDistrict";
-	public static final String OCCUPATION_COMMUNITY = "occupationCommunity";
-	public static final String OCCUPATION_FACILITY = "occupationFacility";
-	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
 
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
@@ -102,7 +97,6 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
-	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
 
@@ -116,24 +110,31 @@ public class PersonDto extends PseudonymizableDto {
 
 	@Outbreaks
 	@Required
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private String firstName;
 	@Outbreaks
 	@Required
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private String lastName;
 	@PersonalData
+	@SensitiveData
 	private String nickname;
 	@PersonalData
+	@SensitiveData
 	private String mothersName;
 	@PersonalData
+	@SensitiveData
 	private String mothersMaidenName;
 	@PersonalData
+	@SensitiveData
 	private String fathersName;
 	@Outbreaks
 	private Sex sex;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private Integer birthdateDD;
 	@Outbreaks
 	private Integer birthdateMM;
@@ -252,16 +253,6 @@ public class PersonDto extends PseudonymizableDto {
 	private OccupationType occupationType;
 	@SensitiveData
 	private String occupationDetails;
-	private RegionReferenceDto occupationRegion;
-	private DistrictReferenceDto occupationDistrict;
-	@SensitiveData
-	private CommunityReferenceDto occupationCommunity;
-	@SensitiveData
-	private FacilityType occupationFacilityType;
-	@SensitiveData
-	private FacilityReferenceDto occupationFacility;
-	@SensitiveData
-	private String occupationFacilityDetails;
 	@SensitiveData
 	private String generalPractitionerDetails;
 	@SensitiveData
@@ -506,46 +497,6 @@ public class PersonDto extends PseudonymizableDto {
 		this.occupationDetails = occupationDetails;
 	}
 
-	public FacilityReferenceDto getOccupationFacility() {
-		return occupationFacility;
-	}
-
-	public void setOccupationFacility(FacilityReferenceDto occupationFacility) {
-		this.occupationFacility = occupationFacility;
-	}
-
-	public RegionReferenceDto getOccupationRegion() {
-		return occupationRegion;
-	}
-
-	public void setOccupationRegion(RegionReferenceDto occupationRegion) {
-		this.occupationRegion = occupationRegion;
-	}
-
-	public DistrictReferenceDto getOccupationDistrict() {
-		return occupationDistrict;
-	}
-
-	public void setOccupationDistrict(DistrictReferenceDto occupationDistrict) {
-		this.occupationDistrict = occupationDistrict;
-	}
-
-	public CommunityReferenceDto getOccupationCommunity() {
-		return occupationCommunity;
-	}
-
-	public void setOccupationCommunity(CommunityReferenceDto occupationCommunity) {
-		this.occupationCommunity = occupationCommunity;
-	}
-
-	public String getOccupationFacilityDetails() {
-		return occupationFacilityDetails;
-	}
-
-	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
-		this.occupationFacilityDetails = occupationFacilityDetails;
-	}
-
 	public String getMothersName() {
 		return mothersName;
 	}
@@ -648,14 +599,6 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
-	}
-
-	public FacilityType getOccupationFacilityType() {
-		return occupationFacilityType;
-	}
-
-	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
-		this.occupationFacilityType = occupationFacilityType;
 	}
 
 	public FacilityType getPlaceOfBirthFacilityType() {

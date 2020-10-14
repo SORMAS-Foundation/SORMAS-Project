@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -232,7 +233,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	 * Used by most getAll* and getAllUuids methods to filter by user
 	 */
 	@SuppressWarnings("rawtypes")
-	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO, ADO> from);
+	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -285,24 +286,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@Override
 	public Boolean exists(@NotNull String uuid) {
 
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-
-		final CriteriaQuery<Object> query = cb.createQuery(Object.class);
-		query.from(getElementClass());
-
-		final Subquery<ADO> subquery = query.subquery(getElementClass());
-		final Root<ADO> subRootEntity = subquery.from(getElementClass());
-		subquery.select(subRootEntity);
-		subquery.where(cb.equal(subRootEntity.get(AbstractDomainObject.UUID), uuid));
-
-		final Predicate exists = cb.exists(subquery);
-		final Expression<Boolean> trueExpression = cb.literal(true);
-		final Expression<Boolean> falseExpression = cb.literal(false);
-		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
-
-		final TypedQuery<Object> typedQuery = em.createQuery(query);
-
-		return (Boolean) typedQuery.getSingleResult();
+		return exists((cb, root) -> cb.equal(root.get(AbstractDomainObject.UUID), uuid));
 	}
 
 	@Override
@@ -330,6 +314,33 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@Override
 	public void doFlush() {
 		em.flush();
+	}
+
+	protected Boolean exists(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		final CriteriaQuery<Object> query = cb.createQuery(Object.class);
+		query.from(getElementClass());
+
+		final Subquery<ADO> subquery = query.subquery(getElementClass());
+		final Root<ADO> subRootEntity = subquery.from(getElementClass());
+		subquery.select(subRootEntity);
+		subquery.where(filterBuilder.apply(cb, subRootEntity));
+
+		final Predicate exists = cb.exists(subquery);
+		final Expression<Boolean> trueExpression = cb.literal(true);
+		final Expression<Boolean> falseExpression = cb.literal(false);
+		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
+
+		final TypedQuery<Object> typedQuery = em.createQuery(query);
+
+		try {
+			return (Boolean) typedQuery.getSingleResult();
+		} catch (NoResultException e) {
+			// h2 database entity manager throws "NoResultException" if the entity not found
+			return false;
+		}
 	}
 
 	/**

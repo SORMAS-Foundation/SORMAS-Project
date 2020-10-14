@@ -1,16 +1,6 @@
-import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
-import static com.kms.katalon.core.testdata.TestDataFactory.findTestData
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 
-import org.openqa.selenium.Dimension
-import org.openqa.selenium.WebDriver
-
 import com.hzi.Helper
-import com.hzi.Table
-import com.hzi.TableContent
-import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.model.FailureHandling as FailureHandling
-import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
 

@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
-
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -78,6 +77,7 @@ public class EventBackendTest {
 		Event event = TestEntityCreator.createEvent();
 		EventParticipant eventParticipant = TestEntityCreator.createEventParticipant(event);
 
+		event.setEventTitle("AppEventTitle");
 		event.setEventDesc("AppEventDescription");
 		eventParticipant.setInvolvementDescription("AppInvolvementDescription");
 
@@ -90,6 +90,7 @@ public class EventBackendTest {
 		mergeEvent.setEventLocation((Location) event.getEventLocation().clone());
 		mergeEvent.setId(null);
 		mergeEvent.getEventLocation().setId(null);
+		mergeEvent.setEventTitle("ServerEventTitle");
 		mergeEvent.setEventDesc("ServerEventDescription");
 
 		EventParticipant mergeEventParticipant = (EventParticipant) eventParticipant.clone();
@@ -103,6 +104,7 @@ public class EventBackendTest {
 		DatabaseHelper.getEventParticipantDao().mergeOrCreate(mergeEventParticipant);
 
 		Event updatedEvent = DatabaseHelper.getEventDao().queryUuid(event.getUuid());
+		assertThat(updatedEvent.getEventTitle(), is("ServerEventTitle"));
 		assertThat(updatedEvent.getEventDesc(), is("ServerEventDescription"));
 		EventParticipant updatedEventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipant.getUuid());
 		assertThat(updatedEventParticipant.getInvolvementDescription(), is("ServerInvolvementDescription"));
@@ -113,6 +115,7 @@ public class EventBackendTest {
 		Event event = TestEntityCreator.createEvent();
 		assertThat(event.isModified(), is(false));
 
+		event.setEventTitle("NewEventTitle");
 		event.setEventDesc("NewEventDescription");
 
 		DatabaseHelper.getEventDao().saveAndSnapshot(event);

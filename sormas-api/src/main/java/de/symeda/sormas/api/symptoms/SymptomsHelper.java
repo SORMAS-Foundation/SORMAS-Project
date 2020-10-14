@@ -478,7 +478,8 @@ public final class SymptomsHelper {
 		appendYesSymptom(string, symptomsDto.getInabilityToWalk(), SymptomsDto.INABILITY_TO_WALK);
 		appendYesSymptom(string, symptomsDto.getInDrawingOfChestWall(), SymptomsDto.IN_DRAWING_OF_CHEST_WALL);
 		appendYesSymptom(string, symptomsDto.getRespiratoryDiseaseVentilation(), SymptomsDto.RESPIRATORY_DISEASE_VENTILATION);
-		appendYesSymptom(string, symptomsDto.getGeneralSignsOfDisease(), SymptomsDto.GENERAL_SIGNS_OF_DISEASE);
+		appendYesSymptom(string, symptomsDto.getFeelingIll(), SymptomsDto.FEELING_ILL);
+		appendYesSymptom(string, symptomsDto.getShivering(), SymptomsDto.SHIVERING);
 		appendYesSymptom(string, symptomsDto.getFastHeartRate(), SymptomsDto.FAST_HEART_RATE);
 		appendYesSymptom(string, symptomsDto.getOxygenSaturationLower94(), SymptomsDto.OXYGEN_SATURATION_LOWER_94);
 

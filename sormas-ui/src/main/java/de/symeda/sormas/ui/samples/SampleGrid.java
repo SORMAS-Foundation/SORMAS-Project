@@ -32,14 +32,12 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.SampleJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -164,15 +162,10 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		}
 
 		for (Column<SampleIndexDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 
 			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					getBeanType(),
-					column.getId(),
-					SampleJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createSensitiveDataFieldAccessChecker(),
-					FieldHelper.createPersonalDataFieldAccessChecker()));
+				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 
 		}
 	}

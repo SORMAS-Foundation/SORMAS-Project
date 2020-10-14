@@ -26,6 +26,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
@@ -34,10 +35,8 @@ import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogEpidBurialEditLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 
 public class EpiDataBurialDialog extends FormDialog {
 
@@ -45,10 +44,11 @@ public class EpiDataBurialDialog extends FormDialog {
 
 	private EpiDataBurial data;
 	private DialogEpidBurialEditLayoutBinding contentBinding;
+	private boolean create;
 
 	// Constructor
 
-	EpiDataBurialDialog(final FragmentActivity activity, EpiDataBurial epiDataBurial) {
+	EpiDataBurialDialog(final FragmentActivity activity, EpiDataBurial epiDataBurial, boolean create) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
@@ -56,9 +56,10 @@ public class EpiDataBurialDialog extends FormDialog {
 			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_burial,
 			-1,
-			AppFieldAccessCheckers.withCheckers(!epiDataBurial.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(epiDataBurial.isPseudonymized()));
 
 		this.data = epiDataBurial;
+		this.create = create;
 	}
 
 	// Instance methods
@@ -121,7 +122,7 @@ public class EpiDataBurialDialog extends FormDialog {
 
 	@Override
 	public boolean isDeleteButtonVisible() {
-		return true;
+		return !create;
 	}
 
 	@Override

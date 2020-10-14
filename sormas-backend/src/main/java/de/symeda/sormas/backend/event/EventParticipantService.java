@@ -186,7 +186,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EventParticipant, EventParticipant> eventParticipantPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
 		return createUserFilterForJoin(cb, cq, eventParticipantPath);
 	}
 

@@ -3,7 +3,7 @@
    <description></description>
    <name>default</name>
    <tag></tag>
-   <defaultProfile>true</defaultProfile>
+   <defaultProfile>false</defaultProfile>
    <GlobalVariableEntity>
       <description>Sormas Testapplication</description>
       <initValue>'https://sormas.symeda.de'</initValue>

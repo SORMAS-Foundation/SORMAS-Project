@@ -217,7 +217,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
 		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
-		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+		target.setFeelingIll(source.getFeelingIll());
+		target.setShivering(source.getShivering());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
 		target.setFeverishFeeling(source.getFeverishFeeling());
@@ -413,7 +414,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
 		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
-		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+		target.setFeelingIll(source.getFeelingIll());
+		target.setShivering(source.getShivering());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
 		target.setFeverishFeeling(source.getFeverishFeeling());

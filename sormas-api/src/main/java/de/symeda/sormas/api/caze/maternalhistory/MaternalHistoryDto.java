@@ -2,13 +2,13 @@ package de.symeda.sormas.api.caze.maternalhistory;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class MaternalHistoryDto extends PseudonymizableDto {
 

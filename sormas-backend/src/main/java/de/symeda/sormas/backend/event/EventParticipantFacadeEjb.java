@@ -110,12 +110,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return eventParticipantService.getAllByEventAfter(date, event).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<String> getAllActiveUuids() {
+	public List<String>  getAllActiveUuids() {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
@@ -133,7 +133,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
@@ -154,13 +154,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@Override
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return eventParticipantService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return convertToDto(eventParticipantService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return convertToDto(eventParticipantService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -168,7 +168,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingParticipant, pseudonymizer);
 
 		validate(dto);
@@ -273,7 +273,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			indexList = em.createQuery(cq).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			EventParticipantIndexDto.class,
 			indexList,
@@ -318,6 +318,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.TYPE_OF_PLACE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.NAME),
 			eventLocation.join(Location.DISTRICT, JoinType.LEFT).get(District.NAME),
@@ -343,6 +344,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 			address.join(Location.REGION, JoinType.LEFT).get(Region.NAME),
 			address.join(Location.DISTRICT, JoinType.LEFT).get(District.NAME),
+			address.join(Location.COMMUNITY, JoinType.LEFT).get(Community.NAME),
 			address.get(Location.CITY),
 			address.get(Location.STREET),
 			address.get(Location.HOUSE_NUMBER),
@@ -381,8 +383,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 			samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedEventParticipant().getId()));
 
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			for (EventParticipantExportDto exportDto : eventParticipantResultList) {
 				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
 

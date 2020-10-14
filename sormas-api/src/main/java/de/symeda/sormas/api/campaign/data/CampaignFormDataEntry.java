@@ -16,6 +16,9 @@
 package de.symeda.sormas.api.campaign.data;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -82,5 +85,16 @@ public class CampaignFormDataEntry implements Serializable {
 		}
 
 		return value.toString();
+	}
+
+	public static void removeNullValueEntries(Collection<CampaignFormDataEntry> entries) {
+
+		Iterator<CampaignFormDataEntry> iterator = entries.iterator();
+		while (iterator.hasNext()) {
+			CampaignFormDataEntry entry = iterator.next();
+			if (entry.value == null) {
+				iterator.remove();
+			}
+		}
 	}
 }

@@ -42,6 +42,7 @@ import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -49,14 +50,15 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -78,6 +80,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
 			fluidRowLocs(EventDto.EXTERNAL_ID, "") +
+			fluidRowLocs(EventDto.EVENT_TITLE) +
 			fluidRowLocs(EventDto.EVENT_DESC) +
 			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
 
@@ -95,19 +98,19 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
 
-	private final VerticalLayout statusChangeLayout;
-	private Boolean isCreateForm = null;
-	private final boolean isInJutisdiction;
+	private final Boolean isCreateForm;
+	private final boolean isPseudonymized;
 
-	public EventDataForm(boolean create, boolean inJurisdiction) {
-		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), createFieldAccessCheckers(inJurisdiction, inJurisdiction));
+	public EventDataForm(boolean create, boolean isPseudonymized) {
+		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), createFieldAccessCheckers(isPseudonymized, true));
 
 		isCreateForm = create;
-		this.isInJutisdiction = inJurisdiction;
+		this.isPseudonymized = isPseudonymized;
+
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
-		statusChangeLayout = new VerticalLayout();
+		VerticalLayout statusChangeLayout = new VerticalLayout();
 		statusChangeLayout.setSpacing(false);
 		statusChangeLayout.setMargin(false);
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
@@ -115,15 +118,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addFields();
 	}
 
-	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean inJurisdiction, boolean withPersonalAndSensitive) {
-		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers(inJurisdiction);
-
+	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
 		if (withPersonalAndSensitive) {
-			fieldAccessCheckers.add(FieldHelper.createSensitiveDataFieldAccessChecker());
-			fieldAccessCheckers.add(FieldHelper.createPersonalDataFieldAccessChecker());
+			return UiFieldAccessCheckers.getDefault(isPseudonymized);
 		}
 
-		return fieldAccessCheckers;
+		return UiFieldAccessCheckers.getNoop();
 	}
 
 	@Override
@@ -155,8 +155,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
-		addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
-
+		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
+		title.addStyleName(CssStyles.SOFT_REQUIRED);
+		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
+		descriptionField.setRows(2);
+		descriptionField.setDescription(
+			I18nProperties.getPrefixDescription(EventDto.I18N_PREFIX, EventDto.EVENT_DESC, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		addField(EventDto.NOSOCOMIAL, OptionGroup.class);
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
@@ -175,9 +180,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextField srcMediaWebsite = addField(EventDto.SRC_MEDIA_WEBSITE, TextField.class);
 		TextField srcMediaName = addField(EventDto.SRC_MEDIA_NAME, TextField.class);
 		TextArea srcMediaDetails = addField(EventDto.SRC_MEDIA_DETAILS, TextArea.class);
-		srcMediaDetails.setRows(2);
+		srcMediaDetails.setRows(4);
 
-		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isInJutisdiction, false)))
+		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
 			.setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);

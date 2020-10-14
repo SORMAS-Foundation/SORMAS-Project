@@ -94,12 +94,9 @@ public class DiseaseBurdenGrid extends Grid {
 				String strValue = "" + Math.abs(value);
 				if (strValue.equals("100.0"))
 					strValue = "100";
-//				or use below to remove insignificant decimals
-//				if (strValue.endsWith(".0"))
-//					strValue = strValue.substring(0, strValue.length() - 3);
 
 				//@formatter:off
-				stringRepresentation = 
+				stringRepresentation =
 					  "<div style=\"width:100%\">"
 					+	"<div class=\"\" style=\"display: inline-block;margin-top: 2px;width: 70%;text-align:left;\">" + strValue + "%" + "</div>"
 					+	"<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel

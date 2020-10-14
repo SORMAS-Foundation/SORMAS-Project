@@ -26,7 +26,6 @@ import org.joda.time.DateTime;
 
 import android.content.Context;
 import android.util.Log;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -1608,6 +1607,7 @@ class EventGenerator extends BaseDataGenerator {
 			Event data1 = new Event();
 			data1.setUuid(getRandomUuid());
 			data1.setEventStatus(getRandomEventStatus());
+			data1.setEventTitle(getRandomSentence());
 			data1.setEventDesc(getRandomSentence());
 			data1.setStartDate(getRandomDate());
 			data1.setReportDateTime(getRandomDate());

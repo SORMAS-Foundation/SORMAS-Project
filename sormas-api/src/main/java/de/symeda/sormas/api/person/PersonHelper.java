@@ -147,19 +147,13 @@ public final class PersonHelper {
 		return result.toString();
 	}
 
-	public static String buildOccupationString(OccupationType occupationType, String occupationDetails, String occupationFacilityName) {
+	public static String buildOccupationString(OccupationType occupationType, String occupationDetails) {
 
 		StringBuilder result = new StringBuilder();
 		if (occupationType == OccupationType.OTHER) {
 			result.append(occupationDetails);
 		} else if (occupationType != null) {
 			result.append(occupationType);
-		}
-		if (!DataHelper.isNullOrEmpty(occupationFacilityName)) {
-			if (result.length() > 0) {
-				result.append(", ");
-			}
-			result.append(occupationFacilityName);
 		}
 		return result.toString();
 	}

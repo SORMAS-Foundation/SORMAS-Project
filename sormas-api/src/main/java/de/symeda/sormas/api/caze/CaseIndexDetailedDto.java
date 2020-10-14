@@ -1,7 +1,10 @@
 package de.symeda.sormas.api.caze;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -10,8 +13,6 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
-
-import java.util.Date;
 
 public class CaseIndexDetailedDto extends CaseIndexDto {
 
@@ -25,6 +26,10 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String PHONE = "phone";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVENT_COUNT = "eventCount";
+	public static final String LATEST_EVENT_ID = "latestEventId";
+	public static final String LATEST_EVENT_STATUS = "latestEventStatus";
+	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
 
 	@PersonalData
 	@SensitiveData
@@ -44,6 +49,10 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private String postalCode;
 	@SensitiveData
 	private String phone;
+	private Long eventCount;
+	private String latestEventId;
+	private String latestEventTitle;
+	private EventStatus latestEventStatus;
 
 	private UserReferenceDto reportingUser;
 
@@ -55,15 +64,15 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
-								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
+								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId,
 								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								String reportingUserFirstName, String reportingUserLastName, int visitCount) {
+								String reportingUserFirstName, String reportingUserLastName, int visitCount, long eventCount) {
 
 		super(id, uuid, epidNumber, externalID, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
-				quarantineTo, completeness, followUpStatus, followUpUntil, visitCount);
+				quarantineTo, completeness, followUpStatus, followUpUntil, changeDate, facilityId, visitCount);
 		//@formatter:on
 
 		this.city = city;
@@ -73,6 +82,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
+		this.eventCount = eventCount;
 	}
 
 	public String getCity() {
@@ -105,5 +115,33 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public Long getEventCount() {
+		return eventCount;
+	}
+
+	public String getLatestEventId() {
+		return latestEventId;
+	}
+
+	public void setLatestEventId(String latestEventId) {
+		this.latestEventId = latestEventId;
+	}
+
+	public String getLatestEventTitle() {
+		return latestEventTitle;
+	}
+
+	public void setLatestEventTitle(String latestEventTitle) {
+		this.latestEventTitle = latestEventTitle;
+	}
+
+	public EventStatus getLatestEventStatus() {
+		return latestEventStatus;
+	}
+
+	public void setLatestEventStatus(EventStatus latestEventStatus) {
+		this.latestEventStatus = latestEventStatus;
 	}
 }

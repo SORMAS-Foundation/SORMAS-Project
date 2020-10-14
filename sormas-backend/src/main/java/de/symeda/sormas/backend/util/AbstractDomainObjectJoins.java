@@ -29,6 +29,8 @@ public class AbstractDomainObjectJoins<X extends AbstractDomainObject, Y extends
 		if (join == null) {
 			join = parent.join(attribute, joinType);
 			setValue.accept(join);
+		} else if (join.getJoinType() != joinType) {
+			throw new IllegalArgumentException("Join already defined with another join type");
 		}
 
 		return join;

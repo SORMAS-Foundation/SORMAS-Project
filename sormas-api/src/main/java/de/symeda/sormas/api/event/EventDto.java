@@ -20,13 +20,13 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class EventDto extends PseudonymizableDto {
 
@@ -39,6 +39,7 @@ public class EventDto extends PseudonymizableDto {
 	public static final String PARTICIPANTS_COUNT = "participantCount";
 	public static final String EVENT_ACTIONS = "eventActions";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String NOSOCOMIAL = "nosocomial";
 	public static final String START_DATE = "startDate";
@@ -66,6 +67,7 @@ public class EventDto extends PseudonymizableDto {
 	@Required
 	private EventStatus eventStatus;
 	private String externalId;
+	private String eventTitle;
 	@Required
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
@@ -119,6 +121,14 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public String getEventTitle() {
+		return eventTitle;
+	}
+
+	public void setEventTitle(String eventTitle) {
+		this.eventTitle = eventTitle;
 	}
 
 	public String getEventDesc() {

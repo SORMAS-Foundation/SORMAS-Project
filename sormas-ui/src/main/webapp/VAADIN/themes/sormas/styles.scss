@@ -1,8 +1,8 @@
-
 @import "bootstrap-grid.min.css";
 
 @import "sormas.scss";
 @import "addons.scss";
+@import "print.scss";
 
 // This should be in the Valo theme as a shorthand
 $v-layout-margin: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left !default;
@@ -14,3 +14,5 @@ $v-layout-margin: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-b
   @include addons;
   @include sormas;
 }
+
+@include print;

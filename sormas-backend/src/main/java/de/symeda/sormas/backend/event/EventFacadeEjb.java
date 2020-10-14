@@ -108,13 +108,13 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return eventService.getAllActiveEventsAfter(date).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<EventDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return eventService.getByUuids(uuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -147,7 +147,7 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public EventDto getEventByUuid(String uuid) {
-		return convertToDto(eventService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public EventDto saveEvent(EventDto dto) {
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
 		EventDto existingDto = toDto(existingEvent);
 
@@ -229,7 +229,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
-			event.get(Event.EVENT_DESC),
+			event.get(Event.EVENT_TITLE),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			district.get(District.UUID),
@@ -273,7 +273,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
-				case EventIndexDto.EVENT_DESC:
+				case EventIndexDto.EVENT_TITLE:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:
 				case EventIndexDto.SRC_TEL_NO:
@@ -334,6 +334,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.NOSOCOMIAL),
 			region.get(Region.UUID),
@@ -441,6 +442,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setExternalId(source.getExternalId());
+		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
 		target.setStartDate(source.getStartDate());
@@ -515,6 +517,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setExternalId(source.getExternalId());
+		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
 		target.setStartDate(source.getStartDate());

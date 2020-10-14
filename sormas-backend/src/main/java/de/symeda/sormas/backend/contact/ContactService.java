@@ -67,7 +67,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -89,6 +88,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -166,11 +166,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
 
-		Predicate dateFilter = greaterThanAndNotNull(cb, from.get(AbstractDomainObject.CHANGE_DATE), date);
-		Predicate epiDataDateFilter = epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date);
-		Predicate healthConditionsDateFilter =
-			healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date);
-		return cb.or(dateFilter, epiDataDateFilter, healthConditionsDateFilter);
+		Predicate dateFilter = changeDateFilter(cb, date, from);
+		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
+		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
+
+		return dateFilter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -839,7 +840,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
 		return createUserFilterForJoin(cb, cq, contactPath);
 	}
 
@@ -1092,6 +1093,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getBirthdateDD() != null) {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
 			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), contactCriteria.getBirthdateDD()));
+		}
+		if (contactCriteria.getReturningTraveler() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.RETURNING_TRAVELER), contactCriteria.getReturningTraveler()));
 		}
 
 		return filter;

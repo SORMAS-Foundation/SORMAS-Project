@@ -31,12 +31,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.OnRebindCallback;
 import androidx.databinding.ViewDataBinding;
 
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
 public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
@@ -68,7 +67,7 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
 		Bundle data,
 		AbstractDomainObject activityRootData,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
-		AppFieldAccessCheckers fieldAccessCheckers) {
+		UiFieldAccessCheckers fieldAccessCheckers) {
 		TFragment fragment = newInstance(fragmentClass, data, activityRootData);
 		fragment.setFieldVisibilityCheckers(fieldVisibilityCheckers);
 		fragment.setFieldAccessCheckers(fieldAccessCheckers);

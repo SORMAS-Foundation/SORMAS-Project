@@ -9,16 +9,16 @@ public class CampaignDiagramSeries implements Serializable {
 
 	private String fieldId;
 	private String formId;
-	private String fieldValue;
+	private String referenceValue;
 	private String stack;
 
 	public CampaignDiagramSeries() {
 	}
 
-	public CampaignDiagramSeries(String fieldId, String formId, String fieldValue, String stack) {
+	public CampaignDiagramSeries(String fieldId, String formId, String referenceValue, String stack) {
 		this.fieldId = fieldId;
 		this.formId = formId;
-		this.fieldValue = fieldValue;
+		this.referenceValue = referenceValue;
 		this.stack = stack;
 	}
 
@@ -38,12 +38,12 @@ public class CampaignDiagramSeries implements Serializable {
 		this.formId = formId;
 	}
 
-	public String getFieldValue() {
-		return fieldValue;
+	public String getReferenceValue() {
+		return referenceValue;
 	}
 
-	public void setFieldValue(String fieldValue) {
-		this.fieldValue = fieldValue;
+	public void setReferenceValue(String referenceValue) {
+		this.referenceValue = referenceValue;
 	}
 
 	public String getStack() {
@@ -56,17 +56,19 @@ public class CampaignDiagramSeries implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		CampaignDiagramSeries that = (CampaignDiagramSeries) o;
-		return Objects.equals(fieldId, that.fieldId) &&
-				Objects.equals(formId, that.formId) &&
-				Objects.equals(fieldValue, that.fieldValue) &&
-				Objects.equals(stack, that.stack);
+		return Objects.equals(fieldId, that.fieldId)
+			&& Objects.equals(formId, that.formId)
+			&& Objects.equals(referenceValue, that.referenceValue)
+			&& Objects.equals(stack, that.stack);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fieldId, formId, fieldValue, stack);
+		return Objects.hash(fieldId, formId, referenceValue, stack);
 	}
 }

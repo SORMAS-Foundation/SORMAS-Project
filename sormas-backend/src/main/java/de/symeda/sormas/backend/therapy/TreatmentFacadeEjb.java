@@ -43,6 +43,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "TreatmentFacade")
 public class TreatmentFacadeEjb implements TreatmentFacade {
@@ -96,7 +97,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			TreatmentIndexDto.class,
 			indexList,
@@ -111,7 +112,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@Override
 	public TreatmentDto getTreatmentByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -145,13 +146,13 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return service.getAllActiveTreatmentsAfter(date, user).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<TreatmentDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return service.getByUuids(uuids).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -194,14 +195,15 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				.collect(Collectors.toList()));
 
 		Predicate filter = service.createUserFilter(cb, cq, treatment);
-		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze());
+		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
 
 		List<TreatmentExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			TreatmentExportDto.class,
 			exportList,
@@ -228,7 +230,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	private void restorePseudonymizedDto(TreatmentDto source, Treatment existingTreatment, TreatmentDto existingDto) {
 		if (existingTreatment != null) {
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(
 				TreatmentDto.class,
 				source,

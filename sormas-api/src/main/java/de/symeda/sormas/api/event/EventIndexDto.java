@@ -22,9 +22,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
+public class EventIndexDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 8322646404033924938L;
 
@@ -37,7 +37,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
-	public static final String EVENT_DESC = "eventDesc";
+	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
@@ -52,7 +52,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
-	private String eventDesc;
+	private String eventTitle;
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
 	private String srcFirstName;
@@ -71,7 +71,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		String diseaseDetails,
 		Date startDate,
 		Date endDate,
-		String eventDesc,
+		String eventTitle,
 		String regionUuid,
 		String regionName,
 		String districtUuid,
@@ -98,7 +98,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.eventDesc = eventDesc;
+		this.eventTitle = eventTitle;
 		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		this.srcType = srcType;
 		this.srcFirstName = srcFirstName;
@@ -159,12 +159,12 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.endDate = endDate;
 	}
 
-	public String getEventDesc() {
-		return eventDesc;
+	public String getEventTitle() {
+		return eventTitle;
 	}
 
-	public void setEventDesc(String eventDesc) {
-		this.eventDesc = eventDesc;
+	public void setEventTitle(String eventTitle) {
+		this.eventTitle = eventTitle;
 	}
 
 	public EventIndexLocation getEventLocation() {

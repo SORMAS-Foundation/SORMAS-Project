@@ -23,7 +23,8 @@ public enum PresentCondition {
 
 	ALIVE,
 	DEAD,
-	BURIED;
+	BURIED,
+	UNKNOWN;
 
 	public boolean isDeceased() {
 		return this == DEAD || this == BURIED;

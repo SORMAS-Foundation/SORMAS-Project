@@ -41,6 +41,7 @@ import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataEditForm;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
+import de.symeda.sormas.ui.campaign.campaigns.CampaignView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -146,7 +147,7 @@ public class CampaignController {
 
 	public CommitDiscardWrapperComponent<CampaignEditForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
 
-		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto == null);
+		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto);
 		if (campaignDto == null) {
 			campaignDto = CampaignDto.build();
 			campaignDto.setCreatingUser(UserProvider.getCurrent().getUserReference());
@@ -154,12 +155,19 @@ public class CampaignController {
 		campaignEditForm.setValue(campaignDto);
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> view =
-			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
+				@Override
+				public void discard() {
+					super.discard();
+					campaignEditForm.discard();
+				}
+			};
 
 		view.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
 				CampaignDto dto = campaignEditForm.getValue();
 				FacadeProvider.getCampaignFacade().saveCampaign(dto);
+				SormasUI.refreshView();
 				callback.run();
 			}
 		});
@@ -225,6 +233,10 @@ public class CampaignController {
 		return FacadeProvider.getCampaignFacade().getByUuid(uuid);
 	}
 
+	public void navigateToCampaign(String uuid) {
+		String navigationState = CampaignView.VIEW_NAME + "/" + uuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
 	public void navigateToFormDataView(String uuid) {
 		String navigationState = CampaignFormDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);

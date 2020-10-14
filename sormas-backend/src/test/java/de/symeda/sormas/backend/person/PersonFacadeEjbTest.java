@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -207,5 +208,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		Optional<PersonFollowUpEndDto> result2 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person2.getUuid())).findFirst();
 		assertTrue(result2.isPresent());
 		assertTrue(DateHelper.isSameDay(result2.get().getLatestFollowUpEndDate(), now));
+		Date result3 = getPersonFacade().getLatestFollowUpEndDateByUuid(person1.getUuid());
+		assertTrue(DateHelper.isSameDay(result3, DateHelper.subtractDays(now, 8)));
 	}
 }

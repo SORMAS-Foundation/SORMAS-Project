@@ -29,13 +29,23 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -64,6 +74,8 @@ import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.user.UsersView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Content of the UI when the user is logged in.
@@ -224,10 +236,56 @@ public class MainScreen extends HorizontalLayout {
 
 		navigator.addViewChangeListener(viewChangeListener);
 
+		// Add GDPR window
+		// possible to desactivate it with check
+		UserDto user = UserProvider.getCurrent().getUser();
+		if (!user.isHasConsentedToGdpr()) {
+			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
+			VerticalLayout subContentGdpr = new VerticalLayout();
+			subWindowGdpR.setContent(subContentGdpr);
+			subWindowGdpR.center();
+			subWindowGdpR.setWidth("40%");
+			subWindowGdpR.setModal(true);
+			subWindowGdpR.setClosable(true);
+
+			Label textGdpr = new Label();
+			textGdpr.setWidth("80%");
+			textGdpr.setSizeFull();
+			textGdpr.setValue(I18nProperties.getString(Strings.messageGdpr));
+			subContentGdpr.addComponent(textGdpr);
+
+			CheckBox checkBoxGdpr = new CheckBox(I18nProperties.getString(Strings.messageGdprCheck));
+
+			HorizontalLayout buttonLayout = new HorizontalLayout();
+			buttonLayout.setMargin(false);
+			buttonLayout.setSpacing(true);
+			buttonLayout.setWidth(100, Unit.PERCENTAGE);
+			Button buttonGdpr = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionConfirm), event -> {
+				if (checkBoxGdpr.getValue()) {
+					user.setHasConsentedToGdpr(true);
+					FacadeProvider.getUserFacade().saveUser(user);
+					navigator.getUI().removeWindow(subWindowGdpR);
+				}
+				navigator.getUI().removeWindow(subWindowGdpR);
+			}, ValoTheme.BUTTON_PRIMARY);
+			buttonLayout.addComponent(buttonGdpr);
+			subContentGdpr.addComponent(checkBoxGdpr);
+			subContentGdpr.addComponent(buttonLayout);
+			buttonLayout.setComponentAlignment(buttonGdpr, Alignment.BOTTOM_RIGHT);
+			buttonLayout.setExpandRatio(buttonGdpr, 0);
+			navigator.getUI().addWindow(subWindowGdpR);
+		}
+
 		ui.setNavigator(navigator);
 
 		addComponent(menu);
 		addComponent(viewContainer);
+
+		// Add some css for printable version
+		menu.addStyleName(CssStyles.PRINT_MENU);
+		viewContainer.addStyleName(CssStyles.PRINT_VIEW_CONTAINER);
+		addStyleName(CssStyles.PRINT_CONTAINER);
+
 		setExpandRatio(viewContainer, 1);
 		setSpacing(false);
 		setMargin(false);

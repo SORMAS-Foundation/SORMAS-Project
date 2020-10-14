@@ -66,7 +66,7 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(rdcf.community.getUuid(), newCampaignFormDataDto.getCommunity().getUuid());
 
 		String newFormData = "[{\"id\":\"teamNumber\",\"value\":\"12\"},{\"id\":\"namesOfTeamMembers\",\"value\":\"Ekkehard Rosin\"},"
-			+ "{\"id\":\"monitorName\",\"value\":\"Ralf Windisch\"},{\"id\":\"agencyName\",\"value\":\"Sormas Institut\"}]";
+			+ "{\"id\":\"monitorName\",\"value\":\"Ralf Windisch\"},{\"id\":\"agencyName\",\"value\":\"Sormas Institut\"},{\"id\":\"orgaName\",\"value\":null}]";
 
 		newCampaignFormDataDto.setFormValues(Arrays.asList(mapper.readValue(newFormData, CampaignFormDataEntry[].class)));
 

@@ -74,6 +74,27 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.community}" />
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/facilityTypeGroup"
+                style="@style/ControlSingleColumnStyle"
+                app:caption="@string/caption_facility_type_group"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/location_facilityType"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.facilityType}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/location_facility"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.facility}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_facilityDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:required="true"
+                app:value="@={data.facilityDetails}" />
+
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/location_postalCode"
                 style="@style/ControlSingleColumnStyle"

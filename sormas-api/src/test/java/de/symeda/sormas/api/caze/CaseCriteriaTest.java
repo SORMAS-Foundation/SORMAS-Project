@@ -17,11 +17,13 @@ public class CaseCriteriaTest {
 		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid());
 		criteria.setDistrict(district);
 		criteria.setNameUuidEpidNumberLike("test AHSDBSD-ADS");
+		criteria.setEventLike("test EVENT");
 		criteria.setDisease(Disease.CSM);
 
 		CaseCriteria generatedCriteria = new CaseCriteria();
 		generatedCriteria.fromUrlParams(criteria.toUrlParams());
 		assertEquals(criteria.getDistrict(), generatedCriteria.getDistrict());
 		assertEquals(criteria.getDisease(), generatedCriteria.getDisease());
+		assertEquals(criteria.getEventLike(), generatedCriteria.getEventLike());
 	}
 }

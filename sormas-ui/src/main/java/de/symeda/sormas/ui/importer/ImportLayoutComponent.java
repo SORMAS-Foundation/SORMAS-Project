@@ -27,8 +27,10 @@ public class ImportLayoutComponent extends VerticalLayout {
 		CssStyles.style(headlineLabel, CssStyles.H3);
 		addComponent(headlineLabel);
 
-		infoTextLabel = new Label(infoText);
-		addComponent(infoTextLabel);
+		if (infoText != null) {
+			infoTextLabel = new Label(infoText);
+			addComponent(infoTextLabel);
+		}
 
 		if (buttonCaption != null) {
 			button = ButtonHelper.createIconButtonWithCaption(

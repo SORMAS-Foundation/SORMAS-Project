@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
-		<version>1.49.1</version>
+		<version>1.50.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -132,7 +132,36 @@
 			<artifactId>bcpkix-jdk15on</artifactId>
 		</dependency>
 
-    </dependencies>
+		<dependency>
+			<groupId>org.apache.geronimo.config</groupId>
+			<artifactId>geronimo-config-impl</artifactId>
+		</dependency>
+
+		<!-- Keycloak -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<version>${keycloak.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>fish.payara.api</groupId>
+			<artifactId>payara-api</artifactId>
+		</dependency>
+
+		<!-- OpenID -->
+		<dependency>
+			<groupId>fish.payara.security.connectors</groupId>
+			<artifactId>security-connector-oidc-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.microprofile.config</groupId>
+			<artifactId>microprofile-config-api</artifactId>
+		</dependency>
+
+
+	</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>

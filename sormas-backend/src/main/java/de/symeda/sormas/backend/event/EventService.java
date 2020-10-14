@@ -294,7 +294,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
 		return createUserFilter(cb, cq, eventPath, null);
 	}
 
@@ -302,7 +302,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	public Predicate createUserFilter(
 		CriteriaBuilder cb,
 		CriteriaQuery cq,
-		From<Event, Event> eventPath,
+		From<?, Event> eventPath,
 		EventUserFilterCriteria eventUserFilterCriteria) {
 
 		final User currentUser = getCurrentUser();
@@ -353,7 +353,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return filter;
 	}
 
-	public Predicate createCaseFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath) {
+	public Predicate createCaseFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
 
 		Predicate filter = null;
 
@@ -407,7 +407,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super.delete(event);
 	}
 
-	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, Root<Event> from) {
+	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, From<?, Event> from) {
 
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {
@@ -451,6 +451,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID),
 					eventCriteria.getDistrict().getUuid()));
 		}
+		if (eventCriteria.getCommunity() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID),
+					eventCriteria.getCommunity().getUuid()));
+		}
 		if (eventCriteria.getReportedDateFrom() != null || eventCriteria.getReportedDateTo() != null) {
 			filter =
 				and(cb, filter, cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));
@@ -492,8 +500,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			for (int i = 0; i < textFilters.length; i++) {
 				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters =
-						cb.or(cb.like(cb.lower(from.get(Event.UUID)), textFilter), cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter));
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(from.get(Event.UUID)), textFilter),
+						cb.like(cb.lower(from.get(Event.EVENT_TITLE)), textFilter),
+						cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
@@ -555,5 +565,32 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	public List<EventSummaryDetails> getEventSummaryDetailsByCases(List<Long> casesId) {
+		if (casesId.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventSummaryDetails> eventsCq = cb.createQuery(EventSummaryDetails.class);
+		Root<EventParticipant> eventsCqRoot = eventsCq.from(EventParticipant.class);
+		Join<EventParticipant, Event> eventJoin = eventsCqRoot.join(EventParticipant.EVENT, JoinType.INNER);
+		Join<EventParticipant, Case> cazeJoin = eventsCqRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
+
+		eventsCq.where(
+			cb.and(
+				cazeJoin.get(AbstractDomainObject.ID).in(casesId),
+				cb.isFalse(eventJoin.get(Event.DELETED)),
+				cb.isFalse(eventJoin.get(Event.ARCHIVED)),
+				cb.isFalse(eventsCqRoot.get(EventParticipant.DELETED))));
+		eventsCq.multiselect(
+			cazeJoin.get(Case.ID),
+			eventJoin.get(Event.UUID),
+			eventJoin.get(Event.EVENT_STATUS),
+			eventJoin.get(Event.EVENT_TITLE),
+			cb.coalesce(cb.coalesce(eventJoin.get(Event.END_DATE), eventJoin.get(Event.START_DATE)), eventJoin.get(Event.REPORT_DATE_TIME)));
+
+		return em.createQuery(eventsCq).getResultList();
 	}
 }

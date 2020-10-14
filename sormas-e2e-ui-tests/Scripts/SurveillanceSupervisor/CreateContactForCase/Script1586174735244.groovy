@@ -1,6 +1,5 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
 import com.hzi.TestDataConnector as TestDataConnector
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
@@ -16,7 +15,7 @@ String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_cas
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPersonName'), [('personName') : (firstName + 
         ' ') + lastName], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Surveillance/CaseView/Case/span_Contacts_tab'))
+WebUI.click(findTestObject('Surveillance/CaseView/div_Contacts_tab'))
 
 WebUI.click(findTestObject('Contacts/CasesView/NewContact/div_New contact'))
 
@@ -27,6 +26,10 @@ WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_First n
 lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_contact')
 
 WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_Last name'), lastName)
+
+WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Sex_v-filterselect-button'))
+
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/span_Male'))
 
 WebUI.click(findTestObject('Surveillance/CaseView/Contacts/NewContact/div_RelationshipWithCase_DDBox'))
 

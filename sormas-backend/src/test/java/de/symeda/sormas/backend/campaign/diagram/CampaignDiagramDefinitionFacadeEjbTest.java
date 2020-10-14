@@ -29,13 +29,13 @@ public class CampaignDiagramDefinitionFacadeEjbTest extends AbstractBeanTest {
 		campaignDiagramSeriesList.add(diagramSeries("missedStillAbsent", "monitoringRevisitForm", "revisit"));
 		campaignDiagramSeriesList.add(diagramSeries("missedRefusals", "monitoringRevisitForm", "revisit"));
 		campaignDiagramSeriesList.add(diagramSeries("missedTeamNegligence", "monitoringRevisitForm", "revisit"));
-		campaignDiagramDefinitionDto.setCampaignDiagramSeriesList(campaignDiagramSeriesList);
+		campaignDiagramDefinitionDto.setCampaignDiagramSeries(campaignDiagramSeriesList);
 
 		final CampaignDiagramDefinitionDto savedDiagramDefinition = getCampaignDiagramDefinitionFacade().save(campaignDiagramDefinitionDto);
 
 		Assert.assertEquals("testDiagram", savedDiagramDefinition.getDiagramId());
 		Assert.assertEquals(DiagramType.COLUMN, savedDiagramDefinition.getDiagramType());
-		final List<CampaignDiagramSeries> savedCampaignDiagramSeriesList = savedDiagramDefinition.getCampaignDiagramSeriesList();
+		final List<CampaignDiagramSeries> savedCampaignDiagramSeriesList = savedDiagramDefinition.getCampaignDiagramSeries();
 		Assert.assertEquals(7, savedCampaignDiagramSeriesList.size());
 		final CampaignDiagramSeries campaignDiagramSeries1 = savedCampaignDiagramSeriesList.get(0);
 		Assert.assertEquals("recordedAbsentDuring", campaignDiagramSeries1.getFieldId());

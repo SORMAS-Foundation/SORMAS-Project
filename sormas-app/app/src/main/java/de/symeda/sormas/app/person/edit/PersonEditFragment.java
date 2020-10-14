@@ -46,16 +46,16 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
@@ -65,7 +65,6 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -87,10 +86,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			AppFieldAccessCheckers.withCheckers(
-				CaseEditAuthorization.isCaseEditAllowed(activityRootData),
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
 	public static PersonEditFragment newInstance(Contact activityRootData) {
@@ -100,10 +96,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			AppFieldAccessCheckers.withCheckers(
-				ContactEditAuthorization.isContactEditAllowed(activityRootData),
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
 	public static void setUpLayoutBinding(
@@ -128,10 +121,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 
 		List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
-		List<Item> initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
-		List<Item> initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
-		List<Item> initialOccupationFacilities =
-			InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity(), null);
 
 		List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialPlaceOfBirthDistricts = InfrastructureHelper.loadDistricts(record.getPlaceOfBirthRegion());
@@ -142,8 +131,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
 		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
 
-		InfrastructureHelper
-			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.personPlaceOfBirthFacility,
 			contentBinding.personPlaceOfBirthFacilityDetails);
@@ -153,28 +140,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personCauseOfDeathDetails);
 		initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
-		InfrastructureHelper.initializeFacilityFields(
-			record,
-			contentBinding.personOccupationRegion,
-			initialOccupationRegions,
-			record.getOccupationRegion(),
-			contentBinding.personOccupationDistrict,
-			initialOccupationDistricts,
-			record.getOccupationDistrict(),
-			contentBinding.personOccupationCommunity,
-			initialOccupationCommunities,
-			record.getOccupationCommunity(),
-			null,
-			null,
-			null,
-			null,
-			contentBinding.personOccupationFacilityType,
-			occupationFacilityTypeList,
-			contentBinding.personOccupationFacility,
-			initialOccupationFacilities,
-			record.getOccupationFacility(),
-			contentBinding.personOccupationFacilityDetails,
-			true);
 		InfrastructureHelper.initializeFacilityFields(
 			record,
 			contentBinding.personPlaceOfBirthRegion,
@@ -215,6 +180,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 				(Integer) contentBinding.personBirthdateMM.getValue());
 		});
 		int year = Calendar.getInstance().get(Calendar.YEAR);
+		FieldVisibilityCheckers countryVisibilityChecker = FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode());
 		contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
 		contentBinding.personApproximateAgeType.initializeSpinner(approximateAgeTypeList);
 		contentBinding.personSex.initializeSpinner(sexList);
@@ -222,7 +188,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.personCauseOfDeathDisease.initializeSpinner(diseaseList);
 		contentBinding.personDeathPlaceType.initializeSpinner(deathPlaceTypeList);
 		contentBinding.personBurialConductor.initializeSpinner(burialConductorList);
-		contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true));
+		contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true, countryVisibilityChecker));
 		contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
 		contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
 
@@ -475,7 +441,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 				"ActivityRootData of class " + ado.getClass().getSimpleName() + " does not support PersonEditFragment");
 		}
 
-		// Workaround because person is not an embedded entity and therefore the locations are not 
+		// Workaround because person is not an embedded entity and therefore the locations are not
 		// automatically loaded (because there's no additional queryForId call for person when the
 		// parent data is loaded)
 		DatabaseHelper.getPersonDao().initLocations(record);

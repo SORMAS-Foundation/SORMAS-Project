@@ -8,6 +8,7 @@
   * [Java 11](#java-11)
   * [Postgres Database](#postgres-database)
 * [SORMAS Server](#sormas-server)
+* [Keycloak Server](#keycloak-server)
 * [Web Server Setup](#web-server-setup)
   * [Apache Web Server](#apache-web-server)
   * [Firewall](#firewall)
@@ -18,6 +19,7 @@
 
 ## Related
 * [Creating an App for a Demo Server](DEMO_APP.md)
+* [SORMAS Docker Repository](https://github.com/hzi-braunschweig/SORMAS-Docker)
 
 ## Prerequisites
 
@@ -70,6 +72,62 @@
 * **IMPORTANT**: Adjust the SORMAS configuration for your country in /opt/domains/sormas/sormas.properties
 * Adjust the logging configuration in ``/opt/domains/sormas/config/logback.xml`` based on your needs (e.g. configure and activate email appender)
 * Linux: [Update the SORMAS domain](SERVER_UPDATE.md)
+
+## Keycloak Server
+
+By default Keycloak is run as a Docker container, which can be set up in two ways:
+* As a Docker container
+* As a Standalone installation
+
+### Keycloak as a Docker container
+*To be done only in the situation when SORMAS is already installed on the machine as a standalone installation.*
+
+*For complete Docker setup see the [SORMAS-Docker](https://github.com/hzi-braunschweig/SORMAS-Docker/tree/keycloak-integration) repository.*
+
+**Prerequisites**
+* SORMAS Server is installed
+* PostgreSQL is installed
+* Docker is installed
+* Open and edit [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh) with your system's actual values
+
+**Setup**
+* Run [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh)
+* Update `sormas.properties` file in the SORMAS domain with the property `authentication.provider=KEYCLOAK`
+
+
+### Keycloak as a standalone installation
+
+**Prerequisites**
+* SORMAS Server is installed
+* PostgreSQL is installed
+
+**Setup**
+
+Setting Keycloak up as a standalone installation [Server Installation and Configuration Guide](https://www.keycloak.org/docs/11.0/server_installation/#installation)
+* Make sure to configure Keycloak with PostgreSQL Database [Relational Database Setup](https://www.keycloak.org/docs/11.0/server_installation/#_database)
+* Setup an Admin User
+* Copy the `themes` folder content to `${KEYCLOAK_HOME}/themes` [Deploying Themes](https://www.keycloak.org/docs/11.0/server_development/#deploying-themes)
+* Create the SORMAS Realm by importing [SORMAS.json](sormas-base/setup/keycloak/SORMAS.json) see [Create a New Realm](https://www.keycloak.org/docs/11.0/server_admin/#_create-realm)
+* Update the `sormas-*` clients by generating new secrets for them
+* Update the realm's email settings to allow sending emails to users
+
+To update the SORMAS Server run the following commands
+```shell script
+${ASADMIN} set-config-property --propertyName=payara.security.openid.clientSecret --propertyValue=${KEYCLOAK_SORMAS_UI_SECRET} --source=domain
+${ASADMIN} set-config-property --propertyName=payara.security.openid.clientId --propertyValue=sormas-ui --source=domain
+${ASADMIN} set-config-property --propertyName=payara.security.openid.scope --propertyValue=openid --source=domain
+${ASADMIN} set-config-property --propertyName=payara.security.openid.providerURI --propertyValue=http://localhost:${KEYCLOAK_PORT}/keycloak/auth/realms/SORMAS --source=domain
+${ASADMIN} set-config-property --propertyName=sormas.rest.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/auth\",\"ssl-required\":\"external\",\"resource\":\"sormas-rest\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_REST_SECRET}\"},\"confidential-port\":0,\"principal-attribute\":\"preferred_username\",\"enable-basic-auth\":true}" --source=domain
+${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/auth/\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
+```
+where:
+* `${ASADMIN}` - represents the location to `${PAYARA_HOME}\bin\asadmin`
+* `${KEYCLOAK_PORT}` - the port on which keycloak will run
+* `${KEYCLOAK_SORMAS_UI_SECRET}` - is the secret generated in Keycloak for the `sormas-ui` client
+* `${KEYCLOAK_SORMAS_REST_SECRET}` - is the secret generated in Keycloack for the `sormas-rest` client
+* `${KEYCLOAK_SORMAS_BACKEND_SECRET}` - is the secret generated in Keycloack for the `sormas-backend` client
+
+Then update `sormas.properties` file in the SORMAS domain with the property `authentication.provider=KEYCLOAK`
 
 ## Web Server Setup
 

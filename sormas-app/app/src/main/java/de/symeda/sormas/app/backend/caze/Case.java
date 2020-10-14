@@ -33,10 +33,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.ContactTracingContactType;
+import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
@@ -45,6 +49,7 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
@@ -58,6 +63,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.therapy.Therapy;
 import de.symeda.sormas.app.backend.user.User;
@@ -307,6 +313,31 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown postpartum;
 	@Enumerated(EnumType.STRING)
 	private Trimester trimester;
+	@DatabaseField
+	private Integer caseIdIsm;
+	@Enumerated(EnumType.STRING)
+	private CovidTestReason covidTestReason;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String covidTestReasonDetails;
+	@Enumerated(EnumType.STRING)
+	private ContactTracingContactType contactTracingFirstContactType;
+	@DatabaseField
+	private Date contactTracingFirstContactDate;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown wasInQuarantineBeforeIsolation;
+	@Enumerated(EnumType.STRING)
+	private QuarantineReason quarantineReasonBeforeIsolation;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String quarantineReasonBeforeIsolationDetails;
+	@Enumerated(EnumType.STRING)
+	private EndOfIsolationReason endOfIsolationReason;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String endOfIsolationReasonDetails;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	@DatabaseField
+	private boolean ownershipHandedOver;
 
 	public boolean isUnreferredPortHealthCase() {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -990,5 +1021,101 @@ public class Case extends PseudonymizableAdo {
 
 	public void setFacilityType(FacilityType facilityType) {
 		this.facilityType = facilityType;
+	}
+
+	public Integer getCaseIdIsm() {
+		return caseIdIsm;
+	}
+
+	public void setCaseIdIsm(Integer caseIdIsm) {
+		this.caseIdIsm = caseIdIsm;
+	}
+
+	public CovidTestReason getCovidTestReason() {
+		return covidTestReason;
+	}
+
+	public void setCovidTestReason(CovidTestReason covidTestReason) {
+		this.covidTestReason = covidTestReason;
+	}
+
+	public String getCovidTestReasonDetails() {
+		return covidTestReasonDetails;
+	}
+
+	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
+		this.covidTestReasonDetails = covidTestReasonDetails;
+	}
+
+	public ContactTracingContactType getContactTracingFirstContactType() {
+		return contactTracingFirstContactType;
+	}
+
+	public void setContactTracingFirstContactType(ContactTracingContactType contactTracingFirstContactType) {
+		this.contactTracingFirstContactType = contactTracingFirstContactType;
+	}
+
+	public Date getContactTracingFirstContactDate() {
+		return contactTracingFirstContactDate;
+	}
+
+	public void setContactTracingFirstContactDate(Date contactTracingFirstContactDate) {
+		this.contactTracingFirstContactDate = contactTracingFirstContactDate;
+	}
+
+	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
+		return wasInQuarantineBeforeIsolation;
+	}
+
+	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
+		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
+	}
+
+	public QuarantineReason getQuarantineReasonBeforeIsolation() {
+		return quarantineReasonBeforeIsolation;
+	}
+
+	public void setQuarantineReasonBeforeIsolation(QuarantineReason quarantineReasonBeforeIsolation) {
+		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
+	}
+
+	public String getQuarantineReasonBeforeIsolationDetails() {
+		return quarantineReasonBeforeIsolationDetails;
+	}
+
+	public void setQuarantineReasonBeforeIsolationDetails(String quarantineReasonBeforeIsolationDetails) {
+		this.quarantineReasonBeforeIsolationDetails = quarantineReasonBeforeIsolationDetails;
+	}
+
+	public EndOfIsolationReason getEndOfIsolationReason() {
+		return endOfIsolationReason;
+	}
+
+	public void setEndOfIsolationReason(EndOfIsolationReason endOfIsolationReason) {
+		this.endOfIsolationReason = endOfIsolationReason;
+	}
+
+	public String getEndOfIsolationReasonDetails() {
+		return endOfIsolationReasonDetails;
+	}
+
+	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
+		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }

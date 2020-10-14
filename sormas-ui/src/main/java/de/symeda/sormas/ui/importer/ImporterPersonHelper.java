@@ -54,8 +54,6 @@ public final class ImporterPersonHelper {
 
 	public static RegionReferenceDto getPersonRegion(String propertyName, PersonDto person) {
 		switch (propertyName) {
-		case PersonDto.OCCUPATION_DISTRICT:
-			return person.getOccupationRegion();
 		case PersonDto.PLACE_OF_BIRTH_DISTRICT:
 			return person.getPlaceOfBirthRegion();
 		case LocationDto.DISTRICT:
@@ -67,8 +65,6 @@ public final class ImporterPersonHelper {
 
 	public static DistrictReferenceDto getPersonDistrict(String propertyName, PersonDto person) {
 		switch (propertyName) {
-		case PersonDto.OCCUPATION_COMMUNITY:
-			return person.getOccupationDistrict();
 		case PersonDto.PLACE_OF_BIRTH_COMMUNITY:
 			return person.getPlaceOfBirthDistrict();
 		case LocationDto.COMMUNITY:
@@ -83,10 +79,6 @@ public final class ImporterPersonHelper {
 		CommunityReferenceDto community;
 
 		switch (propertyName) {
-		case PersonDto.OCCUPATION_FACILITY:
-			district = person.getOccupationDistrict();
-			community = person.getOccupationCommunity();
-			break;
 		case PersonDto.PLACE_OF_BIRTH_FACILITY:
 			district = person.getPlaceOfBirthDistrict();
 			community = person.getPlaceOfBirthCommunity();

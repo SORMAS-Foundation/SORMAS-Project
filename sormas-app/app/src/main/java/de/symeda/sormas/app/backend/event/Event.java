@@ -50,6 +50,7 @@ public class Event extends PseudonymizableAdo {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
+	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String START_DATE = "startDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -74,6 +75,9 @@ public class Event extends PseudonymizableAdo {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalId;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String eventTitle;
 
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String eventDesc;
@@ -156,6 +160,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public String getEventTitle() {
+		return eventTitle;
+	}
+
+	public void setEventTitle(String eventTitle) {
+		this.eventTitle = eventTitle;
 	}
 
 	public String getEventDesc() {

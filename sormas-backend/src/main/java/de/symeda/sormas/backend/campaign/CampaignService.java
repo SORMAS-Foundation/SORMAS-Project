@@ -26,7 +26,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Campaign, Campaign> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
 		return null;
 	}
 

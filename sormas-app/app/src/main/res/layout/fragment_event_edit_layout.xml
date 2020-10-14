@@ -115,6 +115,11 @@
         </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_eventTitle"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.eventTitle}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/event_eventDesc"
                 style="@style/ControlSingleColumnStyle"
                 app:required="true"

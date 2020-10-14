@@ -17,32 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.contact.ContactCategory;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactIdentificationSource;
-import de.symeda.sormas.api.contact.ContactProximity;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.ContactRelation;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.contact.TracingApp;
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.epidata.EpiData;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.visit.Visit;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -57,13 +39,36 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
+import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
 @Audited
@@ -134,6 +139,10 @@ public class Contact extends CoreAdo {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String RETURNING_TRAVELER = "returningTraveler";
+	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
+	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -207,6 +216,12 @@ public class Contact extends CoreAdo {
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
 	private HealthConditions healthConditions;
+	private YesNoUnknown returningTraveler;
+	private EndOfQuarantineReason endOfQuarantineReason;
+	private String endOfQuarantineReasonDetails;
+
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -798,5 +813,51 @@ public class Contact extends CoreAdo {
 
 	public void setHealthConditions(HealthConditions healthConditions) {
 		this.healthConditions = healthConditions;
+	}
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
+		this.sormasToSormasOriginInfo = originInfo;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CONTACT, fetch = FetchType.LAZY)
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public EndOfQuarantineReason getEndOfQuarantineReason() {
+		return endOfQuarantineReason;
+	}
+
+	public void setEndOfQuarantineReason(EndOfQuarantineReason endOfQuarantineReason) {
+		this.endOfQuarantineReason = endOfQuarantineReason;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getEndOfQuarantineReasonDetails() {
+		return endOfQuarantineReasonDetails;
+	}
+
+	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
+		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
+	}
+
+  @Enumerated(EnumType.STRING)
+  public YesNoUnknown getReturningTraveler() {
+		return returningTraveler;
+	}
+
+	public void setReturningTraveler(YesNoUnknown returningTraveler) {
+		this.returningTraveler = returningTraveler;
 	}
 }

@@ -26,7 +26,7 @@ public class I18nConstantsUpdatedTest {
 		List<String> invalid = new ArrayList<>();
 		for (I18nConstantGenerator generator : config) {
 			StringWriter writer = new StringWriter();
-			generator.writeI18nConstantClass(writer);
+			generator.writeI18nConstantClass(writer, "\n");
 
 			if (!isValidContent(generator, writer.toString())) {
 				invalid.add(generator.getOutputClassFilePath());

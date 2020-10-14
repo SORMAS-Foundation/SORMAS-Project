@@ -17,25 +17,32 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.backend.person.Person.PERSON_LOCATIONS_TABLE_NAME;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity
 @Audited
@@ -59,6 +66,10 @@ public class Location extends AbstractDomainObject {
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String ADDRESS_TYPE = "addressType";
 	public static final String ADDRESS_TYPE_DETAILS = "addressTypeDetails";
+	public static final String FACILITY_TYPE = "facilityType";
+	public static final String FACILITY = "facility";
+	public static final String FACILITY_DETAILS = "facilityDetails";
+	public static final String PERSON = "person";
 
 	private String details;
 	private String city;
@@ -78,6 +89,11 @@ public class Location extends AbstractDomainObject {
 	private String additionalInformation;
 	private PersonAddressType addressType;
 	private String addressTypeDetails;
+	private FacilityType facilityType;
+	private Facility facility;
+	private String facilityDetails;
+
+	private Person person;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDetails() {
@@ -209,6 +225,45 @@ public class Location extends AbstractDomainObject {
 
 	public void setAddressTypeDetails(String addressTypeDetails) {
 		this.addressTypeDetails = addressTypeDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	@ManyToOne(cascade = {})
+	public Facility getFacility() {
+		return facility;
+	}
+
+	public void setFacility(Facility facility) {
+		this.facility = facility;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getFacilityDetails() {
+		return facilityDetails;
+	}
+
+	public void setFacilityDetails(String facilityDetails) {
+		this.facilityDetails = facilityDetails;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinTable(name = PERSON_LOCATIONS_TABLE_NAME,
+		joinColumns = @JoinColumn(name = "location_id"),
+		inverseJoinColumns = @JoinColumn(name = "person_id"))
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	public String buildGpsCoordinatesCaption() {

@@ -121,14 +121,14 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReport, WeeklyReport> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReport> from) {
 
 		User currentUser = getCurrentUser();
 		// National users can access all reports in the system
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (currentUser == null
-				|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-				|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
@@ -139,8 +139,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		// Allow access based on user role
 
 		// Supervisors see all reports from users in their region
-		if (currentUser.getRegion() != null
-			&& jurisdictionLevel == JurisdictionLevel.REGION) {
+		if (currentUser.getRegion() != null && jurisdictionLevel == JurisdictionLevel.REGION) {
 			filter = cb.or(filter, cb.equal(from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT).get(User.REGION), currentUser.getRegion()));
 		}
 

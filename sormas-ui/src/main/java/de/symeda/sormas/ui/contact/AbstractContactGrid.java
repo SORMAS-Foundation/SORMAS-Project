@@ -35,13 +35,11 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -136,12 +134,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					LocationDto.I18N_PREFIX));
 
 			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					getBeanType(),
-					column.getId(),
-					ContactJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
 	}
 

@@ -50,7 +50,7 @@ public class UserRoleConfigService extends AbstractAdoService<UserRoleConfig> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<UserRoleConfig, UserRoleConfig> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, UserRoleConfig> from) {
 		// a user can read all user role configurations
 		return null;
 	}

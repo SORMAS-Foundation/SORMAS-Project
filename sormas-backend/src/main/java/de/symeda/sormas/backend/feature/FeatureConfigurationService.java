@@ -94,7 +94,7 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<FeatureConfiguration, FeatureConfiguration> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, FeatureConfiguration> from) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {

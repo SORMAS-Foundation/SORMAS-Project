@@ -27,7 +27,8 @@ for (int i=0; i < 2; i++){
 	
 	println('NumberOfCases: ' + numberOfCases)
 	
-	WebUI.click(findTestObject('Login/span_Logout_link'))
+	WebUI.scrollToElement(findTestObject('Login/div_Logout'), 2)
+	WebUI.click(findTestObject('Login/div_Logout'))
 		
 	// TESTCASE
 	'Login as another Surveillance Supervisor'
@@ -54,9 +55,9 @@ for (int i=0; i < 2; i++){
 	
 	WebUI.click(findTestObject('Surveillance/CaseView/div_Save_btn'))
 	
-	
+	WebUI.scrollToElement(findTestObject('Login/div_Logout'), 2)
 	// CHECK
-	WebUI.click(findTestObject('Login/span_Logout_link'))
+	WebUI.click(findTestObject('Login/div_Logout'))
 	
 	String newNumberOfCases = WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/DashboardNumberOfCasesInYear'), [:], 
 	    FailureHandling.STOP_ON_FAILURE)
@@ -69,7 +70,8 @@ for (int i=0; i < 2; i++){
 		throw new StepFailedException('After checking share-Case the number of new cases should be higher by one. oldCases: ' + numberOfCases + ' newCases: ' + newNumberOfCases)
 	}
 	
-	WebUI.click(findTestObject('Login/span_Logout_link'))
+	WebUI.scrollToElement(findTestObject('Login/div_Logout'), 2)
+	WebUI.click(findTestObject('Login/div_Logout'))
 	println('test run finished')
 }
 

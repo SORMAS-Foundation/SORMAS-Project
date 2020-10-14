@@ -141,7 +141,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		return didNavigate;
 	}
 
-	private String buildNavigationState(String currentState, BaseCriteria criteria) {
+	public static String buildNavigationState(String currentState, BaseCriteria criteria) {
 
 		String newState = currentState;
 		int paramsIndex = newState.lastIndexOf('?');

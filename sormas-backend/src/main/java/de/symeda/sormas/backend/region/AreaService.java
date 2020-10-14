@@ -7,6 +7,8 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -25,7 +27,7 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Area, Area> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Area> from) {
 		return null;
 	}
 
@@ -33,7 +35,6 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Area> cq = cb.createQuery(getElementClass());
 		Root<Area> from = cq.from(getElementClass());
-
 		Predicate filter =
 			cb.or(cb.equal(cb.trim(from.get(Area.NAME)), name.trim()), cb.equal(cb.lower(cb.trim(from.get(Area.NAME))), name.trim().toLowerCase()));
 		if (!includeArchivedEntities) {

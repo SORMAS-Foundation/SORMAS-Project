@@ -33,26 +33,28 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	private static final long serialVersionUID = 4265377973842591202L;
 	private static final String CONTACT_PERSON_PHONE_NUMBER_LOC = "contactPersonPhoneNumberLoc";
 
-	private static final String HTML_LAYOUT =
-		fluidRowLocs(VisitDto.VISIT_STATUS, CONTACT_PERSON_PHONE_NUMBER_LOC)  + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
+	private static final String HTML_LAYOUT = fluidRowLocs(VisitDto.VISIT_STATUS, CONTACT_PERSON_PHONE_NUMBER_LOC)
+		+ fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS)
+		+ fluidRowLocs(VisitDto.SYMPTOMS);
 
 	private final Disease disease;
 	private final ContactDto contact;
@@ -60,14 +62,9 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	private final PersonDto person;
 	private SymptomsForm symptomsForm;
 
-	public VisitEditForm(Disease disease, ContactDto contact, CaseDataDto caze, PersonDto person, boolean create, boolean isInJurisdiction) {
+	public VisitEditForm(Disease disease, ContactDto contact, CaseDataDto caze, PersonDto person, boolean create, boolean isPseudonymized) {
 
-		super(
-			VisitDto.class,
-			VisitDto.I18N_PREFIX,
-			false,
-			null,
-			UiFieldAccessCheckers.withCheckers(create || isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+		super(VisitDto.class, VisitDto.I18N_PREFIX, false, null, UiFieldAccessCheckers.forSensitiveData(create ? false : isPseudonymized));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -87,11 +84,11 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	}
 
 	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, boolean isInJurisdiction) {
-		this(disease, contact, null, person, create, isInJurisdiction);
+		this(disease, contact, null, person, create, contact.isPseudonymized());
 	}
 
 	public VisitEditForm(Disease disease, CaseDataDto caze, PersonDto person, boolean create, boolean isInJurisdiction) {
-		this(disease, null, caze, person, create, isInJurisdiction);
+		this(disease, null, caze, person, create, caze.isPseudonymized());
 	}
 
 	@Override
@@ -120,7 +117,9 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
-		addField(VisitDto.VISIT_REMARKS, TextField.class);
+		addField(VisitDto.VISIT_REMARKS, TextField.class).setDescription(
+			I18nProperties.getPrefixDescription(VisitDto.I18N_PREFIX, VisitDto.VISIT_REMARKS) + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);

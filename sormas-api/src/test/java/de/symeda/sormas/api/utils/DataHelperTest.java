@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
 public class DataHelperTest {
 
@@ -15,6 +16,7 @@ public class DataHelperTest {
 
 		assertEquals("CaseData", DataHelper.getHumanClassName(CaseDataDto.class));
 		assertEquals("Disease", DataHelper.getHumanClassName(Disease.class));
+		assertEquals("RegionReference", DataHelper.getHumanClassName(RegionReferenceDto.class));
 	}
 
 	@Test

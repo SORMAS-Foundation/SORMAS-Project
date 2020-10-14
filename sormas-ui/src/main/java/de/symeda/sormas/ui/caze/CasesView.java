@@ -47,8 +47,10 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportType;
@@ -321,6 +323,25 @@ public class CasesView extends AbstractView {
 					VaadinIcons.FILE_TEXT,
 					Captions.exportSamples,
 					Strings.infoSampleExport);
+			}
+
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
+				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
+					BAGExportCaseDto.class,
+					null,
+					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(start, max),
+					(propertyId, type) -> {
+						String caption = I18nProperties.findPrefixCaption(propertyId);
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+						}
+						return caption;
+					},
+					createFileNameWithCurrentDate("sormas_BAG_cases_", ".csv"),
+					null);
+
+				addExportButton(bagExportResource, exportPopupButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
 			}
 
 			{
@@ -673,13 +694,14 @@ public class CasesView extends AbstractView {
 							I18nProperties.getCaption(Captions.actionArchive),
 							VaadinIcons.ARCHIVE,
 							mi -> ControllerProvider.getCaseController()
-								.archiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
+								.archiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionDearchive),
 							VaadinIcons.ARCHIVE,
 							mi -> ControllerProvider.getCaseController()
 								.dearchiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							false));
+							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);

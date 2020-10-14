@@ -32,6 +32,7 @@ import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.action.ActionFacade;
+import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
@@ -74,6 +75,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.action.ActionFacadeEjb;
+import de.symeda.sormas.backend.bagexport.BAGExportFacadeEjb;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb.CampaignFacadeEjbLocal;
 import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
@@ -121,6 +123,8 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -411,6 +415,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CampaignFormMetaFacadeEjbLocal.class);
 	}
 
+	public SormasToSormasFacadeEjbLocal getSormasToSormasFacade() {
+		return getBean(SormasToSormasFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasEncryptionService getSormasToSormasEncryptionService() {
+		return getBean(SormasToSormasEncryptionService.class);
+	}
+
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
 		if (rdcf == null) {
 			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -431,11 +443,12 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CampaignFacadeEjbLocal.class);
 	}
 
-	public CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {return getBean(CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal.class);}
+	public CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {
+		return getBean(CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal.class);
+	}
 
 	protected UserDto useNationalUserLogin() {
-		UserDto natUser =
-			creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
+		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
 
 		return natUser;
@@ -445,4 +458,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PathogenTestService.class);
 	}
 
+	public BAGExportFacade getBAGExportFacade() {
+		return getBean(BAGExportFacadeEjb.BAGExportFacadeEjbLocal.class);
+	}
 }

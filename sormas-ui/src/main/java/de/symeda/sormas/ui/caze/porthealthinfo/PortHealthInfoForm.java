@@ -229,7 +229,7 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 	private void addOtherFields() {
 
 		TextArea taDetails = addField(PortHealthInfoDto.DETAILS, TextArea.class);
-		taDetails.setRows(5);
+		taDetails.setRows(7);
 	}
 
 	@Override

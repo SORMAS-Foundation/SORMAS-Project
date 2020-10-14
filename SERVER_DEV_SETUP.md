@@ -44,6 +44,12 @@ Other steps :
 * Adjust the logging configuration in ``${HOME}/opt/domains/sormas/config/logback.xml`` based on your needs (e.g. configure and activate email appender)
 * Build and deploy applications (ear and war) with you IDE.
 
+## Keycloak
+
+See [Keycloak](SERVER_SETUP.md#keycloak-server) for how to install Docker locally.
+
+If you are doing active development on Keycloak (themes, authentication mechanisms, translations, etc.) it's recommended to install the standalone variant.
+
 
 ## Other components
 

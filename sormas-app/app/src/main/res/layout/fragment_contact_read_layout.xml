@@ -107,6 +107,11 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_returningTraveler"
+                    app:value="@{data.returningTraveler}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -283,6 +288,12 @@
                     app:dependencyParentValue="@{QuarantineType.HOME}"
                     app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
                     app:value="@{data.quarantineHelpNeeded}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_endOfQuarantineReason"
+                    app:appendValue="@{data.endOfQuarantineReasonDetails}"
+                    app:value="@{data.endOfQuarantineReason}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

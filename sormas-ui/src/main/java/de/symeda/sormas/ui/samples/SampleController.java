@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.Collection;
-import java.util.Date;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -37,7 +34,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -69,6 +65,9 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.Collection;
+import java.util.Date;
 
 public class SampleController {
 
@@ -151,6 +150,7 @@ public class SampleController {
 			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
 			pathogenTest.setLab(newSample.getLab());
 			pathogenTest.setTestResult(testResult);
+			newSample.setPathogenTestResult(testResult);
 			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
 			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
@@ -177,9 +177,9 @@ public class SampleController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized) {
 
-		SampleEditForm form = new SampleEditForm(isInJurisdiction);
+		SampleEditForm form = new SampleEditForm(isPseudonymized);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);

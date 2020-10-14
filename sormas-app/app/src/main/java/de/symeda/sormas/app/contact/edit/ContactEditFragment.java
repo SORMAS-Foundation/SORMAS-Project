@@ -30,9 +30,11 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -41,16 +43,13 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -72,6 +71,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	private List<Item> categoryList;
 	private List<Item> contactIdentificationSources;
 	private List<Item> tracingApps;
+	private List<Item> endOfQuarantineReasons;
 
 	// Instance methods
 
@@ -82,8 +82,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			AppFieldAccessCheckers
-				.withCheckers(ContactEditAuthorization.isContactEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
 	private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {
@@ -168,6 +167,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
 		contactIdentificationSources = DataUtils.getEnumItems(ContactIdentificationSource.class, true);
 		tracingApps = DataUtils.getEnumItems(TracingApp.class, true);
+		endOfQuarantineReasons = DataUtils.getEnumItems(EndOfQuarantineReason.class, true);
 
 		if (record.getQuarantineTo() == null) {
 			record.setQuarantineTo(record.getFollowUpUntil());
@@ -180,6 +180,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
 		contentBinding.setData(record);
 		contentBinding.setCaze(sourceCase);
+		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
 		InfrastructureHelper.initializeRegionFields(
 			contentBinding.contactRegion,
@@ -392,6 +393,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactContactCategory.initializeSpinner(categoryList);
 		contentBinding.contactContactIdentificationSource.initializeSpinner(contactIdentificationSources);
 		contentBinding.contactTracingApp.initializeSpinner(tracingApps);
+		contentBinding.contactEndOfQuarantineReason.initializeSpinner(endOfQuarantineReasons);
 
 		// Initialize ControlDateFields
 		contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());

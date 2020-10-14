@@ -97,7 +97,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AdditionalTest, AdditionalTest> additionalTestPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, AdditionalTest> additionalTestPath) {
 
 		// whoever created the sample the additional test is associated with is allowed to access it
 		Join<Sample, Sample> sampleJoin = additionalTestPath.join(AdditionalTest.SAMPLE);

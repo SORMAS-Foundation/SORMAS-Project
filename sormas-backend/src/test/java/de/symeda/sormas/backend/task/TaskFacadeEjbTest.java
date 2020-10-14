@@ -17,6 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -33,24 +52,11 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskFacadeEjbTest extends AbstractBeanTest {
@@ -111,6 +117,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			"Title",
 			"Description",
 			"First",
 			"Name",
@@ -181,19 +188,29 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testFilterTasksByUserJurisdiction() {
 		RDCF rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		UserDto survOff = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), null,
-				"Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
+		UserDto survOff = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), null, "Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
 
-
-		creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.community.getUuid(), null,
-				"Comm", "Inf", UserRole.COMMUNITY_INFORMANT);
+		creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.community.getUuid(),
+			null,
+			"Comm",
+			"Inf",
+			UserRole.COMMUNITY_INFORMANT);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("CommInf");
 
 		CaseDataDto caze = creator.createCase(survOff.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
-		creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
-				caze.toReference(),
-				null, null, new Date(), survOff.toReference());
+		creator.createTask(
+			TaskContext.CASE,
+			TaskType.CASE_INVESTIGATION,
+			TaskStatus.PENDING,
+			caze.toReference(),
+			null,
+			null,
+			new Date(),
+			survOff.toReference());
 
 		List<TaskIndexDto> indexTasks = getTaskFacade().getIndexList(null, 0, 100, null);
 		assertThat(indexTasks.size(), is(0));
@@ -205,5 +222,38 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskDto> tasksByCase = getTaskFacade().getAllByCase(caze.toReference());
 		assertThat(tasksByCase.size(), is(0));
+	}
+
+	@Test
+	public void testGetPendingTaskCountPerUser() {
+
+		List<String> userUuids;
+
+		// 0. empty or not present uuid
+		userUuids = Collections.emptyList();
+		assertThat(getTaskFacade().getPendingTaskCountPerUser(userUuids).entrySet(), is(empty()));
+		userUuids = Collections.singletonList(DataHelper.createUuid());
+		assertThat(getTaskFacade().getPendingTaskCountPerUser(userUuids).entrySet(), is(empty()));
+
+		// 1. one user with tasks, one without
+		RDCF rdcf = new RDCF(creator.createRDCFEntities());
+		UserDto user1 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user2 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+
+		creator.createTask(user1.toReference());
+
+		userUuids = Arrays.asList(user1.getUuid(), user2.getUuid());
+		Map<String, Long> taskCounts = getTaskFacade().getPendingTaskCountPerUser(userUuids);
+		assertThat(taskCounts.size(), is(1));
+		assertThat(taskCounts.get(user1.getUuid()), is(1L));
+
+		// 2. both users have tasks
+		creator.createTask(user1.toReference());
+		creator.createTask(user2.toReference());
+
+		taskCounts = getTaskFacade().getPendingTaskCountPerUser(userUuids);
+		assertThat(taskCounts.size(), is(2));
+		assertThat(taskCounts.get(user1.getUuid()), is(2L));
+		assertThat(taskCounts.get(user2.getUuid()), is(1L));
 	}
 }

@@ -17,8 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
+import java.sql.Timestamp;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -27,11 +35,6 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.sql.Timestamp;
 
 @Stateless(name = "LocationFacade")
 public class LocationFacadeEjb implements LocationFacade {
@@ -46,6 +49,8 @@ public class LocationFacadeEjb implements LocationFacade {
 	private CommunityService communityService;
 	@EJB
 	private PersonService personService;
+	@EJB
+	private FacilityService facilityService;
 
 	public Location fromDto(LocationDto source) {
 
@@ -81,6 +86,9 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setAdditionalInformation(source.getAdditionalInformation());
 		target.setAddressType(source.getAddressType());
 		target.setAddressTypeDetails(source.getAddressTypeDetails());
+		target.setFacility(facilityService.getByReferenceDto(source.getFacility()));
+		target.setFacilityDetails(source.getFacilityDetails());
+		target.setFacilityType(source.getFacilityType());
 
 		return target;
 	}
@@ -112,6 +120,9 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setAdditionalInformation(source.getAdditionalInformation());
 		target.setAddressType(source.getAddressType());
 		target.setAddressTypeDetails(source.getAddressTypeDetails());
+		target.setFacility(FacilityFacadeEjb.toReferenceDto(source.getFacility()));
+		target.setFacilityDetails(source.getFacilityDetails());
+		target.setFacilityType(source.getFacilityType());
 
 		return target;
 	}

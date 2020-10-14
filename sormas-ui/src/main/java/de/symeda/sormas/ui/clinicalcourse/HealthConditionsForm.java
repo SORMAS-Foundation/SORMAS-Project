@@ -38,13 +38,14 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> {
 
@@ -102,7 +103,11 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			ASTHMA,
 			SICKLE_CELL_DISEASE,
 			IMMUNODEFICIENCY_INCLUDING_HIV);
-		addField(OTHER_CONDITIONS, TextArea.class).setRows(3);
+		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
+		otherConditions.setRows(6);
+		otherConditions.setDescription(
+			I18nProperties.getPrefixDescription(HealthConditionsDto.I18N_PREFIX, OTHER_CONDITIONS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();

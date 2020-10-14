@@ -36,7 +36,7 @@ public class EpiDataBurialService extends AbstractAdoService<EpiDataBurial> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataBurial, EpiDataBurial> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EpiDataBurial> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

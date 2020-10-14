@@ -31,6 +31,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.DateRangeValidator;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -64,6 +65,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
@@ -80,6 +82,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 							fluidRowLocs(PersonDto.SEX)) +
 					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
 					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
+					LayoutUtil.fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
 					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
@@ -136,6 +139,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
 		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
 		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
+
+		phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phone.getCaption())));
+		email.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, email.getCaption())));
+
+		addField(ContactDto.RETURNING_TRAVELER, OptionGroup.class);
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
 		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
@@ -148,11 +156,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 		}
-		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
+		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(4);
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
-		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(2);
+		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		birthDateDay.addStyleName(FORCE_CAPTION);
@@ -194,7 +202,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 		});
 
-		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, ContactDto.REPORT_DATE_TIME);
+		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, ContactDto.REPORT_DATE_TIME, PersonDto.SEX);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ContactDto.RELATION_DESCRIPTION,

@@ -7,9 +7,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class VisitIndexDto implements WithJurisdiction<ContactJurisdictionDto>, Serializable {
+public class VisitIndexDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = -2707325548819626469L;
 
@@ -132,7 +132,6 @@ public class VisitIndexDto implements WithJurisdiction<ContactJurisdictionDto>, 
 		this.contactJurisdiction = contactJurisdiction;
 	}
 
-	@Override
 	public ContactJurisdictionDto getJurisdiction() {
 		return contactJurisdiction;
 	}

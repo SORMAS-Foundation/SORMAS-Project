@@ -44,6 +44,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "PrescriptionFacade")
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
@@ -96,7 +97,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		List<PrescriptionIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			PrescriptionIndexDto.class,
 			indexList,
@@ -111,7 +112,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@Override
 	public PrescriptionDto getPrescriptionByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -125,7 +126,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		service.ensurePersisted(entity);
 
-		return convertToDto(entity, new Pseudonymizer(userService::hasRight));
+		return convertToDto(entity, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -147,13 +148,17 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return service.getAllActivePrescriptionsAfter(date, user).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<PrescriptionDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(p -> convertToDto(p, new Pseudonymizer(userService::hasRight))).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+
+		return service.getByUuids(uuids).stream().map(p -> {
+			return convertToDto(p, pseudonymizer);
+		}).collect(Collectors.toList());
 	}
 
 	@Override
@@ -199,14 +204,15 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				.collect(Collectors.toList()));
 
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
-		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze());
+		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(prescription.get(Prescription.PRESCRIPTION_DATE)));
 
 		List<PrescriptionExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			PrescriptionExportDto.class,
 			exportList,
@@ -233,7 +239,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	private void restorePseudonymizedDto(PrescriptionDto prescription, Prescription existingPrescription, PrescriptionDto existingPrescriptionDto) {
 		if (existingPrescription != null) {
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(
 				PrescriptionDto.class,
 				prescription,

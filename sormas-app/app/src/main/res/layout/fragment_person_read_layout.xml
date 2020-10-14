@@ -329,60 +329,6 @@
                 app:valueFormat="@string/two_strings_with_hyphen_format"
                 style="@style/ControlSingleColumnStyle" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_occupationRegion"
-                    app:value="@{data.occupationRegion}"
-                    app:dependencyParentField="@{personOccupationType}"
-                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_occupationDistrict"
-                    app:value="@{data.occupationDistrict}"
-                    app:dependencyParentField="@{personOccupationType}"
-                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                    style="@style/ControlSecondOfTwoColumnsStyle" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_occupationCommunity"
-                    app:value="@{data.occupationCommunity}"
-                    app:dependencyParentField="@{personOccupationType}"
-                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/person_occupationFacilityType"
-                    style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:dependencyParentField="@{personOccupationType}"
-                    app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                    app:value="@{data.occupationFacilityType}"/>
-
-            </LinearLayout>
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/person_occupationFacility"
-                app:value="@{data.occupationFacility}"
-                app:dependencyParentField="@{personOccupationType}"
-                app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/person_occupationFacilityDetails"
-                app:value="@{data.occupationFacilityDetails}"
-                style="@style/ControlSingleColumnStyle" />
-
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <LinearLayout

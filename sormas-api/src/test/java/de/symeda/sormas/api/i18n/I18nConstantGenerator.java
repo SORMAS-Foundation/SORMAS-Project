@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.i18n;
 
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +15,10 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.TreeSet;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Generates Constants out of the corresponding property files.
@@ -73,8 +78,29 @@ public class I18nConstantGenerator {
 
 	private void generateI18nConstantClass() throws IOException {
 
-		Writer writer = new FileWriter(outputClassFilePath, false);
-		writeI18nConstantClass(writer);
+		Path path = Paths.get(outputClassFilePath);
+		String sep = determineLineSeparator(path);
+
+		try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			writeI18nConstantClass(writer, sep);
+		}
+	}
+
+	/**
+	 * Try to determine line separator from file
+	 */
+	private static String determineLineSeparator(Path path) {
+		if (Files.exists(path)) {
+			try (Scanner s = new Scanner(path.toFile())) {
+				String sep = s.findWithinHorizon("\\R", 0);
+				if (StringUtils.isNoneEmpty(sep)) {
+					return sep;
+				}
+			} catch (FileNotFoundException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+		return System.lineSeparator();
 	}
 
 	/**
@@ -87,7 +113,7 @@ public class I18nConstantGenerator {
 	 *            Writes the java file into this {@code writer}.
 	 * @throws IOException
 	 */
-	void writeI18nConstantClass(Writer writer) throws IOException {
+	void writeI18nConstantClass(Writer writer, String sep) throws IOException {
 
 		Properties properties = new Properties();
 		InputStream inputStream = I18nProperties.class.getClassLoader().getResourceAsStream(propertiesFileName);
@@ -97,12 +123,18 @@ public class I18nConstantGenerator {
 
 		Enumeration<?> e = properties.propertyNames();
 
-		writer.write("package de.symeda.sormas.api.i18n;\n\n");
-		writer.write("import javax.annotation.Generated;\n\n");
-		writer.write("@Generated(value = \"" + getClass().getCanonicalName() + "\")\n");
-		writer.write("public interface " + outputClassName + " {\n\n");
-		writer.write(
-			"\t/*\n\t * Hint for SonarQube issues:\n\t * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.\n\t */\n\n");
+		writer.append("package de.symeda.sormas.api.i18n;").append(sep + sep);
+		writer.append("import javax.annotation.Generated;").append(sep + sep);
+		writer.append("@Generated(value = \"" + getClass().getCanonicalName() + "\")").append(sep);
+		writer.append("public interface " + outputClassName + " {").append(sep + sep);
+		writer.append("\t/*")
+			.append(sep)
+			.append("\t * Hint for SonarQube issues:")
+			.append(sep)
+			.append("\t * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.")
+			.append(sep)
+			.append("\t */")
+			.append(sep + sep);
 
 		Collection<String> orderedKeys = new TreeSet<String>(new Comparator<String>() {
 
@@ -120,10 +152,10 @@ public class I18nConstantGenerator {
 
 		for (String key : orderedKeys) {
 			String constant = key.replaceAll("[\\.\\-]", "_");
-			writer.write("\tString " + constant + " = \"" + key + "\";\n");
+			writer.append("\tString " + constant + " = \"" + key + "\";").append(sep);
 		}
 
-		writer.write("}\n");
+		writer.append("}").append(sep);
 		writer.flush();
 		writer.close();
 	}

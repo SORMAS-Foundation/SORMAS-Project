@@ -65,10 +65,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO, CaseCriteria.FOLLOW_UP_UNTIL_TO,
 			CaseCriteria.BIRTHDATE_YYYY,
 			CaseCriteria.BIRTHDATE_MM,
-			CaseCriteria.BIRTHDATE_DD)			
+			CaseCriteria.BIRTHDATE_DD)
 			+ filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
 					CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
-					CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, CaseCriteria.WITH_EXTENDED_QUARANTINE, CaseCriteria.WITH_REDUCED_QUARANTINE)
+					CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, CaseCriteria.WITH_EXTENDED_QUARANTINE,
+					CaseCriteria.WITH_REDUCED_QUARANTINE, CaseCriteria.ONLY_CASES_WITH_EVENTS)
 			+ loc(WEEK_AND_DATE_FILTER);
 	//@formatter:on
 
@@ -85,7 +86,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.DISEASE,
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.FOLLOW_UP_STATUS,
-			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE };
+			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE,
+			CaseCriteria.EVENT_LIKE };
 	}
 
 	@Override
@@ -115,6 +117,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE, I18nProperties.getString(Strings.promptCasesSearchField), 200));
 		searchField.setNullRepresentation("");
+
+		TextField eventSearchField = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.EVENT_LIKE, I18nProperties.getString(Strings.promptCaseOrContactEventSearchField), 200));
+		eventSearchField.setNullRepresentation("");
 	}
 
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
@@ -155,9 +162,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
-		if (user.getRegion() != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
-		}
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
@@ -260,6 +265,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithReducedQuarantine),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.ONLY_CASES_WITH_EVENTS,
+				I18nProperties.getCaption(Captions.caseFilterRelatedToEvent),
+				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
@@ -271,43 +285,62 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		ComboBox communityField = getField(CaseDataDto.COMMUNITY);
+		ComboBox facilityTypeGroupField = getField(CaseCriteria.FACILITY_TYPE_GROUP);
 		ComboBox facilityTypeField = getField(CaseCriteria.FACILITY_TYPE);
 		ComboBox facilityField = getField(CaseDataDto.HEALTH_FACILITY);
 		ComboBox pointOfEntryField = getField(CaseDataDto.POINT_OF_ENTRY);
+		ComboBox caseOriginField = getField(CaseDataDto.CASE_ORIGIN);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 		DistrictReferenceDto currentDistrict = user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
-		CaseOrigin currentCaseOrigin = (CaseOrigin) getField(CaseDataDto.CASE_ORIGIN).getValue();
+		CaseOrigin currentCaseOrigin =
+			caseOriginField != null ? (CaseOrigin) getField(CaseDataDto.CASE_ORIGIN).getValue() : CaseOrigin.POINT_OF_ENTRY;
 
 		switch (propertyId) {
 		case CaseDataDto.REGION: {
 			RegionReferenceDto region = user.getRegion() != null ? user.getRegion() : (RegionReferenceDto) event.getProperty().getValue();
 
 			if (!DataHelper.equal(region, criteria.getRegion())) {
+				final ComboBox officerField = getField(CaseDataDto.SURVEILLANCE_OFFICER);
+				officerField.removeAllItems();
 				if (region != null) {
 					enableFields(CaseDataDto.DISTRICT);
 					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 
-					clearAndDisableFields(
-						CaseDataDto.COMMUNITY,
-						CaseCriteria.FACILITY_TYPE_GROUP,
-						CaseCriteria.FACILITY_TYPE,
-						CaseDataDto.HEALTH_FACILITY);
+					clearAndDisableFields(CaseDataDto.COMMUNITY);
+
+					if (facilityField != null) {
+						clearAndDisableFields(CaseDataDto.HEALTH_FACILITY);
+					}
+					if (facilityTypeField != null) {
+						clearAndDisableFields(CaseCriteria.FACILITY_TYPE);
+					}
+					if (facilityTypeGroupField != null) {
+						clearAndDisableFields(CaseCriteria.FACILITY_TYPE_GROUP);
+					}
 
 					if (pointOfEntryField != null) {
 						pointOfEntryField.setEnabled(false);
 					}
+					officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_OFFICER));
 				} else {
-					clearAndDisableFields(
-						CaseDataDto.DISTRICT,
-						CaseDataDto.COMMUNITY,
-						CaseCriteria.FACILITY_TYPE_GROUP,
-						CaseCriteria.FACILITY_TYPE,
-						CaseDataDto.HEALTH_FACILITY);
+					clearAndDisableFields(CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY);
+
+					if (facilityField != null) {
+						clearAndDisableFields(CaseDataDto.HEALTH_FACILITY);
+					}
+					if (facilityTypeField != null) {
+						clearAndDisableFields(CaseCriteria.FACILITY_TYPE);
+					}
+					if (facilityTypeGroupField != null) {
+						clearAndDisableFields(CaseCriteria.FACILITY_TYPE_GROUP);
+					}
 
 					if (pointOfEntryField != null) {
 						pointOfEntryField.setEnabled(false);
 					}
+
+					officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 				}
 			}
 
@@ -317,9 +350,19 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			DistrictReferenceDto newDistrict = (DistrictReferenceDto) event.getProperty().getValue();
 
 			if (!DataHelper.equal(newDistrict, criteria.getDistrict())) {
+				final ComboBox officerField = getField(CaseDataDto.SURVEILLANCE_OFFICER);
+				officerField.removeAllItems();
 				if (newDistrict != null) {
-					enableFields(CaseDataDto.COMMUNITY, CaseCriteria.FACILITY_TYPE_GROUP);
-					clearAndDisableFields(CaseCriteria.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
+					communityField.setEnabled(true);
+					if (facilityTypeGroupField != null) {
+						facilityTypeGroupField.setEnabled(true);
+					}
+					if (facilityField != null) {
+						clearAndDisableFields(CaseDataDto.HEALTH_FACILITY);
+					}
+					if (facilityTypeField != null) {
+						clearAndDisableFields(CaseCriteria.FACILITY_TYPE);
+					}
 					FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
 
 					if (pointOfEntryField != null && currentCaseOrigin == CaseOrigin.POINT_OF_ENTRY) {
@@ -328,16 +371,34 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 							pointOfEntryField,
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
 					}
+
+					officerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, UserRole.SURVEILLANCE_OFFICER));
 				} else {
-					clearAndDisableFields(
-						CaseDataDto.COMMUNITY,
-						CaseCriteria.FACILITY_TYPE_GROUP,
-						CaseCriteria.FACILITY_TYPE,
-						CaseDataDto.HEALTH_FACILITY);
+					clearAndDisableFields(CaseDataDto.COMMUNITY);
+
+					if (facilityField != null) {
+						clearAndDisableFields(CaseDataDto.HEALTH_FACILITY);
+					}
+					if (facilityTypeGroupField != null) {
+						clearAndDisableFields(CaseCriteria.FACILITY_TYPE_GROUP);
+					}
+					if (facilityTypeField != null) {
+						clearAndDisableFields(CaseCriteria.FACILITY_TYPE);
+					}
 
 					if (pointOfEntryField != null) {
 						clearAndDisableFields(CaseDataDto.POINT_OF_ENTRY);
 					}
+
+					final Object region = getField(CaseDataDto.REGION).getValue();
+					if (region != null) {
+						officerField.addItems(
+							FacadeProvider.getUserFacade().getUsersByRegionAndRoles((RegionReferenceDto) region, UserRole.SURVEILLANCE_OFFICER));
+					} else {
+						officerField
+							.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
+					}
+
 				}
 			}
 
@@ -346,13 +407,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		case CaseDataDto.COMMUNITY: {
 			CommunityReferenceDto community = (CommunityReferenceDto) event.getProperty().getValue();
 			if (!DataHelper.equal(community, criteria.getCommunity())) {
-				facilityField.setValue(null);
+				if (facilityField != null) {
+					facilityField.setValue(null);
+				}
 
-				FacilityType facilityType = (FacilityType) facilityTypeField.getValue();
+				FacilityType facilityType = facilityTypeField != null ? (FacilityType) facilityTypeField.getValue() : null;
 
-				if (facilityType == null) {
+				if (facilityType == null && facilityField != null) {
 					facilityField.removeAllItems();
-				} else {
+				} else if (facilityField != null) {
 					if (community == null) {
 						FieldHelper.updateItems(
 							facilityField,
@@ -453,7 +516,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		districtField.setEnabled(false);
 
 		ComboBox communityField = getField(CaseDataDto.COMMUNITY);
-		districtField.setEnabled(false);
+		communityField.setEnabled(false);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 
@@ -479,15 +542,23 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		if (user.getDistrict() != null && user.getCommunity() == null) {
 			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
 			communityField.setEnabled(true);
-			typeGroupField.setEnabled(true);
+			if (typeGroupField != null) {
+				typeGroupField.setEnabled(true);
+			}
 		} else if (criteria.getDistrict() != null) {
 			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid()));
 			communityField.setEnabled(true);
-			typeGroupField.setEnabled(true);
+			if (typeGroupField != null) {
+				typeGroupField.setEnabled(true);
+			}
 		} else {
 			communityField.setEnabled(false);
-			typeGroupField.setEnabled(false);
-			typeField.setEnabled(false);
+			if (typeGroupField != null) {
+				typeGroupField.setEnabled(false);
+			}
+			if (typeField != null) {
+				typeField.setEnabled(false);
+			}
 		}
 
 		ComboBox facilityField = getField(CaseDataDto.HEALTH_FACILITY);
@@ -500,8 +571,12 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		if (district == null) {
 			communityField.setEnabled(false);
-			typeGroupField.setEnabled(false);
-			typeField.setEnabled(false);
+			if (typeGroupField != null) {
+				typeGroupField.setEnabled(false);
+			}
+			if (typeField != null) {
+				typeField.setEnabled(false);
+			}
 			if (facilityField != null) {
 				facilityField.setEnabled(false);
 			}
@@ -526,13 +601,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			}
 		}
 
-		if (district != null && typeGroup != null) {
+		if (district != null && typeGroup != null && typeField != null) {
 			FacilityType facilityType = (FacilityType) typeField.getValue();
 			typeField.removeAllItems();
 			typeField.setEnabled(true);
 			FieldHelper.updateEnumData(typeField, FacilityType.getAccommodationTypes(typeGroup));
 			typeField.setValue(facilityType);
-		} else {
+		} else if (typeField != null) {
 			typeField.setEnabled(false);
 		}
 
@@ -544,7 +619,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			} else {
 				facilityField.addItems(FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, type, true, false));
 			}
-		} else {
+		} else if (facilityField != null) {
 			facilityField.setEnabled(false);
 		}
 
@@ -649,11 +724,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	public void disableSearchAndReportingUser() {
 		getField(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE).setEnabled(false);
+		getField(CaseCriteria.EVENT_LIKE).setEnabled(false);
 		getField(CaseCriteria.REPORTING_USER_LIKE).setEnabled(false);
 	}
 
 	public void enableSearchAndReportingUser() {
 		getField(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE).setEnabled(true);
+		getField(CaseCriteria.EVENT_LIKE).setEnabled(true);
 		getField(CaseCriteria.REPORTING_USER_LIKE).setEnabled(true);
 	}
 

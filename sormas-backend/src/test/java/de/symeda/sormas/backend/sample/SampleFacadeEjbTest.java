@@ -140,6 +140,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			"Title",
 			"Description",
 			"First",
 			"Name",

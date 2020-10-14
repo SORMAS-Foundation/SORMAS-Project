@@ -17,6 +17,29 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -30,26 +53,6 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.PasswordHelper;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -83,9 +86,17 @@ public class UserService extends AbstractAdoService<User> {
 		ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
 
-		TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName);
+		Expression<String> userNameExpression = from.get(User.USER_NAME);
+		String userNameParamValue = userName;
+		if (!AuthProvider.getProvider().isUsernameCaseSensitive()) {
+			userNameExpression = cb.lower(userNameExpression);
+			userNameParamValue = userName.toLowerCase();
+		}
+
+		cq.where(cb.equal(userNameExpression, userNameParam));
+
+		TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userNameParamValue);
 
 		User entity = q.getResultList().stream().findFirst().orElse(null);
 		return entity;
@@ -258,13 +269,22 @@ public class UserService extends AbstractAdoService<User> {
 		ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
 
-		TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName);
+
+		Expression<String> userNameExpression = from.get(User.USER_NAME);
+		String userNameParamValue = userName;
+		if (!AuthProvider.getProvider().isUsernameCaseSensitive()) {
+			userNameExpression = cb.lower(userNameExpression);
+			userNameParamValue = userName.toLowerCase();
+		}
+
+		cq.where(cb.equal(userNameExpression, userNameParam));
+
+		TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userNameParamValue);
 
 		User entity = q.getResultList().stream().findFirst().orElse(null);
 
-		return entity == null || (entity != null && entity.getUuid().equals(uuid));
+		return entity == null || entity.getUuid().equals(uuid);
 	}
 
 	public String resetPassword(String userUuid) {
@@ -322,7 +342,7 @@ public class UserService extends AbstractAdoService<User> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<User, User> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, User> from) {
 		// a user can read all other users
 		return null;
 	}

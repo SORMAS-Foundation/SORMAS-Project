@@ -219,7 +219,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
 		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
-		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+		target.setFeelingIll(source.getFeelingIll());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
 		target.setFeverishFeeling(source.getFeverishFeeling());
@@ -234,6 +234,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setDizzinessStandingUp(source.getDizzinessStandingUp());
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
+		target.setShivering(source.getShivering());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
@@ -404,7 +405,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
 		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
-		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+		target.setFeelingIll(source.getFeelingIll());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
 		target.setFeverishFeeling(source.getFeverishFeeling());
@@ -419,6 +420,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setDizzinessStandingUp(source.getDizzinessStandingUp());
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
+		target.setShivering(source.getShivering());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

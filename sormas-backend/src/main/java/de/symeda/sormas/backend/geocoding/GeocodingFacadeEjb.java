@@ -74,11 +74,11 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 	@Override
 	public GeoLatLon getLatLon(String street, String houseNumber, String postalCode, String city) {
 
-		if (StringUtils.isBlank(houseNumber)) {
+		if (StringUtils.isBlank(street)) {
 			return null;
 		}
 
-		String textValue = join(", ", houseNumber.replaceAll("\\s", " "), join(" ", postalCode, city));
+		String textValue = join(", ", join(" ", street, houseNumber.replaceAll("\\s", " ")), join(" ", postalCode, city));
 
 		String query = textValue;
 //		Stream.of(

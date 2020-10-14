@@ -28,11 +28,11 @@ WebUI.click(findTestObject('Samples/MainView/div_Referred to other lab'))
 WebUI.delay(1)
 int referredToOtherLab = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
+/*WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply date filter'))
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 WebUI.delay(1)
-int afterReset = Table.getNumberOfTableRows()
+int afterReset = Table.getNumberOfTableRows()*/
 
 if (allRows != (notShipped + shipped)) {
 	WebUI.closeBrowser()
@@ -44,9 +44,9 @@ if (received > shipped) {
 	throw new StepFailedException('Expected the number of received samples to be less or equal to the number of shipped samples. received: ' + received + ' shipped: ' + shipped)
 }
 
-if (allRows != afterReset) {
+/*if (allRows != afterReset) {
 	WebUI.closeBrowser()
 	throw new StepFailedException('Expected the same number of rows before and after filtering. before: ' + allRows + ' after: ' + afterReset)
-}
+}*/
 
 WebUI.closeBrowser()

@@ -51,11 +51,11 @@ con = dbConnect(PostgreSQL(), user = DB_USER, dbname = DB_NAME, password = DB_PA
 #query contact table and ratin only contacts parsed from Sys.getenv
 if (CONTACT_IDS == "") {
   #for testing: get all valid contacts
-  idContString = as.character(dbGetQuery(con, "select ct.id
+  idContString = paste(dbGetQuery(con, "select ct.id
 from public.contact ct
 	join public.cases cs on (ct.caze_id = cs.id)
 where ct.deleted = FALSE and ct.contactclassification != 'NO_CONTACT'
-	and cs.caseclassification != 'NO_CASE' and cs.deleted = FALSE")$id)
+	and cs.caseclassification != 'NO_CASE' and cs.deleted = FALSE")$id, collapse=",")
 } else {
   idContString = CONTACT_IDS
 }

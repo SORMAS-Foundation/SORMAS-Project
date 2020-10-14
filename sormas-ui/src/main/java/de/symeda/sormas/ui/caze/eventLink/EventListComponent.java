@@ -28,7 +28,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -44,7 +46,19 @@ public class EventListComponent extends VerticalLayout {
 
 	public EventListComponent(CaseReferenceDto caseRef) {
 
-		createEventListComponent(new EventList(caseRef), e -> ControllerProvider.getEventController().selectOrCreateEvent(caseRef));
+		createEventListComponent(new EventList(caseRef), e -> {
+
+			EventCriteria eventCriteria = new EventCriteria();
+
+			//check if there are active events in the database
+			long events = FacadeProvider.getEventFacade().count(eventCriteria);
+			if (events > 0) {
+				ControllerProvider.getEventController().selectOrCreateEvent(caseRef);
+			} else {
+				ControllerProvider.getEventController().create(caseRef);
+			}
+		});
+
 	}
 
 	private void createEventListComponent(EventList eventList, Button.ClickListener clickListener) {

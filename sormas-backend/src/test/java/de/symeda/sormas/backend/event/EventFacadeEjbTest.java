@@ -61,6 +61,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			"Title",
 			"Description",
 			"First",
 			"Name",
@@ -94,6 +95,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			"Title",
 			"Description",
 			"First",
 			"Name",
@@ -130,6 +132,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		creator.createEvent(
 			EventStatus.SIGNAL,
+			"TitleEv1",
 			"DescriptionEv1",
 			"First",
 			"Name",
@@ -144,6 +147,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createEvent(
 			EventStatus.EVENT,
+			"TitleEv2",
 			"DescriptionEv2",
 			"First",
 			"Name",
@@ -163,13 +167,13 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		eventCriteria.eventStatus(EventStatus.SIGNAL);
 		results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		assertEquals(1, results.size());
-		assertEquals("DescriptionEv1", results.get(0).getEventDesc());
+		assertEquals("TitleEv1", results.get(0).getEventTitle());
 
 		eventCriteria.eventStatus(null);
 		eventCriteria.setTypeOfPlace(TypeOfPlace.HOSPITAL);
 		results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		assertEquals(1, results.size());
-		assertEquals("DescriptionEv2", results.get(0).getEventDesc());
+		assertEquals("TitleEv2", results.get(0).getEventTitle());
 	}
 
 	@Test
@@ -180,6 +184,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createEvent(
 			EventStatus.SIGNAL,
+			"Title",
 			"Description",
 			"First",
 			"Name",
@@ -207,6 +212,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			"Title",
 			"Description",
 			"First",
 			"Name",
@@ -265,6 +271,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"",
 			"",
 			"",
+			"",
 			TypeOfPlace.MEANS_OF_TRANSPORT,
 			new Date(),
 			new Date(),
@@ -276,8 +283,20 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		cut.archiveOrDearchiveEvent(event1.getUuid(), true);
 
 		// One other event
-		EventDto event2 = creator
-			.createEvent(EventStatus.SIGNAL, "", "", "", "", TypeOfPlace.HOSPITAL, new Date(), new Date(), user, user, Disease.DENGUE, rdcf.district);
+		EventDto event2 = creator.createEvent(
+			EventStatus.SIGNAL,
+			"",
+			"",
+			"",
+			"",
+			"",
+			TypeOfPlace.HOSPITAL,
+			new Date(),
+			new Date(),
+			user,
+			user,
+			Disease.DENGUE,
+			rdcf.district);
 
 		assertTrue(cut.isArchived(event1.getUuid()));
 		assertFalse(cut.isArchived(event2.getUuid()));

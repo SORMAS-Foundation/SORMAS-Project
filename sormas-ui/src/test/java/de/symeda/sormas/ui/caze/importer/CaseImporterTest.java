@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -27,18 +28,6 @@ import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.function.Consumer;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseImporterTest extends AbstractBeanTest {
@@ -143,7 +132,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(
 					new CaseImportSimilarityResult(
-							getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
+						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
 						null,
 						ImportSimilarityResultOption.PICK));
 			}
@@ -167,7 +156,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(
 					new CaseImportSimilarityResult(
-							getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
+						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
 						null,
 						ImportSimilarityResultOption.PICK));
 			}
@@ -213,7 +202,6 @@ public class CaseImporterTest extends AbstractBeanTest {
 		creator.createRDCF("R1", "D1", "C1", "F1");
 		creator.createRDCF("R2", "D2", "C2", "F2");
 		creator.createRDCF("R3", "D3", "C3", "F3");
-		creator.createRDCF("R4", "D4", "C4", "F4");
 
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_different_infrastructure.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());

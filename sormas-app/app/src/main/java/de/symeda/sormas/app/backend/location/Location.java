@@ -28,12 +28,14 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.JoinTableReference;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -84,6 +86,12 @@ public class Location extends PseudonymizableAdo {
 	private PersonAddressType addressType;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String addressTypeDetails;
+	@Column
+	private FacilityType facilityType;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Facility facility;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String facilityDetails;
 
 	/**
 	 * Dirty fix for person-location association; doing this with a JoinTable is not
@@ -208,6 +216,30 @@ public class Location extends PseudonymizableAdo {
 
 	public void setAddressTypeDetails(String addressTypeDetails) {
 		this.addressTypeDetails = addressTypeDetails;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public Facility getFacility() {
+		return facility;
+	}
+
+	public void setFacility(Facility facility) {
+		this.facility = facility;
+	}
+
+	public String getFacilityDetails() {
+		return facilityDetails;
+	}
+
+	public void setFacilityDetails(String facilityDetails) {
+		this.facilityDetails = facilityDetails;
 	}
 
 	@JoinTableReference

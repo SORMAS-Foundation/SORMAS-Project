@@ -37,10 +37,8 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.ui.events.EventGrid;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
 @SuppressWarnings("serial")
@@ -63,7 +61,7 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 
 		setColumns(
 			EventIndexDto.EVENT_LOCATION,
-			EventIndexDto.EVENT_DESC,
+			EventIndexDto.EVENT_TITLE,
 			EventGrid.createEventDateColumn(this, userLanguage),
 			EventIndexDto.EVENT_STATUS,
 			EventIndexDto.REPORT_DATE_TIME);
@@ -71,14 +69,10 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 		for (Column<EventIndexDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					EventIndexDto.class,
-					column.getId(),
-					EventJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				FieldAccessColumnStyleGenerator.forSensitiveData(EventIndexDto.class, column.getId()));
 		}
 
-		getColumn(EventIndexDto.EVENT_DESC).setMaximumWidth(300);
+		getColumn(EventIndexDto.EVENT_TITLE).setMaximumWidth(300);
 
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));

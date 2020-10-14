@@ -12,7 +12,8 @@ public enum ExportGroupType {
 	VACCINATION,
 	CASE_MANAGEMENT,
 	FOLLOW_UP,
-	ADDITIONAL;
+	ADDITIONAL,
+	EVENT;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

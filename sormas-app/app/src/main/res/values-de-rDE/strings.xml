@@ -230,7 +230,7 @@
     <string name="confirmation_pick_gps">Sind Sie gerade an diesem Ort?</string>
     <string name="confirmation_extend_quarantine">Sind Sie sicher, dass sie die Quarantäne verlängern wollen?</string>
     <string name="confirmation_reduce_quarantine">Sind Sie sicher, dass sie die Quarantäne verkürzen wollen?</string>
-    <string name="confirmation_extend_followup">Möchten Sie auch, dass der Nachverfolgungszeitraum enstprechend verlängert wird?</string>
+    <string name="confirmation_extend_followup">Möchten Sie auch, dass der Nachverfolgungszeitraum entsprechend verlängert wird?</string>
     <string name="description_epi_week">Epi Woche</string>
     <string name="description_first_name">Vorname</string>
     <string name="description_last_name">Nachname</string>
@@ -364,6 +364,7 @@
     <string name="heading_extend_quarantine">Quarantäne verlängern</string>
     <string name="heading_reduce_quarantine">Quarantäne verkürzen</string>
     <string name="heading_extend_followup">Nachverfolgungs Zeitraum verlängern</string>
+    <string name="heading_contact_tracing_first_contact">Erster Kontakt mit Kontaktverfolgung</string>
     <string name="hint_add_to_empty_list">Fügen Sie einen neuen Eintrag hinzu, indem Sie das \"+\" Symbol oben rechts drücken.</string>
     <string name="hint_clear">Löschen</string>
     <string name="hint_create_pin">Bitte wählen Sie eine vierstellige PIN aus, mit der Sie sich bei jedem Öffnen der SORMAS-App authentifizieren werden.</string>

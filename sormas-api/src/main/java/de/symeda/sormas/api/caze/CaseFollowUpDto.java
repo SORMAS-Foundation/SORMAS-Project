@@ -21,9 +21,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.followup.FollowUpDto;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class CaseFollowUpDto extends FollowUpDto implements WithJurisdiction<CaseJurisdictionDto> {
+public class CaseFollowUpDto extends FollowUpDto {
 
 	private static final long serialVersionUID = -7782443664670559221L;
 

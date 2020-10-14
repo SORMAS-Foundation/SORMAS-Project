@@ -71,9 +71,19 @@ if [[ ${LINUX} = true ]]; then
 	# make sure to update payara-sormas script when changing the user name
 	USER_NAME=payara
 	DOWNLOAD_DIR=${ROOT_PREFIX}/var/www/sormas/downloads
-else 
+else
 	ROOT_PREFIX=/c
 fi
+
+
+
+echo "--- Select an authentication provider for SORMAS"
+select LS in "SORMAS" "KEYCLOAK"; do
+  case $LS in
+    SORMAS ) AUTHENTICATION_PROVIDER="SORMAS"; break;;
+    KEYCLOAK ) AUTHENTICATION_PROVIDER="KEYCLOAK"; break;;
+  esac
+done
 
 TEMP_DIR=${ROOT_PREFIX}/opt/sormas/temp
 GENERATED_DIR=${ROOT_PREFIX}/opt/sormas/generated
@@ -120,6 +130,7 @@ echo "Domain directory: ${DOMAIN_DIR}"
 echo "SORMAS to SORMAS directory:" ${SORMAS2SORMAS_DIR}
 echo "Base port: ${PORT_BASE}"
 echo "Admin port: ${PORT_ADMIN}"
+echo "Authentication provider: ${AUTHENTICATION_PROVIDER}"
 echo "---"
 read -p "Press [Enter] to continue or [Ctrl+C] to cancel and adjust the values..."
 
@@ -385,6 +396,20 @@ if [[ ${DEV_SYSTEM} != true ]]; then
 	${ASADMIN} set configs.config.server-config.jms-service.jms-host.default_JMS_host.host=127.0.0.1
 	${ASADMIN} set configs.config.server-config.admin-service.jmx-connector.system.address=127.0.0.1
 	${ASADMIN} set-hazelcast-configuration --enabled=false
+fi
+
+
+if [[ ${AUTHENTICATION_PROVIDER} = "KEYCLOAK" ]];then
+  read -p "Starting Keycloak setup. Press [Enter] to continue..."
+  export PORT_BASE
+  export PORT_ADMIN
+  export PAYARA_HOME
+  export DOMAINS_HOME
+  export DOMAIN_NAME
+  export PSQL
+  export DB_PG_PW
+	cd keycloak
+	./keycloak-setup.sh
 fi
 
 # don't stop the domain, because we need it running for the update script

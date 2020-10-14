@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,10 +30,13 @@ import java.util.stream.Stream.Builder;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
@@ -78,6 +82,8 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataService;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -105,6 +111,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -153,8 +160,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
+		CaseJoins<Case> joins = new CaseJoins<>(from);
 
-		Predicate filter = createCriteriaFilter(caseCriteria, cb, cq, from);
+		Predicate filter = createCriteriaFilter(caseCriteria, cb, cq, from, joins);
 		if (!ignoreUserFilter) {
 			filter = and(cb, filter, createUserFilter(cb, cq, from));
 		}
@@ -445,15 +453,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 	}
 
-	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Case> from) {
+	public <T extends AbstractDomainObject> Predicate createCriteriaFilter(
+		CaseCriteria caseCriteria,
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		From<T, Case> from,
+		CaseJoins<T> joins) {
 
-		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
-		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
-		Join<Case, Community> community = from.join(Case.COMMUNITY, JoinType.LEFT);
-		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Case, Person> person = joins.getPerson();
+		Join<Case, User> reportingUser = joins.getReportingUser();
+		Join<Case, Region> region = joins.getRegion();
+		Join<Case, District> district = joins.getDistrict();
+		Join<Case, Community> community = joins.getCommunity();
+		Join<Case, Facility> facility = joins.getFacility();
 		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter =
@@ -567,7 +581,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					DateHelper.getEndOfDay(caseCriteria.getQuarantineTo())));
 		}
 		if (caseCriteria.getPerson() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
+			filter = and(cb, filter, cb.equal(person.get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
 		if (caseCriteria.getMustHaveNoGeoCoordinates() != null && caseCriteria.getMustHaveNoGeoCoordinates() == true) {
 			Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
@@ -633,6 +647,36 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
+			}
+		}
+		boolean hasEventLikeCriteria = caseCriteria.getEventLike() != null && !caseCriteria.getEventLike().trim().isEmpty();
+		boolean hasOnlyCasesWithEventsCriteria = Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithEvents());
+		if (hasEventLikeCriteria || hasOnlyCasesWithEventsCriteria) {
+			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
+			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+
+			filter = and(
+				cb,
+				filter,
+				cb.isFalse(event.get(Event.DELETED)),
+				cb.isFalse(event.get(Event.ARCHIVED)),
+				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+
+			if (hasEventLikeCriteria) {
+				String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
+				for (int i = 0; i < textFilters.length; i++) {
+					String textFilter = formatForLike(textFilters[i]);
+					if (!DataHelper.isNullOrEmpty(textFilter)) {
+						Predicate likeFilters = cb.or(
+							cb.like(cb.lower(event.get(Event.EVENT_DESC)), textFilter),
+							cb.like(cb.lower(event.get(Event.EVENT_TITLE)), textFilter),
+							cb.like(cb.lower(event.get(Event.UUID)), textFilter));
+						filter = and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+					}
+				}
+			}
+			if (hasOnlyCasesWithEventsCriteria) {
+				filter = and(cb, filter, cb.isNotNull(event.get(Event.ID)));
 			}
 		}
 		if (caseCriteria.getReportingUserLike() != null) {
@@ -773,6 +817,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		filters.add(changeDateFilter(cb, date, casePath, Case.MATERNAL_HISTORY));
 		filters.add(changeDateFilter(cb, date, casePath, Case.PORT_HEALTH_INFO));
 
+		filters.add(changeDateFilter(cb, date, casePath, Case.SORMAS_TO_SORMAS_SHARES));
+
 		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
 			filters.add(changeDateFilter(cb, date, caseSampleJoin));
@@ -784,14 +830,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return cb.or(filters.build().toArray(Predicate[]::new));
-	}
-
-	private <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
-		From<?, ?> parent = path;
-		for (int i = 0; i < joinFields.length; i++) {
-			parent = parent.join(joinFields[i], JoinType.LEFT);
-		}
-		return greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -890,7 +928,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case, Case> casePath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath) {
 		return createUserFilter(cb, cq, casePath, null);
 	}
 
@@ -1074,5 +1112,27 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		ensurePersisted(caze);
+	}
+
+	/**
+	 * @param caseUuids
+	 *            {@link Case}s identified by {@code uuid} to be archived or not.
+	 * @param archived
+	 *            {@code true} archives the Case, {@code false} unarchives it.
+	 * @see {@link Case#setArchived(boolean)}
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void updateArchived(List<String> caseUuids, boolean archived) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+
+		cu.set(Case.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Case.ARCHIVED), archived);
+
+		cu.where(root.get(Case.UUID).in(caseUuids));
+
+		em.createQuery(cu).executeUpdate();
 	}
 }

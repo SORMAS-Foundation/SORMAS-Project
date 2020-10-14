@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
+import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
@@ -26,6 +27,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.RichTextArea;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
@@ -54,6 +56,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 					locs(ActionDto.EVENT)) +
 			fluidRowLocs(ActionDto.DATE, ActionDto.PRIORITY) +
 			loc(CREATING_LABEL_LOC) +
+			fluidRowLocs(ActionDto.TITLE) +
 			fluidRowLocs(ActionDto.DESCRIPTION) +
 			loc(REPLYING_LABEL_LOC) +
 			fluidRowLocs(ActionDto.REPLY) +
@@ -91,6 +94,8 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		// XXX: set visible when other contexts will be managed
 		actionContext.setVisible(false);
 
+		TextField title = addField(ActionDto.TITLE, TextField.class);
+		title.addStyleName(SOFT_REQUIRED);
 		RichTextArea description = addField(ActionDto.DESCRIPTION, RichTextArea.class);
 		description.setNullRepresentation("");
 		description.setImmediate(true);
@@ -148,7 +153,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 				updateCreationInfo();
 			}
 
-			setReadOnly(!creator, ActionDto.DESCRIPTION);
+			setReadOnly(!creator, ActionDto.DESCRIPTION, ActionDto.TITLE);
 		}
 	}
 

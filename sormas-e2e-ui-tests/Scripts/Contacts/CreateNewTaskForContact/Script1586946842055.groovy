@@ -20,6 +20,8 @@ WebUI.delay(1)
 WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'),
 	findTestData(GlobalVariable.gContactTestDataName).getValue(2, 7))
 
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
 WebUI.delay(1)
 
 int rows = Table.getNumberOfTableRows()

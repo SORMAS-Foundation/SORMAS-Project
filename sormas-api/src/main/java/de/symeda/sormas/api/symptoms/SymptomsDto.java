@@ -17,21 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.symptoms;
 
-import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.PseudonymizableDto;
-import de.symeda.sormas.api.utils.Complication;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DependantOn;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.HideForCountries;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.Order;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.YesNoUnknown;
-
-import java.util.Date;
-
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.Disease.AFP;
 import static de.symeda.sormas.api.Disease.ANTHRAX;
 import static de.symeda.sormas.api.Disease.CHOLERA;
@@ -52,6 +39,21 @@ import static de.symeda.sormas.api.Disease.RABIES;
 import static de.symeda.sormas.api.Disease.UNDEFINED;
 import static de.symeda.sormas.api.Disease.UNSPECIFIED_VHF;
 import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
+
+import java.util.Date;
+
+import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.utils.Complication;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependantOn;
+import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class SymptomsDto extends PseudonymizableDto {
 
@@ -212,7 +214,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String VOMITING = "vomiting";
 	public static final String WHEEZING = "wheezing";
 	public static final String RESPIRATORY_DISEASE_VENTILATION = "respiratoryDiseaseVentilation";
-	public static final String GENERAL_SIGNS_OF_DISEASE = "generalSignsOfDisease";
+	public static final String FEELING_ILL = "feelingIll";
+	public static final String SHIVERING = "shivering";
 	public static final String FAST_HEART_RATE = "fastHeartRate";
 	public static final String OXYGEN_SATURATION_LOWER_94 = "oxygenSaturationLower94";
 
@@ -688,7 +691,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@HideForCountries
 	private SymptomState headache;
 
 	@Diseases({
@@ -1038,7 +1040,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@HideForCountries
 	private SymptomState musclePain;
 
 	@Diseases({
@@ -1833,9 +1834,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@HideForCountriesExcept(countries = {
-		"de",
-		"ch" })
-	private SymptomState generalSignsOfDisease;
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
+	private SymptomState feelingIll;
 
 	@Diseases({
 		CORONAVIRUS,
@@ -2137,6 +2138,15 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountriesExcept(countries = "ch")
 	private SymptomState urinaryRetention;
+
+	@Diseases({
+		CORONAVIRUS,
+		UNDEFINED,
+		OTHER })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
+	private SymptomState shivering;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -2850,16 +2860,21 @@ public class SymptomsDto extends PseudonymizableDto {
 	}
 
 	@Order(301)
-	public SymptomState getGeneralSignsOfDisease() {
-		return generalSignsOfDisease;
+	public SymptomState getFeelingIll() {
+		return feelingIll;
 	}
 
 	@Order(302)
+	public SymptomState getShivering() {
+		return shivering;
+	}
+
+	@Order(304)
 	public SymptomState getFastHeartRate() {
 		return fastHeartRate;
 	}
 
-	@Order(303)
+	@Order(305)
 	public SymptomState getOxygenSaturationLower94() {
 		return oxygenSaturationLower94;
 	}
@@ -3656,8 +3671,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.respiratoryDiseaseVentilation = respiratoryDiseaseVentilation;
 	}
 
-	public void setGeneralSignsOfDisease(SymptomState generalSignsOfDisease) {
-		this.generalSignsOfDisease = generalSignsOfDisease;
+	public void setFeelingIll(SymptomState feelingIll) {
+		this.feelingIll = feelingIll;
+	}
+
+	public void setShivering(SymptomState shivering) {
+		this.shivering = shivering;
 	}
 
 	public void setFastHeartRate(SymptomState fastHeartRate) {

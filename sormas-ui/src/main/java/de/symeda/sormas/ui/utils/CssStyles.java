@@ -273,6 +273,12 @@ public final class CssStyles {
 	public static final String INACCESSIBLE_COLUMN = "inaccessible-column";
 	public static final String INACCESSIBLE_LABEL = "inaccessible-label";
 
+	// Print
+	public static final String PRINT_CONTAINER = "print-container";
+	public static final String PRINT_MENU = "print-menu";
+	public static final String PRINT_VIEW_CONTAINER = "print-view-container";
+	public static final String FILTER_FORM = "filter-form";
+
 	@Deprecated
 	public static final String CALLOUT = "callout";
 

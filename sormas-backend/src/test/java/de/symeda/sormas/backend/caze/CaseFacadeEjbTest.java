@@ -62,7 +62,10 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -390,6 +393,51 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("20095"), 0, 100, null).size());
 		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("+49-31-901-820"), 0, 100, null).size());
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("4930901822"), 0, 100, null).size());
+	}
+
+	@Test
+	public void testGetIndexListByEventFreeText() {
+
+		String districtName = "District";
+		RDCF rdcf = creator.createRDCF("Region", districtName, "Community", "Facility");
+		useSurveillanceOfficerLogin(rdcf);
+
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+
+		EventDto event1 = creator.createEvent(EventStatus.SIGNAL, "Signal foo", "A long description for this event", user.toReference(), eventDto -> {
+		});
+
+		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
+		EventParticipantDto event1Participant2 = creator.createEventParticipant(event1.toReference(), person2, user.toReference());
+
+		CaseDataDto case1 = creator.createCase(
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		CaseDataDto case2 = creator.createCase(
+			user.toReference(),
+			person2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		event1Participant1.setResultingCase(case1.toReference());
+		getEventParticipantFacade().saveEventParticipant(event1Participant1);
+
+		Assert.assertEquals(2, getCaseFacade().getIndexList(null, 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike(event1.getUuid()), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal description"), 0, 100, null).size());
 	}
 
 	@Test

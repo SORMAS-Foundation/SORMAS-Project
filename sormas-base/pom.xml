@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.49.1</version>
+	<version>1.50.0</version>
 
 	<properties>
 		<slf4j.version>1.7.30</slf4j.version>
@@ -20,6 +20,12 @@
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- Versions used for release. Overwrite them in settings.xml for local development with different versions -->
+		<payara.version>5.2020.2</payara.version>
+		<payara.oidc.version>1.1.0</payara.oidc.version>
+		<microprofile.api.version>1.4</microprofile.api.version>
+
+		<keycloak.version>11.0.0</keycloak.version>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -54,8 +60,8 @@
 
 			<dependency>
 				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>1.10.19</version>
+				<artifactId>mockito-inline</artifactId>
+				<version>3.5.13</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -94,6 +100,13 @@
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
 				<version>3.17</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.geronimo.config</groupId>
+				<artifactId>geronimo-config-impl</artifactId>
+				<version>1.0</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -214,6 +227,27 @@
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
 				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>fish.payara.api</groupId>
+				<artifactId>payara-api</artifactId>
+				<version>${payara.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>fish.payara.security.connectors</groupId>
+				<artifactId>security-connector-oidc-client</artifactId>
+				<version>${payara.oidc.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.microprofile.config</groupId>
+				<artifactId>microprofile-config-api</artifactId>
+				<version>${microprofile.api.version}</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<!-- serverlibs -->
@@ -377,7 +411,7 @@
 
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
+			<artifactId>mockito-inline</artifactId>
 		</dependency>
 
 	</dependencies>

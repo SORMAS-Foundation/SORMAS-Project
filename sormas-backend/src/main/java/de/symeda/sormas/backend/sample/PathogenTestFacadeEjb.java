@@ -113,7 +113,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return pathogenTestService.getAllActivePathogenTestsAfter(date, user)
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
@@ -122,13 +122,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@Override
 	public List<PathogenTestDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return pathogenTestService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return pathogenTestService.getBySampleUuids(sampleUuids).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -140,7 +140,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		Sample sample = sampleService.getByUuid(sampleRef.getUuid());
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return pathogenTestService.getAllBySample(sample).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -157,7 +157,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@Override
 	public PathogenTestDto getByUuid(String uuid) {
-		return convertToDto(pathogenTestService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return convertToDto(pathogenTestService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase);
 		}
 
-		return convertToDto(pathogenTest, new Pseudonymizer(userService::hasRight));
+		return convertToDto(pathogenTest, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -312,7 +312,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private void restorePseudonymizedDto(PathogenTestDto dto, PathogenTest existingSampleTest, PathogenTestDto existingSampleTestDto) {
 		if (existingSampleTestDto != null) {
 			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(existingSampleTest.getSample());
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 			pseudonymizer.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);
 		}

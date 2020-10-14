@@ -31,6 +31,7 @@ import com.j256.ormlite.field.DatabaseField;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.BaseObservable;
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -113,7 +114,11 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 			while (propertyIterator.hasNext()) {
 				PropertyDescriptor property = propertyIterator.next();
 				AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(this);
-				if (embeddedAdo == null) {
+				if (embeddedAdo == null ) {
+					if(property.getPropertyType().getAnnotation(EmbeddedAdo.class).nullable()){
+						return false;
+					}
+					
 					throw new IllegalArgumentException("No embedded entity was created for " + property.getName());
 				}
 

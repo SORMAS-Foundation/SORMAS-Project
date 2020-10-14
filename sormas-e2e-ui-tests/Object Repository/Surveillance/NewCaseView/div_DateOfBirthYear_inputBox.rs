@@ -11,7 +11,7 @@
       </entry>
       <entry>
          <key>XPATH</key>
-         <value>//*[@id=&quot;gwt-uid-20&quot;]</value>
+         <value>//*[@id='birthdateYYYY']/input</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>

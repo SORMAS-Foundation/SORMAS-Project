@@ -113,6 +113,11 @@
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_eventTitle"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.eventTitle}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_eventDesc"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.eventDesc}" />

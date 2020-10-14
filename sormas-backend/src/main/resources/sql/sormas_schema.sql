@@ -4925,7 +4925,6 @@ ALTER TABLE visit_history ADD COLUMN caze_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (237, 'Adds visit to cases');
 
-
 -- 2020-08-10 - Update app synchronization related to event participants #2596
 ALTER TABLE  eventparticipant ADD COLUMN deleted boolean;
 ALTER TABLE  eventparticipant_history ADD COLUMN deleted boolean;
@@ -5322,5 +5321,177 @@ ALTER TABLE person ADD COLUMN externalid varchar(255);
 ALTER TABLE person_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
+
+-- 2020-09-18 Add action title
+ALTER TABLE action ADD COLUMN title character varying(512);
+ALTER TABLE action_history ADD COLUMN title character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (255, 'Add action.title');
+
+-- 2020-09-18 Add event title
+ALTER TABLE events ADD COLUMN eventTitle character varying(512);
+ALTER TABLE events_history ADD COLUMN eventTitle character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (256, 'Add event.eventTitle');
+
+-- 2020-09-25 Cases > Minimal Essential Data (MED) for Switzerland #2959
+ALTER TABLE cases
+    ADD COLUMN caseidism integer,
+    ADD COLUMN covidtestreason varchar(255),
+    ADD COLUMN covidtestreasondetails varchar(512),
+    ADD COLUMN contacttracingfirstcontacttype varchar(255),
+    ADD COLUMN contacttracingfirstcontactdate timestamp,
+    ADD COLUMN quarantinereasonbeforeisolation varchar(255),
+    ADD COLUMN quarantinereasonbeforeisolationdetails varchar(512),
+    ADD COLUMN endofisolationreason varchar(255),
+    ADD COLUMN endofisolationreasondetails varchar(512);
+
+ALTER TABLE cases_history
+    ADD COLUMN caseidism integer,
+    ADD COLUMN covidtestreason varchar(255),
+    ADD COLUMN covidtestreasondetails varchar(512),
+    ADD COLUMN contacttracingfirstcontacttype varchar(255),
+    ADD COLUMN contacttracingfirstcontactdate timestamp,
+    ADD COLUMN quarantinereasonbeforeisolation varchar(255),
+    ADD COLUMN quarantinereasonbeforeisolationdetails varchar(512),
+    ADD COLUMN endofisolationreason varchar(255),
+    ADD COLUMN endofisolationreasondetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (257, 'Cases > Minimal Essential Data (MED) for Switzerland #2959');
+
+-- 2020-09-22 Add facility fields to location and refactor occupation facilities for persons #2456
+ALTER TABLE location ADD COLUMN facilitytype varchar(255);
+ALTER TABLE location_history ADD COLUMN facilitytype varchar(255);
+ALTER TABLE location ADD COLUMN facility_id bigint;
+ALTER TABLE location_history ADD COLUMN facility_id bigint;
+ALTER TABLE location ADD CONSTRAINT fk_location_facility_id FOREIGN KEY (facility_id) REFERENCES facility(id);
+ALTER TABLE location ADD COLUMN facilitydetails varchar(512);
+ALTER TABLE location_history ADD COLUMN facilitydetails varchar(512);
+
+CREATE temp table t_id_map
+AS SELECT id AS person_id, nextval('entity_seq') AS location_id, create_new_uuid(uuid) AS uuid, occupationregion_id, occupationdistrict_id, occupationcommunity_id, occupationfacility_id, occupationfacilitydetails, occupationfacilitytype
+FROM person WHERE occupationregion_id IS NOT NULL OR occupationdistrict_id IS NOT NULL OR occupationcommunity_id IS NOT NULL OR occupationfacility_id IS NOT NULL;
+
+INSERT INTO location (id, uuid, changedate, creationdate, region_id, district_id, community_id, facility_id, facilitydetails, facilitytype, addresstype)
+SELECT location_id, uuid, now(), now(), occupationregion_id, occupationdistrict_id, occupationcommunity_id, occupationfacility_id, occupationfacilitydetails, occupationfacilitytype, 'PLACE_OF_WORK'
+FROM t_id_map;
+INSERT INTO person_locations (person_id, location_id) SELECT person_id, location_id FROM t_id_map;
+ALTER TABLE person DROP COLUMN occupationregion_id, DROP COLUMN occupationdistrict_id, DROP COLUMN occupationcommunity_id, DROP COLUMN occupationfacilitytype, DROP COLUMN occupationfacility_id, DROP COLUMN occupationfacilitydetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (258, 'Add facility fields to location and refactor occupation facilities for persons #2456');
+
+-- 202-10-01 Split general signs of disease #2916
+ALTER TABLE symptoms ADD COLUMN shivering character varying(255);
+ALTER TABLE symptoms RENAME generalsignsofdisease to feelingill;
+
+ALTER TABLE symptoms_history ADD COLUMN shivering character varying(255);
+ALTER TABLE symptoms_history RENAME generalsignsofdisease to feelingill;
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (259, 'Split general signs of disease #2916');
+
+-- 2020-10-01 Contacts > Minimal Essential Data (MED) for Switzerland #2960
+ALTER TABLE contact
+    ADD COLUMN endofquarantinereason varchar(255),
+    ADD COLUMN endofquarantinereasondetails varchar(512);
+
+ALTER TABLE contact_history
+    ADD COLUMN endofquarantinereason varchar(255),
+    ADD COLUMN endofquarantinereasondetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (260, 'Contacts > Minimal Essential Data (MED) for Switzerland #2960');
+
+-- 2020-09-16 Add total series to campaigndiagramdefinition to calculate percentage values #2528
+ALTER TABLE campaigndiagramdefinition ADD COLUMN campaignseriestotal json;
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaignseriestotal json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (261, 'Add series total to campaigndiagramdefinition to calculate percentage values #2528');
+
+-- 2020-10-01 Add possibility to set percentage visualization as default for campaign diagram definitions #2528
+ALTER TABLE campaigndiagramdefinition ADD COLUMN percentagedefault boolean DEFAULT false;
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN percentagedefault boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (262, 'Add possibility to set percentage visualization as default for campaign diagram definitions #2528');
+
+-- 2020-10-02 Add new field returningTraveler to contact
+ALTER TABLE contact ADD COLUMN returningtraveler varchar(255);
+ALTER TABLE contact_history ADD COLUMN returningtraveler varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (263, 'Add new field returningTraveler to contact #2603');
+-- 2020-08-13 Sormas 2 Sormas sharing information #2624
+CREATE TABLE sormastosormasorigininfo (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    organizationid varchar(512),
+    sendername varchar(512),
+    senderemail varchar(512),
+    senderphonenumber varchar(512),
+    ownershiphandedover boolean NOT NULL DEFAULT false,
+    comment varchar(4096),
+    primary key(id)
+);
+ALTER TABLE sormastosormasorigininfo OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE contact ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE sormastosormasshareinfo (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    caze_id bigint,
+    contact_id bigint,
+    organizationid varchar(512),
+    sender_id bigint,
+    ownershiphandedover boolean NOT NULL DEFAULT false,
+    comment varchar(4096),
+    primary key(id)
+);
+
+ALTER TABLE sormastosormasshareinfo OWNER TO sormas_user;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (264, 'Store Sormas 2 Sormas sharing information #2624');
+
+-- 2020-10-05 Add new field: Quarantine before isolation #2977
+ALTER TABLE cases
+    ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);
+
+ALTER TABLE cases_history
+    ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (265, 'Add new field: Quarantine before isolation #2977');
+-- 2020-09-23 CampaignFormMeta to Campaigns relation #2855
+
+CREATE TABLE campaign_campaignformmeta(
+                                campaign_id bigint NOT NULL,
+                                campaignformmeta_id bigint NOT NULL,
+                                sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE campaign_campaignformmeta OWNER TO sormas_user;
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT unq_campaign_campaignformmeta_0 UNIQUE (campaign_id, campaignformmeta_id);
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT fk_campaign_campaignformmeta_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT fk_campaign_campaignformmeta_meta_id FOREIGN KEY (campaignformmeta_id) REFERENCES campaignformmeta(id);
+
+CREATE TABLE campaign_campaignformmeta_history (LIKE campaign_campaignformmeta);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaign_campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaign_campaignformmeta_history', true);
+ALTER TABLE campaign_campaignformmeta_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (266, 'CampaignFormMeta to Campaigns relation #2855');
+
+--2020-10-09 Add boolean to users to active window GDPR
+ALTER TABLE users ADD COLUMN hasConsentedToGdpr boolean default false;
+ALTER TABLE users_history ADD COLUMN hasConsentedToGdpr boolean default false;
+INSERT INTO schema_version (version_number, comment) VALUES (267, 'Add gdpr popup to user');
 
 -- *** Insert new sql commands BEFORE this line ***
