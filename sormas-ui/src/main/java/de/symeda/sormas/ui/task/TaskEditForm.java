@@ -17,16 +17,33 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -44,19 +61,11 @@ import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
-
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final String SAVE_INFO = "saveInfo";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
@@ -68,15 +77,20 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY) +
 			fluidRowLocs(TaskDto.CREATOR_COMMENT) +
 			fluidRowLocs(TaskDto.ASSIGNEE_REPLY) +
-			fluidRowLocs(TaskDto.TASK_STATUS);
+			fluidRowLocs(TaskDto.TASK_STATUS) +
+			fluidRowLocs(SAVE_INFO);
 	//@formatter:off
 
 	private UserRight editOrCreateUserRight;
+	private boolean editedFromTaskGrid;
 
-	public TaskEditForm(boolean create) {
+	public TaskEditForm(boolean create, boolean editedFromTaskGrid) {
 
 		super(TaskDto.class, TaskDto.I18N_PREFIX);
+
+		this.editedFromTaskGrid = editedFromTaskGrid;	
 		this.editOrCreateUserRight = editOrCreateUserRight;
+
 		addValueChangeListener(e -> {
 			updateByTaskContext();
 			updateByCreatingAndAssignee();
@@ -134,6 +148,16 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					new TaskStatusValidator(
 						taskDto.getCaze().getUuid(),
 						I18nProperties.getValidationError(Validations.investigationStatusUnclassifiedCase)));
+
+				if (!editedFromTaskGrid) {
+					final HorizontalLayout saveInfoLayout = new HorizontalLayout(
+							new Label(
+									VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoSaveOfTask),
+									ContentMode.HTML));
+					saveInfoLayout.setSpacing(true);
+					saveInfoLayout.setMargin(new MarginInfo(true, false, true, false));
+					getContent().addComponent(saveInfoLayout, SAVE_INFO);
+				}
 			}
 
 			DistrictReferenceDto district = null;
