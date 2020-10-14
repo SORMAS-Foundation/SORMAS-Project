@@ -17,7 +17,27 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import static de.symeda.sormas.api.user.UserRole.*;
+import static de.symeda.sormas.api.user.UserRole.ADMIN;
+import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.COMMUNITY_INFORMANT;
+import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.DISTRICT_OBSERVER;
+import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.EXTERNAL_LAB_USER;
+import static de.symeda.sormas.api.user.UserRole.HOSPITAL_INFORMANT;
+import static de.symeda.sormas.api.user.UserRole.IMPORT_USER;
+import static de.symeda.sormas.api.user.UserRole.LAB_USER;
+import static de.symeda.sormas.api.user.UserRole.NATIONAL_CLINICIAN;
+import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
+import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
+import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
+import static de.symeda.sormas.api.user.UserRole.POE_NATIONAL_USER;
+import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
+import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -1063,6 +1083,17 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR,
 			POE_SUPERVISOR
+	),
+	BAG_EXPORT(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_CLINICIAN,
+			POE_NATIONAL_USER,
+			SURVEILLANCE_SUPERVISOR,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR,
+			POE_SUPERVISOR,
+			LAB_USER
 	);
 	//@formatter:on
 
