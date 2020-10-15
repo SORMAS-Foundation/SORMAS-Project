@@ -31,6 +31,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.api.externaljournal.RegisterResult;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.ui.utils.CssStyles;
 import org.jsoup.Jsoup;
@@ -546,8 +547,8 @@ public class ContactController {
 					|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
 				openPatientDiaryEnrollPage(person.getUuid());
 			} else {
-				boolean success = externalJournalFacade.registerPatientDiaryPerson(person);
-				showPatientRegisterResultPopup(success);
+				RegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
+				showPatientRegisterResultPopup(registerResult);
 			}
 		}
 	}
@@ -570,14 +571,11 @@ public class ContactController {
 		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		alreadyRegisteredLayout.addComponent(infoLabel);
 		CssStyles.style(alreadyRegisteredLayout, CssStyles.ALIGN_CENTER);
-		popupWindow.addCloseListener(e -> {
-			popupWindow.close();
-		});
-		popupWindow.setWidth(350, Unit.PIXELS);
-		popupWindow.setHeight(250, Unit.PIXELS);
+		popupWindow.addCloseListener(e -> popupWindow.close());
+		popupWindow.setWidth(400, Unit.PIXELS);
 	}
 
-	private void showPatientRegisterResultPopup(boolean success) {
+	private void showPatientRegisterResultPopup(RegisterResult registerResult) {
 		VerticalLayout registrationResultLayout = new VerticalLayout();
 		registrationResultLayout.setMargin(true);
 		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
@@ -589,8 +587,11 @@ public class ContactController {
 		Label infoLabel = new Label();
 		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		registrationResultLayout.addComponent(infoLabel);
+		Label messageLabel = new Label();
+		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		registrationResultLayout.addComponent(messageLabel);
 		CssStyles.style(registrationResultLayout, CssStyles.ALIGN_CENTER);
-		if (success) {
+		if (registerResult.isSuccess()) {
 			registrationResultLayout.removeComponent(errorIcon);
 			registrationResultLayout.addComponentAsFirst(successIcon);
 			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationSuccess));
@@ -599,12 +600,10 @@ public class ContactController {
 			registrationResultLayout.addComponentAsFirst(errorIcon);
 			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
 		}
+		messageLabel.setValue(registerResult.getMessage());
 		Window popupWindow = VaadinUiUtil.showPopupWindow(registrationResultLayout);
-		popupWindow.addCloseListener(e -> {
-			popupWindow.close();
-		});
-		popupWindow.setWidth(300, Unit.PIXELS);
-		popupWindow.setHeight(200, Unit.PIXELS);
+		popupWindow.addCloseListener(e -> popupWindow.close());
+		popupWindow.setWidth(400, Unit.PIXELS);
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {

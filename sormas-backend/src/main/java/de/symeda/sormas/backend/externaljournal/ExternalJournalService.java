@@ -18,6 +18,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.externaljournal.RegisterResult;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -227,8 +228,9 @@ public class ExternalJournalService {
 			boolean success = node.get("success").booleanValue();
 			if (!success) {
 				String message = node.get("message").textValue();
-				//TODO: should throw an exception? in this case, we can't update person data if something prevents us from accessing CLIMEDO API
-				logger.error("Could not notify patient diary of person update: " + message);
+				logger.warn("Could not notify patient diary of person update: " + message);
+			} else {
+				logger.info("Successfully notified patient diary to update patient " + personUuid);
 			}
 		} catch (IOException e) {
 			logger.error("Could not notify patient diary: {}", e.getMessage());
@@ -271,7 +273,7 @@ public class ExternalJournalService {
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
 	 */
-	public boolean registerPatientDiaryPerson(PersonDto person) {
+	public RegisterResult registerPatientDiaryPerson(PersonDto person) {
 		try {
 			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
 			Response response = invocationBuilder.post(Entity.json(""));
@@ -279,18 +281,19 @@ public class ExternalJournalService {
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
 			boolean success = node.get("success").booleanValue();
+			String message = node.get("message").textValue();
 			if (!success) {
-				String message = node.get("message").textValue();
 				//TODO: should throw an exception?
-				logger.error("Could not create new patient diary person: " + message);
-				return false;
+				logger.warn("Could not create new patient diary person: " + message);
+			} else {
+				logger.info("Successfully registered patient " + person.getUuid() + " in patient diary.");
+				person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
+				personFacade.savePerson(person);
 			}
-			person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
-			personFacade.savePerson(person);
-			return true;
+			return new RegisterResult(success, message);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			return false;
+			return new RegisterResult(false, e.getMessage());
 		}
 	}
 
