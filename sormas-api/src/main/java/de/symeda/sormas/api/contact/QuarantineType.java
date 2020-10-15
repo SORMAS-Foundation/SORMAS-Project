@@ -21,7 +21,7 @@ public enum QuarantineType {
 	UNKNOWN,
 	OTHER;
 
-	public static final List<QuarantineType> QUARANTINE_IN_EFFECT = Arrays.asList(HOME, INSTITUTIONELL, HOSPITAL, HOSPITAL, ASYLUM_ACCOMMODATION);
+	public static final List<QuarantineType> QUARANTINE_IN_EFFECT = Arrays.asList(HOME, INSTITUTIONELL, HOSPITAL, HOTEL, ASYLUM_ACCOMMODATION);
 
 	public static boolean isQuarantineInEffect(QuarantineType quarantineType) {
 		return QUARANTINE_IN_EFFECT.contains(quarantineType);
