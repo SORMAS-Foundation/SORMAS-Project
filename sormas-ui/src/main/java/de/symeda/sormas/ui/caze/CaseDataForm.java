@@ -1276,7 +1276,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private void onValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
-		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
 			CaseDataDto caze = this.getInternalValue();
 			if (caze != null) {
 				quarantineFrom.setValue(caze.getQuarantineFrom());
