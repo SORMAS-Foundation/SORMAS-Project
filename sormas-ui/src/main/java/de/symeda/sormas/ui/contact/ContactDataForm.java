@@ -17,12 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+import static de.symeda.sormas.ui.utils.CssStyles.*;
+import static de.symeda.sormas.ui.utils.LayoutUtil.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -278,14 +274,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			getFieldGroup(),
 			Arrays.asList(ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED),
 			ContactDto.QUARANTINE,
-			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+			QuarantineType.QUARANTINE_IN_EFFECT,
 			true);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY) || isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				ContactDto.QUARANTINE,
-				Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+				QuarantineType.QUARANTINE_IN_EFFECT,
 				true);
 		}
 		FieldHelper.setVisibleWhen(
