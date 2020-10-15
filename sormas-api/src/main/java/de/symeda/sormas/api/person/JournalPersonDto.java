@@ -1,17 +1,16 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.SensitiveData;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class JournalPersonDto implements Serializable {
 
 	private static final long serialVersionUID = 3561284010406711305L;
 
-	private String Uuid;
+	private String uuid;
 	private boolean pseudonymized;
 	@PersonalData
 	private String firstName;
@@ -33,11 +32,11 @@ public class JournalPersonDto implements Serializable {
 	private Date latestFollowUpEndDate;
 
 	public String getUuid() {
-		return Uuid;
+		return uuid;
 	}
 
 	public void setUuid(String uuid) {
-		Uuid = uuid;
+		this.uuid = uuid;
 	}
 
 	public boolean isPseudonymized() {
