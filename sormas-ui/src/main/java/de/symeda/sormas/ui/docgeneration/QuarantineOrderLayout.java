@@ -1,5 +1,10 @@
 package de.symeda.sormas.ui.docgeneration;
 
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.Properties;
+import java.util.function.Function;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
@@ -14,17 +19,13 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
-
-import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.Properties;
-import java.util.function.Function;
 
 public class QuarantineOrderLayout extends VerticalLayout {
 
@@ -48,6 +49,7 @@ public class QuarantineOrderLayout extends VerticalLayout {
 		createButton.setEnabled(false);
 
 		ComboBox<String> templateSelector = new ComboBox<>(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder));
+		templateSelector.setWidth(80F, Unit.PERCENTAGE);
 		templateSelector.setItems(FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates());
 		templateSelector.addValueChangeListener(e -> {
 			String templateFile = e.getValue();

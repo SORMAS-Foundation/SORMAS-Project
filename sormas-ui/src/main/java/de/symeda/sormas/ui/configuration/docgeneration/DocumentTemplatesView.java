@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.configuration.infrastructure;
+package de.symeda.sormas.ui.configuration.docgeneration;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
