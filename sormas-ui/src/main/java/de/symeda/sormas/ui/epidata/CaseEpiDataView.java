@@ -35,7 +35,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 
 
 		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
-			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), isCaseEditAllowed());
+			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid());
 		setSubComponent(epidDataForm);
 		setCaseEditPermission(epidDataForm);
 	}

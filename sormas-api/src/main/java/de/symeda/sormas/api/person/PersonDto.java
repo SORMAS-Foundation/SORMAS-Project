@@ -23,7 +23,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
@@ -39,6 +38,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonDto extends PseudonymizableDto {
 
@@ -110,24 +110,31 @@ public class PersonDto extends PseudonymizableDto {
 
 	@Outbreaks
 	@Required
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private String firstName;
 	@Outbreaks
 	@Required
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private String lastName;
 	@PersonalData
+	@SensitiveData
 	private String nickname;
 	@PersonalData
+	@SensitiveData
 	private String mothersName;
 	@PersonalData
+	@SensitiveData
 	private String mothersMaidenName;
 	@PersonalData
+	@SensitiveData
 	private String fathersName;
 	@Outbreaks
 	private Sex sex;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private Integer birthdateDD;
 	@Outbreaks
 	private Integer birthdateMM;

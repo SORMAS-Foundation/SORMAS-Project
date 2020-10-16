@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,10 +30,13 @@ import java.util.stream.Stream.Builder;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
@@ -107,6 +111,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -812,6 +817,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		filters.add(changeDateFilter(cb, date, casePath, Case.MATERNAL_HISTORY));
 		filters.add(changeDateFilter(cb, date, casePath, Case.PORT_HEALTH_INFO));
 
+		filters.add(changeDateFilter(cb, date, casePath, Case.SORMAS_TO_SORMAS_SHARES));
+
 		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
 			filters.add(changeDateFilter(cb, date, caseSampleJoin));
@@ -823,14 +830,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return cb.or(filters.build().toArray(Predicate[]::new));
-	}
-
-	private <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
-		From<?, ?> parent = path;
-		for (int i = 0; i < joinFields.length; i++) {
-			parent = parent.join(joinFields[i], JoinType.LEFT);
-		}
-		return greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -1113,5 +1112,27 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		ensurePersisted(caze);
+	}
+
+	/**
+	 * @param caseUuids
+	 *            {@link Case}s identified by {@code uuid} to be archived or not.
+	 * @param archived
+	 *            {@code true} archives the Case, {@code false} unarchives it.
+	 * @see {@link Case#setArchived(boolean)}
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void updateArchived(List<String> caseUuids, boolean archived) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+
+		cu.set(Case.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Case.ARCHIVED), archived);
+
+		cu.where(root.get(Case.UUID).in(caseUuids));
+
+		em.createQuery(cu).executeUpdate();
 	}
 }

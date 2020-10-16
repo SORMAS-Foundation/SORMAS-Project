@@ -31,8 +31,11 @@ public class ClinicalCourseController {
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.build(clinicalCourse, caze.getDisease());
-		ClinicalVisitForm form =
-			new ClinicalVisitForm(true, clinicalVisit.getDisease(), FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), true);
+		ClinicalVisitForm form = new ClinicalVisitForm(
+			true,
+			clinicalVisit.getDisease(),
+			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
+			false);
 		form.setValue(clinicalVisit);
 
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
@@ -59,11 +62,14 @@ public class ClinicalCourseController {
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 	}
 
-	public void openClinicalVisitEditForm(ClinicalVisitIndexDto clinicalVisitIndex, String caseUuid, Runnable callback, boolean isInJurisdiction) {
+	public void openClinicalVisitEditForm(ClinicalVisitIndexDto clinicalVisitIndex, String caseUuid, Runnable callback) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = FacadeProvider.getClinicalVisitFacade().getClinicalVisitByUuid(clinicalVisitIndex.getUuid());
-		ClinicalVisitForm form =
-			new ClinicalVisitForm(false, clinicalVisit.getDisease(), FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), isInJurisdiction);
+		ClinicalVisitForm form = new ClinicalVisitForm(
+			false,
+			clinicalVisit.getDisease(),
+			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
+			clinicalVisit.isPseudonymized());
 		form.setValue(clinicalVisit);
 
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =

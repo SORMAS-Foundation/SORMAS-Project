@@ -56,6 +56,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMarker;
@@ -64,7 +65,6 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
@@ -114,6 +114,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		setRequired(required, fieldIds);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
@@ -141,7 +142,6 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityTypeGroup.addItems(FacilityTypeGroup.values());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
 		ComboBox facilityType = addField(LocationDto.FACILITY_TYPE);
-		FieldHelper.removeItems(facilityType);
 		ComboBox facility = addInfrastructureField(LocationDto.FACILITY);
 		facility.setImmediate(true);
 		TextField facilityDetails = addField(LocationDto.FACILITY_DETAILS, TextField.class);
@@ -180,7 +180,6 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
-			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(
 				community,
@@ -215,9 +214,13 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityTypeGroup.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			FieldHelper.updateEnumData(facilityType, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+			facilityType.setRequired(facilityTypeGroup.getValue() != null);
 		});
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
+			if (facilityType.getValue() != null && facilityTypeGroup.getValue() == null) {
+				facilityTypeGroup.setValue(((FacilityType) facilityType.getValue()).getFacilityTypeGroup());
+			}
 			if (facilityType.getValue() != null && district.getValue() != null) {
 				if (community.getValue() != null) {
 					FieldHelper.updateItems(
@@ -249,36 +252,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 				if (!visibleAndRequired) {
 					facilityDetails.clear();
+				} else {
+					facilityDetails.setValue(getValue().getFacilityDetails());
 				}
 			} else {
 				facilityDetails.setVisible(false);
 				facilityDetails.setRequired(false);
 				facilityDetails.clear();
 			}
-			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
-
-		addValueChangeListener(e -> {
-			if (getValue().getFacility() != null) {
-				boolean facilityTypeGroupReadOnly = facilityTypeGroup.isReadOnly();
-				facilityTypeGroup.setReadOnly(false);
-
-				FacilityType caseFacilityType = getValue().getFacilityType();
-				facilityTypeGroup.setValue(caseFacilityType.getFacilityTypeGroup());
-				if (!facilityType.isReadOnly()) {
-					facilityType.setValue(caseFacilityType);
-				}
-
-				facilityTypeGroup.setReadOnly(facilityTypeGroupReadOnly);
-				facility.setValue(getValue().getFacility());
-				facilityDetails.setValue(getValue().getFacilityDetails());
-			}
-		});
 	}
 
 	private HorizontalLayout createGeoButton() {

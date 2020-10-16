@@ -1,7 +1,11 @@
 package de.symeda.sormas.backend.common;
 
+import java.sql.Timestamp;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
@@ -32,7 +36,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 	}
 
 	protected String formatPhoneNumberForSearch(String textFilter) {
-		final String formattedPhoneNumber = textFilter.replaceAll("[^0-9]", "");
+		final String formattedPhoneNumber = textFilter.replaceAll("[^0-9a-zA-Z]", "");
 		if (StringUtils.isEmpty(formattedPhoneNumber)) {
 			return textFilter;
 		}
@@ -45,5 +49,13 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 	protected Expression<String> removeNonNumbersExpression(CriteriaBuilder cb, Path<Object> path) {
 		return cb.function("REGEXP_REPLACE", String.class, path, cb.literal("[^0-9]"), cb.literal(""), cb.literal("g"));
+	}
+
+	protected <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
+		From<?, ?> parent = path;
+		for (int i = 0; i < joinFields.length; i++) {
+			parent = parent.join(joinFields[i], JoinType.LEFT);
+		}
+		return greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
 }

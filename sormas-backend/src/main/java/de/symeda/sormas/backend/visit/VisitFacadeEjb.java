@@ -155,20 +155,20 @@ public class VisitFacadeEjb implements VisitFacade {
 	 */
 	@Override
 	public List<VisitDto> getAllActiveVisitsAfter(Date date) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return visitService.getAllActiveVisitsAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<VisitDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return visitService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 		return convertToDto(contact.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null), pseudonymizer);
 	}
@@ -176,7 +176,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	public List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 		return contact.getVisits()
 			.stream()
@@ -193,7 +193,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public VisitDto getVisitByUuid(String uuid) {
-		return convertToDto(visitService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return convertToDto(visitService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		onVisitChanged(existingDto, entity);
 
-		return convertToDto(entity, new Pseudonymizer(userService::hasRight));
+		return convertToDto(entity, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -342,7 +342,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			Map<Long, List<VisitContactJurisdictionDto>> contactJurisdictions = getVisitContactJurisdictions(visitIds);
 			Map<Long, VisitCaseJurisdictionDto> caseJurisdictions = getVisitCaseJurisdictions(visitIds);
 
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 			indexList.forEach(visitIndex -> {
 
@@ -458,7 +458,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				Map<Long, List<VisitContactJurisdictionDto>> jurisdictions = getVisitContactJurisdictions(visitIds);
 				Map<Long, VisitCaseJurisdictionDto> caseJurisdictions = getVisitCaseJurisdictions(visitIds);
 
-				Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+				Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 				for (VisitExportDto exportDto : resultList) {
 					List<VisitContactJurisdictionDto> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
 					boolean inJurisdiction = (visitContactJurisdictions != null
@@ -536,7 +536,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			boolean isInJurisdiction = existingVisit.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c))
 				|| (existingVisit.getCaze() != null && caseJurisdictionChecker.isInJurisdictionOrOwned(existingVisit.getCaze()));
 
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 			pseudonymizer.restorePseudonymizedValues(VisitDto.class, dto, existingDto, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingDto.getSymptoms(), isInJurisdiction);

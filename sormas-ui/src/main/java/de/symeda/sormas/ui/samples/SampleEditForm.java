@@ -28,8 +28,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 
 public class SampleEditForm extends AbstractSampleForm {
 
@@ -39,11 +38,11 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC) + loc(REPORT_INFORMATION_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
 
-	public SampleEditForm(boolean isInJurisdiction) {
+	public SampleEditForm(boolean isPseudonymized) {
 		super(
 			SampleDto.class,
 			SampleDto.I18N_PREFIX,
-			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 	}
 
 	@SuppressWarnings("deprecation")

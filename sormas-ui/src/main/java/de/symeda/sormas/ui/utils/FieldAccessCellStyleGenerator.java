@@ -20,6 +20,8 @@ import java.util.function.Function;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+
 public class FieldAccessCellStyleGenerator implements Table.CellStyleGenerator, Grid.CellStyleGenerator {
 
 	private static final long serialVersionUID = -1105771966243065908L;

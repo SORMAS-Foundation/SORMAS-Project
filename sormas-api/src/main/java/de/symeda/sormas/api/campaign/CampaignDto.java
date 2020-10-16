@@ -1,8 +1,12 @@
 package de.symeda.sormas.api.campaign;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -23,6 +27,8 @@ public class CampaignDto extends EntityDto {
 	private Date startDate;
 	private Date endDate;
 	private UserReferenceDto creatingUser;
+	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
+	private List<CampaignDashboardElement> campaignDashboardElements;
 
 	public static CampaignDto build() {
 		CampaignDto campaign = new CampaignDto();
@@ -68,5 +74,21 @@ public class CampaignDto extends EntityDto {
 
 	public void setCreatingUser(UserReferenceDto creatingUser) {
 		this.creatingUser = creatingUser;
+	}
+
+	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas() {
+		return campaignFormMetas;
+	}
+
+	public void setCampaignFormMetas(Set<CampaignFormMetaReferenceDto> campaignFormMetas) {
+		this.campaignFormMetas = campaignFormMetas;
+	}
+
+	public List<CampaignDashboardElement> getCampaignDashboardElements() {
+		return campaignDashboardElements;
+	}
+
+	public void setCampaignDashboardElements(List<CampaignDashboardElement> campaignDashboardElements) {
+		this.campaignDashboardElements = campaignDashboardElements;
 	}
 }

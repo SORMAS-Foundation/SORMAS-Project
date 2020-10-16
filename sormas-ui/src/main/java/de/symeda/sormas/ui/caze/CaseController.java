@@ -20,7 +20,9 @@ package de.symeda.sormas.ui.caze;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
@@ -78,6 +80,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -103,8 +107,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.DateHelper8;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -423,6 +425,9 @@ public class CaseController {
 						gatheringDto.setUuid(DataHelper.createUuid());
 						gatheringDto.getGatheringAddress().setUuid(DataHelper.createUuid());
 					});
+
+					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
+
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
@@ -567,10 +572,7 @@ public class CaseController {
 //		return editView;
 //	}
 
-	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(
-		final String caseUuid,
-		final ViewMode viewMode,
-		boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);
 		CaseDataForm caseEditForm = new CaseDataForm(
 			caseUuid,
@@ -578,7 +580,7 @@ public class CaseController {
 			caze.getDisease(),
 			caze.getSymptoms(),
 			viewMode,
-			isInJurisdiction);
+			caze.isPseudonymized());
 		caseEditForm.setValue(caze);
 
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
@@ -640,7 +642,7 @@ public class CaseController {
 		bulkEditData.setRegion(region);
 		bulkEditData.setDistrict(district);
 
-		BulkCaseDataForm form = new BulkCaseDataForm(district);
+		BulkCaseDataForm form = new BulkCaseDataForm(district, selectedCases);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView =
 			new CommitDiscardWrapperComponent<BulkCaseDataForm>(form, form.getFieldGroup());
@@ -759,6 +761,7 @@ public class CaseController {
 			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
 			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
 			updatedCase.setHealthFacility(updatedCaseBulkEditData.getHealthFacility());
+			updatedCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 			CaseLogic.handleHospitalization(updatedCase, caseFacade.getCaseDataByUuid(indexDto.getUuid()), doTransfer);
 			caseFacade.saveCase(updatedCase);
 		}
@@ -793,6 +796,10 @@ public class CaseController {
 		// the same district
 		if (surveillanceOfficerChange) {
 			caseDto.setSurveillanceOfficer(updatedCaseBulkEditData.getSurveillanceOfficer());
+		}
+
+		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
+			caseDto.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 		}
 
 		return caseDto;
@@ -831,13 +838,10 @@ public class CaseController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(
-		final String caseUuid,
-		ViewMode viewMode,
-		boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, viewMode, isInJurisdiction);
+		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, viewMode, caze.isPseudonymized());
 		hospitalizationForm.setValue(caze.getHospitalization());
 
 		final CommitDiscardWrapperComponent<HospitalizationForm> editView = new CommitDiscardWrapperComponent<HospitalizationForm>(
@@ -858,27 +862,20 @@ public class CaseController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<MaternalHistoryForm> getMaternalHistoryComponent(
-		final String caseUuid,
-		ViewMode viewMode,
-		boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<MaternalHistoryForm> getMaternalHistoryComponent(final String caseUuid, ViewMode viewMode) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		MaternalHistoryForm form = new MaternalHistoryForm(viewMode, isInJurisdiction);
+		MaternalHistoryForm form = new MaternalHistoryForm(viewMode, caze.getMaternalHistory().isPseudonymized());
 		form.setValue(caze.getMaternalHistory());
 
 		final CommitDiscardWrapperComponent<MaternalHistoryForm> component = new CommitDiscardWrapperComponent<MaternalHistoryForm>(
 			form,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 			form.getFieldGroup());
-		component.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-				caze.setMaternalHistory(form.getValue());
-				saveCase(caze);
-			}
+		component.addCommitListener(() -> {
+			CaseDataDto caze1 = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+			caze1.setMaternalHistory(form.getValue());
+			saveCase(caze1);
 		});
 
 		return component;
@@ -914,7 +911,7 @@ public class CaseController {
 		return component;
 	}
 
-	public CommitDiscardWrapperComponent<SymptomsForm> getSymptomsEditComponent(final String caseUuid, ViewMode viewMode, boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<SymptomsForm> getSymptomsEditComponent(final String caseUuid, ViewMode viewMode) {
 
 		CaseDataDto caseDataDto = findCase(caseUuid);
 		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
@@ -925,7 +922,7 @@ public class CaseController {
 			person,
 			SymptomsContext.CASE,
 			viewMode,
-			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(caseDataDto.isPseudonymized()));
 		symptomsForm.setValue(caseDataDto.getSymptoms());
 
 		CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(
@@ -946,10 +943,10 @@ public class CaseController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), isInJurisdiction);
+		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), caze.getEpiData().isPseudonymized());
 		epiDataForm.setValue(caze.getEpiData());
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
@@ -970,10 +967,10 @@ public class CaseController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<ClinicalCourseForm> getClinicalCourseComponent(String caseUuid, boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<ClinicalCourseForm> getClinicalCourseComponent(String caseUuid) {
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		ClinicalCourseForm form = new ClinicalCourseForm(isInJurisdiction);
+		ClinicalCourseForm form = new ClinicalCourseForm(caze.isPseudonymized());
 		form.setValue(caze.getClinicalCourse());
 
 		final CommitDiscardWrapperComponent<ClinicalCourseForm> view =
@@ -1162,9 +1159,8 @@ public class CaseController {
 				null,
 				e -> {
 					if (e.booleanValue() == true) {
-						for (CaseIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getCaseFacade().archiveOrDearchiveCase(selectedRow.getUuid(), true);
-						}
+						List<String> caseUuids = selectedRows.stream().map(r -> r.getUuid()).collect(Collectors.toList());
+						FacadeProvider.getCaseFacade().updateArchived(caseUuids, true);
 						callback.run();
 						new Notification(
 							I18nProperties.getString(Strings.headingCasesArchived),
@@ -1193,9 +1189,8 @@ public class CaseController {
 				null,
 				e -> {
 					if (e.booleanValue() == true) {
-						for (CaseIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getCaseFacade().archiveOrDearchiveCase(selectedRow.getUuid(), false);
-						}
+						List<String> caseUuids = selectedRows.stream().map(r -> r.getUuid()).collect(Collectors.toList());
+						FacadeProvider.getCaseFacade().updateArchived(caseUuids, false);
 						callback.run();
 						new Notification(
 							I18nProperties.getString(Strings.headingCasesDearchived),

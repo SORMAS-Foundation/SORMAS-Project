@@ -28,4 +28,5 @@ public interface Descriptions {
 	String descCaseFilterRelatedToEvent = "descCaseFilterRelatedToEvent";
 	String descContactOnlyWithExtendedQuarantine = "descContactOnlyWithExtendedQuarantine";
 	String descContactOnlyWithReducedQuarantine = "descContactOnlyWithReducedQuarantine";
+	String descGdpr = "descGdpr";
 }

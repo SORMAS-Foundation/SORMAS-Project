@@ -1,12 +1,8 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 
-import org.openqa.selenium.Dimension
-import org.openqa.selenium.WebDriver
-
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
-import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
 // PREPARE

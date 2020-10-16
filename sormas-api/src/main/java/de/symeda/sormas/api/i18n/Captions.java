@@ -117,6 +117,7 @@ public interface Captions {
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
 	String areaArchivedAreas = "areaArchivedAreas";
+	String BAGExport = "BAGExport";
 	String bulkActions = "bulkActions";
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
 	String bulkCaseClassification = "bulkCaseClassification";
@@ -139,11 +140,19 @@ public interface Captions {
 	String Campaign_name = "Campaign.name";
 	String Campaign_startDate = "Campaign.startDate";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
+	String campaignAdditionalChart = "campaignAdditionalChart";
+	String campaignAdditionalForm = "campaignAdditionalForm";
 	String campaignAllCampaigns = "campaignAllCampaigns";
 	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
 	String campaignCampaignData = "campaignCampaignData";
 	String campaignCampaignDataForm = "campaignCampaignDataForm";
 	String campaignCampaignForm = "campaignCampaignForm";
+	String campaignDashboardChart = "campaignDashboardChart";
+	String campaignDashboardChartHeight = "campaignDashboardChartHeight";
+	String campaignDashboardChartWidth = "campaignDashboardChartWidth";
+	String campaignDashboardOrder = "campaignDashboardOrder";
+	String campaignDashboardTabName = "campaignDashboardTabName";
+	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
@@ -271,6 +280,7 @@ public interface Captions {
 	String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	String CaseData_vaccine = "CaseData.vaccine";
 	String CaseData_visits = "CaseData.visits";
+	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseEditData = "caseEditData";
@@ -874,6 +884,7 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
+	String facility = "facility";
 	String Facility_archived = "Facility.archived";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
@@ -1117,6 +1128,7 @@ public interface Captions {
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
 	String personSelect = "personSelect";
+	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
 	String PointOfEntry_latitude = "PointOfEntry.latitude";
@@ -1181,6 +1193,7 @@ public interface Captions {
 	String regionAllRegions = "regionAllRegions";
 	String regionArchivedRegions = "regionArchivedRegions";
 	String regionName = "regionName";
+	String remove = "remove";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_associatedCase = "Sample.associatedCase";
@@ -1319,6 +1332,22 @@ public interface Captions {
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String sex = "sex";
 	String singleDayEventDate = "singleDayEventDate";
+	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
+	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
+	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
+	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
+	String sormasToSormasListTitle = "sormasToSormasListTitle";
+	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
+	String SormasToSormasOptions_handOverOwnership = "SormasToSormasOptions.handOverOwnership";
+	String SormasToSormasOptions_organization = "SormasToSormasOptions.organization";
+	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
+	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
+	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
+	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
+	String sormasToSormasShare = "sormasToSormasShare";
+	String sormasToSormasSharedBy = "sormasToSormasSharedBy";
+	String sormasToSormasSharedDate = "sormasToSormasSharedDate";
+	String sormasToSormasSharedWith = "sormasToSormasSharedWith";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";
@@ -1340,6 +1369,8 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
+	String SurvnetGateway_send = "SurvnetGateway.send";
+	String SurvnetGateway_title = "SurvnetGateway.title";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
 	String Symptoms_abnormalLungXrayFindings = "Symptoms.abnormalLungXrayFindings";
@@ -1530,6 +1561,7 @@ public interface Captions {
 	String symptomsLesionsLocations = "symptomsLesionsLocations";
 	String symptomsMaxTemperature = "symptomsMaxTemperature";
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";
+	String symptomsSetClearedToUnknown = "symptomsSetClearedToUnknown";
 	String system = "system";
 	String Task = "Task";
 	String Task_assigneeReply = "Task.assigneeReply";
@@ -1578,6 +1610,7 @@ public interface Captions {
 	String User_active = "User.active";
 	String User_address = "User.address";
 	String User_associatedOfficer = "User.associatedOfficer";
+	String User_hasConsentedToGdpr = "User.hasConsentedToGdpr";
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";
 	String User_limitedDisease = "User.limitedDisease";

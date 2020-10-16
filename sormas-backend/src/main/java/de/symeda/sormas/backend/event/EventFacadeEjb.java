@@ -108,13 +108,13 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return eventService.getAllActiveEventsAfter(date).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<EventDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return eventService.getByUuids(uuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -147,7 +147,7 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public EventDto getEventByUuid(String uuid) {
-		return convertToDto(eventService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public EventDto saveEvent(EventDto dto) {
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
 		EventDto existingDto = toDto(existingEvent);
 

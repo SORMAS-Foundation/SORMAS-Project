@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.ui.themes.ValoTheme;
@@ -22,6 +23,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
@@ -102,7 +104,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			field.setNullSelectionAllowed(true);
 			return (T) field;
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationEditForm(fieldVisibilityCheckers, new UiFieldAccessCheckers(true));
+			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
@@ -182,6 +184,28 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		for (Object r : diseases) {
 			Item newItem = diseaseField.addItem(r);
 			newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void populateWithEnumData(AbstractSelect select, Class<? extends Enum> enumClass) {
+		select.removeAllItems();
+		for (Object p : select.getContainerPropertyIds()) {
+			select.removeContainerProperty(p);
+		}
+		select.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
+		select.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
+		 EnumSet<?> enumSet = EnumSet.allOf(enumClass);
+		for (Object r : enumSet) {
+			boolean visible = true;
+			if (fieldVisibilityCheckers != null) {
+				visible = fieldVisibilityCheckers.isVisible(enumClass, ((Enum<?>) r).name());
+			}
+			if (visible) {
+				Item newItem = select.addItem(r);
+				newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
+			}
 		}
 	}
 }

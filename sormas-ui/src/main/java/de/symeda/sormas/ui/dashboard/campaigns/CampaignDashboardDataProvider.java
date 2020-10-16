@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class CampaignDashboardDataProvider {
 
@@ -26,11 +25,11 @@ public class CampaignDashboardDataProvider {
 	private DistrictReferenceDto district;
 
 	private final Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap = new HashMap<>();
-	private final Map<CampaignDashboardDiagramDto, Map<Object, Double>> campaignFormTotalValues = new HashMap<>();
+	private final Map<CampaignDashboardDiagramDto, Map<CampaignDashboardTotalsReference, Double>> campaignFormTotalsMap = new HashMap<>();
 
 	public void refreshData() {
 		campaignFormDataMap.clear();
-		campaignFormTotalValues.clear();
+		campaignFormTotalsMap.clear();
 
 		final List<CampaignDashboardElement> campaignDashboardElements =
 			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign != null ? campaign.getUuid() : null);
@@ -60,12 +59,15 @@ public class CampaignDashboardDataProvider {
 					.getDiagramData(
 						campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal(),
 						new CampaignDiagramCriteria(campaign, area, region, district));
-				Map<Object, List<CampaignDiagramDataDto>> percentageDiagramDataMap =
-					percentageDiagramData.stream().collect(Collectors.groupingBy(CampaignDiagramDataDto::getGroupingKey));
-				Map<Object, Double> percentageDiagramPercentageMap = new HashMap<>();
-				percentageDiagramDataMap
-					.forEach((k, v) -> percentageDiagramPercentageMap.put(k, v.stream().mapToDouble(d -> d.getValueSum().doubleValue()).sum()));
-				campaignFormTotalValues.put(campaignDashboardDiagramDto, percentageDiagramPercentageMap);
+
+				Map<CampaignDashboardTotalsReference, Double> percentageMap = new HashMap<>();
+				for (CampaignDiagramDataDto data : percentageDiagramData) {
+					CampaignDashboardTotalsReference totals = new CampaignDashboardTotalsReference(data.getGroupingKey(), data.getStack());
+					Double value = percentageMap.getOrDefault(totals, 0D);
+					value += data.getValueSum().doubleValue();
+					percentageMap.put(totals, value);
+				}
+				campaignFormTotalsMap.put(campaignDashboardDiagramDto, percentageMap);
 			}
 		});
 	}
@@ -110,7 +112,7 @@ public class CampaignDashboardDataProvider {
 		return campaignFormDataMap;
 	}
 
-	public Map<CampaignDashboardDiagramDto, Map<Object, Double>> getCampaignFormTotalValues() {
-		return campaignFormTotalValues;
+	public Map<CampaignDashboardDiagramDto, Map<CampaignDashboardTotalsReference, Double>> getCampaignFormTotalsMap() {
+		return campaignFormTotalsMap;
 	}
 }

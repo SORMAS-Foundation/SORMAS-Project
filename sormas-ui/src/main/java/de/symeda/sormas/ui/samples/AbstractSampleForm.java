@@ -31,6 +31,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -54,6 +55,7 @@ import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
+
 
 public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
@@ -131,7 +133,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
-		addField(SampleDto.COMMENT, TextArea.class).setRows(4);
+		TextArea comment = addField(SampleDto.COMMENT, TextArea.class);
+		comment.setRows(4);
+		comment.setDescription(
+			I18nProperties.getPrefixDescription(SampleDto.I18N_PREFIX, SampleDto.COMMENT, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		addField(SampleDto.SHIPPED, CheckBox.class);
 		addField(SampleDto.RECEIVED, CheckBox.class);
 

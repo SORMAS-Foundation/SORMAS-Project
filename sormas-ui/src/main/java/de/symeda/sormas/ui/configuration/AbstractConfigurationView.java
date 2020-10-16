@@ -117,7 +117,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				null,
 				false);
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LINE_LISTING)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
 			menu.addView(
 				LineListingConfigurationView.VIEW_NAME,

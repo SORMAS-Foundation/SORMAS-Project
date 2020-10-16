@@ -1054,12 +1054,15 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 			while (propertyIterator.hasNext()) {
 				PropertyDescriptor property = propertyIterator.next();
 
-				// ignore parent property
-				if (parentProperty.equals(property.getName()) || property.getReadMethod().isAnnotationPresent(JoinTableReference.class))
+				Class<?> propertyType = property.getPropertyType();
+				if (parentProperty.equals(property.getName()) // ignore parent property
+					|| property.getReadMethod().isAnnotationPresent(JoinTableReference.class)
+					// ignore nullable properties
+					|| (propertyType.isAnnotationPresent(EmbeddedAdo.class) && propertyType.getAnnotation(EmbeddedAdo.class).nullable()))
 					continue;
 
 				// build embedded
-				AbstractDomainObject embeddedAdo = DatabaseHelper.getAdoDao((Class<AbstractDomainObject>) property.getPropertyType()).build();
+				AbstractDomainObject embeddedAdo = DatabaseHelper.getAdoDao((Class<AbstractDomainObject>) propertyType).build();
 
 				if (embeddedAdo == null) {
 					throw new IllegalArgumentException("No embedded entity was created for " + property.getName());

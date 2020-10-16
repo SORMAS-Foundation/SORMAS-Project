@@ -143,7 +143,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				final CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(
 					campaignDiagramDefinitionDto,
 					diagramData,
-					dataProvider.getCampaignFormTotalValues().get(campaignDashboardDiagramDto),
+					dataProvider.getCampaignFormTotalsMap().get(campaignDashboardDiagramDto),
 					campaignDiagramDefinitionDto.isPercentageDefault());
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);

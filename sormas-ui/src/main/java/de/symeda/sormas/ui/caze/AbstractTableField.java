@@ -54,10 +54,10 @@ import com.vaadin.v7.ui.Table.ColumnGenerator;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 /**
  * TODO replace table with grid?

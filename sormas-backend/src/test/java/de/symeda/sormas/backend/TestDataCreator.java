@@ -474,6 +474,10 @@ public class TestDataCreator {
 		return contact;
 	}
 
+	public TaskDto createTask(UserReferenceDto assigneeUser) {
+		return createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, new Date(), assigneeUser);
+	}
+
 	public TaskDto createTask(
 		TaskContext context,
 		TaskType type,

@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.caze;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -78,6 +79,8 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -175,6 +178,17 @@ public class Case extends CoreAdo {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+
+	public static final String CASE_ID_ISM = "caseIdIsm";
+	public static final String COVID_TEST_REASON = "covidTestReason";
+	public static final String COVID_TEST_REASON_DETAILS = "covidTestReasonDetails";
+	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
+	public static final String WAS_IN_QUARANTINE_BEFORE_ISOLATION = "wasInQuarantineBeforeIsolation";
+	public static final String QUARANTINE_REASON_BEFORE_ISOLATION = "quarantineReasonBeforeIsolation";
+	public static final String QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS = "quarantineReasonBeforeIsolationDetails";
+	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
+	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
 
 	private Person person;
 	private String description;
@@ -303,10 +317,14 @@ public class Case extends CoreAdo {
 	private String covidTestReasonDetails;
 	private ContactTracingContactType contactTracingFirstContactType;
 	private Date contactTracingFirstContactDate;
+	private YesNoUnknown wasInQuarantineBeforeIsolation;
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	private String quarantineReasonBeforeIsolationDetails;
 	private EndOfIsolationReason endOfIsolationReason;
 	private String endOfIsolationReasonDetails;
+
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1283,6 +1301,15 @@ public class Case extends CoreAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
+		return wasInQuarantineBeforeIsolation;
+	}
+
+	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
+		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
+	}
+
+	@Enumerated(EnumType.STRING)
 	public QuarantineReason getQuarantineReasonBeforeIsolation() {
 		return quarantineReasonBeforeIsolation;
 	}
@@ -1316,5 +1343,24 @@ public class Case extends CoreAdo {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
+		this.sormasToSormasOriginInfo = originInfo;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 }

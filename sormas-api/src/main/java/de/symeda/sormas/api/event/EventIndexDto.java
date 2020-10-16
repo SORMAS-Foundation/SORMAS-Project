@@ -22,9 +22,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
+public class EventIndexDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 8322646404033924938L;
 

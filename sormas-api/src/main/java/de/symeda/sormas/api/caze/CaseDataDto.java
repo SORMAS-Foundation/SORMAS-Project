@@ -24,7 +24,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
@@ -42,6 +41,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -55,6 +55,12 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
+import java.util.Date;
 
 public class CaseDataDto extends PseudonymizableDto {
 
@@ -155,6 +161,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String COVID_TEST_REASON_DETAILS = "covidTestReasonDetails";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_TYPE = "contactTracingFirstContactType";
 	public static final String CONTACT_TRACING_FIRST_CONTACT_DATE = "contactTracingFirstContactDate";
+	public static final String WAS_IN_QUARANTINE_BEFORE_ISOLATION = "wasInQuarantineBeforeIsolation";
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION = "quarantineReasonBeforeIsolation";
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS = "quarantineReasonBeforeIsolationDetails";
 	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
@@ -232,12 +239,13 @@ public class CaseDataDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private CommunityReferenceDto community;
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private FacilityType facilityType;
 	@Outbreaks
 	@Required
-	@PersonalData
-	@SensitiveData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	@PersonalData
@@ -330,8 +338,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private UserReferenceDto caseOfficer;
 	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
 	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 	private HospitalizationDto hospitalization;
@@ -344,8 +354,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
-	@PersonalData
-	@SensitiveData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
 	@SensitiveData
@@ -405,6 +415,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Integer caseIdIsm;
@@ -417,6 +429,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	private ContactTracingContactType contactTracingFirstContactType;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Date contactTracingFirstContactDate;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
+	private YesNoUnknown wasInQuarantineBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
@@ -1232,6 +1246,14 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.contactTracingFirstContactDate = contactTracingFirstContactDate;
 	}
 
+	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
+		return wasInQuarantineBeforeIsolation;
+	}
+
+	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
+		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
+	}
+
 	public QuarantineReason getQuarantineReasonBeforeIsolation() {
 		return quarantineReasonBeforeIsolation;
 	}
@@ -1262,5 +1284,21 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }

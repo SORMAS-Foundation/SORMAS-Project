@@ -21,19 +21,18 @@ import android.os.Bundle;
 import android.view.View;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantReadLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
+import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class EventParticipantReadFragment extends BaseReadFragment<FragmentEventParticipantReadLayoutBinding, EventParticipant, EventParticipant> {
 
@@ -47,10 +46,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()),
-			AppFieldAccessCheckers.withCheckers(
-				EventEditAuthorization.isEventParticipantEditAllowed(activityRootData),
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
 	// Instance methods

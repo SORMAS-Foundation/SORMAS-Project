@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -65,6 +67,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
@@ -167,6 +170,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
 		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
 		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
+
+		phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phone.getCaption())));
+		email.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, email.getCaption())));
 
 		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
@@ -409,7 +415,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
 
 			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(visibleAndRequired);
+			tfFacilityDetails.setRequired(otherHealthFacility);
 
 			if (otherHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));

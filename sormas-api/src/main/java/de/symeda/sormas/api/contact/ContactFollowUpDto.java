@@ -7,9 +7,8 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class ContactFollowUpDto extends FollowUpDto implements WithJurisdiction<ContactJurisdictionDto> {
+public class ContactFollowUpDto extends FollowUpDto {
 
 	private static final long serialVersionUID = -1257025719012862417L;
 

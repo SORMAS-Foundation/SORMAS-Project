@@ -21,6 +21,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import elemental.json.JsonValue;
+import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class UuidRenderer extends HtmlRenderer {
@@ -29,7 +30,7 @@ public class UuidRenderer extends HtmlRenderer {
 	public JsonValue encode(String value) {
 
 		if (value != null && !value.isEmpty()) {
-			value = "<a title='" + value + "'>" + DataHelper.getShortUuid(value) + "</a>";
+			value = "<a title='" + value + "'>" + StringEscapeUtils.escapeHtml4(DataHelper.getShortUuid(value)) + "</a>";
 			return super.encode(value);
 		} else {
 			return null;

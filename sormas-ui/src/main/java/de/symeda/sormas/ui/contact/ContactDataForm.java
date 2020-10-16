@@ -62,6 +62,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -153,13 +154,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 
-	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
+	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 
 		this.viewMode = viewMode;
 		this.disease = disease;
@@ -387,6 +388,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
+		additionalDetails.setDescription(
+			I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		addFields(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS);

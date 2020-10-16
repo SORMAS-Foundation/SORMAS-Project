@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.contact;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +64,8 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -136,7 +139,10 @@ public class Contact extends CoreAdo {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
+	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
+	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -211,9 +217,11 @@ public class Contact extends CoreAdo {
 	private Set<Visit> visits = new HashSet<>();
 	private HealthConditions healthConditions;
 	private YesNoUnknown returningTraveler;
-
 	private EndOfQuarantineReason endOfQuarantineReason;
 	private String endOfQuarantineReasonDetails;
+
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -807,6 +815,25 @@ public class Contact extends CoreAdo {
 		this.healthConditions = healthConditions;
 	}
 
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
+		this.sormasToSormasOriginInfo = originInfo;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CONTACT, fetch = FetchType.LAZY)
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public EndOfQuarantineReason getEndOfQuarantineReason() {
 		return endOfQuarantineReason;
@@ -824,7 +851,7 @@ public class Contact extends CoreAdo {
 	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
 		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
 	}
-  
+
   @Enumerated(EnumType.STRING)
   public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
@@ -832,5 +859,5 @@ public class Contact extends CoreAdo {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
-  }
+	}
 }

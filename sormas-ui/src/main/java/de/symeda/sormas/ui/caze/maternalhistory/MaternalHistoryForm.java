@@ -18,6 +18,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -48,13 +49,9 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE_REGION, MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
 	//@formatter:on
 
-	public MaternalHistoryForm(ViewMode viewMode, boolean isInJurisdiction) {
-		super(
-			MaternalHistoryDto.class,
-			MaternalHistoryDto.I18N_PREFIX,
-			true,
-			new FieldVisibilityCheckers(),
-			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+	public MaternalHistoryForm(ViewMode viewMode, boolean isPseudonymized) {
+		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX, true, new FieldVisibilityCheckers(),
+			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 		this.viewMode = viewMode;
 	}
 

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Provides methods that create HTML Strings to visualize the automatic classification rules.
@@ -174,7 +175,7 @@ public final class ClassificationHtmlRenderer {
 		html.append("<h1 style=\"text-align: center; color: #005A9C;\">").append(I18nProperties.getString(Strings.classificationClassificationRules)).append("</h1>");
 		html.append("<h4 style=\"text-align: center;\">")
 				.append(I18nProperties.getString(Strings.classificationGeneratedFor))
-				.append(" ").append(InfoProvider.get().getVersion())
+				.append(" ").append(StringEscapeUtils.escapeHtml4(InfoProvider.get().getVersion()))
 				.append(StringUtils.wrap(I18nProperties.getString(Strings.on), " "))
 				.append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.at), " "))
 				.append(DateHelper.formatLocalDateTime(new Date(), language)).append("</h4>");
@@ -270,9 +271,9 @@ public final class ClassificationHtmlRenderer {
 		//@formatter:off
 		return "<div class='classification-rules'>"
 				+ "<div class='main-criteria main-criteria-"
-				+ criteriaType.toString()
+				+ StringEscapeUtils.escapeHtml4(criteriaType.toString())
 				+ "'>"
-				+ content
+				+ StringEscapeUtils.escapeHtml4(content)
 				+ "</div></div>";
 		//@formatter:on
 	}
@@ -284,7 +285,7 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='headline'>"
-				+ headline 
+				+ StringEscapeUtils.escapeHtml4(headline)
 				+ "</div>";
 		//@formatter:on
 	}
@@ -307,7 +308,7 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='criteria'>"
-				+ content
+				+ StringEscapeUtils.escapeHtml4(content)
 				+ "</div>";
 		//@formatter:on
 	}
@@ -319,7 +320,7 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='sub-criteria'><div class='sub-criteria-content'>"
-				+ content
+				+ StringEscapeUtils.escapeHtml4(content)
 				+ "</div></div>";
 		//@formatter:on
 	}
@@ -328,7 +329,7 @@ public final class ClassificationHtmlRenderer {
 	 * Creates the div for an actual criteria containing its description.
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return text + "<br/>";
+		return StringEscapeUtils.escapeHtml4(text) + "<br/>";
 	}
 
 	private enum ClassificationCriteriaType {

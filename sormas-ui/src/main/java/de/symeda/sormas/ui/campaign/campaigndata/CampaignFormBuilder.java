@@ -44,11 +44,13 @@ import de.symeda.sormas.api.campaign.form.CampaignFormTranslation;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
+
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class CampaignFormBuilder {
@@ -183,7 +185,7 @@ public class CampaignFormBuilder {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Field<?>> T createField(String fieldId, String caption, CampaignFormElementType type, List<CampaignFormElementStyle> styles) {
-		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(), new UiFieldAccessCheckers(true));
+		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(), UiFieldAccessCheckers.getNoop());
 
 		T field;
 		if (type == CampaignFormElementType.YES_NO) {

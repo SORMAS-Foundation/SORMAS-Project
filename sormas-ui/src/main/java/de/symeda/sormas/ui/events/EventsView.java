@@ -430,6 +430,11 @@ public class EventsView extends AbstractView {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
+
+		if (viewConfiguration.isInEagerMode() && isDefaultViewType()) {
+			((EventGrid) grid).setEagerDataProvider();
+		}
+
 		updateFilterComponents();
 		if (isDefaultViewType()) {
 			((EventGrid) grid).reload();

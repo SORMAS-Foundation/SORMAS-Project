@@ -53,12 +53,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserController {
 
-	public final boolean isSormasAuthentication;
-
-	public UserController() {
-		isSormasAuthentication = FacadeProvider.getConfigFacade().getAuthenticationProvider().equalsIgnoreCase(AuthProvider.SORMAS);
-	}
-
 	public void create() {
 		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
 		Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, I18nProperties.getString(Strings.headingCreateNewUser));
@@ -180,7 +174,7 @@ public class UserController {
 	}
 
 	public void makeInitialPassword(String userUuid) {
-		if (isSormasAuthentication) {
+		if (AuthProvider.getProvider().isDefaultProvider()) {
 			String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
@@ -191,7 +185,7 @@ public class UserController {
 	public void makeNewPassword(String userUuid) {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
-		if (isSormasAuthentication) {
+		if (AuthProvider.getProvider().isDefaultProvider()) {
 			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
 			showPasswordResetExternalSuccessPopup();
@@ -312,6 +306,6 @@ public class UserController {
 	}
 
 	public boolean isEmailRequired() {
-		return !isSormasAuthentication;
+		return AuthProvider.getProvider().isEmailRequired();
 	}
 }

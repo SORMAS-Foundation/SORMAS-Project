@@ -17,10 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -40,10 +45,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class PersonController {
 
@@ -95,11 +96,10 @@ public class PersonController {
 		Disease disease,
 		String diseaseDetails,
 		UserRight editUserRight,
-		final ViewMode viewMode,
-		boolean isInJurisdiction) {
-		PersonEditForm editForm = new PersonEditForm(personContext, disease, diseaseDetails, viewMode, isInJurisdiction);
-
+		final ViewMode viewMode) {
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
+
+		PersonEditForm editForm = new PersonEditForm(personContext, disease, diseaseDetails, viewMode, personDto.isPseudonymized());
 		editForm.setValue(personDto);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(

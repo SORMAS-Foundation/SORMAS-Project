@@ -46,4 +46,8 @@
         <role-name>POE_INFORMANT</role-name>
         <group-name>POE_INFORMANT</group-name>
     </security-role-mapping>
+    <security-role-mapping>
+        <role-name>SORMAS_TO_SORMAS_CLIENT</role-name>
+        <group-name>SORMAS_TO_SORMAS_CLIENT</group-name>
+    </security-role-mapping>
 </glassfish-web-app>

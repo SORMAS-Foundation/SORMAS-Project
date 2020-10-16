@@ -27,16 +27,14 @@ import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogEpidTravelEditLayoutBinding;
-import de.symeda.sormas.app.databinding.DialogEpidTravelEditLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class EpiDataTravelDialog extends FormDialog {
@@ -45,10 +43,11 @@ public class EpiDataTravelDialog extends FormDialog {
 
 	private EpiDataTravel data;
 	private DialogEpidTravelEditLayoutBinding contentBinding;
+	private boolean create;
 
 	// Constructor
 
-	EpiDataTravelDialog(final FragmentActivity activity, EpiDataTravel epiDataTravel) {
+	EpiDataTravelDialog(final FragmentActivity activity, EpiDataTravel epiDataTravel, boolean create) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
@@ -56,9 +55,10 @@ public class EpiDataTravelDialog extends FormDialog {
 			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_travel,
 			-1,
-			AppFieldAccessCheckers.withCheckers(!epiDataTravel.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(epiDataTravel.isPseudonymized()));
 
 		this.data = epiDataTravel;
+		this.create = create;
 	}
 
 	// Overrides
@@ -102,7 +102,7 @@ public class EpiDataTravelDialog extends FormDialog {
 
 	@Override
 	public boolean isDeleteButtonVisible() {
-		return true;
+		return !create;
 	}
 
 	@Override

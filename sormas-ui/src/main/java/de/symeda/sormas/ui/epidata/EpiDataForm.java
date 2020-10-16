@@ -44,6 +44,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -138,13 +139,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	private final Disease disease;
 
-	public EpiDataForm(Disease disease, boolean isInJurisdiction) {
-		super(
-			EpiDataDto.class,
-			EpiDataDto.I18N_PREFIX,
-			false,
-			FieldVisibilityCheckers.withDisease(disease),
-			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+	public EpiDataForm(Disease disease, boolean isPseudonymized) {
+		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease),
+			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 		this.disease = disease;
 		addFields();
 	}

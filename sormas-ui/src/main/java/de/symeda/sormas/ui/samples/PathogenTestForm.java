@@ -71,13 +71,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private final SampleDto sample;
 	private int caseSampleCount;
 
-	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isInJurisdiction) {
+	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isPseudonymized) {
 		super(
 			PathogenTestDto.class,
 			PathogenTestDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers(),
-			UiFieldAccessCheckers.withCheckers(create || isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(!create && isPseudonymized));
 
 		this.sample = sample;
 		this.caseSampleCount = caseSampleCount;

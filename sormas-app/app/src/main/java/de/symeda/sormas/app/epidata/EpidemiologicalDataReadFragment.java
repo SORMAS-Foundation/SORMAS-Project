@@ -36,14 +36,13 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -53,7 +52,6 @@ import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentReadEpidLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
@@ -75,8 +73,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
-			AppFieldAccessCheckers
-				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
 	public static EpidemiologicalDataReadFragment newInstance(Contact activityRootData) {
@@ -85,8 +82,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
-			AppFieldAccessCheckers
-				.withCheckers(ContactEditAuthorization.isContactEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
 	// Instance methods

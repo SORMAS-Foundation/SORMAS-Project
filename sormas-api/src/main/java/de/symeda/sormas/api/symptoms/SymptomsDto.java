@@ -43,7 +43,6 @@ import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
 import java.util.Date;
 
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
@@ -54,6 +53,7 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class SymptomsDto extends PseudonymizableDto {
 
@@ -691,7 +691,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@HideForCountries
 	private SymptomState headache;
 
 	@Diseases({
@@ -1041,7 +1040,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@HideForCountries
 	private SymptomState musclePain;
 
 	@Diseases({

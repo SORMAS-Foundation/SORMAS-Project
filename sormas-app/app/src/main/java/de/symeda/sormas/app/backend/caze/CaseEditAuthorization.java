@@ -10,9 +10,15 @@ public class CaseEditAuthorization {
 
 	public static Boolean isCaseEditAllowed(Case caze) {
 		User user = ConfigProvider.getUser();
-		return CaseJurisdictionHelper.isInJurisdictionOrOwned(
-			UserRole.getJurisdictionLevel(user.getUserRoles()),
-			JurisdictionHelper.createUserJurisdiction(user),
-			JurisdictionHelper.createCaseJurisdictionDto(caze));
+
+		if (caze.getSormasToSormasOriginInfo() != null) {
+			return caze.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return !caze.isOwnershipHandedOver()
+			&& CaseJurisdictionHelper.isInJurisdictionOrOwned(
+				UserRole.getJurisdictionLevel(user.getUserRoles()),
+				JurisdictionHelper.createUserJurisdiction(user),
+				JurisdictionHelper.createCaseJurisdictionDto(caze));
 	}
 }

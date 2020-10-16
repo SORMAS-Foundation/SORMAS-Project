@@ -57,6 +57,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class EventController {
 
@@ -169,7 +170,7 @@ public class EventController {
 			caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
 
-		EventDataForm eventCreateForm = new EventDataForm(true, true);
+		EventDataForm eventCreateForm = new EventDataForm(true, false);
 		if (caseRef != null) {
 			eventCreateForm.setValue(createNewEvent(caseDataDto.getDisease()));
 			eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
@@ -206,10 +207,10 @@ public class EventController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, boolean inJurisdiction) {
+	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
 
 		EventDto event = findEvent(eventUuid);
-		EventDataForm eventEditForm = new EventDataForm(false, inJurisdiction);
+		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventEditForm,
@@ -397,7 +398,7 @@ public class EventController {
 								String.format(
 									I18nProperties.getString(Strings.messageCountEventsNotDeleted),
 									String.format("<b>%s</b>", countNotDeletedEvents),
-									String.format("<b>%s</b>", nonDeletableEvents)),
+									String.format("<b>%s</b>", StringEscapeUtils.escapeHtml4(nonDeletableEvents.toString()))),
 								I18nProperties.getString(Strings.messageEventsNotDeletedReason)),
 							ContentMode.HTML);
 						response.setWidth(600, Sizeable.Unit.PIXELS);
