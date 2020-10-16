@@ -51,8 +51,6 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-
 public class CampaignFormBuilder {
 
 	private final List<CampaignFormElement> formElements;

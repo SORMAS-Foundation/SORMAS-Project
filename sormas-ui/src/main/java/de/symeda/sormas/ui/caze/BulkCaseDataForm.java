@@ -115,7 +115,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private ComboBox facilityType;
 	private TextField healthFacilityDetails;
 	private Collection<? extends CaseIndexDto> selectedCases;
-	OptionGroup facilityOrHome;
+	private NullableOptionGroup facilityOrHome;
 	private HorizontalLayout warningLayout;
 
 	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict, Collection<? extends CaseIndexDto> selectedCases) {
@@ -210,7 +210,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		ComboBox community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.setEnabled(false);
-		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		facilityOrHome.setEnabled(false);

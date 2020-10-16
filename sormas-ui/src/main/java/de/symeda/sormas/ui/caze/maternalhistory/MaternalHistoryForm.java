@@ -23,7 +23,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
@@ -50,7 +49,11 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 	//@formatter:on
 
 	public MaternalHistoryForm(ViewMode viewMode, boolean isPseudonymized) {
-		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX, true, new FieldVisibilityCheckers(),
+		super(
+			MaternalHistoryDto.class,
+			MaternalHistoryDto.I18N_PREFIX,
+			true,
+			new FieldVisibilityCheckers(),
 			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 		this.viewMode = viewMode;
 	}

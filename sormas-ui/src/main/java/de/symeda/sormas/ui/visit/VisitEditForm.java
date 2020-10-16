@@ -46,7 +46,6 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
@@ -119,8 +118,8 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		NullableOptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, NullableOptionGroup.class);
 		addField(VisitDto.VISIT_REMARKS, TextField.class).setDescription(
-				I18nProperties.getPrefixDescription(VisitDto.I18N_PREFIX, VisitDto.VISIT_REMARKS) + "\n"
-						+ I18nProperties.getDescription(Descriptions.descGdpr));
+			I18nProperties.getPrefixDescription(VisitDto.I18N_PREFIX, VisitDto.VISIT_REMARKS) + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
 		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);

@@ -51,7 +51,6 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
@@ -140,7 +139,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final Disease disease;
 
 	public EpiDataForm(Disease disease, boolean isPseudonymized) {
-		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease),
+		super(
+			EpiDataDto.class,
+			EpiDataDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withDisease(disease),
 			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 		this.disease = disease;
 		addFields();

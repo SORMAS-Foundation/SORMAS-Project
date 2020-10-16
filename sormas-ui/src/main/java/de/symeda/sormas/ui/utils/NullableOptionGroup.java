@@ -26,8 +26,6 @@ import com.vaadin.v7.ui.OptionGroup;
 
 public class NullableOptionGroup extends OptionGroup {
 
-//	Object oldValue;
-
 	public NullableOptionGroup() {
 		setup();
 	}
