@@ -345,10 +345,10 @@ public class ContactsView extends AbstractView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_MERGE)) {
 			Button mergeDuplicatesButton = ButtonHelper.createIconButton(
-					Captions.caseMergeDuplicates,
-					VaadinIcons.COMPRESS_SQUARE,
-					e -> ControllerProvider.getContactController().navigateToMergeContactsView(),
-					ValoTheme.BUTTON_PRIMARY);
+				Captions.caseMergeDuplicates,
+				VaadinIcons.COMPRESS_SQUARE,
+				e -> ControllerProvider.getContactController().navigateToMergeContactsView(),
+				ValoTheme.BUTTON_PRIMARY);
 			mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
 			moreLayout.addComponent(mergeDuplicatesButton);
 		}

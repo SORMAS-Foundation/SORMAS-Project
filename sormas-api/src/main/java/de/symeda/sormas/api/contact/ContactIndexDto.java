@@ -90,7 +90,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
-						   String districtUuid, String communityUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
+						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,

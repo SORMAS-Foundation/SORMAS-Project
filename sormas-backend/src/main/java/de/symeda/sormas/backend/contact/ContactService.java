@@ -1208,9 +1208,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
-							cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
-							cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
+						cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
+						cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
