@@ -102,6 +102,8 @@ public interface ConfigFacade {
 
 	SormasToSormasConfig getSormasToSormasConfig();
 
+	String getSurvnetGatewayUrl();
+
 	String getAuthenticationProvider();
 
 	public boolean isExternalJournalActive();

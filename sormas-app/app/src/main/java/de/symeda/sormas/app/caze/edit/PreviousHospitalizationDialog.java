@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.app.caze.edit;
 
+import static android.view.View.GONE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.List;
@@ -46,10 +47,11 @@ public class PreviousHospitalizationDialog extends FormDialog {
 
 	private PreviousHospitalization data;
 	private DialogPreviousHospitalizationLayoutBinding contentBinding;
+	private boolean create;
 
 	// Constructor
 
-	PreviousHospitalizationDialog(final FragmentActivity activity, PreviousHospitalization previousHospitalization) {
+	PreviousHospitalizationDialog(final FragmentActivity activity, PreviousHospitalization previousHospitalization, boolean create) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
@@ -60,6 +62,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			UiFieldAccessCheckers.forSensitiveData(previousHospitalization.isPseudonymized()));
 
 		this.data = previousHospitalization;
+		this.create = create;
 	}
 
 	// Overrides
@@ -139,7 +142,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 
 	@Override
 	public boolean isDeleteButtonVisible() {
-		return true;
+		return !create;
 	}
 
 	@Override

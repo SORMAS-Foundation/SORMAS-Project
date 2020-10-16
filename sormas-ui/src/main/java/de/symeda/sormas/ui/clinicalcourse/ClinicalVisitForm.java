@@ -7,6 +7,8 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -64,7 +66,9 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 
 		addField(ClinicalVisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		addField(ClinicalVisitDto.VISITING_PERSON, TextField.class);
-		addField(ClinicalVisitDto.VISIT_REMARKS, TextField.class);
+		addField(ClinicalVisitDto.VISIT_REMARKS, TextField.class).setDescription(
+			I18nProperties.getPrefixDescription(ClinicalVisitDto.I18N_PREFIX, ClinicalVisitDto.VISIT_REMARKS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));;
 
 		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.CLINICAL_VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, ClinicalVisitDto.SYMPTOMS);

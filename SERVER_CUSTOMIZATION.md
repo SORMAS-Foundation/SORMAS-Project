@@ -58,16 +58,28 @@ SORMAS supports a wide range of diseases, and not all of those might be relevant
 
 Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *diseaseconfiguration* table according to your needs. 
 
-**IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited disease configuration.
+**VERY IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited disease configuration.
 
 ## Feature Configuration
-Some of the features in SORMAS can be enabled or disabled for the system.
-Examples for this are aggregated reporting, event surveillance, national case sharing and more.
+Some of the features in SORMAS can be enabled or disabled to further customize the system. Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *featureconfiguration* table. There is one entry for every configurable feature in this table, and you can set the value of the *enabled* column to *true* to enable it and *false* to disable it. The *region*, *district*, *disease* and *enddate* columns are currently only applicable for the line listing feature and define the scope in which line listing is used. Line listing is configurable from within the UI and does not need to be manually edited in the database. 
 
-Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *featureconfiguration* table. 
+**VERY IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited feature configuration.
 
-* There will be an entry in the database table for each feature that is available in SORMAS
-* Set the "enabled" value of the feature to true or false to enable or disable it
-* The region, district, disease and enddate columns are currently only appicable for the line listing feature. The line listing feature is the only feature that can currently be configured using the UI.
+The following features are currently configurable:
 
-**IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited disease configuration.
+* **Case Surveillance** *(CASE_SURVEILANCE)*: The core module of SORMAS which allows the creation and management of suspect or confirmed disease cases.
+* **Contact Tracing** *(CONTACT_TRACING)*: Management and follow-up of contacts of disease cases.
+* **Sample Management** *(SAMPLES_LAB)*: Management of samples for cases, contacts or event participants and the documentation of pathogen tests performed on these samples.
+* **Event Surveillance** *(EVENT_SURVEILLANCE)*: Creating and managing events and event participants to identify potential outbreaks or disease hotspots.
+* **Aggregate Reporting** *(AGGREGATE_REPORTING)*: Allows collecting case numbers for a number of additional diseases for which case-based surveillance is not used. Commonly referred to as mSers in African countries.
+* **Weekly Reporting** *(WEEKLY_REPORTING)*: Allows mobile users to confirm the number of cases they have collected on a weekly basis and web users to see an overview of whether or not mobile users have submitted their reports and how many cases they have reported.
+* **Clinical Management** *(CLINICAL_MANAGEMENT)*: Enables the clinical management module of cases that allow collecting prescriptions and treatments as well as doctor's visits in a clinical context.
+* **National Case Sharing** *(NATIONAL_CASE_SHARING)*: Allows users with the respective rights to make cases available to the whole country, i.e. other users will see these cases even if they don't belong to their jurisdiction.
+* **Task Generation (Case Surveillance)** *(TASK_GENERATION_CASE_SURVEILLANCE)*: Enables or disables the automatic generation of tasks associated with case surveillance, especially the *Case Investigation* tasks that are usually generated when creating a new case.
+* **Task Generation (Contact Tracing)** *(TASK_GENERATION_CONTACT_TRACING)*: Enables or disables the automatic generation of tasks associated with contact tracing, especially the *Contact Investigation* tasks that are usually generated when creating a new contact and the *Contact Follow-Up* tasks that are created once a day for every contact that is under follow-up.
+* **Task Generation (Event Surveillance)** *(TASK_GENERATION_EVENT_SURVEILLANCE)*: Enables or disables the automatic generation of tasks associated with event surveillance.
+* **Task Generation (General)** *(TASK_GENERATION_GENERAL)*: Enables or disables the automatic generation of tasks that aren't directly associated with one of the three other task types described above, e.g. the *Weekly Report Generation* task that asks mobile users to submit their weekly reports.
+* **Campaigns** *(CAMPAIGNS)*: The campaigns module allows collecting flexible data which can be customized using the JSON format. Currently this is heavily geared towards vaccination campaigns in Afghanistan, but will be usable in a more generic way in the future for other countries as well.
+* **Area Infrastructure** *(INFRASTRUCTURE_TYPE_AREA)*: Enables an additional infrastructure level above region that is called area by default. Currently only used in the campaigns module.
+* **Case Follow-Up** *(CASE_FOLLOWUP)*: Enables the contact follow-up module for cases as well to allow a more detailed daily documentation of symptoms.
+* **Line Listing** *(LINE_LISTING)*: Whether or not using line listing for case entry is enabled in the specified jurisdiction for the specified disease. Configurable from the UI, no database interaction needed.

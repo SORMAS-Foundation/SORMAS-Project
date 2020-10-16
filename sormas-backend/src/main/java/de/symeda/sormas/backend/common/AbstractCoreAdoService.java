@@ -36,7 +36,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 	}
 
 	protected String formatPhoneNumberForSearch(String textFilter) {
-		final String formattedPhoneNumber = textFilter.replaceAll("[^0-9]", "");
+		final String formattedPhoneNumber = textFilter.replaceAll("[^0-9a-zA-Z]", "");
 		if (StringUtils.isEmpty(formattedPhoneNumber)) {
 			return textFilter;
 		}

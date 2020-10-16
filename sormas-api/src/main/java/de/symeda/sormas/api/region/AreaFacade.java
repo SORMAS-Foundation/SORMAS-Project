@@ -27,5 +27,4 @@ public interface AreaFacade {
 	void deArchive(String areaUuid);
 
 	List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas);
-
 }

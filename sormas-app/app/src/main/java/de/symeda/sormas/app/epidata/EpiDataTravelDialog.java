@@ -43,10 +43,11 @@ public class EpiDataTravelDialog extends FormDialog {
 
 	private EpiDataTravel data;
 	private DialogEpidTravelEditLayoutBinding contentBinding;
+	private boolean create;
 
 	// Constructor
 
-	EpiDataTravelDialog(final FragmentActivity activity, EpiDataTravel epiDataTravel) {
+	EpiDataTravelDialog(final FragmentActivity activity, EpiDataTravel epiDataTravel, boolean create) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
@@ -57,6 +58,7 @@ public class EpiDataTravelDialog extends FormDialog {
 			UiFieldAccessCheckers.forSensitiveData(epiDataTravel.isPseudonymized()));
 
 		this.data = epiDataTravel;
+		this.create = create;
 	}
 
 	// Overrides
@@ -100,7 +102,7 @@ public class EpiDataTravelDialog extends FormDialog {
 
 	@Override
 	public boolean isDeleteButtonVisible() {
-		return true;
+		return !create;
 	}
 
 	@Override

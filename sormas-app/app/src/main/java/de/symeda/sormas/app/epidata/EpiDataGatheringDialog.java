@@ -44,10 +44,11 @@ public class EpiDataGatheringDialog extends FormDialog {
 
 	private EpiDataGathering data;
 	private DialogEpidGatheringEditLayoutBinding contentBinding;
+	private boolean create;
 
 	// Constructor
 
-	EpiDataGatheringDialog(final FragmentActivity activity, EpiDataGathering epiDataGathering) {
+	EpiDataGatheringDialog(final FragmentActivity activity, EpiDataGathering epiDataGathering, boolean create) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
@@ -58,6 +59,7 @@ public class EpiDataGatheringDialog extends FormDialog {
 			UiFieldAccessCheckers.forSensitiveData(epiDataGathering.isPseudonymized()));
 
 		this.data = epiDataGathering;
+		this.create = create;
 	}
 
 	// Instance methods
@@ -118,7 +120,7 @@ public class EpiDataGatheringDialog extends FormDialog {
 
 	@Override
 	public boolean isDeleteButtonVisible() {
-		return true;
+		return !create;
 	}
 
 	@Override

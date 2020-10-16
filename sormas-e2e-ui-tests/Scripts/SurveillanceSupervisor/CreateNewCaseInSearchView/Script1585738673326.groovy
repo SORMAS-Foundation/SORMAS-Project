@@ -1,10 +1,7 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 import org.openqa.selenium.Keys as Keys
-import com.hzi.Table as Table
-import com.hzi.TableContent as TableContent
 import com.hzi.TestDataConnector as TestDataConnector
-import com.kms.katalon.core.exception.StepFailedException as StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
@@ -26,9 +23,7 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/div_District_DDBox'))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/td_Voreingestellter Landkreis'))
 
-/*WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_DDBox'))
-WebUI.click(findTestObject('Surveillance/NewCaseView/td_Voreingestellte Gesundheitseinrichtung'))*/
-//WebUI.verifyElementPresent(findTestObject('div_FacilityHome'), 2)
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_FacilityorHome'))
 
 WebUI.check(findTestObject('Surveillance/NewCaseView/span_Home'))
 
@@ -71,8 +66,9 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/div_Save_btn'))
 WebUI.delay(3)
 
 if (WebUI.verifyElementPresent(findTestObject('Surveillance/NewCaseView/Comfirmation/div_check_confimation_lbl'), 5)) {
-    //WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_PickanExistingCase'))
+    
     WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_Select a matching person'))
+    //WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/select_firstcell'))
 
     WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_confirm_btn'))
 

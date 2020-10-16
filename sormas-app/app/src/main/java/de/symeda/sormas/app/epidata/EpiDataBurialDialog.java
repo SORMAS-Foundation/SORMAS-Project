@@ -44,10 +44,11 @@ public class EpiDataBurialDialog extends FormDialog {
 
 	private EpiDataBurial data;
 	private DialogEpidBurialEditLayoutBinding contentBinding;
+	private boolean create;
 
 	// Constructor
 
-	EpiDataBurialDialog(final FragmentActivity activity, EpiDataBurial epiDataBurial) {
+	EpiDataBurialDialog(final FragmentActivity activity, EpiDataBurial epiDataBurial, boolean create) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
@@ -58,6 +59,7 @@ public class EpiDataBurialDialog extends FormDialog {
 			UiFieldAccessCheckers.forSensitiveData(epiDataBurial.isPseudonymized()));
 
 		this.data = epiDataBurial;
+		this.create = create;
 	}
 
 	// Instance methods
@@ -120,7 +122,7 @@ public class EpiDataBurialDialog extends FormDialog {
 
 	@Override
 	public boolean isDeleteButtonVisible() {
-		return true;
+		return !create;
 	}
 
 	@Override

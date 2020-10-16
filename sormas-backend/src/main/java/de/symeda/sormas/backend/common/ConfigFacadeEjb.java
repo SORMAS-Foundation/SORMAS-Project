@@ -116,6 +116,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
+	private static final String SURVNET_GATEWAY_URL = "survnet.url";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup = "sormas/Properties")
@@ -400,6 +402,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getSormasToSormasUserPassword() {
 		return getProperty(SORMAS_TO_SORMAS_USER_PASSWORD, null);
+	}
+
+	@Override
+	public String getSurvnetGatewayUrl() {
+		return getProperty(SURVNET_GATEWAY_URL, null);
 	}
 
 	@Override

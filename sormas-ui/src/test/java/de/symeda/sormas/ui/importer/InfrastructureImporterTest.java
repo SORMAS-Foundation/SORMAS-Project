@@ -11,7 +11,6 @@ import java.io.Writer;
 import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -29,8 +28,11 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+//Using Silent Runner to ignore unnecessary stubbing exception
+//which is a side effect of extending AbstractBeanTest
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	@Test

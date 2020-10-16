@@ -50,7 +50,7 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.PhoneNumberValidator;
+import de.symeda.sormas.ui.utils.UserPhoneNumberValidator;
 
 public class UserEditForm extends AbstractEditForm<UserDto> {
 
@@ -112,7 +112,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.LAST_NAME, TextField.class);
         addField(UserDto.USER_EMAIL, TextField.class);
         TextField phone = addField(UserDto.PHONE, TextField.class);
-        phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.phoneNumberValidation)));
+        phone.addValidator(new UserPhoneNumberValidator(I18nProperties.getValidationError(Validations.phoneNumberValidation)));
         addDiseaseField(UserDto.LIMITED_DISEASE, false);
 
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));

@@ -117,6 +117,7 @@ public interface Captions {
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
 	String areaArchivedAreas = "areaArchivedAreas";
+	String BAGExport = "BAGExport";
 	String bulkActions = "bulkActions";
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
 	String bulkCaseClassification = "bulkCaseClassification";
@@ -139,11 +140,19 @@ public interface Captions {
 	String Campaign_name = "Campaign.name";
 	String Campaign_startDate = "Campaign.startDate";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
+	String campaignAdditionalChart = "campaignAdditionalChart";
+	String campaignAdditionalForm = "campaignAdditionalForm";
 	String campaignAllCampaigns = "campaignAllCampaigns";
 	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
 	String campaignCampaignData = "campaignCampaignData";
 	String campaignCampaignDataForm = "campaignCampaignDataForm";
 	String campaignCampaignForm = "campaignCampaignForm";
+	String campaignDashboardChart = "campaignDashboardChart";
+	String campaignDashboardChartHeight = "campaignDashboardChartHeight";
+	String campaignDashboardChartWidth = "campaignDashboardChartWidth";
+	String campaignDashboardOrder = "campaignDashboardOrder";
+	String campaignDashboardTabName = "campaignDashboardTabName";
+	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
@@ -1189,6 +1198,7 @@ public interface Captions {
 	String regionAllRegions = "regionAllRegions";
 	String regionArchivedRegions = "regionArchivedRegions";
 	String regionName = "regionName";
+	String remove = "remove";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_associatedCase = "Sample.associatedCase";
@@ -1364,6 +1374,8 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
+	String SurvnetGateway_send = "SurvnetGateway.send";
+	String SurvnetGateway_title = "SurvnetGateway.title";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
 	String Symptoms_abnormalLungXrayFindings = "Symptoms.abnormalLungXrayFindings";
@@ -1554,6 +1566,7 @@ public interface Captions {
 	String symptomsLesionsLocations = "symptomsLesionsLocations";
 	String symptomsMaxTemperature = "symptomsMaxTemperature";
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";
+	String symptomsSetClearedToUnknown = "symptomsSetClearedToUnknown";
 	String system = "system";
 	String Task = "Task";
 	String Task_assigneeReply = "Task.assigneeReply";
@@ -1602,6 +1615,7 @@ public interface Captions {
 	String User_active = "User.active";
 	String User_address = "User.address";
 	String User_associatedOfficer = "User.associatedOfficer";
+	String User_hasConsentedToGdpr = "User.hasConsentedToGdpr";
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";
 	String User_limitedDisease = "User.limitedDisease";

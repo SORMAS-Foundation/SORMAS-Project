@@ -54,6 +54,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -179,6 +180,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 				(Integer) contentBinding.personBirthdateMM.getValue());
 		});
 		int year = Calendar.getInstance().get(Calendar.YEAR);
+		FieldVisibilityCheckers countryVisibilityChecker = FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode());
 		contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
 		contentBinding.personApproximateAgeType.initializeSpinner(approximateAgeTypeList);
 		contentBinding.personSex.initializeSpinner(sexList);
@@ -186,7 +188,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.personCauseOfDeathDisease.initializeSpinner(diseaseList);
 		contentBinding.personDeathPlaceType.initializeSpinner(deathPlaceTypeList);
 		contentBinding.personBurialConductor.initializeSpinner(burialConductorList);
-		contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true));
+		contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true, countryVisibilityChecker));
 		contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
 		contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
 

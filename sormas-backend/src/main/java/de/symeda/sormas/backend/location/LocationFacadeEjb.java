@@ -88,9 +88,7 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setAddressTypeDetails(source.getAddressTypeDetails());
 		target.setFacility(facilityService.getByReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
-		if (source.getFacility() != null) {
-			target.setFacilityType(source.getFacilityType());
-		}
+		target.setFacilityType(source.getFacilityType());
 
 		return target;
 	}

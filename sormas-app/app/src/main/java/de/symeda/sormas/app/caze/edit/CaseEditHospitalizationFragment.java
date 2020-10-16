@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -35,6 +37,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
+import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCaseEditHospitalizationLayoutBinding, Hospitalization, Case> {
@@ -62,7 +65,7 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 			final PreviousHospitalization previousHospitalization = (PreviousHospitalization) item;
 			final PreviousHospitalization previousHospitalizationClone = (PreviousHospitalization) previousHospitalization.clone();
 			final PreviousHospitalizationDialog dialog =
-				new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalizationClone);
+				new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalizationClone, false);
 
 			dialog.setPositiveCallback(() -> {
 				record.getPreviousHospitalizations()
@@ -78,7 +81,7 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 		getContentBinding().btnAddPrevHosp.setOnClickListener(v -> {
 			final PreviousHospitalization previousHospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
 			final PreviousHospitalizationDialog dialog =
-				new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalization);
+				new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalization, true);
 
 			dialog.setPositiveCallback(() -> addPreviousHospitalization(previousHospitalization));
 
@@ -106,7 +109,6 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
 	private void updatePreviousHospitalizations() {
 		getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
-		getContentBinding().setPreviousHospitalizationBindCallback(this::setFieldVisibilitiesAndAccesses);
 
 		verifyPrevHospitalizationStatus();
 	}
@@ -123,6 +125,8 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 		} else {
 			getContentBinding().caseHospitalizationHospitalizedPreviously.disableWarningState();
 		}
+
+		getContentBinding().caseHospitalizationHospitalizedPreviously.setEnabled(getPreviousHospitalizations().size() == 0);
 	}
 
 	// Overrides
@@ -148,20 +152,6 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 	public void onLayoutBinding(final FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
 		setUpControlListeners();
 
-		contentBinding.caseHospitalizationHospitalizedPreviously.addValueChangedListener(new ValueChangeListener() {
-
-			@Override
-			public void onChange(ControlPropertyField field) {
-				YesNoUnknown value = (YesNoUnknown) field.getValue();
-				contentBinding.prevHospitalizationsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-				if (value != YesNoUnknown.YES) {
-					clearPreviousHospitalizations();
-				}
-
-				verifyPrevHospitalizationStatus();
-			}
-		});
-
 		CaseValidator.initializeHospitalizationValidation(contentBinding, caze);
 
 		contentBinding.setData(record);
@@ -169,10 +159,22 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 		contentBinding.setPreviousHospitalizationList(getPreviousHospitalizations());
 		contentBinding.setPrevHosItemClickCallback(onPrevHosItemClickListener);
 		getContentBinding().setPreviousHospitalizationBindCallback(this::setFieldVisibilitiesAndAccesses);
+
+		contentBinding.caseHospitalizationHospitalizedPreviously.addValueChangedListener(field -> {
+			YesNoUnknown value = (YesNoUnknown) field.getValue();
+			contentBinding.prevHospitalizationsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+			if (value != YesNoUnknown.YES) {
+				clearPreviousHospitalizations();
+			}
+
+			verifyPrevHospitalizationStatus();
+		});
 	}
 
 	@Override
 	protected void onAfterLayoutBinding(FragmentCaseEditHospitalizationLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(HospitalizationDto.class, contentBinding.mainContent);
+
 		InfrastructureHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
@@ -192,6 +194,11 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 	}
 
 	private void setFieldVisibilitiesAndAccesses(View view) {
-		setFieldVisibilitiesAndAccesses(PreviousHospitalizationDto.class, (ViewGroup) view);
+		FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(
+			PreviousHospitalizationDto.class,
+			(ViewGroup) view,
+			new FieldVisibilityCheckers(),
+			getFieldAccessCheckers());
+
 	}
 }

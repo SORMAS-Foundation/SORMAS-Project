@@ -74,11 +74,11 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		typeGroup.addItems(FacilityTypeGroup.values());
 		typeGroup.setWidth(100, Unit.PERCENTAGE);
-		typeGroup.setEnabled(false);
+		typeGroup.setEnabled(create);
 		getContent().addComponent(typeGroup, TYPE_GROUP_LOC);
 		ComboBox type = addField(FacilityDto.TYPE);
 		type.removeAllItems();
-		type.setEnabled(false);
+		type.setEnabled(create);
 		ComboBox region = addInfrastructureField(FacilityDto.REGION);
 		ComboBox district = addInfrastructureField(FacilityDto.DISTRICT);
 		ComboBox community = addInfrastructureField(FacilityDto.COMMUNITY);

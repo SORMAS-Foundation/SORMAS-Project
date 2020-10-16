@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -204,6 +205,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -286,12 +289,12 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact entity = fromDto(dto);
 		contactService.ensurePersisted(entity);
 
+		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
+			createInvestigationTask(entity);
+
+		}
 		if (existingContact != null) {
 			handleExternalJournalPerson(existingContactDto, dto);
-		}
-
-		if (existingContact == null) {
-			createInvestigationTask(entity);
 		}
 
 		if (handleChanges) {

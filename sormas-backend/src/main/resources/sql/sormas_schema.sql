@@ -5469,11 +5469,36 @@ ALTER TABLE cases_history
     ADD COLUMN wasInQuarantineBeforeIsolation varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (265, 'Add new field: Quarantine before isolation #2977');
+-- 2020-09-23 CampaignFormMeta to Campaigns relation #2855
+
+CREATE TABLE campaign_campaignformmeta(
+                                campaign_id bigint NOT NULL,
+                                campaignformmeta_id bigint NOT NULL,
+                                sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE campaign_campaignformmeta OWNER TO sormas_user;
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT unq_campaign_campaignformmeta_0 UNIQUE (campaign_id, campaignformmeta_id);
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT fk_campaign_campaignformmeta_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE ONLY campaign_campaignformmeta ADD CONSTRAINT fk_campaign_campaignformmeta_meta_id FOREIGN KEY (campaignformmeta_id) REFERENCES campaignformmeta(id);
+
+CREATE TABLE campaign_campaignformmeta_history (LIKE campaign_campaignformmeta);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaign_campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaign_campaignformmeta_history', true);
+ALTER TABLE campaign_campaignformmeta_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (266, 'CampaignFormMeta to Campaigns relation #2855');
+
+--2020-10-09 Add boolean to users to active window GDPR
+ALTER TABLE users ADD COLUMN hasConsentedToGdpr boolean default false;
+ALTER TABLE users_history ADD COLUMN hasConsentedToGdpr boolean default false;
+INSERT INTO schema_version (version_number, comment) VALUES (267, 'Add gdpr popup to user');
+
 
 -- 2020-09-28 - Store visit source #2083
 ALTER TABLE visit ADD COLUMN origin varchar(255);
 ALTER TABLE visit_history ADD COLUMN origin varchar(255);
 UPDATE visit SET origin='USER';
 
-INSERT INTO schema_version (version_number, comment) VALUES (266, 'Add new field origin to visits as per feature #2083');
+INSERT INTO schema_version (version_number, comment) VALUES (268, 'Add new field origin to visits as per feature #2083');
 -- *** Insert new sql commands BEFORE this line ***

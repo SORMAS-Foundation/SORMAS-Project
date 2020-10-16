@@ -261,6 +261,7 @@ import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
@@ -2418,12 +2419,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (existingCase != null) {
 				List<Task> pendingTasks =
 					taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING), true);
+				final boolean caseStatusSetToDone =
+					caze.getInvestigationStatus() == InvestigationStatus.DONE && existingCase.getInvestigationStatus() != InvestigationStatus.DONE;
 				for (Task task : pendingTasks) {
-					task.setTaskStatus(TaskStatus.REMOVED);
+					task.setTaskStatus(caseStatusSetToDone ? TaskStatus.DONE : TaskStatus.REMOVED);
 					task.setStatusChangeDate(new Date());
 				}
 
-				if (caze.getInvestigationStatus() == InvestigationStatus.DONE && existingCase.getInvestigationStatus() != InvestigationStatus.DONE) {
+				if (caseStatusSetToDone) {
 					sendInvestigationDoneNotifications(caze);
 				}
 			}

@@ -138,7 +138,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		if (stackMap.size() > 1) {
 			hcjs.append(
-					", stackLabels: {enabled: true,verticalAlign: 'bottom',crop: false, rotation: 45, x:20,y: 20, overflow: 'none',y: 20,formatter: function() {  return this.stack;},style: {  color: 'grey'}}");
+					", stackLabels: {enabled: true,verticalAlign: 'bottom', allowOverlap: true, crop: false, rotation: 45, x:20,y: 20, overflow: 'none',y: 24,formatter: function() {  return this.stack;},style: {  color: 'grey'}}");
 		}
 		hcjs.append("},");
 		//@formatter:on

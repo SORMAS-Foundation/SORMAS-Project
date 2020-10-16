@@ -62,6 +62,7 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Contact, Visit> visits;
 	private Join<Visit, Symptoms> visitSymptoms;
 	private Join<Contact, HealthConditions> healthConditions;
+	private Join<Person, Location> personAddress;
 
 	public ContactJoins(Root<Contact> contact) {
 		super(contact);
@@ -251,5 +252,13 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	public void setHealthConditions(Join<Contact, HealthConditions> healthConditions) {
 		this.healthConditions = healthConditions;
+	}
+
+	public Join<Person, Location> getPersonAddress() {
+		return getOrCreate(personAddress, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setPersonAddress);
+	}
+
+	private void setPersonAddress(Join<Person, Location> personAddress) {
+		this.personAddress = personAddress;
 	}
 }

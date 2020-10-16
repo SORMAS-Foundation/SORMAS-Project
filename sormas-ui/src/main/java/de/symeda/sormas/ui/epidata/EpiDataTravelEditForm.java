@@ -62,7 +62,7 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 				travelDateFrom,
 				false,
 				true,
-				I18nProperties.getValidationError(Validations.afterDate, travelDateFrom.getCaption(), travelDateTo.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, travelDateTo.getCaption(), travelDateFrom.getCaption())));
 		addField(EpiDataTravelDto.TRAVEL_TYPE, ComboBox.class);
 		addField(EpiDataTravelDto.TRAVEL_DESTINATION, TextField.class);
 

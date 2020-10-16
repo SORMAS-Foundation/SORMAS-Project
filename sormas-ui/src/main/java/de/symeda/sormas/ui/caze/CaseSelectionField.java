@@ -54,7 +54,7 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 		filterLayout.addComponent(searchField);
 
 		Button searchButton = ButtonHelper.createButton(Captions.caseSearchCase, e -> {
-			if (StringUtils.isNotEmpty(searchField.getValue())) {
+			if (StringUtils.isNotEmpty(searchField.getValue()) && StringUtils.isNotEmpty(searchField.getValue().trim())) {
 				criteria.setSourceCaseInfoLike(searchField.getValue());
 				grid.setCases(FacadeProvider.getCaseFacade().getIndexList(criteria, null, null, null));
 			} else {

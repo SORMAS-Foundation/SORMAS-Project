@@ -39,7 +39,6 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
-
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -329,20 +328,30 @@ public final class VaadinUiUtil {
 		return requestTaskComponent;
 	}
 
-	public static HorizontalLayout createInfoComponent(String htmlContent) {
-		HorizontalLayout infoLayout = new HorizontalLayout();
-		infoLayout.setWidth(100, Unit.PERCENTAGE);
-		infoLayout.setSpacing(true);
-		Image icon = new Image(null, new ThemeResource("img/info-icon.png"));
-		icon.setHeight(35, Unit.PIXELS);
-		icon.setWidth(35, Unit.PIXELS);
-		infoLayout.addComponent(icon);
-		infoLayout.setComponentAlignment(icon, Alignment.MIDDLE_LEFT);
-		Label infoLabel = new Label(htmlContent, ContentMode.HTML);
-		infoLabel.setWidth(100, Unit.PERCENTAGE);
-		infoLayout.addComponent(infoLabel);
-		infoLayout.setExpandRatio(infoLabel, 1);
-		CssStyles.style(infoLayout, CssStyles.VSPACE_3);
-		return infoLayout;
-	}
+    public static HorizontalLayout createInfoComponent(String htmlContent) {
+        return createIconComponent(htmlContent, "img/info-icon.png");
+
+    }
+
+    public static HorizontalLayout createWarningComponent(String htmlContent) {
+        return createIconComponent(htmlContent, "img/warning-icon.png");
+
+    }
+
+    public static HorizontalLayout createIconComponent(String htmlContent, String iconName) {
+        HorizontalLayout infoLayout = new HorizontalLayout();
+        infoLayout.setWidth(100, Unit.PERCENTAGE);
+        infoLayout.setSpacing(true);
+        Image icon = new Image(null, new ThemeResource(iconName));
+        icon.setHeight(35, Unit.PIXELS);
+        icon.setWidth(35, Unit.PIXELS);
+        infoLayout.addComponent(icon);
+        infoLayout.setComponentAlignment(icon, Alignment.MIDDLE_LEFT);
+        Label infoLabel = new Label(htmlContent, ContentMode.HTML);
+        infoLabel.setWidth(100, Unit.PERCENTAGE);
+        infoLayout.addComponent(infoLabel);
+        infoLayout.setExpandRatio(infoLabel, 1);
+        CssStyles.style(infoLayout, CssStyles.VSPACE_3);
+        return infoLayout;
+    }
 }

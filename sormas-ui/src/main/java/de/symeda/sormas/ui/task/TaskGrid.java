@@ -17,16 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import java.util.Date;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
-
 import com.vaadin.ui.renderers.TextRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -55,6 +50,9 @@ import de.symeda.sormas.ui.utils.ShortStringRenderer;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 
@@ -74,7 +72,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			setCriteria(criteria);
 		}
 
-		addEditColumn(e -> ControllerProvider.getTaskController().edit(e, this::reload));
+		addEditColumn(e -> ControllerProvider.getTaskController().edit(e, this::reload, true));
 
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {
@@ -122,7 +120,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		assigneeUserColumn.setRenderer(user -> {
 			String text;
 			if (user != null) {
-				text = ControllerProvider.getTaskController().getUserCaptionWithPendingTaskCount(user);
+				text = user.getCaption();
 			} else {
 				text = "";
 			}
