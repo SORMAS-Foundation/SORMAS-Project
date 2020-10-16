@@ -42,7 +42,7 @@ public class VisitSummaryExportDetails {
 		String communityUuid,
 		String caseReportingUserUuid,
 		String caseRegionUui,
-		String caseDistrictUud,
+		String caseDistrictUuid,
 		String caseCommunityUuid,
 		String caseHealthFacilityUuid,
 		String casePointOfEntryUuid) {
@@ -54,7 +54,7 @@ public class VisitSummaryExportDetails {
 			: new CaseJurisdictionDto(
 				caseReportingUserUuid,
 				caseRegionUui,
-				caseDistrictUud,
+				caseDistrictUuid,
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);

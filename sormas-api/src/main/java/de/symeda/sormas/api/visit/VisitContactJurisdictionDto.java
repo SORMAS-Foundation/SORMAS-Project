@@ -32,7 +32,7 @@ public class VisitContactJurisdictionDto extends ContactJurisdictionDto {
 		String communityUuid,
 		String caseReportingUserUuid,
 		String caseRegionUui,
-		String caseDistrictUud,
+		String caseDistrictUuid,
 		String caseCommunityUuid,
 		String caseHealthFacilityUuid,
 		String casePointOfEntryUuid) {
@@ -47,7 +47,7 @@ public class VisitContactJurisdictionDto extends ContactJurisdictionDto {
 				? new CaseJurisdictionDto(
 					caseReportingUserUuid,
 					caseRegionUui,
-					caseDistrictUud,
+					caseDistrictUuid,
 					caseCommunityUuid,
 					caseHealthFacilityUuid,
 					casePointOfEntryUuid)
