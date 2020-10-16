@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
   ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
   ~
@@ -23,9 +22,12 @@
     android:id="@+id/base_layout">
 
     <data>
+
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
 
-        <variable name="data" type="de.symeda.sormas.app.backend.clinicalcourse.HealthConditions" />
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.clinicalcourse.HealthConditions" />
     </data>
 
     <ScrollView

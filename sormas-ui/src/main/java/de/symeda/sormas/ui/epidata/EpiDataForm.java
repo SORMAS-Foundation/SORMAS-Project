@@ -33,7 +33,6 @@ import java.util.List;
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -51,6 +50,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
@@ -139,7 +139,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final Disease disease;
 
 	public EpiDataForm(Disease disease, boolean isPseudonymized) {
-		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease),
+		super(
+			EpiDataDto.class,
+			EpiDataDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withDisease(disease),
 			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 		this.disease = disease;
 		addFields();
@@ -164,13 +168,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			EpiDataDto.VISITED_ANIMAL_MARKET,
 			EpiDataDto.VISITED_HEALTH_FACILIY);
 
-		OptionGroup burialAttendedField = addField(EpiDataDto.BURIAL_ATTENDED, OptionGroup.class);
+		NullableOptionGroup burialAttendedField = addField(EpiDataDto.BURIAL_ATTENDED, NullableOptionGroup.class);
 		CssStyles.style(burialAttendedField, CssStyles.ERROR_COLOR_PRIMARY);
 		EpiDataBurialsField burialsField = addField(EpiDataDto.BURIALS, EpiDataBurialsField.class);
-		OptionGroup gatheringAttendedField = addField(EpiDataDto.GATHERING_ATTENDED, OptionGroup.class);
+		NullableOptionGroup gatheringAttendedField = addField(EpiDataDto.GATHERING_ATTENDED, NullableOptionGroup.class);
 		CssStyles.style(gatheringAttendedField, CssStyles.ERROR_COLOR_PRIMARY);
 		EpiDataGatheringsField gatheringsField = addField(EpiDataDto.GATHERINGS, EpiDataGatheringsField.class);
-		OptionGroup traveledField = addField(EpiDataDto.TRAVELED, OptionGroup.class);
+		NullableOptionGroup traveledField = addField(EpiDataDto.TRAVELED, NullableOptionGroup.class);
 		CssStyles.style(traveledField, CssStyles.ERROR_COLOR_PRIMARY);
 		EpiDataTravelsField travelsField = addField(EpiDataDto.TRAVELS, EpiDataTravelsField.class);
 
@@ -213,8 +217,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		CssStyles.style(kindOfExposureLabel, CssStyles.H3);
 		getContent().addComponent(kindOfExposureLabel, KIND_OF_EXPOSURE_LOC);
 
-		addField(EpiDataDto.ANIMAL_VACCINATION_STATUS, OptionGroup.class);
-		OptionGroup prophylaxisStatus = addField(EpiDataDto.PROPHYLAXIS_STATUS, OptionGroup.class);
+		addField(EpiDataDto.ANIMAL_VACCINATION_STATUS, NullableOptionGroup.class);
+		NullableOptionGroup prophylaxisStatus = addField(EpiDataDto.PROPHYLAXIS_STATUS, NullableOptionGroup.class);
 		CssStyles.style(prophylaxisStatus, CssStyles.ERROR_COLOR_PRIMARY);
 		addFields(EpiDataDto.DATE_OF_PROPHYLAXIS);
 
@@ -346,7 +350,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	}
 
-	private void updateBurialsHint(OptionGroup burialAttendedField, EpiDataBurialsField burialsField) {
+	private void updateBurialsHint(NullableOptionGroup burialAttendedField, EpiDataBurialsField burialsField) {
 		YesNoUnknown value = (YesNoUnknown) burialAttendedField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES
@@ -357,7 +361,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		}
 	}
 
-	private void updateGatheringsHint(OptionGroup gatheringAttendedField, EpiDataGatheringsField gatheringsField) {
+	private void updateGatheringsHint(NullableOptionGroup gatheringAttendedField, EpiDataGatheringsField gatheringsField) {
 		YesNoUnknown value = (YesNoUnknown) gatheringAttendedField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES
@@ -368,7 +372,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		}
 	}
 
-	private void updateTravelsHint(OptionGroup traveledField, EpiDataTravelsField travelsField) {
+	private void updateTravelsHint(NullableOptionGroup traveledField, EpiDataTravelsField travelsField) {
 		YesNoUnknown value = (YesNoUnknown) traveledField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES

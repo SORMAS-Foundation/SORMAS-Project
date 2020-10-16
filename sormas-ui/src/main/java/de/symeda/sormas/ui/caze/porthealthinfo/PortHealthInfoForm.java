@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -27,6 +26,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 
@@ -129,7 +129,7 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 			PortHealthInfoDto.TRANSIT_STOP_DETAILS_5);
 		DateTimeField dfDepartureDateTime = addField(PortHealthInfoDto.DEPARTURE_DATE_TIME, DateTimeField.class);
 		DateTimeField dfArrivalDateTime = addField(PortHealthInfoDto.ARRIVAL_DATE_TIME, DateTimeField.class);
-		addField(PortHealthInfoDto.FREE_SEATING, OptionGroup.class);
+		addField(PortHealthInfoDto.FREE_SEATING, NullableOptionGroup.class);
 		ComboBox cbNumberOfTransitStops = addField(PortHealthInfoDto.NUMBER_OF_TRANSIT_STOPS, ComboBox.class);
 
 		cbNumberOfTransitStops.addItems(DataHelper.buildIntegerList(0, 5));
