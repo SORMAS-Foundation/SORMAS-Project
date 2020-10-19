@@ -24,13 +24,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import java.util.Arrays;
 
 import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 
@@ -52,7 +52,7 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 	protected void addFields() {
 		eventStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventStatus));
 		getContent().addComponent(eventStatusCheckBox, EVENT_STATUS_CHECKBOX);
-		OptionGroup eventStatus = addField(EventDto.EVENT_STATUS, OptionGroup.class);
+		NullableOptionGroup eventStatus = addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		eventStatus.setEnabled(false);
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), eventStatusCheckBox, Arrays.asList(EventDto.EVENT_STATUS), Arrays.asList(true));

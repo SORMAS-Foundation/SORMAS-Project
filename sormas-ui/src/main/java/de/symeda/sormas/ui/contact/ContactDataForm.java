@@ -38,7 +38,6 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -79,6 +78,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -138,7 +138,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	private final ViewMode viewMode;
 	private final Disease disease;
-	private OptionGroup contactProximity;
+	private NullableOptionGroup contactProximity;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
@@ -147,7 +147,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	private ComboBox cbDisease;
-	private OptionGroup contactCategory;
+	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
@@ -178,8 +178,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		followUpStausHeadingLabel.addStyleName(H3);
 		getContent().addComponent(followUpStausHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
 
-		addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
-		addField(ContactDto.CONTACT_STATUS, OptionGroup.class);
+		addField(ContactDto.CONTACT_CLASSIFICATION, NullableOptionGroup.class);
+		addField(ContactDto.CONTACT_STATUS, NullableOptionGroup.class);
 		addField(ContactDto.UUID, TextField.class);
 		addField(ContactDto.EXTERNAL_ID, TextField.class);
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
@@ -210,11 +210,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), ContactDto.TRACING_APP_DETAILS, ContactDto.TRACING_APP, Arrays.asList(TracingApp.OTHER), true);
 		}
-		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
-			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
+			contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
 
 			contactProximity.addValueChangeListener(e -> {
 				if (getInternalValue().getContactProximity() != e.getProperty().getValue() || contactCategory.isModified()) {
@@ -265,9 +265,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		TextField quarantineTypeDetails = addField(ContactDto.QUARANTINE_TYPE_DETAILS, TextField.class);
 		quarantineTypeDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 
-		addField(ContactDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
+		addField(ContactDto.QUARANTINE_HOME_POSSIBLE, NullableOptionGroup.class);
 		addField(ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
-		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, OptionGroup.class);
+		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, NullableOptionGroup.class);
 		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
 
 		FieldHelper.setVisibleWhen(
@@ -325,7 +325,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
 
-		addField(ContactDto.RETURNING_TRAVELER, OptionGroup.class);
+		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
@@ -368,9 +368,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		CheckBox cbHighPriority = addField(ContactDto.HIGH_PRIORITY, CheckBox.class);
 		addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
-		OptionGroup ogImmunosuppressiveTherapyBasicDisease = addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, OptionGroup.class);
+		NullableOptionGroup ogImmunosuppressiveTherapyBasicDisease =
+			addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, NullableOptionGroup.class);
 		addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, TextField.class);
-		OptionGroup ogCareForPeopleOver60 = addField(ContactDto.CARE_FOR_PEOPLE_OVER_60, OptionGroup.class);
+		NullableOptionGroup ogCareForPeopleOver60 = addField(ContactDto.CARE_FOR_PEOPLE_OVER_60, NullableOptionGroup.class);
 
 		cbDisease.addValueChangeListener(e -> updateDiseaseConfiguration((Disease) e.getProperty().getValue()));
 

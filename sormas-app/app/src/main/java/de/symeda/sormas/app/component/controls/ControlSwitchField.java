@@ -51,6 +51,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 	// Constants
 
 	private static final String RADIO_BUTTON_FONT_FAMILY = "sans-serif-medium";
+	private Object valueBeforeChange = null;
 
 	// Views
 
@@ -60,6 +61,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
 	private boolean useAbbreviations;
 	private boolean useBoolean;
+	private boolean nullable;
 	private Drawable background;
 	private ColorStateList textColor;
 
@@ -198,7 +200,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 			button.setText(btnKey);
 		}
 
-		setUpOnClickListener(button);
+		setUpOnClickListener(button, this);
 
 		return button;
 	}
@@ -211,20 +213,21 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 			.build();
 	}
 
-	private void setUpOnClickListener(RadioButton button) {
-		button.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (!v.isEnabled()) {
-					return;
-				}
-
-				showOrHideNotifications(v.hasFocus());
-
-				input.requestFocus();
-				input.requestFocusFromTouch();
+	private void setUpOnClickListener(RadioButton button, ControlSwitchField field) {
+		button.setOnClickListener(v -> {
+			if (!v.isEnabled()) {
+				return;
 			}
+
+			if (nullable && (valueBeforeChange == getValue() || (valueBeforeChange != null && valueBeforeChange.equals(getValue())))) {
+				setValue(null);
+			}
+			valueBeforeChange = getValue();
+
+			showOrHideNotifications(v.hasFocus());
+
+			input.requestFocus();
+			input.requestFocusFromTouch();
 		});
 	}
 
@@ -238,6 +241,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 			try {
 				useAbbreviations = a.getBoolean(R.styleable.ControlSwitchField_useAbbreviations, isSlim());
 				useBoolean = a.getBoolean(R.styleable.ControlSwitchField_useBoolean, false);
+				nullable = a.getBoolean(R.styleable.ControlSwitchField_nullable, true);
 			} finally {
 				a.recycle();
 			}
@@ -275,23 +279,19 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 			setEnumClass(YesNoUnknown.class);
 		}
 
-		input.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+		input.setOnCheckedChangeListener((radioGroup, i) -> {
+			if (inverseBindingListener != null) {
+				inverseBindingListener.onChange();
+			}
 
-			@Override
-			public void onCheckedChanged(RadioGroup radioGroup, int i) {
-				if (inverseBindingListener != null) {
-					inverseBindingListener.onChange();
-				}
+			// on checked changed is also called when other button is deselected before new button is selected
+			RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
+			if (radioButton == null || radioButton.isChecked()) {
+				onValueChanged();
+			}
 
-				// on checked changed is also called when other button is deselected before new button is selected
-				RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
-				if (radioButton == null || radioButton.isChecked()) {
-					onValueChanged();
-				}
-
-				if (onCheckedChangeListener != null && !suppressListeners) {
-					onCheckedChangeListener.onCheckedChanged(radioGroup, i);
-				}
+			if (onCheckedChangeListener != null && !suppressListeners) {
+				onCheckedChangeListener.onCheckedChanged(radioGroup, i);
 			}
 		});
 	}
@@ -315,6 +315,8 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
 	@Override
 	protected void setFieldValue(Object value) {
+		valueBeforeChange = value;
+
 		if (value == null) {
 			input.clearCheck();
 		} else {
