@@ -223,7 +223,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			|| DatabaseHelper.getAggregateReportDao().isAnyModified()
 			|| DatabaseHelper.getPrescriptionDao().isAnyModified()
 			|| DatabaseHelper.getTreatmentDao().isAnyModified()
-			|| DatabaseHelper.getClinicalVisitDao().isAnyModified();
+			|| DatabaseHelper.getClinicalVisitDao().isAnyModified()
+			|| DatabaseHelper.getCampaignDao().isAnyModified()
+			|| DatabaseHelper.getCampaignFormMetaDao().isAnyModified();
 	}
 
 	@AddTrace(name = "synchronizeChangedDataTrace")

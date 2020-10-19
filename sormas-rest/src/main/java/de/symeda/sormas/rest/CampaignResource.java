@@ -10,7 +10,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignChangeDatesDto;
 import de.symeda.sormas.api.campaign.CampaignSyncDto;
 
-@Path("/campaign")
+@Path("/campaigns")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed({
 	"USER",

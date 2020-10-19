@@ -36,6 +36,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.campaign.Campaign;
+import de.symeda.sormas.app.backend.campaign.CampaignDao;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDao;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -137,7 +141,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 237;
+	public static final int DATABASE_VERSION = 238;
 
 	private static DatabaseHelper instance = null;
 
@@ -494,8 +498,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeath varchar(255);");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDetails varchar(512);");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDisease varchar(255);");
-				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDiseaseDetails varchar(512);");
-			case 116:
+				getDao(Person.class).executeRaw("AR TABLE person ADD COLUMN causeOfDeathDiseaseDetails varchar(512);");
+			case 116:LTE
 				currentVersion = 116;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcome varchar(255);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcomeDate timestamp without time zone;");
@@ -1705,6 +1709,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 236;
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN returningTraveler varchar(255);");
 
+			case 237:
+				currentVersion = 237;
+				getDao(Campaign.class).executeRaw(
+					"CREATE TABLE campaigns(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
+						+ "changedate timestamp not null," + "creationdate timestamp not null," + "name varchar(255)," + "description varchar(512),"
+						+ "startdate timestamp," + "enddate timestamp," + "creatinguser_id bigint," + "deleted boolean DEFAULT false,"
+						+ "archived boolean DEFAULT false," + "dashboardElementsJson TEXT," + ");");
+				getDao(Contact.class).executeRaw("ALTER TABLE campaigns ADD COLUMN creatinguser_id bigint REFERENCES users(id);");
+				getDao(CampaignFormMeta.class).executeRaw(
+					"CREATE TABLE campaignformmeta(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
+						+ "changedate timestamp not null," + "creationdate timestamp not null," + "formId varchar(255)," + "formName varchar(512),"
+						+ "languageCode varchar(255)," + "campaignFormElementsJson TEXT," + "campaignFormTranslationsJson TEXT," + ");");
+				
 				// ATTENTION: break should only be done after last version
 				break;
 			default:
@@ -2080,6 +2097,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static AggregateReportDao getAggregateReportDao() {
 		return (AggregateReportDao) getAdoDao(AggregateReport.class);
+	}
+
+	public static CampaignDao getCampaignDao() {
+		return (CampaignDao) getAdoDao(Campaign.class);
+	}
+
+
+	public static CampaignFormMetaDao getCampaignFormMetaDao() {
+		return (CampaignFormMetaDao) getAdoDao(CampaignFormMeta.class);
 	}
 
 	/**
