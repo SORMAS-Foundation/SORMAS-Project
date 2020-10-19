@@ -100,6 +100,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -145,6 +146,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+
+	@EJB
+	private CaseJurisdictionChecker caseJurisdictionChecker;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public CaseService() {
 		super(Case.class);
@@ -1134,5 +1140,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cu.where(root.get(Case.UUID).in(caseUuids));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public boolean isCaseEditAllowed(Case caze) {
+		if (caze.getSormasToSormasOriginInfo() != null) {
+			return caze.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return caseJurisdictionChecker.isInJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
 	}
 }

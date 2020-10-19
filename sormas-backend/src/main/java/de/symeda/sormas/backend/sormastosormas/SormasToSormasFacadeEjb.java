@@ -62,6 +62,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -93,6 +94,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
@@ -290,17 +292,18 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	public void shareCases(List<String> caseUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		User currentUser = userService.getCurrentUser();
 
-		List<Case> casesToSend = new ArrayList<>(caseUuids.size());
+		List<Case> casesToSend = caseService.getByUuids(caseUuids);
+		validateCasesBeforeSend(casesToSend);
+
 		List<Contact> contactsToSend = new ArrayList<>();
 		List<SormasToSormasCaseDto> entitiesToSend = new ArrayList<>();
 
-		for (String uuid : caseUuids) {
-			Case caze = caseService.getByUuid(uuid);
-
+		for (Case caze : casesToSend) {
 			Pseudonymizer pseudonymizer = createPseudonymizer(options);
 
 			PersonDto personDto = getPersonDto(caze.getPerson(), pseudonymizer, options);
 			CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
+
 			SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(currentUser, options);
 
 			SormasToSormasCaseDto entity = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
@@ -324,13 +327,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	public void shareContacts(List<String> contactUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		User currentUser = userService.getCurrentUser();
+		List<Contact> contactsToSend = contactService.getByUuids(contactUuids);
 
-		List<Contact> contactsToSend = new ArrayList<>();
+		validateContactsBeforeSend(contactsToSend);
+
 		List<SormasToSormasContactDto> entitiesToSend = new ArrayList<>();
 
-		for (String uuid : contactUuids) {
-			Contact contact = contactService.getByUuid(uuid);
-
+		for (Contact contact : contactsToSend) {
 			Pseudonymizer pseudonymizer = createPseudonymizer(options);
 
 			PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer, options);
@@ -374,12 +377,48 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public boolean isFeatureEnabled() {
-		return !serverAccessDataService.getOrganizationList().isEmpty();
+		return userService.hasRight(UserRight.SORMAS_TO_SORMAS_SHARE) && !serverAccessDataService.getOrganizationList().isEmpty();
 	}
 
 	@Override
 	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
 		return getOrganizationServerAccessData(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
+	}
+
+	private void validateCasesBeforeSend(List<Case> cases) throws SormasToSormasException {
+		Map<String, Map<String, List<String>>> validationErrors = new HashMap<>();
+		for (Case caze : cases) {
+			if (!caseService.isCaseEditAllowed(caze)) {
+				Map<String, List<String>> error = new HashMap<>(1);
+				error.put(
+					I18nProperties.getCaption(Captions.CaseData),
+					Collections.singletonList(I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+
+				validationErrors.put(buildCaseValidationGroupName(caze), error);
+			}
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), validationErrors);
+		}
+	}
+
+	private void validateContactsBeforeSend(List<Contact> contacts) throws SormasToSormasException {
+		Map<String, Map<String, List<String>>> validationErrors = new HashMap<>();
+		for (Contact contact : contacts) {
+			if (!contactService.isContactEditAllowed(contact)) {
+				Map<String, List<String>> error = new HashMap<>(1);
+				error.put(
+					I18nProperties.getCaption(Captions.Contact),
+					Collections.singletonList(I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+
+				validationErrors.put(buildCaseValidationGroupName(contact), error);
+			}
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), validationErrors);
+		}
 	}
 
 	private PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, SormasToSormasOptionsDto options) {
@@ -727,8 +766,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 	}
 
-	private String buildCaseValidationGroupName(CaseDataDto caze) {
-		return String.format("%s %s", I18nProperties.getCaption(Captions.CaseData), DataHelper.getShortUuid(caze));
+	private String buildCaseValidationGroupName(HasUuid caze) {
+		return String.format("%s %s", I18nProperties.getCaption(Captions.CaseData), DataHelper.getShortUuid(caze.getUuid()));
 	}
 
 	private String buildContactValidationGroupName(ContactDto contact) {

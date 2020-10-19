@@ -141,7 +141,6 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
@@ -204,8 +203,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
-	@EJB
-	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
@@ -1444,10 +1441,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	public boolean isContactEditAllowed(String contactUuid) {
 		Contact contact = contactService.getByUuid(contactUuid);
 
-		if (contact.getSormasToSormasOriginInfo() != null) {
-			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
-		}
-
-		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
+		return contactService.isContactEditAllowed(contact);
 	}
 }

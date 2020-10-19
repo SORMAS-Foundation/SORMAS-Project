@@ -81,6 +81,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -108,6 +109,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private EpiDataService epiDataService;
 	@EJB
 	private HealthConditionsService healthConditionsService;
+
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private ContactJurisdictionChecker contactJurisdictionChecker;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1203,5 +1209,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			jurisdictionPredicate = cb.disjunction();
 		}
 		return cb.or(reportedByCurrentUser, contactCaseInJurisdiction, jurisdictionPredicate);
+	}
+
+	public boolean isContactEditAllowed(Contact contact) {
+		if (contact.getSormasToSormasOriginInfo() != null) {
+			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
 }
