@@ -17,10 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
+import static de.symeda.sormas.api.utils.HtmlHelper.unescapeTags;
+
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -31,7 +34,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
-import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Provides methods that create HTML Strings to visualize the automatic classification rules.
@@ -273,7 +275,7 @@ public final class ClassificationHtmlRenderer {
 				+ "<div class='main-criteria main-criteria-"
 				+ StringEscapeUtils.escapeHtml4(criteriaType.toString())
 				+ "'>"
-				+ StringEscapeUtils.escapeHtml4(content)
+				+ content
 				+ "</div></div>";
 		//@formatter:on
 	}
@@ -294,11 +296,12 @@ public final class ClassificationHtmlRenderer {
 	 * Creates a div containing an info text.
 	 */
 	private static String createInfoDiv() {
-		return I18nProperties.getString(Strings.classificationInfoText);
+		return StringEscapeUtils.escapeHtml4(I18nProperties.getString(Strings.classificationInfoText)) + "<br/>";
 	}
 
 	private static String createInfoDiv(int requirementsNumber) {
-		return String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber));
+		return StringEscapeUtils.escapeHtml4(
+			String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber)));
 	}
 
 	/**
@@ -308,7 +311,7 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='criteria'>"
-				+ StringEscapeUtils.escapeHtml4(content)
+				+ content
 				+ "</div>";
 		//@formatter:on
 	}
@@ -329,7 +332,9 @@ public final class ClassificationHtmlRenderer {
 	 * Creates the div for an actual criteria containing its description.
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return StringEscapeUtils.escapeHtml4(text) + "<br/>";
+		text = StringEscapeUtils.escapeHtml4(text) + "<br/>";
+		text = unescapeTags(text);
+		return text;
 	}
 
 	private enum ClassificationCriteriaType {
