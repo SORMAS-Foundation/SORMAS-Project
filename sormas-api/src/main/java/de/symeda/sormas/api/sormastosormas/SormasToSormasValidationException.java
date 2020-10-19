@@ -16,25 +16,17 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import java.util.List;
+import java.util.Map;
 
-import javax.ejb.Remote;
+public class SormasToSormasValidationException extends Exception {
 
-@Remote
-public interface SormasToSormasFacade {
+	private final Map<String, Map<String, List<String>>> errors;
 
-	void saveSharedCases(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
+	public SormasToSormasValidationException(Map<String, Map<String, List<String>>> errors) {
+		this.errors = errors;
+	}
 
-	void saveSharedContacts(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException, SormasToSormasValidationException;
-
-	void shareCases(List<String> caseUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void shareContacts(List<String> contactUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
-
-	ServerAccessDataReferenceDto getOrganizationRef(String id);
-
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
-
-	boolean isFeatureEnabled();
+	public Map<String, Map<String, List<String>>> getErrors() {
+		return errors;
+	}
 }

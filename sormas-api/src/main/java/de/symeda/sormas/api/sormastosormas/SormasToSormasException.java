@@ -15,9 +15,27 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import java.util.List;
+import java.util.Map;
+
 public class SormasToSormasException extends Exception {
+
+	private Map<String, Map<String, List<String>>> errors;
 
 	public SormasToSormasException(String message) {
 		super(message);
+	}
+
+	public SormasToSormasException(String message, Map<String, Map<String, List<String>>> errors) {
+		super(message);
+		this.errors = errors;
+	}
+
+	public Map<String, Map<String, List<String>>> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(Map<String, Map<String, List<String>>> errors) {
+		this.errors = errors;
 	}
 }

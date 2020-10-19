@@ -60,7 +60,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			canShare ? e -> ControllerProvider.getSormasToSormasController().shareCaseToSormas(caseRef, this) : null);
+			canShare ? e -> ControllerProvider.getSormasToSormasController().shareCaseFormDetailsPage(caseRef, this) : null);
 	}
 
 	public SormasToSormasListComponent(ContactDto contact, boolean canShare) {
@@ -74,7 +74,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			canShare ? e -> ControllerProvider.getSormasToSormasController().shareContactToSormas(contactRef, this) : null);
+			canShare ? e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contactRef, this) : null);
 	}
 
 	private void initLayout(

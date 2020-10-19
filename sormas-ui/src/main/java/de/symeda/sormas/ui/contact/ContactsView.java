@@ -474,7 +474,13 @@ public class ContactsView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkDelete),
 						VaadinIcons.TRASH,
 						mi -> ControllerProvider.getContactController()
-							.deleteAllSelectedItems(((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))));
+							.deleteAllSelectedItems(((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.sormasToSormasShare),
+						VaadinIcons.SHARE,
+						mi -> ControllerProvider.getSormasToSormasController()
+							.shareSelectedContacts(((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+						true));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);

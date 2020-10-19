@@ -48,7 +48,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.CountryHelper;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
@@ -702,7 +701,13 @@ public class CasesView extends AbstractView {
 							VaadinIcons.ARCHIVE,
 							mi -> ControllerProvider.getCaseController()
 								.dearchiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.sormasToSormasShare),
+							VaadinIcons.SHARE,
+							mi -> ControllerProvider.getSormasToSormasController()
+								.shareSelectedCases(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							true));
 
 					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
