@@ -79,6 +79,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -792,7 +793,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return HTML_LAYOUT;
 	}
 
-	public void initializeSymptomRequirementsForVisit(OptionGroup visitStatus) {
+	public void initializeSymptomRequirementsForVisit(NullableOptionGroup visitStatus) {
 		FieldHelper.addSoftRequiredStyleWhen(
 			getFieldGroup(),
 			visitStatus,
@@ -885,7 +886,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Object targetPropertyId,
 		List<String> sourcePropertyIds,
 		List<Object> sourceValues,
-		OptionGroup visitStatusField) {
+		NullableOptionGroup visitStatusField) {
 
 		for (Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);

@@ -57,7 +57,6 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 		}
 
 		OptionGroup epiCurveModeOptionGroup = new OptionGroup();
-		epiCurveModeOptionGroup.setMultiSelect(false);
 		CssStyles.style(epiCurveModeOptionGroup, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SUBTLE);
 		epiCurveModeOptionGroup.addItems((Object[]) SurveillanceEpiCurveMode.values());
 		epiCurveModeOptionGroup.setValue(epiCurveSurveillanceMode);
