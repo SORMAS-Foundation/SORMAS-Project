@@ -314,7 +314,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			}
 
 			entitiesToSend.add(entity);
-			casesToSend.add(caze);
 			contactsToSend.addAll(associatedContacts);
 		}
 
@@ -340,7 +339,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			ContactDto contactDto = getContactDto(contact, pseudonymizer);
 			contactDto.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo(currentUser, options));
 
-			contactsToSend.add(contact);
 			entitiesToSend.add(new SormasToSormasContactDto(personDto, contactDto));
 		}
 
