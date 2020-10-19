@@ -24,11 +24,13 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import de.symeda.sormas.api.campaign.CampaignChangeDatesDto;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
+import de.symeda.sormas.api.campaign.CampaignSyncDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -36,6 +38,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -60,6 +63,10 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	private UserService userService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private CampaignFacadeEjbLocal campaignFacade;
+	@EJB
+	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	@Override
 	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -274,6 +281,21 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return campaignService.exists(uuid);
+	}
+
+	@Override
+	public CampaignSyncDto getCampaignSyncData(CampaignChangeDatesDto changeDates) {
+		final CampaignSyncDto sync = new CampaignSyncDto();
+		sync.setCampaigns(getAllAfter(changeDates.getCampaignChangeDate()));
+		sync.setCampaignFormMetas(campaignFormMetaFacade.getAllAfter(changeDates.getCampaignFormMetaChangeDate()));
+		return sync;
+	}
+
+	@Override
+	public List<CampaignDto> getAllAfter(Date date) {
+
+		final List<Campaign> allAfter = campaignService.getAllAfter(date, userService.getCurrentUser());
+		return allAfter.stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
 	}
 
 	public static CampaignReferenceDto toReferenceDto(Campaign entity) {

@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.campaign;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -33,4 +34,8 @@ public interface CampaignFacade {
 	CampaignReferenceDto getReferenceByUuid(String uuid);
 
 	boolean exists(String uuid);
+
+	CampaignSyncDto getCampaignSyncData(CampaignChangeDatesDto changeDates);
+
+	List<CampaignDto> getAllAfter(Date campaignChangeDate);
 }
