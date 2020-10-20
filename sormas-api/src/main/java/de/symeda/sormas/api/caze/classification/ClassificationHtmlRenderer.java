@@ -134,18 +134,16 @@ public final class ClassificationHtmlRenderer {
 				"  padding: 8px;\r\n" + 
 				"}\r\n" + 
 				".classification-rules .main-criteria.main-criteria-suspect {\r\n" + 
-				"  background: rgba(255, 215, 0, 0.6);\r\n" + 
-				"  margin-bottom: 16px;\r\n" + 
+				"  background: rgba(255, 215, 0, 0.6);\r\n" +
 				"}\r\n" + 
 				".classification-rules .main-criteria.main-criteria-probable {\r\n" + 
-				"  background: rgba(255, 140, 0, 0.6);\r\n" + 
-				"  margin-bottom: 16px;\r\n" + 
+				"  background: rgba(255, 140, 0, 0.6);\r\n" +
 				"}\r\n" + 
 				".classification-rules .main-criteria.main-criteria-confirmed {\r\n" + 
 				"  background: rgba(255, 0, 0, 0.6);\r\n" + 
 				"}\r\n" +
 				".classification-rules .main-criteria.main-criteria-not_a_case {\r\n" + 
-				"  background: rgba(201, 201, 201, 0.6);\r\n" + 
+				"  background: rgba(160, 160, 160, 0.6);\r\n" + 
 				"}\r\n" + 
 				".classification-rules .headline {\r\n" + 
 				"  font-weight: bold;\r\n" + 
@@ -191,6 +189,7 @@ public final class ClassificationHtmlRenderer {
 				html.append(createSuspectHtmlString(diseaseCriteria));
 				html.append(createProbableHtmlString(diseaseCriteria));
 				html.append(createConfirmedHtmlString(diseaseCriteria));
+				html.append(createNotACaseHtmlString(diseaseCriteria));
 			}
 		}
 		html.append("</body></html>");
