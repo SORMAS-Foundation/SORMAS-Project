@@ -30,9 +30,8 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class CaseIndexDto extends PseudonymizableIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Serializable, Cloneable {
+public class CaseIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -109,7 +108,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements WithJurisdi
 			String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-			Float completeness, FollowUpStatus followUpStatus, Date followUpUntil) {
+			Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId) {
 		//@formatter:on
 		this(id, uuid, epidNumber, externalID,personFirstName, personLastName, disease,
 				diseaseDetails, caseClassification, investigationStatus,
@@ -117,7 +116,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements WithJurisdi
 				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
 				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
-				completeness, followUpStatus, followUpUntil, null
+				completeness, followUpStatus, followUpUntil, changeDate, facilityId, null
 				);
 	}
 
