@@ -236,7 +236,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 	private void updatePrevHospHint(NullableOptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
 
-		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
+		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getNullableValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES
