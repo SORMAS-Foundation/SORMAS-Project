@@ -310,7 +310,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		warningLayout = VaadinUiUtil.createWarningComponent(I18nProperties.getString(Strings.pseudonymizedCasesSelectedWarning));
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue())) {
 				if (facilityTypeGroup.getValue() == null) {
 					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				}

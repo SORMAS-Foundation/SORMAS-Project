@@ -205,7 +205,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
-			if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
+			if (!TypeOfPlace.HOME.equals(facilityOrHome.getNullableValue())) {
 				FieldHelper.removeItems(facility);
 			}
 			FieldHelper.removeItems(community);

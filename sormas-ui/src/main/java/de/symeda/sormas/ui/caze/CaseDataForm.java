@@ -475,7 +475,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				facility));
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue())) {
 
 				// default values
 				if (facilityTypeGroup.getValue() == null && !facilityTypeGroup.isReadOnly()) {

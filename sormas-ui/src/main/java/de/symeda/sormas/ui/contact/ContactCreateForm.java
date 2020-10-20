@@ -152,7 +152,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isConfiguredServer("de")) {
-			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
+			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getNullableValue()));
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
 		}
@@ -343,7 +343,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private void updateContactProximity() {
 
-		ContactProximity value = (ContactProximity) contactProximity.getValue();
+		ContactProximity value = (ContactProximity) contactProximity.getNullableValue();
 		FieldHelper.updateEnumData(
 			contactProximity,
 			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));

@@ -309,8 +309,8 @@ public class CampaignFormBuilder {
 		}
 
 		if (dependingOnField instanceof NullableOptionGroup) {
-			String booleanValue = Boolean.TRUE.equals(dependingOnField.getValue()) ? "true" : "false";
-			String stringValue = Boolean.TRUE.equals(dependingOnField.getValue()) ? "yes" : "no";
+			String booleanValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue()) ? "true" : "false";
+			String stringValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue()) ? "yes" : "no";
 
 			return dependingOnValuesList.stream()
 				.anyMatch(v -> v.toString().equalsIgnoreCase(booleanValue) || v.toString().equalsIgnoreCase(stringValue));
