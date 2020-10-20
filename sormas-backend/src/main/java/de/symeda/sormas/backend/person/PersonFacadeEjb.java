@@ -48,6 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -322,8 +323,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
 		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
 		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
-			if (!externalJournalService.isPersonExportable(updatedPerson)) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.externalJournalPersonValidation));
+			ExternalPersonValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
+			if (!validationResult.isValid()) {
+				throw new ValidationRuntimeException(validationResult.getMessage());
 			}
 		}
 		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB

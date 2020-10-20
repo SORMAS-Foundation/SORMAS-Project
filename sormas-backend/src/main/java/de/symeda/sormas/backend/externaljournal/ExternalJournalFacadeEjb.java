@@ -5,6 +5,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externaljournal.ExternalPatientDto;
+import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
 import de.symeda.sormas.api.externaljournal.RegisterResult;
 import de.symeda.sormas.api.person.PersonDto;
 
@@ -35,8 +36,8 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	}
 
 	@Override
-	public boolean isPersonExportable(PersonDto person) {
-		return externalJournalService.isPersonExportable(person);
+	public ExternalPersonValidation validatePatientDiaryPerson(PersonDto person) {
+		return externalJournalService.validatePatientDiaryPerson(person);
 	}
 
 
