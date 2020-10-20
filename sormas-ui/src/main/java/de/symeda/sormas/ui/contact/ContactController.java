@@ -575,7 +575,8 @@ public class ContactController {
 
 	private void openPatientDiaryEnrollPage(String personUuid) {
 		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
-		url += "/enroll?personUuid=" + personUuid;
+		String authToken = externalJournalFacade.getPatientDiaryAuthToken();
+		url += "/data?q=" + personUuid + "&token=" + authToken;
 		UI.getCurrent().getPage().open(url, "_blank");
 	}
 
