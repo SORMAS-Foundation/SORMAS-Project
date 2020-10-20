@@ -13,9 +13,6 @@
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
 		<class>de.symeda.sormas.backend.contact.Contact</class>
 		<class>de.symeda.sormas.backend.epidata.EpiData</class>
-		<class>de.symeda.sormas.backend.epidata.EpiDataBurial</class>
-		<class>de.symeda.sormas.backend.epidata.EpiDataGathering</class>
-		<class>de.symeda.sormas.backend.epidata.EpiDataTravel</class>
 		<class>de.symeda.sormas.backend.event.Event</class>
 		<class>de.symeda.sormas.backend.event.EventParticipant</class>
 		<class>de.symeda.sormas.backend.facility.Facility</class>
@@ -58,6 +55,7 @@
 		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
 		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo</class>
 		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo</class>
+		<class>de.symeda.sormas.backend.exposure.Exposure</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

@@ -427,14 +427,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	private void processEpiData(EpiDataDto epiData) {
 		epiData.setUuid(DataHelper.createUuid());
-		epiData.getBurials().forEach(b -> {
-			b.setUuid(DataHelper.createUuid());
-			b.getBurialAddress().setUuid(DataHelper.createUuid());
-		});
-		epiData.getTravels().forEach(t -> t.setUuid(DataHelper.createUuid()));
-		epiData.getGatherings().forEach(g -> {
-			g.setUuid(DataHelper.createUuid());
-			g.getGatheringAddress().setUuid(DataHelper.createUuid());
+		epiData.getExposures().forEach(e -> {
+			e.setUuid(DataHelper.createUuid());
+			e.getLocation().setUuid(DataHelper.createUuid());
 		});
 	}
 

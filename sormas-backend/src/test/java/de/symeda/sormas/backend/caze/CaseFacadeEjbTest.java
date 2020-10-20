@@ -61,11 +61,12 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -459,11 +460,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
-		EpiDataTravelDto travel = EpiDataTravelDto.build();
-		travel.setTravelDestination("Ghana");
-		travel.setTravelDateFrom(new Date());
-		travel.setTravelDateTo(new Date());
-		caze.getEpiData().getTravels().add(travel);
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.getLocation().setDetails("Ghana");
+		exposure.setStartDate(new Date());
+		exposure.setEndDate(new Date());
+		caze.getEpiData().getExposures().add(exposure);
 		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
 
@@ -511,21 +512,21 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		caze.getEpiData().setTraveled(YesNoUnknown.YES);
+		caze.getEpiData().setExposureDetailsKnown(YesNoUnknown.YES);
 
 		{
-			EpiDataTravelDto travel = EpiDataTravelDto.build();
-			travel.setTravelDestination("Ghana");
-			travel.setTravelDateFrom(new Date());
-			travel.setTravelDateTo(new Date());
-			caze.getEpiData().getTravels().add(travel);
+			ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+			exposure.getLocation().setDetails("Ghana");
+			exposure.setStartDate(new Date());
+			exposure.setEndDate(new Date());
+			caze.getEpiData().getExposures().add(exposure);
 		}
 		{
-			EpiDataTravelDto travel = EpiDataTravelDto.build();
-			travel.setTravelDestination("Nigeria");
-			travel.setTravelDateFrom(new Date());
-			travel.setTravelDateTo(new Date());
-			caze.getEpiData().getTravels().add(travel);
+			ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+			exposure.getLocation().setDetails("Nigeria");
+			exposure.setStartDate(new Date());
+			exposure.setEndDate(new Date());
+			caze.getEpiData().getExposures().add(exposure);
 		}
 
 		caze = cut.saveCase(caze);
@@ -535,7 +536,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
 		assertThat(exportDto.getUuid(), equalTo(caze.getUuid()));
-		assertThat(exportDto.getTraveled(), equalTo(YesNoUnknown.YES));
+		assertTrue(exportDto.isTraveled());
 	}
 
 	@Test
@@ -1057,7 +1058,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 4.7 Visits;
 		List<String> mergedVisits = getVisitFacade().getIndexList(new VisitCriteria().caze(mergedCase.toReference()), null, null, null)
-				.stream().map(VisitIndexDto::getUuid).collect(Collectors.toList());
+			.stream()
+			.map(VisitIndexDto::getUuid)
+			.collect(Collectors.toList());
 		assertEquals(2, mergedVisits.size());
 		assertTrue(mergedVisits.contains(leadVisit.getUuid()));
 		assertTrue(mergedVisits.contains(otherVisit.getUuid()));
@@ -1098,8 +1101,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto cazePerson = creator.createPerson("Foo", "Bar").toReference();
-		CaseDataDto caze =
-				creator.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator
+			.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
 		caze.getSymptoms().setChestPain(SymptomState.YES);
 
 		// Add a new visit to the case
@@ -1234,7 +1237,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testSearchCasesWithReducedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		CaseDataDto caze =
-				creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
+			creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
 		caze.setQuarantineReduced(true);
 		getCaseFacade().saveCase(caze);
 

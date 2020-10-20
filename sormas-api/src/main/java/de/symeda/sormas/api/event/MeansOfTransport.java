@@ -13,8 +13,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.epidata;
+package de.symeda.sormas.api.event;
 
-final class EpiDataValidator {
+import de.symeda.sormas.api.i18n.I18nProperties;
 
+public enum MeansOfTransport {
+
+	BUS,
+	FERRY,
+	PLANE,
+	TRAIN,
+	OTHER;
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

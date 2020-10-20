@@ -1,21 +1,19 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.backend.epidata;
+ */
+
+package de.symeda.sormas.backend.exposure;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -28,15 +26,15 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 
 @Stateless
 @LocalBean
-public class EpiDataGatheringService extends AbstractAdoService<EpiDataGathering> {
+public class ExposureService extends AbstractAdoService<Exposure> {
 
-	public EpiDataGatheringService() {
-		super(EpiDataGathering.class);
+	public ExposureService() {
+		super(Exposure.class);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EpiDataGathering> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Exposure> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

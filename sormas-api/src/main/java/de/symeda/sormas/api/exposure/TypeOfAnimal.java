@@ -13,8 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.epidata;
+package de.symeda.sormas.api.exposure;
 
-final class EpiDataValidator {
+import de.symeda.sormas.api.i18n.I18nProperties;
+
+public enum TypeOfAnimal {
+
+	BATS,
+	POULTRY,
+	CAMELS,
+	CANIDAE,
+	CATS,
+	CATTLE,
+	DOGS,
+	PRIMATES,
+	SNAKES,
+	SWINE,
+	RABBITS,
+	RODENTS,
+	OTHER;
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 
 }

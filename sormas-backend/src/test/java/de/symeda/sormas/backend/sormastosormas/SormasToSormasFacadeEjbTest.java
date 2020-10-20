@@ -56,9 +56,8 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
-import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -167,9 +166,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
 
 		caze.getHospitalization().getPreviousHospitalizations().add(PreviousHospitalizationDto.build(caze));
-		caze.getEpiData().getBurials().add(EpiDataBurialDto.build());
-		caze.getEpiData().getTravels().add(EpiDataTravelDto.build());
-		caze.getEpiData().getGatherings().add(EpiDataGatheringDto.build());
+		caze.getEpiData().getExposures().add(ExposureDto.build(ExposureType.TRAVEL));
 
 		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
 		getSormasToSormasFacade().saveSharedCase(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));

@@ -5489,9 +5489,138 @@ ALTER TABLE campaign_campaignformmeta_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (266, 'CampaignFormMeta to Campaigns relation #2855');
 
---2020-10-09 Add boolean to users to active window GDPR
+-- 2020-10-09 Add boolean to users to active window GDPR
 ALTER TABLE users ADD COLUMN hasConsentedToGdpr boolean default false;
 ALTER TABLE users_history ADD COLUMN hasConsentedToGdpr boolean default false;
 INSERT INTO schema_version (version_number, comment) VALUES (267, 'Add gdpr popup to user');
+
+-- 2020-10-15 New exposure entity and migration #2948
+ALTER TABLE epidata ADD COLUMN exposuredetailsknown varchar(255);
+ALTER TABLE epidata_history ADD COLUMN exposuredetailsknown varchar(255);
+
+UPDATE epidata SET exposuredetailsknown =
+CASE
+WHEN traveled = 'YES' OR gatheringattended = 'YES' OR burialattended = 'YES' THEN 'YES'
+WHEN traveled = 'NO' OR gatheringattended = 'NO' OR burialattended = 'NO' THEN 'NO'
+WHEN traveled = 'UNKNOWN' OR gatheringattended = 'UNKNOWN' OR burialattended = 'UNKNOWN' THEN 'UNKNOWN'
+END;
+
+CREATE TABLE exposures(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    epidata_id bigint not null,
+    reportinguser_id bigint,
+    startdate timestamp,
+    enddate timestamp,
+    description text,
+    exposuretype varchar(255),
+    location_id bigint not null,
+    typeofplace varchar(255),
+    typeofplacedetails text,
+    meansoftransport varchar(255),
+    connectionnumber varchar(512),
+    seatnumber varchar(512),
+    indoors varchar(255),
+    outdoors varchar(255),
+    wearingmask varchar(255),
+    wearingppe varchar(255),
+    otherprotectivemeasures varchar(255),
+    protectivemeasuresdetails text,
+    shortdistance varchar(255),
+    longfacetofacecontact varchar(255),
+    animalmarket varchar(255),
+    percutaneous varchar(255),
+    contacttobodyfluids varchar(255),
+    handlingsamples varchar(255),
+    eatingrawanimalproducts varchar(255),
+    handlinganimals varchar(255),
+    animalcondition varchar(255),
+    animalvaccinated varchar(255),
+    animalcontacttype varchar(255),
+    animalcontacttypedetails text,
+    contacttocase_id bigint,
+    gatheringtype varchar(255),
+    gatheringdetails text,
+    habitationtype varchar(255),
+    habitationdetails text,
+    typeofanimal varchar(255),
+    typeofanimaldetails text,
+    physicalcontactduringpreparation varchar(255),
+    physicalcontactwithbody varchar(255),
+    deceasedpersonill varchar(255),
+    deceasedpersonname varchar(512),
+    deceasedpersonrelation varchar(512),
+    sys_period tstzrange not null,
+    primary key(id)
+);
+
+ALTER TABLE exposures OWNER TO sormas_user;
+ALTER TABLE exposures ADD CONSTRAINT fk_exposures_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+ALTER TABLE exposures ADD CONSTRAINT fk_exposures_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE exposures ADD CONSTRAINT fk_exposures_location_id FOREIGN KEY (location_id) REFERENCES location(id);
+ALTER TABLE exposures ADD CONSTRAINT fk_exposures_contacttocase_id FOREIGN KEY (contacttocase_id) REFERENCES contact(id);
+
+CREATE TABLE exposures_history (LIKE exposures);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON exposures
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_history', true);
+ALTER TABLE exposures_history OWNER TO sormas_user;
+
+INSERT INTO exposures(
+    id, uuid, changedate, creationdate, epidata_id, location_id, deceasedpersonname, deceasedpersonrelation, physicalcontactwithbody,
+    deceasedpersonill, startdate, enddate, exposuretype)
+SELECT nextval('entity_seq'),
+       overlay(overlay(overlay(
+            substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+            placing '-' from 7) placing '-' from 14) placing '-' from 21),
+       now(), now(), b.epidata_id, b.burialaddress_id, b.burialpersonname, b.burialrelation, b.burialtouching,
+       b.burialill, b.burialdatefrom, b.burialdateto, 'BURIAL'
+FROM epidataburial b;
+
+INSERT INTO exposures(
+    id, uuid, changedate, creationdate, epidata_id, location_id, startdate, enddate, description, exposuretype)
+SELECT nextval('entity_seq'),
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21),
+       now(), now(), g.epidata_id, g.gatheringaddress_id, g.gatheringdate, g.gatheringdate, g.description, 'GATHERING'
+FROM epidatagathering g;
+
+DROP TABLE IF EXISTS tl_map;
+
+CREATE temp table tl_map
+AS SELECT id AS travel_id,
+          nextval('entity_seq') AS location_id,
+          create_new_uuid(uuid) AS location_uuid,
+          epidata_id,
+          traveldatefrom,
+          traveldateto,
+          concat_ws(', ', regexp_replace(traveltype, '_', ' '), traveldestination) AS traveldetails
+   FROM epidatatravel;
+
+INSERT INTO location (id, uuid, changedate, creationdate, details)
+SELECT location_id, location_uuid, now(), now(), traveldetails
+FROM tl_map;
+
+INSERT INTO exposures(
+    id, uuid, changedate, creationdate, epidata_id, location_id, startdate, enddate, exposuretype)
+SELECT nextval('entity_seq'),
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21),
+       now(), now(), tl.epidata_id, tl.location_id, tl.traveldatefrom, tl.traveldateto, 'TRAVEL'
+FROM tl_map tl;
+
+DROP TABLE IF EXISTS tl_map;
+
+DROP TABLE epidataburial;
+DROP TABLE epidatagathering;
+DROP TABLE epidatatravel;
+DROP TABLE epidataburial_history;
+DROP TABLE epidatagathering_history;
+DROP TABLE epidatatravel_history;
+
+INSERT INTO schema_version (version_number, comment) VALUES (268, 'New exposure entity and migration #2948');
 
 -- *** Insert new sql commands BEFORE this line ***

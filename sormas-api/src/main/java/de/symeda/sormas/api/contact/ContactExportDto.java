@@ -117,9 +117,9 @@ public class ContactExportDto implements Serializable {
 	@SensitiveData
 	private String quarantineHelpNeeded;
 	private long epiDataId;
-	private YesNoUnknown traveled;
+	private boolean traveled;
 	private String travelHistory;
-	private YesNoUnknown burialAttended;
+	private boolean burialAttended;
 	private YesNoUnknown directContactConfirmedCase;
 	private YesNoUnknown directContactProbableCase;
 	private YesNoUnknown contactWithRodent;
@@ -151,7 +151,7 @@ public class ContactExportDto implements Serializable {
 							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
+							long epiDataId, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
 							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
@@ -211,8 +211,6 @@ public class ContactExportDto implements Serializable {
 		this.district = district;
 		this.community = community;
 		this.epiDataId = epiDataId;
-		this.traveled = traveled;
-		this.burialAttended = burialAttended;
 		this.directContactConfirmedCase = directContactConfirmedCase;
 		this.directContactProbableCase = directContactProbableCase;
 		this.contactWithRodent = contactWithRodent;
@@ -534,11 +532,11 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(65)
-	public YesNoUnknown getTraveled() {
+	public boolean isTraveled() {
 		return traveled;
 	}
 
-	public void setTraveled(YesNoUnknown traveled) {
+	public void setTraveled(boolean traveled) {
 		this.traveled = traveled;
 	}
 
@@ -552,11 +550,11 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(67)
-	public YesNoUnknown getBurialAttended() {
+	public boolean isBurialAttended() {
 		return burialAttended;
 	}
 
-	public void setBurialAttended(YesNoUnknown burialAttended) {
+	public void setBurialAttended(boolean burialAttended) {
 		this.burialAttended = burialAttended;
 	}
 

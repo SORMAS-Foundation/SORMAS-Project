@@ -38,6 +38,7 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.exposure.Exposure;
 
 @Entity
 @Audited
@@ -47,12 +48,8 @@ public class EpiData extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "epidata";
 
-	public static final String BURIAL_ATTENDED = "burialAttended";
-	public static final String BURIALS = "burials";
-	public static final String GATHERING_ATTENDED = "gatheringAttended";
-	public static final String GATHERINGS = "gatherings";
-	public static final String TRAVELED = "traveled";
-	public static final String TRAVELS = "travels";
+	public static final String EXPOSURE_DETAILS_KNOWN = "exposureDetailsKnown";
+	public static final String EXPOSURES = "exposures";
 	public static final String RODENTS = "rodents";
 	public static final String BATS = "bats";
 	public static final String PRIMATES = "primates";
@@ -85,14 +82,10 @@ public class EpiData extends AbstractDomainObject {
 	public static final String PROPHYLAXIS_STATUS = "prophylaxisStatus";
 	public static final String DATE_OF_PROPHYLAXIS = "dateOfProphylaxis";
 
-	private YesNoUnknown burialAttended;
-	private YesNoUnknown gatheringAttended;
-	private YesNoUnknown traveled;
+	private YesNoUnknown exposureDetailsKnown;
 
 	private Date changeDateOfEmbeddedLists;
-	private List<EpiDataBurial> burials = new ArrayList<>();
-	private List<EpiDataGathering> gatherings = new ArrayList<>();
-	private List<EpiDataTravel> travels = new ArrayList<>();
+	private List<Exposure> exposures = new ArrayList<>();
 
 	private YesNoUnknown directContactConfirmedCase;
 	private YesNoUnknown directContactProbableCase;
@@ -150,30 +143,12 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown snakes;
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getBurialAttended() {
-		return burialAttended;
+	public YesNoUnknown getExposureDetailsKnown() {
+		return exposureDetailsKnown;
 	}
 
-	public void setBurialAttended(YesNoUnknown burialAttended) {
-		this.burialAttended = burialAttended;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getGatheringAttended() {
-		return gatheringAttended;
-	}
-
-	public void setGatheringAttended(YesNoUnknown gatheringAttended) {
-		this.gatheringAttended = gatheringAttended;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getTraveled() {
-		return traveled;
-	}
-
-	public void setTraveled(YesNoUnknown traveled) {
-		this.traveled = traveled;
+	public void setExposureDetailsKnown(YesNoUnknown exposureDetailsKnown) {
+		this.exposureDetailsKnown = exposureDetailsKnown;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -446,31 +421,13 @@ public class EpiData extends AbstractDomainObject {
 		this.dateOfProphylaxis = dateOfProphylaxis;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = EpiDataBurial.EPI_DATA)
-	public List<EpiDataBurial> getBurials() {
-		return burials;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = Exposure.EPI_DATA)
+	public List<Exposure> getExposures() {
+		return exposures;
 	}
 
-	public void setBurials(List<EpiDataBurial> burials) {
-		this.burials = burials;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = EpiDataGathering.EPI_DATA)
-	public List<EpiDataGathering> getGatherings() {
-		return gatherings;
-	}
-
-	public void setGatherings(List<EpiDataGathering> gatherings) {
-		this.gatherings = gatherings;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = EpiDataTravel.EPI_DATA)
-	public List<EpiDataTravel> getTravels() {
-		return travels;
-	}
-
-	public void setTravels(List<EpiDataTravel> travels) {
-		this.travels = travels;
+	public void setExposures(List<Exposure> exposures) {
+		this.exposures = exposures;
 	}
 
 	/**

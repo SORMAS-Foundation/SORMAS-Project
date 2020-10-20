@@ -24,6 +24,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -36,9 +37,7 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "EpiData";
 
-	public static final String BURIAL_ATTENDED = "burialAttended";
-	public static final String GATHERING_ATTENDED = "gatheringAttended";
-	public static final String TRAVELED = "traveled";
+	public static final String EXPOSURE_DETAILS_KNOWN = "exposureDetailsKnown";
 	public static final String RODENTS = "rodents";
 	public static final String BATS = "bats";
 	public static final String PRIMATES = "primates";
@@ -69,9 +68,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String ANIMAL_VACCINATION_STATUS = "animalVaccinationStatus";
 	public static final String PROPHYLAXIS_STATUS = "prophylaxisStatus";
 	public static final String DATE_OF_PROPHYLAXIS = "dateOfProphylaxis";
-	public static final String BURIALS = "burials";
-	public static final String GATHERINGS = "gatherings";
-	public static final String TRAVELS = "travels";
+	public static final String EXPOSURES = "exposures";
 	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
 	public static final String DIRECT_CONTACT_PROBABLE_CASE = "directContactProbableCase";
 	public static final String CLOSE_CONTACT_PROBABLE_CASE = "closeContactProbableCase";
@@ -135,57 +132,8 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	// Fields are declared in the order they should appear in the import template
 
-	@Diseases({
-		Disease.AFP,
-		Disease.EVD,
-		Disease.UNSPECIFIED_VHF,
-		Disease.GUINEA_WORM,
-		Disease.LASSA,
-		Disease.POLIO,
-		Disease.UNDEFINED,
-		Disease.OTHER })
-	private YesNoUnknown burialAttended;
-	@Diseases({
-		Disease.AFP,
-		Disease.EVD,
-		Disease.GUINEA_WORM,
-		Disease.LASSA,
-		Disease.NEW_INFLUENZA,
-		Disease.POLIO,
-		Disease.CSM,
-		Disease.CHOLERA,
-		Disease.MEASLES,
-		Disease.YELLOW_FEVER,
-		Disease.DENGUE,
-		Disease.CORONAVIRUS,
-		Disease.UNSPECIFIED_VHF,
-		Disease.UNDEFINED,
-		Disease.OTHER })
-	private YesNoUnknown gatheringAttended;
-	@Diseases({
-		Disease.AFP,
-		Disease.EVD,
-		Disease.GUINEA_WORM,
-		Disease.LASSA,
-		Disease.NEW_INFLUENZA,
-		Disease.POLIO,
-		Disease.CSM,
-		Disease.CHOLERA,
-		Disease.MEASLES,
-		Disease.YELLOW_FEVER,
-		Disease.DENGUE,
-		Disease.UNSPECIFIED_VHF,
-		Disease.MONKEYPOX,
-		Disease.PLAGUE,
-		Disease.RABIES,
-		Disease.CORONAVIRUS,
-		Disease.UNDEFINED,
-		Disease.OTHER })
-	private YesNoUnknown traveled;
-
-	private List<EpiDataBurialDto> burials = new ArrayList<>();
-	private List<EpiDataGatheringDto> gatherings = new ArrayList<>();
-	private List<EpiDataTravelDto> travels = new ArrayList<>();
+	private YesNoUnknown exposureDetailsKnown;
+	private List<ExposureDto> exposures = new ArrayList<>();
 
 	@Diseases({
 		Disease.AFP,
@@ -237,7 +185,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.GUINEA_WORM,
 		Disease.POLIO,
 		Disease.CORONAVIRUS,
-		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown processingConfirmedCaseFluidUnsafe;
@@ -659,31 +606,12 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.OTHER })
 	private YesNoUnknown snakes;
 
-	@ImportIgnore
-	public YesNoUnknown getBurialAttended() {
-		return burialAttended;
+	public YesNoUnknown getExposureDetailsKnown() {
+		return exposureDetailsKnown;
 	}
 
-	public void setBurialAttended(YesNoUnknown burialAttended) {
-		this.burialAttended = burialAttended;
-	}
-
-	@ImportIgnore
-	public YesNoUnknown getGatheringAttended() {
-		return gatheringAttended;
-	}
-
-	public void setGatheringAttended(YesNoUnknown gatheringAttended) {
-		this.gatheringAttended = gatheringAttended;
-	}
-
-	@ImportIgnore
-	public YesNoUnknown getTraveled() {
-		return traveled;
-	}
-
-	public void setTraveled(YesNoUnknown traveled) {
-		this.traveled = traveled;
+	public void setExposureDetailsKnown(YesNoUnknown exposureDetailsKnown) {
+		this.exposureDetailsKnown = exposureDetailsKnown;
 	}
 
 	public YesNoUnknown getRodents() {
@@ -927,30 +855,12 @@ public class EpiDataDto extends PseudonymizableDto {
 	}
 
 	@ImportIgnore
-	public List<EpiDataBurialDto> getBurials() {
-		return burials;
+	public List<ExposureDto> getExposures() {
+		return exposures;
 	}
 
-	public void setBurials(List<EpiDataBurialDto> burials) {
-		this.burials = burials;
-	}
-
-	@ImportIgnore
-	public List<EpiDataGatheringDto> getGatherings() {
-		return gatherings;
-	}
-
-	public void setGatherings(List<EpiDataGatheringDto> gatherings) {
-		this.gatherings = gatherings;
-	}
-
-	@ImportIgnore
-	public List<EpiDataTravelDto> getTravels() {
-		return travels;
-	}
-
-	public void setTravels(List<EpiDataTravelDto> travels) {
-		this.travels = travels;
+	public void setExposures(List<ExposureDto> exposures) {
+		this.exposures = exposures;
 	}
 
 	public YesNoUnknown getDirectContactConfirmedCase() {

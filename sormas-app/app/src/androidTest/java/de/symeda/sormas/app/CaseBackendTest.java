@@ -41,11 +41,11 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -109,39 +109,13 @@ public class CaseBackendTest {
 	}
 
 	@Test
-	public void shouldCreateEpiDataBurial() {
-		// Assure that there are no burials in the app to start with
-		assertThat(DatabaseHelper.getEpiDataBurialDao().queryForAll().size(), is(0));
+	public void shouldCreateExposure() {
+		assertThat(DatabaseHelper.getExposureDao().queryForAll().size(), is(0));
 
 		Case caze = TestEntityCreator.createCase();
-		TestEntityCreator.createEpiDataBurial(caze);
+		TestEntityCreator.createExposure(caze);
 
-		// Assure that the burial has been successfully created
-		assertThat(DatabaseHelper.getEpiDataBurialDao().queryForAll().size(), is(1));
-	}
-
-	@Test
-	public void shouldCreateEpiDataGathering() {
-		// Assure that there are no burials in the app to start with
-		assertThat(DatabaseHelper.getEpiDataGatheringDao().queryForAll().size(), is(0));
-
-		Case caze = TestEntityCreator.createCase();
-		TestEntityCreator.createEpiDataGathering(caze);
-
-		// Assure that the burial has been successfully created
-		assertThat(DatabaseHelper.getEpiDataGatheringDao().queryForAll().size(), is(1));
-	}
-
-	@Test
-	public void shouldCreateEpiDataTravel() {
-		// Assure that there are no burials in the app to start with
-		assertThat(DatabaseHelper.getEpiDataTravelDao().queryForAll().size(), is(0));
-
-		Case caze = TestEntityCreator.createCase();
-		TestEntityCreator.createEpiDataTravel(caze);
-
-		// Assure that the burial has been successfully created
-		assertThat(DatabaseHelper.getEpiDataTravelDao().queryForAll().size(), is(1));
+		assertThat(DatabaseHelper.getExposureDao().queryForAll().size(), is(1));
 	}
 
 	/**
@@ -391,18 +365,16 @@ public class CaseBackendTest {
 		TestDtoCreator.fillNewDto(epiDataDto);
 		serverCaseDto.setEpiData(epiDataDto);
 
-		EpiDataBurialDto epiDataBurialDto = new EpiDataBurialDto();
-		TestDtoCreator.fillNewDto(epiDataBurialDto);
-		LocationDto epiDataBurialLocationDto = new LocationDto();
-		TestDtoCreator.fillNewDto(epiDataBurialLocationDto);
-		epiDataBurialDto.setBurialAddress(epiDataBurialLocationDto);
-		epiDataDto.getBurials().add(epiDataBurialDto);
+		ExposureDto exposureDto = ExposureDto.build(ExposureType.TRAVEL);
+		TestDtoCreator.fillNewDto(exposureDto);
+		TestDtoCreator.fillNewDto(exposureDto.getLocation());
+		epiDataDto.getExposures().add(exposureDto);
 
 		// merge server case
 		Case serverCase = caseDtoHelper.fillOrCreateFromDto(null, serverCaseDto);
 		DatabaseHelper.getCaseDao().mergeOrCreate(serverCase);
 		Case mergedCase = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(serverCase.getUuid());
-		assertEquals(1, mergedCase.getEpiData().getBurials().size());
+		assertEquals(1, mergedCase.getEpiData().getExposures().size());
 	}
 
 	@Test

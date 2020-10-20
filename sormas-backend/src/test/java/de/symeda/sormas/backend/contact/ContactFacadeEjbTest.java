@@ -61,9 +61,9 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
-import de.symeda.sormas.api.epidata.TravelType;
+import de.symeda.sormas.api.epidata.EpiDataHelper;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
@@ -218,9 +218,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().generateContactFollowUpTasks();
 
 		// task should have been generated
-		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference()).stream()
-				.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
-				.collect(Collectors.toList());
+		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference())
+			.stream()
+			.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
+			.collect(Collectors.toList());
 		assertEquals(1, tasks.size());
 		TaskDto task = tasks.get(0);
 		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
@@ -230,9 +231,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// task should not be generated multiple times 
 		getContactFacade().generateContactFollowUpTasks();
-		tasks = getTaskFacade().getAllByContact(contact.toReference()).stream()
-				.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
-				.collect(Collectors.toList());
+		tasks = getTaskFacade().getAllByContact(contact.toReference())
+			.stream()
+			.filter(t -> t.getTaskType() == TaskType.CONTACT_FOLLOW_UP)
+			.collect(Collectors.toList());
 		assertEquals(1, tasks.size());
 	}
 
@@ -538,15 +540,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
 		EpiDataDto epiData = contact.getEpiData();
-		epiData.setTraveled(YesNoUnknown.YES);
-		List<EpiDataTravelDto> travels = new ArrayList<>();
-		EpiDataTravelDto travel = EpiDataTravelDto.build();
-		travel.setTravelDateFrom(DateHelper.subtractDays(new Date(), 15));
-		travel.setTravelDateTo(DateHelper.subtractDays(new Date(), 7));
-		travel.setTravelDestination("Mallorca");
-		travel.setTravelType(TravelType.ABROAD);
-		travels.add(travel);
-		epiData.setTravels(travels);
+		epiData.setExposureDetailsKnown(YesNoUnknown.YES);
+		List<ExposureDto> travels = new ArrayList<>();
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.getLocation().setDetails("Mallorca");
+		exposure.setStartDate(DateHelper.subtractDays(new Date(), 15));
+		exposure.setEndDate(DateHelper.subtractDays(new Date(), 7));
+		caze.getEpiData().getExposures().add(exposure);
+		travels.add(exposure);
+		epiData.setExposures(travels);
 		contact.setEpiData(epiData);
 		getContactFacade().saveContact(contact);
 
@@ -583,13 +585,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(YesNoUnknown.YES, exportDto.getLastCooperativeVisitSymptomatic());
 
 		assertNotNull(exportDto.getEpiDataId());
-		assertEquals(YesNoUnknown.YES, exportDto.getTraveled());
+		assertTrue(exportDto.isTraveled());
 		assertEquals(
-			EpiDataTravelHelper.buildTravelString(
-				travel.getTravelType(),
-				travel.getTravelDestination(),
-				travel.getTravelDateFrom(),
-				travel.getTravelDateTo(),
+			EpiDataHelper.buildDetailedTravelString(
+				exposure.getLocation().toString(),
+				exposure.getDescription(),
+				exposure.getStartDate(),
+				exposure.getEndDate(),
 				Language.EN),
 			exportDto.getTravelHistory());
 	}
@@ -846,7 +848,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testSearchContactsWithReducedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		ContactDto contact =
-				creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
+			creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
 		contact.setQuarantineReduced(true);
 		getContactFacade().saveContact(contact);
 

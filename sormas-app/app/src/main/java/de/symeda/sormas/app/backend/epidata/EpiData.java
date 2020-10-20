@@ -36,6 +36,7 @@ import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.exposure.Exposure;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -52,11 +53,7 @@ public class EpiData extends PseudonymizableAdo {
 	public static final String I18N_PREFIX = "EpiData";
 
 	@Enumerated(EnumType.STRING)
-	private YesNoUnknown burialAttended;
-	@Enumerated(EnumType.STRING)
-	private YesNoUnknown gatheringAttended;
-	@Enumerated(EnumType.STRING)
-	private YesNoUnknown traveled;
+	private YesNoUnknown exposureDetailsKnown;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown directContactConfirmedCase;
@@ -174,10 +171,7 @@ public class EpiData extends PseudonymizableAdo {
 	@DatabaseField(dataType = DataType.DATE_LONG, columnName = "wildbirdsDate")
 	private Date unusedDate;
 
-	// just for reference, not persisted in DB
-	private List<EpiDataBurial> burials = new ArrayList<>();
-	private List<EpiDataGathering> gatherings = new ArrayList<>();
-	private List<EpiDataTravel> travels = new ArrayList<>();
+	private List<Exposure> exposures = new ArrayList<>();
 
 	// @TODO Replace this with EpiDataDto call once API version has been increased
 	public static final String[] ENVIRONMENTAL_EXPOSURE_PROPERTIES = new String[] {
@@ -186,28 +180,12 @@ public class EpiData extends PseudonymizableAdo {
 		"tickBite",
 		"fleaBite" };
 
-	public YesNoUnknown getBurialAttended() {
-		return burialAttended;
+	public YesNoUnknown getExposureDetailsKnown() {
+		return exposureDetailsKnown;
 	}
 
-	public void setBurialAttended(YesNoUnknown burialAttended) {
-		this.burialAttended = burialAttended;
-	}
-
-	public YesNoUnknown getGatheringAttended() {
-		return gatheringAttended;
-	}
-
-	public void setGatheringAttended(YesNoUnknown gatheringAttended) {
-		this.gatheringAttended = gatheringAttended;
-	}
-
-	public YesNoUnknown getTraveled() {
-		return traveled;
-	}
-
-	public void setTraveled(YesNoUnknown traveled) {
-		this.traveled = traveled;
+	public void setExposureDetailsKnown(YesNoUnknown exposureDetailsKnown) {
+		this.exposureDetailsKnown = exposureDetailsKnown;
 	}
 
 	public YesNoUnknown getRodents() {
@@ -450,28 +428,12 @@ public class EpiData extends PseudonymizableAdo {
 		this.dateOfProphylaxis = dateOfProphylaxis;
 	}
 
-	public List<EpiDataBurial> getBurials() {
-		return burials;
+	public List<Exposure> getExposures() {
+		return exposures;
 	}
 
-	public void setBurials(List<EpiDataBurial> burials) {
-		this.burials = burials;
-	}
-
-	public List<EpiDataGathering> getGatherings() {
-		return gatherings;
-	}
-
-	public void setGatherings(List<EpiDataGathering> gatherings) {
-		this.gatherings = gatherings;
-	}
-
-	public List<EpiDataTravel> getTravels() {
-		return travels;
-	}
-
-	public void setTravels(List<EpiDataTravel> travels) {
-		this.travels = travels;
+	public void setExposures(List<Exposure> exposures) {
+		this.exposures = exposures;
 	}
 
 	public YesNoUnknown getDirectContactConfirmedCase() {

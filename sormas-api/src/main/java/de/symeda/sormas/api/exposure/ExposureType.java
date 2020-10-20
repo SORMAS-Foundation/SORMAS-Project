@@ -13,18 +13,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.event;
+package de.symeda.sormas.api.exposure;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum MeanOfTransport {
+public enum ExposureType {
 
-	BUS,
-	FERRY,
-	PLANE,
-	TRAIN;
+	WORK,
+	TRAVEL,
+	SPORT,
+	VISIT,
+	GATHERING,
+	HABITATION,
+	PERSONAL_SERVICES,
+	BURIAL,
+	ANIMAL_CONTACT,
+	OTHER;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
+
 }

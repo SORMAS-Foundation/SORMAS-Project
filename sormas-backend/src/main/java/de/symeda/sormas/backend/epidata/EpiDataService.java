@@ -31,7 +31,7 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.exposure.Exposure;
 
 @Stateless
 @LocalBean
@@ -59,20 +59,10 @@ public class EpiDataService extends AbstractAdoService<EpiData> {
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EpiData> epiData, Timestamp date) {
 		Predicate dateFilter = greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date);
 
-		Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
-
-		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(
-			dateFilter,
-			greaterThanAndNotNull(cb, epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-
-		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(
-			dateFilter,
-			greaterThanAndNotNull(cb, epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+		Join<EpiData, Exposure> exposures = epiData.join(EpiData.EXPOSURES, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, exposures.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb
+			.or(dateFilter, greaterThanAndNotNull(cb, exposures.join(Exposure.LOCATION, JoinType.LEFT).get(AbstractDomainObject.CHANGE_DATE), date));
 
 		return dateFilter;
 	}

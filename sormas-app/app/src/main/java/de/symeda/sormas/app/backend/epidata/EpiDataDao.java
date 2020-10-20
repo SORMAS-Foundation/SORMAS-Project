@@ -15,26 +15,17 @@
 
 package de.symeda.sormas.app.backend.epidata;
 
-import java.sql.SQLException;
 import java.util.Date;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 
-/**
- * Created by Mate Strysewske on 08.03.2017.
- */
-
 public class EpiDataDao extends AbstractAdoDao<EpiData> {
 
-	private static final Logger logger = LoggerFactory.getLogger(EpiDataDao.class);
-
-	public EpiDataDao(Dao<EpiData, Long> innerDao) throws SQLException {
+	public EpiDataDao(Dao<EpiData, Long> innerDao) {
 		super(innerDao);
 	}
 
@@ -76,9 +67,7 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 	}
 
 	private EpiData initLazyData(EpiData epiData) {
-		epiData.setBurials(DatabaseHelper.getEpiDataBurialDao().getByEpiData(epiData));
-		epiData.setGatherings(DatabaseHelper.getEpiDataGatheringDao().getByEpiData(epiData));
-		epiData.setTravels(DatabaseHelper.getEpiDataTravelDao().getByEpiData(epiData));
+		epiData.setExposures(DatabaseHelper.getExposureDao().getByEpiData(epiData));
 
 		return epiData;
 	}
@@ -88,12 +77,7 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 
 		EpiData snapshot = super.saveAndSnapshot(ado);
 
-		DatabaseHelper.getEpiDataBurialDao()
-			.saveCollectionWithSnapshot(DatabaseHelper.getEpiDataBurialDao().getByEpiData(ado), ado.getBurials(), ado);
-		DatabaseHelper.getEpiDataGatheringDao()
-			.saveCollectionWithSnapshot(DatabaseHelper.getEpiDataGatheringDao().getByEpiData(ado), ado.getGatherings(), ado);
-		DatabaseHelper.getEpiDataTravelDao()
-			.saveCollectionWithSnapshot(DatabaseHelper.getEpiDataTravelDao().getByEpiData(ado), ado.getTravels(), ado);
+		DatabaseHelper.getExposureDao().saveCollectionWithSnapshot(DatabaseHelper.getExposureDao().getByEpiData(ado), ado.getExposures(), ado);
 
 		return snapshot;
 	}
@@ -105,17 +89,9 @@ public class EpiDataDao extends AbstractAdoDao<EpiData> {
 			return null;
 		}
 
-		Date burialDate = DatabaseHelper.getEpiDataBurialDao().getLatestChangeDate();
-		if (burialDate != null && burialDate.after(date)) {
-			date = burialDate;
-		}
-		Date gatheringDate = DatabaseHelper.getEpiDataGatheringDao().getLatestChangeDate();
-		if (gatheringDate != null && gatheringDate.after(date)) {
-			date = gatheringDate;
-		}
-		Date travelDate = DatabaseHelper.getEpiDataTravelDao().getLatestChangeDate();
-		if (travelDate != null && travelDate.after(date)) {
-			date = travelDate;
+		Date exposureDate = DatabaseHelper.getExposureDao().getLatestChangeDate();
+		if (exposureDate != null && exposureDate.after(date)) {
+			date = exposureDate;
 		}
 
 		return date;
