@@ -229,7 +229,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 	private void setDateFieldVisibilties() {
 
-		boolean visible = YesNoUnknown.YES.equals(intensiveCareUnit.getValue());
+		boolean visible = YesNoUnknown.YES.equals(intensiveCareUnit.getNullableValue());
 		intensiveCareUnitStart.setVisible(visible);
 		intensiveCareUnitEnd.setVisible(visible);
 	}
