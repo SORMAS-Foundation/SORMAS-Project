@@ -27,6 +27,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.ValidationException;
 
 public class QuarantineOrderLayout extends VerticalLayout {
@@ -73,7 +74,11 @@ public class QuarantineOrderLayout extends VerticalLayout {
 					setStreamResource(templateFile);
 				} catch (ValidationException validationException) {
 					validationException.printStackTrace();
-					new Notification("Error I18N", "Error Description I18N", Notification.Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					new Notification(
+						I18nProperties.getString(Strings.errorOccurred),
+						validationException.getMessage(),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
 				}
 			}
 		});
@@ -85,14 +90,14 @@ public class QuarantineOrderLayout extends VerticalLayout {
 
 	private Properties readAdditionalVariables() {
 		Properties properties = new Properties();
-		forAllVariableInputs(textField -> {
+		doForAllVariableInputs(textField -> {
 			properties.setProperty(textField.getCaption(), textField.getValue());
 			return null;
 		});
 		return properties;
 	}
 
-	private void forAllVariableInputs(Function<TextField, Void> function) {
+	private void doForAllVariableInputs(Function<TextField, Void> function) {
 		for (int i = 0; i < additionalVariablesComponent.getComponentCount(); i++) {
 			Component component = additionalVariablesComponent.getComponent(i);
 			if (component instanceof TextField) {

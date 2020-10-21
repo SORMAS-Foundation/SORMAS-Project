@@ -34,7 +34,7 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 		setDataProvider(dataProvider);
 
 		removeAllColumns();
-		addColumn(x -> x.toString()).setCaption(I18nProperties.getString(Strings.fileName)).setExpandRatio(1);
+		addColumn(String::toString).setCaption(I18nProperties.getString(Strings.fileName)).setExpandRatio(1);
 		addComponentColumn(this::buildActionButtons).setCaption(I18nProperties.getCaption(Captions.eventActionsView))
 			.setWidth(100)
 			.setStyleGenerator(item -> "v-align-center");
@@ -48,40 +48,41 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 		getDataProvider().refreshAll();
 	}
 
-	private Button buildDeleteButton(String s) {
-		Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), s), () -> {
-				try {
-					FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(s.toString());
-				} catch (ValidationException ex) {
-					new Notification("header i18n delete failed", "content i18n" + ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)
-						.show(Page.getCurrent());
-				}
-				reload();
-			});
-		});
-		return deleteButton;
+	private Button buildDeleteButton(String templateFileName) {
+		return ButtonHelper.createIconButton(
+			"",
+			VaadinIcons.TRASH,
+			e -> VaadinUiUtil
+				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), templateFileName), () -> {
+					try {
+						FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(templateFileName);
+					} catch (ValidationException ex) {
+						new Notification(
+							I18nProperties.getString(Strings.errorDeletingDocumentTemplate),
+							ex.getMessage(),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+					}
+					reload();
+				}));
 	}
 
-	private Button buildViewDocumentButton(String s) {
-		Button viewButton = ButtonHelper.createIconButton("", VaadinIcons.FILE_TEXT, e -> {
-			try {
-				FacadeProvider.getQuarantineOrderFacade().getTemplate(s.toString());
-			} catch (ValidationException ex) {
-				new Notification("header i18n view failed", "content i18n " + ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)
-					.show(Page.getCurrent());
-			}
-		});
+	private Button buildViewDocumentButton(String templateFileName) {
+		Button viewButton = new Button(VaadinIcons.FILE_TEXT);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 			try {
-				return new ByteArrayInputStream(quarantineOrderFacade.getTemplate(s));
+				return new ByteArrayInputStream(quarantineOrderFacade.getTemplate(templateFileName));
 			} catch (ValidationException e) {
-				e.printStackTrace();
+				new Notification(
+					String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFileName),
+					e.getMessage(),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
 				return null;
 			}
-		}, s);
+		}, templateFileName);
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(viewButton);
 		fileDownloader.setFileDownloadResource(streamResource);
@@ -90,17 +91,15 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 	}
 
 	private HorizontalLayout buildActionButtons(String s) {
-		HorizontalLayout lay = new HorizontalLayout();
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
 
-		Button delBut = buildDeleteButton(s);
-		Button viewBut = buildViewDocumentButton(s);
-		lay.addComponent(viewBut);
-		lay.addComponent(delBut);
+		horizontalLayout.addComponent(buildViewDocumentButton(s));
+		horizontalLayout.addComponent(buildDeleteButton(s));
 
-		lay.setSpacing(false);
-		lay.setMargin(false);
-		lay.setWidth("100px");
+		horizontalLayout.setSpacing(false);
+		horizontalLayout.setMargin(false);
+		horizontalLayout.setWidth("100px");
 
-		return lay;
+		return horizontalLayout;
 	}
 }

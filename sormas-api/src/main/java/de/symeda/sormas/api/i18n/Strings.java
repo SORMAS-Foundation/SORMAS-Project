@@ -160,6 +160,7 @@ public interface Strings {
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorFieldValidationFailed = "errorFieldValidationFailed";
