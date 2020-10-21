@@ -222,7 +222,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 			contactProximity.addValueChangeListener(e -> {
 				if (getInternalValue().getContactProximity() != e.getProperty().getValue() || contactCategory.isModified()) {
-					updateContactCategory((ContactProximity) contactProximity.getValue());
+					updateContactCategory((ContactProximity) contactProximity.getNullableValue());
 				}
 			});
 		}

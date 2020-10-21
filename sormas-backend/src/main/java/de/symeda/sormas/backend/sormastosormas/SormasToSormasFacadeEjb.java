@@ -69,12 +69,14 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -701,26 +703,39 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 
 		if (facility != null) {
-			String facilityName = facility.getCaption();
-			FacilityReferenceDto localFacility =
-				facilityFacade.getByNameAndType(facilityName, localDistrict, localCommunity, facilityType, false).stream().findFirst().orElse(null);
-
-			if (localFacility == null) {
-				unmatchedFields.add(I18nProperties.getCaption(Captions.facility) + ": " + facilityName);
+			String facilityUuid = facility.getUuid();
+			if (FacilityDto.CONSTANT_FACILITY_UUIDS.contains(facilityUuid)) {
+				infrastructureData.facility = facilityFacade.getByUuid(facilityUuid).toReference();
 			} else {
-				infrastructureData.facility = localFacility;
+				String facilityName = facility.getCaption();
+				FacilityReferenceDto localFacility = facilityFacade.getByNameAndType(facilityName, localDistrict, localCommunity, facilityType, false)
+					.stream()
+					.findFirst()
+					.orElse(null);
+
+				if (localFacility == null) {
+					unmatchedFields.add(I18nProperties.getCaption(Captions.facility) + ": " + facilityName);
+				} else {
+					infrastructureData.facility = localFacility;
+				}
 			}
 		}
 
 		if (pointOfEntry != null) {
-			String pointOfEntryName = pointOfEntry.getCaption();
-			PointOfEntryReferenceDto localPointOfEntry =
-				pointOfEntryFacade.getByName(pointOfEntryName, localDistrict, false).stream().findFirst().orElse(null);
+			String pointOfEntryUuid = pointOfEntry.getUuid();
 
-			if (localPointOfEntry == null) {
-				unmatchedFields.add(I18nProperties.getCaption(Captions.pointOfEntry) + ": " + pointOfEntryName);
+			if (PointOfEntryDto.CONSTANT_POE_UUIDS.contains(pointOfEntryUuid)) {
+				infrastructureData.pointOfEntry = pointOfEntryFacade.getByUuid(pointOfEntryUuid).toReference();
 			} else {
-				infrastructureData.pointOfEntry = localPointOfEntry;
+				String pointOfEntryName = pointOfEntry.getCaption();
+				PointOfEntryReferenceDto localPointOfEntry =
+					pointOfEntryFacade.getByName(pointOfEntryName, localDistrict, false).stream().findFirst().orElse(null);
+
+				if (localPointOfEntry == null) {
+					unmatchedFields.add(I18nProperties.getCaption(Captions.pointOfEntry) + ": " + pointOfEntryName);
+				} else {
+					infrastructureData.pointOfEntry = localPointOfEntry;
+				}
 			}
 		}
 

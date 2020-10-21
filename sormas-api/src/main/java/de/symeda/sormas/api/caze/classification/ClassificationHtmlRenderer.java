@@ -17,10 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
+import static de.symeda.sormas.api.utils.HtmlHelper.escapeAndUnescapeBasicTags;
+import static de.symeda.sormas.api.utils.HtmlHelper.unescapeBasicTags;
+
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -31,7 +35,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
-import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Provides methods that create HTML Strings to visualize the automatic classification rules.
@@ -131,18 +134,16 @@ public final class ClassificationHtmlRenderer {
 				"  padding: 8px;\r\n" + 
 				"}\r\n" + 
 				".classification-rules .main-criteria.main-criteria-suspect {\r\n" + 
-				"  background: rgba(255, 215, 0, 0.6);\r\n" + 
-				"  margin-bottom: 16px;\r\n" + 
+				"  background: rgba(255, 215, 0, 0.6);\r\n" +
 				"}\r\n" + 
 				".classification-rules .main-criteria.main-criteria-probable {\r\n" + 
-				"  background: rgba(255, 140, 0, 0.6);\r\n" + 
-				"  margin-bottom: 16px;\r\n" + 
+				"  background: rgba(255, 140, 0, 0.6);\r\n" +
 				"}\r\n" + 
 				".classification-rules .main-criteria.main-criteria-confirmed {\r\n" + 
 				"  background: rgba(255, 0, 0, 0.6);\r\n" + 
 				"}\r\n" +
 				".classification-rules .main-criteria.main-criteria-not_a_case {\r\n" + 
-				"  background: rgba(201, 201, 201, 0.6);\r\n" + 
+				"  background: rgba(160, 160, 160, 0.6);\r\n" + 
 				"}\r\n" + 
 				".classification-rules .headline {\r\n" + 
 				"  font-weight: bold;\r\n" + 
@@ -188,6 +189,7 @@ public final class ClassificationHtmlRenderer {
 				html.append(createSuspectHtmlString(diseaseCriteria));
 				html.append(createProbableHtmlString(diseaseCriteria));
 				html.append(createConfirmedHtmlString(diseaseCriteria));
+				html.append(createNotACaseHtmlString(diseaseCriteria));
 			}
 		}
 		html.append("</body></html>");
@@ -239,7 +241,7 @@ public final class ClassificationHtmlRenderer {
 		for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
-				subCriteriaSb.append("- " + subCriteria.buildDescription() + "</br>");
+				subCriteriaSb.append("- " + escapeAndUnescapeBasicTags(subCriteria.buildDescription() + "</br>"));
 			} else if (subCriteria instanceof ClassificationCollectiveCriteria
 				&& !(subCriteria instanceof ClassificationAllOfCriteriaDto)
 				&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
@@ -273,7 +275,7 @@ public final class ClassificationHtmlRenderer {
 				+ "<div class='main-criteria main-criteria-"
 				+ StringEscapeUtils.escapeHtml4(criteriaType.toString())
 				+ "'>"
-				+ StringEscapeUtils.escapeHtml4(content)
+				+ content
 				+ "</div></div>";
 		//@formatter:on
 	}
@@ -294,11 +296,13 @@ public final class ClassificationHtmlRenderer {
 	 * Creates a div containing an info text.
 	 */
 	private static String createInfoDiv() {
-		return I18nProperties.getString(Strings.classificationInfoText);
+		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(I18nProperties.getString(Strings.classificationInfoText)));
 	}
 
 	private static String createInfoDiv(int requirementsNumber) {
-		return String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber));
+		return unescapeBasicTags(
+			StringEscapeUtils.escapeHtml4(
+				String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber))));
 	}
 
 	/**
@@ -308,7 +312,7 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='criteria'>"
-				+ StringEscapeUtils.escapeHtml4(content)
+				+ content
 				+ "</div>";
 		//@formatter:on
 	}
@@ -320,16 +324,17 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='sub-criteria'><div class='sub-criteria-content'>"
-				+ StringEscapeUtils.escapeHtml4(content)
+				+ content
 				+ "</div></div>";
 		//@formatter:on
 	}
 
 	/**
 	 * Creates the div for an actual criteria containing its description.
+	 * Specific tags are allowed to be contained in i18n strings and are thus unescaped
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return StringEscapeUtils.escapeHtml4(text) + "<br/>";
+		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(text) + "<br>");
 	}
 
 	private enum ClassificationCriteriaType {
