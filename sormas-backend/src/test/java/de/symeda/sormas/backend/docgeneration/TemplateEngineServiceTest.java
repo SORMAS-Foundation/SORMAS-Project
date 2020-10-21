@@ -3,7 +3,11 @@ package de.symeda.sormas.backend.docgeneration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Properties;
 import java.util.Set;
 
