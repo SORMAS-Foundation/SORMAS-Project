@@ -93,6 +93,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -175,7 +176,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	public void saveSharedCases(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasCaseDto[] sharedCases = decryptSharedData(encryptedData, SormasToSormasCaseDto[].class);
 
-		Map<String, Map<String, List<String>>> validationErrors = new HashMap<>();
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		List<ProcessedCaseData> casesToSave = new ArrayList<>(sharedCases.length);
 
 		for (SormasToSormasCaseDto sharedCase : sharedCases) {
@@ -188,7 +189,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 			ValidationErrors caseErrors = validateCase(caze);
 			if (caseErrors.hasError()) {
-				validationErrors.put(buildCaseValidationGroupName(caze), caseErrors.getErrors());
+				validationErrors.put(buildCaseValidationGroupName(caze), caseErrors);
 
 				continue;
 			}
@@ -200,11 +201,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			caseValidationErrors.addAll(caseDataErrors);
 
 			if (caseValidationErrors.hasError()) {
-				validationErrors.put(buildCaseValidationGroupName(caze), caseValidationErrors.getErrors());
+				validationErrors.put(buildCaseValidationGroupName(caze), caseValidationErrors);
 			}
 
 			if (associatedContacts != null) {
-				Map<String, Map<String, List<String>>> contactValidationErrors = processAssociatedContacts(associatedContacts, originInfo);
+				Map<String, ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts, originInfo);
 				validationErrors.putAll(contactValidationErrors);
 			}
 
@@ -243,7 +244,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	public void saveSharedContacts(SormasToSormasEncryptedDataDto sharedData) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasContactDto[] sharedContacts = decryptSharedData(sharedData, SormasToSormasContactDto[].class);
 
-		Map<String, Map<String, List<String>>> validationErrors = new HashMap<>();
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		List<ProcessedContactData> contactsToSave = new ArrayList<>(sharedContacts.length);
 
 		for (SormasToSormasContactDto sharedContact : sharedContacts) {
@@ -252,21 +253,19 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 			ValidationErrors contactErrors = validateContact(contact);
 			if (contactErrors.hasError()) {
-				validationErrors.put(buildContactValidationGroupName(contact), contactErrors.getErrors());
+				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
 
 				continue;
 			}
 
-			ValidationErrors contactErrorsErrors = new ValidationErrors();
-
 			ValidationErrors originInfoErrors = processOriginInfo(contact.getSormasToSormasOriginInfo());
-			contactErrorsErrors.addAll(originInfoErrors);
+			contactErrors.addAll(originInfoErrors);
 
 			ValidationErrors contactDataErrors = processContactData(contact, person);
 			contactErrors.addAll(contactDataErrors);
 
 			if (contactErrors.hasError()) {
-				validationErrors.put(buildContactValidationGroupName(contact), contactErrors.getErrors());
+				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
 			}
 
 			contactsToSave.add(ProcessedContactData.create(person, contact));
@@ -384,15 +383,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	private void validateCasesBeforeSend(List<Case> cases) throws SormasToSormasException {
-		Map<String, Map<String, List<String>>> validationErrors = new HashMap<>();
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Case caze : cases) {
 			if (!caseService.isCaseEditAllowed(caze)) {
-				Map<String, List<String>> error = new HashMap<>(1);
-				error.put(
-					I18nProperties.getCaption(Captions.CaseData),
-					Collections.singletonList(I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
-
-				validationErrors.put(buildCaseValidationGroupName(caze), error);
+				validationErrors.put(
+					buildCaseValidationGroupName(caze),
+					ValidationErrors
+						.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
 			}
 		}
 
@@ -402,15 +399,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	private void validateContactsBeforeSend(List<Contact> contacts) throws SormasToSormasException {
-		Map<String, Map<String, List<String>>> validationErrors = new HashMap<>();
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Contact contact : contacts) {
 			if (!contactService.isContactEditAllowed(contact)) {
-				Map<String, List<String>> error = new HashMap<>(1);
-				error.put(
-					I18nProperties.getCaption(Captions.Contact),
-					Collections.singletonList(I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
-
-				validationErrors.put(buildCaseValidationGroupName(contact), error);
+				validationErrors.put(
+					buildCaseValidationGroupName(contact),
+					ValidationErrors
+						.create(I18nProperties.getCaption(Captions.Contact), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
 			}
 		}
 
@@ -500,10 +495,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return caseValidationErrors;
 	}
 
-	private Map<String, Map<String, List<String>>> processAssociatedContacts(
+	private Map<String, ValidationErrors> processAssociatedContacts(
 		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts,
 		SormasToSormasOriginInfoDto originInfo) {
-		Map<String, Map<String, List<String>>> validationErrors = new HashMap<>();
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		associatedContacts.forEach(associatedContact -> {
 			ContactDto contact = associatedContact.getContact();
@@ -512,7 +507,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			ValidationErrors contactErrors = processContactData(contact, associatedContact.getPerson());
 
 			if (contactErrors.hasError()) {
-				validationErrors.put(buildContactValidationGroupName(contact), contactErrors.getErrors());
+				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
 			}
 		});
 
@@ -754,11 +749,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		try {
 			return saveOperation.get();
 		} catch (ValidationRuntimeException exception) {
-			Map<String, List<String>> validationError = new HashMap<>(1);
-			validationError.put(I18nProperties.getCaption(validationGroupCaption), Collections.singletonList(exception.getMessage()));
-
-			Map<String, Map<String, List<String>>> parentError = new HashMap<>(1);
-			parentError.put(parentValidationGroup, validationError);
+			Map<String, ValidationErrors> parentError = new HashMap<>(1);
+			parentError
+				.put(parentValidationGroup, ValidationErrors.create(I18nProperties.getCaption(validationGroupCaption), exception.getMessage()));
 
 			throw new SormasToSormasValidationException(parentError);
 		}
@@ -903,7 +896,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		int statusCode = response.getStatus();
 		if (statusCode != HttpStatus.SC_NO_CONTENT) {
 			String errorMessage = response.readEntity(String.class);
-			Map<String, Map<String, List<String>>> errors = null;
+			Map<String, ValidationErrors> errors = null;
 
 			try {
 				SormasToSormasErrorResponse errorResponse = objectMapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
