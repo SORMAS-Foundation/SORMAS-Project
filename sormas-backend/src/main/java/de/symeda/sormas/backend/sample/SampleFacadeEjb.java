@@ -101,6 +101,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -163,6 +165,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -263,7 +267,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		final Root<Sample> sample = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(sample);
+		SampleJoins<Sample> joins = new SampleJoins<>(sample);
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
@@ -491,7 +495,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(sample);
+		SampleJoins<Sample> joins = new SampleJoins<>(sample);
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -688,7 +692,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(root);
+		SampleJoins<Sample> joins = new SampleJoins<>(root);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
 		if (sampleCriteria != null) {
@@ -779,10 +783,14 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasFacade.fromSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+		}
+
 		return target;
 	}
 
-	private SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer) {
+	public SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer) {
 
 		SampleDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer);
@@ -904,6 +912,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setSormasToSormasOriginInfo(SormasToSormasFacadeEjb.toSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
 
 		return target;
 	}

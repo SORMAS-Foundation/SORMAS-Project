@@ -81,6 +81,10 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
@@ -90,6 +94,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
@@ -112,6 +117,11 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -161,6 +171,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private ServerAccessDataService serverAccessDataService;
 	@EJB
 	protected SormasToSormasEncryptionService encryptionService;
+	@EJB
+	private SampleService sampleService;
+	@EJB
+	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
+	@EJB
+	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
+	@EJB
+	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
 
 	private final ObjectMapper objectMapper;
 
@@ -182,6 +200,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			PersonDto person = sharedCase.getPerson();
 			CaseDataDto caze = sharedCase.getCaze();
 			List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = sharedCase.getAssociatedContacts();
+			List<SormasToSormasSampleDto> samples = sharedCase.getSamples();
+
 			SormasToSormasOriginInfoDto originInfo = sharedCase.getOriginInfo();
 
 			ValidationErrors caseValidationErrors = new ValidationErrors();
@@ -193,10 +213,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 				continue;
 			}
 
-			ValidationErrors originInfoErrorsErrors = processOriginInfo(originInfo);
+			ValidationErrors originInfoErrorsErrors = processOriginInfo(originInfo, Captions.CaseData);
 			caseValidationErrors.addAll(originInfoErrorsErrors);
 
-			ValidationErrors caseDataErrors = processCaseData(caze, person, associatedContacts, originInfo);
+			ValidationErrors caseDataErrors = processCaseData(caze, person, originInfo);
 			caseValidationErrors.addAll(caseDataErrors);
 
 			if (caseValidationErrors.hasError()) {
@@ -208,7 +228,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 				validationErrors.putAll(contactValidationErrors);
 			}
 
-			casesToSave.add(ProcessedCaseData.create(person, caze, associatedContacts));
+			if (samples != null) {
+				Map<String, Map<String, List<String>>> sampleErrors = processSamples(samples);
+				validationErrors.putAll(sampleErrors);
+			}
+
+			casesToSave.add(ProcessedCaseData.create(person, caze, associatedContacts, samples));
 		}
 
 		if (validationErrors.size() > 0) {
@@ -235,6 +260,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 					handleValidationError(() -> contactFacade.saveContact(contact), Captions.Contact, buildContactValidationGroupName(contact));
 				}
 			}
+
+			if (caseData.samples != null) {
+				saveSamples(caseData.samples, savedCase.getSormasToSormasOriginInfo());
+			}
 		}
 	}
 
@@ -249,6 +278,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		for (SormasToSormasContactDto sharedContact : sharedContacts) {
 			PersonDto person = sharedContact.getPerson();
 			ContactDto contact = sharedContact.getContact();
+			List<SormasToSormasSampleDto> samples = sharedContact.getSamples();
+			SormasToSormasOriginInfoDto originInfo = sharedContact.getOriginInfo();
 
 			ValidationErrors contactErrors = validateContact(contact);
 			if (contactErrors.hasError()) {
@@ -257,19 +288,22 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 				continue;
 			}
 
-			ValidationErrors contactErrorsErrors = new ValidationErrors();
+			ValidationErrors originInfoErrors = processOriginInfo(originInfo, Captions.Contact);
+			contactErrors.addAll(originInfoErrors);
 
-			ValidationErrors originInfoErrors = processOriginInfo(contact.getSormasToSormasOriginInfo());
-			contactErrorsErrors.addAll(originInfoErrors);
-
-			ValidationErrors contactDataErrors = processContactData(contact, person);
+			ValidationErrors contactDataErrors = processContactData(contact, person, originInfo);
 			contactErrors.addAll(contactDataErrors);
 
 			if (contactErrors.hasError()) {
 				validationErrors.put(buildContactValidationGroupName(contact), contactErrors.getErrors());
 			}
 
-			contactsToSave.add(ProcessedContactData.create(person, contact));
+			if (samples != null) {
+				Map<String, Map<String, List<String>>> sampleErrors = processSamples(samples);
+				validationErrors.putAll(sampleErrors);
+			}
+
+			contactsToSave.add(ProcessedContactData.create(person, contact, samples));
 		}
 
 		if (validationErrors.size() > 0) {
@@ -281,10 +315,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 				() -> personFacade.savePerson(contactData.person),
 				Captions.Person,
 				buildContactValidationGroupName(contactData.contact));
-			handleValidationError(
+			ContactDto savedContact = handleValidationError(
 				() -> contactFacade.saveContact(contactData.contact),
 				Captions.Contact,
 				buildContactValidationGroupName(contactData.contact));
+
+			if (contactData.samples != null) {
+				saveSamples(contactData.samples, savedContact.getSormasToSormasOriginInfo());
+			}
 		}
 	}
 
@@ -296,6 +334,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		validateCasesBeforeSend(casesToSend);
 
 		List<Contact> contactsToSend = new ArrayList<>();
+		List<Sample> samplesToSend = new ArrayList<>();
 		List<SormasToSormasCaseDto> entitiesToSend = new ArrayList<>();
 
 		for (Case caze : casesToSend) {
@@ -313,20 +352,40 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 				entity.setAssociatedContacts(getAssociatedContactDtos(associatedContacts, pseudonymizer, options));
 			}
 
+			final List<Sample> samples = new ArrayList<>();
+			if (options.isWithSamples()) {
+				final List<Sample> caseSamples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), currentUser);
+				samples.addAll(caseSamples);
+
+				associatedContacts.forEach(associatedContact -> {
+					List<Sample> contactSamples = sampleService.findBy(new SampleCriteria().contact(associatedContact.toReference()), currentUser)
+						.stream()
+						.filter(contactSample -> caseSamples.stream().noneMatch(caseSample -> DataHelper.isSame(caseSample, contactSample)))
+						.collect(Collectors.toList());
+
+					samples.addAll(contactSamples);
+				});
+			}
+
+			entity.setSamples(getSampleDtos(samples, pseudonymizer));
+
 			entitiesToSend.add(entity);
 			contactsToSend.addAll(associatedContacts);
+			samplesToSend.addAll(samples);
 		}
 
 		sendEntityToSormas(entitiesToSend, SAVE_SHARED_CASE_ENDPOINT, options);
 
-		casesToSend.forEach(caze -> saveNewShareInfo(currentUser.toReference(), options, caze, null));
-		contactsToSend.forEach((contact) -> saveNewShareInfo(currentUser.toReference(), options, null, contact));
+		casesToSend.forEach(caze -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setCaze(caze)));
+		contactsToSend.forEach((contact) -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setContact(contact)));
+		samplesToSend.forEach((sample) -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setSample(sample)));
 	}
 
 	@Override
 	public void shareContacts(List<String> contactUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		User currentUser = userService.getCurrentUser();
 		List<Contact> contactsToSend = contactService.getByUuids(contactUuids);
+		List<Sample> samplesToSend = new ArrayList<>();
 
 		validateContactsBeforeSend(contactsToSend);
 
@@ -337,14 +396,25 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 			PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer, options);
 			ContactDto contactDto = getContactDto(contact, pseudonymizer);
-			contactDto.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo(currentUser, options));
 
-			entitiesToSend.add(new SormasToSormasContactDto(personDto, contactDto));
+			SormasToSormasContactDto entity =
+				new SormasToSormasContactDto(personDto, contactDto, createSormasToSormasOriginInfo(currentUser, options));
+
+			List<Sample> samples = Collections.emptyList();
+			if (options.isWithSamples()) {
+				samples = sampleService.findBy(new SampleCriteria().contact(contact.toReference()), currentUser);
+
+				entity.setSamples(getSampleDtos(samples, pseudonymizer));
+			}
+
+			entitiesToSend.add(entity);
+			samplesToSend.addAll(samples);
 		}
 
 		sendEntityToSormas(entitiesToSend, SAVE_SHARED_CONTACT_ENDPOINT, options);
 
-		contactsToSend.forEach(contact -> saveNewShareInfo(currentUser.toReference(), options, null, contact));
+		contactsToSend.forEach(contact -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setContact(contact)));
+		samplesToSend.forEach(sample -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setSample(sample)));
 	}
 
 	@Override
@@ -463,11 +533,17 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}).collect(Collectors.toList());
 	}
 
-	private ValidationErrors processCaseData(
-		CaseDataDto caze,
-		PersonDto person,
-		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts,
-		SormasToSormasOriginInfoDto originInfo) {
+	public List<SormasToSormasSampleDto> getSampleDtos(List<Sample> samples, Pseudonymizer pseudonymizer) {
+		return samples.stream()
+			.map(
+				s -> new SormasToSormasSampleDto(
+					sampleFacade.convertToDto(s, pseudonymizer),
+					s.getPathogenTests().stream().map(t -> pathogenTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()),
+					s.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList())))
+			.collect(Collectors.toList());
+	}
+
+	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person, SormasToSormasOriginInfoDto originInfo) {
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = processPerson(person);
@@ -507,13 +583,55 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		associatedContacts.forEach(associatedContact -> {
 			ContactDto contact = associatedContact.getContact();
-			contact.setSormasToSormasOriginInfo(originInfo);
 
-			ValidationErrors contactErrors = processContactData(contact, associatedContact.getPerson());
+			ValidationErrors contactErrors = processContactData(contact, associatedContact.getPerson(), originInfo);
 
 			if (contactErrors.hasError()) {
 				validationErrors.put(buildContactValidationGroupName(contact), contactErrors.getErrors());
 			}
+		});
+
+		return validationErrors;
+	}
+
+	private Map<String, Map<String, List<String>>> processSamples(List<SormasToSormasSampleDto> samples) {
+		Map<String, Map<String, List<String>>> validationErrors = new HashMap<>();
+
+		samples.forEach(sormasToSormasSample -> {
+			SampleDto sample = sormasToSormasSample.getSample();
+
+			sample.setReportingUser(userService.getCurrentUser().toReference());
+
+			DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
+				loadLocalInfrastructure(null, null, null, null, sample.getLab(), null);
+
+			ValidationErrors sampleErrors = new ValidationErrors();
+			handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, sampleErrors, (infrastructureData -> {
+				sample.setLab(infrastructureData.facility);
+			}));
+			if (sampleErrors.hasError()) {
+				validationErrors.put(buildSampleValidationGroupName(sample), sampleErrors.getErrors());
+			}
+
+			sormasToSormasSample.getPathogenTests().forEach(pathogenTest -> {
+				pathogenTest.setUuid(DataHelper.createUuid());
+				DataHelper.Pair<InfrastructureData, List<String>> ptInfrastructureAndErrors =
+					loadLocalInfrastructure(null, null, null, FacilityType.LABORATORY, pathogenTest.getLab(), null);
+
+				ValidationErrors pathogenTestErrors = new ValidationErrors();
+				handleInfraStructure(ptInfrastructureAndErrors, Captions.PathogenTest_lab, pathogenTestErrors, (infrastructureData -> {
+					pathogenTest.setLab(infrastructureData.facility);
+				}));
+
+				if (pathogenTestErrors.hasError()) {
+					validationErrors.put(buildPathogenTestValidationGroupName(pathogenTest), pathogenTestErrors.getErrors());
+				}
+			});
+
+			sormasToSormasSample.getAdditionalTests().forEach(additionalTest -> {
+				additionalTest.setUuid(DataHelper.createUuid());
+			});
+
 		});
 
 		return validationErrors;
@@ -610,7 +728,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		healthConditions.setUuid(DataHelper.createUuid());
 	}
 
-	private ValidationErrors processContactData(ContactDto contact, PersonDto person) {
+	private ValidationErrors processContactData(ContactDto contact, PersonDto person, SormasToSormasOriginInfoDto originInfo) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		processPerson(person);
@@ -635,6 +753,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		if (contact.getHealthConditions() != null) {
 			processHealthConditions(contact.getHealthConditions());
 		}
+
+		contact.setSormasToSormasOriginInfo(originInfo);
 
 		return validationErrors;
 	}
@@ -765,11 +885,23 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	private String buildCaseValidationGroupName(HasUuid caze) {
-		return String.format("%s %s", I18nProperties.getCaption(Captions.CaseData), DataHelper.getShortUuid(caze.getUuid()));
+		return buildValidationGroupName(Captions.CaseData, caze);
 	}
 
 	private String buildContactValidationGroupName(ContactDto contact) {
-		return String.format("%s %s", I18nProperties.getCaption(Captions.Contact), DataHelper.getShortUuid(contact));
+		return buildValidationGroupName(Captions.Contact, contact);
+	}
+
+	private String buildSampleValidationGroupName(SampleDto sample) {
+		return buildValidationGroupName(Captions.Sample, sample);
+	}
+
+	private String buildPathogenTestValidationGroupName(PathogenTestDto pathogenTest) {
+		return buildValidationGroupName(Captions.PathogenTest, pathogenTest);
+	}
+
+	private String buildValidationGroupName(String captionTag, HasUuid hasUuid) {
+		return String.format("%s %s", I18nProperties.getCaption(captionTag), DataHelper.getShortUuid(hasUuid.getUuid()));
 	}
 
 	private ValidationErrors validateCase(CaseDataDto caze) throws ValidationRuntimeException {
@@ -796,10 +928,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return errors;
 	}
 
-	private ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo) {
+	private ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
-			return ValidationErrors
-				.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasShareInfoMissing));
+			return ValidationErrors.create(
+				I18nProperties.getCaption(validationGroupCaption),
+				I18nProperties.getValidationError(Validations.sormasToSormasShareInfoMissing));
 		}
 
 		ValidationErrors validationErrors = new ValidationErrors();
@@ -850,7 +983,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return sormasToSormasOriginInfo;
 	}
 
-	private void saveNewShareInfo(UserReferenceDto sender, SormasToSormasOptionsDto options, Case caze, Contact contact) {
+	private void saveNewShareInfo(UserReferenceDto sender, SormasToSormasOptionsDto options, Consumer<SormasToSormasShareInfo> setAssociatedObject) {
 		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
 
 		shareInfo.setUuid(DataHelper.createUuid());
@@ -860,10 +993,33 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		shareInfo.setSender(userService.getByReferenceDto(sender));
 		shareInfo.setComment(options.getComment());
 
-		shareInfo.setCaze(caze);
-		shareInfo.setContact(contact);
+		setAssociatedObject.accept(shareInfo);
 
 		sormasToSormasShareInfoService.ensurePersisted(shareInfo);
+	}
+
+	private void saveSamples(List<SormasToSormasSampleDto> samples, SormasToSormasOriginInfoDto sormasToSormasOriginInfo)
+		throws SormasToSormasValidationException {
+		for (SormasToSormasSampleDto sormasToSormasSample : samples) {
+			SampleDto sample = sormasToSormasSample.getSample();
+			sample.setSormasToSormasOriginInfo(sormasToSormasOriginInfo);
+
+			handleValidationError(() -> sampleFacade.saveSample(sample), Captions.Sample, buildSampleValidationGroupName(sample));
+
+			for (PathogenTestDto pathogenTest : sormasToSormasSample.getPathogenTests()) {
+				handleValidationError(
+					() -> pathogenTestFacade.savePathogenTest(pathogenTest),
+					Captions.PathogenTest,
+					buildPathogenTestValidationGroupName(pathogenTest));
+			}
+
+			for (AdditionalTestDto additionalTest : sormasToSormasSample.getAdditionalTests()) {
+				handleValidationError(
+					() -> additionalTestFacade.saveAdditionalTest(additionalTest),
+					Captions.AdditionalTest,
+					buildValidationGroupName(Captions.AdditionalTest, additionalTest));
+			}
+		}
 	}
 
 	private void sendEntityToSormas(List<?> entities, String endpoint, SormasToSormasOptionsDto options) throws SormasToSormasException {
@@ -999,6 +1155,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			target.setContact(source.getContact().toReference());
 		}
 
+		if (source.getSample() != null) {
+			target.setSample(source.getSample().toReference());
+		}
+
 		OrganizationServerAccessData serverAccessData = getOrganizationServerAccessData(source.getOrganizationId())
 			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));
 		target.setTarget(serverAccessData.toReference());
@@ -1030,13 +1190,19 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		private PersonDto person;
 		private CaseDataDto caze;
 		private List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts;
+		private List<SormasToSormasSampleDto> samples;
 
-		static ProcessedCaseData create(PersonDto person, CaseDataDto caze, List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
+		static ProcessedCaseData create(
+			PersonDto person,
+			CaseDataDto caze,
+			List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts,
+			List<SormasToSormasSampleDto> samples) {
 			ProcessedCaseData caseData = new ProcessedCaseData();
 
 			caseData.person = person;
 			caseData.caze = caze;
 			caseData.associatedContacts = associatedContacts;
+			caseData.samples = samples;
 
 			return caseData;
 		}
@@ -1046,11 +1212,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		private PersonDto person;
 		private ContactDto contact;
+		private List<SormasToSormasSampleDto> samples;
 
-		static ProcessedContactData create(PersonDto person, ContactDto contact) {
+		static ProcessedContactData create(PersonDto person, ContactDto contact, List<SormasToSormasSampleDto> samples) {
 			ProcessedContactData data = new ProcessedContactData();
 			data.person = person;
 			data.contact = contact;
+			data.samples = samples;
 
 			return data;
 		}
