@@ -1734,7 +1734,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private void migrateEmbeddedEpiDataToExposures() throws SQLException {
 		GenericRawResults<Object[]> newBurials = getDao(EpiData.class).queryRaw(
 			"SELECT epiData_id, burialAddress_id, burialPersonName, burialRelation,"
-				+ "burialTouching, burialIll, burialDateFrom, burialDateTo FROM epidataburial WHERE snapshot = 0;",
+				+ "burialTouching, burialIll, burialDateFrom, burialDateTo FROM epidataburial WHERE changeDate = 0 AND snapshot = 0;",
 			new DataType[] {
 				DataType.BIG_INTEGER,
 				DataType.BIG_INTEGER,
@@ -1764,7 +1764,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 		GenericRawResults<Object[]> newGatherings = getDao(EpiData.class).queryRaw(
-			"SELECT epiData_id, gatheringAddress_id, gatheringDate, description FROM epidatagathering WHERE snapshot = 0;",
+			"SELECT epiData_id, gatheringAddress_id, gatheringDate, description FROM epidatagathering WHERE changeDate = 0 AND snapshot = 0;",
 			new DataType[] {
 				DataType.BIG_INTEGER,
 				DataType.BIG_INTEGER,
@@ -1785,7 +1785,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 		GenericRawResults<Object[]> newTravels = getDao(EpiData.class).queryRaw(
-			"SELECT epiData_id, travelDateFrom, travelDateTo, travelType, travelDestination FROM epidatatravel WHERE snapshot = 0;",
+			"SELECT epiData_id, travelDateFrom, travelDateTo, travelType, travelDestination FROM epidatatravel WHERE changeDate = 0 AND snapshot = 0;",
 			new DataType[] {
 				DataType.BIG_INTEGER,
 				DataType.DATE_LONG,
