@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
@@ -53,7 +55,7 @@ public class QuarantineOrderLayout extends VerticalLayout {
 		templateSelector.setItems(FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates());
 		templateSelector.addValueChangeListener(e -> {
 			String templateFile = e.getValue();
-			boolean isValidTemplateFile = templateFile != null && !templateFile.isEmpty();
+			boolean isValidTemplateFile = StringUtils.isNotBlank(templateFile);
 			createButton.setEnabled(isValidTemplateFile);
 			additionalVariablesComponent.removeAllComponents();
 			additionalVariablesComponent.setVisible(false);
