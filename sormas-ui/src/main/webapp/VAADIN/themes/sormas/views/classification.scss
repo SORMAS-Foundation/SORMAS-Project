@@ -11,17 +11,15 @@
 			
 			&.main-criteria-suspect {
 				background: rgba(255, 215, 0, 0.6);
-				margin-bottom: 16px;
 			}
 			&.main-criteria-probable {
 				background: rgba(255, 140, 0, 0.6);
-				margin-bottom: 16px;
 			}
 			&.main-criteria-confirmed {
 				background: rgba(255, 0, 0, 0.6);
 			}
 			&.main-criteria-not_a_case {
-				background: rgba(201, 201, 201, 0.6);
+				background: rgba(160, 160, 160, 0.6);
 			}
 		}
 	
