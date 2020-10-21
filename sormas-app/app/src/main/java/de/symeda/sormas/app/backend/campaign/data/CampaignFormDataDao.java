@@ -13,25 +13,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.rest;
+package de.symeda.sormas.app.backend.campaign.data;
 
-import java.util.List;
+import com.j256.ormlite.dao.Dao;
 
-import de.symeda.sormas.api.campaign.CampaignDto;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 
-public interface CampaignFacadeRetro {
+public class CampaignFormDataDao extends AbstractAdoDao<CampaignFormData> {
 
-	@GET("campaigns/uuids")
-	Call<List<String>> pullUuids();
+	public CampaignFormDataDao(Dao<CampaignFormData, Long> innerDao) {
+		super(innerDao);
+	}
 
-	@GET("campaigns/all/{since}")
-	Call<List<CampaignDto>> pullAllSince(@Path("since") long since);
+	@Override
+	protected Class<CampaignFormData> getAdoClass() {
+		return CampaignFormData.class;
+	}
 
-	@POST("campaigns/query")
-	Call<List<CampaignDto>> pullByUuids(@Body List<String> uuids);
+	@Override
+	public String getTableName() {
+		return CampaignFormData.TABLE_NAME;
+	}
 }

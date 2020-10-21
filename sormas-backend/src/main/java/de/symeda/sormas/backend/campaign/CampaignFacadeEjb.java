@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.campaign;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.campaign.CampaignChangeDatesDto;
@@ -284,18 +286,24 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	@Override
-	public CampaignSyncDto getCampaignSyncData(CampaignChangeDatesDto changeDates) {
-		final CampaignSyncDto sync = new CampaignSyncDto();
-		sync.setCampaigns(getAllAfter(changeDates.getCampaignChangeDate()));
-		sync.setCampaignFormMetas(campaignFormMetaFacade.getAllAfter(changeDates.getCampaignFormMetaChangeDate()));
-		return sync;
-	}
-
-	@Override
 	public List<CampaignDto> getAllAfter(Date date) {
 
 		final List<Campaign> allAfter = campaignService.getAllAfter(date, userService.getCurrentUser());
 		return allAfter.stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CampaignDto> getByUuids(List<String> uuids) {
+		return campaignService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllActiveUuids() {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return campaignService.getAllActiveUuids();
 	}
 
 	public static CampaignReferenceDto toReferenceDto(Campaign entity) {

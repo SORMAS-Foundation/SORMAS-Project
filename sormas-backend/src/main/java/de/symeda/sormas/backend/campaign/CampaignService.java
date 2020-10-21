@@ -14,6 +14,9 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
@@ -69,5 +72,23 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 			}
 		}
 		return filter;
+	}
+
+	public List<String> getAllActiveUuids() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Campaign> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and();
+
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = AbstractAdoService.and(cb, cb.isFalse(from.get(Campaign.ARCHIVED)), userFilter);
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Campaign.UUID));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

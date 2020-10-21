@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.campaign;
 
+import java.sql.SQLException;
+
 import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -33,5 +35,18 @@ public class CampaignDao extends AbstractAdoDao<Campaign> {
     @Override
     public String getTableName() {
         return Campaign.TABLE_NAME;
+    }
+
+    public void deleteCampaignAndAllDependingEntities(String uuid) throws SQLException {
+        deleteCampaignAndAllDependingEntities(queryUuidWithEmbedded(uuid));
+    }
+
+    public void deleteCampaignAndAllDependingEntities(Campaign campaign) throws SQLException {
+        // Cancel if not in local database
+        if (campaign == null) {
+            return;
+        }
+
+        deleteCascade(campaign);
     }
 }

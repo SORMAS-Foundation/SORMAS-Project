@@ -20,6 +20,9 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -31,9 +34,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -76,5 +82,49 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignFormData> from) {
 		return null;
+	}
+
+	public List<String> getAllActiveUuids() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<CampaignFormData> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and();
+
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = AbstractAdoService.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Campaign.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<CampaignFormData> getAllActiveAfter(Date date) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
+		Root<CampaignFormData> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and();
+
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = AbstractAdoService.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
+		}
+
+		if (date != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			if (dateFilter != null) {
+				filter = cb.and(filter, dateFilter);
+			}
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
 	}
 }

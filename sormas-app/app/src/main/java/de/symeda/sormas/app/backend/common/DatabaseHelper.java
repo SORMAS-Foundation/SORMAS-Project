@@ -38,6 +38,8 @@ import android.util.Log;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.CampaignDao;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataDao;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDao;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -499,7 +501,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDetails varchar(512);");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDisease varchar(255);");
 				getDao(Person.class).executeRaw("AR TABLE person ADD COLUMN causeOfDeathDiseaseDetails varchar(512);");
-			case 116:LTE
+			case 116:
 				currentVersion = 116;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcome varchar(255);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcomeDate timestamp without time zone;");
@@ -1714,14 +1716,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Campaign.class).executeRaw(
 					"CREATE TABLE campaigns(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
 						+ "changedate timestamp not null," + "creationdate timestamp not null," + "name varchar(255)," + "description varchar(512),"
-						+ "startdate timestamp," + "enddate timestamp," + "creatinguser_id bigint," + "deleted boolean DEFAULT false,"
+						+ "startdate timestamp," + "enddate timestamp," + "creatinguser_id bigint REFERENCES users(id)," + "deleted boolean DEFAULT false,"
 						+ "archived boolean DEFAULT false," + "dashboardElementsJson TEXT," + ");");
-				getDao(Contact.class).executeRaw("ALTER TABLE campaigns ADD COLUMN creatinguser_id bigint REFERENCES users(id);");
 				getDao(CampaignFormMeta.class).executeRaw(
 					"CREATE TABLE campaignformmeta(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
 						+ "changedate timestamp not null," + "creationdate timestamp not null," + "formId varchar(255)," + "formName varchar(512),"
 						+ "languageCode varchar(255)," + "campaignFormElementsJson TEXT," + "campaignFormTranslationsJson TEXT," + ");");
-				
+				getDao(CampaignFormData.class).executeRaw(
+					"CREATE TABLE campaignFormData(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
+						+ "changedate timestamp not null," + "creationdate timestamp not null," + "formValuesJson TEXT,"
+						+ "campaign_id bigint  REFERENCES campaigns(id);," + "campaignFormMeta_id bigint REFERENCES campaignformmeta(id);,"
+						+ "formDate timestamp," + "creatinguser_id bigint REFERENCES users(id)," + "region_id bigint REFERENCES region(id),"
+						+ "district_id bigint REFERENCES district(id)," + "community_id bigint REFERENCES community(id)," + ");");
 				// ATTENTION: break should only be done after last version
 				break;
 			default:
@@ -2103,9 +2109,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (CampaignDao) getAdoDao(Campaign.class);
 	}
 
-
 	public static CampaignFormMetaDao getCampaignFormMetaDao() {
 		return (CampaignFormMetaDao) getAdoDao(CampaignFormMeta.class);
+	}
+
+	public static CampaignFormDataDao getCampaignFormDataDao() {
+		return (CampaignFormDataDao) getAdoDao(CampaignFormData.class);
 	}
 
 	/**

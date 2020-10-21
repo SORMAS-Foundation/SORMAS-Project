@@ -12,30 +12,30 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 
-@Path("/campaigns")
+@Path("/campaignFormMeta")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed({
 	"USER",
 	"REST_USER" })
-public class CampaignResource {
+public class CampaignFormMetaResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<CampaignDto> getAllCampaignFormData(@PathParam("since") long since) {
-		return FacadeProvider.getCampaignFacade().getAllAfter(new Date(since));
+	public List<CampaignFormMetaDto> getAllCampaignFormMeta(@PathParam("since") long since) {
+		return FacadeProvider.getCampaignFormMetaFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<CampaignDto> getByUuids(List<String> uuids) {
-		return FacadeProvider.getCampaignFacade().getByUuids(uuids);
+	public List<CampaignFormMetaDto> getByUuids(List<String> uuids) {
+		return FacadeProvider.getCampaignFormMetaFacade().getByUuids(uuids);
 	}
 
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
-		return FacadeProvider.getCampaignFacade().getAllActiveUuids();
+		return FacadeProvider.getCampaignFormMetaFacade().getAllUuids();
 	}
 }

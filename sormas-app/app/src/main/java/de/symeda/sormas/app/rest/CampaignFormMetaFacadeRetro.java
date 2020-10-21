@@ -17,21 +17,21 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface CampaignFacadeRetro {
+public interface CampaignFormMetaFacadeRetro {
 
-	@GET("campaigns/uuids")
+	@GET("campaignFormMeta/uuids")
 	Call<List<String>> pullUuids();
 
-	@GET("campaigns/all/{since}")
-	Call<List<CampaignDto>> pullAllSince(@Path("since") long since);
+	@GET("campaignFormMeta/all/{since}")
+	Call<List<CampaignFormMetaDto>> pullAllSince(@Path("since") long since);
 
-	@POST("campaigns/query")
-	Call<List<CampaignDto>> pullByUuids(@Body List<String> uuids);
+	@POST("campaignFormMeta/query")
+	Call<List<CampaignFormMetaDto>> pullByUuids(@Body List<String> uuids);
 }
