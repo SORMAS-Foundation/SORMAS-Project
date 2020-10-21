@@ -108,7 +108,7 @@ public class BAGExportCaseDto implements Serializable {
 							String homeAddressStreet, String homeAddressHouseNumber, String homeAddressCity, String homeAddressPostalCode,
 							String phoneNumber, String mobileNumber, String emailAddress, Sex sex,
 							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
-							OccupationType occupationType, Boolean symptomatic,
+							OccupationType occupationType, YesNoUnknown symptomatic,
 							CovidTestReason covidTestReason, String covidTestReasonDetails,
 							Date symptomOnsetDate,
 							Date contactTracingContactDate,
@@ -134,7 +134,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.sex = sex;
 		this.birthDate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.occupationType = occupationType;
-		this.symptomatic = symptomatic == null ? YesNoUnknown.UNKNOWN : symptomatic ? YesNoUnknown.YES : YesNoUnknown.NO;
+		this.symptomatic = symptomatic;
 		this.pcrReason = covidTestReason;
 		this.otherPcrReason = covidTestReasonDetails;
 		this.symptomOnsetDate = symptomOnsetDate;

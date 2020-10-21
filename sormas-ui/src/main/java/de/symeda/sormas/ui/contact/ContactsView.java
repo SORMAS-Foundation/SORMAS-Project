@@ -23,6 +23,8 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -268,25 +270,24 @@ public class ContactsView extends AbstractView {
 					Descriptions.descFollowUpExportButton);
 			}
 
-			//TODO - enable after 1.50 release
-//			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
-//				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
-//				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
-//					BAGExportContactDto.class,
-//					null,
-//					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
-//					(propertyId, type) -> {
-//						String caption = I18nProperties.findPrefixCaption(propertyId);
-//						if (Date.class.isAssignableFrom(type)) {
-//							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-//						}
-//						return caption;
-//					},
-//					createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
-//					null);
-//
-//				addExportButton(bagExportResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
-//			}
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
+				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
+					BAGExportContactDto.class,
+					null,
+					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
+					(propertyId, type) -> {
+						String caption = I18nProperties.findPrefixCaption(propertyId);
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+						}
+						return caption;
+					},
+					createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
+					null);
+
+				addExportButton(bagExportResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
+			}
 
 			// Warning if no filters have been selected
 			{
