@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
-import static de.symeda.sormas.api.utils.HtmlHelper.escapeAndUnescapeTags;
-import static de.symeda.sormas.api.utils.HtmlHelper.unescapeTags;
+import static de.symeda.sormas.api.utils.HtmlHelper.escapeAndUnescapeBasicTags;
+import static de.symeda.sormas.api.utils.HtmlHelper.unescapeBasicTags;
 
 import java.util.Date;
 import java.util.List;
@@ -241,7 +241,7 @@ public final class ClassificationHtmlRenderer {
 		for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
-				subCriteriaSb.append("- " + escapeAndUnescapeTags(subCriteria.buildDescription() + "</br>"));
+				subCriteriaSb.append("- " + escapeAndUnescapeBasicTags(subCriteria.buildDescription() + "</br>"));
 			} else if (subCriteria instanceof ClassificationCollectiveCriteria
 				&& !(subCriteria instanceof ClassificationAllOfCriteriaDto)
 				&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
@@ -296,11 +296,11 @@ public final class ClassificationHtmlRenderer {
 	 * Creates a div containing an info text.
 	 */
 	private static String createInfoDiv() {
-		return unescapeTags(StringEscapeUtils.escapeHtml4(I18nProperties.getString(Strings.classificationInfoText)));
+		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(I18nProperties.getString(Strings.classificationInfoText)));
 	}
 
 	private static String createInfoDiv(int requirementsNumber) {
-		return unescapeTags(
+		return unescapeBasicTags(
 			StringEscapeUtils.escapeHtml4(
 				String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber))));
 	}
@@ -331,9 +331,10 @@ public final class ClassificationHtmlRenderer {
 
 	/**
 	 * Creates the div for an actual criteria containing its description.
+	 * Specific tags are allowed to be contained in i18n strings and are thus unescaped
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return unescapeTags(StringEscapeUtils.escapeHtml4(text) + "<br>");
+		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(text) + "<br>");
 	}
 
 	private enum ClassificationCriteriaType {
