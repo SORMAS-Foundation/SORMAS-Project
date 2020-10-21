@@ -196,11 +196,7 @@ public final class SymptomsHelper {
 			throw new RuntimeException(e);
 		}
 
-		if (dto.getSymptomatic() == YesNoUnknown.UNKNOWN) {
-			return;
-		} else if (dto.getSymptomatic() == YesNoUnknown.NO) {
-			return;
-		} else {
+		if (!YesNoUnknown.UNKNOWN.equals(dto.getSymptomatic()) && !YesNoUnknown.NO.equals(dto.getSymptomatic())) {
 			dto.setSymptomatic(null);
 		}
 	}
@@ -235,8 +231,8 @@ public final class SymptomsHelper {
 					}
 				} else if (pd.getReadMethod().getReturnType() == Boolean.class) {
 					// Booleans are carried over when they are TRUE
-					YesNoUnknown result = (YesNoUnknown) pd.getReadMethod().invoke(sourceSymptoms);
-					if (result == YesNoUnknown.YES) {
+					Boolean result = (Boolean) pd.getReadMethod().invoke(sourceSymptoms);
+					if (Boolean.TRUE.equals(result)) {
 						pd.getWriteMethod().invoke(targetSymptoms, result);
 					}
 				} else if (pd.getName().equals(SymptomsDto.TEMPERATURE)) {

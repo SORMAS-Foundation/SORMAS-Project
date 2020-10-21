@@ -17,10 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.i18n;
 
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.ResourceBundle;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;

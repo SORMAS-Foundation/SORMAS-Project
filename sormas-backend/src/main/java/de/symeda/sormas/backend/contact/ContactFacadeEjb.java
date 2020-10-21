@@ -105,7 +105,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
@@ -537,11 +536,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 					exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
 					exportContact.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(symptoms, true, userLanguage));
-					if (lastCooperativeVisit.getSymptoms().getSymptomatic() == YesNoUnknown.YES) exportContact
-							.setLastCooperativeVisitSymptomatic(YesNoUnknown.YES);
-					else if (lastCooperativeVisit.getSymptoms().getSymptomatic() == YesNoUnknown.NO) exportContact
-							.setLastCooperativeVisitSymptomatic(YesNoUnknown.NO);
-					else exportContact.setLastCooperativeVisitSymptomatic(YesNoUnknown.UNKNOWN);
+					exportContact.setLastCooperativeVisitSymptomatic(symptoms.getSymptomatic());
 				}
 
 				if (travels != null) {

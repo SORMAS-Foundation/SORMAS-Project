@@ -869,15 +869,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 						SymptomsDto visitSymptoms = SymptomsFacadeEjb.toDto(lastCooperativeVisit.getSymptoms());
 						pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitSymptoms, inJurisdiction, null);
-
 						exportDto.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(visitSymptoms, true, userLanguage));
-						if (visitSymptoms.getSymptomatic() == YesNoUnknown.YES) {
-							exportDto.setLastCooperativeVisitSymptomatic(YesNoUnknown.YES);
-						} else if (lastCooperativeVisit.getSymptoms().getSymptomatic() == YesNoUnknown.NO) {
-							exportDto.setLastCooperativeVisitSymptomatic(YesNoUnknown.NO);
-						} else {
-							exportDto.setLastCooperativeVisitSymptomatic(YesNoUnknown.UNKNOWN);
-						}
+						exportDto.setLastCooperativeVisitSymptomatic(visitSymptoms.getSymptomatic());
+
 					}
 				}
 
@@ -1833,7 +1827,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (sampleService.getSampleCountByCase(caze) > 0) {
 			completeness += 0.15f;
 		}
-		if ((caze.getSymptoms().getSymptomatic()) == YesNoUnknown.YES) {
+		if (YesNoUnknown.YES.equals(caze.getSymptoms().getSymptomatic())) {
 			completeness += 0.15f;
 		}
 		if (contactService.getContactCountByCase(caze) > 0) {

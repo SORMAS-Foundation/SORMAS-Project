@@ -1024,18 +1024,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					symptom.setEnabled(true);
 				}
 			}
-			if (sourceFieldSymptomatic.getValue() != null) {
-				if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.NO) || sourceFieldSymptomatic.getValue().equals(YesNoUnknown.UNKNOWN)) {
-					onsetDateField.setVisible(false);
-					onsetSymptom.setVisible(false);
-					onsetDateField.setValue(null);
-				} else {
-					onsetDateField.setVisible(true);
-					onsetSymptom.setVisible(true);
-				}
+			if (sourceFieldSymptomatic.getValue() != null
+				&& (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.NO) || sourceFieldSymptomatic.getValue().equals(YesNoUnknown.UNKNOWN))) {
+				onsetDateField.setEnabled(false);
+				onsetSymptom.setEnabled(false);
+				onsetDateField.setValue(null);
 			} else {
-				onsetDateField.setVisible(true);
-				onsetSymptom.setVisible(true);
+				onsetDateField.setEnabled(true);
+				onsetSymptom.setEnabled(true);
 			}
 		});
 	}

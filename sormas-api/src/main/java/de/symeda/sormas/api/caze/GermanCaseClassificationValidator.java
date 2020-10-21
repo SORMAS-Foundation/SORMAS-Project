@@ -67,7 +67,7 @@ public class GermanCaseClassificationValidator {
 	private static boolean hasCoronavirusSymptom(CaseDataDto caseDataDto) {
 		final SymptomsDto symptoms = caseDataDto.getSymptoms();
 		return caseDataDto.getDisease() == Disease.CORONAVIRUS
-			&& symptoms.getSymptomatic() == YesNoUnknown.YES
+			&& YesNoUnknown.YES.equals(symptoms.getSymptomatic())
 			&& SymptomsHelper.atLeastOnSymptomTrue(
 				symptoms.getPneumoniaClinicalOrRadiologic(),
 				symptoms.getDifficultyBreathing(),
