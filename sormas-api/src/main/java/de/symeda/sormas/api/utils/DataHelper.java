@@ -358,7 +358,7 @@ public final class DataHelper {
 			return "";
 		} else if (value instanceof Date) {
 			return DateFormatHelper.formatDate((Date) value);
-		} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
+		} else if (value.getClass().equals(Boolean.class)) {
 			return DataHelper.parseBoolean((Boolean) value);
 		} else if (value instanceof Set) {
 			StringBuilder sb = new StringBuilder();
