@@ -286,6 +286,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Outbreak.class);
 			TableUtils.createTable(connectionSource, DiseaseClassificationCriteria.class);
 			TableUtils.createTable(connectionSource, SormasToSormasOriginInfo.class);
+			TableUtils.createTable(connectionSource, Campaign.class);
+			TableUtils.createTable(connectionSource, CampaignFormData.class);
+			TableUtils.createTable(connectionSource, CampaignFormMeta.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -1713,31 +1716,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 237:
 				currentVersion = 237;
-				getDao(Campaign.class).executeRaw(
-					"CREATE TABLE campaigns(id integer primary key autoincrement, uuid varchar(36) not null unique, "
-						+ "changedate timestamp not null, creationdate timestamp not null, name varchar(255), description varchar(512),"
-						+ "startdate timestamp, enddate timestamp, creatinguser_id bigint REFERENCES users(id), deleted boolean DEFAULT false,"
-						+ "archived boolean DEFAULT false, dashboardElementsJson TEXT);");
-				getDao(CampaignFormMeta.class).executeRaw(
-					"CREATE TABLE campaignformmeta( id integer primary key autoincrement, uuid varchar(36) not null unique,"
-						+ "changedate timestamp not null, creationdate timestamp not null, formId varchar(255), formName varchar(512),"
-						+ "languageCode varchar(255), campaignFormElementsJson TEXT, campaignFormTranslationsJson TEXT );");
-				getDao(CampaignFormData.class).executeRaw(
-					"CREATE TABLE campaignFormData\n" +
-							"(\n" +
-							"    id                  integer primary key autoincrement,\n" +
-							"    uuid                varchar(36) not null unique,\n" +
-							"    changedate          timestamp   not null,\n" +
-							"    creationdate        timestamp   not null,\n" +
-							"    formValuesJson      TEXT,\n" +
-							"    campaign_id         bigint REFERENCES campaigns (id),\n" +
-							"    campaignFormMeta_id bigint REFERENCES campaignformmeta (id),\n" +
-							"    formDate            timestamp,\n" +
-							"    creatinguser_id     bigint REFERENCES users (id),\n" +
-							"    region_id           bigint REFERENCES region (id),\n" +
-							"    district_id         bigint REFERENCES district (id),\n" +
-							"    community_id        bigint REFERENCES community (id)\n" +
-							");");
+				TableUtils.createTable(connectionSource, Campaign.class);
+				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
+				TableUtils.createTable(connectionSource, CampaignFormData.class);
+
 				// ATTENTION: break should only be done after last version
 				break;
 			default:

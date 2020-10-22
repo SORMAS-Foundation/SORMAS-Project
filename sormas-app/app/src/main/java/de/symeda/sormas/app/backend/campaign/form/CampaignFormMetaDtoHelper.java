@@ -24,7 +24,6 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -41,12 +40,12 @@ public class CampaignFormMetaDtoHelper extends AdoDtoHelper<CampaignFormMeta, Ca
 
     @Override
     protected Class<CampaignFormMeta> getAdoClass() {
-        return null;
+        return CampaignFormMeta.class;
     }
 
     @Override
     protected Class<CampaignFormMetaDto> getDtoClass() {
-        return null;
+        return CampaignFormMetaDto.class;
     }
 
     @Override

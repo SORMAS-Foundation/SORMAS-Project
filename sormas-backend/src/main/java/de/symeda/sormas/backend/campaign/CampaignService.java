@@ -91,4 +91,28 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		return em.createQuery(cq).getResultList();
 	}
+
+	public List<Campaign> getAllAfter(Date since, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
+		Root<Campaign> root = cq.from(getElementClass());
+
+		Predicate filter = createUserFilter(cb, cq, root);
+		if (since != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, root, since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
+
+		List<Campaign> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
 }

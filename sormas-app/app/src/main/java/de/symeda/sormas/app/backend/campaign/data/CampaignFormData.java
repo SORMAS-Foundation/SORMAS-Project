@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -84,6 +85,7 @@ public class CampaignFormData extends PseudonymizableAdo {
 		this.formValues = null;
 	}
 
+	@Transient
 	public List<CampaignFormDataEntry> getFormValues() {
 		if (formValues == null) {
 			Gson gson = new Gson();
@@ -165,5 +167,10 @@ public class CampaignFormData extends PseudonymizableAdo {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

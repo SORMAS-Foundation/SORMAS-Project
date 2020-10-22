@@ -20,21 +20,17 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.table.DatabaseTable;
 
-import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 
 @Entity(name = CampaignFormMeta.TABLE_NAME)
@@ -42,6 +38,7 @@ import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 public class CampaignFormMeta extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "campaignformmeta";
+	public static final String I18N_PREFIX = "CampaignFormMeta";
 
 	public static final String FORM_ID = "formId";
 	public static final String FORM_NAME = "formName";
@@ -97,10 +94,11 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 		this.campaignFormElementsJson = campaignFormElementsJson;
 	}
 
+	@Transient
 	public List<CampaignFormElement> getCampaignFormElements() {
 		if (campaignFormElements == null) {
 			Gson gson = new Gson();
-			Type type = new TypeToken<Set<UserRole>>() {
+			Type type = new TypeToken<List<CampaignFormElement>>() {
 			}.getType();
 			campaignFormElements = gson.fromJson(campaignFormElementsJson, type);
 			if (campaignFormElements == null) {
@@ -125,10 +123,11 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 		this.campaignFormTranslations = null;
 	}
 
+	@Transient
 	public List<CampaignFormTranslations> getCampaignFormTranslations() {
 		if (campaignFormTranslations == null) {
 			Gson gson = new Gson();
-			Type type = new TypeToken<Set<UserRole>>() {
+			Type type = new TypeToken<List<CampaignFormTranslations>>() {
 			}.getType();
 			campaignFormTranslations = gson.fromJson(campaignFormTranslationsJson, type);
 			if (campaignFormTranslations == null) {
@@ -142,5 +141,10 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 		this.campaignFormTranslations = campaignFormTranslations;
 		Gson gson = new Gson();
 		campaignFormTranslationsJson = gson.toJson(campaignFormTranslations);
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

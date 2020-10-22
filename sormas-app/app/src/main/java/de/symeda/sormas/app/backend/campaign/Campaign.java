@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,7 +33,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.user.User;
@@ -142,7 +140,7 @@ public class Campaign extends PseudonymizableAdo {
 	public List<CampaignDashboardElement> getDashboardElements() {
 		if (dashboardElements == null) {
 			Gson gson = new Gson();
-			Type type = new TypeToken<Set<UserRole>>() {
+			Type type = new TypeToken<List<CampaignDashboardElement>>() {
 			}.getType();
 			dashboardElements = gson.fromJson(dashboardElementsJson, type);
 			if (dashboardElements == null) {

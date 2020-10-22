@@ -123,7 +123,6 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
-		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
 	}
