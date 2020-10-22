@@ -27,9 +27,6 @@ import retrofit2.http.Path;
 
 public interface CampaignFormDataFacadeRetro {
 
-//	@GET("campaignFormData/deleted/{since}")
-//	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
-
 	@GET("campaignFormData/all/{since}")
 	Call<List<CampaignFormDataDto>> pullAllSince(@Path("since") long since);
 

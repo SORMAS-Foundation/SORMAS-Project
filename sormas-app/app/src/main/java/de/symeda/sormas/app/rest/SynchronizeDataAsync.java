@@ -492,13 +492,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
 			}
 
-//			// Campaigns
-//			if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-//				List<String> campaignDataUuids =
-//					executeUuidCall(RetroProvider.getCampaignFormDataFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-//				DatabaseHelper.getCampaignFormDataDao().delete(campaignDataUuids);
-//			}
-
 			ConfigProvider.setLastDeletedSyncDate(new Date());
 		} catch (SQLException e) {
 			Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveDeletedUuidsSince failed: " + e.getMessage());
