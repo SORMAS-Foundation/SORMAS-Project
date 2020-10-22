@@ -54,7 +54,7 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String formName;
 
-	@Enumerated(EnumType.STRING)
+	@Column(length = 32)
 	private String languageCode;
 
 	@Column(name = "campaignFormElements")

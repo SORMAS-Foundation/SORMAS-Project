@@ -1714,20 +1714,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 237:
 				currentVersion = 237;
 				getDao(Campaign.class).executeRaw(
-					"CREATE TABLE campaigns(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
-						+ "changedate timestamp not null," + "creationdate timestamp not null," + "name varchar(255)," + "description varchar(512),"
-						+ "startdate timestamp," + "enddate timestamp," + "creatinguser_id bigint REFERENCES users(id)," + "deleted boolean DEFAULT false,"
-						+ "archived boolean DEFAULT false," + "dashboardElementsJson TEXT," + ");");
+					"CREATE TABLE campaigns(id integer primary key autoincrement, uuid varchar(36) not null unique, "
+						+ "changedate timestamp not null, creationdate timestamp not null, name varchar(255), description varchar(512),"
+						+ "startdate timestamp, enddate timestamp, creatinguser_id bigint REFERENCES users(id), deleted boolean DEFAULT false,"
+						+ "archived boolean DEFAULT false, dashboardElementsJson TEXT);");
 				getDao(CampaignFormMeta.class).executeRaw(
-					"CREATE TABLE campaignformmeta(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
-						+ "changedate timestamp not null," + "creationdate timestamp not null," + "formId varchar(255)," + "formName varchar(512),"
-						+ "languageCode varchar(255)," + "campaignFormElementsJson TEXT," + "campaignFormTranslationsJson TEXT," + ");");
+					"CREATE TABLE campaignformmeta( id integer primary key autoincrement, uuid varchar(36) not null unique,"
+						+ "changedate timestamp not null, creationdate timestamp not null, formId varchar(255), formName varchar(512),"
+						+ "languageCode varchar(255), campaignFormElementsJson TEXT, campaignFormTranslationsJson TEXT );");
 				getDao(CampaignFormData.class).executeRaw(
-					"CREATE TABLE campaignFormData(" + "id integer primary key autoincrement," + "uuid varchar(36) not null unique,"
-						+ "changedate timestamp not null," + "creationdate timestamp not null," + "formValuesJson TEXT,"
-						+ "campaign_id bigint  REFERENCES campaigns(id);," + "campaignFormMeta_id bigint REFERENCES campaignformmeta(id);,"
-						+ "formDate timestamp," + "creatinguser_id bigint REFERENCES users(id)," + "region_id bigint REFERENCES region(id),"
-						+ "district_id bigint REFERENCES district(id)," + "community_id bigint REFERENCES community(id)," + ");");
+					"CREATE TABLE campaignFormData\n" +
+							"(\n" +
+							"    id                  integer primary key autoincrement,\n" +
+							"    uuid                varchar(36) not null unique,\n" +
+							"    changedate          timestamp   not null,\n" +
+							"    creationdate        timestamp   not null,\n" +
+							"    formValuesJson      TEXT,\n" +
+							"    campaign_id         bigint REFERENCES campaigns (id),\n" +
+							"    campaignFormMeta_id bigint REFERENCES campaignformmeta (id),\n" +
+							"    formDate            timestamp,\n" +
+							"    creatinguser_id     bigint REFERENCES users (id),\n" +
+							"    region_id           bigint REFERENCES region (id),\n" +
+							"    district_id         bigint REFERENCES district (id),\n" +
+							"    community_id        bigint REFERENCES community (id)\n" +
+							");");
 				// ATTENTION: break should only be done after last version
 				break;
 			default:
@@ -1888,6 +1898,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new DiseaseClassificationCriteriaDao((Dao<DiseaseClassificationCriteria, Long>) innerDao);
 				} else if (type.equals(SormasToSormasOriginInfo.class)) {
 					dao = (AbstractAdoDao<ADO>) new SormasToSormasOriginInfoDao((Dao<SormasToSormasOriginInfo, Long>) innerDao);
+				} else if (type.equals(Campaign.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignDao((Dao<Campaign, Long>) innerDao);
+				} else if (type.equals(CampaignFormMeta.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignFormMetaDao((Dao<CampaignFormMeta, Long>) innerDao);
+				} else if (type.equals(CampaignFormData.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignFormDataDao((Dao<CampaignFormData, Long>) innerDao);
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}
