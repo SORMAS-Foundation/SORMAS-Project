@@ -103,6 +103,8 @@ import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFac
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -167,6 +169,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -914,6 +918,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasFacadeEjb.toSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;
 	}
@@ -1004,8 +1009,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	public Boolean isSampleEditAllowed(String sampleUuid) {
-
 		Sample sample = sampleService.getByUuid(sampleUuid);
-		return sampleJurisdictionChecker.isInJurisdictionOrOwned(sample);
+
+		if (sample.getSormasToSormasOriginInfo() != null) {
+			return sample.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return sampleJurisdictionChecker.isInJurisdictionOrOwned(sample) && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
 	}
 }

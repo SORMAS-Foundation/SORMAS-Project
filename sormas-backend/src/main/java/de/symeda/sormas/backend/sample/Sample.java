@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.sample;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -59,6 +60,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "samples")
@@ -147,6 +149,7 @@ public class Sample extends CoreAdo {
 	private List<AdditionalTest> additionalTests;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@ManyToOne
 	@JoinColumn
@@ -567,5 +570,14 @@ public class Sample extends CoreAdo {
 
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 }

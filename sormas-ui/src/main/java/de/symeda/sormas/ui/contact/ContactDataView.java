@@ -48,7 +48,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -211,12 +210,12 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
-		sormasToSormasLocLayout.setMargin(false);
-		sormasToSormasLocLayout.setSpacing(false);
-
 		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null) {
+			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+			sormasToSormasLocLayout.setMargin(false);
+			sormasToSormasLocLayout.setSpacing(false);
+
 			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, sormasToSormasfeatureEnabled);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
