@@ -1216,6 +1216,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);
+		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
 }
