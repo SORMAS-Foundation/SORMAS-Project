@@ -474,6 +474,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.eventLike = eventLike;
 	}
 
+	@IgnoreForUrl
 	public String getEventLike() {
 		return eventLike;
 	}
