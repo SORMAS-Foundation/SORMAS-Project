@@ -24,8 +24,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class ActionEditForm extends AbstractEditForm<ActionDto> {
 
@@ -87,8 +88,8 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		DateTimeField date = addDateField(ActionDto.DATE, DateTimeField.class, -1);
 		date.setImmediate(true);
 		addField(ActionDto.PRIORITY, ComboBox.class);
-		addField(ActionDto.ACTION_STATUS, OptionGroup.class);
-		OptionGroup actionContext = addField(ActionDto.ACTION_CONTEXT, OptionGroup.class);
+		addField(ActionDto.ACTION_STATUS, NullableOptionGroup.class);
+		NullableOptionGroup actionContext = addField(ActionDto.ACTION_CONTEXT, NullableOptionGroup.class);
 		actionContext.setImmediate(true);
 		actionContext.addValueChangeListener(event -> updateByActionContext());
 		// XXX: set visible when other contexts will be managed
@@ -109,7 +110,8 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 
 	private void updateReplyInfo() {
 		if (getValue().getReplyingUser() != null && getValue().getChangeDate() != null) {
-			Label replyLabel = new Label(String.format(
+			Label replyLabel = new Label(
+				String.format(
 					I18nProperties.getCaption(Captions.actionReplyingLabel),
 					DateFormatHelper.formatDate(getValue().getChangeDate()),
 					getValue().getReplyingUser().getCaption()));
@@ -120,7 +122,8 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 
 	private void updateStatusChangeInfo() {
 		if (getValue().getStatusChangeDate() != null) {
-			Label statusChangeLabel = new Label(String.format(
+			Label statusChangeLabel = new Label(
+				String.format(
 					I18nProperties.getCaption(Captions.actionStatusChangeDate),
 					DateFormatHelper.formatDate(getValue().getStatusChangeDate())));
 			statusChangeLabel.addStyleNames(CssStyles.LABEL_ITALIC);
@@ -129,7 +132,8 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 	}
 
 	private void updateCreationInfo() {
-		Label creationLabel = new Label(String.format(
+		Label creationLabel = new Label(
+			String.format(
 				I18nProperties.getCaption(Captions.actionCreatingLabel),
 				DateFormatHelper.formatDate(getValue().getCreationDate()),
 				getValue().getCreatorUser().getCaption()));
@@ -158,7 +162,8 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 	}
 
 	private void updateByActionContext() {
-		ActionContext actionContext = (ActionContext) getFieldGroup().getField(ActionDto.ACTION_CONTEXT).getValue();
+		NullableOptionGroup field = (NullableOptionGroup) getFieldGroup().getField(ActionDto.ACTION_CONTEXT);
+		ActionContext actionContext = (ActionContext) field.getNullableValue();
 
 		// context reference depending on action context
 		// ready for adding new context
@@ -172,7 +177,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 			}
 		} else {
 			FieldHelper.setFirstVisibleClearOthers(null, eventField);
-			FieldHelper.setFirstRequired(null,  eventField);
+			FieldHelper.setFirstRequired(null, eventField);
 		}
 	}
 

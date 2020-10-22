@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -32,6 +34,7 @@ public class FacilityDto extends EntityDto {
 	public static final String I18N_PREFIX = "Facility";
 	public static final String OTHER_FACILITY_UUID = "SORMAS-CONSTID-OTHERS-FACILITY";
 	public static final String NONE_FACILITY_UUID = "SORMAS-CONSTID-ISNONE-FACILITY";
+	public static final List<String> CONSTANT_FACILITY_UUIDS = Arrays.asList(OTHER_FACILITY_UUID, NONE_FACILITY_UUID);
 	public static final String OTHER_FACILITY = "OTHER_FACILITY";
 	public static final String NO_FACILITY = "NO_FACILITY";
 	public static final String NAME = "name";

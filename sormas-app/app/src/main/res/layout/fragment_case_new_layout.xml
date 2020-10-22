@@ -50,6 +50,7 @@
                 android:id="@+id/caseData_caseOrigin"
                 style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{caseOriginClass}"
+                app:nullable="false"
                 app:required="true"
                 app:value="@={data.caseOrigin}" />
 

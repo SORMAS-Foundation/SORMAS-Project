@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Date;
 
 import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -46,6 +45,7 @@ import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
@@ -116,7 +116,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		getContent().addComponent(textFieldPhone, CONTACT_PERSON_PHONE_NUMBER_LOC);
 
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
-		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
+		NullableOptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, NullableOptionGroup.class);
 		addField(VisitDto.VISIT_REMARKS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(VisitDto.I18N_PREFIX, VisitDto.VISIT_REMARKS) + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
@@ -147,7 +147,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 				CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()));
 		}
 
-		symptomsForm.initializeSymptomRequirementsForVisit((OptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
+		symptomsForm.initializeSymptomRequirementsForVisit((NullableOptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
 
 		FieldHelper.setEnabledWhen(getFieldGroup(), visitStatus, Arrays.asList(VisitStatus.COOPERATIVE), Arrays.asList(VisitDto.SYMPTOMS), true);
 	}

@@ -26,7 +26,6 @@ import java.util.List;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -37,6 +36,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 
@@ -75,7 +75,7 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 
 		classificationCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkContactClassification));
 		getContent().addComponent(classificationCheckBox, CLASSIFICATION_CHECKBOX);
-		OptionGroup contactClassification = addField(ContactBulkEditData.CONTACT_CLASSIFICATION, OptionGroup.class);
+		NullableOptionGroup contactClassification = addField(ContactBulkEditData.CONTACT_CLASSIFICATION, NullableOptionGroup.class);
 		contactClassification.setEnabled(false);
 
 		if (singleSelectedDistrict != null) {
