@@ -902,7 +902,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		if (visitStatusField != null) {
-			if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) && visitStatusField.getValue() == VisitStatus.COOPERATIVE) {
+			if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) && visitStatusField.getNullableValue() == VisitStatus.COOPERATIVE) {
 				FieldHelper.addSoftRequiredStyle(targetField);
 			} else {
 				FieldHelper.removeSoftRequiredStyle(targetField);

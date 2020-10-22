@@ -17,8 +17,6 @@ package de.symeda.sormas.ui.sormastosormas;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.Sizeable;
@@ -38,6 +36,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -153,8 +152,8 @@ public class SormasToSormasController {
 		return errorsLayout;
 	}
 
-	private Component[] formatGroupErrors(Map<String, List<String>> errors) {
-		return errors.entrySet().stream().map(e -> {
+	private Component[] formatGroupErrors(ValidationErrors errors) {
+		return errors.getErrors().entrySet().stream().map(e -> {
 			Label groupLabel = new Label(e.getKey() + ":");
 			groupLabel.addStyleName(CssStyles.LABEL_BOLD);
 			HorizontalLayout layout = new HorizontalLayout(groupLabel, new Label(String.join(", ", e.getValue())));

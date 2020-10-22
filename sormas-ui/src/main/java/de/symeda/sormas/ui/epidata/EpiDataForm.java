@@ -351,7 +351,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	private void updateBurialsHint(NullableOptionGroup burialAttendedField, EpiDataBurialsField burialsField) {
-		YesNoUnknown value = (YesNoUnknown) burialAttendedField.getValue();
+		YesNoUnknown value = (YesNoUnknown) burialAttendedField.getNullableValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES
 			&& (burialsField == null || burialsField.getValue() == null || burialsField.getValue().size() == 0)) {
@@ -362,7 +362,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	private void updateGatheringsHint(NullableOptionGroup gatheringAttendedField, EpiDataGatheringsField gatheringsField) {
-		YesNoUnknown value = (YesNoUnknown) gatheringAttendedField.getValue();
+		YesNoUnknown value = (YesNoUnknown) gatheringAttendedField.getNullableValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES
 			&& (gatheringsField == null || gatheringsField.getValue() == null || gatheringsField.getValue().size() == 0)) {
@@ -373,7 +373,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	private void updateTravelsHint(NullableOptionGroup traveledField, EpiDataTravelsField travelsField) {
-		YesNoUnknown value = (YesNoUnknown) traveledField.getValue();
+		YesNoUnknown value = (YesNoUnknown) traveledField.getNullableValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES
 			&& (travelsField == null || travelsField.getValue() == null || travelsField.getValue().size() == 0)) {

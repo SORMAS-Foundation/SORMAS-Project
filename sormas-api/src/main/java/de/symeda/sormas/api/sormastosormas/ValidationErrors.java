@@ -13,16 +13,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.api.sormastosormas;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ValidationErrors {
+public class ValidationErrors implements Serializable {
 
-	private Map<String, List<String>> errors;
+	private static final long serialVersionUID = 1635651082132555214L;
+
+	private final Map<String, List<String>> errors;
 
 	public ValidationErrors() {
 		errors = new HashMap<>();
@@ -42,9 +45,11 @@ public class ValidationErrors {
 	}
 
 	public void addAll(ValidationErrors errors) {
-		errors.errors.forEach((group, messages) -> {
-			messages.forEach(message -> add(group, message));
-		});
+		for (Map.Entry<String, List<String>> error : errors.errors.entrySet()) {
+			for (String message : error.getValue()) {
+				add(error.getKey(), message);
+			}
+		}
 	}
 
 	public Map<String, List<String>> getErrors() {
