@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.utils;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.OptionGroup;
@@ -50,7 +52,7 @@ public class NullableOptionGroup extends OptionGroup {
 		if (isRequired()) {
 			setConverter((Converter<Object, ?>) null);
 		} else {
-			setConverter(new NullableOptionGroupConverter(((Set) getValue()).stream().findFirst().orElse(null)));
+			setConverter(new NullableOptionGroupConverter(getFirstValue((Set) getValue())));
 		}
 	}
 
@@ -59,9 +61,18 @@ public class NullableOptionGroup extends OptionGroup {
 		throw new UnsupportedOperationException();
 	}
 
+	public Object getNullableValue() {
+		final Object value = super.getValue();
+		return ObjectUtils.isNotEmpty(value) ? getFirstValue((Set) value) : null;
+	}
+
 	@Override
 	public void setRequired(boolean required) {
 		super.setRequired(required);
 		setup();
+	}
+
+	private Object getFirstValue(Set value) {
+		return value.stream().findFirst().orElse(null);
 	}
 }
