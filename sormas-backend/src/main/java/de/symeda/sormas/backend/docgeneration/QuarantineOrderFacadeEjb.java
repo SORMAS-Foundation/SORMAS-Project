@@ -20,6 +20,7 @@ import javax.ejb.Stateless;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,20 +116,20 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 		IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
 
-		EntityDto caseData;
+		EntityDto entityData;
 		if (rootEntityReference instanceof CaseReferenceDto) {
-			caseData = caseFacade.getCaseDataByUuid(rootEntityUuid);
+			entityData = caseFacade.getCaseDataByUuid(rootEntityUuid);
 		} else if (rootEntityReference instanceof ContactReferenceDto) {
-			caseData = contactFacade.getContactByUuid(rootEntityUuid);
+			entityData = contactFacade.getContactByUuid(rootEntityUuid);
 		} else {
 			throw new ValidationException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
 		}
 
-		if (caseData != null) {
+		if (entityData != null) {
 			for (String propertyKey : propertyKeys) {
 				if (isEntityVariable(propertyKey)) {
 					String propertyPath = propertyKey.replace(ROOT_ENTITY_NAME + ".", "");
-					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(caseData, propertyPath, referenceDtoResolver);
+					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entityData, propertyPath, referenceDtoResolver);
 					logger.trace(propertyKey + ":" + propertyValue);
 					properties.setProperty(propertyKey, propertyValue);
 				}
@@ -147,7 +148,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 		// 4. fill null properties
 		for (String propertyKey : propertyKeys) {
-			if (properties.getProperty(propertyKey) == null || properties.getProperty(propertyKey).isEmpty()) {
+			if (StringUtils.isBlank(properties.getProperty(propertyKey))) {
 				logger.trace(propertyKey + ":" + DEFAULT_NULL_REPLACEMENT);
 				properties.setProperty(propertyKey, DEFAULT_NULL_REPLACEMENT);
 			}
@@ -198,7 +199,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 			throw new ValidationException(I18nProperties.getString(Strings.headingWrongFileType));
 		}
 		String path = FilenameUtils.getPath(fileName);
-		if (path != null && !path.isEmpty()) {
+		if (StringUtils.isNotBlank(path)) {
 			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), fileName));
 		}
 
@@ -261,7 +262,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	}
 
 	private boolean isEntityVariable(String propertyKey) {
-		return propertyKey.startsWith("case.");
+		return propertyKey.startsWith(ROOT_ENTITY_NAME + ".");
 	}
 
 	private IReferenceDtoResolver getReferenceDtoResolver() {

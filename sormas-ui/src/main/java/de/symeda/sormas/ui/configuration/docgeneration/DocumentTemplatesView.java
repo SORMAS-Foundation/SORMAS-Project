@@ -43,8 +43,7 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 	private ViewConfiguration viewConfiguration;
 
 	private VerticalLayout gridLayout;
-	private QuarantineTemplatesGrid Qgrid;
-	protected Button uploadButton;
+	private QuarantineTemplatesGrid quarantineTemplatesGrid;
 
 	public DocumentTemplatesView() {
 
@@ -55,17 +54,17 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 		gridLayout = new VerticalLayout();
 
 		// Add Quarantine Template Section
-		Qgrid = new QuarantineTemplatesGrid();
-		Qgrid.setWidth("500px"); // Remove this line to fit whole page
+		quarantineTemplatesGrid = new QuarantineTemplatesGrid();
+		quarantineTemplatesGrid.setWidth("500px"); // Remove this line to fit whole page
 		Label QuarantineTemplatesLabel = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_templates));
 		QuarantineTemplatesLabel.addStyleName(H3);
 		gridLayout.addComponent(QuarantineTemplatesLabel);
-		gridLayout.addComponent(Qgrid);
+		gridLayout.addComponent(quarantineTemplatesGrid);
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
-		gridLayout.setExpandRatio(Qgrid, 1); // Ensure that everything stays at the top
+		gridLayout.setExpandRatio(quarantineTemplatesGrid, 1); // Ensure that everything stays at the top
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
@@ -75,14 +74,10 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 	}
 
 	Button buildUploadButton() {
-		Button newBut = ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate), VaadinIcons.UPLOAD, e -> {
+		return ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate), VaadinIcons.UPLOAD, e -> {
 			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout());
 			window.setCaption(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate));
-			window.addCloseListener(c -> {
-				Qgrid.reload();
-			});
+			window.addCloseListener(c -> quarantineTemplatesGrid.reload());
 		}, ValoTheme.BUTTON_PRIMARY);
-		return newBut;
 	}
-
 }
