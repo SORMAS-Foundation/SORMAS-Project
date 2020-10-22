@@ -865,6 +865,7 @@ public interface Captions {
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
+	String EventParticipant_contactCount = "EventParticipant.contactCount";
 	String EventParticipant_event = "EventParticipant.event";
 	String EventParticipant_involvementDescription = "EventParticipant.involvementDescription";
 	String EventParticipant_name = "EventParticipant.name";
@@ -873,6 +874,7 @@ public interface Captions {
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
+	String eventParticipantContactCountOnlyWithSourceCaseInEvent = "eventParticipantContactCountOnlyWithSourceCaseInEvent";
 	String EventParticipantExport_addressCommunity = "EventParticipantExport.addressCommunity";
 	String EventParticipantExport_addressDistrict = "EventParticipantExport.addressDistrict";
 	String EventParticipantExport_addressGpsCoordinates = "EventParticipantExport.addressGpsCoordinates";

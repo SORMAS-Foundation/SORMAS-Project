@@ -40,6 +40,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Language;
@@ -63,6 +64,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -115,7 +117,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public List<String>  getAllActiveUuids() {
+	public List<String> getAllActiveUuids() {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
@@ -150,7 +152,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		List<String> deletedEventParticipants = eventParticipantService.getDeletedUuidsSince(since, user);
 		return deletedEventParticipants;
-	};
+	}
 
 	@Override
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
@@ -219,6 +221,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
 
+		Subquery<Long> contactCount = cq.subquery(Long.class);
+		Root<Contact> contact = contactCount.from(Contact.class);
+		contactCount.select(cb.count(contact));
+		contactCount.where(cb.equal(contact.join(Contact.PERSON).get(Person.UUID), person.get(Person.UUID)));
+		if (Boolean.TRUE.equals(eventParticipantCriteria.getContactCountOnlyWithSourceCaseInEvent())) {
+			contactCount.where(
+				contactCount.getRestriction(),
+				contact.join(Contact.CAZE).get(Case.UUID).in(event.join(Event.EVENT_PERSONS).join(EventParticipant.RESULTING_CASE).get(Case.UUID)));
+		}
+
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -230,7 +242,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID));
+			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			contactCount);
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
 		cq.where(filter);
