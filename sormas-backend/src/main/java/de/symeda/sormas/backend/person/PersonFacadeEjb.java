@@ -48,7 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
+import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -320,7 +320,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
 		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
 		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
-			ExternalPersonValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
+			PatientDiaryPersonValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());
 			}

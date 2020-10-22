@@ -1,9 +1,8 @@
 package de.symeda.sormas.api.externaljournal;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public class ExternalPatientDto implements Serializable {
+public class PatientDiaryPersonDto implements Serializable {
 
     private static final long serialVersionUID = 1300043011538769976L;
 
@@ -12,7 +11,7 @@ public class ExternalPatientDto implements Serializable {
     private String lastName;
     private String gender;
     private String birthday;
-    private ExternalPatientContactInformation contactInformation;
+    private PatientDiaryContactInformation contactInformation;
     private String endDate;
 
     public String getPersonUUID() {
@@ -55,11 +54,11 @@ public class ExternalPatientDto implements Serializable {
         this.birthday = birthday;
     }
 
-    public ExternalPatientContactInformation getContactInformation() {
+    public PatientDiaryContactInformation getContactInformation() {
         return contactInformation;
     }
 
-    public void setContactInformation(ExternalPatientContactInformation contactInformation) {
+    public void setContactInformation(PatientDiaryContactInformation contactInformation) {
         this.contactInformation = contactInformation;
     }
 

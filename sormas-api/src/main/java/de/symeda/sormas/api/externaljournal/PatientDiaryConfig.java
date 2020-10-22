@@ -5,10 +5,11 @@ import java.util.Objects;
 
 public class PatientDiaryConfig implements Serializable, Cloneable {
 
-	private static final long serialVersionUID = -2758495636275275828L;
+	private static final long serialVersionUID = -1997433636517306892L;
 
 	private String url;
 	private String externalDataUrl;
+	private String probandsUrl;
 	private String authUrl;
 	private String email;
 	private String password;
@@ -28,6 +29,14 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 
 	public void setExternalDataUrl(String externalDataUrl) {
 		this.externalDataUrl = externalDataUrl;
+	}
+
+	public String getProbandsUrl() {
+		return probandsUrl;
+	}
+
+	public void setProbandsUrl(String probandsUrl) {
+		this.probandsUrl = probandsUrl;
 	}
 
 	public String getAuthUrl() {

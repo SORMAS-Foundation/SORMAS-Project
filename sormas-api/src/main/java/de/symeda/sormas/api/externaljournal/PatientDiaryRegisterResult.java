@@ -2,12 +2,12 @@ package de.symeda.sormas.api.externaljournal;
 
 import java.io.Serializable;
 
-public class RegisterResult implements Serializable {
+public class PatientDiaryRegisterResult implements Serializable {
 
     private boolean success;
     private String message;
 
-    public RegisterResult(boolean success, String message) {
+    public PatientDiaryRegisterResult(boolean success, String message) {
         this.success = success;
         this.message = message;
     }

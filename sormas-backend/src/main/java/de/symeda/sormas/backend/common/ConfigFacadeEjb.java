@@ -101,6 +101,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
 	public static final String INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL = "interface.patientdiary.externaldataurl";
+	public static final String INTERFACE_PATIENT_DIARY_PROBANDS_URL = "interface.patientdiary.probandsurl";
 	public static final String INTERFACE_PATIENT_DIARY_AUTH_URL = "interface.patientdiary.authurl";
 	public static final String INTERFACE_PATIENT_DIARY_EMAIL = "interface.patientdiary.email";
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
@@ -409,6 +410,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		PatientDiaryConfig config = new PatientDiaryConfig();
 		config.setUrl(getProperty(INTERFACE_PATIENT_DIARY_URL, null));
 		config.setExternalDataUrl(getProperty(INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL, null));
+		config.setProbandsUrl(getProperty(INTERFACE_PATIENT_DIARY_PROBANDS_URL, null));
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));

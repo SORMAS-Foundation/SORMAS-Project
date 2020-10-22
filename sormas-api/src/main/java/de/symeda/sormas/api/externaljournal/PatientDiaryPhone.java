@@ -2,7 +2,7 @@ package de.symeda.sormas.api.externaljournal;
 
 import java.io.Serializable;
 
-class ExternalPatientPhone implements Serializable {
+class PatientDiaryPhone implements Serializable {
 
     private static final long serialVersionUID = -5111422297633793595L;
 
