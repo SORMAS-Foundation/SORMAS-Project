@@ -654,7 +654,11 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			.passportNumber(referencePerson.getPassportNumber())
 			.nationalHealthId(referencePerson.getNationalHealthId());
 
-		return personFacade.getMatchingNameDtos(userFacade.getCurrentUser().toReference(), criteria).stream().findAny().isPresent();
+//		boolean present = personFacade.getMatchingNameDtos(userFacade.getCurrentUser().toReference(), criteria).stream().findAny().isPresent();
+
+		boolean present = personFacade.checkMatchingNameDtos(userFacade.getCurrentUser().toReference(), criteria);
+
+		return present;
 	}
 
 	protected String buildEntityProperty(String[] entityPropertyPath) {

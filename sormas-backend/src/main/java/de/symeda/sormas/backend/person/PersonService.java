@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.SIMILARITY_OPERATOR;
+
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,6 +32,7 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -289,6 +292,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Set<PersonNameDto> persons = new HashSet<>();
 
 		// Persons of active cases
+		setSimilarityThresholdQuery();
 		CriteriaQuery<PersonNameDto> casePersonsQuery = cb.createQuery(PersonNameDto.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Join<Case, Person> casePersonsJoin = casePersonsRoot.join(Case.PERSON, JoinType.LEFT);
@@ -304,6 +308,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		persons.addAll(em.createQuery(casePersonsQuery).getResultList());
 
 		// Persons of active contacts
+		setSimilarityThresholdQuery();
 		CriteriaQuery<PersonNameDto> contactPersonsQuery = cb.createQuery(PersonNameDto.class);
 		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
 		Join<Contact, Person> contactPersonsJoin = contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT);
@@ -322,6 +327,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		persons.addAll(em.createQuery(contactPersonsQuery).getResultList());
 
 		// Persons of event participants in active events
+		setSimilarityThresholdQuery();
 		CriteriaQuery<PersonNameDto> eventPersonsQuery = cb.createQuery(PersonNameDto.class);
 		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
 		Join<EventParticipant, Person> eventPersonsJoin = eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT);
@@ -341,6 +347,53 @@ public class PersonService extends AbstractAdoService<Person> {
 		persons.addAll(em.createQuery(eventPersonsQuery).getResultList());
 
 		return persons;
+	}
+
+	public boolean checkExistMatchingName(User user, PersonSimilarityCriteria criteria) {
+
+		setSimilarityThresholdQuery();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		Predicate caseContactEventParticipantLinkPredicate;
+
+		CriteriaQuery<PersonNameDto> personQuery = cb.createQuery(PersonNameDto.class);
+		Root<Person> personRoot = personQuery.from(Person.class);
+		Join<Person, Case> personCaseJoin = personRoot.join(Person.PERSON_CASES, JoinType.LEFT);
+		Join<Person, Contact> personContactJoin = personRoot.join(Person.PERSON_CONTACTS, JoinType.LEFT);
+		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.PERSON_EVENT_PARTICIPANTS, JoinType.LEFT);
+
+		personQuery.multiselect(personRoot.get(Person.FIRST_NAME), personRoot.get(Person.LAST_NAME), personRoot.get(Person.UUID));
+
+		// Persons of active cases
+		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
+		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, personCaseJoin);
+		Predicate caseUserFilter = caseService.createUserFilter(cb, personQuery, personCaseJoin);
+		Predicate personCasePredicate = and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
+
+		// Persons of active contacts
+		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, personContactJoin);
+		Predicate contactUserFilter = contactService.createUserFilter(cb, personQuery, personContactJoin);
+		Predicate personContactPredicate = and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
+
+		// Persons of event participants in active events
+		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin);
+		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
+		Predicate personEventParticipantPredicate =
+			and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
+
+		caseContactEventParticipantLinkPredicate = or(cb, personCasePredicate, personContactPredicate, personEventParticipantPredicate);
+
+		personQuery.where(and(cb, personSimilarityFilter, caseContactEventParticipantLinkPredicate));
+		personQuery.distinct(true);
+
+		return em.createQuery(personQuery).setMaxResults(1).getResultList().stream().findAny().isPresent();
+	}
+
+	public void setSimilarityThresholdQuery() {
+		double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
+		Query q = em.createNativeQuery("select set_limit(" + nameSimilarityThreshold + ")");
+		q.getSingleResult();
 	}
 
 	public List<Person> getDeathsBetween(Date fromDate, Date toDate, District district, Disease disease, User user) {
@@ -411,8 +464,7 @@ public class PersonService extends AbstractAdoService<Person> {
 
 			String name = criteria.getFirstName() + " " + criteria.getLastName();
 
-			double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
-			filter = and(cb, filter, cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold));
+			filter = and(cb, filter, cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, nameExpr, cb.literal(name))));
 		}
 
 		if (criteria.getSex() != null) {

@@ -143,6 +143,17 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
+	public boolean checkMatchingNameDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
+
+		User user = userService.getByReferenceDto(userRef);
+		if (user == null) {
+			return false;
+		}
+
+		return personService.checkExistMatchingName(user, criteria);
+	}
+
+	@Override
 	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
 
 		List<Person> persons = personService.getByUuids(personUuids);
@@ -396,7 +407,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	 */
 	private void cleanUp(Person person) {
 
-		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE || person.getPresentCondition() == PresentCondition.UNKNOWN) {
+		if (person.getPresentCondition() == null
+			|| person.getPresentCondition() == PresentCondition.ALIVE
+			|| person.getPresentCondition() == PresentCondition.UNKNOWN) {
 			person.setDeathDate(null);
 			person.setCauseOfDeath(null);
 			person.setCauseOfDeathDisease(null);
