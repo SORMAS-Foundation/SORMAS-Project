@@ -80,6 +80,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
 						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   int visitCount) {
 	//@formatter:on
 
