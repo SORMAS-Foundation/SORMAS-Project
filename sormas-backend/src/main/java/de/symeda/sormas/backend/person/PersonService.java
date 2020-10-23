@@ -23,9 +23,7 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,6 +31,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -286,70 +285,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		return cb.or(isCaseInJurisdiction, isContactInJurisdiction, isEventParticipantInJurisdiction);
 	}
 
-	public Set<PersonNameDto> getMatchingNameDtos(User user, PersonSimilarityCriteria criteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		Set<PersonNameDto> persons = new HashSet<>();
-
-		// Persons of active cases
-		setSimilarityThresholdQuery();
-		CriteriaQuery<PersonNameDto> casePersonsQuery = cb.createQuery(PersonNameDto.class);
-		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
-		Join<Case, Person> casePersonsJoin = casePersonsRoot.join(Case.PERSON, JoinType.LEFT);
-
-		casePersonsQuery.multiselect(casePersonsJoin.get(Person.FIRST_NAME), casePersonsJoin.get(Person.LAST_NAME), casePersonsJoin.get(Person.UUID));
-
-		Predicate casePersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, casePersonsJoin);
-		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, casePersonsRoot);
-		Predicate caseUserFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
-		casePersonsQuery.where(
-			caseUserFilter != null ? and(cb, casePersonsFilter, activeCasesFilter, caseUserFilter) : and(cb, casePersonsFilter, activeCasesFilter));
-		casePersonsQuery.distinct(true);
-		persons.addAll(em.createQuery(casePersonsQuery).getResultList());
-
-		// Persons of active contacts
-		setSimilarityThresholdQuery();
-		CriteriaQuery<PersonNameDto> contactPersonsQuery = cb.createQuery(PersonNameDto.class);
-		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
-		Join<Contact, Person> contactPersonsJoin = contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT);
-
-		contactPersonsQuery
-			.multiselect(contactPersonsJoin.get(Person.FIRST_NAME), contactPersonsJoin.get(Person.LAST_NAME), contactPersonsJoin.get(Person.UUID));
-
-		Predicate contactPersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT));
-		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, contactPersonsRoot);
-		Predicate contactUserFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot);
-		contactPersonsQuery.where(
-			contactPersonsFilter != null
-				? and(cb, contactPersonsFilter, activeContactsFilter, contactUserFilter)
-				: and(cb, contactPersonsFilter, activeContactsFilter));
-		contactPersonsQuery.distinct(true);
-		persons.addAll(em.createQuery(contactPersonsQuery).getResultList());
-
-		// Persons of event participants in active events
-		setSimilarityThresholdQuery();
-		CriteriaQuery<PersonNameDto> eventPersonsQuery = cb.createQuery(PersonNameDto.class);
-		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
-		Join<EventParticipant, Person> eventPersonsJoin = eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT);
-
-		eventPersonsQuery
-			.multiselect(eventPersonsJoin.get(Person.FIRST_NAME), eventPersonsJoin.get(Person.LAST_NAME), eventPersonsJoin.get(Person.UUID));
-
-		Predicate eventParticipantPersonsFilter =
-			buildSimilarityCriteriaFilter(criteria, cb, eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT));
-		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, eventPersonsRoot);
-		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot);
-		eventPersonsQuery.where(
-			eventParticipantUserFilter != null
-				? and(cb, eventParticipantPersonsFilter, activeEventParticipantsFilter, eventParticipantUserFilter)
-				: and(cb, eventParticipantPersonsFilter, activeEventParticipantsFilter));
-		eventPersonsQuery.distinct(true);
-		persons.addAll(em.createQuery(eventPersonsQuery).getResultList());
-
-		return persons;
-	}
-
-	public boolean checkExistMatchingName(User user, PersonSimilarityCriteria criteria) {
+	public List<PersonNameDto> getMatchingNameDtos(PersonSimilarityCriteria criteria, Integer limit) {
 
 		setSimilarityThresholdQuery();
 
@@ -387,7 +323,11 @@ public class PersonService extends AbstractAdoService<Person> {
 		personQuery.where(and(cb, personSimilarityFilter, caseContactEventParticipantLinkPredicate));
 		personQuery.distinct(true);
 
-		return em.createQuery(personQuery).setMaxResults(1).getResultList().stream().findAny().isPresent();
+		TypedQuery<PersonNameDto> query = em.createQuery(personQuery);
+		if (limit != null) {
+			query.setMaxResults(limit);
+		}
+		return query.getResultList();
 	}
 
 	public void setSimilarityThresholdQuery() {

@@ -139,7 +139,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
-		return new ArrayList<>(personService.getMatchingNameDtos(user, criteria));
+		return new ArrayList<>(personService.getMatchingNameDtos(criteria, null));
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return false;
 		}
 
-		return personService.checkExistMatchingName(user, criteria);
+		return personService.getMatchingNameDtos(criteria, 1).size() > 0;
 	}
 
 	@Override
