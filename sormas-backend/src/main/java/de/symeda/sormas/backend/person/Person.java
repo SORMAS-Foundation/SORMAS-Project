@@ -111,6 +111,8 @@ public class Person extends AbstractDomainObject {
 	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
+	public static final String CONTACTS = "contacts";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
@@ -175,6 +177,9 @@ public class Person extends AbstractDomainObject {
 	private boolean hasCovidApp;
 	private boolean covidCodeDelivered;
 	private String externalId;
+
+	private Set<EventParticipant> eventParticipants = new HashSet<>();
+	private Set<Contact> contacts = new HashSet<>();
 
 	private List<Case> personCases;
 	private List<Contact> personContacts;
@@ -610,6 +615,15 @@ public class Person extends AbstractDomainObject {
 		this.externalId = externalId;
 	}
 
+	public void setEventParticipants(Set<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
+	}
+
+	@OneToMany(cascade = {}, mappedBy = EventParticipant.PERSON, fetch = FetchType.LAZY)
+	public Set<EventParticipant> getEventParticipants() {
+		return eventParticipants;
+	}
+
 	@OneToMany(mappedBy = Case.PERSON, fetch = FetchType.LAZY)
 	public List<Case> getPersonCases() {
 		return personCases;
@@ -636,6 +650,16 @@ public class Person extends AbstractDomainObject {
 	public void setPersonEventParticipants(List<EventParticipant> personEventParticipants) {
 		this.personEventParticipants = personEventParticipants;
 	}
+
+	public void setContacts(Set<Contact> contacts) {
+		this.contacts = contacts;
+	}
+
+	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
+	public Set<Contact> getContacts() {
+		return contacts;
+	}
+
 
 	@Override
 	public String toString() {
