@@ -55,6 +55,11 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
+	// ROOT_ENTITY_NAME defines the root variable in document template.
+	// In templates quarantine orders, the root variable "case" refers
+	// to either a CaseDataDto or a ContactDto, depending on from where
+	// it is called. So "${case.person.firstName}" in the template refers
+	// to the case's or contact's person's first name in either case.
 	public static final String ROOT_ENTITY_NAME = "case";
 
 	private static String DEFAULT_NULL_REPLACEMENT = "./.";
@@ -259,9 +264,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	private IReferenceDtoResolver getReferenceDtoResolver() {
 		IReferenceDtoResolver referenceDtoResolver = referenceDto -> {
-			if (referenceDto == null) {
-				return null;
-			} else {
+			if (referenceDto != null) {
 				String uuid = referenceDto.getUuid();
 				Class<? extends ReferenceDto> referenceDtoClass = referenceDto.getClass();
 				if (PersonReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
@@ -279,8 +282,8 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 				} else if (PointOfEntryReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return pointOfEntryFacade.getByUuid(uuid);
 				}
-				return null;
 			}
+			return null;
 		};
 		return new CachedReferenceDtoResolver(referenceDtoResolver);
 	}
