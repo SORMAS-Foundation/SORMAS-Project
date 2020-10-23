@@ -32,6 +32,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.epidata.AnimalCondition;
+import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -92,7 +93,13 @@ public class Exposure extends AbstractDomainObject {
 	private YesNoUnknown animalVaccinated;
 	private AnimalContactType animalContactType;
 	private String animalContactTypeDetails;
+	private YesNoUnknown bodyOfWater;
+	private WaterSource waterSource;
+	private String waterSourceDetails;
 	private Contact contactToCase;
+	private YesNoUnknown prophylaxis;
+	private Date prophylaxisDate;
+	private YesNoUnknown riskArea;
 
 	// Exposure sub-types
 	private GatheringType gatheringType;
@@ -341,6 +348,33 @@ public class Exposure extends AbstractDomainObject {
 		this.animalContactTypeDetails = animalContactTypeDetails;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getBodyOfWater() {
+		return bodyOfWater;
+	}
+
+	public void setBodyOfWater(YesNoUnknown bodyOfWater) {
+		this.bodyOfWater = bodyOfWater;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WaterSource getWaterSource() {
+		return waterSource;
+	}
+
+	public void setWaterSource(WaterSource waterSource) {
+		this.waterSource = waterSource;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getWaterSourceDetails() {
+		return waterSourceDetails;
+	}
+
+	public void setWaterSourceDetails(String waterSourceDetails) {
+		this.waterSourceDetails = waterSourceDetails;
+	}
+
 	@ManyToOne
 	@JoinColumn
 	public Contact getContactToCase() {
@@ -493,5 +527,31 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setSeatNumber(String seatNumber) {
 		this.seatNumber = seatNumber;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getProphylaxis() {
+		return prophylaxis;
+	}
+
+	public void setProphylaxis(YesNoUnknown prophylaxis) {
+		this.prophylaxis = prophylaxis;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getProphylaxisDate() {
+		return prophylaxisDate;
+	}
+
+	public void setProphylaxisDate(Date prophylaxisDate) {
+		this.prophylaxisDate = prophylaxisDate;
+	}
+
+	public YesNoUnknown getRiskArea() {
+		return riskArea;
+	}
+
+	public void setRiskArea(YesNoUnknown riskArea) {
+		this.riskArea = riskArea;
 	}
 }

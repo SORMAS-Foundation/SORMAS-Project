@@ -1676,20 +1676,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 237:
 				currentVersion = 237;
-				getDao(Exposure.class).executeRaw(
-					"CREATE TABLE exposures(id integer primary key autoincrement, uuid varchar(36) not null,"
-						+ "changeDate timestamp not null, creationDate timestamp not null, lastOpenedDate timestamp, localChangeDate timestamp not null,"
-						+ "modified integer, snapshot integer, pseudonymized boolean, epiData_id bigint REFERENCES epidata(id), reportingUser_id bigint REFERENCES users(id),"
-						+ "startDate timestamp, endDate timestamp, description text, exposureType varchar(255), typeOfPlace varchar(255), typeOfPlaceDetails text,"
-						+ "meansOfTransport varchar(255), connectionNumber varchar(512), seatNumber varchar(512), location_id bigint REFERENCES location(id),"
-						+ "indoors varchar(255), outdoors varchar(255), wearingMask varchar(255), wearingPpe varchar(255), otherProtectiveMeasures varchar(255),"
-						+ "protectiveMeasuresDetails text, shortDistance varchar(255), longFaceToFaceContact varchar(255), animalMarket varchar(255), percutaneous varchar(255),"
-						+ "contactToBodyFluids varchar(255), handlingSamples varchar(255), eatingRawAnimalProducts varchar(255), handlingAnimals varchar(255),"
-						+ "animalCondition varchar(255), animalVaccinated varchar(255), typeOfAnimal varchar(255), typeOfAnimalDetails text,"
-						+ "contactToCase_id bigint REFERENCES contacts(id), gatheringType varchar(255), gatheringDetails text, habitationType varchar(255),"
-						+ "habitationDetails text, animalContact varchar(255), animalContactDetails text, physicalContactDuringPreparation varchar(255),"
-						+ "physicalContactWithBody varchar(255), deceasedPersonIll varchar(255), deceasedPersonName varchar(512), deceasedPersonRelation varchar(512),"
-						+ "UNIQUE(snapshot, uuid));");
+				TableUtils.createTable(connectionSource, Exposure.class);
 
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN exposureDetailsKnown varchar(255);");
 				getDao(EpiData.class).executeRaw(

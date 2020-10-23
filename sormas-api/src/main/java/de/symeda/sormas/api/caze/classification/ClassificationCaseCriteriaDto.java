@@ -35,6 +35,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 	@JsonSubTypes.Type(value = ClassificationEpiDataCriteriaDto.class, name = "ClassificationEpiDataCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationNotInStartDateRangeCriteriaDto.class, name = "ClassificationNotInStartDateRangeCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationPathogenTestCriteriaDto.class, name = "ClassificationPathogenTestCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationExposureCriteriaDto.class, name = "ClassificationExposureCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationSymptomsCriteriaDto.class, name = "ClassificationSymptomsCriteriaDto"), })
 public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 
@@ -61,7 +62,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {
 
 		try {
 			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));

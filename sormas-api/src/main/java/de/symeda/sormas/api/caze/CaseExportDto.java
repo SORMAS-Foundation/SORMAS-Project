@@ -187,9 +187,7 @@ public class CaseExportDto implements Serializable {
 	private String travelHistory;
 	private boolean traveled;
 	private boolean burialAttended;
-	private YesNoUnknown directContactConfirmedCase;
-	private YesNoUnknown directContactProbableCase;
-	private YesNoUnknown contactWithRodent;
+	private YesNoUnknown contactWithSourceCaseKnown;
 	private SymptomsDto symptoms;
 	//	private Date onsetDate;
 //	private String symptoms;
@@ -259,8 +257,7 @@ public class CaseExportDto implements Serializable {
 						 String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 						 String facility, String facilityUuid, String facilityDetails,
 						 String phone, String phoneOwner, EducationType educationType, String educationDetails,
-						 OccupationType occupationType, String occupationDetails, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
-						 YesNoUnknown contactWithRodent,
+						 OccupationType occupationType, String occupationDetails, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
 						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
@@ -326,9 +323,7 @@ public class CaseExportDto implements Serializable {
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
-		this.directContactConfirmedCase = directContactConfirmedCase;
-		this.directContactProbableCase = directContactProbableCase;
-		this.contactWithRodent = contactWithRodent;
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 //		this.onsetDate = onsetDate;
 		this.vaccination = vaccination;
 		this.vaccinationDoses = vaccinationDoses;
@@ -1021,36 +1016,14 @@ public class CaseExportDto implements Serializable {
 	@Order(80)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
-	@ExportProperty(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE)
+	@ExportProperty(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
-	public YesNoUnknown getDirectContactConfirmedCase() {
-		return directContactConfirmedCase;
+	public YesNoUnknown getContactWithSourceCaseKnown() {
+		return contactWithSourceCaseKnown;
 	}
 
-	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
-		this.directContactConfirmedCase = directContactConfirmedCase;
-	}
-
-	@Order(90)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE })
-	@ExportProperty(EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE)
-	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
-	public YesNoUnknown getDirectContactProbableCase() {
-		return directContactProbableCase;
-	}
-
-	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
-		this.directContactProbableCase = directContactProbableCase;
-	}
-
-	@Order(91)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE })
-	@ExportProperty(EpiDataDto.RODENTS)
-	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
-	public YesNoUnknown getContactWithRodent() {
-		return contactWithRodent;
+	public void setContactWithSourceCaseKnown(YesNoUnknown contactWithSourceCaseKnown) {
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 	}
 
 	@Order(92)
@@ -1492,10 +1465,6 @@ public class CaseExportDto implements Serializable {
 		this.travelHistory = travelHistory;
 	}
 
-	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
-		this.contactWithRodent = contactWithRodent;
-	}
-
 	public void setInitialDetectionPlace(String initialDetectionPlace) {
 		this.initialDetectionPlace = initialDetectionPlace;
 	}
@@ -1515,10 +1484,6 @@ public class CaseExportDto implements Serializable {
 	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
-
-//	public void setOnsetDate(Date onsetDate) {
-//		this.onsetDate = onsetDate;
-//	}
 
 	public void setSymptoms(SymptomsDto symptoms) {
 		this.symptoms = symptoms;

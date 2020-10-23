@@ -22,6 +22,7 @@ public interface Strings {
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
 	String classificationConfirmed = "classificationConfirmed";
+	String classificationCriteriaForExposureType = "classificationCriteriaForExposureType";
 	String classificationCriteriaForTestType = "classificationCriteriaForTestType";
 	String classificationDaysBeforeCaseStart = "classificationDaysBeforeCaseStart";
 	String classificationForDisease = "classificationForDisease";

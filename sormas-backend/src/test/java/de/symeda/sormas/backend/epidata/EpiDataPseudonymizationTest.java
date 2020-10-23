@@ -26,9 +26,13 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -67,27 +71,23 @@ public class EpiDataPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caseWEpiData.getUuid());
 		EpiDataDto epiData = savedCase.getEpiData();
 
-		assertThat(epiData.getSickDeadAnimalsDetails(), is("Test sick dead animal details"));
-		assertThat(epiData.getSickDeadAnimalsLocation(), is("Test sick dead animal location"));
-		assertThat(epiData.getEatingRawAnimalsDetails(), is("Test eating raw animals details"));
-		assertThat(epiData.getOtherAnimalsDetails(), is("Test other animals details"));
+		assertThat(epiData.getExposures().get(0).getDescription(), is("Test description"));
+		assertThat(epiData.getExposures().get(0).getLocation().getDetails(), is("Test location details"));
+		assertThat(epiData.getExposures().get(1).getTypeOfAnimalDetails(), is("Test other animal details"));
+		assertThat(epiData.getExposures().get(2).getWaterSourceDetails(), is("Test water source details"));
+		assertThat(epiData.getExposures().get(3).getAnimalContactTypeDetails(), is("Test animal contact type details"));
 
-		assertThat(epiData.getWaterSourceOther(), is("Test water source other"));
-		assertThat(epiData.getWaterBodyDetails(), is("Test water body details"));
-		assertThat(epiData.getKindOfExposureDetails(), is("Test kind of exposure details"));
-		assertThat(epiData.getPlaceOfLastExposure(), is("Test place of last exposure"));
-
-		ExposureDto burial = epiData.getExposures().get(0);
+		ExposureDto burial = epiData.getExposures().get(4);
 		assertThat(burial.getDeceasedPersonName(), is("John Smith"));
 		assertThat(burial.getDeceasedPersonRelation(), is("Test burial relation"));
 		LocationDto burialAddress = burial.getLocation();
 		assertThat(burialAddress.getCommunity(), is(rdcf2.community));
 		assertThat(burialAddress.getCity(), is("Test City"));
 
-		ExposureDto travel = epiData.getExposures().get(1);
+		ExposureDto travel = epiData.getExposures().get(5);
 		assertThat(travel.getLocation().getDetails(), is("Test travel destination"));
 
-		ExposureDto gathering = epiData.getExposures().get(2);
+		ExposureDto gathering = epiData.getExposures().get(6);
 		assertThat(gathering.getDescription(), is("Test gathering description"));
 		LocationDto gatheringAddress = gathering.getLocation();
 		assertThat(gatheringAddress.getCommunity(), is(rdcf2.community));
@@ -101,17 +101,13 @@ public class EpiDataPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caseWEpiData.getUuid());
 		EpiDataDto epiData = savedCase.getEpiData();
 
-		assertThat(epiData.getSickDeadAnimalsDetails(), isEmptyString());
-		assertThat(epiData.getSickDeadAnimalsLocation(), isEmptyString());
-		assertThat(epiData.getEatingRawAnimalsDetails(), isEmptyString());
-		assertThat(epiData.getOtherAnimalsDetails(), isEmptyString());
+		assertThat(epiData.getExposures().get(0).getDescription(), isEmptyString());
+		assertThat(epiData.getExposures().get(0).getLocation().getDetails(), isEmptyString());
+		assertThat(epiData.getExposures().get(1).getTypeOfAnimalDetails(), isEmptyString());
+		assertThat(epiData.getExposures().get(2).getWaterSourceDetails(), isEmptyString());
+		assertThat(epiData.getExposures().get(3).getAnimalContactTypeDetails(), isEmptyString());
 
-		assertThat(epiData.getWaterSourceOther(), isEmptyString());
-		assertThat(epiData.getWaterBodyDetails(), isEmptyString());
-		assertThat(epiData.getKindOfExposureDetails(), isEmptyString());
-		assertThat(epiData.getPlaceOfLastExposure(), isEmptyString());
-
-		ExposureDto burial = epiData.getExposures().get(0);
+		ExposureDto burial = epiData.getExposures().get(4);
 
 		assertThat(burial.getDeceasedPersonName(), isEmptyString());
 		assertThat(burial.getDeceasedPersonRelation(), isEmptyString());
@@ -119,10 +115,10 @@ public class EpiDataPseudonymizationTest extends AbstractBeanTest {
 		assertThat(burialAddress.getCommunity(), is(nullValue()));
 		assertThat(burialAddress.getCity(), isEmptyString());
 
-		ExposureDto travel = epiData.getExposures().get(1);
+		ExposureDto travel = epiData.getExposures().get(5);
 		assertThat(travel.getLocation().getDetails(), isEmptyString());
 
-		ExposureDto gathering = epiData.getExposures().get(2);
+		ExposureDto gathering = epiData.getExposures().get(6);
 		assertThat(gathering.getDescription(), isEmptyString());
 		LocationDto gatheringAddress = gathering.getLocation();
 		assertThat(gatheringAddress.getCommunity(), is(nullValue()));
@@ -133,23 +129,27 @@ public class EpiDataPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), rdcf, c -> {
 			EpiDataDto epiData = c.getEpiData();
 
-			epiData.setSickDeadAnimals(YesNoUnknown.YES);
-			epiData.setSickDeadAnimalsDetails("Test sick dead animal details");
-			epiData.setSickDeadAnimalsLocation("Test sick dead animal location");
+			ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+			exposure.setAnimalCondition(AnimalCondition.DEAD);
+			exposure.setDescription("Test description");
+			exposure.getLocation().setDetails("Test location details");
+			epiData.getExposures().add(exposure);
 
-			epiData.setEatingRawAnimals(YesNoUnknown.YES);
-			epiData.setEatingRawAnimalsDetails("Test eating raw animals details");
+			ExposureDto exposure2 = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+			exposure2.setTypeOfAnimal(TypeOfAnimal.OTHER);
+			exposure2.setTypeOfAnimalDetails("Test other animal details");
+			epiData.getExposures().add(exposure2);
 
-			epiData.setOtherAnimals(YesNoUnknown.YES);
-			epiData.setOtherAnimalsDetails("Test other animals details");
+			ExposureDto exposure3 = ExposureDto.build(ExposureType.TRAVEL);
+			exposure3.setBodyOfWater(YesNoUnknown.YES);
+			exposure3.setWaterSource(WaterSource.OTHER);
+			exposure3.setWaterSourceDetails("Test water source details");
+			epiData.getExposures().add(exposure3);
 
-			epiData.setWaterSourceOther("Test water source other");
-
-			epiData.setWaterBody(YesNoUnknown.YES);
-			epiData.setWaterBodyDetails("Test water body details");
-
-			epiData.setKindOfExposureDetails("Test kind of exposure details");
-			epiData.setPlaceOfLastExposure("Test place of last exposure");
+			ExposureDto exposure4 = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+			exposure4.setAnimalContactType(AnimalContactType.OTHER);
+			exposure4.setAnimalContactTypeDetails("Test animal contact type details");
+			epiData.getExposures().add(exposure4);
 
 			ExposureDto burial = ExposureDto.build(ExposureType.BURIAL);
 			burial.setDeceasedPersonName("John Smith");

@@ -53,6 +53,9 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -920,6 +923,13 @@ public class TestDataCreator {
 
 		test = beanTest.getAdditionalTestFacade().saveAdditionalTest(test);
 		return test;
+	}
+
+	public ExposureDto buildAnimalContactExposure(TypeOfAnimal typeOfAnimal) {
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+		exposure.setTypeOfAnimal(typeOfAnimal);
+		return exposure;
 	}
 
 	public CampaignDto createCampaign(UserDto user) {

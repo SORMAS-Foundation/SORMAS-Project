@@ -14,6 +14,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.epidata.AnimalCondition;
+import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -106,8 +107,20 @@ public class Exposure extends PseudonymizableAdo {
 	private AnimalContactType animalContactType;
 	@Column(columnDefinition = "text")
 	private String animalContactTypeDetails;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown bodyOfWater;
+	@Enumerated(EnumType.STRING)
+	private WaterSource waterSource;
+	@Column(columnDefinition = "text")
+	private String waterSourceDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Contact contactToCase;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown prophylaxis;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date prophylaxisDate;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown riskArea;
 
 	// Exposure sub-types
 	@Enumerated(EnumType.STRING)
@@ -338,6 +351,30 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setAnimalContactTypeDetails(String animalContactTypeDetails) {
 		this.animalContactTypeDetails = animalContactTypeDetails;
+	}
+
+	public YesNoUnknown getBodyOfWater() {
+		return bodyOfWater;
+	}
+
+	public void setBodyOfWater(YesNoUnknown bodyOfWater) {
+		this.bodyOfWater = bodyOfWater;
+	}
+
+	public WaterSource getWaterSource() {
+		return waterSource;
+	}
+
+	public void setWaterSource(WaterSource waterSource) {
+		this.waterSource = waterSource;
+	}
+
+	public String getWaterSourceDetails() {
+		return waterSourceDetails;
+	}
+
+	public void setWaterSourceDetails(String waterSourceDetails) {
+		this.waterSourceDetails = waterSourceDetails;
 	}
 
 	public Contact getContactToCase() {

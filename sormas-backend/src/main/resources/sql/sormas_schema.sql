@@ -5540,6 +5540,9 @@ CREATE TABLE exposures(
     animalvaccinated varchar(255),
     animalcontacttype varchar(255),
     animalcontacttypedetails text,
+    bodyofwater varchar(255),
+    watersource varchar(255),
+    watersourcedetails text,
     contacttocase_id bigint,
     gatheringtype varchar(255),
     gatheringdetails text,
@@ -5552,6 +5555,9 @@ CREATE TABLE exposures(
     deceasedpersonill varchar(255),
     deceasedpersonname varchar(512),
     deceasedpersonrelation varchar(512),
+    prophylaxis varchar(255),
+    prophylaxisdate timestamp,
+    riskarea varchar(255),
     sys_period tstzrange not null,
     primary key(id)
 );
@@ -5622,5 +5628,137 @@ DROP TABLE epidatagathering_history;
 DROP TABLE epidatatravel_history;
 
 INSERT INTO schema_version (version_number, comment) VALUES (268, 'New exposure entity and migration #2948');
+
+-- 2020-10-21 Epi data migration #2949
+ALTER TABLE epidata ADD COLUMN contactwithsourcecaseknown varchar(255);
+ALTER TABLE epidata ADD COLUMN hightransmissionriskarea varchar(255);
+ALTER TABLE epidata ADD COLUMN largeoutbreaksarea varchar(255);
+ALTER TABLE epidata_history ADD COLUMN contactwithsourcecaseknown varchar(255);
+ALTER TABLE epidata_history ADD COLUMN hightransmissionriskarea varchar(255);
+ALTER TABLE epidata_history ADD COLUMN largeoutbreaksarea varchar(255);
+
+CREATE OR REPLACE FUNCTION migrate_epidata(epidata_field_name text, exposures_field_name text, exposures_field_value text, exposuretype text,
+epidata_startdate_field_name text default 'null', epidata_enddate_field_name text default 'null', epidata_description_field_name text default 'null',
+epidata_locationinfo_field_name text default 'null')
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS
+$BODY$
+BEGIN
+EXECUTE
+    'DROP TABLE IF EXISTS id_map;
+    CREATE TEMP TABLE id_map AS
+    SELECT id as epidata_id,
+           nextval(''entity_seq'') as location_id,
+           nextval(''entity_seq'') as exposure_id,
+           overlay(overlay(overlay(
+               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
+               placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as location_uuid,
+           overlay(overlay(overlay(
+               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
+               placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as exposure_uuid,
+           ' || epidata_startdate_field_name || '::timestamp as startdate,
+           ' || epidata_enddate_field_name || '::timestamp as enddate,
+           ' || epidata_description_field_name || ' as description,
+           ' || epidata_locationinfo_field_name || ' as locationinfo
+    FROM epidata WHERE ' || epidata_field_name || ' = ''YES'';
+
+    INSERT INTO location (id, uuid, changedate, creationdate, details)
+    SELECT location_id, location_uuid, now(), now(), locationinfo
+    FROM id_map;
+
+    INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype, ' || exposures_field_name || ', startdate, enddate, description)
+    SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, ' || quote_literal(exposuretype) || ', ' || quote_literal(exposures_field_value) || ',
+    startdate, enddate, description FROM id_map;';
+END;
+$BODY$;
+
+ALTER FUNCTION migrate_epidata(text, text, text, text, text, text, text, text) OWNER TO sormas_user;
+
+UPDATE epidata SET areainfectedanimals = 'YES' WHERE eatingrawanimalsininfectedarea = 'YES';
+UPDATE epidata SET eatingrawanimals = 'YES' WHERE eatingrawanimalsininfectedarea = 'YES';
+
+SELECT migrate_epidata('processingconfirmedcasefluidunsafe', 'handlingsamples', 'YES', 'WORK');
+SELECT migrate_epidata('percutaneouscaseblood', 'percutaneous', 'YES', 'WORK');
+SELECT migrate_epidata('directcontactdeadunsafe', 'physicalcontactwithbody', 'YES', 'BURIAL');
+SELECT migrate_epidata('processingsuspectedcasesampleunsafe', 'handlingsamples', 'YES', 'WORK');
+SELECT migrate_epidata('sickdeadanimals', 'animalcondition', 'DEAD', 'ANIMAL_CONTACT', 'sickdeadanimalsdate', 'sickdeadanimalsdate', 'sickdeadanimalsdetails', 'sickdeadanimalslocation');
+SELECT migrate_epidata('eatingrawanimals', 'eatingrawanimalproducts', 'YES', 'ANIMAL_CONTACT', 'null', 'null', 'eatingrawanimalsdetails', 'null');
+SELECT migrate_epidata('rodents', 'typeofanimal', 'RODENT', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('bats', 'typeofanimal', 'BAT', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('primates', 'typeofanimal', 'PRIMATE', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('swine', 'typeofanimal', 'SWINE', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('birds', 'typeofanimal', 'POULTRY', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('rabbits', 'typeofanimal', 'RABBIT', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('cattle', 'typeofanimal', 'CATTLE', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('dogs', 'typeofanimal', 'DOG', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('cats', 'typeofanimal', 'CAT', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('canidae', 'typeofanimal', 'CANIDAE', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('camels', 'typeofanimal', 'CAMEL', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('snakes', 'typeofanimal', 'SNAKE', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('tickbite', 'typeofanimal', 'TICK', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('fleabite', 'typeofanimal', 'FLEA', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('otheranimals', 'typeofanimal', 'OTHER', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('waterbody', 'bodyofwater', 'YES', 'OTHER', 'null', 'null', 'waterbodydetails', 'null');
+SELECT migrate_epidata('visitedhealthfacility', 'habitationtype', 'MEDICAL', 'HABITATION');
+SELECT migrate_epidata('visitedanimalmarket', 'animalmarket', 'YES', 'OTHER');
+SELECT migrate_epidata('areaconfirmedcases', 'riskarea', 'YES', 'TRAVEL');
+SELECT migrate_epidata('kindofexposurebite', 'animalcontacttype', 'BITE', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('kindofexposuretouch', 'animalcontacttype', 'TOUCH', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('kindofexposurescratch', 'animalcontacttype', 'SCRATCH', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('kindofexposurelick', 'animalcontacttype', 'LICK', 'ANIMAL_CONTACT');
+SELECT migrate_epidata('kindofexposureother', 'animalcontacttype', 'OTHER', 'ANIMAL_CONTACT');
+
+DROP TABLE IF EXISTS id_map;
+
+DROP TABLE IF EXISTS last_exposure_map;
+CREATE TEMP TABLE last_exposure_map AS
+SELECT id as epidata_id,
+       nextval('entity_seq') as location_id,
+       nextval('entity_seq') as exposure_id,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
+                               placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as location_uuid,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
+                               placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as exposure_uuid,
+       dateoflastexposure,
+       placeoflastexposure,
+       animalcondition,
+       animalvaccinationstatus,
+       prophylaxisstatus,
+       dateofprophylaxis
+FROM epidata WHERE dateoflastexposure IS NOT NULL OR placeoflastexposure IS NOT NULL OR animalcondition IS NOT NULL OR animalvaccinationstatus IS NOT NULL OR prophylaxisstatus IS NOT NULL OR dateofprophylaxis IS NOT NULL;
+
+INSERT INTO location (id, uuid, changedate, creationdate, details)
+SELECT location_id, location_uuid, now(), now(), placeoflastexposure
+FROM last_exposure_map;
+
+INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype, startdate, enddate, animalcondition, animalvaccinated, prophylaxis, prophylaxisdate, description)
+SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'ANIMAL_CONTACT', dateoflastexposure, dateoflastexposure, animalcondition,
+       CASE WHEN animalvaccinationstatus = 'VACCINATED' THEN 'YES' WHEN animalvaccinationstatus = 'UNVACCINATED' THEN 'NO' WHEN animalvaccinationstatus = 'UNKNOWN' THEN 'UNKNOWN' END,
+       prophylaxisstatus, dateofprophylaxis, 'Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact'
+FROM last_exposure_map;
+
+DROP TABLE IF EXISTS last_exposure_map;
+
+UPDATE exposures SET typeofanimaldetails = otheranimalsdetails FROM epidata WHERE epidata.id = epidata_id AND typeofanimal = 'OTHER';
+UPDATE exposures SET watersource = epidata.watersource, watersourcedetails = epidata.watersourceother FROM epidata WHERE epidata.id = epidata_id AND waterbody = 'YES';
+UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure; this exposure may be merged with another exposure with animal contact' WHERE exposuretype = 'ANIMAL_CONTACT' AND typeofanimal IS NULL;
+
+UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirmedcase = 'YES' OR directcontactprobablecase = 'YES' OR closecontactprobablecase = 'YES' OR contactwithsourcerespiratorycase = 'YES';
+
+ALTER TABLE epidata DROP COLUMN rodents, DROP COLUMN bats, DROP COLUMN primates, DROP COLUMN swine, DROP COLUMN birds, DROP COLUMN eatingrawanimals, DROP COLUMN sickdeadanimals,
+    DROP COLUMN sickdeadanimalsdetails, DROP COLUMN sickdeadanimalsdate, DROP COLUMN sickdeadanimalslocation, DROP COLUMN cattle, DROP COLUMN otheranimals, DROP COLUMN otheranimalsdetails,
+    DROP COLUMN watersource, DROP COLUMN watersourceother, DROP COLUMN waterbody, DROP COLUMN waterbodydetails, DROP COLUMN tickbite, DROP COLUMN burialattended, DROP COLUMN gatheringattended,
+    DROP COLUMN traveled, DROP COLUMN dateoflastexposure, DROP COLUMN placeoflastexposure, DROP COLUMN animalcondition, DROP COLUMN fleabite, DROP COLUMN directcontactconfirmedcase,
+    DROP COLUMN directcontactprobablecase, DROP COLUMN closecontactprobablecase, DROP COLUMN areaconfirmedcases, DROP COLUMN processingconfirmedcasefluidunsafe, DROP COLUMN percutaneouscaseblood,
+    DROP COLUMN directcontactdeadunsafe, DROP COLUMN processingsuspectedcasesampleunsafe, DROP COLUMN eatingrawanimalsininfectedarea, DROP COLUMN eatingrawanimalsdetails,
+    DROP COLUMN kindofexposurebite, DROP COLUMN kindofexposuretouch, DROP COLUMN kindofexposurescratch, DROP COLUMN kindofexposurelick, DROP COLUMN kindofexposureother,
+    DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
+    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;
+
+INSERT INTO schema_version (version_number, comment) VALUES (269, 'Epi data migration #2949');
 
 -- *** Insert new sql commands BEFORE this line ***

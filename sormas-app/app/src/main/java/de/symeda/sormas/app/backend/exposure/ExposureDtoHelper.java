@@ -94,6 +94,12 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setBodyOfWater(source.getBodyOfWater());
+		target.setWaterSource(source.getWaterSource());
+		target.setWaterSourceDetails(source.getWaterSourceDetails());
+		target.setProphylaxis(source.getProphylaxis());
+		target.setProphylaxisDate(source.getProphylaxisDate());
+		target.setRiskArea(source.getRiskArea());
 	}
 
 	@Override
@@ -158,5 +164,11 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setBodyOfWater(source.getBodyOfWater());
+		target.setWaterSource(source.getWaterSource());
+		target.setWaterSourceDetails(source.getWaterSourceDetails());
+		target.setProphylaxis(source.getProphylaxis());
+		target.setProphylaxisDate(source.getProphylaxisDate());
+		target.setRiskArea(source.getRiskArea());
 	}
 }

@@ -462,9 +462,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getDistrict().get(District.NAME),
 					joins.getCommunity().get(Community.NAME),
 					joins.getEpiData().get(EpiData.ID),
-					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
-					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
-					joins.getEpiData().get(EpiData.RODENTS),
+					joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 					contact.get(Contact.RETURNING_TRAVELER)),
 				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 

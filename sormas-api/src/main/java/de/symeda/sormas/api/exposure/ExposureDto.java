@@ -19,6 +19,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
+import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.location.LocationDto;
@@ -34,6 +35,12 @@ public class ExposureDto extends PseudonymizableDto {
 	private static final long serialVersionUID = 6551672739041643946L;
 
 	public static final String I18N_PREFIX = "Exposure";
+
+	public static final String HANDLING_SAMPLES = "handlingSamples";
+	public static final String PERCUTANEOUS = "percutaneous";
+	public static final String RISK_AREA = "riskArea";
+	public static final String PHYSICAL_CONTACT_WITH_BODY = "physicalContactWithBody";
+	public static final String TYPE_OF_ANIMAL = "typeOfAnimal";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -75,8 +82,15 @@ public class ExposureDto extends PseudonymizableDto {
 	private AnimalContactType animalContactType;
 	@SensitiveData
 	private String animalContactTypeDetails;
+	private YesNoUnknown bodyOfWater;
+	private WaterSource waterSource;
+	@SensitiveData
+	private String waterSourceDetails;
 	@PersonalData
 	private ContactReferenceDto contactToCase;
+	private YesNoUnknown prophylaxis;
+	private Date prophylaxisDate;
+	private YesNoUnknown riskArea;
 
 	// Exposure sub-types
 	private GatheringType gatheringType;
@@ -300,6 +314,30 @@ public class ExposureDto extends PseudonymizableDto {
 		this.animalContactTypeDetails = animalContactTypeDetails;
 	}
 
+	public YesNoUnknown getBodyOfWater() {
+		return bodyOfWater;
+	}
+
+	public void setBodyOfWater(YesNoUnknown bodyOfWater) {
+		this.bodyOfWater = bodyOfWater;
+	}
+
+	public WaterSource getWaterSource() {
+		return waterSource;
+	}
+
+	public void setWaterSource(WaterSource waterSource) {
+		this.waterSource = waterSource;
+	}
+
+	public String getWaterSourceDetails() {
+		return waterSourceDetails;
+	}
+
+	public void setWaterSourceDetails(String waterSourceDetails) {
+		this.waterSourceDetails = waterSourceDetails;
+	}
+
 	public ContactReferenceDto getContactToCase() {
 		return contactToCase;
 	}
@@ -434,5 +472,29 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setSeatNumber(String seatNumber) {
 		this.seatNumber = seatNumber;
+	}
+
+	public YesNoUnknown getProphylaxis() {
+		return prophylaxis;
+	}
+
+	public void setProphylaxis(YesNoUnknown prophylaxis) {
+		this.prophylaxis = prophylaxis;
+	}
+
+	public Date getProphylaxisDate() {
+		return prophylaxisDate;
+	}
+
+	public void setProphylaxisDate(Date prophylaxisDate) {
+		this.prophylaxisDate = prophylaxisDate;
+	}
+
+	public YesNoUnknown getRiskArea() {
+		return riskArea;
+	}
+
+	public void setRiskArea(YesNoUnknown riskArea) {
+		this.riskArea = riskArea;
 	}
 }

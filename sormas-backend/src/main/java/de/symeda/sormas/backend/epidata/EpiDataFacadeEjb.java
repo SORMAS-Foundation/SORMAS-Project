@@ -71,61 +71,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
-
-		target.setDirectContactConfirmedCase(source.getDirectContactConfirmedCase());
-		target.setDirectContactProbableCase(source.getDirectContactProbableCase());
-		target.setCloseContactProbableCase(source.getCloseContactProbableCase());
-		target.setAreaConfirmedCases(source.getAreaConfirmedCases());
-
-		target.setProcessingConfirmedCaseFluidUnsafe(source.getProcessingConfirmedCaseFluidUnsafe());
-		target.setPercutaneousCaseBlood(source.getPercutaneousCaseBlood());
-		target.setDirectContactDeadUnsafe(source.getDirectContactDeadUnsafe());
-
-		target.setProcessingSuspectedCaseSampleUnsafe(source.getProcessingSuspectedCaseSampleUnsafe());
+		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
+		target.setHighTransmissionRiskArea(source.getHighTransmissionRiskArea());
+		target.setLargeOutbreaksArea(source.getLargeOutbreaksArea());
 		target.setAreaInfectedAnimals(source.getAreaInfectedAnimals());
-		target.setSickDeadAnimals(source.getSickDeadAnimals());
-		target.setSickDeadAnimalsDetails(source.getSickDeadAnimalsDetails());
-		target.setSickDeadAnimalsDate(source.getSickDeadAnimalsDate());
-		target.setSickDeadAnimalsLocation(source.getSickDeadAnimalsLocation());
-		target.setEatingRawAnimalsInInfectedArea(source.getEatingRawAnimalsInInfectedArea());
-		target.setEatingRawAnimals(source.getEatingRawAnimals());
-		target.setEatingRawAnimalsDetails(source.getEatingRawAnimalsDetails());
-
-		target.setRodents(source.getRodents());
-		target.setBats(source.getBats());
-		target.setPrimates(source.getPrimates());
-		target.setSwine(source.getSwine());
-		target.setBirds(source.getBirds());
-		target.setRabbits(source.getRabbits());
-		target.setCattle(source.getCattle());
-		target.setDogs(source.getDogs());
-		target.setCats(source.getCats());
-		target.setCanidae(source.getCanidae());
-		target.setOtherAnimals(source.getOtherAnimals());
-		target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
-		target.setWaterSource(source.getWaterSource());
-		target.setWaterSourceOther(source.getWaterSourceOther());
-		target.setWaterBody(source.getWaterBody());
-		target.setWaterBodyDetails(source.getWaterBodyDetails());
-		target.setTickBite(source.getTickBite());
-		target.setFleaBite(source.getFleaBite());
-		target.setKindOfExposureBite(source.getKindOfExposureBite());
-		target.setKindOfExposureTouch(source.getKindOfExposureTouch());
-		target.setKindOfExposureScratch(source.getKindOfExposureScratch());
-		target.setKindOfExposureLick(source.getKindOfExposureLick());
-		target.setKindOfExposureOther(source.getKindOfExposureOther());
-		target.setKindOfExposureDetails(source.getKindOfExposureDetails());
-		target.setDateOfLastExposure(source.getDateOfLastExposure());
-		target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
-		target.setAnimalCondition(source.getAnimalCondition());
-		target.setAnimalVaccinationStatus(source.getAnimalVaccinationStatus());
-		target.setProphylaxisStatus(source.getProphylaxisStatus());
-		target.setDateOfProphylaxis(source.getDateOfProphylaxis());
-		target.setVisitedHealthFacility(source.getVisitedHealthFacility());
-		target.setContactWithSourceRespiratoryCase(source.getContactWithSourceRespiratoryCase());
-		target.setVisitedAnimalMarket(source.getVisitedAnimalMarket());
-		target.setCamels(source.getCamels());
-		target.setSnakes(source.getSnakes());
 
 		List<Exposure> exposures = new ArrayList<>();
 		for (ExposureDto exposureDto : source.getExposures()) {
@@ -201,6 +150,12 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setBodyOfWater(source.getBodyOfWater());
+		target.setWaterSource(source.getWaterSource());
+		target.setWaterSourceDetails(source.getWaterSourceDetails());
+		target.setProphylaxis(source.getProphylaxis());
+		target.setProphylaxisDate(source.getProphylaxisDate());
+		target.setRiskArea(source.getRiskArea());
 
 		return exposure;
 	}
@@ -219,61 +174,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setUuid(source.getUuid());
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
-
-		target.setDirectContactConfirmedCase(source.getDirectContactConfirmedCase());
-		target.setDirectContactProbableCase(source.getDirectContactProbableCase());
-		target.setCloseContactProbableCase(source.getCloseContactProbableCase());
-		target.setAreaConfirmedCases(source.getAreaConfirmedCases());
-
-		target.setProcessingConfirmedCaseFluidUnsafe(source.getProcessingConfirmedCaseFluidUnsafe());
-		target.setPercutaneousCaseBlood(source.getPercutaneousCaseBlood());
-		target.setDirectContactDeadUnsafe(source.getDirectContactDeadUnsafe());
-
-		target.setProcessingSuspectedCaseSampleUnsafe(source.getProcessingSuspectedCaseSampleUnsafe());
+		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
+		target.setHighTransmissionRiskArea(source.getHighTransmissionRiskArea());
+		target.setLargeOutbreaksArea(source.getLargeOutbreaksArea());
 		target.setAreaInfectedAnimals(source.getAreaInfectedAnimals());
-		target.setSickDeadAnimals(source.getSickDeadAnimals());
-		target.setSickDeadAnimalsDetails(source.getSickDeadAnimalsDetails());
-		target.setSickDeadAnimalsDate(source.getSickDeadAnimalsDate());
-		target.setSickDeadAnimalsLocation(source.getSickDeadAnimalsLocation());
-		target.setEatingRawAnimalsInInfectedArea(source.getEatingRawAnimalsInInfectedArea());
-		target.setEatingRawAnimals(source.getEatingRawAnimals());
-		target.setEatingRawAnimalsDetails(source.getEatingRawAnimalsDetails());
-
-		target.setRodents(source.getRodents());
-		target.setBats(source.getBats());
-		target.setPrimates(source.getPrimates());
-		target.setSwine(source.getSwine());
-		target.setBirds(source.getBirds());
-		target.setRabbits(source.getRabbits());
-		target.setCattle(source.getCattle());
-		target.setDogs(source.getDogs());
-		target.setCats(source.getCats());
-		target.setCanidae(source.getCanidae());
-		target.setOtherAnimals(source.getOtherAnimals());
-		target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
-		target.setWaterSource(source.getWaterSource());
-		target.setWaterSourceOther(source.getWaterSourceOther());
-		target.setWaterBody(source.getWaterBody());
-		target.setWaterBodyDetails(source.getWaterBodyDetails());
-		target.setTickBite(source.getTickBite());
-		target.setFleaBite(source.getFleaBite());
-		target.setKindOfExposureBite(source.getKindOfExposureBite());
-		target.setKindOfExposureTouch(source.getKindOfExposureTouch());
-		target.setKindOfExposureScratch(source.getKindOfExposureScratch());
-		target.setKindOfExposureLick(source.getKindOfExposureLick());
-		target.setKindOfExposureOther(source.getKindOfExposureOther());
-		target.setKindOfExposureDetails(source.getKindOfExposureDetails());
-		target.setDateOfLastExposure(source.getDateOfLastExposure());
-		target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
-		target.setAnimalCondition(source.getAnimalCondition());
-		target.setAnimalVaccinationStatus(source.getAnimalVaccinationStatus());
-		target.setProphylaxisStatus(source.getProphylaxisStatus());
-		target.setDateOfProphylaxis(source.getDateOfProphylaxis());
-		target.setVisitedHealthFacility(source.getVisitedHealthFacility());
-		target.setContactWithSourceRespiratoryCase(source.getContactWithSourceRespiratoryCase());
-		target.setVisitedAnimalMarket(source.getVisitedAnimalMarket());
-		target.setCamels(source.getCamels());
-		target.setSnakes(source.getSnakes());
 
 		List<ExposureDto> exposureDtos = new ArrayList<>();
 		for (Exposure exposure : source.getExposures()) {
@@ -338,6 +242,12 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setBodyOfWater(source.getBodyOfWater());
+		target.setWaterSource(source.getWaterSource());
+		target.setWaterSourceDetails(source.getWaterSourceDetails());
+		target.setProphylaxis(source.getProphylaxis());
+		target.setProphylaxisDate(source.getProphylaxisDate());
+		target.setRiskArea(source.getRiskArea());
 
 		return target;
 	}

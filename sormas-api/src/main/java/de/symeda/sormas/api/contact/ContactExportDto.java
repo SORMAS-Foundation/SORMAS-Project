@@ -120,9 +120,7 @@ public class ContactExportDto implements Serializable {
 	private boolean traveled;
 	private String travelHistory;
 	private boolean burialAttended;
-	private YesNoUnknown directContactConfirmedCase;
-	private YesNoUnknown directContactProbableCase;
-	private YesNoUnknown contactWithRodent;
+	private YesNoUnknown contactWithSourceCaseKnown;
 
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -151,10 +149,9 @@ public class ContactExportDto implements Serializable {
 							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
-							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler,
+							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
+							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//@formatter:on
 
@@ -211,17 +208,15 @@ public class ContactExportDto implements Serializable {
 		this.district = district;
 		this.community = community;
 		this.epiDataId = epiDataId;
-		this.directContactConfirmedCase = directContactConfirmedCase;
-		this.directContactProbableCase = directContactProbableCase;
-		this.contactWithRodent = contactWithRodent;
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
 			: new CaseJurisdictionDto(
 				caseReportingUserUuid,
-				caseRegionUui,
-				caseDistrictUud,
+				caseRegionUuid,
+				caseDistrictUuid,
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
@@ -559,33 +554,15 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(68)
-	public YesNoUnknown getDirectContactConfirmedCase() {
-		return directContactConfirmedCase;
+	public YesNoUnknown getContactWithSourceCaseKnown() {
+		return contactWithSourceCaseKnown;
 	}
 
-	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
-		this.directContactConfirmedCase = directContactConfirmedCase;
-	}
-
-	@Order(69)
-	public YesNoUnknown getDirectContactProbableCase() {
-		return directContactProbableCase;
-	}
-
-	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
-		this.directContactProbableCase = directContactProbableCase;
+	public void setContactWithSourceCaseKnown(YesNoUnknown directContactConfirmedCase) {
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 	}
 
 	@Order(70)
-	public YesNoUnknown getContactWithRodent() {
-		return contactWithRodent;
-	}
-
-	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
-		this.contactWithRodent = contactWithRodent;
-	}
-
-	@Order(62)
 	public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
 	}
