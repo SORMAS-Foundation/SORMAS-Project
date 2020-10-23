@@ -21,8 +21,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.EntityDtoAccessHelper;
@@ -59,7 +57,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	public static final String ROOT_ENTITY_NAME = "case";
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private static String DEFAULT_NULL_REPLACEMENT = "./.";
 
 	@EJB
@@ -98,7 +95,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	@Override
 	public byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws ValidationException {
 		String rootEntityUuid = rootEntityReference.getUuid();
-		logger.trace("Generate {} for case {}{}", templateName, rootEntityReference.getClass().getSimpleName(), rootEntityUuid);
 
 		// 1. Read template from custom directory
 		File templateFile = getTemplateFile(templateName);
@@ -130,7 +126,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 				if (isEntityVariable(propertyKey)) {
 					String propertyPath = propertyKey.replace(ROOT_ENTITY_NAME + ".", "");
 					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entityData, propertyPath, referenceDtoResolver);
-					logger.trace(propertyKey + ":" + propertyValue);
 					properties.setProperty(propertyKey, propertyValue);
 				}
 			}
@@ -141,7 +136,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		if (extraProperties != null) {
 			for (String extraPropertyKey : extraProperties.stringPropertyNames()) {
 				String propertyValue = extraProperties.getProperty(extraPropertyKey);
-				logger.trace(extraPropertyKey + ":" + propertyValue);
 				properties.setProperty(extraPropertyKey, propertyValue);
 			}
 		}
@@ -149,7 +143,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		// 4. fill null properties
 		for (String propertyKey : propertyKeys) {
 			if (StringUtils.isBlank(properties.getProperty(propertyKey))) {
-				logger.trace(propertyKey + ":" + DEFAULT_NULL_REPLACEMENT);
 				properties.setProperty(propertyKey, DEFAULT_NULL_REPLACEMENT);
 			}
 		}
@@ -159,7 +152,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		try {
 			return IOUtils.toByteArray(templateEngineService.generateDocument(properties, new FileInputStream(templateFile)));
 		} catch (IOException | XDocReportException e) {
-			logger.warn("Error while generating document", e);
 			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), e.getMessage()));
 		}
 	}
