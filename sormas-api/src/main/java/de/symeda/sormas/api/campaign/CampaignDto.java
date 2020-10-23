@@ -21,8 +21,6 @@ public class CampaignDto extends EntityDto {
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String CREATING_USER = "creatingUser";
-	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
-	public static final String CAMPAIGN_DASHBOARD_ELEMENTS = "campaignDashboardElements";
 
 	private String name;
 	private String description;
@@ -31,26 +29,6 @@ public class CampaignDto extends EntityDto {
 	private UserReferenceDto creatingUser;
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
 	private List<CampaignDashboardElement> campaignDashboardElements;
-
-	public CampaignDto() {
-	}
-
-	public CampaignDto(
-		String name,
-		String description,
-		Date startDate,
-		Date endDate,
-		UserReferenceDto creatingUser,
-		Set<CampaignFormMetaReferenceDto> campaignFormMetas,
-		List<CampaignDashboardElement> campaignDashboardElements) {
-		this.name = name;
-		this.description = description;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.creatingUser = creatingUser;
-		this.campaignFormMetas = campaignFormMetas;
-		this.campaignDashboardElements = campaignDashboardElements;
-	}
 
 	public static CampaignDto build() {
 		CampaignDto campaign = new CampaignDto();

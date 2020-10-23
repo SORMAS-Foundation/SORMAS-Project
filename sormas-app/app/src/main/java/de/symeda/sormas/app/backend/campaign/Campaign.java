@@ -73,10 +73,6 @@ public class Campaign extends PseudonymizableAdo {
 	@DatabaseField
 	private boolean archived;
 
-	@Column(name = "dashboardElements")
-	private String dashboardElementsJson;
-	private List<CampaignDashboardElement> dashboardElements;
-
 	private List<CampaignFormMeta> campaignFormMetas = new ArrayList<>();
 
 	public String getName() {
@@ -125,35 +121,6 @@ public class Campaign extends PseudonymizableAdo {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
-	}
-
-	public String getDashboardElementsJson() {
-		return dashboardElementsJson;
-	}
-
-	public void setDashboardElementsJson(String dashboardElementsJson) {
-		this.dashboardElementsJson = dashboardElementsJson;
-		this.dashboardElements = null;
-	}
-
-	@Transient
-	public List<CampaignDashboardElement> getDashboardElements() {
-		if (dashboardElements == null) {
-			Gson gson = new Gson();
-			Type type = new TypeToken<List<CampaignDashboardElement>>() {
-			}.getType();
-			dashboardElements = gson.fromJson(dashboardElementsJson, type);
-			if (dashboardElements == null) {
-				dashboardElements = new ArrayList<>();
-			}
-		}
-		return dashboardElements;
-	}
-
-	public void setDashboardElements(List<CampaignDashboardElement> dashboardElements) {
-		this.dashboardElements = dashboardElements;
-		Gson gson = new Gson();
-		dashboardElementsJson = gson.toJson(dashboardElements);
 	}
 
 	public List<CampaignFormMeta> getCampaignFormMetas() {

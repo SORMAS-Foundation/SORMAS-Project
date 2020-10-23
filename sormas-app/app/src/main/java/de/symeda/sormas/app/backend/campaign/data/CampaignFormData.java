@@ -89,7 +89,7 @@ public class CampaignFormData extends PseudonymizableAdo {
 	public List<CampaignFormDataEntry> getFormValues() {
 		if (formValues == null) {
 			Gson gson = new Gson();
-			Type type = new TypeToken<Set<UserRole>>() {
+			Type type = new TypeToken<Set<CampaignFormDataEntry>>() {
 			}.getType();
 			formValues = gson.fromJson(formValuesJson, type);
 			if (formValues == null) {

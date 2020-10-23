@@ -284,9 +284,10 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public List<CampaignDto> getAllAfter(Date date) {
-
-		final List<Campaign> allAfter = campaignService.getAllAfter(date, userService.getCurrentUser());
-		return allAfter.stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
+		return campaignService.getAllAfter(date, userService.getCurrentUser())
+			.stream()
+			.map(campaignFormMeta -> toDto(campaignFormMeta))
+			.collect(Collectors.toList());
 	}
 
 	@Override

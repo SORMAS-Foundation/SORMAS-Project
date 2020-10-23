@@ -210,6 +210,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
+			TableUtils.createTable(connectionSource, CampaignFormData.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -221,6 +222,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
 				TableUtils.clearTable(connectionSource, Region.class);
+				TableUtils.createTable(connectionSource, Campaign.class);
+				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
 
 				ConfigProvider.init(instance.context);
 			}
@@ -503,7 +506,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeath varchar(255);");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDetails varchar(512);");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDisease varchar(255);");
-				getDao(Person.class).executeRaw("AR TABLE person ADD COLUMN causeOfDeathDiseaseDetails varchar(512);");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN causeOfDeathDiseaseDetails varchar(512);");
 			case 116:
 				currentVersion = 116;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN outcome varchar(255);");
@@ -1775,6 +1778,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, DiseaseClassificationCriteria.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseConfiguration.class, true);
 			TableUtils.dropTable(connectionSource, FeatureConfiguration.class, true);
+			TableUtils.dropTable(connectionSource, Campaign.class, true);
+			TableUtils.dropTable(connectionSource, CampaignFormMeta.class, true);
+			TableUtils.dropTable(connectionSource, CampaignFormData.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
