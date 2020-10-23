@@ -660,7 +660,6 @@ public class Person extends AbstractDomainObject {
 		return contacts;
 	}
 
-
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
