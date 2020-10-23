@@ -119,7 +119,7 @@ public class SampleDto extends PseudonymizableDto {
 	private String requestedOtherAdditionalTests;
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean isOwnershipHandedOver;
+	private boolean ownershipHandedOver;
 
 	@ImportIgnore
 	public CaseReferenceDto getAssociatedCase() {
@@ -380,11 +380,11 @@ public class SampleDto extends PseudonymizableDto {
 	}
 
 	public boolean isOwnershipHandedOver() {
-		return isOwnershipHandedOver;
+		return ownershipHandedOver;
 	}
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		isOwnershipHandedOver = ownershipHandedOver;
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public static SampleDto build(UserReferenceDto userRef, CaseReferenceDto caseRef) {

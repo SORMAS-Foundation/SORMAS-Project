@@ -572,7 +572,7 @@ public class Sample extends CoreAdo {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.SAMPLE, fetch = FetchType.LAZY)
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}
