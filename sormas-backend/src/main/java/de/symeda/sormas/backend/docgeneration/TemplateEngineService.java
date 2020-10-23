@@ -17,7 +17,6 @@ import javax.ejb.Stateless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
@@ -78,13 +77,13 @@ public class TemplateEngineService {
 		return new ByteArrayInputStream(outputStream.toByteArray());
 	}
 
-	public void validateTemplate(InputStream templateFile) throws ValidationException {
+	public void validateTemplate(InputStream templateFile) {
 		try {
 			IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
 			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 			report.extractFields(extractor);
 		} catch (Exception e) {
-			throw new ValidationException(e.getMessage());
+			throw new IllegalArgumentException(e.getMessage());
 		}
 	}
 

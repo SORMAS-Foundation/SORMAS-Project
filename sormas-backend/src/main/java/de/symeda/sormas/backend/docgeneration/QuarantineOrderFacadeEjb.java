@@ -39,7 +39,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -98,7 +97,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 
 	@Override
-	public byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws ValidationException {
+	public byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws IOException {
 		String rootEntityUuid = rootEntityReference.getUuid();
 
 		// 1. Read template from custom directory
@@ -123,7 +122,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		} else if (rootEntityReference instanceof ContactReferenceDto) {
 			entityData = contactFacade.getContactByUuid(rootEntityUuid);
 		} else {
-			throw new ValidationException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
 		}
 
 		if (entityData != null) {
@@ -156,8 +155,8 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 		try {
 			return IOUtils.toByteArray(templateEngineService.generateDocument(properties, new FileInputStream(templateFile)));
-		} catch (IOException | XDocReportException e) {
-			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), e.getMessage()));
+		} catch (XDocReportException e) {
+			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), e.getMessage()));
 		}
 	}
 
@@ -184,72 +183,62 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	}
 
 	@Override
-	public List<String> getAdditionalVariables(String templateName) throws ValidationException {
+	public List<String> getAdditionalVariables(String templateName) throws IOException {
 		File templateFile = getTemplateFile(templateName);
 		Set<String> propertyKeys = getTemplateVariables(templateFile);
 		return propertyKeys.stream().filter(e -> !isEntityVariable(e)).sorted(String::compareTo).collect(Collectors.toList());
 	}
 
 	@Override
-	public void writeQuarantineTemplate(String fileName, byte[] document) throws ValidationException {
+	public void writeQuarantineTemplate(String fileName, byte[] document) throws IOException {
 		if (!"docx".equalsIgnoreCase(FilenameUtils.getExtension(fileName))) {
-			throw new ValidationException(I18nProperties.getString(Strings.headingWrongFileType));
+			throw new IllegalArgumentException(I18nProperties.getString(Strings.headingWrongFileType));
 		}
 		String path = FilenameUtils.getPath(fileName);
 		if (StringUtils.isNotBlank(path)) {
-			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), fileName));
+			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), fileName));
 		}
 
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
 		templateEngineService.validateTemplate(new ByteArrayInputStream(document));
-		try {
-			Files.createDirectories(Paths.get(workflowTemplateDirPath));
-			FileOutputStream fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + FilenameUtils.getName(fileName));
-			fileOutputStream.write(document);
-			fileOutputStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new ValidationException(e.getMessage());
-		}
+
+		Files.createDirectories(Paths.get(workflowTemplateDirPath));
+		FileOutputStream fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + FilenameUtils.getName(fileName));
+		fileOutputStream.write(document);
+		fileOutputStream.close();
 	}
 
 	@Override
-	public boolean deleteQuarantineTemplate(String fileName) throws ValidationException {
+	public boolean deleteQuarantineTemplate(String fileName) {
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
 		File templateFile = new File(workflowTemplateDirPath + File.separator + fileName);
 		if (templateFile.exists() && templateFile.isFile()) {
 			return templateFile.delete();
 		} else {
-			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorFileNotFound), fileName));
+			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorFileNotFound), fileName));
 		}
 	}
 
 	@Override
-	public byte[] getTemplate(String templateName) throws ValidationException {
-		try {
-			return FileUtils.readFileToByteArray(getTemplateFile(templateName));
-		} catch (IOException e) {
-			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateName));
-		}
+	public byte[] getTemplate(String templateName) throws IOException {
+		return FileUtils.readFileToByteArray(getTemplateFile(templateName));
 	}
 
-	private Set<String> getTemplateVariables(File templateFile) throws ValidationException {
+	private Set<String> getTemplateVariables(File templateFile) throws IOException {
 		try {
 			return templateEngineService.extractTemplateVariables(new FileInputStream(templateFile));
-		} catch (IOException e) {
-			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFile.getName()));
 		} catch (XDocReportException e) {
-			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
+			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
 		}
 	}
 
-	private File getTemplateFile(String templateName) throws ValidationException {
+	private File getTemplateFile(String templateName) {
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
 		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
 		File templateFile = new File(templateFileName);
 
 		if (!templateFile.exists()) {
-			throw new ValidationException(String.format(I18nProperties.getString(Strings.errorFileNotFound), templateName));
+			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorFileNotFound), templateName));
 		}
 		return templateFile;
 	}

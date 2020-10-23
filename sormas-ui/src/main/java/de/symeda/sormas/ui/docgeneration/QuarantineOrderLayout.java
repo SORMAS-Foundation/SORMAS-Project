@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.docgeneration;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
@@ -28,7 +29,6 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.ValidationException;
 
 public class QuarantineOrderLayout extends VerticalLayout {
 
@@ -72,11 +72,11 @@ public class QuarantineOrderLayout extends VerticalLayout {
 						additionalVariablesComponent.setVisible(true);
 					}
 					setStreamResource(templateFile);
-				} catch (ValidationException validationException) {
-					validationException.printStackTrace();
+				} catch (IOException ioException) {
+					ioException.printStackTrace();
 					new Notification(
 						I18nProperties.getString(Strings.errorOccurred),
-						validationException.getMessage(),
+						ioException.getMessage(),
 						Notification.Type.ERROR_MESSAGE,
 						false).show(Page.getCurrent());
 				}
@@ -117,7 +117,7 @@ public class QuarantineOrderLayout extends VerticalLayout {
 					new ByteArrayInputStream(quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto, readAdditionalVariables()));
 				closeWindow();
 				return byteArrayInputStream;
-			} catch (ValidationException e) {
+			} catch (IOException | IllegalArgumentException e) {
 				new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 				return null;
 			}

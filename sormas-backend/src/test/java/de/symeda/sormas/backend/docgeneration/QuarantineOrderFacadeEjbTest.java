@@ -33,7 +33,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -97,13 +96,13 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void generateQuarantineOrderCaseTest() throws IOException, ValidationException {
+	public void generateQuarantineOrderCaseTest() throws IOException {
 		ReferenceDto rootEntityReference = caseDataDto.toReference();
 		generateQuarantineOrderTest(rootEntityReference);
 	}
 
 	@Test
-	public void generateQuarantineOrderContactTest() throws IOException, ValidationException {
+	public void generateQuarantineOrderContactTest() throws IOException {
 		generateQuarantineOrderTest(contactDto.toReference());
 	}
 
@@ -113,12 +112,12 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 			generateQuarantineOrderTest(new ReferenceDto() {
 			});
 			fail("Wrong ReferenceDto not recognized");
-		} catch (ValidationException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals("Quarantine can only be issued for cases or contacts.", e.getMessage());
 		}
 	}
 
-	private void generateQuarantineOrderTest(ReferenceDto rootEntityReference) throws ValidationException, IOException {
+	private void generateQuarantineOrderTest(ReferenceDto rootEntityReference) throws IOException {
 		List<String> additionalVariables = quarantineOrderFacadeEjb.getAdditionalVariables("Quarantine.docx");
 		assertEquals(Arrays.asList("other", "supervisor.name", "supervisor.phone", "supervisor.roomNumber"), additionalVariables);
 
@@ -163,7 +162,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void writeAndDeleteTemplateTest() throws IOException, ValidationException {
+	public void writeAndDeleteTemplateTest() throws IOException {
 		String testDirectory = "target" + File.separator + "doctest";
 		byte[] document = IOUtils.toByteArray(getClass().getResourceAsStream("/docgeneration/quarantine/Quarantine.docx"));
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, testDirectory);
@@ -178,28 +177,28 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void validateTemplateTest() throws IOException {
 		try {
-			quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToValidated.txt", new byte[0]);
+			quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToBeValidated.txt", new byte[0]);
 			fail("Invalid file extension not recognized.");
-		} catch (ValidationException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals("Wrong file type", e.getMessage());
 		}
 		try {
-			quarantineOrderFacadeEjb.writeQuarantineTemplate("../TemplateFileToValidated.docx", new byte[0]);
+			quarantineOrderFacadeEjb.writeQuarantineTemplate("../TemplateFileToBeValidated.docx", new byte[0]);
 			fail("Invalid file extension not recognized.");
-		} catch (ValidationException e) {
-			assertEquals("Illegal file name: ../TemplateFileToValidated.docx", e.getMessage());
+		} catch (IllegalArgumentException e) {
+			assertEquals("Illegal file name: ../TemplateFileToBeValidated.docx", e.getMessage());
 		}
 		try {
-			quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToValidated.docx", new byte[0]);
+			quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToBeValidated.docx", new byte[0]);
 			fail("Invalid docx file not recognized.");
-		} catch (ValidationException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals("InputStream is not a zip.", e.getMessage());
 		}
 		try {
 			byte[] document = IOUtils.toByteArray(getClass().getResourceAsStream("/docgeneration/quarantine/FaultyTemplate.docx"));
-			quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToValidated.docx", document);
+			quarantineOrderFacadeEjb.writeQuarantineTemplate("TemplateFileToBeValidated.docx", document);
 			fail("Syntax error not recognized.");
-		} catch (ValidationException e) {
+		} catch (IllegalArgumentException e) {
 			String message =
 				"org.apache.velocity.runtime.parser.TemplateParseException: Encountered \"].</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val=\\\"Normal\\\"/><w:bidi w:val=\\\"0\\\"/><w:ind w:right=\\\"3117\\\" w:hanging=\\\"0\\\"/><w:jc w:val=\\\"both\\\"/><w:rPr><w:rFonts w:ascii=\\\"DejaVu Sans\\\" w:hAnsi=\\\"DejaVu Sans\\\"/><w:sz w:val=\\\"21\\\"/><w:szCs w:val=\\\"21\\\"/></w:rPr></w:pPr><w:r><w:rPr><w:b w:val=\\\"false\\\"/><w:bCs w:val=\\\"false\\\"/></w:rPr></w:r></w:p><w:p><w:pPr><w:pStyle w:val=\\\"Normal\\\"/><w:bidi w:val=\\\"0\\\"/><w:ind w:right=\\\"3117\\\" w:hanging=\\\"0\\\"/><w:jc w:val=\\\"both\\\"/><w:rPr><w:b w:val=\\\"false\\\"/><w:b w:val=\\\"false\\\"/><w:bCs w:val=\\\"false\\\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\\\"DejaVu Sans\\\" w:hAnsi=\\\"DejaVu Sans\\\"/><w:b w:val=\\\"false\\\"/><w:bCs w:val=\\\"false\\\"/><w:sz w:val=\\\"21\\\"/><w:szCs w:val=\\\"21\\\"/></w:rPr><w:t>Processing of this template should fail.</w:t></w:r></w:p><w:sectPr><w:type w:val=\\\"nextPage\\\"/><w:pgSz w:w=\\\"11906\\\" w:h=\\\"16838\\\"/><w:pgMar w:left=\\\"1134\\\" w:right=\\\"1134\\\" w:header=\\\"0\\\" w:top=\\\"1134\\\" w:footer=\\\"0\\\" w:bottom=\\\"1134\\\" w:gutter=\\\"0\\\"/><w:pgNumType w:fmt=\\\"decimal\\\"/><w:formProt w:val=\\\"false\\\"/><w:textDirection w:val=\\\"lrTb\\\"/><w:docGrid w:type=\\\"default\\\" w:linePitch=\\\"100\\\" w:charSpace=\\\"0\\\"/></w:sectPr></w:body></w:document>\" at word/document.xml[line 1, column 1240]\n"
 					+ "Was expecting one of:\n" //
@@ -210,7 +209,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void readTemplateTest() throws ValidationException {
+	public void readTemplateTest() throws IOException {
 		byte[] template = quarantineOrderFacadeEjb.getTemplate("Quarantine.docx");
 		assertEquals(5416, template.length);
 	}

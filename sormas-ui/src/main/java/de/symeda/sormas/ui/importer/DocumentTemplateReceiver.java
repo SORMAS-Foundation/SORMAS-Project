@@ -21,7 +21,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -80,59 +79,26 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 				I18nProperties.getCaption(Captions.actionCancel),
 				null,
 				ok -> {
-					if (ok.booleanValue()) {
-						byte[] filecontent;
-						try {
-							filecontent = Files.readAllBytes(file.toPath());
-							// This should be more general for reusability
-							FacadeProvider.getQuarantineOrderFacade().writeQuarantineTemplate(fName, filecontent);
-						} catch (IOException e) {
-							e.printStackTrace();
-							new Notification(
-								I18nProperties.getString(Strings.headingImportFailed),
-								I18nProperties.getString(Strings.messageImportFailed),
-								Notification.Type.ERROR_MESSAGE,
-								false).show(Page.getCurrent());
-							return;
-						} catch (ValidationException e) {
-							e.printStackTrace();
-							new Notification(
-								I18nProperties.getString(Strings.headingImportFailed),
-								e.getMessage(),
-								Notification.Type.ERROR_MESSAGE,
-								false).show(Page.getCurrent());
-							return;
-						}
-
-						VaadinUiUtil.showSimplePopupWindow(
-							I18nProperties.getString(Strings.headingUploadSuccess),
-							I18nProperties.getString(Strings.messageUploadSuccessful));
+					if (ok) {
+						writeTemplateFile();
 					}
 				});
 		} else {
-			byte[] filecontent;
-			try {
-				filecontent = Files.readAllBytes(file.toPath());
-				// This should be more general for reusability
-				FacadeProvider.getQuarantineOrderFacade().writeQuarantineTemplate(fName, filecontent);
-			} catch (IOException e) {
-				e.printStackTrace();
-				new Notification(
-					I18nProperties.getString(Strings.headingImportFailed),
-					I18nProperties.getString(Strings.messageImportFailed),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
-				return;
-			} catch (ValidationException e) {
-				e.printStackTrace();
-				new Notification(I18nProperties.getString(Strings.headingImportFailed), e.getMessage(), Notification.Type.ERROR_MESSAGE, false)
-					.show(Page.getCurrent());
-				return;
-			}
+			writeTemplateFile();
+		}
+	}
 
+	private void writeTemplateFile() {
+		try {
+			byte[] filecontent = Files.readAllBytes(file.toPath());
+			// This should be more general for reusability
+			FacadeProvider.getQuarantineOrderFacade().writeQuarantineTemplate(fName, filecontent);
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingUploadSuccess),
 				I18nProperties.getString(Strings.messageUploadSuccessful));
+		} catch (IOException | IllegalArgumentException e) {
+			new Notification(I18nProperties.getString(Strings.headingImportFailed), e.getMessage(), Notification.Type.ERROR_MESSAGE, false)
+				.show(Page.getCurrent());
 		}
 	}
 }

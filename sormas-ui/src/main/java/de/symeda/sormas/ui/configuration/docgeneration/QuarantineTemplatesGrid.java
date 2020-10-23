@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.configuration.docgeneration;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -18,7 +19,6 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -56,7 +56,7 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), templateFileName), () -> {
 					try {
 						FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(templateFileName);
-					} catch (ValidationException ex) {
+					} catch (IllegalArgumentException ex) {
 						new Notification(
 							I18nProperties.getString(Strings.errorDeletingDocumentTemplate),
 							ex.getMessage(),
@@ -74,7 +74,7 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 			try {
 				return new ByteArrayInputStream(quarantineOrderFacade.getTemplate(templateFileName));
-			} catch (ValidationException e) {
+			} catch (IOException | IllegalArgumentException e) {
 				new Notification(
 					String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFileName),
 					e.getMessage(),
