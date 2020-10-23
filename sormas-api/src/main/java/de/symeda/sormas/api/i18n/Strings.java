@@ -740,6 +740,9 @@ public interface Strings {
 	String promptActionDateTo = "promptActionDateTo";
 	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
 	String promptActionEpiWeekTo = "promptActionEpiWeekTo";
+	String promptAllArea = "promptAllArea";
+	String promptAllDistrict = "promptAllDistrict";
+	String promptAllRegion = "promptAllRegion";
 	String promptArea = "promptArea";
 	String promptCampaign = "promptCampaign";
 	String promptCampaignSearch = "promptCampaignSearch";
