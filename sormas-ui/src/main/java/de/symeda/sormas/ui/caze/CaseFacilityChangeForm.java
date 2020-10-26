@@ -24,7 +24,6 @@ import java.util.List;
 
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -44,6 +43,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 
@@ -64,7 +64,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			);
 	//@formatter:on
 
-	private OptionGroup facilityOrHome;
+	private NullableOptionGroup facilityOrHome;
 	private ComboBox typeGroup;
 	private ComboBox type;
 
@@ -79,7 +79,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);

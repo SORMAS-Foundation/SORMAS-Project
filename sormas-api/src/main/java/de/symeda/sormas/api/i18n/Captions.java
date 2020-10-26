@@ -447,6 +447,8 @@ public interface Captions {
 	String Contact_immunosuppressiveTherapyBasicDiseaseDetails = "Contact.immunosuppressiveTherapyBasicDiseaseDetails";
 	String Contact_lastContactDate = "Contact.lastContactDate";
 	String Contact_lastName = "Contact.lastName";
+	String Contact_latestEventId = "Contact.latestEventId";
+	String Contact_latestEventTitle = "Contact.latestEventTitle";
 	String Contact_numberOfVisits = "Contact.numberOfVisits";
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
@@ -522,6 +524,7 @@ public interface Captions {
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
+	String contactOnlyWithSourceCaseInEvent = "contactOnlyWithSourceCaseInEvent";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
@@ -832,6 +835,7 @@ public interface Captions {
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventLinkToCases = "eventLinkToCases";
+	String eventLinkToContacts = "eventLinkToContacts";
 	String eventNewEvent = "eventNewEvent";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
 	String EventParticipant = "EventParticipant";

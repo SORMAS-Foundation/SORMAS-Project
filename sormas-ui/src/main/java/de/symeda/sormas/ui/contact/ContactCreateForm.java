@@ -38,7 +38,6 @@ import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -66,6 +65,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
@@ -98,11 +98,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
 	//@formatter:on
 
-	private OptionGroup contactProximity;
+	private NullableOptionGroup contactProximity;
 	private Disease disease;
 	private Boolean hasCaseRelation;
 	private CaseReferenceDto selectedCase;
-	private OptionGroup contactCategory;
+	private NullableOptionGroup contactCategory;
 	private TextField contactProximityDetails;
 	private ComboBox birthDateDay;
 
@@ -143,18 +143,18 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phone.getCaption())));
 		email.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, email.getCaption())));
 
-		addField(ContactDto.RETURNING_TRAVELER, OptionGroup.class);
+		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
 		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
 
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
-		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isConfiguredServer("de")) {
-			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
+			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getNullableValue()));
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
-			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
+			contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
 		}
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(4);
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
@@ -343,7 +343,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private void updateContactProximity() {
 
-		ContactProximity value = (ContactProximity) contactProximity.getValue();
+		ContactProximity value = (ContactProximity) contactProximity.getNullableValue();
 		FieldHelper.updateEnumData(
 			contactProximity,
 			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));

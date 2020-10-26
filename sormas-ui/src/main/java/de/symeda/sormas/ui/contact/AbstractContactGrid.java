@@ -143,6 +143,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		return Stream.of(
 			Stream.of(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS),
 			getPersonColumns(),
+			getEventColumns(),
 			Stream.of(
 				ContactIndexDto.CONTACT_CATEGORY,
 				ContactIndexDto.CONTACT_PROXIMITY,
@@ -155,6 +156,10 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 	protected Stream<String> getPersonColumns() {
 		return Stream.of(ContactIndexDto.PERSON_FIRST_NAME, ContactIndexDto.PERSON_LAST_NAME);
+	}
+
+	protected Stream<String> getEventColumns() {
+		return Stream.empty();
 	}
 
 	public void reload() {

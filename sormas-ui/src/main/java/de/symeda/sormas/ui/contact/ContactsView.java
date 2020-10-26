@@ -496,7 +496,7 @@ public class ContactsView extends AbstractView {
 
 				Button minusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.contactMinusDays), e -> {
 					followUpRangeInterval =
-							DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+						DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
 					buttonPreviousOrNextClick = true;
 					toReferenceDate.setValue(toReferenceDate.getValue().minusDays(followUpRangeInterval));
 					fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(followUpRangeInterval));
@@ -527,7 +527,7 @@ public class ContactsView extends AbstractView {
 
 				Button plusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.contactPlusDays), e -> {
 					followUpRangeInterval =
-							DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+						DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
 					buttonPreviousOrNextClick = true;
 					toReferenceDate.setValue(toReferenceDate.getValue().plusDays(followUpRangeInterval));
 					fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(followUpRangeInterval));
@@ -557,6 +557,11 @@ public class ContactsView extends AbstractView {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
+
+			if (criteria.getEventUuid() != null) {
+				criteria.eventLike(criteria.getEventUuid());
+				criteria.eventUuid(null);
+			}
 		}
 		updateFilterComponents();
 

@@ -136,6 +136,10 @@ public class ContactExportDto implements Serializable {
 
 	private ContactJurisdictionDto jurisdiction;
 
+	private final Long eventCount;
+	private String latestEventId;
+	private String latestEventTitle;
+
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
@@ -152,7 +156,7 @@ public class ContactExportDto implements Serializable {
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
-							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler,
+							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler, long eventCount,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
@@ -217,6 +221,7 @@ public class ContactExportDto implements Serializable {
 		this.directContactProbableCase = directContactProbableCase;
 		this.contactWithRodent = contactWithRodent;
 		this.returningTraveler = returningTraveler;
+		this.eventCount = eventCount;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -594,6 +599,29 @@ public class ContactExportDto implements Serializable {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
+	}
+
+	@Order(71)
+	public String getLatestEventId() {
+		return latestEventId;
+	}
+
+	public void setLatestEventId(String latestEventId) {
+		this.latestEventId = latestEventId;
+	}
+
+	@Order(72)
+	public String getLatestEventTitle() {
+		return latestEventTitle;
+	}
+
+	public void setLatestEventTitle(String latestEventTitle) {
+		this.latestEventTitle = latestEventTitle;
+	}
+
+	@Order(73)
+	public long getEventCount() {
+		return this.eventCount;
 	}
 
 	public void setId(long id) {

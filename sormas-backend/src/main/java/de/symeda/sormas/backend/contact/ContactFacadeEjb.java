@@ -53,6 +53,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -124,6 +125,10 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -208,6 +213,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private EventService eventService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -400,6 +407,20 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		ContactJoins joins = new ContactJoins(contact);
 
+		// Events count subquery
+		Subquery<Long> eventCountSq = cq.subquery(Long.class);
+		Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
+		Join<EventParticipant, Event> eventJoin = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
+		Join<Person, Contact> contactJoin = eventCountRoot.join(EventParticipant.PERSON, JoinType.INNER).join(Person.CONTACTS, JoinType.INNER);
+
+		eventCountSq.where(
+			cb.and(
+				cb.equal(contactJoin.get(Contact.UUID), contact.get(Contact.UUID)),
+				cb.isFalse(eventJoin.get(Event.DELETED)),
+				cb.isFalse(eventJoin.get(Event.ARCHIVED)),
+				cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
+		eventCountSq.select(cb.countDistinct(eventJoin.get(Event.ID)));
+
 		cq.multiselect(
 			Stream.concat(
 				Stream.of(
@@ -468,12 +489,13 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
 					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
 					joins.getEpiData().get(EpiData.RODENTS),
-					contact.get(Contact.RETURNING_TRAVELER)),
+					contact.get(Contact.RETURNING_TRAVELER),
+					eventCountSq),
 				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
 		cq.distinct(true);
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq, joins);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -482,6 +504,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
 
 		List<ContactExportDto> exportContacts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<String> resultContactsUuids = exportContacts.stream().map(ContactExportDto::getUuid).collect(Collectors.toList());
 
 		if (!exportContacts.isEmpty()) {
 			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
@@ -515,6 +538,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
 			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 			travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
+
+			// Load latest events info
+			// Adding a second query here is not perfect, but selecting the last event with a criteria query
+			// doesn't seem to be possible and using a native query is not an option because of user filters
+			List<ContactEventSummaryDetails> eventSummaries = eventService.getEventSummaryDetailsByContacts(resultContactsUuids);
 
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
@@ -563,6 +591,16 @@ public class ContactFacadeEjb implements ContactFacade {
 					});
 				}
 
+				if (eventSummaries != null && exportContact.getEventCount() != 0) {
+					eventSummaries.stream()
+						.filter(v -> v.getContactUuid().equals(exportContact.getUuid()))
+						.max(Comparator.comparing(ContactEventSummaryDetails::getEventDate))
+						.ifPresent(eventSummary -> {
+							exportContact.setLatestEventId(eventSummary.getEventUuid());
+							exportContact.setLatestEventTitle(eventSummary.getEventTitle());
+						});
+				}
+
 				pseudonymizer.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, null);
 			}
 		}
@@ -576,7 +614,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
-		final Join<Contact, Person> contactPerson = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+		final ContactJoins contactJoins = new ContactJoins(contactRoot);
+		final Join<Contact, Person> contactPerson = contactJoins.getPerson();
 
 		cq.multiselect(
 			contactRoot.get(Contact.UUID),
@@ -591,7 +630,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		cq.where(
 			AbstractAdoService.and(
 				cb,
-				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq),
+				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, contactJoins),
 				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
@@ -649,9 +688,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
-		contactRoot.join(Contact.VISITS, JoinType.LEFT);
+		final ContactJoins joins = new ContactJoins(contactRoot);
+		joins.getVisits();
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, joins);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -678,8 +718,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> root = cq.from(Contact.class);
+		ContactJoins joins = new ContactJoins(root);
 
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, root, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, root, cq, joins);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -726,7 +767,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				.collect(Collectors.toList()));
 
 		// Only use user filter if no restricting case is specified
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq, joins);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -856,6 +897,25 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
 			dtos = em.createQuery(query).getResultList();
+		}
+
+		// Load latest events info
+		// Adding a second query here is not perfect, but selecting the last event with a criteria query
+		// doesn't seem to be possible and using a native query is not an option because of user filters
+		List<ContactEventSummaryDetails> eventSummaries =
+			eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()));
+		for (ContactIndexDetailedDto contact : dtos) {
+			if (contact.getEventCount() == 0) {
+				continue;
+			}
+
+			eventSummaries.stream()
+				.filter(v -> v.getContactUuid().equals(contact.getUuid()))
+				.max(Comparator.comparing(ContactEventSummaryDetails::getEventDate))
+				.ifPresent(eventSummary -> {
+					contact.setLatestEventId(eventSummary.getEventUuid());
+					contact.setLatestEventTitle(eventSummary.getEventTitle());
+				});
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));

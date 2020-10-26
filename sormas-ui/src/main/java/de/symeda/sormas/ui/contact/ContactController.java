@@ -35,6 +35,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.caze.CasesView;
+import de.symeda.sormas.ui.utils.AbstractView;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.jsoup.Jsoup;
@@ -127,6 +131,12 @@ public class ContactController {
 		} else {
 			SormasUI.get().getNavigator().navigateTo(navigationState);
 		}
+	}
+
+	public void navigateTo(ContactCriteria contactCriteria) {
+		ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
+		String navigationState = AbstractView.buildNavigationState(ContactsView.VIEW_NAME, contactCriteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
 	public void editData(String contactUuid) {

@@ -59,6 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:enumClass="@{reportFilterOptionClass}"
+                    app:nullable="false"
                     app:showCaption="false" />
 
                 <LinearLayout
