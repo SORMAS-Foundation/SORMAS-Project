@@ -190,9 +190,11 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	private void validate(CampaignDto campaignDto) {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
-		for (CampaignDashboardElement cde : campaignDashboardElements) {
-			if (cde.getDiagramId() == null || cde.getTabId() == null || cde.getWidth() == null || cde.getHeight() == null || cde.getOrder() == null) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignDashboardChartValueNull));
+		if (campaignDashboardElements != null) {
+			for (CampaignDashboardElement cde : campaignDashboardElements) {
+				if (cde.getDiagramId() == null || cde.getTabId() == null || cde.getWidth() == null || cde.getHeight() == null || cde.getOrder() == null) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignDashboardChartValueNull));
+				}
 			}
 		}
 	}
