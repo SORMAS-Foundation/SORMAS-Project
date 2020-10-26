@@ -95,7 +95,7 @@ public class MessagingService {
 		throws NotificationDeliveryFailedException {
 
 		// Don't send notifications to users that initiated an action
-		if (recipient.equals(userService.getCurrentUser())) {
+		if (recipient.equals(userService.getCurrentUser()) || !recipient.isActive()) {
 			return;
 		}
 
