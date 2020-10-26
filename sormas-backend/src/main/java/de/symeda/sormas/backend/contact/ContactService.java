@@ -1160,6 +1160,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return cb.and(cb.or(cb.isNull(root.get(Contact.CAZE)), cb.isFalse(caze.get(Case.ARCHIVED))), cb.isFalse(root.get(Contact.DELETED)));
 	}
 
+	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Join<?, Contact> contactJoin) {
+
+		Join<Contact, Case> caze = contactJoin.join(Contact.CAZE, JoinType.LEFT);
+		return cb
+			.and(cb.or(cb.isNull(contactJoin.get(Contact.CAZE)), cb.isFalse(caze.get(Case.ARCHIVED))), cb.isFalse(contactJoin.get(Contact.DELETED)));
+	}
+
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do
 	 * not use {@link ContactCriteria}. This essentially removes
