@@ -29,7 +29,10 @@ import org.slf4j.LoggerFactory;
 
 import com.nexmo.client.NexmoClientException;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -41,18 +44,6 @@ import de.symeda.sormas.backend.user.UserService;
 @Stateless(name = "MessagingService")
 @LocalBean
 public class MessagingService {
-
-	// Message subjects
-	public static final String SUBJECT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChangedSubject";
-	public static final String SUBJECT_CASE_INVESTIGATION_DONE = "notificationCaseInvestigationDoneSubject";
-	public static final String SUBJECT_LAB_RESULT_ARRIVED = "notificationLabResultArrivedSubject";
-	public static final String SUBJECT_LAB_RESULT_SPECIFIED = "notificationLabResultSpecifiedSubject";
-	public static final String SUBJECT_LAB_SAMPLE_SHIPPED = "notificationLabSampleShippedSubject";
-	public static final String SUBJECT_CONTACT_SYMPTOMATIC = "notificationContactSymptomaticSubject";
-	public static final String SUBJECT_TASK_START = "notificationTaskStartSubject";
-	public static final String SUBJECT_TASK_DUE = "notificationTtaskDueSubject";
-	public static final String SUBJECT_VISIT_COMPLETED = "notificationVisitCompletedSubject";
-	public static final String SUBJECT_DISEASE_CHANGED = "notificationDiseaseChangedSubject";
 
 	// Message contents (via properties file)
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChanged";
@@ -86,16 +77,26 @@ public class MessagingService {
 	private EmailService emailService;
 	@EJB
 	private SmsService smsService;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	/**
 	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
 	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
 	 */
-	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes)
+	public void sendMessage(User recipient, MessageSubject subject, String messageContent, MessageType... messageTypes)
 		throws NotificationDeliveryFailedException {
 
 		// Don't send notifications to users that initiated an action
 		if (recipient.equals(userService.getCurrentUser())) {
+			return;
+		}
+		// Don't send notifications if the feature is disabled for the current MessageSubject
+		if ((MessageSubject.TASK_DUE.equals(subject) || MessageSubject.TASK_START.equals(subject))
+			&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.TASK_NOTIFICATIONS)
+			|| !MessageSubject.TASK_DUE.equals(subject)
+				&& !MessageSubject.TASK_START.equals(subject)
+				&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.OTHER_NOTIFICATIONS)) {
 			return;
 		}
 
@@ -110,9 +111,9 @@ public class MessagingService {
 			} else {
 				try {
 					if (messageType == MessageType.EMAIL) {
-						emailService.sendEmail(emailAddress, subject, messageContent);
+						emailService.sendEmail(emailAddress, I18nProperties.getEnumCaption(subject), messageContent);
 					} else if (messageType == MessageType.SMS) {
-						smsService.sendSms(phoneNumber, subject, messageContent);
+						smsService.sendSms(phoneNumber, I18nProperties.getEnumCaption(subject), messageContent);
 					}
 				} catch (MessagingException e) {
 					throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);

@@ -173,6 +173,7 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -1732,7 +1733,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				try {
 					messagingService.sendMessage(
 						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
+						MessageSubject.CASE_CLASSIFICATION_CHANGED,
 						String.format(
 							I18nProperties.getString(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
 							DataHelper.getShortUuid(newCase.getUuid()),
@@ -1761,7 +1762,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				try {
 					messagingService.sendMessage(
 						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_DISEASE_CHANGED),
+						MessageSubject.DISEASE_CHANGED,
 						String.format(
 							I18nProperties.getString(MessagingService.CONTENT_DISEASE_CHANGED),
 							DataHelper.getShortUuid(newCase.getUuid()),
@@ -2690,7 +2691,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			try {
 				messagingService.sendMessage(
 					recipient,
-					I18nProperties.getString(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
+					MessageSubject.CASE_INVESTIGATION_DONE,
 					String
 						.format(I18nProperties.getString(MessagingService.CONTENT_CASE_INVESTIGATION_DONE), DataHelper.getShortUuid(caze.getUuid())),
 					MessageType.EMAIL,

@@ -81,6 +81,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -615,12 +616,8 @@ public class VisitFacadeEjb implements VisitFacade {
 								DataHelper.getShortUuid(contact.getUuid()));
 						}
 
-						messagingService.sendMessage(
-							recipient,
-							I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC),
-							messageContent,
-							MessageType.EMAIL,
-							MessageType.SMS);
+						messagingService
+							.sendMessage(recipient, MessageSubject.CONTACT_SYMPTOMATIC, messageContent, MessageType.EMAIL, MessageType.SMS);
 					} catch (NotificationDeliveryFailedException e) {
 						logger.error(
 							String.format(
