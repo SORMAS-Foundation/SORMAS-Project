@@ -5,11 +5,6 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
@@ -65,7 +60,7 @@ public class CampaignFormMetaService extends AbstractAdoService<CampaignFormMeta
 		Join<CampaignFormData, Campaign> campaignJoin = campaignFormMetaRoot.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
 		Predicate filter = cb.equal(campaignJoin.get(Campaign.UUID), uuid);
 		cq = cq.where(filter);
-		cq.multiselect(campaignJoin.get(CampaignFormMeta.UUID), formJoin.get(CampaignFormMeta.FORM_NAME));
+		cq.multiselect(formJoin.get(CampaignFormMeta.UUID), formJoin.get(CampaignFormMeta.FORM_NAME));
 		TypedQuery query = em.createQuery(cq);
 		List<CampaignFormMetaReferenceDto> result = query.getResultList();
 		return result;
