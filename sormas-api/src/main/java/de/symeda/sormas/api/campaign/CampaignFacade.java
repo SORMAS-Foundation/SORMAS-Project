@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.campaign;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -33,4 +35,10 @@ public interface CampaignFacade {
 	CampaignReferenceDto getReferenceByUuid(String uuid);
 
 	boolean exists(String uuid);
+
+	List<CampaignDto> getAllAfter(Date campaignChangeDate);
+
+	List<CampaignDto> getByUuids(List<String> uuids);
+
+	List<String> getAllActiveUuids();
 }

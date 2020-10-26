@@ -176,7 +176,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.desc(root.get(Case.CHANGE_DATE)));
+		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 		cq.distinct(true);
 
 		List<ADO> resultList = em.createQuery(cq).getResultList();
