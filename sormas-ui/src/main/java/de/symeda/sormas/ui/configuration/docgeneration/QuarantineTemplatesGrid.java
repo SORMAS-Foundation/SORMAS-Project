@@ -68,7 +68,7 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 	}
 
 	private Button buildViewDocumentButton(String templateFileName) {
-		Button viewButton = new Button(VaadinIcons.FILE_TEXT);
+		Button viewButton = new Button(VaadinIcons.DOWNLOAD);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();

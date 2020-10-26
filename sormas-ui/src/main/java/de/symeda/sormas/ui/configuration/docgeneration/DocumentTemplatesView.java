@@ -41,7 +41,6 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/documentTemplates";
 
 	private ViewConfiguration viewConfiguration;
-
 	private VerticalLayout gridLayout;
 	private QuarantineTemplatesGrid quarantineTemplatesGrid;
 
@@ -56,9 +55,9 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 		// Add Quarantine Template Section
 		quarantineTemplatesGrid = new QuarantineTemplatesGrid();
 		quarantineTemplatesGrid.setWidth("500px"); // Remove this line to fit whole page
-		Label QuarantineTemplatesLabel = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_templates));
-		QuarantineTemplatesLabel.addStyleName(H3);
-		gridLayout.addComponent(QuarantineTemplatesLabel);
+		Label quarantineTemplatesLabel = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_templates));
+		quarantineTemplatesLabel.addStyleName(H3);
+		gridLayout.addComponent(quarantineTemplatesLabel);
 		gridLayout.addComponent(quarantineTemplatesGrid);
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);

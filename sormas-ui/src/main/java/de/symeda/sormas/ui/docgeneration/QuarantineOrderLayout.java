@@ -13,10 +13,12 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -29,12 +31,14 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class QuarantineOrderLayout extends VerticalLayout {
 
 	private final ReferenceDto caseReferenceDto;
 
 	private final Button createButton;
+	private final Button cancelButton;
 	private final VerticalLayout additionalVariablesComponent;
 	private FileDownloader fileDownloader;
 
@@ -44,6 +48,7 @@ public class QuarantineOrderLayout extends VerticalLayout {
 
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
+		additionalVariablesComponent.setMargin(false);
 		additionalVariablesComponent.setVisible(false);
 
 		createButton = new Button(I18nProperties.getCaption(Captions.actionCreate));
@@ -51,8 +56,14 @@ public class QuarantineOrderLayout extends VerticalLayout {
 		createButton.setIcon(VaadinIcons.FILE_TEXT);
 		createButton.setEnabled(false);
 
+		cancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
+		cancelButton.addClickListener((e) -> closeWindow());
+
+		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.addComponents(cancelButton, createButton);
+
 		ComboBox<String> templateSelector = new ComboBox<>(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder));
-		templateSelector.setWidth(80F, Unit.PERCENTAGE);
+		templateSelector.setWidth(100F, Unit.PERCENTAGE);
 		templateSelector.setItems(FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates());
 		templateSelector.addValueChangeListener(e -> {
 			String templateFile = e.getValue();
@@ -66,7 +77,7 @@ public class QuarantineOrderLayout extends VerticalLayout {
 					if (additionalVariables != null && !additionalVariables.isEmpty()) {
 						for (String variable : additionalVariables) {
 							TextField variableInput = new TextField(variable);
-							variableInput.setWidth(80F, Unit.PERCENTAGE);
+							variableInput.setWidth(100F, Unit.PERCENTAGE);
 							additionalVariablesComponent.addComponent(variableInput);
 						}
 						additionalVariablesComponent.setVisible(true);
@@ -82,10 +93,12 @@ public class QuarantineOrderLayout extends VerticalLayout {
 				}
 			}
 		});
+		templateSelector.addStyleName(CssStyles.SOFT_REQUIRED);
 
 		addComponent(templateSelector);
 		addComponent(additionalVariablesComponent);
-		addComponent(createButton);
+		addComponent(buttonBar);
+		setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
 	}
 
 	private Properties readAdditionalVariables() {
