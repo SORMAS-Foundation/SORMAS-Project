@@ -1,35 +1,29 @@
 package de.symeda.sormas.backend.campaign.form;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormElement;
-import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.util.DtoHelper;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.campaign.form.*;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "CampaignFormMetaFacade")
 public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
@@ -113,6 +107,11 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
     public CampaignFormMetaDto getCampaignFormMetaByUuid(String campaignFormUuid) {
         return toDto(service.getByUuid(campaignFormUuid));
     }
+
+	@Override
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
+		return service.getCampaignFormMetasAsReferencesByCampaign(uuid);
+	}
 
     @Override
     public void validateAllFormMetas() {

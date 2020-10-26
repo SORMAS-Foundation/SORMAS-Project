@@ -29,14 +29,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.BaseCriteria;
@@ -50,15 +43,12 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
+import de.symeda.sormas.ui.campaign.campaigndata.AbstractCampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
-import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
-import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
-import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
-import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.infrastructure.*;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -113,7 +103,7 @@ public class MainScreen extends HorizontalLayout {
 			views.add(ContactsDashboardView.VIEW_NAME);
 		}
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
-			views.add(CampaignDashboardView.VIEW_NAME);
+			views.add(CampaignDataView.VIEW_NAME);
 		}
 
 		return views;
@@ -205,8 +195,8 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.CAMPAIGN_VIEW)) {
 			AbstractCampaignView.registerViews(navigator);
 			menu.addView(
-				CampaignsView.class,
-				AbstractCampaignView.ROOT_VIEW_NAME,
+				CampaignDataView.class,
+				AbstractCampaignDataView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuCampaigns),
 				VaadinIcons.CLIPBOARD_CHECK);
 		}
@@ -335,7 +325,7 @@ public class MainScreen extends HorizontalLayout {
 					} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
 						defaultView = ContactsDashboardView.VIEW_NAME;
 					} else {
-						defaultView = CampaignDashboardView.VIEW_NAME;
+						defaultView = CampaignDataView.VIEW_NAME;
 					}
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					defaultView = SamplesView.VIEW_NAME;

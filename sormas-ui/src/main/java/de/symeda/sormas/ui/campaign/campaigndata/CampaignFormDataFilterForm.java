@@ -41,9 +41,15 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	private Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback;
 	private ComboBox cbCampaignForm;
+	ComboBox cbCampaign;
 
 	protected CampaignFormDataFilterForm() {
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
+	}
+
+	protected CampaignFormDataFilterForm(ComboBox cbCampaign) {
+		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
+		this.cbCampaign = cbCampaign;
 	}
 
 	@Override
@@ -58,12 +64,6 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	@Override
 	protected void addFields() {
-		ComboBox cbCampaign = addField(
-			FieldConfiguration.withCaptionAndPixelSized(
-				CampaignFormDataCriteria.CAMPAIGN,
-				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN),
-				200));
-		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllCampaignsAsReference());
 
 		cbCampaignForm = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
@@ -72,7 +72,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				200));
 		cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 
-		FieldHelper.addSoftRequiredStyle(cbCampaign, cbCampaignForm);
+		FieldHelper.addSoftRequiredStyle(/* cbCampaign, */ cbCampaignForm);
 
 		if (formMetaChangedCallback != null) {
 			cbCampaignForm.addValueChangeListener(e -> {
@@ -179,5 +179,13 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		if (cbCampaignForm != null) {
 			cbCampaignForm.addValueChangeListener(e -> formMetaChangedCallback.accept((CampaignFormMetaReferenceDto) e.getProperty().getValue()));
 		}
+	}
+
+	public ComboBox getCbCampaign() {
+		return cbCampaign;
+	}
+
+	public void setCbCampaign(ComboBox cbCampaign) {
+		this.cbCampaign = cbCampaign;
 	}
 }
