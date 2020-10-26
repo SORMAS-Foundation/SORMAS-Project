@@ -143,7 +143,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public boolean checkMatchingNameDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
+	public boolean checkMatchingNameInDatabase(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
 
 		User user = userService.getByReferenceDto(userRef);
 		if (user == null) {

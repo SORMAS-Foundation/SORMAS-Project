@@ -57,7 +57,7 @@ public interface PersonFacade {
 	 */
 	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
 
-	boolean checkMatchingNameDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria);
+	boolean checkMatchingNameInDatabase(UserReferenceDto userRef, PersonSimilarityCriteria criteria);
 
 	List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids);
 
