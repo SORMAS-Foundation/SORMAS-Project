@@ -290,7 +290,6 @@ public class PersonService extends AbstractAdoService<Person> {
 		setSimilarityThresholdQuery();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-
 		Predicate caseContactEventParticipantLinkPredicate;
 
 		CriteriaQuery<PersonNameDto> personQuery = cb.createQuery(PersonNameDto.class);
