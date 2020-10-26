@@ -23,7 +23,7 @@ WebUI.click(findTestObject('Events/NewEventView/td_Disease_COVID-19'))
 WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'Cluster Event')
 
 //select Nosocomial as Yes
-WebUI.click(findTestObject('Events/NewEventView/Nosocomial_label_Yes'))
+//WebUI.click(findTestObject('Events/NewEventView/Nosocomial_label_Yes'))
 
 //WebUI.click(findTestObject('Events/NewEventView/div_Source type_v-filterselect-button'))
 
