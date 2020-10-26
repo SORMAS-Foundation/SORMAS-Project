@@ -753,7 +753,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				.concat(
 					Stream.of(
 						contact.get(Contact.UUID),
-						joins.getPerson().get(Person.UUID),
 						joins.getPerson().get(Person.FIRST_NAME),
 						joins.getPerson().get(Person.LAST_NAME),
 						joins.getContactOfficer().get(User.UUID),
@@ -786,9 +785,10 @@ public class ContactFacadeEjb implements ContactFacade {
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
 					break;
-				case FollowUpDto.PERSON:
+				case FollowUpDto.FIRST_NAME:
 					expression = joins.getPerson().get(Person.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				case FollowUpDto.LAST_NAME:
 					expression = joins.getPerson().get(Person.LAST_NAME);
 					break;
 				case ContactFollowUpDto.CONTACT_OFFICER:

@@ -2994,7 +2994,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		final Stream<Selection<?>> select = Stream.of(
 			caze.get(Case.UUID),
-			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			caze.get(Case.REPORT_DATE),
@@ -3020,10 +3019,13 @@ public class CaseFacadeEjb implements CaseFacade {
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = caze.get(sortProperty.propertyName);
 					break;
-				case FollowUpDto.PERSON:
+				case FollowUpDto.FIRST_NAME:
 					expression = joins.getPerson().get(Person.FIRST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				case FollowUpDto.LAST_NAME:
 					expression = joins.getPerson().get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
