@@ -41,6 +41,8 @@ public class DocGenerationComponent extends VerticalLayout {
 		super();
 		this.referenceDto = referenceDto;
 
+		setSpacing(false);
+
 		Label headerDocgeneration = new Label(I18nProperties.getCaption(Captions.caseDocuments));
 		headerDocgeneration.addStyleName(CssStyles.H3);
 		addComponent(headerDocgeneration);

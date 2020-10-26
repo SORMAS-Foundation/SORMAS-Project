@@ -13,6 +13,7 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -48,8 +49,8 @@ public class QuarantineOrderLayout extends VerticalLayout {
 
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
-		additionalVariablesComponent.setMargin(false);
-		additionalVariablesComponent.setVisible(false);
+		additionalVariablesComponent.setMargin(new MarginInfo(false, false, true, false));
+		hideTextfields();
 
 		createButton = new Button(I18nProperties.getCaption(Captions.actionCreate));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -70,7 +71,7 @@ public class QuarantineOrderLayout extends VerticalLayout {
 			boolean isValidTemplateFile = StringUtils.isNotBlank(templateFile);
 			createButton.setEnabled(isValidTemplateFile);
 			additionalVariablesComponent.removeAllComponents();
-			additionalVariablesComponent.setVisible(false);
+			hideTextfields();
 			if (isValidTemplateFile) {
 				try {
 					List<String> additionalVariables = FacadeProvider.getQuarantineOrderFacade().getAdditionalVariables(templateFile);
@@ -80,7 +81,7 @@ public class QuarantineOrderLayout extends VerticalLayout {
 							variableInput.setWidth(100F, Unit.PERCENTAGE);
 							additionalVariablesComponent.addComponent(variableInput);
 						}
-						additionalVariablesComponent.setVisible(true);
+						showTextfields();
 					}
 					setStreamResource(templateFile);
 				} catch (IOException ioException) {
@@ -99,6 +100,16 @@ public class QuarantineOrderLayout extends VerticalLayout {
 		addComponent(additionalVariablesComponent);
 		addComponent(buttonBar);
 		setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
+	}
+
+	private void showTextfields() {
+		additionalVariablesComponent.setVisible(true);
+		setSpacing(false);
+	}
+
+	private void hideTextfields() {
+		additionalVariablesComponent.setVisible(false);
+		setSpacing(true);
 	}
 
 	private Properties readAdditionalVariables() {
