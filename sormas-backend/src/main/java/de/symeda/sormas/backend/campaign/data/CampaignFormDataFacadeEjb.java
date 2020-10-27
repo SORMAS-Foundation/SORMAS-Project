@@ -67,6 +67,7 @@ import de.symeda.sormas.backend.campaign.CampaignService;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.Community;
@@ -97,9 +98,6 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@EJB
 	private CampaignFormMetaService campaignFormMetaService;
-
-	@EJB
-	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	@EJB
 	private RegionService regionService;
@@ -239,7 +237,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			communityJoin.get(Community.NAME),
 			root.get(CampaignFormData.FORM_DATE));
 
-		Predicate filter = campaignFormDataService.createCriteriaFilter(criteria, cb, root);
+		Predicate filter = AbstractAdoService
+			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
 		}
