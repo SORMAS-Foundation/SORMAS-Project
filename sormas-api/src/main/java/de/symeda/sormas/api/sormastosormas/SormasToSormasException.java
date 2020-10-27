@@ -15,9 +15,26 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import java.util.Map;
+
 public class SormasToSormasException extends Exception {
+
+	private Map<String, ValidationErrors> errors;
 
 	public SormasToSormasException(String message) {
 		super(message);
+	}
+
+	public SormasToSormasException(String message, Map<String, ValidationErrors> errors) {
+		super(message);
+		this.errors = errors;
+	}
+
+	public Map<String, ValidationErrors> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(Map<String, ValidationErrors> errors) {
+		this.errors = errors;
 	}
 }
