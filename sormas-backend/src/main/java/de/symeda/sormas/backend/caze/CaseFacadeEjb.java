@@ -1728,6 +1728,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
 				newCase.getRegion(),
 				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
 				UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
@@ -1757,6 +1758,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
 				newCase.getRegion(),
 				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
 				UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
@@ -2544,12 +2546,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (assignee == null) {
-			if (caze.getReportingUser() != null && caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+			if (caze.getReportingUser() != null
+				&& (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)
+					|| caze.getReportingUser().getUserRoles().contains(UserRole.ADMIN_SUPERVISOR))) {
 				// 3) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else if (caze.getRegion() != null) {
 				// 4) Assign a random surveillance supervisor from the case region
-				List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+				List<User> supervisors =
+					userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
 				if (!supervisors.isEmpty()) {
 					Random rand = new Random();
 					assignee = supervisors.get(rand.nextInt(supervisors.size()));
@@ -2686,8 +2691,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendInvestigationDoneNotifications(Case caze) {
 
-		List<User> messageRecipients = userService
-			.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
+			caze.getRegion(),
+			UserRole.SURVEILLANCE_SUPERVISOR,
+			UserRole.ADMIN_SUPERVISOR,
+			UserRole.CASE_SUPERVISOR,
+			UserRole.CONTACT_SUPERVISOR);
 		for (User recipient : messageRecipients) {
 			try {
 				messagingService.sendMessage(
