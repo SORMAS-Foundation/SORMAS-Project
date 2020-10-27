@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.regex.Pattern;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -44,7 +46,67 @@ public final class CSVUtils {
 	}
 
 	public static CSVWriter createCSVWriter(Writer writer, char separator) {
-		return new CSVWriter(writer, separator, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
+		return new SafeCSVWriter(writer, separator, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
 	}
 
+	/**
+	 * Extension of the {@link CSVWriter} which sanitizes each element of the CSV to prevent CSV Injection
+	 * @see  <a href="https://owasp.org/www-community/attacks/CSV_Injection">CSV Injection</a>
+	 */
+	public static class SafeCSVWriter extends CSVWriter {
+
+		private static final String FORMULA_PREFIX = "'";
+
+		private final Pattern formulaPattern = Pattern.compile("(?s)^[+=@-].*", Pattern.MULTILINE);
+
+		public SafeCSVWriter(Writer writer, char separator, char quotechar, char escapechar, String lineEnd) {
+			super(writer, separator, quotechar, escapechar, lineEnd);
+		}
+
+		@Override
+		public void writeNext(String[] nextLine, boolean applyQuotesToAll, Appendable appendable) throws IOException {
+			if (nextLine == null) {
+				return;
+			}
+
+			for (int i = 0; i < nextLine.length; i++) {
+
+				if (i != 0) {
+					appendable.append(separator);
+				}
+
+				String nextElement = nextLine[i];
+
+				if (nextElement == null) {
+					continue;
+				}
+
+				boolean stringContainsSpecialCharacters = stringContainsSpecialCharacters(nextElement);
+				boolean containsFormula = formulaPattern.matcher(nextElement).matches();
+				boolean isQuoteCharacterNeeded = (applyQuotesToAll || stringContainsSpecialCharacters) && quotechar != NO_QUOTE_CHARACTER;
+
+				if (isQuoteCharacterNeeded) {
+					appendable.append(quotechar);
+				}
+
+				if(containsFormula) {
+					appendable.append(FORMULA_PREFIX);
+				}
+
+				if (stringContainsSpecialCharacters) {
+					processLine(nextElement, appendable);
+				} else {
+					appendable.append(nextElement);
+				}
+
+
+				if (isQuoteCharacterNeeded) {
+					appendable.append(quotechar);
+				}
+			}
+
+			appendable.append(lineEnd);
+			writer.write(appendable.toString());
+		}
+	}
 }
