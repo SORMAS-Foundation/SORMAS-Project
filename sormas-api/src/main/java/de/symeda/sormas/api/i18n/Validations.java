@@ -15,6 +15,7 @@ public interface Validations {
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
 	String campaignDashboardChartPercentage = "campaignDashboardChartPercentage";
+	String campaignDashboardChartValueNull = "campaignDashboardChartValueNull";
 	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
@@ -35,6 +36,7 @@ public interface Validations {
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
+	String externalJournalPersonValidation = "externalJournalPersonValidation";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";

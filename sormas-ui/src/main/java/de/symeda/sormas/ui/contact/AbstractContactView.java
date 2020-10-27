@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -44,9 +47,6 @@ import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
-import java.util.Collections;
-import java.util.List;
-
 @SuppressWarnings("serial")
 public abstract class AbstractContactView extends AbstractDetailView<ContactReferenceDto> {
 
@@ -55,7 +55,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	protected AbstractContactView(String viewName) {
 		super(viewName);
 
-		if (FacadeProvider.getConfigFacade().getSymptomJournalUrl() != null
+		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
 			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
@@ -67,14 +67,14 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			getButtonsLayout().addComponent(btnCreatePIAAccount);
 		}
 
-		if (FacadeProvider.getConfigFacade().getPatientDiaryUrl() != null
+		if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
 			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
 			btnClimedoAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
 				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ControllerProvider.getContactController().openDiaryTab(contactPerson);
+				ControllerProvider.getContactController().registerPatientDiaryPerson(contactPerson);
 			});
 			getButtonsLayout().addComponent(btnClimedoAccount);
 		}
@@ -120,7 +120,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		} else if (FacadeProvider.getPersonFacade().isValidPersonUuid(uuid)) {
 			PersonReferenceDto person = FacadeProvider.getPersonFacade().getReferenceByUuid(uuid);
 			ContactCriteria criteria = new ContactCriteria();
-			criteria.person(person);
+			criteria.setPerson(person);
 			List<ContactIndexDto> personContacts = FacadeProvider.getContactFacade().getIndexList(criteria, null, null, Collections.emptyList());
 			if (personContacts != null) {
 				reference = FacadeProvider.getContactFacade().getReferenceByUuid(personContacts.get(0).getUuid());

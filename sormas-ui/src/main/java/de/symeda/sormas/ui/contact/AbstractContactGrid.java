@@ -124,6 +124,10 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
+		if (!FacadeProvider.getConfigFacade().isExternalJournalActive()) {
+			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);
+		}
+
 		for (Column<IndexDto, ?> column : getColumns()) {
 			column.setCaption(
 				I18nProperties.findPrefixCaptionWithDefault(
@@ -143,11 +147,13 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		return Stream.of(
 			Stream.of(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS),
 			getPersonColumns(),
+			getEventColumns(),
 			Stream.of(
 				ContactIndexDto.CONTACT_CATEGORY,
 				ContactIndexDto.CONTACT_PROXIMITY,
 				ContactIndexDto.FOLLOW_UP_STATUS,
 				ContactIndexDto.FOLLOW_UP_UNTIL,
+				ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
 				NUMBER_OF_VISITS,
 				NUMBER_OF_PENDING_TASKS))
 			.flatMap(s -> s);
@@ -155,6 +161,10 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 	protected Stream<String> getPersonColumns() {
 		return Stream.of(ContactIndexDto.PERSON_FIRST_NAME, ContactIndexDto.PERSON_LAST_NAME);
+	}
+
+	protected Stream<String> getEventColumns() {
+		return Stream.empty();
 	}
 
 	public void reload() {

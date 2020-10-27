@@ -77,6 +77,7 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -971,12 +972,7 @@ public class SampleFacadeEjb implements SampleFacade {
 							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
 							DataHelper.getShortUuid(newSample.getAssociatedEventParticipant().getUuid()));
 					}
-					messagingService.sendMessage(
-						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED),
-						messageContent,
-						MessageType.EMAIL,
-						MessageType.SMS);
+					messagingService.sendMessage(recipient, MessageSubject.LAB_SAMPLE_SHIPPED, messageContent, MessageType.EMAIL, MessageType.SMS);
 
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(

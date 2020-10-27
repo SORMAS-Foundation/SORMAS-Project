@@ -53,6 +53,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -431,7 +432,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				try {
 					messagingService.sendMessage(
 						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED),
+						MessageSubject.LAB_RESULT_ARRIVED,
 						String.format(
 							I18nProperties.getString(contentLabResultArrived),
 							newPathogenTest.getTestResult().toString(),
@@ -456,7 +457,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				try {
 					messagingService.sendMessage(
 						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED),
+						MessageSubject.LAB_RESULT_SPECIFIED,
 						String.format(
 							I18nProperties.getString(contentLabResultSpecified),
 							disease,

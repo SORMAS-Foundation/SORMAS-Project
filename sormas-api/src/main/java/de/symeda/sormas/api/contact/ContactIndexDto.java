@@ -24,6 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
@@ -45,6 +46,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String CASE_CLASSIFICATION = "caseClassification";
@@ -63,6 +65,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
+	private SymptomJournalStatus symptomJournalStatus;
 	private String contactOfficerUuid;
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
@@ -77,9 +80,10 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
 						   String districtUuid, String communityUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
-						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+						   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
 						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   int visitCount) {
 	//@formatter:on
 
@@ -107,6 +111,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.contactStatus = contactStatus;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
+		this.symptomJournalStatus = symptomJournalStatus;
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
 		this.caseClassification = caseClassification;
@@ -209,6 +214,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
+	}
+
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
 	public String getDistrictUuid() {
