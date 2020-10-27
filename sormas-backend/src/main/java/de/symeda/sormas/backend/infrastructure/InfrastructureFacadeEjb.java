@@ -3,9 +3,12 @@ package de.symeda.sormas.backend.infrastructure;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
+import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -49,6 +52,10 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private CampaignFacadeEjb.CampaignFacadeEjbLocal campaignFacade;
+	@EJB
+	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	@Override
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
@@ -73,6 +80,11 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 		sync.setDeletedUserRoleConfigurationUuids(userRoleConfigurationFacade.getDeletedUuids(changeDates.getUserRoleConfigurationChangeDate()));
 		sync.setFeatureConfigurations(featureConfigurationFacade.getAllAfter(changeDates.getFeatureConfigurationChangeDate()));
 		sync.setDeletedFeatureConfigurationUuids(featureConfigurationFacade.getDeletedUuids(changeDates.getFeatureConfigurationChangeDate()));
+
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CAMPAIGNS)) {
+			sync.setCampaigns(campaignFacade.getAllAfter(changeDates.getCampaignChangeDate()));
+			sync.setCampaignFormMetas(campaignFormMetaFacade.getAllAfter(changeDates.getCampaignFormMetaChangeDate()));
+		}
 
 		return sync;
 	}

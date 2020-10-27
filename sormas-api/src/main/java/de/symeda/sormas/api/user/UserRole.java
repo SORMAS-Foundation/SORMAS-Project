@@ -40,6 +40,7 @@ public enum UserRole
 	ADMIN(false, false, false, false, JurisdictionLevel.NONE),
 	NATIONAL_USER(false, false, false, false, JurisdictionLevel.NATION),
 	SURVEILLANCE_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
+	ADMIN_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION), // FIXME : remove this when user rights management is doable by users
 	SURVEILLANCE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
 	HOSPITAL_INFORMANT(false, false, true, false, JurisdictionLevel.HEALTH_FACILITY),
 	COMMUNITY_INFORMANT(false, false, true, false, JurisdictionLevel.COMMUNITY),

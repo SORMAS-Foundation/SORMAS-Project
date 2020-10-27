@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
+import de.symeda.sormas.api.VisitOrigin;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
@@ -154,7 +155,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
 
 		VisitDto visit =
-			creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE);
+			creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE, VisitOrigin.USER);
 
 		// Follow-up until should be increased by one day
 		contact = getContactFacade().getContactByUuid(contact.getUuid());

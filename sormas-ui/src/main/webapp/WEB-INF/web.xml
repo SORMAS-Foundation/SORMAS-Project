@@ -19,6 +19,9 @@
 	  <role-name>ADMIN</role-name>
 	</security-role>
 	<security-role>
+	  <role-name>ADMIN_SUPERVISOR</role-name>
+	</security-role>
+	<security-role>
 	  <role-name>SURVEILLANCE_SUPERVISOR</role-name>
 	</security-role>
 	<security-role>

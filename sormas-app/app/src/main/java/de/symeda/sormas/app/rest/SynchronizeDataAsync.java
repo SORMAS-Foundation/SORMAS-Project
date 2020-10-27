@@ -28,10 +28,14 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.campaign.CampaignDtoHelper;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataDtoHelper;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDtoHelper;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
@@ -104,7 +108,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 				// infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
 				pullInfrastructure();
-				// pull and remove deleted entities when the last time this has been doen is more than 24 hours ago
+				// pull and remove deleted entities when the last time this has been done is more than 24 hours ago
 				if (ConfigProvider.getLastDeletedSyncDate() == null
 					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastDeletedSyncDate(), new Date()) >= 1) {
 					pullAndRemoveDeletedUuidsSince(ConfigProvider.getLastDeletedSyncDate());
@@ -209,6 +213,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	}
 
 	public static boolean hasAnyUnsynchronizedData() {
+		final boolean hasUnsynchronizedCampaignData = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)
+			&& (DatabaseHelper.getCampaignFormDataDao().isAnyModified());
 		return DatabaseHelper.getCaseDao().isAnyModified()
 			|| DatabaseHelper.getContactDao().isAnyModified()
 			|| DatabaseHelper.getPersonDao().isAnyModified()
@@ -223,7 +229,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			|| DatabaseHelper.getAggregateReportDao().isAnyModified()
 			|| DatabaseHelper.getPrescriptionDao().isAnyModified()
 			|| DatabaseHelper.getTreatmentDao().isAnyModified()
-			|| DatabaseHelper.getClinicalVisitDao().isAnyModified();
+			|| DatabaseHelper.getClinicalVisitDao().isAnyModified()
+			|| hasUnsynchronizedCampaignData;
 	}
 
 	@AddTrace(name = "synchronizeChangedDataTrace")
@@ -297,6 +304,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			treatmentDtoHelper.pullEntities(true);
 		if (clinicalVisitsNeedPull)
 			clinicalVisitDtoHelper.pullEntities(true);
+
+		// Campaigns
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
+			if (campaignFormDataDtoHelper.pullAndPushEntities())
+				campaignFormDataDtoHelper.pullEntities(true);
+		}
 	}
 
 	@AddTrace(name = "repullDataTrace")
@@ -340,6 +354,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		prescriptionDtoHelper.repullEntities();
 		treatmentDtoHelper.repullEntities();
 		clinicalVisitDtoHelper.repullEntities();
+
+		// Campaigns
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
+			campaignFormDataDtoHelper.repullEntities();
+		}
 	}
 
 	@AddTrace(name = "pullInfrastructureTrace")
@@ -397,6 +417,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		DatabaseHelper.getFeatureConfigurationDao().delete(featureConfigurationConfigUuids);
 
 		new FeatureConfigurationDtoHelper().pullEntities(false);
+
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			new CampaignDtoHelper().pullEntities(false);
+			new CampaignFormMetaDtoHelper().pullEntities(false);
+		}
 
 		ConfigProvider.setInitialSyncRequired(false);
 	}
@@ -568,6 +593,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
 		new TreatmentDtoHelper().pullMissing(treatmentUuids);
 		new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
+
+		// CampaignData
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
+			campaignFormDataDtoHelper.pushEntities(true);
+			final List<String> campaignFormDataUuids = executeUuidCall(RetroProvider.getCampaignFormDataFacade().pullUuids());
+			DatabaseHelper.getCampaignFormDataDao().deleteInvalid(campaignFormDataUuids);
+			campaignFormDataDtoHelper.pullMissing(campaignFormDataUuids);
+		}
 	}
 
 	@AddTrace(name = "pullMissingAndDeleteInvalidInfrastructureTrace")
@@ -607,6 +641,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
 		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
 
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			// campaigns
+			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
+			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
+			// campaignFormMetas
+			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
+			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
+		}
+
 		// order is important, due to dependencies
 
 		new RegionDtoHelper().pullMissing(regionUuids);
@@ -618,6 +661,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new UserDtoHelper().pullMissing(userUuids);
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
 		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			new CampaignDtoHelper().pullMissing(featureConfigurationUuids);
+			new CampaignFormMetaDtoHelper().pullMissing(featureConfigurationUuids);
+		}
 	}
 
 	private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException, ServerCommunicationException {
