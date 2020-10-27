@@ -181,9 +181,11 @@ public interface Strings {
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
+	String errorSormasToSormasNotEditable = "errorSormasToSormasNotEditable";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
+	String errorSormasToSormasShare = "errorSormasToSormasShare";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String fileName = "fileName";

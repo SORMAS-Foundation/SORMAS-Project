@@ -22,13 +22,13 @@ import javax.ejb.Remote;
 @Remote
 public interface SormasToSormasFacade {
 
-	void saveSharedCase(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException;
+	void saveSharedCases(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
-	void saveSharedContact(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException;
+	void saveSharedContacts(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException, SormasToSormasValidationException;
 
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	void shareCases(List<String> caseUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	void shareContacts(List<String> contactUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
 	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
 
