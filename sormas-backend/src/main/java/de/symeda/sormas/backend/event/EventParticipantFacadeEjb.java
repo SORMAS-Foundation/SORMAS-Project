@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -45,7 +46,9 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
@@ -63,6 +66,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -94,6 +99,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@EJB
 	private UserService userService;
 	@EJB
+	private ContactService contactService;
+	@EJB
 	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 
 	@Override
@@ -115,7 +122,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public List<String>  getAllActiveUuids() {
+	public List<String> getAllActiveUuids() {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
@@ -150,7 +157,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		List<String> deletedEventParticipants = eventParticipantService.getDeletedUuidsSince(since, user);
 		return deletedEventParticipants;
-	};
+	}
 
 	@Override
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
@@ -394,7 +401,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 				if (samples != null) {
 					Optional.ofNullable(samples.get(exportDto.getId())).ifPresent(eventParticipantSamples -> {
-						int count = 0;
 						for (Sample sample : eventParticipantSamples) {
 							EmbeddedSampleExportDto sampleDto = new EmbeddedSampleExportDto(
 								sample.getSampleDateTime(),
@@ -508,7 +514,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 	}
 
-	public static EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
+	static public EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
 
 		if (entity == null) {
 			return null;
@@ -519,7 +525,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return new EventParticipantReferenceDto(entity.getUuid(), person.getFirstName(), person.getFirstName());
 	}
 
-	public static EventParticipantDto toDto(EventParticipant source) {
+	static public EventParticipantDto toDto(EventParticipant source) {
 
 		if (source == null) {
 			return null;
@@ -562,4 +568,42 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return eventParticipantService.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
 	}
 
+	// returns the number of cases among the participants of event with uuid eventUuid
+	public long getParticipantCasesCountByEvent(String eventUuid) {
+		ListIterator<EventParticipantDto> iterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
+		long numberOfCases = 0;
+		while (iterator.hasNext()) {
+			if (iterator.next().getResultingCase() != null)
+				numberOfCases++;
+		}
+		return numberOfCases;
+	}
+
+	public long getParticipantCasesContactsCount(String eventUuid) {
+		// For each case among the participants, count all contacts who are also part of the same event
+		long numberOfContacts = 0;
+		ListIterator<EventParticipantDto> caseiterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
+
+		// iterate over all cases among participants
+		while (caseiterator.hasNext()) {
+			CaseReferenceDto caseref = caseiterator.next().getResultingCase();
+			if (caseref != null) {
+				ContactCriteria crit = new ContactCriteria();
+				crit.caze(caseref);
+				ListIterator<Contact> contactiterator = contactService.findBy(crit, null).listIterator();
+				// iterate over all contacts among cases
+				while (contactiterator.hasNext()) {
+					String contactPersonUuid = contactiterator.next().getPerson().getUuid();
+					ListIterator<EventParticipantDto> participantIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
+					// iterate over all participants, and compare to current contact person
+					while (participantIterator.hasNext()) {
+						if (participantIterator.next().getPerson().getUuid().equals(contactPersonUuid)) {
+							numberOfContacts++;
+						}
+					}
+				}
+			}
+		}
+		return numberOfContacts;
+	}
 }
