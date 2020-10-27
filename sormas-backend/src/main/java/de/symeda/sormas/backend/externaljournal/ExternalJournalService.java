@@ -306,9 +306,11 @@ public class ExternalJournalService {
 	}
 
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
-		String externalDataUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + personUuid;
+		String externalDataUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/external-data/" + personUuid;
 		Client client = ClientBuilder.newClient();
-		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken());
+		return client.target(externalDataUrl)
+				.request(MediaType.APPLICATION_JSON)
+				.header("x-access-token", getPatientDiaryAuthToken());
 	}
 
 	/**
@@ -372,12 +374,15 @@ public class ExternalJournalService {
 	 */
 	public PatientDiaryPersonQueryResponse queryPatientDiary(String key, String value) {
 		try {
-			String probandsUrl = configFacade.getPatientDiaryConfig().getProbandsUrl();
+			String probandsUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/probands";
 			String queryParam = "\"" + key + "\" = \"" + value + "\"";
 			String encodedParams = URLEncoder.encode(queryParam, StandardCharsets.UTF_8.toString());
 			String fullUrl = probandsUrl + "?q=" + encodedParams;
 			Client client = ClientBuilder.newClient();
-			Response response = client.target(fullUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken()).get();
+			Response response = client.target(fullUrl)
+					.request(MediaType.APPLICATION_JSON)
+					.header("x-access-token", getPatientDiaryAuthToken())
+					.get();
 			return response.readEntity(PatientDiaryPersonQueryResponse.class);
 		} catch (IOException e) {
 			logger.error("Could not retrieve patient query response: {}", e.getMessage());
