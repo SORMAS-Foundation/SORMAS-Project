@@ -19,12 +19,14 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
@@ -54,7 +56,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			ContactFollowUpDto.CONTACT_OFFICER,
 			ContactFollowUpDto.LAST_CONTACT_DATE,
 			FollowUpDto.REPORT_DATE,
-			FollowUpDto.FOLLOW_UP_UNTIL);
+			FollowUpDto.FOLLOW_UP_UNTIL,
+			ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS);
 
 		setVisitColumns(referenceDate, interval, criteria);
 
@@ -64,8 +67,12 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.REPORT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
+		if (!FacadeProvider.getConfigFacade().isExternalJournalActive()) {
+			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);
+		}
+
 		for (Column<ContactFollowUpDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if (!dateColumnIds.contains(column.getId())) {
 				column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 			}
@@ -91,7 +98,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 			final int index = i;
 			getColumn(columnId).setCaption(columnId).setSortable(false).setStyleGenerator((StyleGenerator<ContactFollowUpDto>) item -> {
-				final VisitResult visitResult = item.getVisitResults()[index];
+				final VisitResultDto visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
 				return getVisitResultCssStyle(
 					visitResult,
@@ -99,7 +106,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate()),
 					item.getFollowUpUntil());
 			}).setDescriptionGenerator((DescriptionGenerator<ContactFollowUpDto>) item -> {
-				final VisitResult visitResult = item.getVisitResults()[index];
+				final VisitResultDto visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
 				return getVisitResultDescription(
 					visitResult,

@@ -43,6 +43,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.person.PersonDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -458,5 +459,9 @@ public class PersonService extends AbstractAdoService<Person> {
 		Join<Person, Location> address = from.join(Person.ADDRESS);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
 		return dateFilter;
+	}
+
+	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
+
 	}
 }

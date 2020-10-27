@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.VisitOrigin;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -313,7 +314,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		VisitDto visit =
-			creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE);
+			creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE, VisitOrigin.USER);
 		TaskDto task = creator.createTask(
 			TaskContext.CONTACT,
 			TaskType.CONTACT_INVESTIGATION,
@@ -594,7 +595,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			rdcf);
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		EpiDataDto epiData = contact.getEpiData();
 		epiData.setTraveled(YesNoUnknown.YES);
 		List<EpiDataTravelDto> travels = new ArrayList<>();
@@ -674,11 +675,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		// Create another contact that should have the same visits as the first one
 		ContactDto contact2 =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
-		VisitDto visit11 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit11 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit11.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit11);
 		VisitDto visit12 =
-			creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateHelper.subtractDays(new Date(), 1), VisitStatus.COOPERATIVE);
+			creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateHelper.subtractDays(new Date(), 1), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit12.getSymptoms().setChestPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit12);
 		PersonDto contactPersonWithoutFollowUp = creator.createPerson();
@@ -687,7 +688,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
 		ContactDto contact3 =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference(), caze, new Date(), null, null);
-		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit21.getSymptoms().setBackache(SymptomState.YES);
 		getVisitFacade().saveVisit(visit21);
 
@@ -758,23 +759,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
-		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
 		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference(), caze, new Date(), new Date(), null);
-		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit21.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit21);
-		VisitDto visit22 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit22 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit22.getSymptoms().setAgitation(SymptomState.YES);
 		getVisitFacade().saveVisit(visit22);
 
 		PersonDto contactPerson3 = creator.createPerson("Contact3", "Person3");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson3.toReference(), caze, new Date(), new Date(), null);
 		for (int i = 0; i < 10; i++) {
-			creator.createVisit(caze.getDisease(), contactPerson3.toReference(), new Date(), VisitStatus.COOPERATIVE);
+			creator.createVisit(caze.getDisease(), contactPerson3.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		}
 
 		assertEquals(10, getContactFacade().countMaximumFollowUpDays(null));
@@ -797,7 +798,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
-		creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
 

@@ -20,6 +20,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -62,6 +63,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ContactCriteria.CONTACT_OFFICER,
 		ContactCriteria.REPORTING_USER_ROLE,
 		ContactCriteria.FOLLOW_UP_UNTIL_TO,
+		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
 		ContactCriteria.BIRTHDATE_YYYY,
 		ContactCriteria.BIRTHDATE_MM,
 		ContactCriteria.BIRTHDATE_DD)
@@ -110,7 +112,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ComboBox caseClassificationField = addField(FieldConfiguration.pixelSized(ContactIndexDto.CASE_CLASSIFICATION, 140));
 		caseClassificationField.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
 
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(FieldConfiguration.pixelSized(ContactIndexDto.CONTACT_CATEGORY, 140));
 		}
 
@@ -179,6 +181,15 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL),
 				200));
 		followUpUntilTo.removeAllValidators();
+
+		if (FacadeProvider.getConfigFacade().isExternalJournalActive()) {
+			addField(
+					moreFiltersContainer,
+					FieldConfiguration.withCaptionAndPixelSized(
+							ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+							I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
+							240));
+		}
 		addField(moreFiltersContainer, ComboBox.class, FieldConfiguration.pixelSized(ContactCriteria.RETURNING_TRAVELER, 200));
 		addField(
 			moreFiltersContainer,
@@ -207,7 +218,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
 		birthDateDD.setWidth(140, Unit.PIXELS);
 
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,

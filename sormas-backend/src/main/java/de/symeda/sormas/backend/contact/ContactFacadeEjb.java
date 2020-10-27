@@ -32,6 +32,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,6 +65,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -107,7 +111,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
@@ -119,12 +123,12 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -153,7 +157,6 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -173,10 +176,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@EJB
 	private ContactService contactService;
-
 	@EJB
 	private ContactListCriteriaBuilder listCriteriaBuilder;
-
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -194,9 +195,9 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private CommunityService communityService;
 	@EJB
-	private CaseFacadeEjbLocal caseFacade;
+	private ExternalJournalService externalJournalService;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
@@ -205,8 +206,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	private EpiDataFacadeEjbLocal epiDataFacade;
 	@EJB
 	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
@@ -283,7 +282,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);
-
 		restorePseudonymizedDto(dto, existingContact, existingContactDto);
 
 		validate(dto);
@@ -300,6 +298,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
 			createInvestigationTask(entity);
+
+		}
+		if (existingContact != null) {
+			handleExternalJournalPerson(existingContactDto, dto);
 		}
 
 		if (handleChanges) {
@@ -314,6 +316,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return toDto(entity);
+	}
+
+	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
+	private void handleExternalJournalPerson(ContactDto existingContact, ContactDto updatedContact) {
+		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+		Runnable notify = () -> externalJournalService.notifyExternalJournalFollowUpUntilUpdate(updatedContact, existingContact.getFollowUpUntil());
+		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	private void createInvestigationTask(Contact entity) {
@@ -761,6 +770,7 @@ public class ContactFacadeEjb implements ContactFacade {
 						contact.get(Contact.LAST_CONTACT_DATE),
 						contact.get(Contact.REPORT_DATE_TIME),
 						contact.get(Contact.FOLLOW_UP_UNTIL),
+						joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 						contact.get(Contact.DISEASE)),
 					listCriteriaBuilder.getJurisdictionSelections(joins))
 				.collect(Collectors.toList()));
@@ -784,6 +794,9 @@ public class ContactFacadeEjb implements ContactFacade {
 					break;
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
+					break;
+				case ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS:
+					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
 					break;
 				case FollowUpDto.FIRST_NAME:
 					expression = joins.getPerson().get(Person.FIRST_NAME);
@@ -827,6 +840,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				visitsCqRoot.get(Contact.UUID),
 				visitsJoin.get(Visit.VISIT_DATE_TIME),
 				visitsJoin.get(Visit.VISIT_STATUS),
+				visitsJoin.get(Visit.ORIGIN),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
 
 			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)), cb.asc(visitsJoin.get(Visit.CREATION_DATE)));
@@ -845,7 +859,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
-				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
+				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (boolean) v[4]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
 			});
 		}

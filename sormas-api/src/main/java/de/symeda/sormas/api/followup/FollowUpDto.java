@@ -5,9 +5,13 @@ import java.util.Arrays;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 
 public abstract class FollowUpDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -28,7 +32,7 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 	private Date reportDate;
 	private Date followUpUntil;
 	private Disease disease;
-	private VisitResult[] visitResults;
+	private VisitResultDto[] visitResults;
 
 	protected FollowUpDto(String uuid, String personFirstName, String personLastName, Date reportDate, Date followUpUntil, Disease disease) {
 		this.uuid = uuid;
@@ -40,8 +44,8 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 	}
 
 	public void initVisitSize(int i) {
-		visitResults = new VisitResult[i];
-		Arrays.fill(visitResults, VisitResult.NOT_PERFORMED);
+		visitResults = new VisitResultDto[i];
+		Arrays.fill(visitResults, new VisitResultDto(VisitOrigin.USER, VisitResult.NOT_PERFORMED));
 	}
 
 	public String getUuid() {
@@ -92,11 +96,11 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 		this.disease = disease;
 	}
 
-	public VisitResult[] getVisitResults() {
+	public VisitResultDto[] getVisitResults() {
 		return visitResults;
 	}
 
-	public void setVisitResults(VisitResult[] visitResults) {
+	public void setVisitResults(VisitResultDto[] visitResults) {
 		this.visitResults = visitResults;
 	}
 }

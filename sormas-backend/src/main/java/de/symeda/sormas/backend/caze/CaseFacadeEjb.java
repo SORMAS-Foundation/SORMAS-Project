@@ -61,6 +61,8 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -3058,6 +3060,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				visitsCqRoot.get(Case.UUID),
 				visitsJoin.get(Visit.VISIT_DATE_TIME),
 				visitsJoin.get(Visit.VISIT_STATUS),
+				visitsJoin.get(Visit.ORIGIN),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
 			// Sort by visit date so that we'll have the latest visit of each day
 			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
@@ -3078,7 +3081,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
-				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
+				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (boolean) v[4]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
 			});
 		}

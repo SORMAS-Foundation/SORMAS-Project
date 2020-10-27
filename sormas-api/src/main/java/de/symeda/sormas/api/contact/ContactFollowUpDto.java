@@ -5,6 +5,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.followup.FollowUpDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SensitiveData;
 
@@ -16,17 +17,19 @@ public class ContactFollowUpDto extends FollowUpDto {
 
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 
 	@SensitiveData
 	private UserReferenceDto contactOfficer;
 	private Date lastContactDate;
 
 	private ContactJurisdictionDto jurisdiction;
+	private SymptomJournalStatus symptomJournalStatus;
 
 	//@formatter:off
 	public ContactFollowUpDto(String uuid, String personFirstName, String personLastName,
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
-							  Date lastContactDate, Date reportDate, Date followUpUntil, Disease disease,
+							  Date lastContactDate, Date reportDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Disease disease,
 							  String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
@@ -35,6 +38,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
 		this.contactOfficer = new UserReferenceDto(contactOfficerUuid, contactOfficerFirstName, contactOfficerLastName, null);
 		this.lastContactDate = lastContactDate;
+		this.symptomJournalStatus = symptomJournalStatus;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid == null
 			? null
@@ -66,5 +70,13 @@ public class ContactFollowUpDto extends FollowUpDto {
 
 	public ContactJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
 	}
 }

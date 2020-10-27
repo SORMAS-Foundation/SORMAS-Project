@@ -7,6 +7,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -53,7 +54,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid, String communityUuid,
 								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 								   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
-								   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+								   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
 								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
 								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate,
@@ -65,7 +66,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 		//@formatter:off
 		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid, communityUuid,
-				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil,
+				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil, symptomJournalStatus,
 				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
 				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, visitCount);
 		//@formatter:on
