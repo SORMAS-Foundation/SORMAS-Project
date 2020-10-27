@@ -229,14 +229,14 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 	private void setDateFieldVisibilties() {
 
-		boolean visible = YesNoUnknown.YES.equals(intensiveCareUnit.getValue());
+		boolean visible = YesNoUnknown.YES.equals(intensiveCareUnit.getNullableValue());
 		intensiveCareUnitStart.setVisible(visible);
 		intensiveCareUnitEnd.setVisible(visible);
 	}
 
 	private void updatePrevHospHint(NullableOptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
 
-		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getValue();
+		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getNullableValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES

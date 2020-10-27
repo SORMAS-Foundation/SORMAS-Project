@@ -5494,11 +5494,15 @@ ALTER TABLE users ADD COLUMN hasConsentedToGdpr boolean default false;
 ALTER TABLE users_history ADD COLUMN hasConsentedToGdpr boolean default false;
 INSERT INTO schema_version (version_number, comment) VALUES (267, 'Add gdpr popup to user');
 
+--2020-10-22 Optimize person similarity/duplication check
+CREATE INDEX similarity_index
+    ON person using gist ((firstName || ' ' || lastName) gist_trgm_ops);
+INSERT INTO schema_version (version_number, comment) VALUES (268, 'Optimize person similarity/duplication check');
 
--- 2020-09-28 - Store visit source #2083
+-- 2020-10-27 - Store visit source #2083
 ALTER TABLE visit ADD COLUMN origin varchar(255);
 ALTER TABLE visit_history ADD COLUMN origin varchar(255);
 UPDATE visit SET origin='USER';
 
-INSERT INTO schema_version (version_number, comment) VALUES (268, 'Add new field origin to visits as per feature #2083');
+INSERT INTO schema_version (version_number, comment) VALUES (269, 'Add new field origin to visits as per feature #2083');
 -- *** Insert new sql commands BEFORE this line ***

@@ -15,6 +15,7 @@ public interface Validations {
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
 	String campaignDashboardChartPercentage = "campaignDashboardChartPercentage";
+	String campaignDashboardChartValueNull = "campaignDashboardChartValueNull";
 	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";

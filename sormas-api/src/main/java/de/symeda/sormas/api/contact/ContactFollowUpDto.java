@@ -27,7 +27,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 	private SymptomJournalStatus symptomJournalStatus;
 
 	//@formatter:off
-	public ContactFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
+	public ContactFollowUpDto(String uuid, String personFirstName, String personLastName,
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
 							  Date lastContactDate, Date reportDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Disease disease,
 							  String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
@@ -35,7 +35,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 	) {
 	//formatter:on
 
-		super(uuid, personUuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
+		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
 		this.contactOfficer = new UserReferenceDto(contactOfficerUuid, contactOfficerFirstName, contactOfficerLastName, null);
 		this.lastContactDate = lastContactDate;
 		this.symptomJournalStatus = symptomJournalStatus;

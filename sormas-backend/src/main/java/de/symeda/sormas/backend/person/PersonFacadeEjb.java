@@ -145,7 +145,18 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
-		return new ArrayList<>(personService.getMatchingNameDtos(user, criteria));
+		return new ArrayList<>(personService.getMatchingNameDtos(criteria, null));
+	}
+
+	@Override
+	public boolean checkMatchingNameInDatabase(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
+
+		User user = userService.getByReferenceDto(userRef);
+		if (user == null) {
+			return false;
+		}
+
+		return personService.getMatchingNameDtos(criteria, 1).size() > 0;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.campaign;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -33,9 +34,12 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -60,6 +64,10 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	private UserService userService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private CampaignFacadeEjbLocal campaignFacade;
+	@EJB
+	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	@Override
 	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -167,6 +175,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
+		validate(source);
+
 		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
 		target.setDescription(source.getDescription());
 		target.setEndDate(source.getEndDate());
@@ -182,6 +192,17 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setDashboardElements(source.getCampaignDashboardElements());
 
 		return target;
+	}
+
+	private void validate(CampaignDto campaignDto) {
+		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
+		if (campaignDashboardElements != null) {
+			for (CampaignDashboardElement cde : campaignDashboardElements) {
+				if (cde.getDiagramId() == null || cde.getTabId() == null || cde.getWidth() == null || cde.getHeight() == null || cde.getOrder() == null) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignDashboardChartValueNull));
+				}
+			}
+		}
 	}
 
 	public CampaignDto toDto(Campaign source) {
@@ -274,6 +295,28 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return campaignService.exists(uuid);
+	}
+
+	@Override
+	public List<CampaignDto> getAllAfter(Date date) {
+		return campaignService.getAllAfter(date, userService.getCurrentUser())
+			.stream()
+			.map(campaignFormMeta -> toDto(campaignFormMeta))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CampaignDto> getByUuids(List<String> uuids) {
+		return campaignService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllActiveUuids() {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return campaignService.getAllActiveUuids();
 	}
 
 	public static CampaignReferenceDto toReferenceDto(Campaign entity) {

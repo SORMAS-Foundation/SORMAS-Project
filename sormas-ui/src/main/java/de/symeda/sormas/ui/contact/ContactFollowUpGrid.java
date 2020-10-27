@@ -1,5 +1,13 @@
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultCssStyle;
+import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -7,6 +15,7 @@ import com.vaadin.ui.DescriptionGenerator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.renderers.DateRenderer;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
@@ -25,14 +34,6 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultCssStyle;
-import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
-
 @SuppressWarnings("serial")
 public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, ContactCriteria> {
 
@@ -50,7 +51,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 		setColumns(
 			FollowUpDto.UUID,
-			FollowUpDto.PERSON,
+			FollowUpDto.FIRST_NAME,
+			FollowUpDto.LAST_NAME,
 			ContactFollowUpDto.CONTACT_OFFICER,
 			ContactFollowUpDto.LAST_CONTACT_DATE,
 			FollowUpDto.REPORT_DATE,
@@ -72,8 +74,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		for (Column<ContactFollowUpDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if (!dateColumnIds.contains(column.getId())) {
-				column.setStyleGenerator(
-					FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+				column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 			}
 		}
 

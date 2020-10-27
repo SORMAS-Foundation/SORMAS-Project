@@ -8,6 +8,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitResultDto;
@@ -18,24 +19,25 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 
 	public static final String I18N_PREFIX = "FollowUp";
 	public static final String UUID = "uuid";
-	public static final String PERSON = "person";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 
 	private String uuid;
-	@EmbeddedPersonalData
-	private PersonReferenceDto person;
+	@PersonalData
+	private String firstName;
+	@PersonalData
+	private String lastName;
 	private Date reportDate;
 	private Date followUpUntil;
 	private Disease disease;
 	private VisitResultDto[] visitResults;
 
-	//@formatter:off
-	protected FollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
-			Date reportDate, Date followUpUntil, Disease disease) {
-	//@formatter:on
+	protected FollowUpDto(String uuid, String personFirstName, String personLastName, Date reportDate, Date followUpUntil, Disease disease) {
 		this.uuid = uuid;
-		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
+		this.firstName = personFirstName;
+		this.lastName = personLastName;
 		this.reportDate = reportDate;
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
@@ -54,12 +56,20 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 		this.uuid = uuid;
 	}
 
-	public PersonReferenceDto getPerson() {
-		return person;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setPerson(PersonReferenceDto person) {
-		this.person = person;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public Date getReportDate() {

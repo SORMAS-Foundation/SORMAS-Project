@@ -61,7 +61,7 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 		Date fromDate = DateHelper.subtractDays(referenceDate, interval - 1);
 		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
-		setColumns(FollowUpDto.UUID, FollowUpDto.PERSON, FollowUpDto.REPORT_DATE, FollowUpDto.FOLLOW_UP_UNTIL);
+		setColumns(FollowUpDto.UUID, FollowUpDto.FIRST_NAME, FollowUpDto.LAST_NAME, FollowUpDto.REPORT_DATE, FollowUpDto.FOLLOW_UP_UNTIL);
 
 		setVisitColumns(referenceDate, interval, criteria);
 

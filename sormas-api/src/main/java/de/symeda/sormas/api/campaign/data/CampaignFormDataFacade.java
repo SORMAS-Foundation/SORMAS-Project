@@ -26,6 +26,8 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.utils.SortProperty;
 
 import javax.ejb.Remote;
+
+import java.util.Date;
 import java.util.List;
 
 @Remote
@@ -50,4 +52,8 @@ public interface CampaignFormDataFacade {
 	long count(CampaignFormDataCriteria criteria);
 
 	List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
+
+	List<String> getAllActiveUuids();
+
+	List<CampaignFormDataDto> getAllActiveAfter(Date date);
 }

@@ -51,6 +51,7 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -107,6 +108,9 @@ public final class RetroProvider {
 	private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
 	private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
 	private InfrastructureFacadeRetro infrastructureFacadeRetro;
+	private CampaignFacadeRetro campaignFacadeRetro;
+	private CampaignFormMetaFacadeRetro campaignFormMetaFacadeRetro;
+	private CampaignFormDataFacadeRetro campaignFormDataFacadeRetro;
 	private FeatureConfigurationFacadeRetro featureConfigurationFacadeRetro;
 	private AggregateReportFacadeRetro aggregateReportFacadeRetro;
 
@@ -764,6 +768,45 @@ public final class RetroProvider {
 			}
 		}
 		return instance.infrastructureFacadeRetro;
+	}
+
+	public static CampaignFacadeRetro getCampaignFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.campaignFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.campaignFacadeRetro == null) {
+					instance.campaignFacadeRetro = instance.retrofit.create(CampaignFacadeRetro.class);
+				}
+			}
+		}
+		return instance.campaignFacadeRetro;
+	}
+
+	public static CampaignFormMetaFacadeRetro getCampaignFormMetaFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.campaignFormMetaFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.campaignFormMetaFacadeRetro == null) {
+					instance.campaignFormMetaFacadeRetro = instance.retrofit.create(CampaignFormMetaFacadeRetro.class);
+				}
+			}
+		}
+		return instance.campaignFormMetaFacadeRetro;
+	}
+
+	public static CampaignFormDataFacadeRetro getCampaignFormDataFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.campaignFormDataFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.campaignFormDataFacadeRetro == null) {
+					instance.campaignFormDataFacadeRetro = instance.retrofit.create(CampaignFormDataFacadeRetro.class);
+				}
+			}
+		}
+		return instance.campaignFormDataFacadeRetro;
 	}
 
 	public static AggregateReportFacadeRetro getAggregateReportFacade() throws NoConnectionException {

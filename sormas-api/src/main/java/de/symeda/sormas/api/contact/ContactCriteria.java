@@ -58,6 +58,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
+	public static final String EVENT_LIKE = "eventLike";
+	public static final String ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT = "onlyContactsWithSourceCaseInEvent";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -105,6 +107,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Integer birthdateMM;
 	private Integer birthdateDD;
 	private YesNoUnknown returningTraveler;
+	private String eventLike;
+	private String eventUuid;
+	private Boolean onlyContactsWithSourceCaseInEvent;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -474,5 +479,46 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
+	}
+
+	public void setEventLike(String eventLike) {
+		this.eventLike = eventLike;
+	}
+
+	@IgnoreForUrl
+	public String getEventLike() {
+		return eventLike;
+	}
+
+	public ContactCriteria eventLike(String eventLike) {
+		setEventLike(eventLike);
+		return this;
+	}
+
+	public void setEventUuid(String eventUuid) {
+		this.eventUuid = eventUuid;
+	}
+
+	public String getEventUuid() {
+		return eventUuid;
+	}
+
+	public ContactCriteria eventUuid(String eventUuid) {
+		setEventUuid(eventUuid);
+		return this;
+	}
+
+	public void setOnlyContactsWithSourceCaseInEvent(Boolean onlyContactsWithSourceCaseInEvent) {
+		this.onlyContactsWithSourceCaseInEvent = onlyContactsWithSourceCaseInEvent;
+	}
+
+	@IgnoreForUrl
+	public Boolean getOnlyContactsWithSourceCaseInEvent() {
+		return onlyContactsWithSourceCaseInEvent;
+	}
+
+	public ContactCriteria onlyContactsWithSourceCaseInEvent(Boolean onlyContactsWithSourceCaseInEvent) {
+		this.onlyContactsWithSourceCaseInEvent = onlyContactsWithSourceCaseInEvent;
+		return this;
 	}
 }

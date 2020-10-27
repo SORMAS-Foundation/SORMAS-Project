@@ -145,6 +145,14 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	}
 
 	@Override
+	protected AbstractSelect createCompatibleSelect(Class<? extends AbstractSelect> fieldType) {
+		if (NullableOptionGroup.class.isAssignableFrom(fieldType)) {
+			return new NullableOptionGroup();
+		}
+		return super.createCompatibleSelect(fieldType);
+	}
+
+	@Override
 	protected <T extends AbstractTextField> T createAbstractTextField(Class<T> fieldType) {
 		T textField = super.createAbstractTextField(fieldType);
 		textField.setNullRepresentation("");
@@ -157,7 +165,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	@Override
 	protected <T extends Field> T createBooleanField(Class<T> fieldType) {
 		if (NullableOptionGroup.class.isAssignableFrom(fieldType)) {
-			AbstractSelect s = createCompatibleSelect(NullableOptionGroup.class);
+			final AbstractSelect s = new NullableOptionGroup();;
 			s.addItem(Boolean.TRUE);
 			s.setItemCaption(Boolean.TRUE, I18nProperties.getEnumCaption(YesNoUnknown.YES));
 			s.addItem(Boolean.FALSE);
