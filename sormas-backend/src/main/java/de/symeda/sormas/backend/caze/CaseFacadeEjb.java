@@ -61,6 +61,8 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1726,6 +1728,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
 				newCase.getRegion(),
 				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
 				UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
@@ -1755,6 +1758,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
 				newCase.getRegion(),
 				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
 				UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
@@ -2542,12 +2546,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (assignee == null) {
-			if (caze.getReportingUser() != null && caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+			if (caze.getReportingUser() != null
+				&& (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)
+					|| caze.getReportingUser().getUserRoles().contains(UserRole.ADMIN_SUPERVISOR))) {
 				// 3) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else if (caze.getRegion() != null) {
 				// 4) Assign a random surveillance supervisor from the case region
-				List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+				List<User> supervisors =
+					userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
 				if (!supervisors.isEmpty()) {
 					Random rand = new Random();
 					assignee = supervisors.get(rand.nextInt(supervisors.size()));
@@ -2684,8 +2691,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendInvestigationDoneNotifications(Case caze) {
 
-		List<User> messageRecipients = userService
-			.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
+			caze.getRegion(),
+			UserRole.SURVEILLANCE_SUPERVISOR,
+			UserRole.ADMIN_SUPERVISOR,
+			UserRole.CASE_SUPERVISOR,
+			UserRole.CONTACT_SUPERVISOR);
 		for (User recipient : messageRecipients) {
 			try {
 				messagingService.sendMessage(
@@ -2994,7 +3005,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		final Stream<Selection<?>> select = Stream.of(
 			caze.get(Case.UUID),
-			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			caze.get(Case.REPORT_DATE),
@@ -3020,10 +3030,13 @@ public class CaseFacadeEjb implements CaseFacade {
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = caze.get(sortProperty.propertyName);
 					break;
-				case FollowUpDto.PERSON:
+				case FollowUpDto.FIRST_NAME:
 					expression = joins.getPerson().get(Person.FIRST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				case FollowUpDto.LAST_NAME:
 					expression = joins.getPerson().get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -3056,6 +3069,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				visitsCqRoot.get(Case.UUID),
 				visitsJoin.get(Visit.VISIT_DATE_TIME),
 				visitsJoin.get(Visit.VISIT_STATUS),
+				visitsJoin.get(Visit.ORIGIN),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
 			// Sort by visit date so that we'll have the latest visit of each day
 			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
@@ -3076,7 +3090,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
-				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
+				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (boolean) v[4]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
 			});
 		}

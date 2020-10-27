@@ -22,6 +22,8 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -58,6 +60,10 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Location, Facility> addressFacility;
 	private Join<Person, Facility> occupationFacility;
 	private Join<Contact, EpiData> epiData;
+	private Join<Person, EventParticipant> eventParticipants;
+	private Join<Case, EventParticipant> caseEventParticipants;
+	private Join<EventParticipant, Event> event;
+	private Join<EventParticipant, Event> caseEvent;
 
 	private Join<Contact, Visit> visits;
 	private Join<Visit, Symptoms> visitSymptoms;
@@ -260,5 +266,37 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private void setPersonAddress(Join<Person, Location> personAddress) {
 		this.personAddress = personAddress;
+	}
+
+	private void setEventParticipants(Join<Person, EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
+	}
+
+	public Join<Person, EventParticipant> getEventParticipants() {
+		return getOrCreate(eventParticipants, Person.EVENT_PARTICIPANTS, JoinType.LEFT, getPerson(), this::setEventParticipants);
+	}
+
+	private void setCaseEventParticipants(Join<Case, EventParticipant> caseEventParticipants) {
+		this.caseEventParticipants = caseEventParticipants;
+	}
+
+	public Join<Case, EventParticipant> getCaseEventParticipants() {
+		return getOrCreate(caseEventParticipants, Case.EVENT_PARTICIPANTS, JoinType.LEFT, getCaze(), this::setCaseEventParticipants);
+	}
+
+	private void setEvent(Join<EventParticipant, Event> event) {
+		this.event = event;
+	}
+
+	public Join<EventParticipant, Event> getEvent() {
+		return getOrCreate(event, EventParticipant.EVENT, JoinType.LEFT, getEventParticipants(), this::setEvent);
+	}
+
+	private void setCaseEvent(Join<EventParticipant, Event> caseEvent) {
+		this.caseEvent = caseEvent;
+	}
+
+	public Join<EventParticipant, Event> getCaseEvent() {
+		return getOrCreate(caseEvent, EventParticipant.EVENT, JoinType.LEFT, getCaseEventParticipants(), this::setCaseEvent);
 	}
 }

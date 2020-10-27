@@ -43,6 +43,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -475,7 +476,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				facility));
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue())) {
 
 				// default values
 				if (facilityTypeGroup.getValue() == null && !facilityTypeGroup.isReadOnly()) {
@@ -866,7 +867,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getField(CaseDataDto.CLASSIFICATION_USER).setVisible(false);
 				Label classifiedBySystemLabel = new Label(I18nProperties.getCaption(Captions.system));
 				classifiedBySystemLabel.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLASSIFIED_BY));
-				getContent().addComponent(classifiedBySystemLabel, CLASSIFIED_BY_SYSTEM_LOC);
+				// ensure correct formatting
+				GridLayout tempLayout = new GridLayout();
+				tempLayout.addComponent(classifiedBySystemLabel);
+				getContent().addComponent(tempLayout, CLASSIFIED_BY_SYSTEM_LOC);
 			}
 
 			updateFollowUpStatusComponents();

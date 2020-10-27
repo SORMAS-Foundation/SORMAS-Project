@@ -94,6 +94,46 @@ $v-grid-cell-focused-border: none !default;
           background-color: $s-minor-color;
           line-height: 2;
         }
+
+        &.follow-up-symptomatic-external > .component-wrap {
+          background: $s-critical-color url(../img/smartphone.png) no-repeat;
+          background-size: 40% 80%;
+          background-position-x: center;
+          background-position-y: center;
+          line-height: 2;
+        }
+
+        &.follow-up-not-symptomatic-external > .component-wrap {
+          background: $s-positive-color url(../img/smartphone.png) no-repeat;
+          background-size: 40% 80%;
+          background-position-x: center;
+          background-position-y: center;
+          line-height: 2;
+        }
+
+        &.follow-up-unavailable-external > .component-wrap {
+          background: #6277cc url(../img/smartphone.png) no-repeat;
+          background-size: 40% 80%;
+          background-position-x: center;
+          background-position-y: center;
+          line-height: 2;
+        }
+
+        &.follow-up-uncooperative-external > .component-wrap {
+          background: #ff19ff url(../img/smartphone.png) no-repeat;
+          background-size: 40% 80%;
+          background-position-x: center;
+          background-position-y: center;
+          line-height: 2;
+        }
+
+        &.follow-up-not-performed-external > .component-wrap {
+          background: $s-minor-color url(../img/smartphone.png) no-repeat;
+          background-size: 40% 80%;
+          background-position-x: center;
+          background-position-y: center;
+          line-height: 2;
+        }
       }
     	
       &.status-discarded .v-grid-cell {
@@ -124,6 +164,7 @@ $v-grid-cell-focused-border: none !default;
 	  .v-treegrid-cell {
 	    border-left: none;
 	    border-bottom: none;
+        background-color: #FEFEFE;
       }
       
       .v-grid-column-header-content,

@@ -123,7 +123,7 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -158,6 +158,12 @@
 			<artifactId>geronimo-config-impl</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>8.12.11</version>
+		</dependency>
+
 		<!-- Keycloak -->
 		<dependency>
 			<groupId>org.keycloak</groupId>
@@ -180,7 +186,6 @@
 			<groupId>org.eclipse.microprofile.config</groupId>
 			<artifactId>microprofile-config-api</artifactId>
 		</dependency>
-
 
 	</dependencies>
 
