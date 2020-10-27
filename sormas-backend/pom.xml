@@ -166,6 +166,13 @@
 			<artifactId>microprofile-config-api</artifactId>
 		</dependency>
 
+		<!-- JsonPath -->
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

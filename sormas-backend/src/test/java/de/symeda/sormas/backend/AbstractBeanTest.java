@@ -102,6 +102,7 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
@@ -425,6 +426,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasEncryptionService getSormasToSormasEncryptionService() {
 		return getBean(SormasToSormasEncryptionService.class);
+	}
+
+	public GeocodingService getGeocodingService() {
+		return getBean(GeocodingService.class);
 	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
