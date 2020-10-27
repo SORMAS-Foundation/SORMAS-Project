@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -464,5 +465,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public BAGExportFacade getBAGExportFacade() {
 		return getBean(BAGExportFacadeEjb.BAGExportFacadeEjbLocal.class);
+	}
+
+	public ExternalJournalService getExternalJournalService() {
+		return getBean(ExternalJournalService.class);
 	}
 }

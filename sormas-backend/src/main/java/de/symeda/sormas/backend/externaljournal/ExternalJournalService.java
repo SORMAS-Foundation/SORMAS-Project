@@ -159,7 +159,7 @@ public class ExternalJournalService {
 	 * @param contact
 	 *            a contact assigned to a person already available in the external journal
 	 * @param previousFollowUpUntilDate
-	 * 			the follow-up end date before the update
+	 *            the follow-up end date before the update
 	 */
 	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
 		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
@@ -183,8 +183,9 @@ public class ExternalJournalService {
 	 * @param updatedPerson
 	 *            the updated person in SORMAS
 	 */
-	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-		if (shouldNotify(existingPerson, updatedPerson)) {
+	public boolean notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
+		boolean shouldNotify = shouldNotify(existingPerson, updatedPerson);
+		if (shouldNotify) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 				notifySymptomJournal(existingPerson.getUuid());
 			}
@@ -192,6 +193,7 @@ public class ExternalJournalService {
 				notifyPatientDiary(existingPerson.getUuid());
 			}
 		}
+		return shouldNotify;
 	}
 
 	/**
@@ -269,6 +271,7 @@ public class ExternalJournalService {
 	/**
 	 * Attempts to register a new patient in the CLIMEDO patient diary.
 	 * Sets the person symptom journal status to REGISTERED if successful.
+	 * 
 	 * @param person
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
