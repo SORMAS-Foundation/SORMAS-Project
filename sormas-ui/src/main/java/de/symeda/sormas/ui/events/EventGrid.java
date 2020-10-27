@@ -55,6 +55,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	public static final String INFORMATION_SOURCE = Captions.Event_informationSource;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+	public static final String CASE_COUNT = Captions.Event_caseCount;
+	public static final String CONTACT_COUNT = Captions.Event_contactCount;
 
 	@SuppressWarnings("unchecked")
 	public <V extends View> EventGrid(EventCriteria criteria, Class<V> viewClass) {
@@ -95,14 +97,14 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		Column<EventIndexDto, String> numberOfCasesColumn =
 			addColumn(event -> String.valueOf((FacadeProvider.getEventParticipantFacade().getParticipantCasesCountByEvent(event.getUuid()))));
-		numberOfCasesColumn.setId("CASECOUNT");
-		numberOfCasesColumn.setCaption("Number of Cases i18n");
+		numberOfCasesColumn.setId(CASE_COUNT);
+		numberOfCasesColumn.setCaption(I18nProperties.getCaption(CASE_COUNT));
 		numberOfCasesColumn.setSortable(false);
 
 		Column<EventIndexDto, String> numberOfInvolvedContacts =
 			addColumn(event -> String.valueOf((FacadeProvider.getEventParticipantFacade().getParticipantCasesContactsCount(event.getUuid()))));
-		numberOfInvolvedContacts.setId("CONTACTCOUNT");
-		numberOfInvolvedContacts.setCaption("Number of Contacts i18n");
+		numberOfInvolvedContacts.setId(CONTACT_COUNT);
+		numberOfInvolvedContacts.setCaption(I18nProperties.getCaption(CONTACT_COUNT));
 		numberOfInvolvedContacts.setSortable(false);
 
 		setColumns(
@@ -117,8 +119,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			EventIndexDto.REPORT_DATE_TIME,
 			NUMBER_OF_PENDING_TASKS,
 			EventIndexDto.PARTICIPANT_COUNT,
-			"CASECOUNT",
-			"CONTACTCOUNT");
+			CASE_COUNT,
+			CONTACT_COUNT);
 
 		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
 

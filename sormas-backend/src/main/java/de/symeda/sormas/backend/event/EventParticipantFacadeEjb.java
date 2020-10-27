@@ -582,18 +582,18 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public long getParticipantCasesContactsCount(String eventUuid) {
 		// For each case among the participants, count all contacts who are also part of the same event
 		long numberOfContacts = 0;
-		ListIterator<EventParticipantDto> caseiterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
+		ListIterator<EventParticipantDto> caseIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
 
 		// iterate over all cases among participants
-		while (caseiterator.hasNext()) {
-			CaseReferenceDto caseref = caseiterator.next().getResultingCase();
+		while (caseIterator.hasNext()) {
+			CaseReferenceDto caseref = caseIterator.next().getResultingCase();
 			if (caseref != null) {
 				ContactCriteria crit = new ContactCriteria();
 				crit.caze(caseref);
-				ListIterator<Contact> contactiterator = contactService.findBy(crit, null).listIterator();
+				ListIterator<Contact> contactIterator = contactService.findBy(crit, null).listIterator();
 				// iterate over all contacts among cases
-				while (contactiterator.hasNext()) {
-					String contactPersonUuid = contactiterator.next().getPerson().getUuid();
+				while (contactIterator.hasNext()) {
+					String contactPersonUuid = contactIterator.next().getPerson().getUuid();
 					ListIterator<EventParticipantDto> participantIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
 					// iterate over all participants, and compare to current contact person
 					while (participantIterator.hasNext()) {
