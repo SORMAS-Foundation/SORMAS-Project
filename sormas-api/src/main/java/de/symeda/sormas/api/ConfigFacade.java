@@ -19,6 +19,8 @@ package de.symeda.sormas.api;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
+import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.region.GeoLatLon;
 
 @Remote
@@ -90,15 +92,9 @@ public interface ConfigFacade {
 
 	String getGeocodingOsgtsEndpoint();
 
-	String getSymptomJournalUrl();
+	SymptomJournalConfig getSymptomJournalConfig();
 
-	String getSymptomJournalAuthUrl();
-
-	String getSymptomJournalClientId();
-
-	String getSymptomJournalSecret();
-
-	String getPatientDiaryUrl();
+	PatientDiaryConfig getPatientDiaryConfig();
 
 	String getSormasToSormasUserPassword();
 
@@ -109,4 +105,6 @@ public interface ConfigFacade {
 	String getSurvnetGatewayUrl();
 
 	String getAuthenticationProvider();
+
+	public boolean isExternalJournalActive();
 }

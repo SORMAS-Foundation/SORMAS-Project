@@ -569,6 +569,11 @@ public class ContactsView extends AbstractView {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
+
+			if (criteria.getEventUuid() != null) {
+				criteria.eventLike(criteria.getEventUuid());
+				criteria.eventUuid(null);
+			}
 		}
 		updateFilterComponents();
 

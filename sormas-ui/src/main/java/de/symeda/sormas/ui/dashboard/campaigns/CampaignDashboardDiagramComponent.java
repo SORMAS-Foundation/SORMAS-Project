@@ -149,7 +149,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("plotOptions: {");
 
 			if (stackMap.size() > 0) {
-				hcjs.append("column: { stacking: 'normal'}");
+				hcjs.append("column: { stacking: 'normal', borderWidth: 0}");
 			}
 			if (showPercentages && totalValuesMap != null) {
 				hcjs.append(stackMap.size() > 0 ? ", " : "")

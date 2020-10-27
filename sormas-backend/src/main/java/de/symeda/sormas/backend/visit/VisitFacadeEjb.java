@@ -46,6 +46,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.VisitOrigin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +82,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -232,7 +234,8 @@ public class VisitFacadeEjb implements VisitFacade {
 			dto.getSymptoms(),
 			dto.getReportLat(),
 			dto.getReportLon(),
-			dto.getReportLatLonAccuracy());
+			dto.getReportLatLonAccuracy(),
+			VisitOrigin.EXTERNAL_JOURNAL);
 
 		saveVisit(visitDto);
 
@@ -300,7 +303,8 @@ public class VisitFacadeEjb implements VisitFacade {
 			visit.get(Visit.DISEASE),
 			symptoms.get(Symptoms.SYMPTOMATIC),
 			symptoms.get(Symptoms.TEMPERATURE),
-			symptoms.get(Symptoms.TEMPERATURE_SOURCE));
+			symptoms.get(Symptoms.TEMPERATURE_SOURCE),
+			visit.get(Visit.ORIGIN));
 
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
 
@@ -313,6 +317,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				case VisitIndexDto.VISIT_STATUS:
 				case VisitIndexDto.VISIT_REMARKS:
 				case VisitIndexDto.DISEASE:
+				case VisitIndexDto.ORIGIN:
 					expression = visit.get(sortProperty.propertyName);
 					break;
 				case VisitIndexDto.SYMPTOMATIC:
@@ -429,6 +434,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitRoot.get(Visit.VISIT_REMARKS),
 			visitRoot.get(Visit.REPORT_LAT),
 			visitRoot.get(Visit.REPORT_LON),
+			visitRoot.get(Visit.ORIGIN),
 			personJoin.get(Person.UUID));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
@@ -507,6 +513,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setOrigin(source.getOrigin());
 
 		return target;
 	}
@@ -573,6 +580,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setOrigin(source.getOrigin());
 
 		return target;
 	}
@@ -615,12 +623,8 @@ public class VisitFacadeEjb implements VisitFacade {
 								DataHelper.getShortUuid(contact.getUuid()));
 						}
 
-						messagingService.sendMessage(
-							recipient,
-							I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC),
-							messageContent,
-							MessageType.EMAIL,
-							MessageType.SMS);
+						messagingService
+							.sendMessage(recipient, MessageSubject.CONTACT_SYMPTOMATIC, messageContent, MessageType.EMAIL, MessageType.SMS);
 					} catch (NotificationDeliveryFailedException e) {
 						logger.error(
 							String.format(

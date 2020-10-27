@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.campaign;
 
 import java.util.Date;
+import java.util.List;
 
+import de.symeda.sormas.backend.MockProducer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,6 +13,8 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+
+import static org.mockito.Mockito.when;
 
 public class CampaignFacadeEjbTest extends AbstractBeanTest {
 
@@ -25,14 +29,13 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 		campaign1.setStartDate(new Date(System.currentTimeMillis() - 7 * ONE_DAY_IN_MILLIS)); // last week
 		getCampaignFacade().saveCampaign(campaign1);
 		final CampaignDto campaign2 = creator.createCampaign(user);
-        campaign2.setStartDate(new Date(System.currentTimeMillis() - ONE_DAY_IN_MILLIS)); // yesterday
+		campaign2.setStartDate(new Date(System.currentTimeMillis() - ONE_DAY_IN_MILLIS)); // yesterday
 		getCampaignFacade().saveCampaign(campaign2);
 		final CampaignDto campaign3 = creator.createCampaign(user);
-        campaign3.setStartDate(new Date(System.currentTimeMillis() + ONE_DAY_IN_MILLIS)); // tomorrow
+		campaign3.setStartDate(new Date(System.currentTimeMillis() + ONE_DAY_IN_MILLIS)); // tomorrow
 		getCampaignFacade().saveCampaign(campaign3);
 
-        CampaignReferenceDto lastStartedCampaign = getCampaignFacade().getLastStartedCampaign();
-        Assert.assertEquals(campaign2.getUuid(), lastStartedCampaign.getUuid());
-    }
-
+		CampaignReferenceDto lastStartedCampaign = getCampaignFacade().getLastStartedCampaign();
+		Assert.assertEquals(campaign2.getUuid(), lastStartedCampaign.getUuid());
+	}
 }

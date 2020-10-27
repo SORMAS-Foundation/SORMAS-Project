@@ -27,6 +27,7 @@ import org.joda.time.DateTime;
 import android.content.Context;
 import android.util.Log;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -907,6 +908,7 @@ class VisitGenerator extends BaseDataGenerator {
 			data1.setVisitDateTime(getRandomDate());
 			data1.setVisitUser(UserGenerator.getSingle());
 			data1.setVisitStatus(getRandomVisitStatus());
+			data1.setOrigin(getRandomVisitOrigin());
 			data1.setVisitRemarks(getRandomSentence());
 			data1.setReportLat(getRandomDouble());
 			data1.setReportLon(getRandomDouble());
@@ -940,6 +942,18 @@ class VisitGenerator extends BaseDataGenerator {
 				add(VisitStatus.UNAVAILABLE);
 				add(VisitStatus.UNCOOPERATIVE);
 				add(VisitStatus.COOPERATIVE);
+			}
+		};
+
+		return randomItem(list);
+	}
+
+	private static VisitOrigin getRandomVisitOrigin() {
+		List<VisitOrigin> list = new ArrayList<VisitOrigin>() {
+
+			{
+				add(VisitOrigin.USER);
+				add(VisitOrigin.EXTERNAL_JOURNAL);
 			}
 		};
 

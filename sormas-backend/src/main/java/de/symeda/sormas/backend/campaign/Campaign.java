@@ -38,6 +38,8 @@ public class Campaign extends CoreAdo {
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String CREATING_USER = "creatingUser";
+	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
+	public static final String CAMPAIGN_DASHBOARD_ELEMENTS = "dashboardElements";
 	public static final String ARCHIVED = "archived";
 
 	private String name;
