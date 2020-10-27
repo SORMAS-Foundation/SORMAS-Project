@@ -337,13 +337,18 @@ public class ExternalJournalService {
 		if (ObjectUtils.anyNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY())) {
 			validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
 		}
-		boolean valid = validEmail && validPhone && validBirthdate;
-		String message = getValidationMessage(validEmail, validPhone, validBirthdate);
+		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
+		boolean valid = hasPhoneOrEmail && validEmail && validPhone && validBirthdate;
+		String message = getValidationMessage(hasPhoneOrEmail, validEmail, validPhone, validBirthdate);
 		return new ExternalPersonValidation(valid, message);
 	}
 
-	private String getValidationMessage(boolean validEmail, boolean validPhone, boolean validBirthdate) {
+	private String getValidationMessage(boolean hasPhoneOrEmail, boolean validEmail, boolean validPhone, boolean validBirthdate) {
 		StringBuilder message = new StringBuilder();
+		if (!hasPhoneOrEmail) {
+			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationNoEmailOrPhone));
+			message.append('\n');
+		}
 		if (!validEmail) {
 			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationEmail));
 			message.append('\n');

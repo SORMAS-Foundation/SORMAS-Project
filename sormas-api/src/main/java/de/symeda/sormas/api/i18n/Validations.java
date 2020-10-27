@@ -39,6 +39,7 @@ public interface Validations {
 	String externalJournalPersonValidationBirthdate = "externalJournalPersonValidationBirthdate";
 	String externalJournalPersonValidationEmail = "externalJournalPersonValidationEmail";
 	String externalJournalPersonValidationError = "externalJournalPersonValidationError";
+	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
 	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";

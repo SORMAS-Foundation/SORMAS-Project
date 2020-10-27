@@ -307,13 +307,13 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		validate(source);
 
-		person = fillOrBuildEntity(source, person);
-
-		personService.ensurePersisted(person);
-
 		if (existingPerson != null) {
 			handleExternalJournalPerson(existingPerson, source);
 		}
+
+		person = fillOrBuildEntity(source, person);
+
+		personService.ensurePersisted(person);
 
 		onPersonChanged(existingPerson, person);
 
