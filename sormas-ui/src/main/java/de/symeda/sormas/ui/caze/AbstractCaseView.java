@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -52,6 +54,7 @@ import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
+import de.symeda.sormas.ui.utils.ExternalJournalUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -103,6 +106,30 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			}
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
+
+		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
+				&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
+			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
+			btnCreatePIAAccount.addClickListener(e -> {
+				CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
+				PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+				ExternalJournalUtil.openSymptomJournalWindow(casePerson);
+			});
+			getButtonsLayout().addComponent(btnCreatePIAAccount);
+		}
+
+		if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
+				&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
+			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
+			btnClimedoAccount.addClickListener(e -> {
+				CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
+				PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+				ExternalJournalUtil.registerPatientDiaryPerson(casePerson);
+			});
+			getButtonsLayout().addComponent(btnClimedoAccount);
+		}
 	}
 
 	@Override

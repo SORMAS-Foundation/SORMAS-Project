@@ -17,34 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.server.StreamResource;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.BrowserFrame;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
@@ -61,15 +45,10 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
-import de.symeda.sormas.api.externaljournal.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -83,16 +62,12 @@ import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class ContactController {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-	private final ExternalJournalFacade externalJournalFacade = FacadeProvider.getExternalJournalFacade();
 
 	public ContactController() {
 
@@ -238,10 +213,10 @@ public class ContactController {
 		if (casePerson != null && asSourceContact) {
 			createForm.setPerson(casePerson);
 		}
-		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
+				createForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
+				createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -279,10 +254,7 @@ public class ContactController {
 								if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 									PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
 									if (personDto.getAddress().checkIsEmptyLocation()) {
-										CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-										personDto.getAddress().setRegion(caseDto.getRegion());
-										personDto.getAddress().setDistrict(caseDto.getDistrict());
-										personDto.getAddress().setCommunity(caseDto.getCommunity());
+										fillPersonAddress(dto, personDto);
 									}
 									FacadeProvider.getPersonFacade().savePerson(personDto);
 								}
@@ -373,9 +345,7 @@ public class ContactController {
 				}
 			});
 
-			contactSelect.setSelectionChangeCallback((commitAllowed) -> {
-				component.getCommitButton().setEnabled(commitAllowed);
-			});
+			contactSelect.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
 
 			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateContact));
 			contactSelect.selectBestMatch();
@@ -399,35 +369,28 @@ public class ContactController {
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
 		editForm.setValue(contact);
-		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<>(
+				editForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
+				editForm.getFieldGroup());
 
-		editComponent.addCommitListener(new CommitListener() {
+		editComponent.addCommitListener(() -> {
+			if (!editForm.getFieldGroup().isModified()) {
+				ContactDto dto = editForm.getValue();
 
-			@Override
-			public void onCommit() {
-				if (!editForm.getFieldGroup().isModified()) {
-					ContactDto dto = editForm.getValue();
-
-					// set the contact person's address to the one of the case when it is currently empty and
-					// the relationship with the case has been set to living in the same household
-					if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
-						if (person.getAddress().checkIsEmptyLocation()) {
-							CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-							person.getAddress().setRegion(caze.getRegion());
-							person.getAddress().setDistrict(caze.getDistrict());
-							person.getAddress().setCommunity(caze.getCommunity());
-						}
-						FacadeProvider.getPersonFacade().savePerson(person);
+				// set the contact person's address to the one of the case when it is currently empty and
+				// the relationship with the case has been set to living in the same household
+				if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
+					PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+					if (person.getAddress().checkIsEmptyLocation()) {
+						fillPersonAddress(dto, person);
 					}
-
-					dto = FacadeProvider.getContactFacade().saveContact(dto);
-					Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
-					SormasUI.refreshView();
+					FacadeProvider.getPersonFacade().savePerson(person);
 				}
+
+				FacadeProvider.getContactFacade().saveContact(dto);
+				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
 			}
 		});
 
@@ -439,6 +402,13 @@ public class ContactController {
 		}
 
 		return editComponent;
+	}
+
+	private void fillPersonAddress(ContactDto dto, PersonDto person) {
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
+		person.getAddress().setRegion(caze.getRegion());
+		person.getAddress().setDistrict(caze.getDistrict());
+		person.getAddress().setCommunity(caze.getCommunity());
 	}
 
 	public void showBulkContactDataEditComponent(Collection<? extends ContactIndexDto> selectedContacts, String caseUuid) {
@@ -469,38 +439,34 @@ public class ContactController {
 		BulkContactDataForm form = new BulkContactDataForm(district);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkContactDataForm> editView =
-			new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());
+				new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditContacts));
 
-		editView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				ContactBulkEditData updatedBulkEditData = form.getValue();
-				for (ContactIndexDto indexDto : selectedContacts) {
-					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
-					if (form.getClassificationCheckBox().getValue() == true) {
-						contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
-					}
-					// Setting the contact officer is only allowed if all selected contacts are in the same district
-					if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
-						contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
-					}
-
-					FacadeProvider.getContactFacade().saveContact(contactDto);
+		editView.addCommitListener(() -> {
+			ContactBulkEditData updatedBulkEditData = form.getValue();
+			for (ContactIndexDto indexDto : selectedContacts) {
+				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
+				if (form.getClassificationCheckBox().getValue()) {
+					contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
 				}
-				popupWindow.close();
-				if (caseUuid == null) {
-					overview();
-				} else {
-					caseContactsOverview(caseUuid);
+				// Setting the contact officer is only allowed if all selected contacts are in the same district
+				if (district != null && form.getContactOfficerCheckBox().getValue()) {
+					contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
 				}
-				Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
+
+				FacadeProvider.getContactFacade().saveContact(contactDto);
 			}
+			popupWindow.close();
+			if (caseUuid == null) {
+				overview();
+			} else {
+				caseContactsOverview(caseUuid);
+			}
+			Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
 		});
 
-		editView.addDiscardListener(() -> popupWindow.close());
+		editView.addDiscardListener(popupWindow::close);
 	}
 
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
@@ -513,9 +479,7 @@ public class ContactController {
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
+					() -> {
 						for (ContactIndexDto selectedRow : selectedRows) {
 							FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
 						}
@@ -525,8 +489,7 @@ public class ContactController {
 							I18nProperties.getString(Strings.messageContactsDeleted),
 							Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
-					}
-				});
+					});
 		}
 	}
 
@@ -541,9 +504,7 @@ public class ContactController {
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 				String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
+					() -> {
 						for (ContactIndexDto contact : selectedRows) {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
@@ -559,8 +520,7 @@ public class ContactController {
 							I18nProperties.getString(Strings.messageFollowUpCanceled),
 							Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
-					}
-				});
+					});
 		}
 	}
 
@@ -574,9 +534,7 @@ public class ContactController {
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 				String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
+					() -> {
 						for (ContactIndexDto contact : selectedRows) {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
@@ -592,8 +550,7 @@ public class ContactController {
 							I18nProperties.getString(Strings.messageFollowUpStatusChanged),
 							Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
-					}
-				});
+					});
 		}
 	}
 
@@ -606,142 +563,11 @@ public class ContactController {
 		final CommitDiscardWrapperComponent<CaseSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
 		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		component.getCommitButton().setEnabled(false);
-		component.addCommitListener(() -> {
-			selectedCaseCallback.accept(selectionField.getValue());
-		});
+		component.addCommitListener(() -> selectedCaseCallback.accept(selectionField.getValue()));
 
-		selectionField.setSelectionChangeCallback((commitAllowed) -> {
-			component.getCommitButton().setEnabled(commitAllowed);
-		});
+		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
-	}
-
-	/**
-	 * Opens a window that contains an iFrame with the symptom journal website specified in the properties.
-	 * The steps to build that iFrame are:
-	 * 1. Request an authentication token based on the stored client ID and secret
-	 * 2. Build an HTML page containing a form with the auth token and some personal details as parameters
-	 * 3. The form is automatically submitted and replaced by the iFrame
-	 */
-	public void openSymptomJournalWindow(PersonDto person) {
-		String authToken = externalJournalFacade.getSymptomJournalAuthToken();
-		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
-			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl();
-			Map<String, String> parameters = new LinkedHashMap<>();
-			parameters.put("token", authToken);
-			parameters.put("uuid", person.getUuid());
-			parameters.put("firstname", person.getFirstName());
-			parameters.put("lastname", person.getLastName());
-			parameters.put("email", person.getEmailAddress());
-			byte[] document = createSymptomJournalForm(formUrl, parameters);
-
-			return new ByteArrayInputStream(document);
-		}, "symptomJournal.html"));
-		frame.setWidth("100%");
-		frame.setHeight("100%");
-
-		Window window = VaadinUiUtil.createPopupWindow();
-		window.setContent(frame);
-		window.setCaption(I18nProperties.getString(Strings.headingPIAAccountCreation));
-		window.setWidth(80, Unit.PERCENTAGE);
-		window.setHeight(80, Unit.PERCENTAGE);
-
-		UI.getCurrent().addWindow(window);
-	}
-
-	/**
-	 * @return An HTML page containing a form that is automatically submitted in order to display the symptom journal iFrame
-	 */
-	private byte[] createSymptomJournalForm(String formUrl, Map<String, String> inputs) {
-		Document document;
-		try (InputStream in = getClass().getResourceAsStream("/symptomJournal.html")) {
-			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(), formUrl);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-
-		Element form = document.getElementById("form");
-		form.attr("action", formUrl);
-		Element parametersElement = form.getElementById("parameters");
-
-		inputs.forEach((k, v) -> parametersElement.appendChild(new Element("input").attr("type", "hidden").attr("name", k).attr("value", v)));
-		return document.toString().getBytes(StandardCharsets.UTF_8);
-	}
-
-	/**
-	 * Attempts to register the given person as a new patient in CLIMEDO
-	 * Displays the result in a popup
-	 */
-	public void registerPatientDiaryPerson(PersonDto person) {
-		PatientDiaryPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
-		if (!validationResult.isValid()) {
-			showPatientDiaryWarningPopup(validationResult.getMessage());
-		} else {
-			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
-				|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
-				openPatientDiaryEnrollPage(person.getUuid());
-			} else {
-				PatientDiaryRegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
-				showPatientRegisterResultPopup(registerResult);
-			}
-		}
-	}
-
-	private void openPatientDiaryEnrollPage(String personUuid) {
-		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
-		String authToken = externalJournalFacade.getPatientDiaryAuthToken();
-		url += "/data?q=" + personUuid + "&token=" + authToken;
-		UI.getCurrent().getPage().open(url, "_blank");
-	}
-
-	private void showPatientDiaryWarningPopup(String message) {
-		VerticalLayout warningLayout = new VerticalLayout();
-		warningLayout.setMargin(true);
-		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
-		warningIcon.setHeight(35, Unit.PIXELS);
-		warningIcon.setWidth(35, Unit.PIXELS);
-		warningLayout.addComponentAsFirst(warningIcon);
-		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
-		Label messageLabel = new Label(I18nProperties.getValidationError(Validations.externalJournalPersonValidationError));
-		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		warningLayout.addComponent(messageLabel);
-		Label infoLabel = new Label(message);
-		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		warningLayout.addComponent(infoLabel);
-		CssStyles.style(warningLayout, CssStyles.ALIGN_CENTER);
-		popupWindow.addCloseListener(e -> popupWindow.close());
-		popupWindow.setWidth(400, Unit.PIXELS);
-	}
-
-	private void showPatientRegisterResultPopup(PatientDiaryRegisterResult registerResult) {
-		VerticalLayout registrationResultLayout = new VerticalLayout();
-		registrationResultLayout.setMargin(true);
-		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
-		errorIcon.setHeight(35, Unit.PIXELS);
-		errorIcon.setWidth(35, Unit.PIXELS);
-		Image successIcon = new Image(null, new ThemeResource("img/success-icon.png"));
-		successIcon.setHeight(35, Unit.PIXELS);
-		successIcon.setWidth(35, Unit.PIXELS);
-		CssStyles.style(registrationResultLayout, CssStyles.ALIGN_CENTER);
-		if (registerResult.isSuccess()) {
-			registrationResultLayout.removeComponent(errorIcon);
-			registrationResultLayout.addComponentAsFirst(successIcon);
-		} else {
-			registrationResultLayout.removeComponent(successIcon);
-			registrationResultLayout.addComponentAsFirst(errorIcon);
-			Label infoLabel = new Label();
-			CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-			registrationResultLayout.addComponent(infoLabel);
-			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
-		}
-		Label messageLabel = new Label();
-		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		registrationResultLayout.addComponent(messageLabel);
-		messageLabel.setValue(registerResult.getMessage());
-		Window popupWindow = VaadinUiUtil.showPopupWindow(registrationResultLayout);
-		popupWindow.addCloseListener(e -> popupWindow.close());
-		popupWindow.setWidth(400, Unit.PIXELS);
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
@@ -750,10 +576,10 @@ public class ContactController {
 		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), ContactDto.class, contact.getEpiData().isPseudonymized(), null);
 		epiDataForm.setValue(contact.getEpiData());
 
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
-			epiDataForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
-			epiDataForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<>(
+				epiDataForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
+				epiDataForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
