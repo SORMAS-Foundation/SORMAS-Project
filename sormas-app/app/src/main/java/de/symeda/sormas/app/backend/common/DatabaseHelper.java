@@ -35,6 +35,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.campaign.Campaign;
+import de.symeda.sormas.app.backend.campaign.CampaignDao;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataDao;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDao;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -136,7 +142,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 238;
+	public static final int DATABASE_VERSION = 240;
 
 	private static DatabaseHelper instance = null;
 
@@ -203,6 +209,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
+			TableUtils.createTable(connectionSource, CampaignFormData.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -214,6 +221,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
 				TableUtils.clearTable(connectionSource, Region.class);
+				TableUtils.createTable(connectionSource, Campaign.class);
+				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
 
 				ConfigProvider.init(instance.context);
 			}
@@ -279,6 +288,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Outbreak.class);
 			TableUtils.createTable(connectionSource, DiseaseClassificationCriteria.class);
 			TableUtils.createTable(connectionSource, SormasToSormasOriginInfo.class);
+			TableUtils.createTable(connectionSource, Campaign.class);
+			TableUtils.createTable(connectionSource, CampaignFormData.class);
+			TableUtils.createTable(connectionSource, CampaignFormMeta.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -1706,6 +1718,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 237:
 				currentVersion = 237;
+				TableUtils.createTable(connectionSource, Campaign.class);
+				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
+				TableUtils.createTable(connectionSource, CampaignFormData.class);
+
+			case 238:
+				currentVersion = 238;
+				getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN origin varchar(255);");
+				getDao(Visit.class).executeRaw("UPDATE visit SET origin='USER'");
+
+			case 239:
+				currentVersion = 239;
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationStatus varchar(255);");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationStartDate timestamp;");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationEndDate timestamp;");
@@ -1765,6 +1788,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, DiseaseClassificationCriteria.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseConfiguration.class, true);
 			TableUtils.dropTable(connectionSource, FeatureConfiguration.class, true);
+			TableUtils.dropTable(connectionSource, Campaign.class, true);
+			TableUtils.dropTable(connectionSource, CampaignFormMeta.class, true);
+			TableUtils.dropTable(connectionSource, CampaignFormData.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
@@ -1870,6 +1896,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new DiseaseClassificationCriteriaDao((Dao<DiseaseClassificationCriteria, Long>) innerDao);
 				} else if (type.equals(SormasToSormasOriginInfo.class)) {
 					dao = (AbstractAdoDao<ADO>) new SormasToSormasOriginInfoDao((Dao<SormasToSormasOriginInfo, Long>) innerDao);
+				} else if (type.equals(Campaign.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignDao((Dao<Campaign, Long>) innerDao);
+				} else if (type.equals(CampaignFormMeta.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignFormMetaDao((Dao<CampaignFormMeta, Long>) innerDao);
+				} else if (type.equals(CampaignFormData.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignFormDataDao((Dao<CampaignFormData, Long>) innerDao);
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}
@@ -2085,6 +2117,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static AggregateReportDao getAggregateReportDao() {
 		return (AggregateReportDao) getAdoDao(AggregateReport.class);
+	}
+
+	public static CampaignDao getCampaignDao() {
+		return (CampaignDao) getAdoDao(Campaign.class);
+	}
+
+	public static CampaignFormMetaDao getCampaignFormMetaDao() {
+		return (CampaignFormMetaDao) getAdoDao(CampaignFormMeta.class);
+	}
+
+	public static CampaignFormDataDao getCampaignFormDataDao() {
+		return (CampaignFormDataDao) getAdoDao(CampaignFormData.class);
 	}
 
 	/**

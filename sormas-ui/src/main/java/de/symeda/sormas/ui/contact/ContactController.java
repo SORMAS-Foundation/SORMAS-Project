@@ -35,16 +35,25 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.caze.CasesView;
+import de.symeda.sormas.ui.utils.AbstractView;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.api.externaljournal.RegisterResult;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.ui.utils.CssStyles;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -66,6 +75,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -89,6 +99,8 @@ import de.symeda.sormas.ui.utils.ViewMode;
 public class ContactController {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private final ExternalJournalFacade externalJournalFacade = FacadeProvider.getExternalJournalFacade();
 
 	public ContactController() {
 
@@ -127,6 +139,12 @@ public class ContactController {
 		} else {
 			SormasUI.get().getNavigator().navigateTo(navigationState);
 		}
+	}
+
+	public void navigateTo(ContactCriteria contactCriteria) {
+		ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
+		String navigationState = AbstractView.buildNavigationState(ContactsView.VIEW_NAME, contactCriteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
 	public void editData(String contactUuid) {
@@ -493,9 +511,9 @@ public class ContactController {
 	 * 3. The form is automatically submitted and replaced by the iFrame
 	 */
 	public void openSymptomJournalWindow(PersonDto person) {
-		String authToken = getSymptomJournalAuthToken();
+		String authToken = externalJournalFacade.getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
-			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalUrl();
+			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl();
 			Map<String, String> parameters = new LinkedHashMap<>();
 			parameters.put("token", authToken);
 			parameters.put("uuid", person.getUuid());
@@ -519,55 +537,12 @@ public class ContactController {
 	}
 
 	/**
-	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
-	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
-	 */
-	public void openDiaryTab(PersonDto person) {
-		String url = FacadeProvider.getConfigFacade().getPatientDiaryUrl();
-		url += "/enroll?personUuid=" + person.getUuid();
-		UI.getCurrent().getPage().open(url, "_blank");
-	}
-
-	private String getSymptomJournalAuthToken() {
-		String authenticationUrl = FacadeProvider.getConfigFacade().getSymptomJournalAuthUrl();
-		String clientId = FacadeProvider.getConfigFacade().getSymptomJournalClientId();
-		String secret = FacadeProvider.getConfigFacade().getSymptomJournalSecret();
-
-		if (StringUtils.isBlank(authenticationUrl)) {
-			throw new IllegalArgumentException("Property interface.symptomjournal.authurl is not defined");
-		}
-		if (StringUtils.isBlank(clientId)) {
-			throw new IllegalArgumentException("Property interface.symptomjournal.clientid is not defined");
-		}
-		if (StringUtils.isBlank(secret)) {
-			throw new IllegalArgumentException("Property interface.symptomjournal.secret is not defined");
-		}
-
-		try {
-			Client client = ClientBuilder.newClient();
-			HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(clientId, secret);
-			client.register(feature);
-			WebTarget webTarget = client.target(authenticationUrl);
-			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-			Response response = invocationBuilder.post(Entity.json(""));
-			String responseJson = response.readEntity(String.class);
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
-			return node.get("auth").textValue();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return null;
-		}
-	}
-
-	/**
 	 * @return An HTML page containing a form that is automatically submitted in order to display the symptom journal iFrame
 	 */
 	private byte[] createSymptomJournalForm(String formUrl, Map<String, String> inputs) {
 		Document document;
 		try (InputStream in = getClass().getResourceAsStream("/symptomJournal.html")) {
-			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(), FacadeProvider.getConfigFacade().getSymptomJournalUrl());
+			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(), formUrl);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -578,6 +553,77 @@ public class ContactController {
 
 		inputs.forEach((k, v) -> parametersElement.appendChild(new Element("input").attr("type", "hidden").attr("name", k).attr("value", v)));
 		return document.toString().getBytes(StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Attempts to register the given person as a new patient in CLIMEDO
+	 * Displays the result in a popup
+	 */
+	public void registerPatientDiaryPerson(PersonDto person) {
+		if (!externalJournalFacade.isPersonExportable(person)) {
+			showWarningPopup(I18nProperties.getCaption(Captions.patientDiaryPersonNotExportable));
+		} else {
+			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
+					|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
+				openPatientDiaryEnrollPage(person.getUuid());
+			} else {
+				RegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
+				showPatientRegisterResultPopup(registerResult);
+			}
+		}
+	}
+
+	private void openPatientDiaryEnrollPage(String personUuid) {
+		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
+		url += "/enroll?personUuid=" + personUuid;
+		UI.getCurrent().getPage().open(url, "_blank");
+	}
+
+	private void showWarningPopup(String message) {
+		VerticalLayout alreadyRegisteredLayout = new VerticalLayout();
+		alreadyRegisteredLayout.setMargin(true);
+		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
+		warningIcon.setHeight(35, Unit.PIXELS);
+		warningIcon.setWidth(35, Unit.PIXELS);
+		alreadyRegisteredLayout.addComponentAsFirst(warningIcon);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(alreadyRegisteredLayout);
+		Label infoLabel = new Label(message);
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		alreadyRegisteredLayout.addComponent(infoLabel);
+		CssStyles.style(alreadyRegisteredLayout, CssStyles.ALIGN_CENTER);
+		popupWindow.addCloseListener(e -> popupWindow.close());
+		popupWindow.setWidth(400, Unit.PIXELS);
+	}
+
+	private void showPatientRegisterResultPopup(RegisterResult registerResult) {
+		VerticalLayout registrationResultLayout = new VerticalLayout();
+		registrationResultLayout.setMargin(true);
+		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
+		errorIcon.setHeight(35, Unit.PIXELS);
+		errorIcon.setWidth(35, Unit.PIXELS);
+		Image successIcon = new Image(null, new ThemeResource("img/success-icon.png"));
+		successIcon.setHeight(35, Unit.PIXELS);
+		successIcon.setWidth(35, Unit.PIXELS);
+		Label infoLabel = new Label();
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		registrationResultLayout.addComponent(infoLabel);
+		Label messageLabel = new Label();
+		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		registrationResultLayout.addComponent(messageLabel);
+		CssStyles.style(registrationResultLayout, CssStyles.ALIGN_CENTER);
+		if (registerResult.isSuccess()) {
+			registrationResultLayout.removeComponent(errorIcon);
+			registrationResultLayout.addComponentAsFirst(successIcon);
+			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationSuccess));
+		} else {
+			registrationResultLayout.removeComponent(successIcon);
+			registrationResultLayout.addComponentAsFirst(errorIcon);
+			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
+		}
+		messageLabel.setValue(registerResult.getMessage());
+		Window popupWindow = VaadinUiUtil.showPopupWindow(registrationResultLayout);
+		popupWindow.addCloseListener(e -> popupWindow.close());
+		popupWindow.setWidth(400, Unit.PIXELS);
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {

@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -523,15 +524,15 @@ public class TestDataCreator {
 	}
 
 	public VisitDto createVisit(Disease disease, PersonReferenceDto person) {
-		return createVisit(disease, person, new Date(), VisitStatus.COOPERATIVE);
+		return createVisit(disease, person, new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 	}
 
 	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime) {
-		return createVisit(disease, person, visitDateTime, VisitStatus.COOPERATIVE);
+		return createVisit(disease, person, visitDateTime, VisitStatus.COOPERATIVE, VisitOrigin.USER);
 	}
 
-	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus) {
-		return createVisit(disease, person, visitDateTime, visitStatus, null);
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus, VisitOrigin visitOrigin) {
+		return createVisit(disease, person, visitDateTime, visitStatus, visitOrigin, null);
 	}
 
 	public VisitDto createVisit(
@@ -539,8 +540,9 @@ public class TestDataCreator {
 		PersonReferenceDto person,
 		Date visitDateTime,
 		VisitStatus visitStatus,
+		VisitOrigin visitOrigin,
 		Consumer<VisitDto> customConfig) {
-		VisitDto visit = VisitDto.build(person, disease);
+		VisitDto visit = VisitDto.build(person, disease, visitOrigin);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
 

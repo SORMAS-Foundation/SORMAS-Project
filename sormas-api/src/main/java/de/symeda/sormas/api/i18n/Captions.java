@@ -135,10 +135,13 @@ public interface Captions {
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String Campaign = "Campaign";
+	String Campaign_area = "Campaign.area";
 	String Campaign_creatingUser = "Campaign.creatingUser";
 	String Campaign_description = "Campaign.description";
+	String Campaign_district = "Campaign.district";
 	String Campaign_endDate = "Campaign.endDate";
 	String Campaign_name = "Campaign.name";
+	String Campaign_region = "Campaign.region";
 	String Campaign_startDate = "Campaign.startDate";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
 	String campaignAdditionalChart = "campaignAdditionalChart";
@@ -270,6 +273,7 @@ public interface Captions {
 	String CaseData_sharedToCountry = "CaseData.sharedToCountry";
 	String CaseData_smallpoxVaccinationReceived = "CaseData.smallpoxVaccinationReceived";
 	String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
+	String CaseData_sormasToSormasOriginInfo = "CaseData.sormasToSormasOriginInfo";
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
@@ -284,6 +288,7 @@ public interface Captions {
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
+	String caseDocuments = "caseDocuments";
 	String caseEditData = "caseEditData";
 	String caseEvents = "caseEvents";
 	String caseEventsResetDateFilter = "caseEventsResetDateFilter";
@@ -448,6 +453,8 @@ public interface Captions {
 	String Contact_immunosuppressiveTherapyBasicDiseaseDetails = "Contact.immunosuppressiveTherapyBasicDiseaseDetails";
 	String Contact_lastContactDate = "Contact.lastContactDate";
 	String Contact_lastName = "Contact.lastName";
+	String Contact_latestEventId = "Contact.latestEventId";
+	String Contact_latestEventTitle = "Contact.latestEventTitle";
 	String Contact_numberOfVisits = "Contact.numberOfVisits";
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
@@ -480,6 +487,7 @@ public interface Captions {
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
 	String Contact_returningTraveler = "Contact.returningTraveler";
+	String Contact_symptomJournalStatus = "Contact.symptomJournalStatus";
 	String Contact_tracingApp = "Contact.tracingApp";
 	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
 	String Contact_uuid = "Contact.uuid";
@@ -523,6 +531,7 @@ public interface Captions {
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
+	String contactOnlyWithSourceCaseInEvent = "contactOnlyWithSourceCaseInEvent";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
@@ -693,6 +702,15 @@ public interface Captions {
 	String districtAllDistricts = "districtAllDistricts";
 	String districtArchivedDistricts = "districtArchivedDistricts";
 	String districtName = "districtName";
+	String DocumentTemplate = "DocumentTemplate";
+	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
+	String DocumentTemplate_exampleTemplateLibreOffice = "DocumentTemplate.exampleTemplateLibreOffice";
+	String DocumentTemplate_exampleTemplateWord = "DocumentTemplate.exampleTemplateWord";
+	String DocumentTemplate_plural = "DocumentTemplate.plural";
+	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
+	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";
+	String DocumentTemplate_QuarantineOrder_templates = "DocumentTemplate.QuarantineOrder.templates";
+	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
 	String EpiData = "EpiData";
 	String EpiData_animalCondition = "EpiData.animalCondition";
 	String EpiData_animalVaccinationStatus = "EpiData.animalVaccinationStatus";
@@ -837,6 +855,7 @@ public interface Captions {
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventLinkToCases = "eventLinkToCases";
+	String eventLinkToContacts = "eventLinkToContacts";
 	String eventNewEvent = "eventNewEvent";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
 	String EventParticipant = "EventParticipant";
@@ -1067,6 +1086,9 @@ public interface Captions {
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";
+	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
+	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
+	String patientDiaryRegistrationSuccess = "patientDiaryRegistrationSuccess";
 	String Person = "Person";
 	String Person_address = "Person.address";
 	String Person_addresses = "Person.addresses";
@@ -1127,6 +1149,7 @@ public interface Captions {
 	String Person_placeOfBirthRegion = "Person.placeOfBirthRegion";
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
+	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
 	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
@@ -1658,6 +1681,8 @@ public interface Captions {
 	String View_configuration_devMode_short = "View.configuration.devMode.short";
 	String View_configuration_districts = "View.configuration.districts";
 	String View_configuration_districts_short = "View.configuration.districts.short";
+	String View_configuration_documentTemplates = "View.configuration.documentTemplates";
+	String View_configuration_documentTemplates_short = "View.configuration.documentTemplates.short";
 	String View_configuration_facilities = "View.configuration.facilities";
 	String View_configuration_facilities_short = "View.configuration.facilities.short";
 	String View_configuration_laboratories = "View.configuration.laboratories";
@@ -1672,6 +1697,8 @@ public interface Captions {
 	String View_configuration_populationdata_short = "View.configuration.populationdata.short";
 	String View_configuration_regions = "View.configuration.regions";
 	String View_configuration_regions_short = "View.configuration.regions.short";
+	String View_configuration_templates = "View.configuration.templates";
+	String View_configuration_templates_short = "View.configuration.templates.short";
 	String View_configuration_userrights = "View.configuration.userrights";
 	String View_configuration_userrights_short = "View.configuration.userrights.short";
 	String View_contacts = "View.contacts";
@@ -1706,6 +1733,7 @@ public interface Captions {
 	String View_users_sub = "View.users.sub";
 	String Visit = "Visit";
 	String Visit_disease = "Visit.disease";
+	String Visit_origin = "Visit.origin";
 	String Visit_person = "Visit.person";
 	String Visit_reportLat = "Visit.reportLat";
 	String Visit_reportLon = "Visit.reportLon";

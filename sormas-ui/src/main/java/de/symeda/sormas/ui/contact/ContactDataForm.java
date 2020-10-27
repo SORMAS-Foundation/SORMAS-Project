@@ -278,14 +278,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			getFieldGroup(),
 			Arrays.asList(ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED),
 			ContactDto.QUARANTINE,
-			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+			QuarantineType.QUARANTINE_IN_EFFECT,
 			true);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY) || isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				ContactDto.QUARANTINE,
-				Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+				QuarantineType.QUARANTINE_IN_EFFECT,
 				true);
 		}
 		FieldHelper.setVisibleWhen(
@@ -819,7 +819,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	private void onValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
-		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
 			ContactDto contact = this.getInternalValue();
 			if (contact != null) {
 				quarantineFrom.setValue(contact.getQuarantineFrom());

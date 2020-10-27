@@ -74,6 +74,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CronService;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -293,7 +294,7 @@ public class TaskFacadeEjb implements TaskFacade {
 					try {
 						messagingService.sendMessage(
 							recipient,
-							I18nProperties.getString(MessagingService.SUBJECT_VISIT_COMPLETED),
+							MessageSubject.VISIT_COMPLETED,
 							String.format(
 								I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED),
 								DataHelper.getShortUuid(ado.getContact().getUuid()),
@@ -663,7 +664,6 @@ public class TaskFacadeEjb implements TaskFacade {
 			if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor()
 				|| task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
 				try {
-					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_START);
 					String content = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
 						: String.format(
@@ -671,8 +671,12 @@ public class TaskFacadeEjb implements TaskFacade {
 							task.getTaskType().toString(),
 							context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
-					messagingService
-						.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
+					messagingService.sendMessage(
+						userService.getByUuid(task.getAssigneeUser().getUuid()),
+						MessageSubject.TASK_START,
+						content,
+						MessageType.EMAIL,
+						MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(
 						String.format(
@@ -692,7 +696,6 @@ public class TaskFacadeEjb implements TaskFacade {
 			if (task.getAssigneeUser() != null
 				&& (task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER))) {
 				try {
-					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_DUE);
 					String content = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
 						: String.format(
@@ -700,8 +703,12 @@ public class TaskFacadeEjb implements TaskFacade {
 							task.getTaskType().toString(),
 							context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
 
-					messagingService
-						.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
+					messagingService.sendMessage(
+						userService.getByUuid(task.getAssigneeUser().getUuid()),
+						MessageSubject.TASK_DUE,
+						content,
+						MessageType.EMAIL,
+						MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(
 						String.format(

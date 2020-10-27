@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.VisitOrigin;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1112,7 +1113,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.getSymptoms().setChestPain(SymptomState.YES);
 
 		// Add a new visit to the case
-		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate(), VisitStatus.COOPERATIVE);
+		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		visit.getSymptoms().setChestPain(SymptomState.NO);
 
