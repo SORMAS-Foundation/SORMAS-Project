@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
+import java.io.IOException;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Extension;
@@ -23,8 +25,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
-
-import java.io.IOException;
 
 @SuppressWarnings("serial")
 public class AbstractImportLayout extends VerticalLayout {
@@ -82,9 +82,11 @@ public class AbstractImportLayout extends VerticalLayout {
 			CssStyles.style(importTemplateComponent, CssStyles.VSPACE_2);
 			addComponent(importTemplateComponent);
 		} catch (IOException e) {
-			new Notification(I18nProperties.getString(Strings.headingTemplateNotAvailable),
-				I18nProperties.getString(Strings.messageTemplateNotAvailable), Notification.Type.ERROR_MESSAGE, false)
-				.show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingTemplateNotAvailable),
+				I18nProperties.getString(Strings.messageTemplateNotAvailable),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 		}
 	}
 

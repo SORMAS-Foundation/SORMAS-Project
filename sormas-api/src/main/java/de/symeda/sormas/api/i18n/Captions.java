@@ -287,6 +287,7 @@ public interface Captions {
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
+	String caseDocuments = "caseDocuments";
 	String caseEditData = "caseEditData";
 	String caseEvents = "caseEvents";
 	String caseEventsResetDateFilter = "caseEventsResetDateFilter";
@@ -700,6 +701,15 @@ public interface Captions {
 	String districtAllDistricts = "districtAllDistricts";
 	String districtArchivedDistricts = "districtArchivedDistricts";
 	String districtName = "districtName";
+	String DocumentTemplate = "DocumentTemplate";
+	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
+	String DocumentTemplate_exampleTemplateLibreOffice = "DocumentTemplate.exampleTemplateLibreOffice";
+	String DocumentTemplate_exampleTemplateWord = "DocumentTemplate.exampleTemplateWord";
+	String DocumentTemplate_plural = "DocumentTemplate.plural";
+	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
+	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";
+	String DocumentTemplate_QuarantineOrder_templates = "DocumentTemplate.QuarantineOrder.templates";
+	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
 	String EpiData = "EpiData";
 	String EpiData_animalCondition = "EpiData.animalCondition";
 	String EpiData_animalVaccinationStatus = "EpiData.animalVaccinationStatus";
@@ -1666,6 +1676,8 @@ public interface Captions {
 	String View_configuration_devMode_short = "View.configuration.devMode.short";
 	String View_configuration_districts = "View.configuration.districts";
 	String View_configuration_districts_short = "View.configuration.districts.short";
+	String View_configuration_documentTemplates = "View.configuration.documentTemplates";
+	String View_configuration_documentTemplates_short = "View.configuration.documentTemplates.short";
 	String View_configuration_facilities = "View.configuration.facilities";
 	String View_configuration_facilities_short = "View.configuration.facilities.short";
 	String View_configuration_laboratories = "View.configuration.laboratories";
@@ -1680,6 +1692,8 @@ public interface Captions {
 	String View_configuration_populationdata_short = "View.configuration.populationdata.short";
 	String View_configuration_regions = "View.configuration.regions";
 	String View_configuration_regions_short = "View.configuration.regions.short";
+	String View_configuration_templates = "View.configuration.templates";
+	String View_configuration_templates_short = "View.configuration.templates.short";
 	String View_configuration_userrights = "View.configuration.userrights";
 	String View_configuration_userrights_short = "View.configuration.userrights.short";
 	String View_contacts = "View.contacts";
