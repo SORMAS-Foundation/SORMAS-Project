@@ -77,6 +77,7 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -101,6 +102,10 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -163,6 +168,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -263,7 +272,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		final Root<Sample> sample = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(sample);
+		SampleJoins<Sample> joins = new SampleJoins<>(sample);
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
@@ -491,7 +500,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(sample);
+		SampleJoins<Sample> joins = new SampleJoins<>(sample);
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -688,7 +697,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(root);
+		SampleJoins<Sample> joins = new SampleJoins<>(root);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
 		if (sampleCriteria != null) {
@@ -779,10 +788,14 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasFacade.fromSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+		}
+
 		return target;
 	}
 
-	private SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer) {
+	public SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer) {
 
 		SampleDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer);
@@ -905,6 +918,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		target.setSormasToSormasOriginInfo(SormasToSormasFacadeEjb.toSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+
 		return target;
 	}
 
@@ -956,12 +972,7 @@ public class SampleFacadeEjb implements SampleFacade {
 							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
 							DataHelper.getShortUuid(newSample.getAssociatedEventParticipant().getUuid()));
 					}
-					messagingService.sendMessage(
-						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED),
-						messageContent,
-						MessageType.EMAIL,
-						MessageType.SMS);
+					messagingService.sendMessage(recipient, MessageSubject.LAB_SAMPLE_SHIPPED, messageContent, MessageType.EMAIL, MessageType.SMS);
 
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(
@@ -994,8 +1005,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	public Boolean isSampleEditAllowed(String sampleUuid) {
-
 		Sample sample = sampleService.getByUuid(sampleUuid);
-		return sampleJurisdictionChecker.isInJurisdictionOrOwned(sample);
+
+		if (sample.getSormasToSormasOriginInfo() != null) {
+			return sample.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return sampleJurisdictionChecker.isInJurisdictionOrOwned(sample) && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
 	}
 }

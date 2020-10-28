@@ -21,8 +21,8 @@ public class SormasToSormasApiConstants {
 
 	public static final String RESOURCE_PATH = "/sormasToSormas";
 
-	public static final String CASE_ENDPOINT = "/case";
+	public static final String CASE_ENDPOINT = "/cases";
 
-	public static final String CONTACT_ENDPOINT = "/contact";
+	public static final String CONTACT_ENDPOINT = "/contacts";
 
 }

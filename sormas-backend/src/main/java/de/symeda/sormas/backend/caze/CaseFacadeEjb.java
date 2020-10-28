@@ -175,6 +175,7 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -232,7 +233,6 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -365,8 +365,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
-	@EJB
-	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -1735,7 +1733,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				try {
 					messagingService.sendMessage(
 						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
+						MessageSubject.CASE_CLASSIFICATION_CHANGED,
 						String.format(
 							I18nProperties.getString(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
 							DataHelper.getShortUuid(newCase.getUuid()),
@@ -1765,7 +1763,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				try {
 					messagingService.sendMessage(
 						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_DISEASE_CHANGED),
+						MessageSubject.DISEASE_CHANGED,
 						String.format(
 							I18nProperties.getString(MessagingService.CONTENT_DISEASE_CHANGED),
 							DataHelper.getShortUuid(newCase.getUuid()),
@@ -2701,7 +2699,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			try {
 				messagingService.sendMessage(
 					recipient,
-					I18nProperties.getString(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
+					MessageSubject.CASE_INVESTIGATION_DONE,
 					String
 						.format(I18nProperties.getString(MessagingService.CONTENT_CASE_INVESTIGATION_DONE), DataHelper.getShortUuid(caze.getUuid())),
 					MessageType.EMAIL,
@@ -3107,10 +3105,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	public Boolean isCaseEditAllowed(String caseUuid) {
 		Case caze = caseService.getByUuid(caseUuid);
 
-		if (caze.getSormasToSormasOriginInfo() != null) {
-			return caze.getSormasToSormasOriginInfo().isOwnershipHandedOver();
-		}
-
-		return caseJurisdictionChecker.isInJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
+		return caseService.isCaseEditAllowed(caze);
 	}
 }

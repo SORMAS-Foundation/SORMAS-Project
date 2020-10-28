@@ -15,11 +15,19 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.vaadin.ui.GridLayout;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -32,10 +40,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import java.util.Objects;
 
 public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataDto> {
 
@@ -101,9 +105,23 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 				if(Objects.nonNull(area) && cbRegion.isEmpty()) {
 					cbRegion.removeAllItems();
-					cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea((area.getUuid())));
+					cbRegion.addItems(
+						FacadeProvider.getRegionFacade()
+							.getAllActiveByArea((area.getUuid()))
+							.stream()
+							.sorted(Comparator.comparing(RegionReferenceDto::getCaption))
+							.collect(Collectors.toList()));
 				} else if(Objects.isNull(area)){
 					cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				} else {
+					cbRegion.setValue(null);
+					cbRegion.removeAllItems();
+					cbRegion.addItems(
+						FacadeProvider.getRegionFacade()
+							.getAllActiveByArea((area.getUuid()))
+							.stream()
+							.sorted(Comparator.comparing(RegionReferenceDto::getCaption))
+							.collect(Collectors.toList()));
 				}
 			});
 			cbRegion.addValueChangeListener(e -> {

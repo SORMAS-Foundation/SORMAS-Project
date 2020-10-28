@@ -28,8 +28,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Path(SormasToSormasApiConstants.RESOURCE_PATH)
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -39,11 +39,11 @@ public class SormasToSormasResource {
 
 	@POST
 	@Path(SormasToSormasApiConstants.CASE_ENDPOINT)
-	public Response saveSharedCase(SormasToSormasEncryptedDataDto sharedCase) {
+	public Response saveSharedCase(SormasToSormasEncryptedDataDto sharedCases) {
 		try {
-			FacadeProvider.getSormasToSormasFacade().saveSharedCase(sharedCase);
-		} catch (ValidationRuntimeException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getMessage())).build();
+			FacadeProvider.getSormasToSormasFacade().saveSharedCases(sharedCases);
+		} catch (SormasToSormasValidationException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
 		} catch (SormasToSormasException e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 		}
@@ -53,11 +53,11 @@ public class SormasToSormasResource {
 
 	@POST
 	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
-	public Response saveSharedContact(SormasToSormasEncryptedDataDto sharedContact) {
+	public Response saveSharedContact(SormasToSormasEncryptedDataDto sharedContacts) {
 		try {
-			FacadeProvider.getSormasToSormasFacade().saveSharedContact(sharedContact);
-		} catch (ValidationRuntimeException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getMessage())).build();
+			FacadeProvider.getSormasToSormasFacade().saveSharedContacts(sharedContacts);
+		} catch (SormasToSormasValidationException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
 		} catch (SormasToSormasException e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 		}

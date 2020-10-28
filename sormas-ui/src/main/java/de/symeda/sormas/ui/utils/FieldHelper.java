@@ -41,10 +41,7 @@ import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
 
 public final class FieldHelper {
 
@@ -56,7 +53,7 @@ public final class FieldHelper {
 		FieldGroup fieldGroup,
 		Object targetPropertyId,
 		Object sourcePropertyId,
-		List<Object> sourceValues,
+		List<?> sourceValues,
 		boolean clearOnReadOnly,
 		boolean readOnlyWhenNull) {
 
@@ -66,9 +63,9 @@ public final class FieldHelper {
 	@SuppressWarnings("rawtypes")
 	public static void setReadOnlyWhen(
 		final FieldGroup fieldGroup,
-		List<Object> targetPropertyIds,
+		List<?> targetPropertyIds,
 		Object sourcePropertyId,
-		final List<Object> sourceValues,
+		final List<?> sourceValues,
 		final boolean clearOnReadOnly,
 		boolean readOnlyWhenNull) {
 
@@ -127,7 +124,7 @@ public final class FieldHelper {
 		FieldGroup fieldGroup,
 		String targetPropertyId,
 		Object sourcePropertyId,
-		List<Object> sourceValues,
+		List<?> sourceValues,
 		boolean clearOnHidden) {
 
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden);
@@ -138,7 +135,7 @@ public final class FieldHelper {
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
 		Object sourcePropertyId,
-		final List<Object> sourceValues,
+		final List<?> sourceValues,
 		final boolean clearOnHidden) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
@@ -151,7 +148,7 @@ public final class FieldHelper {
 		FieldGroup fieldGroup,
 		String targetPropertyId,
 		Field sourceField,
-		List<Object> sourceValues,
+		List<?> sourceValues,
 		boolean clearOnHidden) {
 
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourceField, sourceValues, clearOnHidden);
@@ -162,7 +159,7 @@ public final class FieldHelper {
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
 		Field sourceField,
-		final List<Object> sourceValues,
+		final List<?> sourceValues,
 		final boolean clearOnHidden) {
 
 		final List<? extends Field<?>> targetFields = targetPropertyIds.stream().map(id -> fieldGroup.getField(id)).collect(Collectors.toList());
@@ -171,7 +168,7 @@ public final class FieldHelper {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(Field sourceField, List<? extends Field<?>> targetFields, List<Object> sourceValues, boolean clearOnHidden) {
+	public static void setVisibleWhen(Field sourceField, List<? extends Field<?>> targetFields, List<?> sourceValues, boolean clearOnHidden) {
 		if (sourceField != null) {
 			if (sourceField instanceof AbstractField<?>) {
 				((AbstractField) sourceField).setImmediate(true);
@@ -220,7 +217,7 @@ public final class FieldHelper {
 	public static void setVisibleWhen(
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
-		Map<Object, List<Object>> sourcePropertyIdsAndValues,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
 		final boolean clearOnHidden) {
 
 		onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, clearOnHidden);
@@ -234,7 +231,7 @@ public final class FieldHelper {
 	public static void setVisibleWhen(
 		final FieldGroup fieldGroup,
 		String targetPropertyId,
-		Map<Object, List<Object>> sourcePropertyIdsAndValues,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
 		final boolean clearOnHidden) {
 
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, clearOnHidden);
@@ -243,7 +240,7 @@ public final class FieldHelper {
 	private static void onValueChangedSetVisible(
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
-		Map<Object, List<Object>> sourcePropertyIdsAndValues,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
 		final boolean clearOnHidden) {
 
 		//a workaround variable to be modified in the forEach lambda
@@ -267,11 +264,7 @@ public final class FieldHelper {
 		}
 	}
 
-	public static void setRequiredWhen(
-		FieldGroup fieldGroup,
-		Object sourcePropertyId,
-		List<String> targetPropertyIds,
-		final List<Object> sourceValues) {
+	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId, List<String> targetPropertyIds, final List<?> sourceValues) {
 
 		setRequiredWhen(fieldGroup, fieldGroup.getField(sourcePropertyId), targetPropertyIds, sourceValues);
 	}
@@ -281,7 +274,7 @@ public final class FieldHelper {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, List<String> targetPropertyIds, final List<Object> sourceValues) {
+	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, List<String> targetPropertyIds, final List<?> sourceValues) {
 		setRequiredWhen(fieldGroup, sourceField, targetPropertyIds, sourceValues, false, null);
 	}
 
@@ -290,7 +283,7 @@ public final class FieldHelper {
 		FieldGroup fieldGroup,
 		Field sourceField,
 		List<String> targetPropertyIds,
-		final List<Object> sourceValues,
+		final List<?> sourceValues,
 		Disease disease) {
 		setRequiredWhen(fieldGroup, sourceField, targetPropertyIds, sourceValues, false, disease);
 	}
@@ -306,7 +299,7 @@ public final class FieldHelper {
 		FieldGroup fieldGroup,
 		Field sourceField,
 		List<String> targetPropertyIds,
-		final List<Object> sourceValues,
+		final List<?> sourceValues,
 		boolean requiredWhenNot,
 		Disease disease) {
 
@@ -319,7 +312,7 @@ public final class FieldHelper {
 	public static void setRequiredWhen(
 		Field sourceField,
 		List<? extends Field<?>> targetFields,
-		List<Object> sourceValues,
+		List<?> sourceValues,
 		boolean requiredWhenNot,
 		Disease disease) {
 
@@ -369,8 +362,8 @@ public final class FieldHelper {
 	public static void setEnabledWhen(
 		FieldGroup fieldGroup,
 		Field sourceField,
-		final List<Object> sourceValues,
-		List<Object> targetPropertyIds,
+		final List<?> sourceValues,
+		List<?> targetPropertyIds,
 		boolean clearOnDisabled) {
 
 		if (sourceField instanceof AbstractField<?>) {
@@ -507,7 +500,7 @@ public final class FieldHelper {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void addSoftRequiredStyleWhen(Field<?> sourceField, List<Field<?>> targetFields, final List<Object> sourceValues) {
+	public static void addSoftRequiredStyleWhen(Field<?> sourceField, List<Field<?>> targetFields, final List<?> sourceValues) {
 
 		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
@@ -542,7 +535,7 @@ public final class FieldHelper {
 		FieldGroup fieldGroup,
 		Field sourceField,
 		List<String> targetPropertyIds,
-		final List<Object> sourceValues,
+		final List<?> sourceValues,
 		Disease disease) {
 
 		if (sourceField instanceof AbstractField<?>) {
@@ -596,7 +589,8 @@ public final class FieldHelper {
 	}
 
 	public static Collection<Enum<?>> getVisibleEnumItems(Class<Enum<?>> enumClass, FieldVisibilityCheckers checkers) {
-		return Arrays.stream(enumClass.getEnumConstants()).filter(constant -> checkers.isVisible(enumClass, constant.name()))
+		return Arrays.stream(enumClass.getEnumConstants())
+			.filter(constant -> checkers.isVisible(enumClass, constant.name()))
 			.collect(Collectors.toList());
 	}
 }
