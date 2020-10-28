@@ -31,13 +31,13 @@ public class CaseFollowUpDto extends FollowUpDto {
 	private final CaseJurisdictionDto jurisdiction;
 
 	//@formatter:off
-	public CaseFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
+	public CaseFollowUpDto(String uuid, String personFirstName, String personLastName,
 							  Date reportDate, Date symptomsOnsetDate, Date followUpUntil, Disease disease,
 							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid,
 							  String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//formatter:on
-		super(uuid, personUuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
+		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
 		this.symptomsOnsetDate = symptomsOnsetDate;
 		this.jurisdiction = new CaseJurisdictionDto(
 				caseReportingUserUuid,

@@ -378,14 +378,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getFieldGroup(),
 			Arrays.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
 			CaseDataDto.QUARANTINE,
-			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+			QuarantineType.QUARANTINE_IN_EFFECT,
 			true);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY) || isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				CaseDataDto.QUARANTINE,
-				Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+				QuarantineType.QUARANTINE_IN_EFFECT,
 				true);
 		}
 		FieldHelper.setVisibleWhen(
@@ -1294,7 +1294,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private void onValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
-		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
 			CaseDataDto caze = this.getInternalValue();
 			if (caze != null) {
 				quarantineFrom.setValue(caze.getQuarantineFrom());

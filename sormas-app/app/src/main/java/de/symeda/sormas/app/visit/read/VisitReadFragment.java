@@ -17,6 +17,7 @@ package de.symeda.sormas.app.visit.read;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -53,5 +54,10 @@ public class VisitReadFragment extends BaseReadFragment<FragmentVisitReadLayoutB
 	@Override
 	public int getReadLayout() {
 		return R.layout.fragment_visit_read_layout;
+	}
+
+	@Override
+	public boolean showEditAction() {
+		return VisitOrigin.USER.equals(record.getOrigin());
 	}
 }

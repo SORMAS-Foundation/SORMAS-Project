@@ -44,6 +44,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -94,6 +95,8 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
+import de.symeda.sormas.backend.docgeneration.TemplateEngineService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -169,6 +172,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_week FOR \"de.symeda.sormas.backend.H2Function.epi_week\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_year FOR \"de.symeda.sormas.backend.H2Function.epi_year\"");
+		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE ALIAS similarity_operator FOR \"de.symeda.sormas.backend.H2Function.similarity_operator\"");
+		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
 		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -456,6 +463,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
+	}
+
+	public TemplateEngineService getTemplateEngineService() {
+		return getBean(TemplateEngineService.class);
+	}
+
+	public QuarantineOrderFacade getQuarantineOrderFacade() {
+		return getBean(QuarantineOrderFacadeEjb.class);
 	}
 
 	public BAGExportFacade getBAGExportFacade() {

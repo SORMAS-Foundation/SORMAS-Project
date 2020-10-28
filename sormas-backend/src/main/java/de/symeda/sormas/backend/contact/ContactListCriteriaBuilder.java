@@ -111,6 +111,7 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.CONTACT_STATUS),
 			contact.get(Contact.FOLLOW_UP_STATUS),
 			contact.get(Contact.FOLLOW_UP_UNTIL),
+			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			joins.getContactOfficer().get(User.UUID),
 			joins.getReportingUser().get(User.UUID),
 			contact.get(Contact.REPORT_DATE_TIME),
@@ -143,6 +144,7 @@ public class ContactListCriteriaBuilder {
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:
 		case ContactIndexDto.PERSON_LAST_NAME:
+		case ContactIndexDto.SYMPTOM_JOURNAL_STATUS:
 			expressions.add(joins.getPerson().get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.CAZE:

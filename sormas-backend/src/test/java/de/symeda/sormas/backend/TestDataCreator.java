@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -522,15 +523,15 @@ public class TestDataCreator {
 	}
 
 	public VisitDto createVisit(Disease disease, PersonReferenceDto person) {
-		return createVisit(disease, person, new Date(), VisitStatus.COOPERATIVE);
+		return createVisit(disease, person, new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 	}
 
 	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime) {
-		return createVisit(disease, person, visitDateTime, VisitStatus.COOPERATIVE);
+		return createVisit(disease, person, visitDateTime, VisitStatus.COOPERATIVE, VisitOrigin.USER);
 	}
 
-	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus) {
-		return createVisit(disease, person, visitDateTime, visitStatus, null);
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus, VisitOrigin visitOrigin) {
+		return createVisit(disease, person, visitDateTime, visitStatus, visitOrigin, null);
 	}
 
 	public VisitDto createVisit(
@@ -538,8 +539,9 @@ public class TestDataCreator {
 		PersonReferenceDto person,
 		Date visitDateTime,
 		VisitStatus visitStatus,
+		VisitOrigin visitOrigin,
 		Consumer<VisitDto> customConfig) {
-		VisitDto visit = VisitDto.build(person, disease);
+		VisitDto visit = VisitDto.build(person, disease, visitOrigin);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
 
@@ -656,6 +658,14 @@ public class TestDataCreator {
 	}
 
 	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
+		return createSample(associatedCase, reportingUser, lab, null);
+	}
+
+	public SampleDto createSample(
+		CaseReferenceDto associatedCase,
+		UserReferenceDto reportingUser,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customSettings) {
 
 		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
 		sample.setSampleDateTime(new Date());
@@ -663,6 +673,10 @@ public class TestDataCreator {
 		sample.setSampleMaterial(SampleMaterial.BLOOD);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		if (customSettings != null) {
+			customSettings.accept(sample);
+		}
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
 
@@ -758,6 +772,28 @@ public class TestDataCreator {
 		sample.setLab(lab);
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
+		return sample;
+	}
+
+	public SampleDto createSample(
+		ContactReferenceDto associatedContact,
+		UserReferenceDto reportingUser,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customSettings) {
+
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(new Date());
+		sample.setReportDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		if (customSettings != null) {
+			customSettings.accept(sample);
+		}
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
 		return sample;
 	}
 

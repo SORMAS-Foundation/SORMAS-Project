@@ -84,6 +84,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -111,6 +112,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private EpiDataService epiDataService;
 	@EJB
 	private HealthConditionsService healthConditionsService;
+
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private ContactJurisdictionChecker contactJurisdictionChecker;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1160,6 +1166,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return cb.and(cb.or(cb.isNull(root.get(Contact.CAZE)), cb.isFalse(caze.get(Case.ARCHIVED))), cb.isFalse(root.get(Contact.DELETED)));
 	}
 
+	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Join<?, Contact> contactJoin) {
+
+		Join<Contact, Case> caze = contactJoin.join(Contact.CAZE, JoinType.LEFT);
+		return cb
+			.and(cb.or(cb.isNull(contactJoin.get(Contact.CAZE)), cb.isFalse(caze.get(Case.ARCHIVED))), cb.isFalse(contactJoin.get(Contact.DELETED)));
+	}
+
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do
 	 * not use {@link ContactCriteria}. This essentially removes
@@ -1234,5 +1247,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			jurisdictionPredicate = cb.disjunction();
 		}
 		return cb.or(reportedByCurrentUser, contactCaseInJurisdiction, jurisdictionPredicate);
+	}
+
+	public boolean isContactEditAllowed(Contact contact) {
+		if (contact.getSormasToSormasOriginInfo() != null) {
+			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
 }

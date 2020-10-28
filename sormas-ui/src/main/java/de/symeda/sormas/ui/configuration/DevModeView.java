@@ -33,6 +33,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -578,7 +579,7 @@ public class DevModeView extends AbstractConfigurationView {
 					}
 
 					for (LocalDateTime date : followUpDates) {
-						VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease());
+						VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease(), VisitOrigin.USER);
 						fillEntity(visit, date);
 						visit.setVisitUser(userReference);
 						visit.setVisitDateTime(DateHelper8.toDate(date));

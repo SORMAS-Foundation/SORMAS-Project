@@ -227,12 +227,15 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(export2.getPathogenTestType3(), is("Confidential"));
 		assertThat(export2.getOtherPathogenTestsDetails(), is("2020-06-10 (Confidential, COVID-19, Pending)"));
 
-		// export contact sample not yet implemented
-		Optional<SampleExportDto> export3 = exportList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst();
-		assertThat(export3.isPresent(), is(false));
+		SampleExportDto export3 = exportList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst().get();
+		assertThat(export3.getAssociatedContact().getContactName().getFirstName(), is("John"));
+		assertThat(export3.getAssociatedContact().getContactName().getLastName(), is("Smith"));
+		assertThat(export3.getLab(), is("Lab"));
 
-		Optional<SampleExportDto> export4 = exportList.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst();
-		assertThat(export4.isPresent(), is(false));
+		SampleExportDto export4 = exportList.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst().get();
+		assertThat(export4.getAssociatedContact().getContactName().getFirstName(), is("Confidential"));
+		assertThat(export4.getAssociatedContact().getContactName().getLastName(), is("Confidential"));
+		assertThat(export4.getLab(), is("Lab"));
 	}
 
 	private void createPathogenTest(SampleDto sample, UserDto user) {
@@ -359,6 +362,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private SampleDto createContactSample(ContactDto contactDto) {
 		Facility lab = new Facility();
+		lab.setName("Lab");
 		getFacilityService().persist(lab);
 
 		return creator.createSample(contactDto.toReference(), new Date(), new Date(), user1.toReference(), SampleMaterial.BLOOD, lab);

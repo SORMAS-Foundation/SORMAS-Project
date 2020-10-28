@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -114,6 +116,9 @@ public class Person extends AbstractDomainObject {
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String PERSON_CASES = "personCases";
+	public static final String PERSON_CONTACTS = "personContacts";
+	public static final String PERSON_EVENT_PARTICIPANTS = "personEventParticipants";
 
 	private String firstName;
 	private String lastName;
@@ -175,6 +180,10 @@ public class Person extends AbstractDomainObject {
 
 	private Set<EventParticipant> eventParticipants = new HashSet<>();
 	private Set<Contact> contacts = new HashSet<>();
+
+	private List<Case> personCases;
+	private List<Contact> personContacts;
+	private List<EventParticipant> personEventParticipants;
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -613,6 +622,33 @@ public class Person extends AbstractDomainObject {
 	@OneToMany(cascade = {}, mappedBy = EventParticipant.PERSON, fetch = FetchType.LAZY)
 	public Set<EventParticipant> getEventParticipants() {
 		return eventParticipants;
+	}
+
+	@OneToMany(mappedBy = Case.PERSON, fetch = FetchType.LAZY)
+	public List<Case> getPersonCases() {
+		return personCases;
+	}
+
+	public void setPersonCases(List<Case> personCases) {
+		this.personCases = personCases;
+	}
+
+	@OneToMany(mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
+	public List<Contact> getPersonContacts() {
+		return personContacts;
+	}
+
+	public void setPersonContacts(List<Contact> personContacts) {
+		this.personContacts = personContacts;
+	}
+
+	@OneToMany(mappedBy = EventParticipant.PERSON, fetch = FetchType.LAZY)
+	public List<EventParticipant> getPersonEventParticipants() {
+		return personEventParticipants;
+	}
+
+	public void setPersonEventParticipants(List<EventParticipant> personEventParticipants) {
+		this.personEventParticipants = personEventParticipants;
 	}
 
 	public void setContacts(Set<Contact> contacts) {
