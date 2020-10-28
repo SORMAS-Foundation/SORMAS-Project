@@ -28,6 +28,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
 @LocalBean
@@ -52,7 +53,15 @@ public class SormasToSormasShareInfoService extends AbstractAdoService<SormasToS
 
 		if (criteria.getContact() != null) {
 			filter =
-				and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.CONTACT, JoinType.LEFT).get(Case.UUID), criteria.getContact().getUuid()));
+				and(
+					cb,
+					filter,
+					cb.equal(from.join(SormasToSormasShareInfo.CONTACT, JoinType.LEFT).get(Contact.UUID), criteria.getContact().getUuid()));
+		}
+
+		if (criteria.getSample() != null) {
+			filter =
+				and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.SAMPLE, JoinType.LEFT).get(Sample.UUID), criteria.getSample().getUuid()));
 		}
 
 		return filter;
@@ -69,5 +78,11 @@ public class SormasToSormasShareInfoService extends AbstractAdoService<SormasToS
 			(cb, root) -> cb.and(
 				cb.equal(root.get(SormasToSormasShareInfo.CONTACT), contact),
 				cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+	}
+
+	public boolean isSamlpeOwnershipHandedOver(Sample sample) {
+		return exists(
+			(cb, root) -> cb
+				.and(cb.equal(root.get(SormasToSormasShareInfo.SAMPLE), sample), cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 	}
 }

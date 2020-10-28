@@ -143,12 +143,12 @@ public class CaseDataView extends AbstractCaseView {
 		eventLayout.addComponent(eventList);
 		layout.addComponent(eventLayout, EVENTS_LOC);
 
-		VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
-		sormasToSormasLocLayout.setMargin(false);
-		sormasToSormasLocLayout.setSpacing(false);
-
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {
+			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+			sormasToSormasLocLayout.setMargin(false);
+			sormasToSormasLocLayout.setSpacing(false);
+
 			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(caze, sormasToSormasEnabled);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);

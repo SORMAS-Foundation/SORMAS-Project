@@ -212,12 +212,12 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
-		sormasToSormasLocLayout.setMargin(false);
-		sormasToSormasLocLayout.setSpacing(false);
-
 		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null) {
+			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+			sormasToSormasLocLayout.setMargin(false);
+			sormasToSormasLocLayout.setSpacing(false);
+
 			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, sormasToSormasfeatureEnabled);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);

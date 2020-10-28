@@ -33,6 +33,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.ORGANIZATION)
 		+ fluidRowLocs(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS)
+		+ fluidRowLocs(SormasToSormasOptionsDto.WITH_SAMPLES)
 		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA)
@@ -66,6 +67,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		if (forCase) {
 			addField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS);
 		}
+
+		addField(SormasToSormasOptionsDto.WITH_SAMPLES);
 
 		addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
 
