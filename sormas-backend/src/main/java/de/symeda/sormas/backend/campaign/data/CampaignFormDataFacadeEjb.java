@@ -500,7 +500,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 
-		Predicate filter = campaignFormDataService.createCriteriaFilter(criteria, cb, root);
+		Predicate filter = AbstractAdoService
+				.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
 		}
