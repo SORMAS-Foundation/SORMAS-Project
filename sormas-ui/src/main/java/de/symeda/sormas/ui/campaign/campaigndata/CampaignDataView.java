@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.naming.NamingException;
@@ -47,8 +48,10 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.importer.CampaignImportLayout;
-import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardDataProvider;
-import de.symeda.sormas.ui.utils.*;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
@@ -59,7 +62,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
 	private Button importCampaignButton;
-	private com.vaadin.v7.ui.ComboBox campaignCombo;
+	private ComboBox campaignCombo;
 	protected OptionGroup campaignFormElementImportance;
 
 	public static final String ONLY_IMPORTANT_FORM_ELEMENTS = "onlyImportantFormElements";
@@ -70,17 +73,15 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
-		campaignCombo = new com.vaadin.v7.ui.ComboBox(" ");
+		campaignCombo = new ComboBox(" ");
 		List<CampaignReferenceDto> campaigns = FacadeProvider.getCampaignFacade().getAllCampaignsAsReference();
-		campaignCombo.addItems(campaigns);
-		final CampaignReferenceDto lastStartedCampaign = new CampaignDashboardDataProvider().getLastStartedCampaign();
-		if (lastStartedCampaign != null) {
-			if (campaigns.contains(lastStartedCampaign)) {
-				campaignCombo.setValue(lastStartedCampaign);
-			}
+		campaignCombo.setItems(campaigns);
+		final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
+		if (lastStartedCampaign != null && campaigns.contains(lastStartedCampaign)) {
+			campaignCombo.setValue(lastStartedCampaign);
 		}
 		criteria.setCampaign((CampaignReferenceDto) campaignCombo.getValue());
-		FieldHelper.addSoftRequiredStyle(campaignCombo);
+		CssStyles.style(campaignCombo, CssStyles.SOFT_REQUIRED);
 		addHeaderComponent(campaignCombo);
 		grid = new CampaignDataGrid(criteria);
 
@@ -92,7 +93,6 @@ public class CampaignDataView extends AbstractCampaignView {
 		filtersLayout.setSpacing(true);
 
 		CampaignFormDataFilterForm filterBar = createFilterBar();
-		filterBar.setCbCampaign(campaignCombo);
 		filtersLayout.addComponent(filterBar);
 		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterBar, 0.8f);
@@ -172,8 +172,10 @@ public class CampaignDataView extends AbstractCampaignView {
 		campaignCombo.addValueChangeListener(e -> {
 			importFormLayout.removeAllComponents();
 			newFormLayout.removeAllComponents();
-			createImportLayout(importFormLayout);
-			createNewFormLayout(newFormLayout);
+			if (!Objects.isNull(campaignCombo.getValue())) {
+				createImportLayout(importFormLayout);
+				createNewFormLayout(newFormLayout);
+			}
 		});
 		addComponent(mainLayout);
 	}
@@ -224,7 +226,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	public CampaignFormDataFilterForm createFilterBar() {
-		filterForm = new CampaignFormDataFilterForm(campaignCombo);
+		filterForm = new CampaignFormDataFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter()) {
 				navigateTo(null);

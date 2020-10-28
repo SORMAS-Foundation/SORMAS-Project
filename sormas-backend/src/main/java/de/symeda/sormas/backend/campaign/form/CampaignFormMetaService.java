@@ -5,12 +5,10 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
-import de.symeda.sormas.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
@@ -55,14 +53,11 @@ public class CampaignFormMetaService extends AbstractAdoService<CampaignFormMeta
 	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormMetaReferenceDto> cq = cb.createQuery(CampaignFormMetaReferenceDto.class);
-		Root<CampaignFormData> campaignFormMetaRoot = cq.from(CampaignFormData.class);
-		Join<CampaignFormMeta, CampaignFormData> formJoin = campaignFormMetaRoot.join(CampaignFormData.CAMPAIGN_FORM_META);
-		Join<CampaignFormData, Campaign> campaignJoin = campaignFormMetaRoot.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
-		Predicate filter = cb.equal(campaignJoin.get(Campaign.UUID), uuid);
+		Root<Campaign> campaignRoot = cq.from(Campaign.class);
+		Join<CampaignFormMeta, Campaign> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
+		Predicate filter = cb.equal(campaignRoot.get(Campaign.UUID), uuid);
 		cq = cq.where(filter);
-		cq.multiselect(formJoin.get(CampaignFormMeta.UUID), formJoin.get(CampaignFormMeta.FORM_NAME));
-		TypedQuery query = em.createQuery(cq);
-		List<CampaignFormMetaReferenceDto> result = query.getResultList();
-		return result;
+		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID), campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
+		return em.createQuery(cq).getResultList();
 	}
 }
