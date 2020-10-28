@@ -50,8 +50,10 @@ public final class CSVUtils {
 	}
 
 	/**
-	 * Extension of the {@link CSVWriter} which sanitizes each element of the CSV to prevent CSV Injection
-	 * @see  <a href="https://owasp.org/www-community/attacks/CSV_Injection">CSV Injection</a>
+	 * Extension of the {@link CSVWriter} which sanitizes each element of the CSV to prevent CSV Injection.
+	 * Implementation based on version 5.3 of opencsv.
+	 * 
+	 * @see <a href="https://owasp.org/www-community/attacks/CSV_Injection">CSV Injection</a>
 	 */
 	public static class SafeCSVWriter extends CSVWriter {
 
@@ -81,17 +83,15 @@ public final class CSVUtils {
 					continue;
 				}
 
-				boolean stringContainsSpecialCharacters = stringContainsSpecialCharacters(nextElement);
-				boolean containsFormula = formulaPattern.matcher(nextElement).matches();
-				boolean isQuoteCharacterNeeded = (applyQuotesToAll || stringContainsSpecialCharacters) && quotechar != NO_QUOTE_CHARACTER;
+				Boolean stringContainsSpecialCharacters = stringContainsSpecialCharacters(nextElement);
 
-				if (isQuoteCharacterNeeded) {
-					appendable.append(quotechar);
-				}
+				appendQuoteCharacterIfNeeded(applyQuotesToAll, appendable, stringContainsSpecialCharacters);
 
-				if(containsFormula) {
+				// begin code change from parent code
+				if(formulaPattern.matcher(nextElement).matches()) {
 					appendable.append(FORMULA_PREFIX);
 				}
+				// end
 
 				if (stringContainsSpecialCharacters) {
 					processLine(nextElement, appendable);
@@ -99,14 +99,18 @@ public final class CSVUtils {
 					appendable.append(nextElement);
 				}
 
-
-				if (isQuoteCharacterNeeded) {
-					appendable.append(quotechar);
-				}
+				appendQuoteCharacterIfNeeded(applyQuotesToAll, appendable, stringContainsSpecialCharacters);
 			}
 
 			appendable.append(lineEnd);
 			writer.write(appendable.toString());
+		}
+
+		// Copied from the parent class since it's access modifier was private
+		private void appendQuoteCharacterIfNeeded(boolean applyQuotesToAll, Appendable appendable, Boolean stringContainsSpecialCharacters) throws IOException {
+			if ((applyQuotesToAll || stringContainsSpecialCharacters) && quotechar != NO_QUOTE_CHARACTER) {
+				appendable.append(quotechar);
+			}
 		}
 	}
 }
