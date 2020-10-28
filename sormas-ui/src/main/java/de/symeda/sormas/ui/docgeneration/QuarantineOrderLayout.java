@@ -137,10 +137,8 @@ public class QuarantineOrderLayout extends VerticalLayout {
 		StreamResource streamResource = new StreamResource((StreamSource) () -> {
 			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 			try {
-				ByteArrayInputStream byteArrayInputStream =
-					new ByteArrayInputStream(quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto, readAdditionalVariables()));
-				closeWindow();
-				return byteArrayInputStream;
+				return new ByteArrayInputStream(
+					quarantineOrderFacade.getGeneratedDocument(templateFile, caseReferenceDto, readAdditionalVariables()));
 			} catch (IOException | IllegalArgumentException e) {
 				new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 				return null;
