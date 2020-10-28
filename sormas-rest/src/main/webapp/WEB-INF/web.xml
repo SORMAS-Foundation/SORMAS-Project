@@ -6,11 +6,6 @@
 	version="3.1">
 	
 	<display-name>SORMAS Rest Interface</display-name>
-	<context-param>
-		<description>Vaadin Production Mode</description>
-		<param-name>productionMode</param-name>
-		<param-value>true</param-value>
-	</context-param>
 
 	<security-role>
 		<role-name>USER</role-name>

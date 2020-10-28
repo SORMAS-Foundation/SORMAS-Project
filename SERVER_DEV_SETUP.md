@@ -52,8 +52,8 @@ If you are doing active development on Keycloak (themes, authentication mechanis
 
 ## VAADIN Debug Mode
 
-To enable [VAADIN Debug Mode](https://vaadin.com/docs/v8/framework/advanced/advanced-debug.html), go to ``sormas-ui/src/main/webapp/WEB-INF/web.xml`` and ``sormas-rest/src/main/webapp/WEB-INF/web.xml`` and set ``productionMode`` to ``false``.
-Make sure not to commit your changes to these files, for example by using .gitignore.
+To enable [VAADIN Debug Mode](https://vaadin.com/docs/v8/framework/advanced/advanced-debug.html), go to ``sormas-ui/src/main/webapp/WEB-INF/web.xml`` and set ``productionMode`` to ``false``.
+Make sure not to commit your changes to these files, for example by using .gitignore. To access the debug Window, got to <url>/sormas-ui/?debug. You may need to log in as admin once first.
 
 ## Other components
 
