@@ -70,6 +70,11 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			templateFileName = "sormas_import_population_data_template.csv";
 			fileNameAddition = "_population_data_import_";
 			break;
+		case COUNTRY:
+			templateFilePath = FacadeProvider.getImportFacade().getCountryImportTemplateFilePath();
+			templateFileName = "sormas_import_country_template.csv";
+			fileNameAddition = "_country_import_";
+			break;
 		case REGION:
 			templateFilePath = FacadeProvider.getImportFacade().getRegionImportTemplateFilePath();
 			templateFileName = "sormas_import_region_template.csv";
@@ -112,6 +117,9 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 						break;
 					case POPULATION_DATA:
 						importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue());
+						break;
+					case COUNTRY:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COUNTRY);
 						break;
 					case REGION:
 						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION);

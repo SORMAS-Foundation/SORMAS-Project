@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import de.symeda.sormas.api.region.CountryDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
@@ -68,6 +69,9 @@ public class InfrastructureImporter extends DataImporter {
 		case POINT_OF_ENTRY:
 			newEntityDto = PointOfEntryDto.build();
 			break;
+		case COUNTRY:
+			newEntityDto = CountryDto.build();
+			break;
 		case REGION:
 			newEntityDto = RegionDto.build();
 			break;
@@ -107,6 +111,9 @@ public class InfrastructureImporter extends DataImporter {
 					break;
 				case POINT_OF_ENTRY:
 					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto);
+					break;
+				case COUNTRY:
+					FacadeProvider.getCountryFacade().saveCountry((CountryDto) newEntityDto);
 					break;
 				case REGION:
 					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto);

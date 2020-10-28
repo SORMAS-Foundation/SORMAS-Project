@@ -57,7 +57,7 @@ public class CountriesView extends AbstractConfigurationView {
 	protected Button importButton;
 	private MenuBar bulkOperationsDropdown;
 
-	protected CountriesView() {
+	public CountriesView() {
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(CountriesView.class).get(ViewConfiguration.class);

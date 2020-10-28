@@ -67,6 +67,8 @@ public interface ImportFacade {
 
 	String getAreaImportTemplateFilePath();
 
+	String getCountryImportTemplateFilePath();
+
 	String getRegionImportTemplateFilePath();
 
 	String getDistrictImportTemplateFilePath();

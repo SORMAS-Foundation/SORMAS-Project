@@ -51,6 +51,7 @@ public interface Strings {
 	String confirmationArchiveCommunities = "confirmationArchiveCommunities";
 	String confirmationArchiveCommunity = "confirmationArchiveCommunity";
 	String confirmationArchiveCountries = "confirmationArchiveCountries";
+	String confirmationArchiveCountry = "confirmationArchiveCountry";
 	String confirmationArchiveDistrict = "confirmationArchiveDistrict";
 	String confirmationArchiveDistricts = "confirmationArchiveDistricts";
 	String confirmationArchiveEvent = "confirmationArchiveEvent";
@@ -74,6 +75,7 @@ public interface Strings {
 	String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
 	String confirmationDearchiveCommunity = "confirmationDearchiveCommunity";
 	String confirmationDearchiveCountries = "confirmationDearchiveCountries";
+	String confirmationDearchiveCountry = "confirmationDearchiveCountry";
 	String confirmationDearchiveDistrict = "confirmationDearchiveDistrict";
 	String confirmationDearchiveDistricts = "confirmationDearchiveDistricts";
 	String confirmationDearchiveEvent = "confirmationDearchiveEvent";
@@ -828,6 +830,8 @@ public interface Strings {
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
+	String messageCountriesArchived = "messageCountriesArchived";
+	String messageCountriesDearchived = "messageCountriesDearchived";
 	String messageCountryArchived = "messageCountryArchived";
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";

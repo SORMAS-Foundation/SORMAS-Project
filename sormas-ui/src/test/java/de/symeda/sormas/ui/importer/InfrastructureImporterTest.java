@@ -8,9 +8,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import com.opencsv.exceptions.CsvValidationException;
+import de.symeda.sormas.api.region.CountryCriteria;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -28,7 +31,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
-import org.mockito.junit.MockitoJUnitRunner;
 
 //Using Silent Runner to ignore unnecessary stubbing exception
 //which is a side effect of extending AbstractBeanTest
@@ -40,9 +42,15 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
+		// Import country
+		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").getFile());
+		InfrastructureImporter importer = new InfrastructureImporterExtension(countryCsvFile, user.toReference(), InfrastructureType.COUNTRY);
+		importer.runImport();
+		getCountryFacade().getByName("Country with ä", false).get(0);
+
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").getFile());
-		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user.toReference(), InfrastructureType.REGION);
+		importer = new InfrastructureImporterExtension(regionCsvFile, user.toReference(), InfrastructureType.REGION);
 		importer.runImport();
 		RegionReferenceDto region = getRegionFacade().getByName("Region with ä", false).get(0);
 
@@ -77,8 +85,14 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
 		// Import region
+		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").getFile());
+		InfrastructureImporter importer = new InfrastructureImporterExtension(countryCsvFile, user.toReference(), InfrastructureType.COUNTRY);
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
+		assertEquals(2, getCountryFacade().count(new CountryCriteria()));
+
+		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").getFile());
-		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user.toReference(), InfrastructureType.REGION);
+		importer = new InfrastructureImporterExtension(regionCsvFile, user.toReference(), InfrastructureType.REGION);
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
 		assertEquals(2, getRegionFacade().count(new RegionCriteria()));
 

@@ -461,6 +461,10 @@ public class InfrastructureController {
 			contentLabel.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveArea : Strings.confirmationDearchiveArea));
 			notificationMessage = I18nProperties.getString(archive ? Strings.messageAreaArchived : Strings.messageAreaDearchived);
 			break;
+		case COUNTRY:
+			contentLabel.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveCountry : Strings.confirmationDearchiveCountry));
+			notificationMessage = I18nProperties.getString(archive ? Strings.messageCountryArchived : Strings.messageCountryDearchived);
+			break;
 		case REGION:
 			contentLabel.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveRegion : Strings.confirmationDearchiveRegion));
 			notificationMessage = I18nProperties.getString(archive ? Strings.messageRegionArchived : Strings.messageRegionDearchived);
@@ -615,7 +619,7 @@ public class InfrastructureController {
 				? I18nProperties.getString(Strings.confirmationArchiveCountries)
 				: I18nProperties.getString(Strings.confirmationDearchiveCountries);
 			notificationMessage =
-				archive ? I18nProperties.getString(Strings.messageCountryArchived) : I18nProperties.getString(Strings.messageCountryDearchived);
+				archive ? I18nProperties.getString(Strings.messageCountriesArchived) : I18nProperties.getString(Strings.messageCountriesDearchived);
 				break;
 		case REGION:
 			confirmationMessage = archive
