@@ -5552,4 +5552,20 @@ UPDATE diseaseconfiguration SET casefollowupduration = followupduration;
 UPDATE diseaseconfiguration SET eventparticipantfollowupduration = followupduration;
 
 INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-up duration #3100');
+CREATE TABLE country (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    default_name varchar(255),
+    external_id varchar(4),
+    iso_code varchar(3),
+    uno_code varchar(3),
+    primary key(id)
+);
+ALTER TABLE country OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (276, 'Create country table #2993');
+
+
 -- *** Insert new sql commands BEFORE this line ***
