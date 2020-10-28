@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
@@ -53,8 +54,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
@@ -67,6 +70,14 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
@@ -74,10 +85,12 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -118,7 +131,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		person.setFirstName("James");
 		person.setLastName("Smith");
 
-		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
+		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
 		caze.getHospitalization().setAdmittedToHealthFacility(YesNoUnknown.YES);
 		caze.getSymptoms().setAgitation(SymptomState.YES);
 		caze.getEpiData().setKindOfExposureTouch(YesNoUnknown.YES);
@@ -165,7 +178,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto person = createPersonDto(rdcf);
 
-		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
+		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
 
 		caze.getHospitalization().getPreviousHospitalizations().add(PreviousHospitalizationDto.build(caze));
 		caze.getEpiData().getBurials().add(EpiDataBurialDto.build());
@@ -216,9 +229,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		MappableRdcf rdcf = createRDCF();
 		PersonDto person = createPersonDto(rdcf);
 
-		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
+		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
 
-		ContactDto contact = createRemoteContactDto(rdcf, caze);
+		ContactDto contact = createRemoteContactDto(rdcf.remoteRdcf, caze);
 
 		PersonDto contactPerson = createPersonDto(rdcf);
 		contact.setPerson(contactPerson.toReference());
@@ -241,6 +254,32 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testSaveSharedCaseWithSamples() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+		MappableRdcf rdcf = createRDCF();
+		PersonDto person = createPersonDto(rdcf);
+
+		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
+		SormasToSormasSampleDto sample = createRemoteSampleDtoWithTests(rdcf.remoteRdcf, caze.toReference(), null);
+
+		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo());
+		shareData.setSamples(Collections.singletonList(sample));
+
+		byte[] encryptedData = encryptShareData(shareData);
+		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getSample().getUuid());
+
+		assertThat(savedSample, is(notNullValue()));
+		assertThat(savedSample.getLab(), is(rdcf.localRdcf.facility));
+
+		assertThat(getPathogenTestFacade().getAllBySample(savedSample.toReference()), hasSize(1));
+		assertThat(getAdditionalTestFacade().getAllBySample(savedSample.getUuid()), hasSize(1));
+
+		assertThat(savedCase.getSormasToSormasOriginInfo().getUuid(), is(savedSample.getSormasToSormasOriginInfo().getUuid()));
+	}
+
+	@Test
 	public void testSaveSharedContact() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
 		MappableRdcf rdcf = createRDCF();
 
@@ -248,16 +287,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		person.setFirstName("James");
 		person.setLastName("Smith");
 
-		ContactDto contact = ContactDto.build(null, Disease.CORONAVIRUS, null);
-		contact.setPerson(person.toReference());
-		contact.setRegion(rdcf.remoteRdcf.region);
-		contact.setDistrict(rdcf.remoteRdcf.district);
-		contact.setCommunity(rdcf.remoteRdcf.community);
-		contact.getEpiData().setAnimalCondition(AnimalCondition.PROCESSED);
+		ContactDto contact = createRemoteContactDto(rdcf.remoteRdcf, person);
 
-		contact.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo());
-
-		byte[] encryptedData = encryptShareData(new SormasToSormasContactDto(person, contact));
+		byte[] encryptedData = encryptShareData(new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo()));
 		getSormasToSormasFacade().saveSharedContacts(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
@@ -281,6 +313,32 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	}
 
+	@Test
+	public void testSaveSharedContactWithSamples() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+		MappableRdcf rdcf = createRDCF();
+		PersonDto person = createPersonDto(rdcf);
+
+		ContactDto contact = createRemoteContactDto(rdcf.remoteRdcf, person);
+		SormasToSormasSampleDto sample = createRemoteSampleDtoWithTests(rdcf.remoteRdcf, null, contact.toReference());
+
+		SormasToSormasContactDto shareData = new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo());
+		shareData.setSamples(Collections.singletonList(sample));
+
+		byte[] encryptedData = encryptShareData(shareData);
+		getSormasToSormasFacade().saveSharedContacts(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+
+		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
+		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getSample().getUuid());
+
+		assertThat(savedSample, is(notNullValue()));
+		assertThat(savedSample.getLab(), is(rdcf.localRdcf.facility));
+
+		assertThat(getPathogenTestFacade().getAllBySample(savedSample.toReference()), hasSize(1));
+		assertThat(getAdditionalTestFacade().getAllBySample(savedSample.getUuid()), hasSize(1));
+
+		assertThat(savedContact.getSormasToSormasOriginInfo().getUuid(), is(savedSample.getSormasToSormasOriginInfo().getUuid()));
+	}
+
 	/**
 	 * Test that it doesnt throw de.symeda.sormas.api.utils.OutdatedEntityException
 	 * To fix OutdatedEntityException generate new uuid for the outdated object in
@@ -299,13 +357,12 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		contact.setDistrict(rdcf.remoteRdcf.district);
 		contact.setCommunity(rdcf.remoteRdcf.community);
 
-		contact.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo());
-		byte[] encryptedData = encryptShareData(new SormasToSormasContactDto(person, contact));
+		byte[] encryptedData = encryptShareData(new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo()));
 
 		getSormasToSormasFacade().saveSharedContacts(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
 		contact.setUuid(DataHelper.createUuid());
-		encryptedData = encryptShareData(new SormasToSormasContactDto(person, contact));
+		encryptedData = encryptShareData(new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo()));
 
 		getSormasToSormasFacade().saveSharedContacts(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
 
@@ -420,6 +477,78 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testShareCaseWithSamples() throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
+		RDCF rdcf = creator.createRDCF();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = creator.createPerson();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		UserReferenceDto officer = user.toReference();
+		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
+			dto.setPerson(person.toReference());
+			dto.setSurveillanceOfficer(officer);
+			dto.setClassificationUser(officer);
+		});
+
+		Date sampleDateTime = new Date();
+		SampleDto caseSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSampleDateTime(sampleDateTime);
+			s.setComment("Test case sample");
+		});
+
+		creator.createPathogenTest(caseSample.toReference(), caze);
+		creator.createAdditionalTest(caseSample.toReference());
+
+		ContactDto contact = creator.createContact(officer, creator.createPerson().toReference(), caze);
+		SampleDto contactSampleSample = creator.createSample(contact.toReference(), officer, rdcf.facility, s -> {
+			s.setSampleDateTime(sampleDateTime);
+			s.setComment("Test contact sample");
+		});
+		creator.createPathogenTest(contactSampleSample.toReference(), caze);
+		creator.createAdditionalTest(contactSampleSample.toReference());
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
+		options.setComment("Test comment");
+		options.setWithSamples(true);
+		options.setWithAssociatedContacts(true);
+
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+			.thenAnswer(invocation -> {
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasCaseDto[] sharedCases = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto[].class);
+
+				assertThat(sharedCases[0].getSamples().size(), is(2));
+
+				SormasToSormasSampleDto sharedCaseSample = sharedCases[0].getSamples().get(0);
+				assertThat(sharedCaseSample.getSample().getSampleDateTime(), is(sampleDateTime));
+				assertThat(sharedCaseSample.getSample().getComment(), is("Test case sample"));
+				assertThat(sharedCaseSample.getPathogenTests(), hasSize(1));
+				assertThat(sharedCaseSample.getAdditionalTests(), hasSize(1));
+
+				SormasToSormasSampleDto sharedContactSample = sharedCases[0].getSamples().get(1);
+				assertThat(sharedContactSample.getSample().getSampleDateTime(), is(sampleDateTime));
+				assertThat(sharedContactSample.getSample().getComment(), is("Test contact sample"));
+				assertThat(sharedContactSample.getPathogenTests(), hasSize(1));
+				assertThat(sharedContactSample.getAdditionalTests(), hasSize(1));
+
+				return Response.noContent().build();
+			});
+
+		getSormasToSormasFacade().shareCases(Collections.singletonList(caze.getUuid()), options);
+
+		List<SormasToSormasShareInfoDto> shareInfoList =
+			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().sample(caseSample.toReference()), 0, 100);
+
+		SormasToSormasShareInfoDto contactShareInfo =
+			shareInfoList.stream().filter(i -> DataHelper.isSame(i.getSample(), caseSample)).findFirst().get();
+		assertThat(contactShareInfo.getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
+		assertThat(contactShareInfo.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
+		assertThat(contactShareInfo.getComment(), is("Test comment"));
+	}
+
+	@Test
 	public void testShareContact() throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
 		RDCF rdcf = creator.createRDCF();
 
@@ -460,9 +589,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedContact.getContact().getResultingCaseUser(), is(nullValue()));
 
 				// share information
-				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
-				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getSenderName(), is("Surv Off"));
-				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getComment(), is("Test comment"));
+				assertThat(sharedContact.getOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
+				assertThat(sharedContact.getOriginInfo().getSenderName(), is("Surv Off"));
+				assertThat(sharedContact.getOriginInfo().getComment(), is("Test comment"));
 
 				return Response.noContent().build();
 			});
@@ -475,6 +604,68 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(shareInfoList.get(0).getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
+	}
+
+	@Test
+	public void testShareContactWithSamples()
+		throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
+		RDCF rdcf = creator.createRDCF();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = creator.createPerson();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		ContactDto contact = creator.createContact(officer, officer, person.toReference(), null, new Date(), null, null, rdcf);
+
+		Date sampleDateTime = new Date();
+		SampleDto sample = creator.createSample(contact.toReference(), officer, rdcf.facility, s -> {
+			s.setSampleDateTime(sampleDateTime);
+			s.setComment("Test sample");
+		});
+		creator.createPathogenTest(
+			sample.toReference(),
+			PathogenTestType.RAPID_TEST,
+			Disease.CORONAVIRUS,
+			sampleDateTime,
+			rdcf.facility,
+			officer,
+			PathogenTestResultType.INDETERMINATE,
+			"result",
+			true,
+			null);
+		creator.createAdditionalTest(sample.toReference());
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
+		options.setComment("Test comment");
+		options.setWithSamples(true);
+
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+			.thenAnswer(invocation -> {
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasContactDto[] sharedContacts = decryptSharesData(encryptedData.getData(), SormasToSormasContactDto[].class);
+
+				assertThat(sharedContacts[0].getSamples().size(), is(1));
+
+				SormasToSormasSampleDto sharedSample = sharedContacts[0].getSamples().get(0);
+				assertThat(sharedSample.getSample().getSampleDateTime(), is(sampleDateTime));
+				assertThat(sharedSample.getSample().getComment(), is("Test sample"));
+				assertThat(sharedSample.getPathogenTests(), hasSize(1));
+				assertThat(sharedSample.getAdditionalTests(), hasSize(1));
+
+				return Response.noContent().build();
+			});
+
+		getSormasToSormasFacade().shareContacts(Collections.singletonList(contact.getUuid()), options);
+
+		List<SormasToSormasShareInfoDto> shareInfoList =
+			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), 0, 100);
+
+		SormasToSormasShareInfoDto sampleShareInfoList =
+			shareInfoList.stream().filter(i -> DataHelper.isSame(i.getSample(), sample)).findFirst().get();
+		assertThat(sampleShareInfoList.getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
+		assertThat(sampleShareInfoList.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
+		assertThat(sampleShareInfoList.getComment(), is("Test comment"));
 	}
 
 	@Test
@@ -589,22 +780,59 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		return rdcf;
 	}
 
-	private CaseDataDto createRemoteCaseDto(MappableRdcf rdcf, PersonDto person) {
+	private CaseDataDto createRemoteCaseDto(RDCF remoteRdcf, PersonDto person) {
 		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
-		caze.setRegion(rdcf.remoteRdcf.region);
-		caze.setDistrict(rdcf.remoteRdcf.district);
-		caze.setCommunity(rdcf.remoteRdcf.community);
-		caze.setHealthFacility(rdcf.remoteRdcf.facility);
+		caze.setRegion(remoteRdcf.region);
+		caze.setDistrict(remoteRdcf.district);
+		caze.setCommunity(remoteRdcf.community);
+		caze.setHealthFacility(remoteRdcf.facility);
 		caze.setFacilityType(FacilityType.HOSPITAL);
 		return caze;
 	}
 
-	private ContactDto createRemoteContactDto(MappableRdcf rdcf, CaseDataDto caze) {
+	private ContactDto createRemoteContactDto(RDCF remoteRdcf, CaseDataDto caze) {
 		ContactDto contact = ContactDto.build(caze);
-		contact.setRegion(rdcf.remoteRdcf.region);
-		contact.setDistrict(rdcf.remoteRdcf.district);
-		contact.setCommunity(rdcf.remoteRdcf.community);
+		contact.setRegion(remoteRdcf.region);
+		contact.setDistrict(remoteRdcf.district);
+		contact.setCommunity(remoteRdcf.community);
 		return contact;
+	}
+
+	private ContactDto createRemoteContactDto(RDCF remoteRdcf, PersonDto person) {
+		ContactDto contact = ContactDto.build(null, Disease.CORONAVIRUS, null);
+		contact.setPerson(person.toReference());
+		contact.setRegion(remoteRdcf.region);
+		contact.setDistrict(remoteRdcf.district);
+		contact.setCommunity(remoteRdcf.community);
+		contact.getEpiData().setAnimalCondition(AnimalCondition.PROCESSED);
+		return contact;
+	}
+
+	private SormasToSormasSampleDto createRemoteSampleDtoWithTests(RDCF rdcf, CaseReferenceDto caseRef, ContactReferenceDto contactRef) {
+		UserReferenceDto userRef = UserDto.build().toReference();
+
+		SampleDto sample;
+		if (caseRef != null) {
+			sample = SampleDto.build(userRef, caseRef);
+		} else {
+			sample = SampleDto.build(userRef, contactRef);
+		}
+
+		sample.setLab(rdcf.facility);
+		sample.setSampleDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSampleSource(SampleSource.HUMAN);
+		sample.setSamplePurpose(SamplePurpose.INTERNAL);
+
+		PathogenTestDto pathogenTest = PathogenTestDto.build(sample.toReference(), userRef);
+		pathogenTest.setTestDateTime(new Date());
+		pathogenTest.setTestResultVerified(true);
+		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
+
+		AdditionalTestDto additionalTest = AdditionalTestDto.build(sample.toReference());
+		additionalTest.setTestDateTime(new Date());
+
+		return new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest));
 	}
 
 	private void mockDefaultServerAccess() {

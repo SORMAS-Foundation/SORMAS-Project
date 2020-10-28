@@ -663,6 +663,14 @@ public class TestDataCreator {
 	}
 
 	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
+		return createSample(associatedCase, reportingUser, lab, null);
+	}
+
+	public SampleDto createSample(
+		CaseReferenceDto associatedCase,
+		UserReferenceDto reportingUser,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customSettings) {
 
 		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
 		sample.setSampleDateTime(new Date());
@@ -670,6 +678,10 @@ public class TestDataCreator {
 		sample.setSampleMaterial(SampleMaterial.BLOOD);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		if (customSettings != null) {
+			customSettings.accept(sample);
+		}
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
 
@@ -765,6 +777,28 @@ public class TestDataCreator {
 		sample.setLab(lab);
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
+		return sample;
+	}
+
+	public SampleDto createSample(
+		ContactReferenceDto associatedContact,
+		UserReferenceDto reportingUser,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customSettings) {
+
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(new Date());
+		sample.setReportDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		if (customSettings != null) {
+			customSettings.accept(sample);
+		}
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
 		return sample;
 	}
 

@@ -1371,6 +1371,7 @@ public interface Captions {
 	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
 	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
+	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
 	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
 	String sormasToSormasShare = "sormasToSormasShare";
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";

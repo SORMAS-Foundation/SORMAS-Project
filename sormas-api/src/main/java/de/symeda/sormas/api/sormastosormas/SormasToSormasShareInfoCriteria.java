@@ -18,6 +18,7 @@ package de.symeda.sormas.api.sormastosormas;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 
 public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 
@@ -26,6 +27,8 @@ public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 	private CaseReferenceDto caze;
 
 	private ContactReferenceDto contact;
+
+	private SampleReferenceDto sample;
 
 	public CaseReferenceDto getCaze() {
 		return caze;
@@ -43,6 +46,16 @@ public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 
 	public SormasToSormasShareInfoCriteria contact(ContactReferenceDto contact) {
 		this.contact = contact;
+
+		return this;
+	}
+
+	public SampleReferenceDto getSample() {
+		return sample;
+	}
+
+	public SormasToSormasShareInfoCriteria sample(SampleReferenceDto sample) {
+		this.sample = sample;
 
 		return this;
 	}
