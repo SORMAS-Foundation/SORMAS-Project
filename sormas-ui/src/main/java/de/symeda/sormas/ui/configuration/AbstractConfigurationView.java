@@ -34,6 +34,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
 import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.CountriesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
 import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
@@ -71,6 +72,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 					null,
 					false);
 			}
+			menu.addView(
+				CountriesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
 			menu.addView(
 				RegionsView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -143,6 +149,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				navigator.addView(AreasView.VIEW_NAME, AreasView.class);
 			}
+			navigator.addView(CountriesView.VIEW_NAME, CountriesView.class);
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);

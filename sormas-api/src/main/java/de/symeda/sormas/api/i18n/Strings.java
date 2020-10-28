@@ -50,6 +50,7 @@ public interface Strings {
 	String confirmationArchiveCases = "confirmationArchiveCases";
 	String confirmationArchiveCommunities = "confirmationArchiveCommunities";
 	String confirmationArchiveCommunity = "confirmationArchiveCommunity";
+	String confirmationArchiveCountries = "confirmationArchiveCountries";
 	String confirmationArchiveDistrict = "confirmationArchiveDistrict";
 	String confirmationArchiveDistricts = "confirmationArchiveDistricts";
 	String confirmationArchiveEvent = "confirmationArchiveEvent";
@@ -72,6 +73,7 @@ public interface Strings {
 	String confirmationDearchiveCases = "confirmationDearchiveCases";
 	String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
 	String confirmationDearchiveCommunity = "confirmationDearchiveCommunity";
+	String confirmationDearchiveCountries = "confirmationDearchiveCountries";
 	String confirmationDearchiveDistrict = "confirmationDearchiveDistrict";
 	String confirmationDearchiveDistricts = "confirmationDearchiveDistricts";
 	String confirmationDearchiveEvent = "confirmationDearchiveEvent";
@@ -567,6 +569,7 @@ public interface Strings {
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
 	String headingImportContacts = "headingImportContacts";
+	String headingImportCountries = "headingImportCountries";
 	String headingImportCsvFile = "headingImportCsvFile";
 	String headingImportDistricts = "headingImportDistricts";
 	String headingImportedCaseInfo = "headingImportedCaseInfo";
@@ -750,6 +753,7 @@ public interface Strings {
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
+	String labelNumberOfCountries = "labelNumberOfCountries";
 	String labelNumberOfDistricts = "labelNumberOfDistricts";
 	String labelNumberOfFacilities = "labelNumberOfFacilities";
 	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
@@ -824,6 +828,8 @@ public interface Strings {
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
+	String messageCountryArchived = "messageCountryArchived";
+	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageCreateContactCase = "messageCreateContactCase";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";

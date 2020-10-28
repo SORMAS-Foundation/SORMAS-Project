@@ -41,6 +41,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -80,6 +81,18 @@ public class InfrastructureController {
 		AreaDto area = FacadeProvider.getAreaFacade().getAreaByUuid(uuid);
 		CommitDiscardWrapperComponent<AreaEditForm> editComponent = getAreaEditComponent(area);
 		String caption = I18nProperties.getString(Strings.edit) + " " + area.getName();
+		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+
+	public void createCountry() {
+		CommitDiscardWrapperComponent<CountryEditForm> createComponent = getCountryEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
+	}
+
+	public void editCountry(String uuid) {
+		CountryDto country = FacadeProvider.getCountryFacade().getCountryByUuid(uuid);
+		CommitDiscardWrapperComponent<CountryEditForm> editComponent = getCountryEditComponent(country);
+		String caption = I18nProperties.getString(Strings.edit) + " " + country.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
@@ -194,6 +207,34 @@ public class InfrastructureController {
 		}
 
 		return editComponent;
+	}
+
+	private CommitDiscardWrapperComponent<CountryEditForm> getCountryEditComponent(CountryDto country) {
+
+		boolean isNew = country == null;
+		CountryEditForm editForm = new CountryEditForm(isNew);
+		if (isNew) {
+			country = CountryDto.build();
+		}
+
+		editForm.setValue(country);
+
+		final CommitDiscardWrapperComponent<CountryEditForm> editView = new CommitDiscardWrapperComponent<>(
+				editForm,
+				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+				editForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			FacadeProvider.getCountryFacade().saveCountry(editForm.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(CountriesView.VIEW_NAME);
+		});
+
+		if (!isNew) {
+			extendEditComponentWithArchiveButton(editView, country.isArchived(), country.getUuid(), InfrastructureType.COUNTRY, null);
+		}
+
+		return editView;
 	}
 
 	private CommitDiscardWrapperComponent<RegionEditForm> getRegionEditComponent(RegionDto region) {
@@ -462,6 +503,14 @@ public class InfrastructureController {
 						}
 						SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
 						break;
+					case COUNTRY:
+						if (archive) {
+							FacadeProvider.getCountryFacade().archive(entityUuid);
+						} else {
+							FacadeProvider.getCountryFacade().dearchive(entityUuid);
+						}
+						SormasUI.get().getNavigator().navigateTo(CountriesView.VIEW_NAME);
+						break;
 					case REGION:
 						if (archive) {
 							FacadeProvider.getRegionFacade().archive(entityUuid);
@@ -561,6 +610,13 @@ public class InfrastructureController {
 			notificationMessage =
 				archive ? I18nProperties.getString(Strings.messageAreasArchived) : I18nProperties.getString(Strings.messageAreasDearchived);
 			break;
+		case COUNTRY:
+			confirmationMessage = archive
+				? I18nProperties.getString(Strings.confirmationArchiveCountries)
+				: I18nProperties.getString(Strings.confirmationDearchiveCountries);
+			notificationMessage =
+				archive ? I18nProperties.getString(Strings.messageCountryArchived) : I18nProperties.getString(Strings.messageCountryDearchived);
+				break;
 		case REGION:
 			confirmationMessage = archive
 				? I18nProperties.getString(Strings.confirmationArchiveRegions)
@@ -618,6 +674,15 @@ public class InfrastructureController {
 								FacadeProvider.getAreaFacade().archive(selectedRow.getUuid());
 							} else {
 								FacadeProvider.getAreaFacade().deArchive(selectedRow.getUuid());
+							}
+						}
+						break;
+					case COUNTRY:
+						for (CountryDto selectedRow : (Collection<CountryDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getCountryFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getCountryFacade().dearchive(selectedRow.getUuid());
 							}
 						}
 						break;
