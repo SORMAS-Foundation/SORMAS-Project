@@ -170,7 +170,7 @@ public class CampaignFormDataImporter extends DataImporter {
 							if (jurisdictionLevel == JurisdictionLevel.DISTRICT && !currentUserDto.getDistrict().getCaption().equals(entry[i])) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(
-										Validations.importEntryDistrictNotInJurisdiction,
+										Validations.importEntryDistrictNotInUsersJurisdiction,
 										entry,
 										buildEntityProperty(entryHeaderPath)));
 							}
@@ -193,7 +193,7 @@ public class CampaignFormDataImporter extends DataImporter {
 							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUserDto.getCommunity().getCaption().equals(entry[i])) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(
-										Validations.importEntryCommunityNotInJurisdiction,
+										Validations.importEntryCommunityNotInUsersJurisdiction,
 										entry,
 										buildEntityProperty(entryHeaderPath)));
 							}
@@ -249,7 +249,7 @@ public class CampaignFormDataImporter extends DataImporter {
 			final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUserDto.getUserRoles());
 			if (jurisdictionLevel == JurisdictionLevel.REGION && !currentUserDto.getRegion().getCaption().equals(entry)) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryRegionNotInJurisdiction, entry, buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(Validations.importEntryRegionNotInUsersJurisdiction, entry, buildEntityProperty(entryHeaderPath)));
 			}
 		}
 		return returnBoolean;
