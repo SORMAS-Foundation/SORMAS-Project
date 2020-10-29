@@ -46,7 +46,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").getFile());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(countryCsvFile, user.toReference(), InfrastructureType.COUNTRY);
 		importer.runImport();
-		getCountryFacade().getByName("Country with ä", false).get(0);
+		getCountryFacade().getByDefaultName("Country with ä", false).get(0);
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").getFile());

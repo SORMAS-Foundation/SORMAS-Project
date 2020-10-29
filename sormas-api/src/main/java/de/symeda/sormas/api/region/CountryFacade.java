@@ -11,7 +11,7 @@ public interface CountryFacade {
 
 	CountryDto getCountryByUuid(String uuid);
 
-	List<CountryReferenceDto> getByName(String name, boolean includeArchivedEntities);
+	List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
 
 	List<CountryDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 

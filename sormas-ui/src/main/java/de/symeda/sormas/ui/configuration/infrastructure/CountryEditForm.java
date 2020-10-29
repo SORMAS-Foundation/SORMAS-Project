@@ -9,6 +9,7 @@ import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class CountryEditForm extends AbstractEditForm<CountryDto> {
 
@@ -16,9 +17,8 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
-            fluidRowLocs(CountryDto.NAME, CountryDto.ISO_CODE) +
-                    fluidRowLocs(CountryDto.EXTERNAL_ID) +
-                    fluidRowLocs(CountryDto.UNO_CODE);
+            fluidRowLocs(CountryDto.ISO_CODE, CountryDto.DEFAULT_NAME) +
+            fluidRowLocs(CountryDto.EXTERNAL_ID, CountryDto.UNO_CODE);
     //@formatter:on
 
 	private final Boolean create;
@@ -48,14 +48,14 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 			return;
 		}
 
-		addField(CountryDto.NAME, TextField.class);
+		addField(CountryDto.DEFAULT_NAME, TextField.class);
 		addField(CountryDto.ISO_CODE, TextField.class);
 		addField(CountryDto.EXTERNAL_ID, TextField.class);
 		addField(CountryDto.UNO_CODE, TextField.class);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, CountryDto.NAME, CountryDto.ISO_CODE);
+		setRequired(true, CountryDto.DEFAULT_NAME, CountryDto.ISO_CODE);
 	}
 
 	@Override

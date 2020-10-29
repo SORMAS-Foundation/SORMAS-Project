@@ -5557,10 +5557,11 @@ CREATE TABLE country (
     uuid varchar(36) not null unique,
     creationdate timestamp without time zone NOT NULL,
     changedate timestamp not null,
-    default_name varchar(255),
-    external_id varchar(4),
-    iso_code varchar(3),
-    uno_code varchar(3),
+    archived boolean not null default false,
+    defaultname varchar(255),
+    externalid varchar(4),
+    isocode varchar(3) unique,
+    unocode varchar(3) unique,
     primary key(id)
 );
 ALTER TABLE country OWNER TO sormas_user;
