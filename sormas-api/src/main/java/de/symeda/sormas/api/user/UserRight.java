@@ -177,6 +177,7 @@ public enum UserRight {
 	),
 	CASE_DELETE(
 			ADMIN,
+			ADMIN_SUPERVISOR,
 			NATIONAL_USER
 	),
 	CASE_IMPORT(
