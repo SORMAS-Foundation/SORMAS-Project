@@ -31,6 +31,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final List<Object> axisKeys = new ArrayList<>();
 	private final Map<Object, String> axisCaptions = new HashMap<>();
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
+	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
 
 	private final HighChart campaignColumnChart;
@@ -44,6 +45,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		this.diagramDefinition = diagramDefinition;
 		this.showPercentages = showPercentages;
 		this.totalValuesMap = totalValuesMap;
+
+		if (this.totalValuesMap.keySet().stream().noneMatch(r -> r.getStack() != null)) {
+			totalValuesWithoutStacks = true;
+		}
 
 		campaignColumnChart = new HighChart();
 
@@ -173,8 +178,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {
 					if (showPercentages && totalValuesMap != null) {
-						double totalValue =
-							totalValuesMap.get(new CampaignDashboardTotalsReference(seriesData.get(axisKey).getGroupingKey(), series.getStack()));
+						double totalValue = totalValuesMap.get(
+							new CampaignDashboardTotalsReference(
+								seriesData.get(axisKey).getGroupingKey(),
+								totalValuesWithoutStacks ? null : series.getStack()));
 						if (totalValue > 0) {
 							hcjs.append(
 								BigDecimal.valueOf(seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100)
