@@ -83,7 +83,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
 		campaignCombo = new ComboBox(" ");
-		List<CampaignReferenceDto> campaigns = FacadeProvider.getCampaignFacade().getAllCampaignsAsReference();
+		List<CampaignReferenceDto> campaigns = FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference();
 		campaignCombo.setItems(campaigns);
 		final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
 		if (lastStartedCampaign != null && campaigns.contains(lastStartedCampaign)) {

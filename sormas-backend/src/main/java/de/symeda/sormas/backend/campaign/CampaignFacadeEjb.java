@@ -116,8 +116,12 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	@Override
-	public List<CampaignReferenceDto> getAllCampaignsAsReference() {
-		return campaignService.getAll().stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+	public List<CampaignReferenceDto> getAllActiveCampaignsAsReference() {
+		return campaignService.getAll()
+			.stream()
+			.filter(c -> !c.isDeleted() && !c.isArchived())
+			.map(CampaignFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -198,7 +202,11 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
 			for (CampaignDashboardElement cde : campaignDashboardElements) {
-				if (cde.getDiagramId() == null || cde.getTabId() == null || cde.getWidth() == null || cde.getHeight() == null || cde.getOrder() == null) {
+				if (cde.getDiagramId() == null
+					|| cde.getTabId() == null
+					|| cde.getWidth() == null
+					|| cde.getHeight() == null
+					|| cde.getOrder() == null) {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignDashboardChartValueNull));
 				}
 			}

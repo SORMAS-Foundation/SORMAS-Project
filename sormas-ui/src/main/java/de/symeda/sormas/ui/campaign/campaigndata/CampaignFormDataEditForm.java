@@ -75,7 +75,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	@Override
 	protected void addFields() {
 		ComboBox cbCampaign = addField(CampaignFormDataDto.CAMPAIGN, ComboBox.class);
-		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllCampaignsAsReference());
+		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
 
 		ComboBox cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
