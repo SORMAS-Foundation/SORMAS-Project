@@ -35,6 +35,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -92,6 +94,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
 		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
+		final UserDto currentUser = UserProvider.getCurrent().getUser();
+		final RegionReferenceDto currentUserRegion = currentUser.getRegion();
+
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			ComboBox cbArea = addCustomField(CampaignFormDataEditForm.AREA, AreaReferenceDto.class, ComboBox.class);
 			cbArea.setCaption(I18nProperties.getCaption(Captions.CampaignFormData_area));
@@ -116,6 +121,26 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 					cbArea.setValue(FacadeProvider.getRegionFacade().getRegionByUuid(region.getUuid()).getArea());
 				}
 			});
+			if (currentUserRegion != null) {
+				final AreaReferenceDto area = FacadeProvider.getRegionFacade().getRegionByUuid(currentUserRegion.getUuid()).getArea();
+				cbArea.setValue(area);
+				if (currentUserRegion != null) {
+					cbArea.setEnabled(false);
+				}
+			}
+		}
+
+		if (currentUserRegion != null) {
+			cbRegion.setValue(currentUserRegion);
+			cbRegion.setEnabled(false);
+		}
+		if (currentUser.getDistrict() != null) {
+			cbDistrict.setValue(currentUser.getDistrict());
+			cbDistrict.setEnabled(false);
+		}
+		if (currentUser.getCommunity() != null) {
+			cbCommunity.setValue(currentUser.getCommunity());
+			cbCommunity.setEnabled(false);
 		}
 	}
 

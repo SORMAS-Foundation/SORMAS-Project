@@ -71,8 +71,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	@SuppressWarnings("deprecation")
 	private void createJurisdictionFilters() {
-		final AreaReferenceDto userArea = UserProvider.getCurrent().getUser().getArea();
 		final RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
+		final AreaReferenceDto userArea = FacadeProvider.getRegionFacade().getRegionByUuid(userRegion.getUuid()).getArea();
 		final DistrictReferenceDto userDistrict = UserProvider.getCurrent().getUser().getDistrict();
 
 		dashboardDataProvider.setArea(userArea);

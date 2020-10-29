@@ -47,10 +47,13 @@ public interface Validations {
 	String importCommunityNotUnique = "importCommunityNotUnique";
 	String importDistrictAlreadyExists = "importDistrictAlreadyExists";
 	String importDistrictNotUnique = "importDistrictNotUnique";
+	String importEntryCommunityNotInUsersJurisdiction = "importEntryCommunityNotInUsersJurisdiction";
+	String importEntryDistrictNotInUsersJurisdiction = "importEntryDistrictNotInUsersJurisdiction";
 	String importEntryDoesNotExist = "importEntryDoesNotExist";
 	String importEntryDoesNotExistDbOrCommunity = "importEntryDoesNotExistDbOrCommunity";
 	String importEntryDoesNotExistDbOrDistrict = "importEntryDoesNotExistDbOrDistrict";
 	String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
+	String importEntryRegionNotInUsersJurisdiction = "importEntryRegionNotInUsersJurisdiction";
 	String importErrorInColumn = "importErrorInColumn";
 	String importFacilityAlreadyExists = "importFacilityAlreadyExists";
 	String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";
