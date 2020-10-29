@@ -33,6 +33,7 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 
 		final List<String> existingDiagramIds = allElements.stream()
 			.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getDiagramId())
+			.filter(s -> StringUtils.isNotEmpty(s))
 			.distinct()
 			.collect(Collectors.toList());
 		final ComboBox<String> diagramIdCombo = new ComboBox<>(Captions.campaignDashboardChart, existingDiagramIds);
