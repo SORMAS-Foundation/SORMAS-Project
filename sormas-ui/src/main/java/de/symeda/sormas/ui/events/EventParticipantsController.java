@@ -24,9 +24,9 @@ import java.util.function.Consumer;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -154,6 +154,17 @@ public class EventParticipantsController {
 						false).show(Page.getCurrent());
 				});
 		}
+	}
+
+	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {
+		VaadinUiUtil.showDeleteConfirmationWindow(
+			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityEventParticipant)),
+			() -> {
+				EventParticipantReferenceDto eventParticipantRef =
+					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
+				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantRef);
+				callback.run();
+			});
 	}
 
 	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {

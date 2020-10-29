@@ -20,10 +20,13 @@
 
 package de.symeda.sormas.ui.events.eventLink;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Button.ClickListener;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -31,6 +34,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -39,11 +43,30 @@ import de.symeda.sormas.ui.utils.PaginationList;
 public class EventList extends PaginationList<EventIndexDto> {
 
 	private final EventCriteria eventCriteria = new EventCriteria();
+	private final Label noEventLabel;
+	private BiConsumer<Integer, EventListEntry> addUnlinkEventListener;
 
 	public EventList(CaseReferenceDto caseReferenceDto) {
 		super(5);
 		eventCriteria.caze(caseReferenceDto);
 		eventCriteria.setUserFilterIncluded(false);
+		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
+	}
+
+	public EventList(PersonReferenceDto personRef) {
+		super(5);
+		eventCriteria.setPerson(personRef);
+		eventCriteria.setUserFilterIncluded(false);
+		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
+		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
+			UserProvider user = UserProvider.getCurrent();
+			if (personRef != null && user.hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+				listEntry.addUnlinkEventListener(
+					i,
+					(ClickListener) clickEvent -> ControllerProvider.getEventParticipantController()
+						.deleteEventParticipant(listEntry.getEvent().getUuid(), personRef.getUuid(), this::reload));
+			}
+		};
 	}
 
 	@Override
@@ -54,8 +77,8 @@ public class EventList extends PaginationList<EventIndexDto> {
 		if (!events.isEmpty()) {
 			showPage(1);
 		} else {
+			listLayout.removeAllComponents();
 			updatePaginationLayout();
-			Label noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
 			listLayout.addComponent(noEventLabel);
 		}
 	}
@@ -67,12 +90,20 @@ public class EventList extends PaginationList<EventIndexDto> {
 			EventIndexDto event = displayedEntries.get(i);
 			EventListEntry listEntry = new EventListEntry(event);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+			UserProvider user = UserProvider.getCurrent();
+			if (user.hasUserRight(UserRight.EVENT_EDIT)) {
+				if (addUnlinkEventListener != null) {
+					addUnlinkEventListener.accept(i, listEntry);
+				}
 				listEntry.addEditListener(
 					i,
 					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid()));
 			}
 			listLayout.addComponent(listEntry);
 		}
+	}
+
+	protected void filterEventListByCase(CaseReferenceDto caseRef) {
+		eventCriteria.caze(caseRef);
 	}
 }

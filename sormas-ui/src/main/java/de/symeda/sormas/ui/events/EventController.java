@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -29,15 +31,16 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -55,9 +58,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.apache.commons.text.StringEscapeUtils;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 
 public class EventController {
 
@@ -70,6 +72,13 @@ public class EventController {
 
 	public EventDto create(CaseReferenceDto caseRef) {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(caseRef);
+		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
+		return eventDto;
+	}
+
+	public EventDto create(ContactDto contact) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(contact);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
@@ -113,11 +122,50 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
+	public void selectOrCreateEvent(ContactDto contact) {
+
+		EventSelectionField eventSelect = new EventSelectionField(contact);
+		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
+		component.addCommitListener(() -> {
+			EventIndexDto selectedEvent = eventSelect.getValue();
+			if (selectedEvent != null) {
+
+				EventCriteria eventCriteria = new EventCriteria();
+				eventCriteria.setPerson(contact.getPerson());
+				eventCriteria.setUserFilterIncluded(false);
+				List<EventIndexDto> eventIndexDto = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
+
+				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
+				if (!eventIndexDto.contains(selectedEvent)) {
+					createEventParticipantWithContact(eventReferenceDto, contact);
+				}
+			} else {
+				create(contact);
+			}
+			SormasUI.refreshView();
+		});
+
+		eventSelect.setSelectionChangeCallback((commitAllowed) -> {
+			component.getCommitButton().setEnabled(commitAllowed);
+		});
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
+	}
+
 	public void createEventParticipantWithCase(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
 		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		EventParticipantDto eventParticipantDto;
 		eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
+	}
+
+	public void createEventParticipantWithContact(EventReferenceDto eventReferenceDto, ContactDto contact) {
+		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		EventParticipantDto eventParticipantDto =
+			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
 		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
 	}
 
@@ -200,6 +248,37 @@ public class EventController {
 					} else {
 						navigateToParticipants(dto.getUuid());
 					}
+				}
+			}
+		});
+
+		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(ContactDto contact) {
+
+		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		eventCreateForm.setValue(createNewEvent(contact.getDisease()));
+		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
+
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
+			eventCreateForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			eventCreateForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!eventCreateForm.getFieldGroup().isModified()) {
+				EventDto dto = eventCreateForm.getValue();
+				FacadeProvider.getEventFacade().saveEvent(dto);
+				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
+
+				if (contact.getCaze() != null) {
+					EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
+
+					createEventParticipantWithContact(createdEvent, contact);
+					SormasUI.refreshView();
+				} else {
+					navigateToParticipants(dto.getUuid());
 				}
 			}
 		});

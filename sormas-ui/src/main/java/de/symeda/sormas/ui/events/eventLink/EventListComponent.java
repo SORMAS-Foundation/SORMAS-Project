@@ -23,6 +23,7 @@ package de.symeda.sormas.ui.events.eventLink;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -30,6 +31,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -61,6 +64,40 @@ public class EventListComponent extends VerticalLayout {
 
 	}
 
+	public EventListComponent(ContactReferenceDto contactRef) {
+
+		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+
+		EventList eventList = new EventList(contact.getPerson());
+
+		createEventListComponent(eventList, e -> {
+
+			EventCriteria eventCriteria = new EventCriteria();
+
+			//check if there are active events in the database
+			long events = FacadeProvider.getEventFacade().count(eventCriteria);
+			if (events > 0) {
+				ControllerProvider.getEventController().selectOrCreateEvent(contact);
+			} else {
+				ControllerProvider.getEventController().create(contact);
+			}
+		});
+
+		if (contact.getCaze() != null) {
+			CheckBox contactOnlyWithSourceCaseInEvent = new CheckBox(I18nProperties.getCaption(Captions.eventOnlyWithContactSourceCaseInvolved));
+			contactOnlyWithSourceCaseInEvent.addStyleNames(CssStyles.CHECKBOX_FILTER_INLINE, CssStyles.VSPACE_4);
+			contactOnlyWithSourceCaseInEvent.addValueChangeListener(e -> {
+				if (e.getValue()) {
+					eventList.filterEventListByCase(contact.getCaze());
+				} else {
+					eventList.filterEventListByCase(null);
+				}
+				eventList.reload();
+			});
+			addComponent(contactOnlyWithSourceCaseInEvent, 1);
+		}
+	}
+
 	private void createEventListComponent(EventList eventList, Button.ClickListener clickListener) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
@@ -76,9 +113,9 @@ public class EventListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label tasksHeader = new Label(I18nProperties.getString(Strings.entityEvent));
-		tasksHeader.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(tasksHeader);
+		Label eventLabel = new Label(I18nProperties.getString(Strings.entityEvent));
+		eventLabel.addStyleName(CssStyles.H3);
+		componentHeader.addComponent(eventLabel);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.linkEvent));

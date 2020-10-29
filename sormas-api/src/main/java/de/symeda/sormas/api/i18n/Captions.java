@@ -862,6 +862,8 @@ public interface Captions {
 	String eventLinkToContacts = "eventLinkToContacts";
 	String eventNewEvent = "eventNewEvent";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
+	String eventNoEventLinkedToContact = "eventNoEventLinkedToContact";
+	String eventOnlyWithContactSourceCaseInvolved = "eventOnlyWithContactSourceCaseInvolved";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";

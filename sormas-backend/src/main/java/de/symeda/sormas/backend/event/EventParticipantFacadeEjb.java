@@ -115,7 +115,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public List<String>  getAllActiveUuids() {
+	public List<String> getAllActiveUuids() {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
@@ -443,6 +443,14 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@Override
 	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
 		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+		return new EventParticipantReferenceDto(eventParticipant.getUuid());
+	}
+
+	@Override
+	public EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid) {
+		Event event = eventService.getByUuid(eventUuid);
+		EventParticipant eventParticipant =
+			event.getEventPersons().stream().filter(ep -> !ep.isDeleted() && ep.getPerson().getUuid().equals(personUuid)).findFirst().orElse(null);
 		return new EventParticipantReferenceDto(eventParticipant.getUuid());
 	}
 

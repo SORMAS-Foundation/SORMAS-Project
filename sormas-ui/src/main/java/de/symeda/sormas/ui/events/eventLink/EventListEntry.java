@@ -41,6 +41,7 @@ public class EventListEntry extends HorizontalLayout {
 
 	private final EventIndexDto event;
 	private Button editButton;
+	private Button unlinkEventButton;
 
 	public EventListEntry(EventIndexDto event) {
 		this.event = event;
@@ -110,6 +111,24 @@ public class EventListEntry extends HorizontalLayout {
 		}
 
 		editButton.addClickListener(editClickListener);
+	}
+
+	public void addUnlinkEventListener(int rowIndex, Button.ClickListener unlinkEventClickListener) {
+		if (unlinkEventButton == null) {
+			unlinkEventButton = ButtonHelper.createIconButtonWithCaption(
+				"unlink-event-" + rowIndex,
+				null,
+				VaadinIcons.UNLINK,
+				null,
+				ValoTheme.BUTTON_LINK,
+				CssStyles.BUTTON_COMPACT);
+
+			addComponent(unlinkEventButton);
+			setComponentAlignment(unlinkEventButton, Alignment.MIDDLE_RIGHT);
+			setExpandRatio(unlinkEventButton, 0);
+		}
+
+		unlinkEventButton.addClickListener(unlinkEventClickListener);
 	}
 
 	public EventIndexDto getEvent() {

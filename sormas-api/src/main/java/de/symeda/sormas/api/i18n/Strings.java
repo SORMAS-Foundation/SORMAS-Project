@@ -473,6 +473,7 @@ public interface Strings {
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
+	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
