@@ -322,9 +322,10 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = '" + district.getUuid() + "'" : "";
 			final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = '" + campaign.getUuid() +  "'" : "";
 			final String jurisdictionGrouping =
-					(district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
-					region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : "")
-							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME;
+					district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
+							region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : 
+									area != null ? ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME :
+											", " + Area.TABLE_NAME + "." + Area.UUID + ", " + Area.TABLE_NAME + "." + Area.NAME;
 			//@formatter:on
 
 			// SELECT
@@ -358,13 +359,15 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				selectBuilder.append(", null as fieldId, null as fieldCaption, count(formId) as sumValue,");
 			}
 
-			selectBuilder.append(Region.TABLE_NAME)
-				.append(".")
-				.append(Region.UUID)
-				.append(", ")
-				.append(Region.TABLE_NAME)
-				.append(".")
-				.append(Region.NAME);
+			if (district != null) {
+				appendInfrastructureSelection(selectBuilder, Community.TABLE_NAME, Community.NAME);
+			} else if (region != null) {
+				appendInfrastructureSelection(selectBuilder, District.TABLE_NAME, District.NAME);
+			} else if (area != null) {
+				appendInfrastructureSelection(selectBuilder, Region.TABLE_NAME, Region.NAME);
+			} else {
+				appendInfrastructureSelection(selectBuilder, Area.TABLE_NAME, Area.NAME);
+			}
 
 			// JOINS
 			StringBuilder joinBuilder = new StringBuilder(" LEFT JOIN ").append(CampaignFormMeta.TABLE_NAME)
@@ -492,6 +495,10 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					.collect(Collectors.toList()));
 		}
 		return resultData;
+	}
+
+	private void appendInfrastructureSelection(StringBuilder sb, String tableNameField, String nameField) {
+		sb.append(tableNameField).append(".").append(AbstractDomainObject.UUID).append(", ").append(tableNameField).append(".").append(nameField);
 	}
 
 	@Override

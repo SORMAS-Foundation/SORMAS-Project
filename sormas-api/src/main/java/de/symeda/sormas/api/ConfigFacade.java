@@ -90,7 +90,11 @@ public interface ConfigFacade {
 
 	int getMapZoom();
 
-	String getGeocodingOsgtsEndpoint();
+	String getGeocodingServiceUrlTemplate();
+
+	String getGeocodingLongitudeJsonPath();
+
+	String getGeocodingLatitudeJsonPath();
 
 	SymptomJournalConfig getSymptomJournalConfig();
 
