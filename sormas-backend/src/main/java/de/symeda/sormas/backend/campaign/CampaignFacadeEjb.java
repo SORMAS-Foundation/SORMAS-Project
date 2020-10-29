@@ -243,12 +243,15 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	public List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid) {
 		final List<CampaignDashboardElement> result = new ArrayList<>();
 		if (campaignUuid != null) {
-			List<CampaignDashboardElement> dashboardElements = campaignService.getByUuid(campaignUuid).getDashboardElements();
+			final Campaign campaign = campaignService.getByUuid(campaignUuid);
+			validate(toDto(campaign));
+			List<CampaignDashboardElement> dashboardElements = campaign.getDashboardElements();
 			if (dashboardElements != null) {
 				result.addAll(dashboardElements);
 			}
 		} else {
-			campaignService.getAll().forEach(campaign -> {
+			campaignService.getAllActive().forEach(campaign -> {
+				validate(toDto(campaign));
 				if (campaign.getDashboardElements() != null) {
 					result.addAll(campaign.getDashboardElements());
 				}
