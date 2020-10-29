@@ -44,20 +44,22 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 		menu.removeAllViews();
 
 		menu.addView(
-			CampaignsView.VIEW_NAME,
-			I18nProperties.getPrefixCaption("View", CampaignsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-			params);
-		menu.addView(
 			CampaignDataView.VIEW_NAME,
 			I18nProperties.getPrefixCaption("View", CampaignDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 			params);
+		menu.addView(
+			CampaignsView.VIEW_NAME,
+			I18nProperties.getPrefixCaption("View", CampaignsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+			params);
+
 	}
 
 	public static void registerViews(Navigator navigator) {
-		navigator.addView(CampaignsView.VIEW_NAME, CampaignsView.class);
-		navigator.addView(CampaignView.VIEW_NAME, CampaignView.class);
 		navigator.addView(CampaignDataView.VIEW_NAME, CampaignDataView.class);
 		navigator.addView(CampaignFormDataView.VIEW_NAME, CampaignFormDataView.class);
+		navigator.addView(CampaignsView.VIEW_NAME, CampaignsView.class);
+		navigator.addView(CampaignView.VIEW_NAME, CampaignView.class);
+
 	}
 
 	@Override

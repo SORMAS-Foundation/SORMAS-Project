@@ -143,9 +143,14 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		return service.getByUuids(uuids).stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
 	}
 
+    @Override
+    public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
+        return service.getCampaignFormMetasAsReferencesByCampaign(uuid);
+    }
+
 	@Override
-	public void validateAllFormMetas() {
-		List<CampaignFormMeta> forms = service.getAll();
+    public void validateAllFormMetas() {
+        List<CampaignFormMeta> forms = service.getAll();
 
 		for (CampaignFormMeta form : forms) {
 			try {
