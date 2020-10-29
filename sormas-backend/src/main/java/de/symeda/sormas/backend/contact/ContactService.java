@@ -1102,8 +1102,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = and(cb, filter, cb.equal(from.get(Contact.RETURNING_TRAVELER), contactCriteria.getReturningTraveler()));
 		}
 		boolean hasEventLikeCriteria = StringUtils.isNotBlank(contactCriteria.getEventLike());
-		boolean hasOnlyContactsWithSourceCaseInEvent = Boolean.TRUE.equals(contactCriteria.getOnlyContactsWithSourceCaseInEvent());
-		if (hasEventLikeCriteria || hasOnlyContactsWithSourceCaseInEvent) {
+		boolean hasOnlyContactsSharingEventWithSourceCase = Boolean.TRUE.equals(contactCriteria.getOnlyContactsSharingEventWithSourceCase());
+		if (hasEventLikeCriteria || hasOnlyContactsSharingEventWithSourceCase) {
 			Join<Person, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = joins.getEvent();
 
@@ -1127,7 +1127,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					}
 				}
 			}
-			if (hasOnlyContactsWithSourceCaseInEvent) {
+			if (hasOnlyContactsSharingEventWithSourceCase) {
 				filter = and(cb, filter, cb.equal(event.get(Event.UUID), joins.getCaseEvent().get(Event.UUID)));
 			}
 		}

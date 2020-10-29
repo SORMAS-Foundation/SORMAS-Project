@@ -430,7 +430,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(
 			1,
 			getContactFacade()
-				.getIndexList(new ContactCriteria().eventLike("signal description").onlyContactsWithSourceCaseInEvent(true), 0, 100, null)
+				.getIndexList(new ContactCriteria().eventLike("signal description").onlyContactsSharingEventWithSourceCase(true), 0, 100, null)
 				.size());
 	}
 

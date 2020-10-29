@@ -78,7 +78,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
 			ContactCriteria.WITH_EXTENDED_QUARANTINE,
 			ContactCriteria.WITH_REDUCED_QUARANTINE,
-			ContactCriteria.ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT)
+			ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -284,8 +284,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			moreFiltersContainer,
 			CheckBox.class,
 			FieldConfiguration.withCaptionAndStyle(
-				ContactCriteria.ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT,
-				I18nProperties.getCaption(Captions.contactOnlyWithSourceCaseInEvent),
+				ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE,
+				I18nProperties.getCaption(Captions.contactOnlyWithSharedEventWithSourceCase),
 				null,
 				CHECKBOX_STYLE));
 
