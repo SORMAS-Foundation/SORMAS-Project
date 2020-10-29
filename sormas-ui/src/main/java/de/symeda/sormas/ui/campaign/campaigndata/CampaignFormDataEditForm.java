@@ -18,9 +18,7 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
-import java.util.Comparator;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.vaadin.ui.GridLayout;
 import com.vaadin.v7.data.Validator;
@@ -46,7 +44,6 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	public static final String CAMPAIGN_FORM_LOC = "campaignFormLoc";
 	private AreaReferenceDto area;
 	public static final String AREA = "area";
-
 
 	public AreaReferenceDto getArea() {
 		return area;
@@ -95,43 +92,33 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
 		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)){
-			ComboBox cbArea = addCustomField(CampaignFormDataEditForm.AREA,AreaReferenceDto.class,ComboBox.class);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			ComboBox cbArea = addCustomField(CampaignFormDataEditForm.AREA, AreaReferenceDto.class, ComboBox.class);
 			cbArea.setCaption(I18nProperties.getCaption(Captions.CampaignFormData_area));
-			setRequired(true,CampaignFormDataEditForm.AREA);
+			setRequired(true, CampaignFormDataEditForm.AREA);
 			cbArea.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 			cbArea.addValueChangeListener(e -> {
-				AreaReferenceDto area =(AreaReferenceDto) e.getProperty().getValue();
+				AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 
-				if(Objects.nonNull(area) && cbRegion.isEmpty()) {
-					cbRegion.removeAllItems();
-					cbRegion.addItems(
-						FacadeProvider.getRegionFacade()
-							.getAllActiveByArea((area.getUuid()))
-							.stream()
-							.sorted(Comparator.comparing(RegionReferenceDto::getCaption))
-							.collect(Collectors.toList()));
-				} else if(Objects.isNull(area)){
-					cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-				} else {
+				if (area == null) {
 					cbRegion.setValue(null);
-					cbRegion.removeAllItems();
-					cbRegion.addItems(
-						FacadeProvider.getRegionFacade()
-							.getAllActiveByArea((area.getUuid()))
-							.stream()
-							.sorted(Comparator.comparing(RegionReferenceDto::getCaption))
-							.collect(Collectors.toList()));
 				}
+
+				FieldHelper.updateItems(
+					cbRegion,
+					area != null
+						? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid())
+						: FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			});
 			cbRegion.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-				if(Objects.nonNull(region)){
+				if (Objects.nonNull(region)) {
 					cbArea.setValue(FacadeProvider.getRegionFacade().getRegionByUuid(region.getUuid()).getArea());
 				}
 			});
 		}
 	}
+
 	private void addInfrastructureListeners(ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity) {
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
