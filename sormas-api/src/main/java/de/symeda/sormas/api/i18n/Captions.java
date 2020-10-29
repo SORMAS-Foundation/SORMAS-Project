@@ -137,8 +137,8 @@ public interface Captions {
 	String Campaign_area = "Campaign.area";
 	String Campaign_creatingUser = "Campaign.creatingUser";
 	String Campaign_description = "Campaign.description";
-	String Campaign_edit = "Campaign.edit";
 	String Campaign_district = "Campaign.district";
+	String Campaign_edit = "Campaign.edit";
 	String Campaign_endDate = "Campaign.endDate";
 	String Campaign_name = "Campaign.name";
 	String Campaign_region = "Campaign.region";
