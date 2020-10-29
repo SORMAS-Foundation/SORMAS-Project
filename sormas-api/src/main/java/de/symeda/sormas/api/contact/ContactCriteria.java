@@ -59,6 +59,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String EVENT_LIKE = "eventLike";
+	public static final String INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS = "includeContactsFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
 
 	private static final long serialVersionUID = 5114202107622217837L;
@@ -109,6 +110,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private YesNoUnknown returningTraveler;
 	private String eventLike;
 	private String eventUuid;
+	private Boolean includeContactsFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsSharingEventWithSourceCase;
 
 	public UserRole getReportingUserRole() {
@@ -520,5 +522,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria onlyContactsSharingEventWithSourceCase(Boolean onlyContactsSharingEventWithSourceCase) {
 		this.onlyContactsSharingEventWithSourceCase = onlyContactsSharingEventWithSourceCase;
 		return this;
+	}
+
+	public Boolean getIncludeContactsFromOtherJurisdictions() {
+		return includeContactsFromOtherJurisdictions;
+	}
+
+	public void setIncludeContactsFromOtherJurisdictions(Boolean includeContactsFromOtherJurisdictions) {
+		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
 	}
 }

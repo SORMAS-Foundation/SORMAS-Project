@@ -69,7 +69,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			+ filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
 					CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
 					CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, CaseCriteria.WITH_EXTENDED_QUARANTINE,
-					CaseCriteria.WITH_REDUCED_QUARANTINE, CaseCriteria.ONLY_CASES_WITH_EVENTS)
+					CaseCriteria.WITH_REDUCED_QUARANTINE, CaseCriteria.ONLY_CASES_WITH_EVENTS, CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
 			+ loc(WEEK_AND_DATE_FILTER);
 	//@formatter:on
 
@@ -272,6 +272,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.ONLY_CASES_WITH_EVENTS,
 				I18nProperties.getCaption(Captions.caseFilterRelatedToEvent),
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS,
+				I18nProperties.getCaption(Captions.caseFilterInludeCasesFromOtherJurisdictions),
+				I18nProperties.getDescription(Descriptions.descCaseFilterIncludeCasesFromOtherJurisdictions),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
