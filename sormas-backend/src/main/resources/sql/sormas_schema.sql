@@ -5505,4 +5505,23 @@ ALTER TABLE visit_history ADD COLUMN origin varchar(255);
 UPDATE visit SET origin='USER';
 
 INSERT INTO schema_version (version_number, comment) VALUES (269, 'Add new field origin to visits as per feature #2083');
+-- 2020-10-22 Sormas 2 Sormas samples #3210
+ALTER TABLE samples ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE samples ADD CONSTRAINT fk_samples_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN sample_id bigint;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (270, 'Sormas 2 Sormas samples #3210');
+
+-- 2020-10-12 Add event investigation status
+ALTER TABLE events ADD COLUMN eventInvestigationStatus varchar(255);
+ALTER TABLE events_history ADD COLUMN eventInvestigationStatus varchar(255);
+ALTER TABLE events ADD COLUMN eventInvestigationStartDate timestamp;
+ALTER TABLE events_history ADD COLUMN eventInvestigationStartDate timestamp;
+ALTER TABLE events ADD COLUMN eventInvestigationEndDate timestamp;
+ALTER TABLE events_history ADD COLUMN eventInvestigationEndDate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (271, 'Add event.eventInvestigationStatus #2992');
 -- *** Insert new sql commands BEFORE this line ***

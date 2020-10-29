@@ -296,7 +296,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return target;
 	}
 
-	private PathogenTestDto convertToDto(PathogenTest source, Pseudonymizer pseudonymizer) {
+	public PathogenTestDto convertToDto(PathogenTest source, Pseudonymizer pseudonymizer) {
 		PathogenTestDto target = toDto(source);
 
 		pseudonymizeDto(source, target, pseudonymizer);

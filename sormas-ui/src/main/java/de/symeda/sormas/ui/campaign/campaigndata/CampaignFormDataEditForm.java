@@ -18,6 +18,13 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import java.util.Objects;
 
 import com.vaadin.ui.GridLayout;
@@ -104,9 +111,23 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 				if (Objects.nonNull(area) && cbRegion.isEmpty()) {
 					cbRegion.removeAllItems();
-					cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea((area.getUuid())));
-				} else if (Objects.isNull(area)) {
+					cbRegion.addItems(
+						FacadeProvider.getRegionFacade()
+							.getAllActiveByArea((area.getUuid()))
+							.stream()
+							.sorted(Comparator.comparing(RegionReferenceDto::getCaption))
+							.collect(Collectors.toList()));
+				} else if(Objects.isNull(area)){
 					cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				} else {
+					cbRegion.setValue(null);
+					cbRegion.removeAllItems();
+					cbRegion.addItems(
+						FacadeProvider.getRegionFacade()
+							.getAllActiveByArea((area.getUuid()))
+							.stream()
+							.sorted(Comparator.comparing(RegionReferenceDto::getCaption))
+							.collect(Collectors.toList()));
 				}
 			});
 			cbRegion.addValueChangeListener(e -> {
