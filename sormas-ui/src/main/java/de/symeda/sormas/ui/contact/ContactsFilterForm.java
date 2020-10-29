@@ -6,6 +6,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.Date;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
@@ -78,7 +80,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
 			ContactCriteria.WITH_EXTENDED_QUARANTINE,
 			ContactCriteria.WITH_REDUCED_QUARANTINE,
-			ContactCriteria.ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT)
+			ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -184,11 +186,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		if (FacadeProvider.getConfigFacade().isExternalJournalActive()) {
 			addField(
-					moreFiltersContainer,
-					FieldConfiguration.withCaptionAndPixelSized(
-							ContactCriteria.SYMPTOM_JOURNAL_STATUS,
-							I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
-							240));
+				moreFiltersContainer,
+				FieldConfiguration.withCaptionAndPixelSized(
+					ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
+					240));
 		}
 		addField(moreFiltersContainer, ComboBox.class, FieldConfiguration.pixelSized(ContactCriteria.RETURNING_TRAVELER, 200));
 		addField(
@@ -284,8 +286,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			moreFiltersContainer,
 			CheckBox.class,
 			FieldConfiguration.withCaptionAndStyle(
-				ContactCriteria.ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT,
-				I18nProperties.getCaption(Captions.contactOnlyWithSourceCaseInEvent),
+				ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE,
+				I18nProperties.getCaption(Captions.contactOnlyWithSharedEventWithSourceCase),
 				null,
 				CHECKBOX_STYLE));
 
@@ -316,6 +318,15 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		}
 		case ContactCriteria.FOLLOW_UP_UNTIL_TO: {
 			getValue().followUpUntilToPrecise(event.getProperty().getValue() != null);
+			break;
+		}
+		case ContactCriteria.EVENT_LIKE: {
+			String eventLike = (String) event.getProperty().getValue();
+			if (StringUtils.isBlank(eventLike)) {
+				clearAndDisableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
+			} else {
+				enableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
+			}
 			break;
 		}
 		}
@@ -374,6 +385,12 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		} else {
 			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
 			weekAndDateFilter.getDateToFilter().setValue(dateTo);
+		}
+
+		if (StringUtils.isBlank(newValue.getEventLike())) {
+			clearAndDisableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
+		} else {
+			enableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
 		}
 	}
 
