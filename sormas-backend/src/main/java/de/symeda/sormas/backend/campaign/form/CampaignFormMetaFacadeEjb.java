@@ -26,7 +26,12 @@ import org.jsoup.safety.Whitelist;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.campaign.form.*;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
