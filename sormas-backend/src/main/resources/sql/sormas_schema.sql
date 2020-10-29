@@ -5515,4 +5515,13 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sa
 
 INSERT INTO schema_version (version_number, comment) VALUES (270, 'Sormas 2 Sormas samples #3210');
 
+-- 2020-10-12 Add event investigation status
+ALTER TABLE events ADD COLUMN eventInvestigationStatus varchar(255);
+ALTER TABLE events_history ADD COLUMN eventInvestigationStatus varchar(255);
+ALTER TABLE events ADD COLUMN eventInvestigationStartDate timestamp;
+ALTER TABLE events_history ADD COLUMN eventInvestigationStartDate timestamp;
+ALTER TABLE events ADD COLUMN eventInvestigationEndDate timestamp;
+ALTER TABLE events_history ADD COLUMN eventInvestigationEndDate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (271, 'Add event.eventInvestigationStatus #2992');
 -- *** Insert new sql commands BEFORE this line ***

@@ -35,6 +35,9 @@ public class EventDto extends PseudonymizableDto {
 	public static final String I18N_PREFIX = "Event";
 
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
+	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String PARTICIPANTS_COUNT = "participantCount";
 	public static final String EVENT_ACTIONS = "eventActions";
@@ -66,6 +69,9 @@ public class EventDto extends PseudonymizableDto {
 
 	@Required
 	private EventStatus eventStatus;
+	private EventInvestigationStatus eventInvestigationStatus;
+	private Date eventInvestigationStartDate;
+	private Date eventInvestigationEndDate;
 	private String externalId;
 	private String eventTitle;
 	@Required
@@ -101,6 +107,7 @@ public class EventDto extends PseudonymizableDto {
 		event.setUuid(DataHelper.createUuid());
 
 		event.setEventStatus(EventStatus.SIGNAL);
+		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
 		event.setEventLocation(LocationDto.build());
 		event.setReportDateTime(new Date());
 
@@ -113,6 +120,30 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public EventInvestigationStatus getEventInvestigationStatus() {
+		return eventInvestigationStatus;
+	}
+
+	public void setEventInvestigationStatus(EventInvestigationStatus eventInvestigationStatus) {
+		this.eventInvestigationStatus = eventInvestigationStatus;
+	}
+
+	public Date getEventInvestigationStartDate() {
+		return eventInvestigationStartDate;
+	}
+
+	public void setEventInvestigationStartDate(Date eventInvestigationStartDate) {
+		this.eventInvestigationStartDate = eventInvestigationStartDate;
+	}
+
+	public Date getEventInvestigationEndDate() {
+		return eventInvestigationEndDate;
+	}
+
+	public void setEventInvestigationEndDate(Date eventInvestigationEndDate) {
+		this.eventInvestigationEndDate = eventInvestigationEndDate;
 	}
 
 	public String getExternalId() {

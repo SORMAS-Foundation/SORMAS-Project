@@ -286,6 +286,10 @@ public class EventController {
 						eventDto.setEventStatus(updatedTempEvent.getEventStatus());
 					}
 
+					if (form.getEventInvestigationStatusCheckbox().getValue() == true) {
+						eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
+					}
+
 					FacadeProvider.getEventFacade().saveEvent(eventDto);
 				}
 				popupWindow.close();
