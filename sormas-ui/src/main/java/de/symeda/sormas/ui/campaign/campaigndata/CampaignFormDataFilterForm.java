@@ -46,10 +46,6 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
 	}
 
-	protected CampaignFormDataFilterForm(ComboBox cbCampaign) {
-		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
-	}
-
 	@Override
 	protected String[] getMainFilterLocators() {
 		return new String[] {

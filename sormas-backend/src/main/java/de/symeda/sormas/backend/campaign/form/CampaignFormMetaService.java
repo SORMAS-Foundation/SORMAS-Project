@@ -54,7 +54,7 @@ public class CampaignFormMetaService extends AbstractAdoService<CampaignFormMeta
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormMetaReferenceDto> cq = cb.createQuery(CampaignFormMetaReferenceDto.class);
 		Root<Campaign> campaignRoot = cq.from(Campaign.class);
-		Join<CampaignFormMeta, Campaign> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
+		Join<Campaign, CampaignFormMeta> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
 		Predicate filter = cb.equal(campaignRoot.get(Campaign.UUID), uuid);
 		cq = cq.where(filter);
 		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID), campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));

@@ -86,7 +86,6 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
-			column.setMinimumWidth(500);
 		}
 		getColumn(EDIT_BTN_ID).setWidth(40);
 		getColumn(VIEW_FORMS_BTN_ID).setWidth(40);

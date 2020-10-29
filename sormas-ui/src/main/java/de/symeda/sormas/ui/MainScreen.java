@@ -103,7 +103,7 @@ public class MainScreen extends HorizontalLayout {
 			views.add(ContactsDashboardView.VIEW_NAME);
 		}
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
-			views.add(CampaignDataView.VIEW_NAME);
+			views.add(CampaignDashboardView.VIEW_NAME);
 		}
 
 		return views;
@@ -325,7 +325,7 @@ public class MainScreen extends HorizontalLayout {
 					} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
 						defaultView = ContactsDashboardView.VIEW_NAME;
 					} else {
-						defaultView = CampaignDataView.VIEW_NAME;
+						defaultView = CampaignDashboardView.VIEW_NAME;
 					}
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					defaultView = SamplesView.VIEW_NAME;
