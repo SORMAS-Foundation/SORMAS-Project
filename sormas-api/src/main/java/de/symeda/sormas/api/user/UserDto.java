@@ -72,7 +72,6 @@ public class UserDto extends EntityDto {
 
 	private Set<UserRole> userRoles;
 
-	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	// community of community informant
@@ -178,14 +177,6 @@ public class UserDto extends EntityDto {
 
 	public void setAssociatedOfficer(UserReferenceDto associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
-	}
-
-	public AreaReferenceDto getArea() {
-		return area;
-	}
-
-	public void setArea(AreaReferenceDto area) {
-		this.area = area;
 	}
 
 	public RegionReferenceDto getRegion() {

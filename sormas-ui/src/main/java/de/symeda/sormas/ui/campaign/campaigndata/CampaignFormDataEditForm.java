@@ -22,11 +22,6 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
-import java.util.Objects;
-
 import com.vaadin.ui.GridLayout;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -101,6 +96,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
 		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
+		final UserDto currentUser = UserProvider.getCurrent().getUser();
+		final RegionReferenceDto currentUserRegion = currentUser.getRegion();
+
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			ComboBox cbArea = addCustomField(CampaignFormDataEditForm.AREA, AreaReferenceDto.class, ComboBox.class);
 			cbArea.setCaption(I18nProperties.getCaption(Captions.CampaignFormData_area));
@@ -117,7 +115,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 							.stream()
 							.sorted(Comparator.comparing(RegionReferenceDto::getCaption))
 							.collect(Collectors.toList()));
-				} else if(Objects.isNull(area)){
+				} else if (Objects.isNull(area)) {
 					cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				} else {
 					cbRegion.setValue(null);
@@ -136,12 +134,17 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 					cbArea.setValue(FacadeProvider.getRegionFacade().getRegionByUuid(region.getUuid()).getArea());
 				}
 			});
+			if (currentUserRegion != null) {
+				final AreaReferenceDto area = FacadeProvider.getRegionFacade().getRegionByUuid(currentUserRegion.getUuid()).getArea();
+				cbArea.setValue(area);
+				if (currentUserRegion != null) {
+					cbArea.setEnabled(false);
+				}
+			}
 		}
 
-		final UserDto currentUser = UserProvider.getCurrent().getUser();
-
-		if (currentUser.getRegion() != null) {
-			cbRegion.setValue(currentUser.getRegion());
+		if (currentUserRegion != null) {
+			cbRegion.setValue(currentUserRegion);
 			cbRegion.setEnabled(false);
 		}
 		if (currentUser.getDistrict() != null) {
