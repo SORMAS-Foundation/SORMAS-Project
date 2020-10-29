@@ -38,6 +38,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
@@ -137,6 +138,7 @@ public final class RetroProvider {
 				.registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
 				.registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
 				.registerSubtype(ClassificationPathogenTestCriteriaDto.class, "ClassificationPathogenTestCriteriaDto")
+				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
 				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");

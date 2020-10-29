@@ -130,7 +130,7 @@ public class CaseBackendTest {
 		caze.getHospitalization().setIsolated(YesNoUnknown.NO);
 		caze.getPerson().setNickname("Hansi");
 		caze.getSymptoms().setTemperature(37.0f);
-		caze.getEpiData().setBats(YesNoUnknown.NO);
+		caze.getEpiData().setAreaInfectedAnimals(YesNoUnknown.NO);
 		caze.getPerson().getAddress().setCity("AppCity");
 
 		DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
@@ -158,7 +158,7 @@ public class CaseBackendTest {
 		mergeCase.getHospitalization().setIsolated(YesNoUnknown.YES);
 		mergeCase.getPerson().setNickname("Franzi");
 		mergeCase.getSymptoms().setTemperature(36.5f);
-		mergeCase.getEpiData().setBats(YesNoUnknown.YES);
+		mergeCase.getEpiData().setAreaInfectedAnimals(YesNoUnknown.YES);
 		mergeCase.getPerson().getAddress().setCity("ServerCity");
 
 		// Assert that the cloning has worked properly
@@ -177,7 +177,7 @@ public class CaseBackendTest {
 		assertThat(updatedCase.getEpidNumber(), is("ServerEpidNumber"));
 		assertThat(updatedCase.getHospitalization().getIsolated(), is(YesNoUnknown.YES));
 		assertThat(updatedCase.getSymptoms().getTemperature(), is(36.5f));
-		assertThat(updatedCase.getEpiData().getBats(), is(YesNoUnknown.YES));
+		assertThat(updatedCase.getEpiData().getAreaInfectedAnimals(), is(YesNoUnknown.YES));
 		assertThat(updatedCase.getPerson().getNickname(), is("Franzi"));
 		assertThat(updatedCase.getPerson().getAddress().getCity(), is("ServerCity"));
 	}

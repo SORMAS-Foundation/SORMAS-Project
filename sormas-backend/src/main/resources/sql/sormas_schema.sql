@@ -5676,8 +5676,7 @@ $BODY$;
 
 ALTER FUNCTION migrate_epidata(text, text, text, text, text, text, text, text) OWNER TO sormas_user;
 
-UPDATE epidata SET areainfectedanimals = 'YES' WHERE eatingrawanimalsininfectedarea = 'YES';
-UPDATE epidata SET eatingrawanimals = 'YES' WHERE eatingrawanimalsininfectedarea = 'YES';
+UPDATE epidata SET areainfectedanimals = 'YES', eatingRawAnimals = 'YES' WHERE eatingrawanimalsininfectedarea = 'YES';
 
 SELECT migrate_epidata('processingconfirmedcasefluidunsafe', 'handlingsamples', 'YES', 'WORK');
 SELECT migrate_epidata('percutaneouscaseblood', 'percutaneous', 'YES', 'WORK');
@@ -5744,7 +5743,8 @@ FROM last_exposure_map;
 DROP TABLE IF EXISTS last_exposure_map;
 
 UPDATE exposures SET typeofanimaldetails = otheranimalsdetails FROM epidata WHERE epidata.id = epidata_id AND typeofanimal = 'OTHER';
-UPDATE exposures SET watersource = epidata.watersource, watersourcedetails = epidata.watersourceother FROM epidata WHERE epidata.id = epidata_id AND waterbody = 'YES';
+UPDATE exposures SET animalcontacttypedetails = kindofexposuredetails FROM epidata WHERE epidata.id = epidata_id AND animalcontacttype = 'OTHER';
+UPDATE exposures SET watersource = epidata.watersource, watersourcedetails = epidata.watersourceother FROM epidata WHERE epidata.id = epidata_id AND bodyofwater = 'YES';
 UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure; this exposure may be merged with another exposure with animal contact' WHERE exposuretype = 'ANIMAL_CONTACT' AND typeofanimal IS NULL;
 
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirmedcase = 'YES' OR directcontactprobablecase = 'YES' OR closecontactprobablecase = 'YES' OR contactwithsourcerespiratorycase = 'YES';
@@ -5758,6 +5758,10 @@ ALTER TABLE epidata DROP COLUMN rodents, DROP COLUMN bats, DROP COLUMN primates,
     DROP COLUMN kindofexposurebite, DROP COLUMN kindofexposuretouch, DROP COLUMN kindofexposurescratch, DROP COLUMN kindofexposurelick, DROP COLUMN kindofexposureother,
     DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
     DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;
+
+UPDATE epidata SET exposuredetailsknown = 'YES' WHERE (exposuredetailsknown IS NULL OR exposuredetailsknown != 'YES') AND (SELECT COUNT(id) FROM exposures WHERE exposures.epidata_id = epidata.id LIMIT 1) > 0;
+
+UPDATE epidata SET changedate = now();
 
 INSERT INTO schema_version (version_number, comment) VALUES (269, 'Epi data migration #2949');
 

@@ -42,6 +42,17 @@ public class Exposure extends PseudonymizableAdo {
 
 	public static final String EPI_DATA = "epiData";
 	public static final String LOCATION = "location";
+	public static final String HANDLING_SAMPLES = "handlingSamples";
+	public static final String PERCUTANEOUS = "percutaneous";
+	public static final String PHYSICAL_CONTACT_WITH_BODY = "physicalContactWithBody";
+	public static final String ANIMAL_CONDITION = "animalCondition";
+	public static final String EATING_RAW_ANIMAL_PRODUCTS = "eatingRawAnimalProducts";
+	public static final String TYPE_OF_ANIMAL = "typeOfAnimal";
+	public static final String BODY_OF_WATER = "bodyOfWater";
+	public static final String HABITATION_TYPE = "habitationType";
+	public static final String ANIMAL_MARKET = "animalMarket";
+	public static final String RISK_AREA = "riskArea";
+	public static final String ANIMAL_CONTACT_TYPE = "animalContactType";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private EpiData epiData;
@@ -511,5 +522,29 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setSeatNumber(String seatNumber) {
 		this.seatNumber = seatNumber;
+	}
+
+	public YesNoUnknown getProphylaxis() {
+		return prophylaxis;
+	}
+
+	public void setProphylaxis(YesNoUnknown prophylaxis) {
+		this.prophylaxis = prophylaxis;
+	}
+
+	public Date getProphylaxisDate() {
+		return prophylaxisDate;
+	}
+
+	public void setProphylaxisDate(Date prophylaxisDate) {
+		this.prophylaxisDate = prophylaxisDate;
+	}
+
+	public YesNoUnknown getRiskArea() {
+		return riskArea;
+	}
+
+	public void setRiskArea(YesNoUnknown riskArea) {
+		this.riskArea = riskArea;
 	}
 }

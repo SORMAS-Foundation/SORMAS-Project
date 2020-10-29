@@ -39,7 +39,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
+import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.epidata.AnimalCondition;
+import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -137,7 +144,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 238;
+	public static final int DATABASE_VERSION = 242;
 
 	private static DatabaseHelper instance = null;
 
@@ -1691,6 +1698,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EpiData.class).executeRaw("DROP TABLE epidatatravel;");
 				getDao(EpiData.class).executeRaw("DROP TABLE epidataburial;");
 
+			case 238:
+				currentVersion = 238;
+				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN contactWithSourceCaseKnown varchar(255);");
+				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN highTransmissionRiskArea varchar(255);");
+				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN largeOutbreaksArea varchar(255);");
+
+			case 239:
+				currentVersion = 239;
+				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN exposureDetailsKnown varchar(255);");
+
+			case 241:
+				currentVersion = 241;
+
+				migrateEpiData();
+
 				// ATTENTION: break should only be done after last version
 				break;
 			default:
@@ -1716,6 +1738,170 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		if (result[index] != null && result[index] instanceof Date) {
 			Array.set(result, index, ((Date) result[index]).getTime());
 		}
+	}
+
+	private void migrateEpiData() throws SQLException {
+		getDao(EpiData.class)
+			.executeRaw("UPDATE epidata SET wildbirds = 'YES', poultryEat = 'YES' WHERE poultry = 'YES' AND changeDate = 0 AND snapshot = 0;");
+
+		// Epi data field names sometimes don't match the actual field names because the columns were renamed in the past
+		migrateEpiDataField("processingConfirmedCaseFluidUnsafe", Exposure.HANDLING_SAMPLES, YesNoUnknown.YES, ExposureType.WORK);
+		migrateEpiDataField("percutaneousCaseBlood", Exposure.PERCUTANEOUS, YesNoUnknown.YES, ExposureType.WORK);
+		migrateEpiDataField("wildbirdsLocation", Exposure.PHYSICAL_CONTACT_WITH_BODY, YesNoUnknown.YES, ExposureType.BURIAL);
+		migrateEpiDataField("wildbirdsDetails", Exposure.HANDLING_SAMPLES, YesNoUnknown.YES, ExposureType.WORK);
+		migrateEpiDataField(
+			"poultrySick",
+			Exposure.ANIMAL_CONDITION,
+			AnimalCondition.DEAD,
+			ExposureType.ANIMAL_CONTACT,
+			"poultryDate",
+			"poultryDate",
+			"poultrySickDetails",
+			"poultryLocation");
+		migrateEpiDataField(
+			"poultryEat",
+			Exposure.EATING_RAW_ANIMAL_PRODUCTS,
+			YesNoUnknown.YES,
+			ExposureType.ANIMAL_CONTACT,
+			null,
+			null,
+			"poultryDetails",
+			null);
+		migrateEpiDataField("rodents", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.RODENT, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("bats", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.BAT, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("primates", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.PRIMATE, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("swine", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.SWINE, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("birds", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.POULTRY, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("rabbits", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.RABBIT, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("cattle", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.CATTLE, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("dogs", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.DOG, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("cats", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.CAT, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("canidae", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.CANIDAE, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("camels", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.CAMEL, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("snakes", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.SNAKE, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("tickBite", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.TICK, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("fleaBite", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.FLEA, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("otherAnimals", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.OTHER, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("waterBody", Exposure.BODY_OF_WATER, YesNoUnknown.YES, ExposureType.OTHER, null, null, "waterBodyDetails", null);
+		migrateEpiDataField("visitedHealthFacility", Exposure.HABITATION_TYPE, HabitationType.MEDICAL, ExposureType.HABITATION);
+		migrateEpiDataField("visitedAnimalMarket", Exposure.ANIMAL_MARKET, YesNoUnknown.YES, ExposureType.OTHER);
+		migrateEpiDataField("areaConfirmedCases", Exposure.RISK_AREA, YesNoUnknown.YES, ExposureType.TRAVEL);
+		migrateEpiDataField("kindOfExposureBite", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.BITE, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("kindOfExposureTouch", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.TOUCH, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("kindOfExposureScratch", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.SCRATCH, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("kindOfExposureLick", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.LICK, ExposureType.ANIMAL_CONTACT);
+		migrateEpiDataField("kindOfExposureOther", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.OTHER, ExposureType.ANIMAL_CONTACT);
+
+		GenericRawResults<Object[]> lastExposureInfo = getDao(EpiData.class).queryRaw(
+			"SELECT id, dateOfLastExposure, placeOfLastExposure, animalCondition, animalVaccinationStatus, prophylaxisStatus, dateOfProphylaxis"
+				+ " FROM epidata WHERE changeDate = 0 AND snapshot = 0 AND (dateOfLastExposure IS NOT NULL OR placeOfLastExposure IS NOT NULL"
+				+ " OR animalCondition IS NOT NULL OR animalVaccinationStatus IS NOT NULL OR prophylaxisStatus IS NOT NULL OR dateOfProphylaxis IS NOT NULL);",
+			new DataType[] {
+				DataType.BIG_INTEGER,
+				DataType.DATE_LONG,
+				DataType.STRING,
+				DataType.ENUM_STRING,
+				DataType.ENUM_STRING,
+				DataType.ENUM_STRING,
+				DataType.DATE_LONG });
+
+		for (Object[] result : lastExposureInfo) {
+			formatRawResultString(result, 2, true);
+			formatRawResultString(result, 3, false);
+			formatRawResultString(result, 5, false);
+			formatRawResultDate(result, 1);
+			formatRawResultDate(result, 6);
+
+			long locationId = insertLocation((String) result[2]);
+			Vaccination vaccinationStatus = result[4] != null ? Vaccination.valueOf((String) result[4]) : null;
+
+			String exposureQuery = "INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
+				+ "startDate, endDate, animalCondition, animalVaccinated, prophylaxis, prophylaxisDate, description, pseudonymized, modified, snapshot) VALUES ('"
+				+ DataHelper.createUuid()
+				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
+				+ result[0] + ", " + locationId + ", '" + ExposureType.ANIMAL_CONTACT.name() + "', " + result[1] + ", " + result[1] + ", " + result[3]
+				+ ", "
+				+ (vaccinationStatus == Vaccination.VACCINATED
+					? "'" + YesNoUnknown.YES.name() + "'"
+					: vaccinationStatus == Vaccination.UNVACCINATED
+						? "'" + YesNoUnknown.NO.name() + "'"
+						: vaccinationStatus == Vaccination.UNKNOWN ? "'" + YesNoUnknown.UNKNOWN.name() + "'" : null)
+				+ ", " + result[5] + ", " + result[6] + ", "
+				+ "'Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact', 0, 0, 0);";
+			getDao(Exposure.class).executeRaw(exposureQuery);
+		}
+
+		getDao(Exposure.class).executeRaw(
+			"UPDATE exposures SET typeOfAnimalDetails = (SELECT otherAnimalsDetails FROM epidata WHERE id = exposures.epidata_id AND exposures.typeOfAnimal = 'OTHER');");
+		getDao(Exposure.class).executeRaw(
+			"UPDATE exposures SET animalContactTypeDetails = (SELECT kindOfExposureDetails FROM epidata WHERE id = exposures.epidata_id AND exposures.animalContactType = 'OTHER');");
+		getDao(Exposure.class).executeRaw(
+			"UPDATE exposures SET waterSource = (SELECT waterSource FROM epidata WHERE id = exposures.epidata_id AND exposures.bodyOfWater = 'YES');");
+		getDao(Exposure.class).executeRaw(
+			"UPDATE exposures SET waterSourceDetails = (SELECT waterSourceOther FROM epidata WHERE id = exposures.epidata_id AND exposures.bodyOfWater = 'YES');");
+		getDao(Exposure.class).executeRaw(
+			"UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure; this exposure may be merged with another exposure with animal contact' WHERE exposureType = 'ANIMAL_CONTACT' AND typeOfAnimal IS NULL;");
+		getDao(EpiData.class).executeRaw(
+			"UPDATE epidata SET contactWithSourceCaseKnown = 'YES' WHERE snapshot = 0 AND changeDate = 0 AND (directContactConfirmedCase = 'YES' OR directContactProbableCase = 'YES' OR closeContactProbableCase = 'YES' OR contactWithSourceRespiratoryCase = 'YES');");
+
+		getDao(EpiData.class).executeRaw(
+			"UPDATE epidata SET exposureDetailsKnown = 'YES' WHERE snapshot = 0 AND changeDate = 0 AND (exposureDetailsKnown IS NULL OR exposureDetailsKnown != 'YES') "
+				+ "AND (SELECT COUNT(id) FROM exposures WHERE exposures.epidata_id = epidata.id LIMIT 1) > 0;");
+	}
+
+	private void migrateEpiDataField(String epiDataFieldName, String exposuresFieldName, Enum<?> exposuresFieldValue, ExposureType exposureType)
+		throws SQLException {
+		migrateEpiDataField(epiDataFieldName, exposuresFieldName, exposuresFieldValue, exposureType, null, null, null, null);
+	}
+
+	private void migrateEpiDataField(
+		String epiDataFieldName,
+		String exposuresFieldName,
+		Enum<?> exposuresFieldValue,
+		ExposureType exposureType,
+		String startDateFieldName,
+		String endDateFieldName,
+		String descriptionFieldName,
+		String locationDetailsFieldName)
+		throws SQLException {
+
+		GenericRawResults<Object[]> epiDataInfo = getDao(EpiData.class).queryRaw(
+			"SELECT id, " + startDateFieldName + ", " + endDateFieldName + ", " + descriptionFieldName + ", " + locationDetailsFieldName
+				+ " FROM epidata WHERE changeDate = 0 AND snapshot = 0 AND " + epiDataFieldName + " = 'YES';",
+			new DataType[] {
+				DataType.BIG_INTEGER,
+				DataType.DATE_LONG,
+				DataType.DATE_LONG,
+				DataType.STRING,
+				DataType.STRING });
+
+		for (Object[] result : epiDataInfo) {
+			formatRawResultString(result, 3, true);
+			formatRawResultString(result, 4, true);
+			formatRawResultDate(result, 1);
+			formatRawResultDate(result, 2);
+
+			long locationId = insertLocation((String) result[4]);
+
+			String exposureQuery = "INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
+				+ exposuresFieldName + ", " + "startDate, endDate, description, pseudonymized, modified, snapshot) VALUES ('"
+				+ DataHelper.createUuid()
+				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
+				+ result[0] + ", " + locationId + ", '" + exposureType.name() + "', '" + exposuresFieldValue.name() + "', " + result[1] + ", "
+				+ result[2] + ", " + result[3] + ", 0, 0, 0);";
+			getDao(Exposure.class).executeRaw(exposureQuery);
+		}
+	}
+
+	private long insertLocation(String locationDetails) throws SQLException {
+		String locationQuery =
+			"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) VALUES ('"
+				+ DataHelper.createUuid()
+				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
+				+ locationDetails + ", 0, 0, 0);";
+		getDao(Location.class).executeRaw(locationQuery);
+
+		return getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
 	}
 
 	private void migrateEmbeddedEpiDataToExposures() throws SQLException {
