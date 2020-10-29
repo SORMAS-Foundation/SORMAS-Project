@@ -15,12 +15,7 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
@@ -37,11 +32,7 @@ import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
-import de.symeda.sormas.api.campaign.form.CampaignFormElement;
-import de.symeda.sormas.api.campaign.form.CampaignFormElementStyle;
-import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
-import de.symeda.sormas.api.campaign.form.CampaignFormTranslation;
-import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.api.campaign.form.*;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -271,7 +262,7 @@ public class CampaignFormBuilder {
 	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
-			((NullableOptionGroup) field).setValue(value instanceof Boolean ? (Boolean) value : null);
+			((NullableOptionGroup) field).setValue(value);
 			break;
 		case TEXT:
 		case NUMBER:
