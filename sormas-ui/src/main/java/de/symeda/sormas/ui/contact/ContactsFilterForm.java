@@ -20,6 +20,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -62,6 +63,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ContactCriteria.CONTACT_OFFICER,
 		ContactCriteria.REPORTING_USER_ROLE,
 		ContactCriteria.FOLLOW_UP_UNTIL_TO,
+		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
 		ContactCriteria.BIRTHDATE_YYYY,
 		ContactCriteria.BIRTHDATE_MM,
 		ContactCriteria.BIRTHDATE_DD)
@@ -75,7 +77,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
 			ContactCriteria.WITH_EXTENDED_QUARANTINE,
-			ContactCriteria.WITH_REDUCED_QUARANTINE)
+			ContactCriteria.WITH_REDUCED_QUARANTINE,
+			ContactCriteria.ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -91,7 +94,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactIndexDto.CASE_CLASSIFICATION,
 			ContactIndexDto.CONTACT_CATEGORY,
 			ContactIndexDto.FOLLOW_UP_STATUS,
-			ContactCriteria.NAME_UUID_CASE_LIKE };
+			ContactCriteria.NAME_UUID_CASE_LIKE,
+			ContactCriteria.EVENT_LIKE };
 	}
 
 	@Override
@@ -108,7 +112,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ComboBox caseClassificationField = addField(FieldConfiguration.pixelSized(ContactIndexDto.CASE_CLASSIFICATION, 140));
 		caseClassificationField.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
 
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(FieldConfiguration.pixelSized(ContactIndexDto.CONTACT_CATEGORY, 140));
 		}
 
@@ -118,6 +122,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			FieldConfiguration
 				.withCaptionAndPixelSized(ContactCriteria.NAME_UUID_CASE_LIKE, I18nProperties.getString(Strings.promptContactsSearchField), 200));
 		searchField.setNullRepresentation("");
+
+		TextField eventSearchField = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(ContactCriteria.EVENT_LIKE, I18nProperties.getString(Strings.promptCaseOrContactEventSearchField), 200));
+		eventSearchField.setNullRepresentation("");
 	}
 
 	@Override
@@ -172,6 +181,15 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL),
 				200));
 		followUpUntilTo.removeAllValidators();
+
+		if (FacadeProvider.getConfigFacade().isExternalJournalActive()) {
+			addField(
+					moreFiltersContainer,
+					FieldConfiguration.withCaptionAndPixelSized(
+							ContactCriteria.SYMPTOM_JOURNAL_STATUS,
+							I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
+							240));
+		}
 		addField(moreFiltersContainer, ComboBox.class, FieldConfiguration.pixelSized(ContactCriteria.RETURNING_TRAVELER, 200));
 		addField(
 			moreFiltersContainer,
@@ -200,7 +218,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
 		birthDateDD.setWidth(140, Unit.PIXELS);
 
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -260,6 +278,15 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.WITH_REDUCED_QUARANTINE,
 				I18nProperties.getCaption(Captions.contactOnlyWithReducedQuarantine),
 				I18nProperties.getDescription(Descriptions.descContactOnlyWithReducedQuarantine),
+				CHECKBOX_STYLE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ContactCriteria.ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT,
+				I18nProperties.getCaption(Captions.contactOnlyWithSourceCaseInEvent),
+				null,
 				CHECKBOX_STYLE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
@@ -434,5 +461,6 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 	public void setSearchFieldEnabled(boolean enabled) {
 		this.getField(ContactCriteria.NAME_UUID_CASE_LIKE).setEnabled(enabled);
+		this.getField(ContactCriteria.EVENT_LIKE).setEnabled(enabled);
 	}
 }

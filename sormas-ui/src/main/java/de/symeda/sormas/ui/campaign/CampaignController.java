@@ -42,6 +42,7 @@ import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataEditForm;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignView;
+import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -156,12 +157,21 @@ public class CampaignController {
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> view =
 			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
+
 				@Override
 				public void discard() {
 					super.discard();
 					campaignEditForm.discard();
 				}
 			};
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+			CampaignDto finalCampaignDto = campaignDto;
+			view.addDeleteListener(() -> {
+				FacadeProvider.getCampaignFacade().deleteCampaign(finalCampaignDto.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityCampaign));
+		}
 
 		view.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
@@ -237,6 +247,7 @@ public class CampaignController {
 		String navigationState = CampaignView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
+
 	public void navigateToFormDataView(String uuid) {
 		String navigationState = CampaignFormDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);

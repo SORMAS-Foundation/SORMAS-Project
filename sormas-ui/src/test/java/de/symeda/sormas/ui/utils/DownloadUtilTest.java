@@ -25,6 +25,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;

@@ -68,8 +68,11 @@ public class NullableOptionGroup extends OptionGroup {
 
 	@Override
 	public void setRequired(boolean required) {
+		boolean readOnly = isReadOnly();
+		setReadOnly(false);
 		super.setRequired(required);
 		setup();
+		setReadOnly(readOnly);
 	}
 
 	private Object getFirstValue(Set value) {

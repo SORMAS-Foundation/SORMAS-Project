@@ -257,15 +257,15 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
 
 		ContactFollowUpDto followup1 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
-		assertThat(followup1.getPerson().getFirstName(), is("James"));
-		assertThat(followup1.getPerson().getLastName(), is("Smith"));
+		assertThat(followup1.getFirstName(), is("James"));
+		assertThat(followup1.getLastName(), is("Smith"));
 
 		//sensitive data
 		assertThat(followup1.getContactOfficer(), is(user2));
 
 		ContactFollowUpDto followup2 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
-		assertThat(followup2.getPerson().getFirstName(), is("Confidential"));
-		assertThat(followup2.getPerson().getLastName(), is("Confidential"));
+		assertThat(followup2.getFirstName(), is("Confidential"));
+		assertThat(followup2.getLastName(), is("Confidential"));
 
 		//sensitive data
 		assertThat(followup2.getContactOfficer(), is(nullValue()));

@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -76,9 +75,6 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.caze.BirthDateDto;
-import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
@@ -94,7 +90,6 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
@@ -617,42 +612,8 @@ public final class DownloadUtil {
 									Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
 									// Sub entity might be null
 									Object value = entity != null ? method.invoke(entity) : null;
-									if (value == null) {
-										fieldValues[i] = "";
-									} else if (value instanceof Date) {
-										fieldValues[i] = DateFormatHelper.formatDate((Date) value);
-									} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
-										fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
-									} else if (value instanceof Set) {
-										StringBuilder sb = new StringBuilder();
-										for (Object o : (Set<?>) value) {
-											if (sb.length() != 0) {
-												sb.append(", ");
-											}
-											sb.append(o);
-										}
-										fieldValues[i] = sb.toString();
-									} else if (value instanceof BurialInfoDto) {
-										fieldValues[i] = PersonHelper.buildBurialInfoString((BurialInfoDto) value, userLanguage);
-									} else if (value instanceof AgeAndBirthDateDto) {
-										AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
-										fieldValues[i] = PersonHelper.getAgeAndBirthdateString(
-											ageAndBirthDate.getAge(),
-											ageAndBirthDate.getAgeType(),
-											ageAndBirthDate.getBirthdateDD(),
-											ageAndBirthDate.getBirthdateMM(),
-											ageAndBirthDate.getBirthdateYYYY(),
-											userLanguage);
-									} else if (value instanceof BirthDateDto) {
-										BirthDateDto birthDate = (BirthDateDto) value;
-										fieldValues[i] = PersonHelper.formatBirthdate(
-											birthDate.getBirthdateDD(),
-											birthDate.getBirthdateMM(),
-											birthDate.getBirthdateYYYY(),
-											userLanguage);
-									} else {
-										fieldValues[i] = value.toString();
-									}
+
+									fieldValues[i] = DataHelper.valueToString(value);
 								}
 								writer.writeNext(fieldValues);
 							} ;

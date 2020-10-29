@@ -26,6 +26,7 @@ import javax.persistence.ManyToOne;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "sormastosormasshareinfo")
@@ -35,11 +36,14 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
+	public static final String SAMPLE = "sample";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 
 	private Case caze;
 
 	private Contact contact;
+
+	private Sample sample;
 
 	private String organizationId;
 
@@ -67,6 +71,16 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setContact(Contact contact) {
 		this.contact = contact;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public Sample getSample() {
+		return sample;
+	}
+
+	public void setSample(Sample sample) {
+		this.sample = sample;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)

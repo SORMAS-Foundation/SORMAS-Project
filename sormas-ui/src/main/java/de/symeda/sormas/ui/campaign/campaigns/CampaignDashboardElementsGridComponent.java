@@ -37,6 +37,7 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 				.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getDiagramId())
 				.distinct()
 				.collect(Collectors.toList()));
+		diagramIdCombo.setEmptySelectionAllowed(false);
 		Binder.Binding<CampaignDashboardElement, String> diagramIdBind =
 			binder.bind(diagramIdCombo, CampaignDashboardElement::getDiagramId, CampaignDashboardElement::setDiagramId);
 		Grid.Column<CampaignDashboardElement, String> diagramIdColumn =
@@ -51,6 +52,7 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 				.distinct()
 				.collect(Collectors.toList()));
 
+		tabIdCombo.setEmptySelectionAllowed(false);
 		tabIdCombo.setTextInputAllowed(true);
 		tabIdCombo.setNewItemProvider((ComboBox.NewItemProvider<String>) s -> Optional.of(s));
 

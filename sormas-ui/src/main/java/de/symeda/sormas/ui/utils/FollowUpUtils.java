@@ -6,9 +6,11 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 
 public class FollowUpUtils {
   private FollowUpUtils() {
@@ -68,7 +70,7 @@ public class FollowUpUtils {
     }
   }
 
-  public static String getVisitResultDescription(VisitResult result, Date date, Date contactDate, Date followUpUntil) {
+  public static String getVisitResultDescription(VisitResultDto result, Date date, Date contactDate, Date followUpUntil) {
 
     if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
       return "";
@@ -76,13 +78,30 @@ public class FollowUpUtils {
     return result.toString();
   }
 
-  public static String getVisitResultCssStyle(VisitResult result, Date date, Date contactDate, Date followUpUntil) {
+  public static String getVisitResultCssStyle(VisitResultDto result, Date date, Date contactDate, Date followUpUntil) {
 
     if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
       return "";
     }
 
-    switch (result) {
+    if (VisitOrigin.EXTERNAL_JOURNAL.equals(result.getOrigin())) {
+      switch (result.getResult()) {
+        case NOT_SYMPTOMATIC:
+          return CssStyles.GRID_CELL_NOT_SYMPTOMATIC_EXTERNAL;
+        case SYMPTOMATIC:
+          return CssStyles.GRID_CELL_SYMPTOMATIC_EXTERNAL;
+        case NOT_PERFORMED:
+          return CssStyles.GRID_CELL_NOT_PERFORMED_EXTERNAL;
+        case UNAVAILABLE:
+          return CssStyles.GRID_CELL_UNAVAILABLE_EXTERNAL;
+        case UNCOOPERATIVE:
+          return CssStyles.GRID_CELL_UNCOOPERATIVE_EXTERNAL;
+        default:
+          throw new IndexOutOfBoundsException(DataHelper.toStringNullable(result));
+      }
+    }
+
+    switch (result.getResult()) {
       case NOT_SYMPTOMATIC:
         return CssStyles.GRID_CELL_NOT_SYMPTOMATIC;
       case SYMPTOMATIC:

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -24,6 +25,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String SYMPTOMATIC = "symptomatic";
 	public static final String TEMPERATURE = "temperature";
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
+	public static final String ORIGIN = "origin";
 
 	private Long id;
 	private String uuid;
@@ -35,6 +37,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 	private Boolean symptomatic;
 	private Float temperature;
 	private TemperatureSource temperatureSource;
+	private VisitOrigin origin;
 
 	private ContactJurisdictionDto contactJurisdiction;
 
@@ -47,7 +50,8 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		Disease disease,
 		Boolean symptomatic,
 		Float temperature,
-		TemperatureSource temperatureSource) {
+		TemperatureSource temperatureSource,
+		VisitOrigin origin) {
 
 		this.id = id;
 		this.uuid = uuid;
@@ -58,6 +62,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.symptomatic = symptomatic;
 		this.temperature = temperature;
 		this.temperatureSource = temperatureSource;
+		this.origin = origin;
 	}
 
 	public Long getId() {
@@ -130,6 +135,14 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setJurisdiction(ContactJurisdictionDto contactJurisdiction) {
 		this.contactJurisdiction = contactJurisdiction;
+	}
+
+	public VisitOrigin getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(VisitOrigin origin) {
+		this.origin = origin;
 	}
 
 	public ContactJurisdictionDto getJurisdiction() {

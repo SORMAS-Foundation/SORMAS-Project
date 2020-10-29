@@ -46,6 +46,7 @@ import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
@@ -169,6 +170,11 @@ public class Sample extends PseudonymizableAdo {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String requestedOtherAdditionalTests;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	@DatabaseField
+	private boolean ownershipHandedOver;
 
 	public Case getAssociatedCase() {
 		return associatedCase;
@@ -508,5 +514,21 @@ public class Sample extends PseudonymizableAdo {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }
