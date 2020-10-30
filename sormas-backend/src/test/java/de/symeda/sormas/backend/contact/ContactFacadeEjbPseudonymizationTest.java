@@ -145,7 +145,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactDto contact2 =
 			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
-		List<ContactIndexDto> indexList = getContactFacade().getIndexList(new ContactCriteria(), null, null, Collections.emptyList());
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
+		List<ContactIndexDto> indexList = getContactFacade().getIndexList(contactCriteria, null, null, Collections.emptyList());
 
 		ContactIndexDto index1 = indexList.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(index1.getFirstName(), is("James"));
@@ -168,7 +170,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactDto contact2 =
 			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
-		List<ContactIndexDetailedDto> indexList = getContactFacade().getIndexDetailedList(new ContactCriteria(), null, null, Collections.emptyList());
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
+		List<ContactIndexDetailedDto> indexList = getContactFacade().getIndexDetailedList(contactCriteria, null, null, Collections.emptyList());
 
 		ContactIndexDetailedDto index1 = indexList.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(index1.getFirstName(), is("James"));
@@ -193,7 +197,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactDto contact2 =
 			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
-		List<ContactExportDto> exportList = getContactFacade().getExportList(new ContactCriteria(), 0, 100, Language.EN);
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
+		List<ContactExportDto> exportList = getContactFacade().getExportList(contactCriteria, 0, 100, Language.EN);
 
 		ContactExportDto index1 = exportList.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(index1.getFirstName(), is("James"));
@@ -253,8 +259,10 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			Disease.CORONAVIRUS,
 			rdcf2);
 
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
 		List<ContactFollowUpDto> matchingContacts =
-			getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
+			getContactFacade().getContactFollowUpList(contactCriteria, new Date(), 10, 0, 100, Collections.emptyList());
 
 		ContactFollowUpDto followup1 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(followup1.getFirstName(), is("James"));

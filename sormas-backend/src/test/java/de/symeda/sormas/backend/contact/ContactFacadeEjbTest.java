@@ -423,14 +423,16 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(user.toReference(), person1.toReference(), case1);
 		creator.createContact(user.toReference(), person1.toReference(), case2);
 
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
 		Assert.assertEquals(2, getContactFacade().getIndexList(null, 0, 100, null).size());
-		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria().eventLike("signal"), 0, 100, null).size());
-		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria().eventLike(event1.getUuid()), 0, 100, null).size());
-		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria().eventLike("signal description"), 0, 100, null).size());
+		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike("signal"), 0, 100, null).size());
+		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike(event1.getUuid()), 0, 100, null).size());
+		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteria.eventLike("signal description"), 0, 100, null).size());
 		Assert.assertEquals(
 			1,
 			getContactFacade()
-				.getIndexList(new ContactCriteria().eventLike("signal description").onlyContactsSharingEventWithSourceCase(true), 0, 100, null)
+				.getIndexList(contactCriteria.eventLike("signal description").onlyContactsSharingEventWithSourceCase(true), 0, 100, null)
 				.size());
 	}
 
