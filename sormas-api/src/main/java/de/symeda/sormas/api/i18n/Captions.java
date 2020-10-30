@@ -547,6 +547,12 @@ public interface Captions {
 	String contactSelect = "contactSelect";
 	String convertContactToCase = "convertContactToCase";
 	String convertEventParticipantToCase = "convertEventParticipantToCase";
+	String Country_archived = "Country.archived";
+	String Country_defaultName = "Country.defaultName";
+	String Country_displayName = "Country.displayName";
+	String Country_externalId = "Country.externalId";
+	String Country_isoCode = "Country.isoCode";
+	String Country_unoCode = "Country.unoCode";
 	String creationDate = "creationDate";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
