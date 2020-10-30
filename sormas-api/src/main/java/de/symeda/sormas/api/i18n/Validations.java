@@ -36,6 +36,7 @@ public interface Validations {
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
+	String externalJournalPersonValidation = "externalJournalPersonValidation";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";
@@ -46,10 +47,13 @@ public interface Validations {
 	String importCommunityNotUnique = "importCommunityNotUnique";
 	String importDistrictAlreadyExists = "importDistrictAlreadyExists";
 	String importDistrictNotUnique = "importDistrictNotUnique";
+	String importEntryCommunityNotInUsersJurisdiction = "importEntryCommunityNotInUsersJurisdiction";
+	String importEntryDistrictNotInUsersJurisdiction = "importEntryDistrictNotInUsersJurisdiction";
 	String importEntryDoesNotExist = "importEntryDoesNotExist";
 	String importEntryDoesNotExistDbOrCommunity = "importEntryDoesNotExistDbOrCommunity";
 	String importEntryDoesNotExistDbOrDistrict = "importEntryDoesNotExistDbOrDistrict";
 	String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
+	String importEntryRegionNotInUsersJurisdiction = "importEntryRegionNotInUsersJurisdiction";
 	String importErrorInColumn = "importErrorInColumn";
 	String importFacilityAlreadyExists = "importFacilityAlreadyExists";
 	String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";
@@ -84,6 +88,7 @@ public interface Validations {
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
+	String sormasToSormasSampleExists = "sormasToSormasSampleExists";
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String specifyFirstName = "specifyFirstName";

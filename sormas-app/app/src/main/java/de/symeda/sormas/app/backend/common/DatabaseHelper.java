@@ -34,7 +34,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.CampaignDao;
@@ -143,7 +142,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 238;
+	public static final int DATABASE_VERSION = 241;
 
 	private static DatabaseHelper instance = null;
 
@@ -1722,6 +1721,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.createTable(connectionSource, Campaign.class);
 				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
 				TableUtils.createTable(connectionSource, CampaignFormData.class);
+
+			case 238:
+				currentVersion = 238;
+				getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN origin varchar(255);");
+				getDao(Visit.class).executeRaw("UPDATE visit SET origin='USER'");
+
+			case 239:
+				currentVersion = 239;
+				getDao(Sample.class)
+					.executeRaw("ALTER TABLE samples ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN ownershipHandedOver boolean;");
+
+			case 240:
+				currentVersion = 240;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationStatus varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationStartDate timestamp;");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationEndDate timestamp;");
 
 				// ATTENTION: break should only be done after last version
 				break;

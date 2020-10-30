@@ -27,6 +27,7 @@ import org.joda.time.DateTime;
 import android.content.Context;
 import android.util.Log;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -38,6 +39,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -907,6 +909,7 @@ class VisitGenerator extends BaseDataGenerator {
 			data1.setVisitDateTime(getRandomDate());
 			data1.setVisitUser(UserGenerator.getSingle());
 			data1.setVisitStatus(getRandomVisitStatus());
+			data1.setOrigin(getRandomVisitOrigin());
 			data1.setVisitRemarks(getRandomSentence());
 			data1.setReportLat(getRandomDouble());
 			data1.setReportLon(getRandomDouble());
@@ -940,6 +943,18 @@ class VisitGenerator extends BaseDataGenerator {
 				add(VisitStatus.UNAVAILABLE);
 				add(VisitStatus.UNCOOPERATIVE);
 				add(VisitStatus.COOPERATIVE);
+			}
+		};
+
+		return randomItem(list);
+	}
+
+	private static VisitOrigin getRandomVisitOrigin() {
+		List<VisitOrigin> list = new ArrayList<VisitOrigin>() {
+
+			{
+				add(VisitOrigin.USER);
+				add(VisitOrigin.EXTERNAL_JOURNAL);
 			}
 		};
 
@@ -1607,6 +1622,9 @@ class EventGenerator extends BaseDataGenerator {
 			Event data1 = new Event();
 			data1.setUuid(getRandomUuid());
 			data1.setEventStatus(getRandomEventStatus());
+			data1.setEventInvestigationStatus(getRandomEventInvestigationStatus());
+			data1.setEventInvestigationStartDate(getRandomDate());
+			data1.setEventInvestigationEndDate(getRandomDate());
 			data1.setEventTitle(getRandomSentence());
 			data1.setEventDesc(getRandomSentence());
 			data1.setStartDate(getRandomDate());
@@ -2377,6 +2395,20 @@ abstract class BaseDataGenerator {
 				add(EventStatus.SCREENING);
 				add(EventStatus.CLUSTER);
 				add(EventStatus.DROPPED);
+			}
+		};
+
+		return randomItem(list);
+	}
+
+	public static EventInvestigationStatus getRandomEventInvestigationStatus() {
+		List<EventInvestigationStatus> list = new ArrayList<EventInvestigationStatus>() {
+
+			{
+				add(EventInvestigationStatus.PENDING);
+				add(EventInvestigationStatus.ONGOING);
+				add(EventInvestigationStatus.DONE);
+				add(EventInvestigationStatus.DISCARDED);
 			}
 		};
 

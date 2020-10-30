@@ -40,6 +40,7 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -68,6 +69,7 @@ public class Visit extends AbstractDomainObject {
 	public static final String REPORT_LON = "reportLon";
 	public static final String CONTACTS = "contacts";
 	public static final String CAZE = "caze";
+	public static final String ORIGIN = "origin";
 
 	private Person person;
 	private Disease disease;
@@ -82,6 +84,7 @@ public class Visit extends AbstractDomainObject {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private VisitOrigin origin;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -194,4 +197,12 @@ public class Visit extends AbstractDomainObject {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public VisitOrigin getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(VisitOrigin origin) {
+		this.origin = origin;
+	}
 }

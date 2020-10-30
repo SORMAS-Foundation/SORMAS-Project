@@ -32,6 +32,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,7 +51,6 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -1037,27 +1037,35 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		Button button = ButtonHelper.createButton(caption, event -> {
 			for (Object symptomId : unconditionalSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(symptomState);
+				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
+					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+					value.add(symptomState);
+					symptom.setValue(value);
 				}
 			}
 			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(symptomState);
+				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
+					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+					value.add(symptomState);
+					symptom.setValue(value);
 				}
 			}
 			for (Object symptomId : lesionsFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(symptomState);
+				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
+					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+					value.add(symptomState);
+					symptom.setValue(value);
 				}
 			}
 			for (Object symptomId : monkeypoxImageFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(symptomState);
+				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
+					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+					value.add(symptomState);
+					symptom.setValue(value);
 				}
 			}
 		}, ValoTheme.BUTTON_LINK);

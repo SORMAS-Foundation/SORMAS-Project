@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -150,11 +152,22 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 		getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 
+		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
+		FacadeProvider.getCampaignDiagramDefinitionFacade().getAll().forEach(campaignDiagramDefinitionDto -> {
+			final String diagramId = campaignDiagramDefinitionDto.getDiagramId();
+			final Optional<CampaignDashboardElement> diagramAlreadyUsed =
+				campaignDashboardElements.stream().filter(cde -> cde.getDiagramId().equals(diagramId)).findAny();
+			if (!diagramAlreadyUsed.isPresent()) {
+				final CampaignDashboardElement campaignDashboardElement = new CampaignDashboardElement();
+				campaignDashboardElement.setDiagramId(diagramId);
+				campaignDashboardElements.add(campaignDashboardElement);
+			}
+		});
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
 				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
-			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null));
+			campaignDashboardElements);
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
 
 		final Label spacer = new Label();

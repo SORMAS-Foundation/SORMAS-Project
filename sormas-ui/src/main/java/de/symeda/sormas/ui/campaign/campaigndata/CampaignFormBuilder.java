@@ -271,7 +271,7 @@ public class CampaignFormBuilder {
 	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
-			((NullableOptionGroup) field).setValue(value instanceof Boolean ? (Boolean) value : null);
+			((NullableOptionGroup) field).setValue(value);
 			break;
 		case TEXT:
 		case NUMBER:

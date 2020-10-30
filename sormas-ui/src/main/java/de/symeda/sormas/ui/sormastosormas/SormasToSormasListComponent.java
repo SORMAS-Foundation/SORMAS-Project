@@ -32,6 +32,8 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
@@ -60,7 +62,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			canShare ? e -> ControllerProvider.getSormasToSormasController().shareCaseToSormas(caseRef, this) : null);
+			canShare ? e -> ControllerProvider.getSormasToSormasController().shareCaseFormDetailsPage(caseRef, this) : null);
 	}
 
 	public SormasToSormasListComponent(ContactDto contact, boolean canShare) {
@@ -74,7 +76,18 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			canShare ? e -> ControllerProvider.getSormasToSormasController().shareContactToSormas(contactRef, this) : null);
+			canShare ? e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contactRef, this) : null);
+	}
+
+	public SormasToSormasListComponent(SampleDto sample) {
+		SampleReferenceDto sampleRef = sample.toReference();
+
+		sormasToSormasList = new SormasToSormasList(
+			new SormasToSormasShareInfoCriteria().sample(sampleRef),
+			sample.getSormasToSormasOriginInfo() == null,
+			Captions.sormasToSormasCaseNotShared);
+
+		initLayout(sample.getSormasToSormasOriginInfo(), sormasToSormasList, null);
 	}
 
 	private void initLayout(

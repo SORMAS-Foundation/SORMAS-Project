@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -30,9 +31,13 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
+import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -92,11 +97,17 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_SYMPTOM_JOURNAL_SECRET = "interface.symptomjournal.secret";
 
 	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
+	public static final String INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL = "interface.patientdiary.externaldataurl";
+	public static final String INTERFACE_PATIENT_DIARY_AUTH_URL = "interface.patientdiary.authurl";
+	public static final String INTERFACE_PATIENT_DIARY_EMAIL = "interface.patientdiary.email";
+	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
-	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
+	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
+	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
+	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
 
 	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	private static final String SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME = "sormas2sormas.serverAccessDataFileName";
@@ -353,28 +364,39 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getGeocodingOsgtsEndpoint() {
-		return getProperty(GEOCODING_OSGTS_ENDPOINT, null);
+	public String getGeocodingServiceUrlTemplate() {
+		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
 	}
 
 	@Override
-	public String getSymptomJournalUrl() {
-		return getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null);
+	public String getGeocodingLongitudeJsonPath() {
+		return getProperty(GEOCODING_LONGITUDE_JSON_PATH, null);
 	}
 
 	@Override
-	public String getSymptomJournalAuthUrl() {
-		return getProperty(INTERFACE_SYMPTOM_JOURNAL_AUTH_URL, null);
+	public String getGeocodingLatitudeJsonPath() {
+		return getProperty(GEOCODING_LATITUDE_JSON_PATH, null);
 	}
 
 	@Override
-	public String getSymptomJournalClientId() {
-		return getProperty(INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID, null);
+	public SymptomJournalConfig getSymptomJournalConfig() {
+		SymptomJournalConfig config = new SymptomJournalConfig();
+		config.setUrl(getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null));
+		config.setAuthUrl(getProperty(INTERFACE_SYMPTOM_JOURNAL_AUTH_URL, null));
+		config.setClientId(getProperty(INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID, null));
+		config.setSecret(getProperty(INTERFACE_SYMPTOM_JOURNAL_SECRET, null));
+		return config;
 	}
 
 	@Override
-	public String getSymptomJournalSecret() {
-		return getProperty(INTERFACE_SYMPTOM_JOURNAL_SECRET, null);
+	public PatientDiaryConfig getPatientDiaryConfig() {
+		PatientDiaryConfig config = new PatientDiaryConfig();
+		config.setUrl(getProperty(INTERFACE_PATIENT_DIARY_URL, null));
+		config.setExternalDataUrl(getProperty(INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL, null));
+		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
+		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
+		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
+		return config;
 	}
 
 	@Override
@@ -390,11 +412,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getPatientDiaryUrl() {
-		return getProperty(INTERFACE_PATIENT_DIARY_URL, null);
-	}
-
-	@Override
 	public String getSormasToSormasUserPassword() {
 		return getProperty(SORMAS_TO_SORMAS_USER_PASSWORD, null);
 	}
@@ -407,24 +424,38 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public void validateExternalUrls() {
 
-		String piaUrl = getSymptomJournalUrl();
+		List<String> urls = Lists.newArrayList(
+				getSymptomJournalConfig().getUrl(),
+				getSymptomJournalConfig().getAuthUrl(),
+				getPatientDiaryConfig().getUrl(),
+				getPatientDiaryConfig().getExternalDataUrl(),
+				getPatientDiaryConfig().getAuthUrl()
+		);
 
-		if (StringUtils.isBlank(piaUrl)) {
-			return;
-		}
-
-		// Must be a valid URL
-		if (!new UrlValidator(
-			new String[] {
-				"http",
-				"https" }).isValid(piaUrl)) {
-			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL + "' is not a valid URL");
-		}
+		urls.forEach(url -> {
+			if (StringUtils.isBlank(url)) {
+				return;
+			}
+			// Must be a valid URL
+			if (!new UrlValidator(
+					new String[]{
+							"http",
+							"https"}).isValid(url)) {
+				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
+			}
+		});
 	}
 
 	@Override
 	public String getAuthenticationProvider() {
 		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
+	}
+
+	@Override
+	public boolean isExternalJournalActive() {
+		return !StringUtils.isAllBlank(
+				getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null),
+				getProperty(INTERFACE_PATIENT_DIARY_URL, null));
 	}
 
 	@Override

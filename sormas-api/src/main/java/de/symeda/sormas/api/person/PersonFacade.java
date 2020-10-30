@@ -39,7 +39,7 @@ public interface PersonFacade {
 
 	PersonDto getPersonByUuid(String uuid);
 
-	JournalPersonDto getPersonForJournal(String Uuid);
+	JournalPersonDto getPersonForJournal(String uuid);
 
 	PersonDto savePerson(PersonDto dto);
 
@@ -67,7 +67,7 @@ public interface PersonFacade {
 
 	List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomsJournal);
 
-	Date getLatestFollowUpEndDateByUuid(String Uuid);
+	Date getLatestFollowUpEndDateByUuid(String uuid);
 
 	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
 

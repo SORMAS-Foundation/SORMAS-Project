@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.VisitOrigin;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -96,6 +97,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(visitIndexDto.getVisitDateTime());
 		assertEquals(VisitStatus.COOPERATIVE, visitIndexDto.getVisitStatus());
 		assertEquals(visitRemarks, visitIndexDto.getVisitRemarks());
+		assertEquals(VisitOrigin.EXTERNAL_JOURNAL, visitIndexDto.getOrigin());
 
 		final VisitCriteria visitCriteria2 = new VisitCriteria();
 		final List<VisitIndexDto> visitIndexList2 = visitFacade.getIndexList(visitCriteria2.caze(new CaseReferenceDto(caze.getUuid())), 0, 100, null);
@@ -105,6 +107,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(visitIndexDto2.getVisitDateTime());
 		assertEquals(VisitStatus.COOPERATIVE, visitIndexDto2.getVisitStatus());
 		assertEquals(visitRemarks2, visitIndexDto2.getVisitRemarks());
+		assertEquals(VisitOrigin.EXTERNAL_JOURNAL, visitIndexDto.getOrigin());
 	}
 
 	@Test
@@ -125,17 +128,17 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
-		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
-		VisitDto visit2 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit2 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit2.getSymptoms().setAgitation(SymptomState.YES);
 		getVisitFacade().saveVisit(visit2);
 
-		VisitDto visit3 = creator.createVisit(caze.getDisease(), cazePerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit3 = creator.createVisit(caze.getDisease(), cazePerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit3.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit3);
-		VisitDto visit4 = creator.createVisit(caze.getDisease(), cazePerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit4 = creator.createVisit(caze.getDisease(), cazePerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit4.getSymptoms().setAgitation(SymptomState.YES);
 		getVisitFacade().saveVisit(visit4);
 

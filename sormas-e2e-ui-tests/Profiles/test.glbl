@@ -114,4 +114,14 @@
       <initValue>'C:\\Users\\raghavender.pola\\Downloads'</initValue>
       <name>gDownloadPath</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'ImpUser'</initValue>
+      <name>gUsernameImportUser</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'FAZQAE3xLJjx'</initValue>
+      <name>gPasswordImportUser</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>

@@ -24,6 +24,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -74,6 +77,7 @@ import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.Location;
@@ -122,6 +126,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private LocationService locationService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ExternalJournalService externalJournalService;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -268,8 +274,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public JournalPersonDto getPersonForJournal(String Uuid) {
-		PersonDto detailedPerson = getPersonByUuid(Uuid);
+	public JournalPersonDto getPersonForJournal(String uuid) {
+		PersonDto detailedPerson = getPersonByUuid(uuid);
 		//only specific attributes of the person shall be returned:
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
@@ -283,7 +289,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			exportPerson.setBirthdateMM(detailedPerson.getBirthdateMM());
 			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
 			exportPerson.setSex(detailedPerson.getSex());
-			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(Uuid));
+			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(uuid));
 			return exportPerson;
 		} else {
 			return null;
@@ -304,9 +310,26 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		personService.ensurePersisted(person);
 
+		if (existingPerson != null) {
+			handleExternalJournalPerson(existingPerson, source);
+		}
+
 		onPersonChanged(existingPerson, person);
 
 		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
+	}
+
+	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
+		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
+		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
+			if (!externalJournalService.isPersonExportable(updatedPerson)) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.externalJournalPersonValidation));
+			}
+		}
+		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
+		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson, updatedPerson);
+		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -369,7 +392,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public Date getLatestFollowUpEndDateByUuid(String Uuid) {
+	public Date getLatestFollowUpEndDateByUuid(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
 		Root<Contact> contactRoot = cq.from(Contact.class);
@@ -377,8 +400,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
 
-		if (Uuid != null) {
-			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.UUID), Uuid));
+		if (uuid != null) {
+			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
 		}
 
 		if (filter != null) {

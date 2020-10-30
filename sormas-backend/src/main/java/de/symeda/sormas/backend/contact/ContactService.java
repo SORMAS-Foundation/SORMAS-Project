@@ -84,6 +84,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -111,6 +112,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private EpiDataService epiDataService;
 	@EJB
 	private HealthConditionsService healthConditionsService;
+
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private ContactJurisdictionChecker contactJurisdictionChecker;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1096,8 +1102,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = and(cb, filter, cb.equal(from.get(Contact.RETURNING_TRAVELER), contactCriteria.getReturningTraveler()));
 		}
 		boolean hasEventLikeCriteria = StringUtils.isNotBlank(contactCriteria.getEventLike());
-		boolean hasOnlyContactsWithSourceCaseInEvent = Boolean.TRUE.equals(contactCriteria.getOnlyContactsWithSourceCaseInEvent());
-		if (hasEventLikeCriteria || hasOnlyContactsWithSourceCaseInEvent) {
+		boolean hasOnlyContactsSharingEventWithSourceCase = Boolean.TRUE.equals(contactCriteria.getOnlyContactsSharingEventWithSourceCase());
+		if (hasEventLikeCriteria || hasOnlyContactsSharingEventWithSourceCase) {
 			Join<Person, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = joins.getEvent();
 
@@ -1121,7 +1127,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					}
 				}
 			}
-			if (hasOnlyContactsWithSourceCaseInEvent) {
+			if (hasOnlyContactsSharingEventWithSourceCase) {
 				filter = and(cb, filter, cb.equal(event.get(Event.UUID), joins.getCaseEvent().get(Event.UUID)));
 			}
 		}
@@ -1241,5 +1247,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			jurisdictionPredicate = cb.disjunction();
 		}
 		return cb.or(reportedByCurrentUser, contactCaseInJurisdiction, jurisdictionPredicate);
+	}
+
+	public boolean isContactEditAllowed(Contact contact) {
+		if (contact.getSormasToSormasOriginInfo() != null) {
+			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
 }

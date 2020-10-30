@@ -38,6 +38,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -61,6 +62,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"Title",
 			"Description",
 			"First",
@@ -95,6 +97,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"Title",
 			"Description",
 			"First",
@@ -132,6 +135,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		creator.createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"TitleEv1",
 			"DescriptionEv1",
 			"First",
@@ -147,6 +151,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createEvent(
 			EventStatus.EVENT,
+			EventInvestigationStatus.PENDING,
 			"TitleEv2",
 			"DescriptionEv2",
 			"First",
@@ -184,6 +189,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"Title",
 			"Description",
 			"First",
@@ -212,6 +218,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"Title",
 			"Description",
 			"First",
@@ -267,6 +274,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// One archived event
 		EventDto event1 = creator.createEvent(
 			EventStatus.EVENT,
+			EventInvestigationStatus.PENDING,
 			"",
 			"",
 			"",
@@ -285,6 +293,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// One other event
 		EventDto event2 = creator.createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"",
 			"",
 			"",

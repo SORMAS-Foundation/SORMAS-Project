@@ -18,6 +18,7 @@ package de.symeda.sormas.api.sormastosormas;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class SormasToSormasShareInfoDto extends EntityDto {
@@ -26,6 +27,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
+	private SampleReferenceDto sample;
 	private ServerAccessDataReferenceDto target;
 	private UserReferenceDto sender;
 	private boolean ownershipHandedOver;
@@ -45,6 +47,14 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setContact(ContactReferenceDto contact) {
 		this.contact = contact;
+	}
+
+	public SampleReferenceDto getSample() {
+		return sample;
+	}
+
+	public void setSample(SampleReferenceDto sample) {
+		this.sample = sample;
 	}
 
 	public ServerAccessDataReferenceDto getTarget() {
