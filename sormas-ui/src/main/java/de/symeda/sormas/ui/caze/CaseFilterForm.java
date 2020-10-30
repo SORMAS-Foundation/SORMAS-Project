@@ -38,6 +38,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -274,7 +275,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
-		if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)) {
+		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
