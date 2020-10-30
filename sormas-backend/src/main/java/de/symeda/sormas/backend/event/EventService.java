@@ -165,6 +165,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			cq.multiselect(
 				event.get(Event.UUID),
 				event.get(Event.EVENT_STATUS),
+				event.get(Event.EVENT_INVESTIGATION_STATUS),
 				event.get(Event.DISEASE),
 				event.get(Event.DISEASE_DETAILS),
 				event.get(Event.START_DATE),
@@ -425,6 +426,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 		if (eventCriteria.getEventStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
+		}
+		if (eventCriteria.getEventInvestigationStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_INVESTIGATION_STATUS), eventCriteria.getEventInvestigationStatus()));
 		}
 		if (eventCriteria.getTypeOfPlace() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));

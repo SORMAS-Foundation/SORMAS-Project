@@ -25,7 +25,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import android.util.Log;
-
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -78,6 +78,7 @@ public class EventDao extends AbstractAdoDao<Event> {
 		event.getEventLocation().setRegion(ConfigProvider.getUser().getRegion());
 		event.getEventLocation().setDistrict(ConfigProvider.getUser().getDistrict());
 		event.setEventStatus(EventStatus.SIGNAL);
+		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
 
 		return event;
 	}

@@ -41,6 +41,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -60,7 +61,7 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 		Date fromDate = DateHelper.subtractDays(referenceDate, interval - 1);
 		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
-		setColumns(FollowUpDto.UUID, FollowUpDto.PERSON, FollowUpDto.REPORT_DATE, FollowUpDto.FOLLOW_UP_UNTIL);
+		setColumns(FollowUpDto.UUID, FollowUpDto.FIRST_NAME, FollowUpDto.LAST_NAME, FollowUpDto.REPORT_DATE, FollowUpDto.FOLLOW_UP_UNTIL);
 
 		setVisitColumns(referenceDate, interval, criteria);
 
@@ -93,11 +94,11 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 
 			final int index = i;
 			getColumn(columnId).setCaption(columnId).setSortable(false).setStyleGenerator((StyleGenerator<CaseFollowUpDto>) item -> {
-				final VisitResult visitResult = item.getVisitResults()[index];
+				final VisitResultDto visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
 				return getVisitResultCssStyle(visitResult, date, item.getReportDate(), item.getFollowUpUntil());
 			}).setDescriptionGenerator((DescriptionGenerator<CaseFollowUpDto>) item -> {
-				final VisitResult visitResult = item.getVisitResults()[index];
+				final VisitResultDto visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
 				return getVisitResultDescription(visitResult, date, item.getReportDate(), item.getFollowUpUntil());
 			});

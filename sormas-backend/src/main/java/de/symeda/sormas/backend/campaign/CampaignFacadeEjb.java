@@ -34,9 +34,11 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -114,8 +116,12 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	@Override
-	public List<CampaignReferenceDto> getAllCampaignsAsReference() {
-		return campaignService.getAll().stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+	public List<CampaignReferenceDto> getAllActiveCampaignsAsReference() {
+		return campaignService.getAll()
+			.stream()
+			.filter(c -> !c.isDeleted() && !c.isArchived())
+			.map(CampaignFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -173,6 +179,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
+		validate(source);
+
 		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
 		target.setDescription(source.getDescription());
 		target.setEndDate(source.getEndDate());
@@ -188,6 +196,21 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setDashboardElements(source.getCampaignDashboardElements());
 
 		return target;
+	}
+
+	private void validate(CampaignDto campaignDto) {
+		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
+		if (campaignDashboardElements != null) {
+			for (CampaignDashboardElement cde : campaignDashboardElements) {
+				if (cde.getDiagramId() == null
+					|| cde.getTabId() == null
+					|| cde.getWidth() == null
+					|| cde.getHeight() == null
+					|| cde.getOrder() == null) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignDashboardChartValueNull));
+				}
+			}
+		}
 	}
 
 	public CampaignDto toDto(Campaign source) {
@@ -220,12 +243,15 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	public List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid) {
 		final List<CampaignDashboardElement> result = new ArrayList<>();
 		if (campaignUuid != null) {
-			List<CampaignDashboardElement> dashboardElements = campaignService.getByUuid(campaignUuid).getDashboardElements();
+			final Campaign campaign = campaignService.getByUuid(campaignUuid);
+			validate(toDto(campaign));
+			List<CampaignDashboardElement> dashboardElements = campaign.getDashboardElements();
 			if (dashboardElements != null) {
 				result.addAll(dashboardElements);
 			}
 		} else {
-			campaignService.getAll().forEach(campaign -> {
+			campaignService.getAllActive().forEach(campaign -> {
+				validate(toDto(campaign));
 				if (campaign.getDashboardElements() != null) {
 					result.addAll(campaign.getDashboardElements());
 				}

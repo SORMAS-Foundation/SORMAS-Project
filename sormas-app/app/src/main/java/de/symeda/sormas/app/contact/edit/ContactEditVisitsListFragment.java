@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -39,6 +40,7 @@ import de.symeda.sormas.app.visit.VisitSection;
 import de.symeda.sormas.app.visit.edit.VisitEditActivity;
 import de.symeda.sormas.app.visit.list.VisitListAdapter;
 import de.symeda.sormas.app.visit.list.VisitListViewModel;
+import de.symeda.sormas.app.visit.read.VisitReadActivity;
 
 public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Visit>, Contact>
 	implements OnListItemClickListener {
@@ -112,6 +114,10 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
 		Visit visit = (Visit) item;
-		VisitEditActivity.startActivity(getContext(), visit.getUuid(), getActivityRootData().getUuid(), VisitSection.VISIT_INFO);
+		if (VisitOrigin.USER.equals(visit.getOrigin())) {
+			VisitEditActivity.startActivity(getContext(), visit.getUuid(), getActivityRootData().getUuid(), VisitSection.VISIT_INFO);
+		} else {
+			VisitReadActivity.startActivity(getContext(), visit.getUuid(), getActivityRootData().getUuid(), VisitSection.VISIT_INFO);
+		}
 	}
 }

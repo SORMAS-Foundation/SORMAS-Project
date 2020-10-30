@@ -37,10 +37,15 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String EVENT_STATUS_CHECKBOX = "eventStatusCheckbox";
+	private static final String EVENT_INVESTIGATION_STATUS_CHECKBOX = "eventInvestigationStatusCheckbox";
 
-	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, EVENT_STATUS_CHECKBOX) + fluidRowLocs(EventDto.EVENT_STATUS);
+	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, EVENT_STATUS_CHECKBOX)
+		+ fluidRowLocs(EventDto.EVENT_STATUS)
+		+ fluidRowLocsCss(VSPACE_4, EVENT_INVESTIGATION_STATUS_CHECKBOX)
+		+ fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS);
 
 	private CheckBox eventStatusCheckBox;
+	private CheckBox eventInvestigationStatusCheckbox;
 
 	public BulkEventDataForm() {
 		super(EventDto.class, EventDto.I18N_PREFIX);
@@ -60,6 +65,21 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 		eventStatusCheckBox.addValueChangeListener(e -> {
 			eventStatus.setEnabled((boolean) e.getProperty().getValue());
 		});
+
+		eventInvestigationStatusCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventInvestigationStatus));
+		getContent().addComponent(eventInvestigationStatusCheckbox, EVENT_INVESTIGATION_STATUS_CHECKBOX);
+		NullableOptionGroup eventInvestigationStatus = addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
+		eventInvestigationStatus.setEnabled(false);
+
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			eventInvestigationStatusCheckbox,
+			Arrays.asList(EventDto.EVENT_INVESTIGATION_STATUS),
+			Arrays.asList(true));
+
+		eventInvestigationStatusCheckbox.addValueChangeListener(e -> {
+			eventInvestigationStatus.setEnabled((boolean) e.getProperty().getValue());
+		});
 	}
 
 	@Override
@@ -69,5 +89,9 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 
 	public CheckBox getEventStatusCheckBox() {
 		return eventStatusCheckBox;
+	}
+
+	public CheckBox getEventInvestigationStatusCheckbox() {
+		return eventInvestigationStatusCheckbox;
 	}
 }

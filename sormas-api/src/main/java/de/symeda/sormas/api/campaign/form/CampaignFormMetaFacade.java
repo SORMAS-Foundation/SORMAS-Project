@@ -1,11 +1,10 @@
 package de.symeda.sormas.api.campaign.form;
 
-import javax.ejb.Remote;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import javax.ejb.Remote;
 
 @Remote
 public interface CampaignFormMetaFacade {
@@ -27,6 +26,8 @@ public interface CampaignFormMetaFacade {
 	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferences();
 
 	CampaignFormMetaDto getCampaignFormMetaByUuid(String campaignFormUuid);
+
+	List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid);
 
     List<CampaignFormMetaDto> getAllAfter(Date campaignFormMetaChangeDate);
 

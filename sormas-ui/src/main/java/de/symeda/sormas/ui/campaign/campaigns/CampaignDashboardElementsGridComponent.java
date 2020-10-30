@@ -31,33 +31,36 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 	protected Binder<CampaignDashboardElement> addColumnsBinder(List<CampaignDashboardElement> allElements) {
 		Binder<CampaignDashboardElement> binder = new Binder<>();
 
-		ComboBox<String> diagramIdCombo = new ComboBox<>(
-			Captions.campaignDashboardChart,
-			allElements.stream()
-				.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getDiagramId())
-				.distinct()
-				.collect(Collectors.toList()));
-		Binder.Binding<CampaignDashboardElement, String> diagramIdBind =
+		final List<String> existingDiagramIds = allElements.stream()
+			.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getDiagramId())
+			.filter(s -> StringUtils.isNotEmpty(s))
+			.distinct()
+			.collect(Collectors.toList());
+		final ComboBox<String> diagramIdCombo = new ComboBox<>(Captions.campaignDashboardChart, existingDiagramIds);
+		diagramIdCombo.setEmptySelectionAllowed(false);
+		final Binder.Binding<CampaignDashboardElement, String> diagramIdBind =
 			binder.bind(diagramIdCombo, CampaignDashboardElement::getDiagramId, CampaignDashboardElement::setDiagramId);
-		Grid.Column<CampaignDashboardElement, String> diagramIdColumn =
+		final Grid.Column<CampaignDashboardElement, String> diagramIdColumn =
 			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getDiagramId())
 				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardChart));
 		diagramIdColumn.setEditorBinding(diagramIdBind);
 
-		ComboBox<String> tabIdCombo = new ComboBox<>(
-			Captions.campaignDashboardTabName,
-			allElements.stream()
-				.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getTabId())
-				.distinct()
-				.collect(Collectors.toList()));
+		final List<String> existingTabIds = allElements.stream()
+			.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getTabId())
+			.filter(s -> StringUtils.isNotEmpty(s))
+			.distinct()
+			.collect(Collectors.toList());
+		final ComboBox<String> tabIdCombo = new ComboBox<>(Captions.campaignDashboardTabName, existingTabIds);
 
+		tabIdCombo.setEmptySelectionAllowed(false);
 		tabIdCombo.setTextInputAllowed(true);
 		tabIdCombo.setNewItemProvider((ComboBox.NewItemProvider<String>) s -> Optional.of(s));
 
-		Binder.Binding<CampaignDashboardElement, String> tabIdBind =
+		final Binder.Binding<CampaignDashboardElement, String> tabIdBind =
 			binder.bind(tabIdCombo, CampaignDashboardElement::getTabId, CampaignDashboardElement::setTabId);
-		Grid.Column<CampaignDashboardElement, String> tabIdColumn = grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getTabId())
-			.setCaption(I18nProperties.getCaption(Captions.campaignDashboardTabName));
+		final Grid.Column<CampaignDashboardElement, String> tabIdColumn =
+			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getTabId())
+				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardTabName));
 		tabIdColumn.setEditorBinding(tabIdBind);
 
 		TextField width = new TextField(Captions.campaignDashboardChartWidth);

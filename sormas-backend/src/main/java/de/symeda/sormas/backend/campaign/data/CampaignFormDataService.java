@@ -34,15 +34,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -80,8 +81,41 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignFormData> from) {
-		return null;
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignFormData> campaignPath) {
+		final User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+
+		Predicate filter = null;
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+			switch (jurisdictionLevel) {
+			case REGION:
+				final Region region = currentUser.getRegion();
+				if (region != null) {
+					filter = or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.REGION).get(Region.ID), region.getId()));
+				}
+				break;
+			case DISTRICT:
+				final District district = currentUser.getDistrict();
+				if (district != null) {
+					filter = or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.DISTRICT).get(District.ID), district.getId()));
+				}
+				break;
+			case COMMUNITY:
+				final Community community = currentUser.getCommunity();
+				if (community != null) {
+					filter = or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), community.getId()));
+				}
+				break;
+			default:
+				return null;
+			}
+		}
+
+		return filter;
 	}
 
 	public List<String> getAllActiveUuids() {

@@ -321,6 +321,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.UUID),
 
 			event.get(Event.EVENT_STATUS),
+			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.TYPE_OF_PLACE),
 			event.get(Event.START_DATE),

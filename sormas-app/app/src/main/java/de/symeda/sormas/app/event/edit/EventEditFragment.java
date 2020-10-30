@@ -23,6 +23,7 @@ import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -127,6 +128,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		contentBinding.setData(record);
 		contentBinding.setEventStatusClass(EventStatus.class);
+		contentBinding.setEventInvestigationStatusClass(EventInvestigationStatus.class);
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
 	}
@@ -146,6 +148,9 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventStartDate.setCaption(startDateCaption);
 
 		contentBinding.eventEndDate.initializeDateField(getFragmentManager());
+
+		contentBinding.eventEventInvestigationStartDate.initializeDateField(getFragmentManager());
+		contentBinding.eventEventInvestigationEndDate.initializeDateField(getFragmentManager());
 
 		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
 	}

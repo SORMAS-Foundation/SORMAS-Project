@@ -26,6 +26,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -44,6 +45,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String QUARANTINE_TYPE = "quarantineType";
 	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
 	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
@@ -57,7 +59,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String EVENT_LIKE = "eventLike";
-	public static final String ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT = "onlyContactsWithSourceCaseInEvent";
+	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -81,6 +83,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
 	 * even if a followUpUntilFrom is specified
 	 */
+	private SymptomJournalStatus symptomJournalStatus;
 	private Boolean followUpUntilToPrecise;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
@@ -106,7 +109,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private YesNoUnknown returningTraveler;
 	private String eventLike;
 	private String eventUuid;
-	private Boolean onlyContactsWithSourceCaseInEvent;
+	private Boolean onlyContactsSharingEventWithSourceCase;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -292,6 +295,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return followUpUntilTo;
 	}
 
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
 	public Boolean getFollowUpUntilToPrecise() {
 		return followUpUntilToPrecise;
 	}
@@ -433,7 +444,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return person;
 	}
 
-	public ContactCriteria person(PersonReferenceDto person) {
+	public ContactCriteria setPerson(PersonReferenceDto person) {
 		this.person = person;
 		return this;
 	}
@@ -497,17 +508,17 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public void setOnlyContactsWithSourceCaseInEvent(Boolean onlyContactsWithSourceCaseInEvent) {
-		this.onlyContactsWithSourceCaseInEvent = onlyContactsWithSourceCaseInEvent;
+	public void setOnlyContactsSharingEventWithSourceCase(Boolean onlyContactsSharingEventWithSourceCase) {
+		this.onlyContactsSharingEventWithSourceCase = onlyContactsSharingEventWithSourceCase;
 	}
 
 	@IgnoreForUrl
-	public Boolean getOnlyContactsWithSourceCaseInEvent() {
-		return onlyContactsWithSourceCaseInEvent;
+	public Boolean getOnlyContactsSharingEventWithSourceCase() {
+		return onlyContactsSharingEventWithSourceCase;
 	}
 
-	public ContactCriteria onlyContactsWithSourceCaseInEvent(Boolean onlyContactsWithSourceCaseInEvent) {
-		this.onlyContactsWithSourceCaseInEvent = onlyContactsWithSourceCaseInEvent;
+	public ContactCriteria onlyContactsSharingEventWithSourceCase(Boolean onlyContactsSharingEventWithSourceCase) {
+		this.onlyContactsSharingEventWithSourceCase = onlyContactsSharingEventWithSourceCase;
 		return this;
 	}
 }

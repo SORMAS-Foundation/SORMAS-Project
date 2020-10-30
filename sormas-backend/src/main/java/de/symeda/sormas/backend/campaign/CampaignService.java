@@ -14,8 +14,6 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.campaign.data.CampaignFormData;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -114,5 +112,16 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		List<Campaign> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+
+	public List<Campaign> getAllActive() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
+		Root<Campaign> from = cq.from(getElementClass());
+		cq.where(cb.isFalse(from.get(Campaign.DELETED)));
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

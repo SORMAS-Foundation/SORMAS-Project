@@ -68,7 +68,6 @@ public class CampaignDtoHelper extends AdoDtoHelper<Campaign, CampaignDto> {
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
 		target.setCreatingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getCreatingUser()));
-		target.setDashboardElements(source.getCampaignDashboardElements());
 	}
 
 	@Override
