@@ -17,7 +17,7 @@ public interface CountryFacade {
 
 	long count(CountryCriteria criteria);
 
-	void saveCountry(CountryDto dto);
+	String saveCountry(CountryDto dto);
 
 	void archive(String countryUuid);
 

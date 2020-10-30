@@ -71,7 +71,7 @@ public class CountryDto extends EntityDto {
 
 	@Override
 	public String toString() {
-		return this.displayName;
+		return this.defaultName;
 	}
 
 	public static CountryDto build() {

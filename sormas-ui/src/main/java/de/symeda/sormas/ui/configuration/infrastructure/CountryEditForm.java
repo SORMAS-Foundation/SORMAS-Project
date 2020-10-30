@@ -49,9 +49,9 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 		}
 
 		addField(CountryDto.DEFAULT_NAME, TextField.class);
-		addField(CountryDto.ISO_CODE, TextField.class);
+		addField(CountryDto.ISO_CODE, TextField.class).setMaxLength(3);
 		addField(CountryDto.EXTERNAL_ID, TextField.class);
-		addField(CountryDto.UNO_CODE, TextField.class);
+		addField(CountryDto.UNO_CODE, TextField.class).setMaxLength(3);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 

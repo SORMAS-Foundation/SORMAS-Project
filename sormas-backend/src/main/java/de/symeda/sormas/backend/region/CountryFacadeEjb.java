@@ -113,7 +113,7 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
-	public void saveCountry(CountryDto dto) throws ValidationRuntimeException {
+	public String saveCountry(CountryDto dto) throws ValidationRuntimeException {
 		Country country = countryService.getByUuid(dto.getUuid());
 
 		if (country == null
@@ -124,6 +124,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		country = fillOrBuildEntity(dto, country);
 		countryService.ensurePersisted(country);
+		return country.getUuid();
 	}
 
 	@Override
@@ -167,6 +168,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setExternalId(entity.getExternalId());
 		dto.setIsoCode(entity.getIsoCode());
 		dto.setUnoCode(entity.getUnoCode());
+		dto.setUuid(entity.getUuid());
 
 		return dto;
 	}

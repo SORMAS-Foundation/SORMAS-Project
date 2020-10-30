@@ -95,6 +95,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseCon
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
@@ -1080,6 +1081,17 @@ public class TestDataCreator {
 		Facility facility = createFacility(facilityName, region, district, community);
 
 		return new RDCFEntities(region, district, community, facility);
+	}
+
+	public Country createCountry(String countryName, String isoCode, String unoCode) {
+		Country country = new Country();
+		country.setUuid(DataHelper.createUuid());
+		country.setDefaultName(countryName);
+		country.setIsoCode(isoCode);
+		country.setUnoCode(unoCode);
+		beanTest.getCountryService().persist(country);
+
+		return country;
 	}
 
 	public Region createRegion(String regionName) {
