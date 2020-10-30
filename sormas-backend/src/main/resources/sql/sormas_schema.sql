@@ -5529,6 +5529,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (271, 'Add event.eve
 ALTER TABLE visit DROP CONSTRAINT IF EXISTS fk_visit_caze_id;
 ALTER TABLE visit ADD CONSTRAINT fk_visit_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
 CREATE INDEX IF NOT EXISTS idx_visit_caze_id ON visit USING HASH (caze_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_resultingcase_id ON eventparticipant USING hash (resultingcase_id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (272, 'Increase case directory performance #3137');
 
