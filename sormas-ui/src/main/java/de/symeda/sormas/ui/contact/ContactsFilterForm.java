@@ -293,14 +293,16 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				null,
 				CHECKBOX_STYLE));
 
-		addField(
-			moreFiltersContainer,
-			CheckBox.class,
-			FieldConfiguration.withCaptionAndStyle(
-				ContactCriteria.INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS,
-				I18nProperties.getCaption(Captions.contactInludeContactsFromOtherJurisdictions),
-				I18nProperties.getDescription(Descriptions.descContactIncludeContactsFromOtherJurisdictions),
-				CHECKBOX_STYLE));
+		if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)) {
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					ContactCriteria.INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS,
+					I18nProperties.getCaption(Captions.contactInludeContactsFromOtherJurisdictions),
+					I18nProperties.getDescription(Descriptions.descContactIncludeContactsFromOtherJurisdictions),
+					CHECKBOX_STYLE));
+		}
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}

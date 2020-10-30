@@ -274,14 +274,16 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
-		addField(
-			moreFiltersContainer,
-			CheckBox.class,
-			FieldConfiguration.withCaptionAndStyle(
-				CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS,
-				I18nProperties.getCaption(Captions.caseFilterInludeCasesFromOtherJurisdictions),
-				I18nProperties.getDescription(Descriptions.descCaseFilterIncludeCasesFromOtherJurisdictions),
-				CssStyles.CHECKBOX_FILTER_INLINE));
+		if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)) {
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS,
+					I18nProperties.getCaption(Captions.caseFilterInludeCasesFromOtherJurisdictions),
+					I18nProperties.getDescription(Descriptions.descCaseFilterIncludeCasesFromOtherJurisdictions),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+		}
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
