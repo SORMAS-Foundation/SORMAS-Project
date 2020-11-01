@@ -5559,7 +5559,7 @@ CREATE TABLE country (
     changedate timestamp not null,
     archived boolean not null default false,
     defaultname varchar(255),
-    externalid varchar(4),
+    externalid varchar(4) unique,
     isocode varchar(3) unique,
     unocode varchar(3) unique,
     primary key(id)

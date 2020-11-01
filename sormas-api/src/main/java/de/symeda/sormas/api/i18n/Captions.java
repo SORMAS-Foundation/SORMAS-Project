@@ -1782,4 +1782,5 @@ public interface Captions {
 	String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
 	String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	String weeklyReportsInDistrict = "weeklyReportsInDistrict";
+    String actionImportAllCountries = "actionImportAllCountries";
 }

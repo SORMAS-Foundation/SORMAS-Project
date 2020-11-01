@@ -55,6 +55,7 @@ public class CountriesView extends AbstractConfigurationView {
 	private CountriesGrid grid;
 	protected Button createButton;
 	protected Button importButton;
+	protected Button importAllButton;
 	private MenuBar bulkOperationsDropdown;
 
 	public CountriesView() {
@@ -82,8 +83,14 @@ public class CountriesView extends AbstractConfigurationView {
 				window.setCaption(I18nProperties.getString(Strings.headingImportCountries));
 				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
-
 			addHeaderComponent(importButton);
+
+			importAllButton = ButtonHelper.createIconButton(Captions.actionImportAllCountries, VaadinIcons.UPLOAD, e -> {
+					Window window = VaadinUiUtil.showPopupWindow(new ImportAllCountriesLayout());
+				window.setCaption(I18nProperties.getString(Strings.headingImportAllCountries));
+				window.addCloseListener(c -> grid.reload());
+			}, ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(importAllButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {

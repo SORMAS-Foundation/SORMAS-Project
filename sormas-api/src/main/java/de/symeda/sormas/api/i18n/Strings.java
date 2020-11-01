@@ -1080,4 +1080,6 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
+	String headingImportAllCountries = "headingImportAllCountries";
+	String infoImportAllCountries = "infoImportAllCountries";
 }
