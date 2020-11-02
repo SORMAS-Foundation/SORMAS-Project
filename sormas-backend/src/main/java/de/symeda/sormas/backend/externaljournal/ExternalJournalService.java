@@ -341,10 +341,6 @@ public class ExternalJournalService {
 	}
 
 	private Client newClient() {
-		ClientBuilder clientBuilder = ClientBuilder.newBuilder();
-		if (clientBuilder instanceof ResteasyClientBuilder) {
-			((ResteasyClientBuilder) clientBuilder).httpEngine(new URLConnectionEngine());
-		}
-		return clientBuilder.build();
+		return new ResteasyClientBuilder().defaultProxy("10.135.160.196", 3128, "http").build();
 	}
 }
