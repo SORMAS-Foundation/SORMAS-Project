@@ -36,7 +36,11 @@ public interface Validations {
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
-	String externalJournalPersonValidation = "externalJournalPersonValidation";
+	String externalJournalPersonValidationBirthdate = "externalJournalPersonValidationBirthdate";
+	String externalJournalPersonValidationEmail = "externalJournalPersonValidationEmail";
+	String externalJournalPersonValidationError = "externalJournalPersonValidationError";
+	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
+	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";
@@ -47,10 +51,13 @@ public interface Validations {
 	String importCommunityNotUnique = "importCommunityNotUnique";
 	String importDistrictAlreadyExists = "importDistrictAlreadyExists";
 	String importDistrictNotUnique = "importDistrictNotUnique";
+	String importEntryCommunityNotInUsersJurisdiction = "importEntryCommunityNotInUsersJurisdiction";
+	String importEntryDistrictNotInUsersJurisdiction = "importEntryDistrictNotInUsersJurisdiction";
 	String importEntryDoesNotExist = "importEntryDoesNotExist";
 	String importEntryDoesNotExistDbOrCommunity = "importEntryDoesNotExistDbOrCommunity";
 	String importEntryDoesNotExistDbOrDistrict = "importEntryDoesNotExistDbOrDistrict";
 	String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
+	String importEntryRegionNotInUsersJurisdiction = "importEntryRegionNotInUsersJurisdiction";
 	String importErrorInColumn = "importErrorInColumn";
 	String importFacilityAlreadyExists = "importFacilityAlreadyExists";
 	String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";

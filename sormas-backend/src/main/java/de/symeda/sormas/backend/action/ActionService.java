@@ -264,6 +264,7 @@ public class ActionService extends AbstractAdoService<Action> {
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_STATUS),
+			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			action.get(Action.TITLE),
 			action.get(Action.CREATION_DATE),
 			action.get(Action.CHANGE_DATE),
@@ -292,6 +293,9 @@ public class ActionService extends AbstractAdoService<Action> {
 					break;
 				case EventActionIndexDto.EVENT_STATUS:
 					expression = event.get(Event.EVENT_STATUS);
+					break;
+				case EventActionIndexDto.EVENT_INVESTIGATION_STATUS:
+					expression = event.get(Event.EVENT_INVESTIGATION_STATUS);
 					break;
 				case EventActionIndexDto.ACTION_CHANGE_DATE:
 					expression = action.get(Action.CHANGE_DATE);

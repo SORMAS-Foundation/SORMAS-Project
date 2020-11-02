@@ -127,6 +127,7 @@ public interface Captions {
 	String bulkDelete = "bulkDelete";
 	String bulkDisease = "bulkDisease";
 	String bulkEdit = "bulkEdit";
+	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
 	String bulkEventStatus = "bulkEventStatus";
 	String bulkEventType = "bulkEventType";
 	String bulkFacility = "bulkFacility";
@@ -138,10 +139,12 @@ public interface Captions {
 	String Campaign_creatingUser = "Campaign.creatingUser";
 	String Campaign_description = "Campaign.description";
 	String Campaign_district = "Campaign.district";
+	String Campaign_edit = "Campaign.edit";
 	String Campaign_endDate = "Campaign.endDate";
 	String Campaign_name = "Campaign.name";
 	String Campaign_region = "Campaign.region";
 	String Campaign_startDate = "Campaign.startDate";
+	String Campaign_viewForms = "Campaign.viewForms";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
 	String campaignAdditionalChart = "campaignAdditionalChart";
 	String campaignAdditionalForm = "campaignAdditionalForm";
@@ -333,6 +336,7 @@ public interface Captions {
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
+	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
@@ -523,6 +527,7 @@ public interface Captions {
 	String ContactExport_travelHistory = "ContactExport.travelHistory";
 	String contactFollowUpDay = "contactFollowUpDay";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
+	String contactInludeContactsFromOtherJurisdictions = "contactInludeContactsFromOtherJurisdictions";
 	String contactLostToFollowUp = "contactLostToFollowUp";
 	String contactMinusDays = "contactMinusDays";
 	String contactNewContact = "contactNewContact";
@@ -530,7 +535,7 @@ public interface Captions {
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
-	String contactOnlyWithSourceCaseInEvent = "contactOnlyWithSourceCaseInEvent";
+	String contactOnlyWithSharedEventWithSourceCase = "contactOnlyWithSharedEventWithSourceCase";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
@@ -805,6 +810,9 @@ public interface Captions {
 	String Event_endDate = "Event.endDate";
 	String Event_eventActions = "Event.eventActions";
 	String Event_eventDesc = "Event.eventDesc";
+	String Event_eventInvestigationEndDate = "Event.eventInvestigationEndDate";
+	String Event_eventInvestigationStartDate = "Event.eventInvestigationStartDate";
+	String Event_eventInvestigationStatus = "Event.eventInvestigationStatus";
 	String Event_eventLocation = "Event.eventLocation";
 	String Event_eventParticipants = "Event.eventParticipants";
 	String Event_eventPersons = "Event.eventPersons";
@@ -838,6 +846,7 @@ public interface Captions {
 	String EventAction_actionReplyingUser = "EventAction.actionReplyingUser";
 	String EventAction_actionStatus = "EventAction.actionStatus";
 	String EventAction_actionTitle = "EventAction.actionTitle";
+	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
 	String EventAction_eventUuid = "EventAction.eventUuid";
@@ -1083,7 +1092,6 @@ public interface Captions {
 	String PathogenTests = "PathogenTests";
 	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
 	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
-	String patientDiaryRegistrationSuccess = "patientDiaryRegistrationSuccess";
 	String Person = "Person";
 	String Person_address = "Person.address";
 	String Person_addresses = "Person.addresses";

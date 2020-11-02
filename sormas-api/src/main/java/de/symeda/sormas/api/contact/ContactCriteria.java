@@ -59,7 +59,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String EVENT_LIKE = "eventLike";
-	public static final String ONLY_CONTACTS_WITH_SOURCE_CASE_IN_EVENT = "onlyContactsWithSourceCaseInEvent";
+	public static final String INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS = "includeContactsFromOtherJurisdictions";
+	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -109,7 +110,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private YesNoUnknown returningTraveler;
 	private String eventLike;
 	private String eventUuid;
-	private Boolean onlyContactsWithSourceCaseInEvent;
+	private Boolean includeContactsFromOtherJurisdictions = Boolean.FALSE;
+	private Boolean onlyContactsSharingEventWithSourceCase;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -508,17 +510,25 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public void setOnlyContactsWithSourceCaseInEvent(Boolean onlyContactsWithSourceCaseInEvent) {
-		this.onlyContactsWithSourceCaseInEvent = onlyContactsWithSourceCaseInEvent;
+	public void setOnlyContactsSharingEventWithSourceCase(Boolean onlyContactsSharingEventWithSourceCase) {
+		this.onlyContactsSharingEventWithSourceCase = onlyContactsSharingEventWithSourceCase;
 	}
 
 	@IgnoreForUrl
-	public Boolean getOnlyContactsWithSourceCaseInEvent() {
-		return onlyContactsWithSourceCaseInEvent;
+	public Boolean getOnlyContactsSharingEventWithSourceCase() {
+		return onlyContactsSharingEventWithSourceCase;
 	}
 
-	public ContactCriteria onlyContactsWithSourceCaseInEvent(Boolean onlyContactsWithSourceCaseInEvent) {
-		this.onlyContactsWithSourceCaseInEvent = onlyContactsWithSourceCaseInEvent;
+	public ContactCriteria onlyContactsSharingEventWithSourceCase(Boolean onlyContactsSharingEventWithSourceCase) {
+		this.onlyContactsSharingEventWithSourceCase = onlyContactsSharingEventWithSourceCase;
 		return this;
+	}
+
+	public Boolean getIncludeContactsFromOtherJurisdictions() {
+		return includeContactsFromOtherJurisdictions;
+	}
+
+	public void setIncludeContactsFromOtherJurisdictions(Boolean includeContactsFromOtherJurisdictions) {
+		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
 	}
 }

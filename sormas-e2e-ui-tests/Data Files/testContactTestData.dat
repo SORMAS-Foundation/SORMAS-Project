@@ -15,20 +15,21 @@
    <data>unchangable-epid-number-A TTZEQU null</data>
    <data>unchangable-epid-number-B XU7LM3 null</data>
    <data>userName-B UserB+test null</data>
+   <data>test test random+search+for+test+data+export</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>Key</name>
-      <size>7</size>
+      <size>8</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>1</columnIndex>
       <name>Value</name>
-      <size>7</size>
+      <size>8</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>2</columnIndex>
       <name>Description</name>
-      <size>7</size>
+      <size>8</size>
    </internalDataColumns>
    <isInternalPath>false</isInternalPath>
    <query></query>

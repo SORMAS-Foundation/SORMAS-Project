@@ -31,6 +31,7 @@ import org.junit.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -52,6 +53,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"Title",
 			"Description",
 			"First",

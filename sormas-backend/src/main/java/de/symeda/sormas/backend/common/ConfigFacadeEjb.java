@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.externaljournal.UserConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
@@ -95,17 +96,23 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_SYMPTOM_JOURNAL_AUTH_URL = "interface.symptomjournal.authurl";
 	public static final String INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID = "interface.symptomjournal.clientid";
 	public static final String INTERFACE_SYMPTOM_JOURNAL_SECRET = "interface.symptomjournal.secret";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_USERNAME = "interface.symptomjournal.defaultuser.username";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_PASSWORD = "interface.symptomjournal.defaultuser.password";
 
 	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
 	public static final String INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL = "interface.patientdiary.externaldataurl";
 	public static final String INTERFACE_PATIENT_DIARY_AUTH_URL = "interface.patientdiary.authurl";
 	public static final String INTERFACE_PATIENT_DIARY_EMAIL = "interface.patientdiary.email";
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
+	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
+	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD = "interface.patientdiary.defaultuser.password";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
-	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
+	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
+	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
+	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
 
 	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	private static final String SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME = "sormas2sormas.serverAccessDataFileName";
@@ -362,8 +369,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getGeocodingOsgtsEndpoint() {
-		return getProperty(GEOCODING_OSGTS_ENDPOINT, null);
+	public String getGeocodingServiceUrlTemplate() {
+		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
+	}
+
+	@Override
+	public String getGeocodingLongitudeJsonPath() {
+		return getProperty(GEOCODING_LONGITUDE_JSON_PATH, null);
+	}
+
+	@Override
+	public String getGeocodingLatitudeJsonPath() {
+		return getProperty(GEOCODING_LATITUDE_JSON_PATH, null);
 	}
 
 	@Override
@@ -373,6 +390,15 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setAuthUrl(getProperty(INTERFACE_SYMPTOM_JOURNAL_AUTH_URL, null));
 		config.setClientId(getProperty(INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID, null));
 		config.setSecret(getProperty(INTERFACE_SYMPTOM_JOURNAL_SECRET, null));
+
+		UserConfig userConfig = new UserConfig();
+		userConfig.setUsername(getProperty(INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_USERNAME, null));
+		userConfig.setPassword(getProperty(INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_PASSWORD, null));
+
+		if(StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
+			config.setDefaultUser(userConfig);
+		}
+
 		return config;
 	}
 
@@ -384,6 +410,15 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
+
+		UserConfig userConfig = new UserConfig();
+		userConfig.setUsername(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME, null));
+		userConfig.setPassword(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD, null));
+
+		if(StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
+			config.setDefaultUser(userConfig);
+		}
+
 		return config;
 	}
 

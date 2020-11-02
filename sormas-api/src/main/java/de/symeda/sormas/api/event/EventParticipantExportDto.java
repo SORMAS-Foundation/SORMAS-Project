@@ -73,6 +73,7 @@ public class EventParticipantExportDto implements Serializable {
 	private String eventUuid;
 
 	private final EventStatus eventStatus;
+	private final EventInvestigationStatus eventInvestigationStatus;
 	private final Disease eventDisease;
 	private TypeOfPlace typeOfPlace;
 	private final Date eventStartDate;
@@ -141,7 +142,7 @@ public class EventParticipantExportDto implements Serializable {
 	//@formatter:off
     public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid, 
 									 
-									 EventStatus eventStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
+									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
 									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
 									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
@@ -158,6 +159,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.eventUuid = eventUuid;
 
 		this.eventStatus = eventStatus;
+		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.eventDisease = eventDisease;
 		this.typeOfPlace = typeOfPlace;
 		this.eventStartDate = eventStartDate;
@@ -353,72 +355,78 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(52)
+	@ExportProperty(EventDto.EVENT_INVESTIGATION_STATUS)
+	public EventInvestigationStatus getEventInvestigationStatus() {
+		return eventInvestigationStatus;
+	}
+
+	@Order(53)
 	@ExportProperty(EventParticipantExportDto.EVENT_DISEASE)
 	public Disease getEventDisease() {
 		return eventDisease;
 	}
 
-	@Order(53)
+	@Order(54)
 	@ExportProperty(EventParticipantExportDto.EVENT_TYPE_OF_PLACE)
 	public TypeOfPlace getTypeOfPlace() {
 		return typeOfPlace;
 	}
 
-	@Order(54)
+	@Order(55)
 	@ExportProperty(EventParticipantExportDto.EVENT_START_DATE)
 	public Date getEventStartDate() {
 		return eventStartDate;
 	}
 
-	@Order(55)
+	@Order(56)
 	@ExportProperty(EventParticipantExportDto.EVENT_END_DATE)
 	public Date getEventEndDate() {
 		return eventEndDate;
 	}
 
-	@Order(56)
+	@Order(57)
 	@ExportProperty(EventParticipantExportDto.EVENT_TITLE)
 	public String getEventTitle() {
 		return eventTitle;
 	}
 
-	@Order(57)
+	@Order(58)
 	@ExportProperty(EventParticipantExportDto.EVENT_DESCRIPTION)
 	public String getEventDesc() {
 		return eventDesc;
 	}
 
-	@Order(58)
+	@Order(59)
 	@ExportProperty(EventParticipantExportDto.EVENT_REGION)
 	public String getEventRegion() {
 		return eventRegion;
 	}
 
-	@Order(59)
+	@Order(60)
 	@ExportProperty(EventParticipantExportDto.EVENT_DISTRICT)
 	public String getEventDistrict() {
 		return eventDistrict;
 	}
 
-	@Order(60)
+	@Order(61)
 	@ExportProperty(EventParticipantExportDto.EVENT_COMMUNITY)
 	public String getEventCommunity() {
 		return eventCommunity;
 	}
 
-	@Order(61)
+	@Order(62)
 	@ExportProperty(EventParticipantExportDto.EVENT_CITY)
 	public String getEventCity() {
 		return eventCity;
 	}
 
-	@Order(62)
+	@Order(63)
 	@ExportProperty(EventParticipantExportDto.EVENT_STREET)
 	public String getEventStreet() {
 		return eventStreet;
 	}
 
-	@Order(63)
+	@Order(64)
 	@ExportProperty(EventParticipantExportDto.EVENT_HOUSE_NUMBER)
 	public String getEventHouseNumber() {
 		return eventHouseNumber;
