@@ -32,6 +32,8 @@ public class CampaignDashboardDataProvider {
 		campaignFormDataMap.clear();
 		campaignFormTotalsMap.clear();
 
+		FacadeProvider.getCampaignFacade().validate(campaign);
+
 		final List<CampaignDashboardElementWithCaption> campaignDashboardElements =
 			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign != null ? campaign.getUuid() : null);
 		final List<CampaignDiagramDefinitionDto> campaignDiagramDefinitions = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();

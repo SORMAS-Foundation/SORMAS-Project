@@ -41,4 +41,6 @@ public interface CampaignFacade {
 	List<CampaignDto> getByUuids(List<String> uuids);
 
 	List<String> getAllActiveUuids();
+
+	void validate(CampaignReferenceDto campaignReferenceDto);
 }

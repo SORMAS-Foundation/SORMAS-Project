@@ -209,6 +209,10 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		return target;
 	}
 
+	public void validate(CampaignReferenceDto campaignReferenceDto) {
+		this.validate(getByUuid(campaignReferenceDto.getUuid()));
+	}
+
 	private void validate(CampaignDto campaignDto) {
 		final List<CampaignDashboardElementWithCaption> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {

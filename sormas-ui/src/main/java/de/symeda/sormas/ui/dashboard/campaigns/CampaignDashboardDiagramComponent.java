@@ -46,7 +46,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		this.showPercentages = showPercentages;
 		this.totalValuesMap = totalValuesMap;
 
-		if (this.totalValuesMap.keySet().stream().noneMatch(r -> r.getStack() != null)) {
+		if (this.totalValuesMap != null && this.totalValuesMap.keySet().stream().noneMatch(r -> r.getStack() != null)) {
 			totalValuesWithoutStacks = true;
 		}
 
