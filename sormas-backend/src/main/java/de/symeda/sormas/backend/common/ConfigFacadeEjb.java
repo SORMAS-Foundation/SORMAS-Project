@@ -105,7 +105,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
-	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
+	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
+	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
+	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
 
 	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	private static final String SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME = "sormas2sormas.serverAccessDataFileName";
@@ -362,8 +364,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getGeocodingOsgtsEndpoint() {
-		return getProperty(GEOCODING_OSGTS_ENDPOINT, null);
+	public String getGeocodingServiceUrlTemplate() {
+		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
+	}
+
+	@Override
+	public String getGeocodingLongitudeJsonPath() {
+		return getProperty(GEOCODING_LONGITUDE_JSON_PATH, null);
+	}
+
+	@Override
+	public String getGeocodingLatitudeJsonPath() {
+		return getProperty(GEOCODING_LATITUDE_JSON_PATH, null);
 	}
 
 	@Override

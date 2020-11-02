@@ -36,6 +36,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -305,11 +306,15 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(AreaFacade.class);
 	}
 
-    public static ExternalJournalFacade getExternalJournalFacade() {
-		return get().lookupEjbRemote(ExternalJournalFacade.class);
-    }
+	public static QuarantineOrderFacade getQuarantineOrderFacade() {
+		return get().lookupEjbRemote(QuarantineOrderFacade.class);
+	}
 
-    @SuppressWarnings("unchecked")
+  public static ExternalJournalFacade getExternalJournalFacade() {
+		return get().lookupEjbRemote(ExternalJournalFacade.class);
+  }
+
+  @SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {
 		try {
 			return (P) get().ic.lookup(buildJndiLookupName(clazz));

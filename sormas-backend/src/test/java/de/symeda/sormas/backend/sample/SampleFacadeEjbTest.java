@@ -41,6 +41,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -140,6 +141,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"Title",
 			"Description",
 			"First",

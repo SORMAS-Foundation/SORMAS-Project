@@ -39,6 +39,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -1621,6 +1622,9 @@ class EventGenerator extends BaseDataGenerator {
 			Event data1 = new Event();
 			data1.setUuid(getRandomUuid());
 			data1.setEventStatus(getRandomEventStatus());
+			data1.setEventInvestigationStatus(getRandomEventInvestigationStatus());
+			data1.setEventInvestigationStartDate(getRandomDate());
+			data1.setEventInvestigationEndDate(getRandomDate());
 			data1.setEventTitle(getRandomSentence());
 			data1.setEventDesc(getRandomSentence());
 			data1.setStartDate(getRandomDate());
@@ -2391,6 +2395,20 @@ abstract class BaseDataGenerator {
 				add(EventStatus.SCREENING);
 				add(EventStatus.CLUSTER);
 				add(EventStatus.DROPPED);
+			}
+		};
+
+		return randomItem(list);
+	}
+
+	public static EventInvestigationStatus getRandomEventInvestigationStatus() {
+		List<EventInvestigationStatus> list = new ArrayList<EventInvestigationStatus>() {
+
+			{
+				add(EventInvestigationStatus.PENDING);
+				add(EventInvestigationStatus.ONGOING);
+				add(EventInvestigationStatus.DONE);
+				add(EventInvestigationStatus.DISCARDED);
 			}
 		};
 

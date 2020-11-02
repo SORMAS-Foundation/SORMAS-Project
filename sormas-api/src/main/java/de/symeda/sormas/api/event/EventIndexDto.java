@@ -32,6 +32,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public static final String UUID = "uuid";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
@@ -47,6 +48,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	private String uuid;
 	private EventStatus eventStatus;
+	private EventInvestigationStatus eventInvestigationStatus;
 	private long participantCount;
 	private Disease disease;
 	private String diseaseDetails;
@@ -66,6 +68,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public EventIndexDto(
 		String uuid,
 		EventStatus eventStatus,
+		EventInvestigationStatus eventInvestigationStatus,
 		Long participantCount,
 		Disease disease,
 		String diseaseDetails,
@@ -94,6 +97,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
+		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
@@ -125,6 +129,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public EventInvestigationStatus getEventInvestigationStatus() {
+		return eventInvestigationStatus;
+	}
+
+	public void setEventInvestigationStatus(EventInvestigationStatus eventInvestigationStatus) {
+		this.eventInvestigationStatus = eventInvestigationStatus;
 	}
 
 	public Disease getDisease() {
@@ -236,7 +248,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	}
 
 	public EventReferenceDto toReference() {
-		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getStartDate());
+		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
 	}
 
 	@Override

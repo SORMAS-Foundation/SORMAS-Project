@@ -16,23 +16,24 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class SormasToSormasErrorResponse implements Serializable {
 
-	private String message;
+	private Map<String, ValidationErrors> errors;
 
 	public SormasToSormasErrorResponse() {
 	}
 
-	public SormasToSormasErrorResponse(String message) {
-		this.message = message;
+	public SormasToSormasErrorResponse(Map<String, ValidationErrors> errors) {
+		this.errors = errors;
 	}
 
-	public String getMessage() {
-		return message;
+	public Map<String, ValidationErrors> getErrors() {
+		return errors;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setErrors(Map<String, ValidationErrors> errors) {
+		this.errors = errors;
 	}
 }

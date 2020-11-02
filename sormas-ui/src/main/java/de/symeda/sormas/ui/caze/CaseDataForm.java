@@ -58,6 +58,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -223,7 +224,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
-	private NullableOptionGroup facilityOrHome;
+	private OptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
@@ -378,14 +379,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getFieldGroup(),
 			Arrays.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
 			CaseDataDto.QUARANTINE,
-			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+			QuarantineType.QUARANTINE_IN_EFFECT,
 			true);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY) || isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				CaseDataDto.QUARANTINE,
-				Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+				QuarantineType.QUARANTINE_IN_EFFECT,
 				true);
 		}
 		FieldHelper.setVisibleWhen(
@@ -434,7 +435,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.addStyleName(SOFT_REQUIRED);
-		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -476,7 +477,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				facility));
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue())) {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
 
 				// default values
 				if (facilityTypeGroup.getValue() == null && !facilityTypeGroup.isReadOnly()) {
@@ -1294,7 +1295,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private void onValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
-		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
 			CaseDataDto caze = this.getInternalValue();
 			if (caze != null) {
 				quarantineFrom.setValue(caze.getQuarantineFrom());

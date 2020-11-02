@@ -49,6 +49,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -558,6 +559,7 @@ public class TestDataCreator {
 
 		return createEvent(
 			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
 			"title",
 			"Description",
 			"FirstName",
@@ -574,6 +576,7 @@ public class TestDataCreator {
 
 	public EventDto createEvent(
 		EventStatus eventStatus,
+		EventInvestigationStatus eventInvestigationStatus,
 		String eventTitle,
 		String eventDesc,
 		String srcFirstName,
@@ -587,7 +590,7 @@ public class TestDataCreator {
 		Disease disease,
 		DistrictReferenceDto district) {
 
-		return createEvent(eventStatus, eventTitle, eventDesc, reportingUser, (event) -> {
+		return createEvent(eventStatus, eventInvestigationStatus, eventTitle, eventDesc, reportingUser, (event) -> {
 			event.setSrcFirstName(srcFirstName);
 			event.setSrcLastName(srcLastName);
 			event.setSrcTelNo(srcTelNo);
@@ -603,6 +606,7 @@ public class TestDataCreator {
 
 	public EventDto createEvent(
 		EventStatus eventStatus,
+		EventInvestigationStatus eventInvestigationStatus,
 		String eventTitle,
 		String eventDesc,
 		UserReferenceDto reportingUser,
@@ -610,6 +614,7 @@ public class TestDataCreator {
 
 		EventDto event = EventDto.build();
 		event.setEventStatus(eventStatus);
+		event.setEventInvestigationStatus(eventInvestigationStatus);
 		event.setEventTitle(eventTitle);
 		event.setEventDesc(eventDesc);
 		event.setReportingUser(reportingUser);
@@ -658,6 +663,14 @@ public class TestDataCreator {
 	}
 
 	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
+		return createSample(associatedCase, reportingUser, lab, null);
+	}
+
+	public SampleDto createSample(
+		CaseReferenceDto associatedCase,
+		UserReferenceDto reportingUser,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customSettings) {
 
 		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
 		sample.setSampleDateTime(new Date());
@@ -665,6 +678,10 @@ public class TestDataCreator {
 		sample.setSampleMaterial(SampleMaterial.BLOOD);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		if (customSettings != null) {
+			customSettings.accept(sample);
+		}
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
 
@@ -760,6 +777,28 @@ public class TestDataCreator {
 		sample.setLab(lab);
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
+		return sample;
+	}
+
+	public SampleDto createSample(
+		ContactReferenceDto associatedContact,
+		UserReferenceDto reportingUser,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customSettings) {
+
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(new Date());
+		sample.setReportDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		if (customSettings != null) {
+			customSettings.accept(sample);
+		}
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
 		return sample;
 	}
 
