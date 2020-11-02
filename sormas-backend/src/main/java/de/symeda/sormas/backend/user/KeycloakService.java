@@ -110,11 +110,11 @@ public class KeycloakService {
 
 		try {
 			JSONObject json = JSONObjectUtils.parse(oidcJson.get());
-			ResteasyClient RestClient = null
+			ResteasyClient RestClient = null;
                         if (configFacade.getProxyHost() != null && configFacade.getProxyPort() != null && configFacade.getProxyProtocol() != null){
-				RestClient = new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build()
+				RestClient = new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build();
 			} else {
-				RestClient = new ResteasyClientBuilder().build()
+				RestClient = new ResteasyClientBuilder().build();
 			}
 			keycloak = KeycloakBuilder.builder()
 				.realm(json.getAsString(OIDC_REALM))
