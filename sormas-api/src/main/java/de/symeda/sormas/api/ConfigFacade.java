@@ -106,7 +106,7 @@ public interface ConfigFacade {
 	
 	String getProxyHost();
 		
-	String getProxyPort();
+	int getProxyPort();
 
 	String getProxyProtocol();
 
