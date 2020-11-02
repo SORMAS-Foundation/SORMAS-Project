@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Paths;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -26,11 +27,11 @@ public class ImportAllCountriesLayout extends AbstractImportLayout {
 		super();
 
 		addImportAllCountriesCsvComponent(1, (event) -> {
-			String templateFilePath = FacadeProvider.getImportFacade().getAllCountriesImportFilePath();
-			File templateFile = Paths.get(templateFilePath).toFile();
+			URI countriesFileUri = FacadeProvider.getImportFacade().getAllCountriesImportFilePath();
+			File countriesFile = Paths.get(countriesFileUri).toFile();
 			resetDownloadErrorReportButton();
 			try {
-				DataImporter importer = new InfrastructureImporter(templateFile, currentUser, InfrastructureType.COUNTRY);
+				DataImporter importer = new InfrastructureImporter(countriesFile, currentUser, InfrastructureType.COUNTRY);
 				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(

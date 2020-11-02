@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -97,6 +99,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -300,6 +303,11 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public void generateCountryImportTemplateFile() throws IOException {
+		generateImportTemplateFile(CountryDto.class, Paths.get(getCountryImportTemplateFilePath()));
+	}
+
+	@Override
 	public void generateRegionImportTemplateFile() throws IOException {
 		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()));
 	}
@@ -395,10 +403,13 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public String getAllCountriesImportFilePath() {
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(ALL_COUNTRIES_IMPORT_FILE_NAME);
-		return filePath.toString();
+	public URI getAllCountriesImportFilePath() {
+		try {
+			return this.getClass().getClassLoader().getResource(ALL_COUNTRIES_IMPORT_FILE_NAME).toURI();
+		} catch (URISyntaxException e) {
+			logger.warn("Cannot get countries import file path: ", e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

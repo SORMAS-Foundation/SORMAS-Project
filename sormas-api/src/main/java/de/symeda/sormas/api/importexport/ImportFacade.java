@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.importexport;
 
 import java.io.IOException;
+import java.net.URI;
 
 import javax.ejb.Remote;
 
@@ -45,6 +46,8 @@ public interface ImportFacade {
 
 	void generateAreaImportTemplateFile() throws IOException;
 
+	void generateCountryImportTemplateFile() throws IOException;
+
 	void generateRegionImportTemplateFile() throws IOException;
 
 	void generateDistrictImportTemplateFile() throws IOException;
@@ -69,7 +72,7 @@ public interface ImportFacade {
 
 	String getCountryImportTemplateFilePath();
 
-	String getAllCountriesImportFilePath();
+	URI getAllCountriesImportFilePath();
 
 	String getRegionImportTemplateFilePath();
 
