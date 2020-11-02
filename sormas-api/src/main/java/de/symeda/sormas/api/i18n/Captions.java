@@ -807,6 +807,7 @@ public interface Captions {
 	String Event = "Event";
 	String Event_caseCount = "Event.caseCount";
 	String Event_contactCount = "Event.contactCount";
+	String Event_contactCountMethod = "Event.contactCountMethod";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
 	String Event_endDate = "Event.endDate";

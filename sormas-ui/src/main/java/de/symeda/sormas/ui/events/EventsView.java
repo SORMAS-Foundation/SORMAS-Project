@@ -436,8 +436,7 @@ public class EventsView extends AbstractView {
 	}
 
 	public CheckBox createContactMethodCheckbox() {
-		countContactsWithSourceCaseInEvent =
-			new CheckBox("Calculate contact count based on contacts where source case is also part of the same event.", true);
+		countContactsWithSourceCaseInEvent = new CheckBox(I18nProperties.getCaption(Captions.Event_contactCountMethod), true);
 		countContactsWithSourceCaseInEvent.addValueChangeListener(event -> {
 			((EventGrid) grid).setCountContactsWithSourceCaseInEvent(event.getValue());
 			((EventGrid) grid).reload();
