@@ -145,6 +145,13 @@ public final class DateHelper {
 
 		if (date != null) {
 			try {
+				SimpleDateFormat dateFormat = clone(SHORT_DATE_FORMAT);
+				dateFormat.setLenient(false);
+				return dateFormat.parse(date);
+			} catch (ParseException e) {
+				// Try next format
+			}
+			try {
 				SimpleDateFormat dateFormat = clone(DATE_FORMAT);
 				dateFormat.setLenient(false);
 				return dateFormat.parse(date);
