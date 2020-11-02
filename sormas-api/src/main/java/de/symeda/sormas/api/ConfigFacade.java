@@ -104,11 +104,11 @@ public interface ConfigFacade {
 
 	String getSurvnetGatewayUrl();
 	
-	String getProxyHost()
+	String getProxyHost();
 		
-	String getProxyPort() 
+	String getProxyPort();
 
-	String getProxyProtocol() {
+	String getProxyProtocol();
 
 	String getAuthenticationProvider();
 
