@@ -20,13 +20,13 @@ The purpose of this API is to enable communication between SORMAS and other symp
 
 ### How to access the API
 Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. If you would like to 
-receive access, please contact the team to have a user set up. <br/>
+receive access, please contact the team to have a user set up. You may use the SORMAS gitter channel to contact developers: https://gitter.im/SORMAS-Project <br/>
 The API is available as a REST resource (depending on the environment you are trying to access) at:
 ``<<domain>>/sormas-rest/visits-external/``<br/>
 Authentication is done using basic auth, with the user and password.
 Data in request and response bodies will be in JSON format unless stated otherwise below. <br/>
 **Note:** SORMAS also uses Swagger to document its REST API. However, in order to generate the OpenAPI specification,
-you need to build the project. More information can be found [here](sormas-rest/README.md).
+you need to build the project or download the latest release, which contains the generated file. More information can be found [here](sormas-rest/README.md).
 
 ### Data structures
 The following are the data structures accepted and returned by the API. Mandatory fields are marked with an asterisk (*).
