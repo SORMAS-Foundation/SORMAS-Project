@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -20,14 +22,13 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.opencsv.exceptions.CsvValidationException;
-import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
@@ -46,13 +47,12 @@ import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Base class for all importers that are used to get data from CSV files into SORMAS.
@@ -220,7 +220,8 @@ public abstract class DataImporter {
 
 		CSVReader csvReader = null;
 		try {
-			csvReader = CSVUtils.createCSVReader(new InputStreamReader(new FileInputStream(inputFile), UTF_8),
+			csvReader = CSVUtils.createCSVReader(
+				new InputStreamReader(new FileInputStream(inputFile), UTF_8),
 				FacadeProvider.getConfigFacade().getCsvSeparator(),
 				new CSVCommentLineValidator());
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
@@ -318,9 +319,8 @@ public abstract class DataImporter {
 	 */
 	protected int readImportFileLength(File inputFile) throws IOException, CsvValidationException {
 		int importFileLength = 0;
-		try (CSVReader caseCountReader = CSVUtils.createCSVReader(new FileReader(inputFile),
-			FacadeProvider.getConfigFacade().getCsvSeparator(),
-			new CSVCommentLineValidator())) {
+		try (CSVReader caseCountReader =
+			CSVUtils.createCSVReader(new FileReader(inputFile), FacadeProvider.getConfigFacade().getCsvSeparator(), new CSVCommentLineValidator())) {
 
 			while (readNextValidLine(caseCountReader) != null) {
 				importFileLength++;
@@ -366,7 +366,7 @@ public abstract class DataImporter {
 		"unchecked",
 		"rawtypes" })
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
-		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
+		throws InvocationTargetException, IllegalAccessException, ImportErrorException {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
@@ -374,13 +374,11 @@ public abstract class DataImporter {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
-			// If the string is smaller than the length of the expected date format, throw an exception
-			if (entry.length() < 10) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
-			} else {
+			try {
 				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry));
 				return true;
+			} catch (ParseException e) {
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, pd.getName()));
 			}
 		}
 		if (propertyType.isAssignableFrom(Integer.class)) {
@@ -535,7 +533,8 @@ public abstract class DataImporter {
 					throw e;
 				}
 			}
-		} while(isCommentLine);
+		}
+		while (isCommentLine);
 		return nextValidLine;
 	}
 }

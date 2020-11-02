@@ -5,14 +5,13 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.lang3.StringUtils;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
@@ -401,9 +400,6 @@ public class ContactImporter extends DataImporter {
 					I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
 			} catch (IllegalArgumentException e) {
 				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
-			} catch (ParseException e) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
