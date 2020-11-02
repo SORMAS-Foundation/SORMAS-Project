@@ -320,9 +320,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				officerField.removeAllItems();
 				if (region != null) {
 					enableFields(districtField);
-					disableFields(pointOfEntryField);
-
 					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+
+					disableFields(pointOfEntryField);
 					clearAndDisableFields(communityField, facilityField, facilityTypeField, facilityTypeGroupField);
 
 					addOfficers(officerField, region);
@@ -511,7 +511,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid()));
 			enableFields(communityField, typeGroupField);
 		} else {
-			enableFields(communityField, typeGroupField, typeField);
+			disableFields(communityField, typeGroupField, typeField);
 		}
 
 		final ComboBox facilityField = getField(CaseDataDto.HEALTH_FACILITY);
@@ -523,7 +523,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		final CommunityReferenceDto community = criteria.getCommunity();
 
 		if (district == null) {
-			enableFields(communityField, typeGroupField, typeField, facilityField, pointOfEntryField);
+			disableFields(communityField, typeGroupField, typeField, facilityField, pointOfEntryField);
 		} else {
 			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
 
