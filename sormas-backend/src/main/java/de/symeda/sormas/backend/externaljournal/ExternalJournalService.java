@@ -23,6 +23,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +89,7 @@ public class ExternalJournalService {
 			throw new IllegalArgumentException("Property interface.symptomjournal.secret is not defined");
 		}
 		try {
-			Client client = ClientBuilder.newClient();
+			Client client = newClient();
 			HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(clientId, secret);
 			client.register(feature);
 			WebTarget webTarget = client.target(authenticationUrl);
@@ -134,7 +136,7 @@ public class ExternalJournalService {
 		}
 
 		try {
-			Client client = ClientBuilder.newClient();
+			Client client = newClient();
 			WebTarget webTarget = client.target(authenticationUrl);
 			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 			Response response = invocationBuilder.post(Entity.json(ImmutableMap.of("email", email, "password", pass)));
@@ -299,7 +301,7 @@ public class ExternalJournalService {
 
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
 		String externalDataUrl = configFacade.getPatientDiaryConfig().getExternalDataUrl() + '/' + personUuid;
-		Client client = ClientBuilder.newClient();
+		Client client = newClient();
 		WebTarget webTarget = client.target(externalDataUrl);
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		invocationBuilder.header("x-access-token", getPatientDiaryAuthToken());
@@ -336,5 +338,13 @@ public class ExternalJournalService {
 			validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
 		}
 		return (validEmail || validPhone) && validBirthdate;
+	}
+
+	private Client newClient() {
+		ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+		if (clientBuilder instanceof ResteasyClientBuilder) {
+			((ResteasyClientBuilder) clientBuilder).httpEngine(new URLConnectionEngine());
+		}
+		return clientBuilder.build();
 	}
 }
