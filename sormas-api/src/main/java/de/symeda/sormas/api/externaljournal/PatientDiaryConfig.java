@@ -12,6 +12,7 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 	private String authUrl;
 	private String email;
 	private String password;
+	private UserConfig defaultUser;
 
 	public String getUrl() {
 		return url;
@@ -53,6 +54,14 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 		this.password = password;
 	}
 
+	public UserConfig getDefaultUser() {
+		return defaultUser;
+	}
+
+	public void setDefaultUser(UserConfig defaultUser) {
+		this.defaultUser = defaultUser;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -64,12 +73,13 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 			&& Objects.equals(externalDataUrl, that.externalDataUrl)
 			&& Objects.equals(authUrl, that.authUrl)
 			&& Objects.equals(email, that.email)
-			&& Objects.equals(password, that.password);
+			&& Objects.equals(password, that.password)
+			&& Objects.equals(defaultUser, that.defaultUser);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(url, externalDataUrl, authUrl, email, password);
+		return Objects.hash(url, externalDataUrl, authUrl, email, password, defaultUser);
 	}
 
 	@Override
