@@ -15,5 +15,5 @@ public interface ExternalJournalFacade {
 
 	RegisterResult registerPatientDiaryPerson(PersonDto person);
 
-	boolean isPersonExportable(PersonDto person);
+	ExternalPersonValidation validatePatientDiaryPerson(PersonDto person);
 }

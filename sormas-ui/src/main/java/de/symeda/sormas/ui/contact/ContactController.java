@@ -45,7 +45,9 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
 import de.symeda.sormas.api.externaljournal.RegisterResult;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.ui.utils.CssStyles;
 import org.jsoup.Jsoup;
@@ -560,8 +562,9 @@ public class ContactController {
 	 * Displays the result in a popup
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
-		if (!externalJournalFacade.isPersonExportable(person)) {
-			showWarningPopup(I18nProperties.getCaption(Captions.patientDiaryPersonNotExportable));
+		ExternalPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
+		if (!validationResult.isValid()) {
+			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {
 			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
 					|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
@@ -579,18 +582,21 @@ public class ContactController {
 		UI.getCurrent().getPage().open(url, "_blank");
 	}
 
-	private void showWarningPopup(String message) {
-		VerticalLayout alreadyRegisteredLayout = new VerticalLayout();
-		alreadyRegisteredLayout.setMargin(true);
+	private void showPatientDiaryWarningPopup(String message) {
+		VerticalLayout warningLayout = new VerticalLayout();
+		warningLayout.setMargin(true);
 		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
 		warningIcon.setHeight(35, Unit.PIXELS);
 		warningIcon.setWidth(35, Unit.PIXELS);
-		alreadyRegisteredLayout.addComponentAsFirst(warningIcon);
-		Window popupWindow = VaadinUiUtil.showPopupWindow(alreadyRegisteredLayout);
+		warningLayout.addComponentAsFirst(warningIcon);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
+		Label messageLabel = new Label(I18nProperties.getValidationError(Validations.externalJournalPersonValidationError));
+		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		warningLayout.addComponent(messageLabel);
 		Label infoLabel = new Label(message);
 		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		alreadyRegisteredLayout.addComponent(infoLabel);
-		CssStyles.style(alreadyRegisteredLayout, CssStyles.ALIGN_CENTER);
+		warningLayout.addComponent(infoLabel);
+		CssStyles.style(warningLayout, CssStyles.ALIGN_CENTER);
 		popupWindow.addCloseListener(e -> popupWindow.close());
 		popupWindow.setWidth(400, Unit.PIXELS);
 	}
@@ -604,22 +610,21 @@ public class ContactController {
 		Image successIcon = new Image(null, new ThemeResource("img/success-icon.png"));
 		successIcon.setHeight(35, Unit.PIXELS);
 		successIcon.setWidth(35, Unit.PIXELS);
-		Label infoLabel = new Label();
-		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		registrationResultLayout.addComponent(infoLabel);
-		Label messageLabel = new Label();
-		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		registrationResultLayout.addComponent(messageLabel);
 		CssStyles.style(registrationResultLayout, CssStyles.ALIGN_CENTER);
 		if (registerResult.isSuccess()) {
 			registrationResultLayout.removeComponent(errorIcon);
 			registrationResultLayout.addComponentAsFirst(successIcon);
-			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationSuccess));
 		} else {
 			registrationResultLayout.removeComponent(successIcon);
 			registrationResultLayout.addComponentAsFirst(errorIcon);
+			Label infoLabel = new Label();
+			CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+			registrationResultLayout.addComponent(infoLabel);
 			infoLabel.setValue(I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
 		}
+		Label messageLabel = new Label();
+		CssStyles.style(messageLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		registrationResultLayout.addComponent(messageLabel);
 		messageLabel.setValue(registerResult.getMessage());
 		Window popupWindow = VaadinUiUtil.showPopupWindow(registrationResultLayout);
 		popupWindow.addCloseListener(e -> popupWindow.close());
