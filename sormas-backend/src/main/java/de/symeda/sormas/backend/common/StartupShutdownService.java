@@ -23,10 +23,13 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -45,10 +48,14 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
+import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
+import de.symeda.sormas.api.externaljournal.UserConfig;
 import de.symeda.sormas.backend.user.event.MockPasswordUpdateEvent;
 import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,6 +183,10 @@ public class StartupShutdownService {
 		createDefaultUsers();
 
 		createOrUpdateSormasToSormasUser();
+
+		createOrUpdateSymptomJournalUser();
+
+		createOrUpdatePatientDiaryUser();
 
 		upgrade();
 
@@ -435,29 +446,75 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdateSormasToSormasUser() {
-		final User sormasToSormasUser = userService.getByUserName(SORMAS_TO_SORMAS_USER_NAME);
-
 		serverAccessDataService.getServerAccessData().ifPresent((serverAccessData -> {
 			String sormasToSormasUserPassword = serverAccessData.getRestUserPassword();
-
-			if (sormasToSormasUser == null) {
-				if (!DataHelper.isNullOrEmpty(sormasToSormasUserPassword)) {
-					User newUser =
-						MockDataGenerator.createUser(UserRole.SORMAS_TO_SORMAS_CLIENT, "Sormas to Sormas", "Client", sormasToSormasUserPassword);
-					newUser.setUserName(SORMAS_TO_SORMAS_USER_NAME);
-
-					userService.persist(newUser);
-					userCreateEvent.fire(new MockUserCreateEvent(newUser, sormasToSormasUserPassword));
-				}
-			} else if (!DataHelper
-				.equal(sormasToSormasUser.getPassword(), PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()))) {
-				sormasToSormasUser.setSeed(PasswordHelper.createPass(16));
-				sormasToSormasUser.setPassword(PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()));
-
-				userService.persist(sormasToSormasUser);
-				passwordResetEvent.fire(new MockPasswordUpdateEvent(sormasToSormasUser, sormasToSormasUserPassword));
-			}
+			createOrUpdateDefaultUser(
+				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
+				SORMAS_TO_SORMAS_USER_NAME,
+				sormasToSormasUserPassword,
+				"Sormas to Sormas",
+				"Client");
 		}));
+	}
+
+	private void createOrUpdateSymptomJournalUser() {
+		SymptomJournalConfig symptomJournalConfig = configFacade.getSymptomJournalConfig();
+		UserConfig userConfig = symptomJournalConfig.getDefaultUser();
+		if (userConfig == null) {
+			logger.debug("Symptom journal default user not configured");
+			return;
+		}
+
+		createOrUpdateDefaultUser(
+			Collections.singleton(UserRole.REST_USER),
+			userConfig.getUsername(),
+			userConfig.getPassword(),
+			"Symptom",
+			"Journal");
+	}
+
+	private void createOrUpdatePatientDiaryUser() {
+		PatientDiaryConfig patientDiaryConfig = configFacade.getPatientDiaryConfig();
+		UserConfig userConfig = patientDiaryConfig.getDefaultUser();
+		if (userConfig == null) {
+			logger.debug("Patient diary default user not configured");
+			return;
+		}
+
+		createOrUpdateDefaultUser(
+			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
+			userConfig.getUsername(),
+			userConfig.getPassword(),
+			"Patient",
+			"Diary");
+	}
+
+	private void createOrUpdateDefaultUser(Set<UserRole> userRoles, String username, String password, String firstName, String lastName) {
+
+		if(StringUtils.isAnyBlank(username, password)) {
+			logger.debug("Invalid user details. Will not create/update default user");
+			return;
+		}
+
+		User existingUser = userService.getByUserName(username);
+
+		if (existingUser == null) {
+			if (!DataHelper.isNullOrEmpty(password)) {
+				User newUser = MockDataGenerator.createUser(userRoles, firstName, lastName, password);
+				newUser.setUserName(username);
+
+				userService.persist(newUser);
+				userCreateEvent.fire(new MockUserCreateEvent(newUser, password));
+			}
+		} else if (!DataHelper
+			.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
+			existingUser.setSeed(PasswordHelper.createPass(16));
+			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
+
+			userService.persist(existingUser);
+			passwordResetEvent.fire(new MockPasswordUpdateEvent(existingUser, password));
+		}
+
 	}
 
 	/**

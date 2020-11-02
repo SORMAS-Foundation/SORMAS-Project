@@ -1092,7 +1092,6 @@ public interface Captions {
 	String PathogenTests = "PathogenTests";
 	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
 	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
-	String patientDiaryRegistrationSuccess = "patientDiaryRegistrationSuccess";
 	String Person = "Person";
 	String Person_address = "Person.address";
 	String Person_addresses = "Person.addresses";

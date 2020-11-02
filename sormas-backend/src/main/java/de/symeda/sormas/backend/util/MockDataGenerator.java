@@ -18,11 +18,15 @@
 package de.symeda.sormas.backend.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.user.User;
+import org.apache.commons.collections4.CollectionUtils;
 
 public final class MockDataGenerator {
 
@@ -31,12 +35,17 @@ public final class MockDataGenerator {
 	}
 
 	public static User createUser(UserRole userRole, String firstName, String lastName, String password) {
+		Set<UserRole> userRoles = userRole != null ? Collections.singleton(userRole) : null;
+		return createUser(userRoles, firstName, lastName, password);
+	}
+
+	public static User createUser(Set<UserRole> userRoles, String firstName, String lastName, String password) {
 
 		User user = new User();
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
-		if (userRole != null) {
-			user.setUserRoles(new HashSet<UserRole>(Arrays.asList(userRole)));
+		if (CollectionUtils.isNotEmpty(userRoles)) {
+			user.setUserRoles(new HashSet<>(userRoles));
 		}
 		user.setUserName(UserHelper.getSuggestedUsername(user.getFirstName(), user.getLastName()));
 		user.setSeed(PasswordHelper.createPass(16));

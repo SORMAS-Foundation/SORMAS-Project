@@ -5533,4 +5533,9 @@ CREATE INDEX IF NOT EXISTS idx_eventparticipant_resultingcase_id ON eventpartici
 
 INSERT INTO schema_version (version_number, comment) VALUES (272, 'Increase case directory performance #3137');
 
+-- 2020-11-02 Drop not null constraint from event description #3223
+ALTER TABLE events ALTER COLUMN eventdesc DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (273, 'Drop not null constraint from event description #3223');
+
 -- *** Insert new sql commands BEFORE this line ***

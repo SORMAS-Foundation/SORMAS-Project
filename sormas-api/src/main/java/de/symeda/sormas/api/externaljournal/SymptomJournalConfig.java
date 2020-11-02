@@ -11,6 +11,7 @@ public class SymptomJournalConfig implements Serializable, Cloneable {
 	private String authUrl;
 	private String clientId;
 	private String secret;
+	private UserConfig defaultUser;
 
 	public String getUrl() {
 		return url;
@@ -44,6 +45,14 @@ public class SymptomJournalConfig implements Serializable, Cloneable {
 		this.secret = secret;
 	}
 
+	public UserConfig getDefaultUser() {
+		return defaultUser;
+	}
+
+	public void setDefaultUser(UserConfig defaultUser) {
+		this.defaultUser = defaultUser;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -54,12 +63,13 @@ public class SymptomJournalConfig implements Serializable, Cloneable {
 		return Objects.equals(url, that.url)
 			&& Objects.equals(authUrl, that.authUrl)
 			&& Objects.equals(clientId, that.clientId)
-			&& Objects.equals(secret, that.secret);
+			&& Objects.equals(secret, that.secret)
+			&& Objects.equals(defaultUser, that.defaultUser);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(url, authUrl, clientId, secret);
+		return Objects.hash(url, authUrl, clientId, secret, defaultUser);
 	}
 
 	@Override

@@ -18,7 +18,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.externaljournal.RegisterResult;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -37,6 +36,10 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.externaljournal.ExternalPatientDto;
+import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
+import de.symeda.sormas.api.externaljournal.RegisterResult;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -310,22 +313,21 @@ public class ExternalJournalService {
 	}
 
 	/**
-	 * Check whether a person has the necessary data to be exported to the patient diary
-	 * 
-	 * @param person
-	 *            the person to check
-	 * @return true if the person has the necessary data, false otherwise
+	 * Check whether a person has valid data in orderd to be registered in the patient diary
+	 * @param person the person to validate
+	 * @return the result of the validation
 	 */
-	public boolean isPersonExportable(PersonDto person) {
+	public ExternalPersonValidation validatePatientDiaryPerson(PersonDto person) {
 		String email = person.getEmailAddress();
 		String phone = person.getPhone();
-		boolean validEmail = false;
-		boolean validPhone = false;
+		boolean validEmail = true;
+		boolean validPhone = true;
 		if (StringUtils.isNotEmpty(email)) {
 			EmailValidator validator = EmailValidator.getInstance();
 			validEmail = validator.isValid(email);
 		}
 		if (StringUtils.isNotEmpty(phone)) {
+			validPhone = false;
 			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 			try {
 				Phonenumber.PhoneNumber germanNumberProto = phoneUtil.parse(phone, "DE");
@@ -338,6 +340,30 @@ public class ExternalJournalService {
 		if (ObjectUtils.anyNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY())) {
 			validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
 		}
-		return (validEmail || validPhone) && validBirthdate;
+		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
+		boolean valid = hasPhoneOrEmail && validEmail && validPhone && validBirthdate;
+		String message = getValidationMessage(hasPhoneOrEmail, validEmail, validPhone, validBirthdate);
+		return new ExternalPersonValidation(valid, message);
+	}
+
+	private String getValidationMessage(boolean hasPhoneOrEmail, boolean validEmail, boolean validPhone, boolean validBirthdate) {
+		StringBuilder message = new StringBuilder();
+		if (!hasPhoneOrEmail) {
+			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationNoEmailOrPhone));
+			message.append('\n');
+		}
+		if (!validEmail) {
+			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationEmail));
+			message.append('\n');
+		}
+		if (!validPhone) {
+			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationPhone));
+			message.append('\n');
+		}
+		if (!validBirthdate) {
+			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationBirthdate));
+			message.append('\n');
+		}
+		return message.toString();
 	}
 }

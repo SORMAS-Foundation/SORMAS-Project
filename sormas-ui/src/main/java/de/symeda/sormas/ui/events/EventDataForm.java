@@ -221,7 +221,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			Collections.singletonList(EventDto.DISEASE_DETAILS),
 			Collections.singletonList(Disease.OTHER));
 
-		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
+		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_TITLE, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.END_DATE, EventDto.MULTI_DAY_EVENT, Collections.singletonList(true), true);
 		FieldHelper.setCaptionWhen(
