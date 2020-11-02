@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElementWithCaption;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -23,7 +24,7 @@ public interface CampaignFacade {
 
 	CampaignDto getByUuid(String uuid);
 
-	List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid);
+	List<CampaignDashboardElementWithCaption> getCampaignDashboardElements(String campaignUuid);
 
 	boolean isArchived(String uuid);
 

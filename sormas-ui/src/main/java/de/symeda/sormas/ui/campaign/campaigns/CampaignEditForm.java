@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElementWithCaption;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -152,17 +153,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 		getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 
-		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
-		FacadeProvider.getCampaignDiagramDefinitionFacade().getAll().forEach(campaignDiagramDefinitionDto -> {
-			final String diagramId = campaignDiagramDefinitionDto.getDiagramId();
-			final Optional<CampaignDashboardElement> diagramAlreadyUsed =
-				campaignDashboardElements.stream().filter(cde -> cde.getDiagramId().equals(diagramId)).findAny();
-			if (!diagramAlreadyUsed.isPresent()) {
-				final CampaignDashboardElement campaignDashboardElement = new CampaignDashboardElement();
-				campaignDashboardElement.setDiagramId(diagramId);
-				campaignDashboardElements.add(campaignDashboardElement);
-			}
-		});
+		final List<CampaignDashboardElementWithCaption> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
