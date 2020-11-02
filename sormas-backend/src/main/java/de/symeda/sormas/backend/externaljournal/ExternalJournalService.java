@@ -44,6 +44,7 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 
+
 @Stateless
 @LocalBean
 public class ExternalJournalService {
@@ -136,8 +137,10 @@ public class ExternalJournalService {
 		}
 
 		try {
+			logger.error("Test before new Client");
 			Client client = newClient();
 			WebTarget webTarget = client.target(authenticationUrl);
+			logger.error("Test before request");
 			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 			Response response = invocationBuilder.post(Entity.json(ImmutableMap.of("email", email, "password", pass)));
 
