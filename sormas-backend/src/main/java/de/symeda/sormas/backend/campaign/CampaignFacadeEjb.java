@@ -194,18 +194,19 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					.map(campaignFormMetaReferenceDto -> campaignFormMetaService.getByUuid(campaignFormMetaReferenceDto.getUuid()))
 					.collect(Collectors.toSet()));
 		}
-		target.setDashboardElements(
-			source.getCampaignDashboardElements()
-				.stream()
-				.map(
-					cdewc -> new CampaignDashboardElement(
-						cdewc.getDiagramId(),
-						cdewc.getTabId(),
-						cdewc.getOrder(),
-						cdewc.getWidth(),
-						cdewc.getHeight()))
-				.collect(Collectors.toList()));
-
+		final List<CampaignDashboardElementWithCaption> campaignDashboardElements = source.getCampaignDashboardElements();
+		if (campaignDashboardElements != null) {
+			target.setDashboardElements(
+				campaignDashboardElements.stream()
+					.map(
+						cdewc -> new CampaignDashboardElement(
+							cdewc.getDiagramId(),
+							cdewc.getTabId(),
+							cdewc.getOrder(),
+							cdewc.getWidth(),
+							cdewc.getHeight()))
+					.collect(Collectors.toList()));
+		}
 		return target;
 	}
 
@@ -278,7 +279,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		final List<CampaignDashboardElementWithCaption> cdewcs = new ArrayList<>();
 		addCampaignDashboardElementsWithCaption(cdewcs, source);
-		target.setCampaignDashboardElements(cdewcs);
+		target.setCampaignDashboardElements(cdewcs.isEmpty() ? null : cdewcs);
 
 		return target;
 	}
