@@ -23,14 +23,14 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import fr.opensagres.xdocreport.core.XDocReportException;
 
-public class TemplateEngineServiceTest extends AbstractBeanTest {
+public class TemplateEngineTest extends AbstractBeanTest {
 
-	private TemplateEngineService templateEngineService;
+	private TemplateEngine templateEngine;
 	private String testCasesDirPath;
 
 	@Before
 	public void setup() {
-		templateEngineService = getTemplateEngineService();
+		templateEngine = new TemplateEngine();
 		testCasesDirPath = getClass().getResource("/docgeneration/testcases").getPath();
 	}
 
@@ -45,7 +45,7 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 			File testcaseCmpText = new File(testCasesDirPath + File.separator + testcaseBasename + ".txt");
 
 			if (testcaseProperties.exists()) {
-				Set<String> variables = templateEngineService.extractTemplateVariables(new FileInputStream(testcaseDocx));
+				Set<String> variables = templateEngine.extractTemplateVariables(new FileInputStream(testcaseDocx));
 
 				Properties properties = new Properties();
 				properties.load(new FileInputStream(testcaseProperties));
@@ -56,7 +56,7 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 				}
 
 				if (testcaseCmpText.exists()) {
-					InputStream generatedFile = templateEngineService.generateDocument(properties, new FileInputStream(testcaseDocx));
+					InputStream generatedFile = templateEngine.generateDocument(properties, new FileInputStream(testcaseDocx));
 
 					XWPFDocument generatedDocument = new XWPFDocument(generatedFile);
 					XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(generatedDocument);
@@ -84,7 +84,7 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 		String testcaseDocx = testCasesDirPath + File.separator + "PropertyAccessTest.docx";
 		String testcaseCmpText = testCasesDirPath + File.separator + "PropertyAccessTest.txt";
 
-		InputStream generatedFile = templateEngineService.generateDocument(properties, new FileInputStream(testcaseDocx));
+		InputStream generatedFile = templateEngine.generateDocument(properties, new FileInputStream(testcaseDocx));
 
 		XWPFDocument generatedDocument = new XWPFDocument(generatedFile);
 		XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(generatedDocument);

@@ -10,14 +10,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
@@ -26,15 +21,10 @@ import fr.opensagres.xdocreport.template.FieldsExtractor;
 import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 
-@Stateless
-@LocalBean
-public class TemplateEngineService {
+public class TemplateEngine {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private static Pattern variablePattern = Pattern.compile("([{] *([A-Za-z0-9.]+) *[}]| *([A-Za-z0-9.]+) *)");
-
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public Set<String> extractTemplateVariables(InputStream templateFile) throws IOException, XDocReportException {
 		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
@@ -85,9 +75,5 @@ public class TemplateEngineService {
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
-	}
-
-	public String getTempDir() {
-		return configFacade.getCustomFilesPath();
 	}
 }

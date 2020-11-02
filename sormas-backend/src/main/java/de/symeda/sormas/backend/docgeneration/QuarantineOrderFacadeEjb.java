@@ -85,9 +85,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	private DistrictFacadeEjbLocal districtFacade;
 
 	@EJB
-	private TemplateEngineService templateEngineService;
-
-	@EJB
 	private CommunityFacadeEjbLocal communityFacade;
 
 	@EJB
@@ -95,6 +92,8 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@EJB
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
+
+	private TemplateEngine templateEngine = new TemplateEngine();
 
 	@Override
 	public byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws IOException {
@@ -154,7 +153,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		// 5. generate document
 
 		try {
-			return IOUtils.toByteArray(templateEngineService.generateDocument(properties, new FileInputStream(templateFile)));
+			return IOUtils.toByteArray(templateEngine.generateDocument(properties, new FileInputStream(templateFile)));
 		} catch (XDocReportException e) {
 			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), e.getMessage()));
 		}
@@ -200,7 +199,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		}
 
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
-		templateEngineService.validateTemplate(new ByteArrayInputStream(document));
+		templateEngine.validateTemplate(new ByteArrayInputStream(document));
 
 		Files.createDirectories(Paths.get(workflowTemplateDirPath));
 		FileOutputStream fileOutputStream = new FileOutputStream(workflowTemplateDirPath + File.separator + FilenameUtils.getName(fileName));
@@ -226,7 +225,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	private Set<String> getTemplateVariables(File templateFile) throws IOException {
 		try {
-			return templateEngineService.extractTemplateVariables(new FileInputStream(templateFile));
+			return templateEngine.extractTemplateVariables(new FileInputStream(templateFile));
 		} catch (XDocReportException e) {
 			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
 		}
