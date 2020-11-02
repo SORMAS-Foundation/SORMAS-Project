@@ -13,7 +13,7 @@ public interface CountryFacade {
 
 	List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
 
-	List<CountryDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(CountryCriteria criteria);
 

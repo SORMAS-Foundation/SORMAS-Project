@@ -51,6 +51,7 @@ public interface Captions {
 	String actionGenerate = "actionGenerate";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
+	String actionImportAllCountries = "actionImportAllCountries";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
@@ -1782,5 +1783,4 @@ public interface Captions {
 	String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
 	String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	String weeklyReportsInDistrict = "weeklyReportsInDistrict";
-    String actionImportAllCountries = "actionImportAllCountries";
 }

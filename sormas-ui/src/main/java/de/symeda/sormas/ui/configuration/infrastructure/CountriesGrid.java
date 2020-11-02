@@ -10,6 +10,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CountryCriteria;
 import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -18,12 +19,12 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public class CountriesGrid extends FilteredGrid<CountryDto, CountryCriteria> {
+public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria> {
 
 	private static final long serialVersionUID = -8192499609737564649L;
 
 	public CountriesGrid(CountryCriteria criteria) {
-		super(CountryDto.class);
+		super(CountryIndexDto.class);
 
 		setSizeFull();
 
@@ -38,7 +39,7 @@ public class CountriesGrid extends FilteredGrid<CountryDto, CountryCriteria> {
 			setCriteria(criteria);
 		}
 
-		setColumns(CountryDto.ISO_CODE, CountryDto.DISPLAY_NAME, CountryDto.EXTERNAL_ID, CountryDto.UNO_CODE);
+		setColumns(CountryIndexDto.ISO_CODE, CountryIndexDto.DISPLAY_NAME, CountryIndexDto.EXTERNAL_ID, CountryIndexDto.UNO_CODE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCountry(e.getUuid()));
@@ -55,7 +56,7 @@ public class CountriesGrid extends FilteredGrid<CountryDto, CountryCriteria> {
 
 	public void setLazyDataProvider() {
 
-		DataProvider<CountryDto, CountryCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<CountryIndexDto, CountryCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getCountryFacade()
 				.getIndexList(
 					query.getFilter().orElse(null),
@@ -73,7 +74,7 @@ public class CountriesGrid extends FilteredGrid<CountryDto, CountryCriteria> {
 
 	public void setEagerDataProvider() {
 
-		ListDataProvider<CountryDto> dataProvider =
+		ListDataProvider<CountryIndexDto> dataProvider =
 			DataProvider.fromStream(FacadeProvider.getCountryFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);

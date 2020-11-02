@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Objects;
 
+import de.symeda.sormas.api.region.CountryIndexDto;
 import org.junit.Test;
 
 import de.symeda.sormas.api.region.CountryCriteria;
@@ -41,10 +42,11 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		Country expected = creator.createCountry("Romania", "ROU", "642");
 		creator.createCountry("Germany", "DEU", "276");
 		CountryCriteria criteria = new CountryCriteria().nameCodeLike("ROU");
-		List<CountryDto> actualList = getCountryFacade().getIndexList(criteria, null, null, null);
+		List<CountryIndexDto> actualList = getCountryFacade().getIndexList(criteria, null, null, null);
 		assertEquals(1, actualList.size());
-		CountryDto actual = actualList.get(0);
-		assertTrue(entityIsEqualToDto(expected, actual));
+		CountryIndexDto actual = actualList.get(0);
+		assertEquals(expected.getUuid(), actual.getUuid());
+		assertEquals(expected.getIsoCode(), actual.getIsoCode());
 	}
 
 	@Test

@@ -9,13 +9,11 @@ public class CountryDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Country";
 	public static final String DEFAULT_NAME = "defaultName";
-	public static final String DISPLAY_NAME = "displayName";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String ISO_CODE = "isoCode";
 	public static final String UNO_CODE = "unoCode";
 
 	private String defaultName;
-	private String displayName;
 	private String externalId;
 	private String isoCode;
 	private String unoCode;
@@ -27,14 +25,6 @@ public class CountryDto extends EntityDto {
 
 	public void setDefaultName(String defaultName) {
 		this.defaultName = defaultName;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public String getExternalId() {

@@ -22,6 +22,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CountryCriteria;
 import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryFacade;
+import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -49,7 +50,7 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
-	public List<CountryDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
 		Root<Country> country = cq.from(Country.class);
@@ -89,10 +90,10 @@ public class CountryFacadeEjb implements CountryFacade {
 				.setMaxResults(max)
 				.getResultList()
 				.stream()
-				.map(f -> toDto(f))
+				.map(f -> toIndexDto(f))
 				.collect(Collectors.toList());
 		} else {
-			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+			return em.createQuery(cq).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
 		}
 	}
 
@@ -160,6 +161,23 @@ public class CountryFacadeEjb implements CountryFacade {
 		CountryDto dto = new CountryDto();
 		DtoHelper.fillDto(dto, entity);
 
+		dto.setDefaultName(entity.getDefaultName());
+		dto.setArchived(entity.isArchived());
+		dto.setExternalId(entity.getExternalId());
+		dto.setIsoCode(entity.getIsoCode());
+		dto.setUnoCode(entity.getUnoCode());
+		dto.setUuid(entity.getUuid());
+
+		return dto;
+	}
+
+	public CountryIndexDto toIndexDto(Country entity) {
+		if (entity == null) {
+			return null;
+		}
+		CountryIndexDto dto = new CountryIndexDto();
+		DtoHelper.fillDto(dto, entity);
+
 		String isoCode = entity.getIsoCode();
 		String nameLanguageKey = isoCode != null ? "country." + isoCode.toUpperCase() + ".name" : null;
 		String displayName = ObjectUtils.firstNonNull(I18nProperties.getString(nameLanguageKey), entity.getDefaultName());
@@ -167,8 +185,8 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setDefaultName(entity.getDefaultName());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
-		dto.setIsoCode(entity.getIsoCode());
-		dto.setUnoCode(isoCode);
+		dto.setIsoCode(isoCode);
+		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 
 		return dto;

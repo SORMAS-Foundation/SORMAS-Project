@@ -92,7 +92,7 @@ public class InfrastructureController {
 	public void editCountry(String uuid) {
 		CountryDto country = FacadeProvider.getCountryFacade().getCountryByUuid(uuid);
 		CommitDiscardWrapperComponent<CountryEditForm> editComponent = getCountryEditComponent(country);
-		String caption = I18nProperties.getString(Strings.edit) + " " + country.getDisplayName();
+		String caption = I18nProperties.getString(Strings.headingEditCountry);
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 

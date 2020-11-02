@@ -533,6 +533,7 @@ public interface Strings {
 	String headingEditCases = "headingEditCases";
 	String headingEditClinicalVisit = "headingEditClinicalVisit";
 	String headingEditContacts = "headingEditContacts";
+	String headingEditCountry = "headingEditCountry";
 	String headingEditEventParticipant = "headingEditEventParticipant";
 	String headingEditEvents = "headingEditEvents";
 	String headingEditLineListing = "headingEditLineListing";
@@ -565,6 +566,7 @@ public interface Strings {
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
+	String headingImportAllCountries = "headingImportAllCountries";
 	String headingImportAreas = "headingImportAreas";
 	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCaseContacts = "headingImportCaseContacts";
@@ -706,6 +708,7 @@ public interface Strings {
 	String infoEditExportConfiguration = "infoEditExportConfiguration";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoHowToMergeCases = "infoHowToMergeCases";
+	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportCsvFile = "infoImportCsvFile";
 	String infoImportProcess = "infoImportProcess";
 	String infoImportSimilarity = "infoImportSimilarity";
@@ -1080,6 +1083,4 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
-	String headingImportAllCountries = "headingImportAllCountries";
-	String infoImportAllCountries = "infoImportAllCountries";
 }

@@ -9,7 +9,6 @@ import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class CountryEditForm extends AbstractEditForm<CountryDto> {
 
