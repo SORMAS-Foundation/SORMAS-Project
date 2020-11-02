@@ -580,27 +580,43 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return numberOfCases;
 	}
 
-	public long getParticipantCasesContactsCount(String eventUuid) {
-		// For each case among the participants, count all contacts who are also part of the same event
+	public long getParticipantCasesContactsCount(String eventUuid, boolean sourceCaseMustBeParticipant) {
 		long numberOfContacts = 0;
-		ListIterator<EventParticipantDto> caseIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
+		if (sourceCaseMustBeParticipant) {
+			// For each case among the participants, count all contacts who are also part of the same event
+			// for each participant (if participant is case ( for all contacts of participant ( if contact is also participant (count + 1))))
+			ListIterator<EventParticipantDto> caseIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
 
-		// iterate over all cases among participants
-		while (caseIterator.hasNext()) {
-			CaseReferenceDto caseref = caseIterator.next().getResultingCase();
-			if (caseref != null) {
-				ContactCriteria crit = new ContactCriteria();
-				crit.caze(caseref);
-				ListIterator<Contact> contactIterator = contactService.findBy(crit, null).listIterator();
-				// iterate over all contacts among cases
-				while (contactIterator.hasNext()) {
-					String contactPersonUuid = contactIterator.next().getPerson().getUuid();
-					ListIterator<EventParticipantDto> participantIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
-					// iterate over all participants, and compare to current contact person
-					while (participantIterator.hasNext()) {
-						if (participantIterator.next().getPerson().getUuid().equals(contactPersonUuid)) {
-							numberOfContacts++;
+			// iterate over all cases among participants
+			while (caseIterator.hasNext()) {
+				CaseReferenceDto caseref = caseIterator.next().getResultingCase();
+				if (caseref != null) {
+					ContactCriteria crit = new ContactCriteria();
+					crit.caze(caseref);
+					ListIterator<Contact> contactIterator = contactService.findBy(crit, null).listIterator();
+					// iterate over all contacts among cases
+					while (contactIterator.hasNext()) {
+						String contactPersonUuid = contactIterator.next().getPerson().getUuid();
+						ListIterator<EventParticipantDto> participantIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
+						// iterate over all participants, and compare to current contact person
+						while (participantIterator.hasNext()) {
+							if (participantIterator.next().getPerson().getUuid().equals(contactPersonUuid)) {
+								numberOfContacts++;
+							}
 						}
+					}
+				}
+			}
+		} else {
+			// for each contact ( if person is participant in this event (counter + 1))
+			ListIterator<Contact> contactIterator = contactService.getAll().listIterator(); // I wonder if this is performant enough
+			while (contactIterator.hasNext()) {
+				String contactPersonUuid = contactIterator.next().getPerson().getUuid();
+				ListIterator<EventParticipantDto> participantIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
+				// iterate over all participants, and compare to current contact person
+				while (participantIterator.hasNext()) {
+					if (participantIterator.next().getPerson().getUuid().equals(contactPersonUuid)) {
+						numberOfContacts++;
 					}
 				}
 			}

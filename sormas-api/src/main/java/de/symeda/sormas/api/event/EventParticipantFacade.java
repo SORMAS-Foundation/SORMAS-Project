@@ -34,7 +34,7 @@ public interface EventParticipantFacade {
 
 	long getParticipantCasesCountByEvent(String eventUuid);
 
-	long getParticipantCasesContactsCount(String eventUuid);
+	long getParticipantCasesContactsCount(String eventUuid, boolean countContactsWithSourceCaseInEvent);
 
 	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date);
 

@@ -58,6 +58,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	public static final String CASE_COUNT = Captions.Event_caseCount;
 	public static final String CONTACT_COUNT = Captions.Event_contactCount;
 
+	private boolean countContactsWithSourceCaseInEvent = true;
+
 	@SuppressWarnings("unchecked")
 	public <V extends View> EventGrid(EventCriteria criteria, Class<V> viewClass) {
 
@@ -101,8 +103,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		numberOfCasesColumn.setCaption(I18nProperties.getCaption(CASE_COUNT));
 		numberOfCasesColumn.setSortable(false);
 
-		Column<EventIndexDto, String> numberOfInvolvedContacts =
-			addColumn(event -> String.valueOf((FacadeProvider.getEventParticipantFacade().getParticipantCasesContactsCount(event.getUuid()))));
+		Column<EventIndexDto, String> numberOfInvolvedContacts = addColumn(
+			event -> String.valueOf(
+				(FacadeProvider.getEventParticipantFacade().getParticipantCasesContactsCount(event.getUuid(), countContactsWithSourceCaseInEvent))));
 		numberOfInvolvedContacts.setId(CONTACT_COUNT);
 		numberOfInvolvedContacts.setCaption(I18nProperties.getCaption(CONTACT_COUNT));
 		numberOfInvolvedContacts.setSortable(false);
@@ -183,6 +186,10 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		}
 
 		return (srcMediaWebsite != null ? srcMediaWebsite : "") + " " + (srcMediaName != null ? "(" + srcMediaName + ")" : "");
+	}
+
+	public void setCountContactsWithSourceCaseInEvent(boolean value) {
+		countContactsWithSourceCaseInEvent = value;
 	}
 
 	public void reload() {

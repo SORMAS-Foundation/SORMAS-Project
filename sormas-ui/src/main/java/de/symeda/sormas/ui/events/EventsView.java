@@ -28,6 +28,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -87,6 +88,9 @@ public class EventsView extends AbstractView {
 	private EventsFilterForm filterForm;
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
+
+	// Calculation Method for Contact Count in Event
+	private CheckBox countContactsWithSourceCaseInEvent;
 
 	private VerticalLayout gridLayout;
 
@@ -299,8 +303,11 @@ public class EventsView extends AbstractView {
 		return new SearchSpecificLayout(confirmCallback, () -> window.close(), searchField, description, confirmCaption);
 	}
 
-	public HorizontalLayout createStatusFilterBar() {
+	public VerticalLayout createStatusFilterBar() {
 
+		VerticalLayout outerLayout = new VerticalLayout();
+		outerLayout.setMargin(false);
+		outerLayout.setSpacing(false);
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
 		statusFilterLayout.setMargin(false);
@@ -420,7 +427,22 @@ public class EventsView extends AbstractView {
 		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
-		return statusFilterLayout;
+		outerLayout.addComponent(statusFilterLayout);
+		outerLayout.addComponent(createContactMethodCheckbox()); // Checkbox for contact count calculation Method
+		outerLayout.setExpandRatio(statusFilterLayout, 1);
+		outerLayout.setComponentAlignment(countContactsWithSourceCaseInEvent, Alignment.TOP_RIGHT);
+
+		return outerLayout;
+	}
+
+	public CheckBox createContactMethodCheckbox() {
+		countContactsWithSourceCaseInEvent =
+			new CheckBox("Calculate contact count based on contacts where source case is also part of the same event.", true);
+		countContactsWithSourceCaseInEvent.addValueChangeListener(event -> {
+			((EventGrid) grid).setCountContactsWithSourceCaseInEvent(event.getValue());
+			((EventGrid) grid).reload();
+		});
+		return countContactsWithSourceCaseInEvent;
 	}
 
 	@Override
