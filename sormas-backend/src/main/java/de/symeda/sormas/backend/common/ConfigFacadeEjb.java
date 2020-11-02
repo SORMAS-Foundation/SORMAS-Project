@@ -418,7 +418,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public String getProxyHost() {
 		return getProperty(PROXY_HOST, null);
 	}
-￼
+
 	@Override
 	public int getProxyPort() {
 		return getInt(PROXY_PORT, null);
