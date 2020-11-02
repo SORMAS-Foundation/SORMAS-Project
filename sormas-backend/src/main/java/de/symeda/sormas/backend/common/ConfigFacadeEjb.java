@@ -117,6 +117,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
 	private static final String SURVNET_GATEWAY_URL = "survnet.url";
+	
+	private static final String PROXY_HOST = "proxy.host";
+	private static final String PROXY_PORT = "proxy.port";
+	private static final String PROXY_PROTOCOL = "survnet.protocol";
+
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -409,6 +414,22 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(SURVNET_GATEWAY_URL, null);
 	}
 
+	
+￼	@Override
+￼	public String getProxyHost() {
+￼		return getProperty(PROXY_HOST, null);
+￼	}
+￼
+￼	@Override
+￼	public String getProxyPort() {
+￼		return getProperty(PROXY_PORT, null);
+￼	}
+￼
+￼	@Override
+￼	public String getProxyProtocol() {
+￼		return getProperty(PROXY_PROTOCOL, null);
+￼	}
+￼
 	@Override
 	public void validateExternalUrls() {
 
