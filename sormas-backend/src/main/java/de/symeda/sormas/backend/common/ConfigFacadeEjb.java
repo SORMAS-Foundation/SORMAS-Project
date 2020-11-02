@@ -120,7 +120,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	private static final String PROXY_HOST = "proxy.host";
 	private static final String PROXY_PORT = "proxy.port";
-	private static final String PROXY_PROTOCOL = "survnet.protocol";
+	private static final String PROXY_PROTOCOL = "proxy.protocol";
 
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
