@@ -344,6 +344,11 @@ public class ExternalJournalService {
 	}
 
 	private Client newClient() {
-		return new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build();
+		if (configFacade.getProxyHost() != null && configFacade.getProxyProtocol() != null){
+			return new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build();
+		} else {
+			return new ResteasyClientBuilder().build();
+	        }
+		
 	}
 }
