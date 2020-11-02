@@ -414,22 +414,21 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(SURVNET_GATEWAY_URL, null);
 	}
 
+	@Override
+	public String getProxyHost() {
+		return getProperty(PROXY_HOST, null);
+	}
+￼
+	@Override
+	public int getProxyPort() {
+		return getInt(PROXY_PORT, null);
+	}
+
+	@Override
+	public String getProxyProtocol() {
+		return getProperty(PROXY_PROTOCOL, null);
+	}
 	
-￼	@Override
-￼	public String getProxyHost() {
-￼		return getProperty(PROXY_HOST, null);
-￼	}
-￼
-￼	@Override
-￼	public int getProxyPort() {
-￼		return getInt(PROXY_PORT, null);
-￼	}
-￼
-￼	@Override
-￼	public String getProxyProtocol() {
-￼		return getProperty(PROXY_PROTOCOL, null);
-￼	}
-￼
 	@Override
 	public void validateExternalUrls() {
 
