@@ -115,7 +115,7 @@ public class KeycloakService {
 				.serverUrl(json.getAsString(OIDC_SERVER_URL))
 				.clientId("sormas-backend")
 				.clientSecret(JSONObjectUtils.getJSONObject(json, OIDC_CREDENTIALS).getAsString(OIDC_SECRET))
-				.resteasyClient(new ResteasyClientBuilder().defaultProxy("10.135.160.196", 3128, "http").build())
+				.resteasyClient(new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build())
 				.grantType(OAuth2Constants.CLIENT_CREDENTIALS)
 				.build();
 
