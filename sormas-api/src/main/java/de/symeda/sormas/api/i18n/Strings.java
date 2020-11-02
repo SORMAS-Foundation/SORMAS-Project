@@ -158,6 +158,7 @@ public interface Strings {
 	String entityUser = "entityUser";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
+	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";

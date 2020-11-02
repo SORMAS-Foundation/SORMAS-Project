@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
+import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.text.StringEscapeUtils;
 
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
@@ -20,6 +23,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.highcharts.HighChart;
 
 @SuppressWarnings("serial")
@@ -178,11 +182,17 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {
 					if (showPercentages && totalValuesMap != null) {
-						double totalValue = totalValuesMap.get(
+						Double totalValue = totalValuesMap.get(
 							new CampaignDashboardTotalsReference(
 								seriesData.get(axisKey).getGroupingKey(),
 								totalValuesWithoutStacks ? null : series.getStack()));
-						if (totalValue > 0) {
+						if (totalValue == null) {
+							Notification.show(
+								String.format(
+									I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError),
+									diagramDefinition.getDiagramCaption()),
+								ERROR_MESSAGE);
+						} else if (totalValue > 0) {
 							hcjs.append(
 								BigDecimal.valueOf(seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100)
 									.setScale(2, RoundingMode.HALF_UP)

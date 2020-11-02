@@ -37,7 +37,11 @@ public interface Validations {
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
-	String externalJournalPersonValidation = "externalJournalPersonValidation";
+	String externalJournalPersonValidationBirthdate = "externalJournalPersonValidationBirthdate";
+	String externalJournalPersonValidationEmail = "externalJournalPersonValidationEmail";
+	String externalJournalPersonValidationError = "externalJournalPersonValidationError";
+	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
+	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";

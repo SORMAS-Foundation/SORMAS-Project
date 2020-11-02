@@ -187,7 +187,7 @@ public class Event extends CoreAdo {
 		this.eventTitle = eventTitle;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG, nullable = false)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getEventDesc() {
 		return eventDesc;
 	}

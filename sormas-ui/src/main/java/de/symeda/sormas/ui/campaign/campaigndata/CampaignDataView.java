@@ -86,7 +86,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		List<CampaignReferenceDto> campaigns = FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference();
 		campaignCombo.setItems(campaigns);
 		final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
-		if (lastStartedCampaign != null && campaigns.contains(lastStartedCampaign)) {
+		if (lastStartedCampaign != null) {
 			campaignCombo.setValue(lastStartedCampaign);
 		}
 		criteria.setCampaign((CampaignReferenceDto) campaignCombo.getValue());

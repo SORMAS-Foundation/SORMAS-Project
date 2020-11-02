@@ -65,6 +65,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -111,6 +112,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date reportDateTo;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
+	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
 
 	@Override
 	public CaseCriteria clone() {
@@ -559,5 +561,13 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setFacilityType(FacilityType type) {
 		this.facilityType = type;
+	}
+
+	public Boolean getIncludeCasesFromOtherJurisdictions() {
+		return includeCasesFromOtherJurisdictions;
+	}
+
+	public void setIncludeCasesFromOtherJurisdictions(Boolean includeCasesFromOtherJurisdictions) {
+		this.includeCasesFromOtherJurisdictions = includeCasesFromOtherJurisdictions;
 	}
 }

@@ -860,19 +860,36 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
+		return createUserFilterForJoin(cb, cq, contactPath, null);
+	}
 
-		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath, ContactCriteria contactCriteria) {
+
+		Predicate userFilter = null;
+
+		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
+			userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
+		}
 		Predicate filter;
 		if (userFilter != null) {
-			filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath), userFilter);
+			filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath, contactCriteria), userFilter);
 		} else {
-			filter = createUserFilterWithoutCase(cb, cq, contactPath);
+			filter = createUserFilterWithoutCase(cb, cq, contactPath, contactCriteria);
 		}
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
+		return createUserFilterWithoutCase(cb, cq, contactPath, null);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilterWithoutCase(
+		CriteriaBuilder cb,
+		CriteriaQuery cq,
+		From<?, Contact> contactPath,
+		ContactCriteria contactCriteria) {
 
 		// National users can access all contacts in the system
 		User currentUser = getCurrentUser();
@@ -886,27 +903,29 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
+		Predicate filter = null;
 		// whoever created it or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
-		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
-
+		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
+			filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
+			filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
+		}
 		switch (jurisdictionLevel) {
 		case REGION:
 			final Region region = currentUser.getRegion();
 			if (region != null) {
-				filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
+				filter = or(cb, filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
 			}
 			break;
 		case DISTRICT:
 			final District district = currentUser.getDistrict();
 			if (district != null) {
-				filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
+				filter = or(cb, filter, cb.equal(contactPath.get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
 			}
 			break;
 		case COMMUNITY:
 			final Community community = currentUser.getCommunity();
 			if (community != null) {
-				filter = cb.or(filter, cb.equal(contactPath.get(Contact.COMMUNITY), currentUser.getCommunity()));
+				filter = or(cb, filter, cb.equal(contactPath.get(Contact.COMMUNITY), currentUser.getCommunity()));
 			}
 			break;
 		default:

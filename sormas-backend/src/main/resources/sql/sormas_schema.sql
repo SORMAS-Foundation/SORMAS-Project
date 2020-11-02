@@ -5524,4 +5524,18 @@ ALTER TABLE events ADD COLUMN eventInvestigationEndDate timestamp;
 ALTER TABLE events_history ADD COLUMN eventInvestigationEndDate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (271, 'Add event.eventInvestigationStatus #2992');
+
+-- 2020-10-30 Increase case directory performance #3137
+ALTER TABLE visit DROP CONSTRAINT IF EXISTS fk_visit_caze_id;
+ALTER TABLE visit ADD CONSTRAINT fk_visit_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
+CREATE INDEX IF NOT EXISTS idx_visit_caze_id ON visit USING HASH (caze_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_resultingcase_id ON eventparticipant USING hash (resultingcase_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (272, 'Increase case directory performance #3137');
+
+-- 2020-11-02 Drop not null constraint from event description #3223
+ALTER TABLE events ALTER COLUMN eventdesc DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (273, 'Drop not null constraint from event description #3223');
+
 -- *** Insert new sql commands BEFORE this line ***
