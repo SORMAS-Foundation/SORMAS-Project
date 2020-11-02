@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextField;
@@ -161,16 +162,18 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 	}
 
 	private void updateByActionContext() {
-		Object fieldValueActionContext = getFieldGroup().getField(ActionDto.ACTION_CONTEXT).getValue();
-		ActionContext actionContext = fieldValueActionContext == null ? null : (ActionContext) fieldValueActionContext;
+		NullableOptionGroup field = (NullableOptionGroup) getFieldGroup().getField(ActionDto.ACTION_CONTEXT);
+		ActionContext actionContext = (ActionContext) field.getNullableValue();
 
 		// context reference depending on action context
 		// ready for adding new context
 		ComboBox eventField = (ComboBox) getFieldGroup().getField(ActionDto.EVENT);
 		if (actionContext != null) {
-			if (actionContext == ActionContext.EVENT) {
+			switch (actionContext) {
+			case EVENT:
 				FieldHelper.setFirstVisibleClearOthers(eventField);
 				FieldHelper.setFirstRequired(eventField);
+				break;
 			}
 		} else {
 			FieldHelper.setFirstVisibleClearOthers(null, eventField);
