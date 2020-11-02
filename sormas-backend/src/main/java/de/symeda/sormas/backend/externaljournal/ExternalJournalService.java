@@ -344,6 +344,6 @@ public class ExternalJournalService {
 	}
 
 	private Client newClient() {
-		return new ResteasyClientBuilder().defaultProxy("10.135.160.196", 3128, "http").build();
+		return new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build();
 	}
 }
