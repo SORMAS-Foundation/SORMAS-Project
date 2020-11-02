@@ -49,6 +49,7 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,13 +110,18 @@ public class KeycloakService {
 
 		try {
 			JSONObject json = JSONObjectUtils.parse(oidcJson.get());
-
+			ResteasyClient RestClient = null
+                        if (configFacade.getProxyHost() != null && configFacade.getProxyPort() != null && configFacade.getProxyProtocol() != null){
+				RestClient = new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build()
+			} else {
+				RestClient = new ResteasyClientBuilder().build()
+			}
 			keycloak = KeycloakBuilder.builder()
 				.realm(json.getAsString(OIDC_REALM))
 				.serverUrl(json.getAsString(OIDC_SERVER_URL))
 				.clientId("sormas-backend")
 				.clientSecret(JSONObjectUtils.getJSONObject(json, OIDC_CREDENTIALS).getAsString(OIDC_SECRET))
-				.resteasyClient(new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build())
+				.resteasyClient(RestClient)
 				.grantType(OAuth2Constants.CLIENT_CREDENTIALS)
 				.build();
 
