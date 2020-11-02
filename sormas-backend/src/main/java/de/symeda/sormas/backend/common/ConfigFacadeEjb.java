@@ -26,7 +26,6 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.externaljournal.UserConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
@@ -39,6 +38,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
+import de.symeda.sormas.api.externaljournal.UserConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -124,6 +124,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
 	private static final String SURVNET_GATEWAY_URL = "survnet.url";
+
+	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -395,7 +397,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		userConfig.setUsername(getProperty(INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_USERNAME, null));
 		userConfig.setPassword(getProperty(INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_PASSWORD, null));
 
-		if(StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
+		if (StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
 			config.setDefaultUser(userConfig);
 		}
 
@@ -415,7 +417,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		userConfig.setUsername(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME, null));
 		userConfig.setPassword(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD, null));
 
-		if(StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
+		if (StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
 			config.setDefaultUser(userConfig);
 		}
 
@@ -448,12 +450,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public void validateExternalUrls() {
 
 		List<String> urls = Lists.newArrayList(
-				getSymptomJournalConfig().getUrl(),
-				getSymptomJournalConfig().getAuthUrl(),
-				getPatientDiaryConfig().getUrl(),
-				getPatientDiaryConfig().getExternalDataUrl(),
-				getPatientDiaryConfig().getAuthUrl()
-		);
+			getSymptomJournalConfig().getUrl(),
+			getSymptomJournalConfig().getAuthUrl(),
+			getPatientDiaryConfig().getUrl(),
+			getPatientDiaryConfig().getExternalDataUrl(),
+			getPatientDiaryConfig().getAuthUrl());
 
 		urls.forEach(url -> {
 			if (StringUtils.isBlank(url)) {
@@ -461,9 +462,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			}
 			// Must be a valid URL
 			if (!new UrlValidator(
-					new String[]{
-							"http",
-							"https"}).isValid(url)) {
+				new String[] {
+					"http",
+					"https" }).isValid(url)) {
 				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
 			}
 		});
@@ -476,9 +477,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public boolean isExternalJournalActive() {
-		return !StringUtils.isAllBlank(
-				getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null),
-				getProperty(INTERFACE_PATIENT_DIARY_URL, null));
+		return !StringUtils.isAllBlank(getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null), getProperty(INTERFACE_PATIENT_DIARY_URL, null));
 	}
 
 	@Override
@@ -520,6 +519,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 					+ InfoProvider.get().getMinimumRequiredVersion() + "'");
 		}
 
+	}
+
+	public int getDashboardMapMarkerLimit() {
+		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
 	}
 
 	@LocalBean
