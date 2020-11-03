@@ -17,11 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -51,12 +58,6 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends FilteredGrid<IndexDto, CaseCriteria> {
@@ -94,8 +95,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					CaseIndexDto.I18N_PREFIX,
 					PersonDto.I18N_PREFIX,
 					LocationDto.I18N_PREFIX));
-			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
 
 		addItemClickListener(new ShowDetailsListener<>(CaseIndexDto.UUID, e -> ControllerProvider.getCaseController().navigateToCase(e.getUuid())));
@@ -145,7 +145,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 		setColumns(getGridColumns().toArray(String[]::new));
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			|| FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
 		} else {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
