@@ -314,6 +314,14 @@
     padding: 12px 20px;
     margin-bottom: 24px;
   }
+  .sticky-bottom-bar > :last-child {
+    position: sticky;
+    bottom: 0;
+    @include background-image(linear-gradient(top, transparent, white, 40px, white));
+    padding-bottom: 16px;
+    padding-top: 16px;
+    z-index: 11;
+  }
 
   .spacing-small {
   	.v-spacing {

@@ -148,6 +148,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(commitButton, 0);
 
+		addStyleName(CssStyles.STICKY_BOTTOM_BAR);
+
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
 
