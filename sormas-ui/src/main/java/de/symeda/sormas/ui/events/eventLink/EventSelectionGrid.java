@@ -18,7 +18,7 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.ui.caze.eventLink;
+package de.symeda.sormas.ui.events.eventLink;
 
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -68,8 +68,7 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 
 		for (Column<EventIndexDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
-			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.forSensitiveData(EventIndexDto.class, column.getId()));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.forSensitiveData(EventIndexDto.class, column.getId()));
 		}
 
 		getColumn(EventIndexDto.EVENT_TITLE).setMaximumWidth(300);

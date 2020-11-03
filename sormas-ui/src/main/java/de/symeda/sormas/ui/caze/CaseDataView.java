@@ -33,7 +33,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
+import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.docgeneration.DocGenerationComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;

@@ -18,7 +18,7 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.ui.caze.eventLink;
+package de.symeda.sormas.ui.events.eventLink;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
@@ -81,7 +81,7 @@ public class EventListComponent extends VerticalLayout {
 		componentHeader.addComponent(tasksHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.linkEventToCase));
+			createButton = new Button(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(clickListener);

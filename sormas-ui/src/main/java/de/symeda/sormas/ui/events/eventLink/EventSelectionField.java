@@ -18,7 +18,7 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.ui.caze.eventLink;
+package de.symeda.sormas.ui.events.eventLink;
 
 import java.util.Date;
 import java.util.function.Consumer;

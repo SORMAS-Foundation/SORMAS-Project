@@ -996,7 +996,7 @@ public interface Captions {
 	String lineListingNewCasesList = "lineListingNewCasesList";
 	String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	String lineListingSharedInformation = "lineListingSharedInformation";
-	String linkEventToCase = "linkEventToCase";
+	String linkEvent = "linkEvent";
 	String Location = "Location";
 	String Location_additionalInformation = "Location.additionalInformation";
 	String Location_addressType = "Location.addressType";

@@ -18,7 +18,7 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.ui.caze.eventLink;
+package de.symeda.sormas.ui.events.eventLink;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
