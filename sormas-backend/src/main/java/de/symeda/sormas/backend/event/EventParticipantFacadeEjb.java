@@ -225,7 +225,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Root<Contact> contact = contactCount.from(Contact.class);
 		contactCount.select(cb.count(contact));
 		contactCount.where(cb.equal(contact.join(Contact.PERSON).get(Person.UUID), person.get(Person.UUID)));
-		if (Boolean.TRUE.equals(eventParticipantCriteria.getContactCountOnlyWithSourceCaseInEvent())) {
+		if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
 			contactCount.where(
 				contactCount.getRestriction(),
 				contact.join(Contact.CAZE).get(Case.UUID).in(event.join(Event.EVENT_PERSONS).join(EventParticipant.RESULTING_CASE).get(Case.UUID)));

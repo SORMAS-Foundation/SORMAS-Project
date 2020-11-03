@@ -30,7 +30,7 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 			EventParticipantCriteria.BIRTHDATE_MM,
 			EventParticipantCriteria.BIRTHDATE_DD,
 			EventParticipantCriteria.FREE_TEXT,
-			EventParticipantCriteria.CONTACT_COUNT_ONLY_WITH_SOURCE_CASE_IN_EVENT };
+			EventParticipantCriteria.ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT};
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 
 		addField(
 			FieldConfiguration.withCaptionAndStyle(
-				EventParticipantCriteria.CONTACT_COUNT_ONLY_WITH_SOURCE_CASE_IN_EVENT,
+				EventParticipantCriteria.ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT,
 				I18nProperties.getCaption(Captions.eventParticipantContactCountOnlyWithSourceCaseInEvent),
 				null,
 				CssStyles.CHECKBOX_FILTER_INLINE),
