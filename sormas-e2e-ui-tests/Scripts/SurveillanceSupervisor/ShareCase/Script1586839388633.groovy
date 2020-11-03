@@ -53,7 +53,7 @@ for (int i=0; i < 2; i++){
 	
 	WebUI.click(findTestObject('Surveillance/CaseView/checkBox_shareCase'))
 	
-	WebUI.click(findTestObject('Surveillance/CaseView/div_Save_btn'))
+	WebUI.click(findTestObject('ReusableORs/div_Save'))
 	
 	WebUI.scrollToElement(findTestObject('Login/div_Logout'), 2)
 	// CHECK

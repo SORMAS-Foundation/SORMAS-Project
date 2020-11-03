@@ -72,7 +72,7 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPerso
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 
     'practitioner')
 
-WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Save'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 // CHECK
 String sex = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Sex'), 'value')
@@ -260,7 +260,7 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPerso
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 
     '')
 
-WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Save'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.closeBrowser()
 

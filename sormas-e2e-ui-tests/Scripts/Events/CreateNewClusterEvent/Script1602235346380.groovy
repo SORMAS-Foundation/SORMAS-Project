@@ -60,7 +60,7 @@ WebUI.click(findTestObject('Events/NewEventView/td_Voreingestellter Landkreis'))
 
 WebUI.click(findTestObject('Events/NewEventView/span_Community_CharlottenburgWilmersdorf-DDItem')) */
 
-WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 
