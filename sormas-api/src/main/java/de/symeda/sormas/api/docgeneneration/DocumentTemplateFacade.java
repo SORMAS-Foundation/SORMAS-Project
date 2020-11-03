@@ -4,16 +4,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import javax.ejb.Remote;
+import de.symeda.sormas.api.EntityDto;
 
-import de.symeda.sormas.api.ReferenceDto;
+public interface DocumentTemplateFacade {
 
-@Remote
-public interface QuarantineOrderFacade {
-
-	byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws IOException;
-
-	byte[] getTemplate(String templateName) throws IOException;
+	byte[] generateDocument(String templateName, EntityDto entityDto, Properties extraProperties) throws IOException;
 
 	List<String> getAvailableTemplates();
 
@@ -24,4 +19,6 @@ public interface QuarantineOrderFacade {
 	void writeQuarantineTemplate(String templateName, byte[] document) throws IOException;
 
 	boolean deleteQuarantineTemplate(String templateName);
+
+	byte[] getTemplate(String templateName) throws IOException;
 }

@@ -44,6 +44,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
@@ -95,6 +96,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -183,7 +185,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	@Before
 	public void createDiseaseConfigurations() {
 		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			getDiseaseConfigurationService().ensurePersisted(configuration);
@@ -467,6 +469,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
+	}
+
+	public DocumentTemplateFacade getDocumentTemplateFacade() {
+		return getBean(DocumentTemplateFacadeEjb.class);
 	}
 
 	public QuarantineOrderFacade getQuarantineOrderFacade() {
