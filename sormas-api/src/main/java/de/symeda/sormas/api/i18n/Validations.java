@@ -14,7 +14,7 @@ public interface Validations {
 	String afterDateSoft = "afterDateSoft";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
-	String campaignDashboardChartIdDoesNotExists = "campaignDashboardChartIdDoesNotExists";
+	String campaignDashboardChartIdDoesNotExist = "campaignDashboardChartIdDoesNotExist";
 	String campaignDashboardChartPercentage = "campaignDashboardChartPercentage";
 	String campaignDashboardChartValueNull = "campaignDashboardChartValueNull";
 	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";

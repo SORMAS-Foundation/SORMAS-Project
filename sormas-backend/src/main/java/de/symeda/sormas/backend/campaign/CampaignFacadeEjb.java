@@ -192,24 +192,12 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					.map(campaignFormMetaReferenceDto -> campaignFormMetaService.getByUuid(campaignFormMetaReferenceDto.getUuid()))
 					.collect(Collectors.toSet()));
 		}
-		final List<CampaignDashboardElement> campaignDashboardElements = source.getCampaignDashboardElements();
-		if (campaignDashboardElements != null) {
-			target.setDashboardElements(
-				campaignDashboardElements.stream()
-					.map(
-						cdewc -> new CampaignDashboardElement(
-							cdewc.getDiagramId(),
-							cdewc.getTabId(),
-							cdewc.getOrder(),
-							cdewc.getWidth(),
-							cdewc.getHeight()))
-					.collect(Collectors.toList()));
-		}
+		target.setDashboardElements(source.getCampaignDashboardElements());
 		return target;
 	}
 
 	public void validate(CampaignReferenceDto campaignReferenceDto) {
-		this.validate(getByUuid(campaignReferenceDto.getUuid()));
+		validate(getByUuid(campaignReferenceDto.getUuid()));
 	}
 
 	private void validate(CampaignDto campaignDto) {
@@ -223,11 +211,9 @@ public class CampaignFacadeEjb implements CampaignFacade {
 							Validations.campaignDashboardChartValueNull,
 							CampaignDashboardElement.DIAGRAM_ID,
 							campaignDto.getName()));
-				} else {
-					if (!campaignDiagramDefinitionFacade.exists(diagramId)) {
+				} else if (!campaignDiagramDefinitionFacade.exists(diagramId)) {
 						throw new ValidationRuntimeException(
-							I18nProperties.getValidationError(Validations.campaignDashboardChartIdDoesNotExists, diagramId, campaignDto.getName()));
-					}
+							I18nProperties.getValidationError(Validations.campaignDashboardChartIdDoesNotExist, diagramId, campaignDto.getName()));
 				}
 
 				if (cde.getTabId() == null) {

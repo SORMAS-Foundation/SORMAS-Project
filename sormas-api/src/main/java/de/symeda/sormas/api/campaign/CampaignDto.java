@@ -6,7 +6,6 @@ import java.util.Set;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
-import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
