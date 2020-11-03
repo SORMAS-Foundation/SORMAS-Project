@@ -17,7 +17,9 @@ String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_e
 
 String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_event_community')
 
-WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'Edited Event')
+WebUI.setText(findTestObject('Events/NewEventView/input_Title_eventTitle'), 'VFX design Event')
+
+WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'This event is Edited')
 
 WebUI.scrollToElement(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'), 2)
 
