@@ -22,7 +22,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.time.Month;
 import java.util.Arrays;
-import java.util.List;
 
 import org.joda.time.LocalDate;
 
@@ -450,7 +449,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	}
 
 	public void setPersonDetailsReadOnly() {
-		final List<String> fieldList = Arrays.asList(
+		setEnabled(
+			false,
 			PersonDto.FIRST_NAME,
 			PersonDto.LAST_NAME,
 			PersonDto.SEX,
@@ -461,10 +461,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.PHONE,
 			PersonDto.EMAIL_ADDRESS);
-
-		for (String field : fieldList) {
-			getField(field).setEnabled(false);
-		}
 	}
 
 	public void setDiseaseReadOnly() {
