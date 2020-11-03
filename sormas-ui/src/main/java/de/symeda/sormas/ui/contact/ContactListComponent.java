@@ -26,7 +26,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -56,10 +58,15 @@ public class ContactListComponent extends VerticalLayout {
 		setMargin(false);
 		setSpacing(false);
 
+		EventReferenceDto eventRef = FacadeProvider.getEventFacade().getReferenceByEventParticipant(eventParticipantRef.getUuid());
 		CheckBox contactOnlyWithSourceCaseInEvent = new CheckBox(I18nProperties.getCaption(Captions.contactOnlyWithSourceCaseInEvent));
 		contactOnlyWithSourceCaseInEvent.addStyleNames(CssStyles.CHECKBOX_FILTER_INLINE, CssStyles.VSPACE_4);
 		contactOnlyWithSourceCaseInEvent.addValueChangeListener(e -> {
-			contactList.contactOnlyWithSourceCaseInEvent(e.getValue());
+			if (e.getValue()) {
+				contactList.filterContactListBySourceCaseInEvent(eventRef);
+			} else {
+				contactList.filterContactListBySourceCaseInEvent(null);
+			}
 			contactList.reload();
 		});
 		addComponent(contactOnlyWithSourceCaseInEvent);

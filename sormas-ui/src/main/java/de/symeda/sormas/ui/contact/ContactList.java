@@ -38,12 +38,10 @@ import de.symeda.sormas.ui.utils.PaginationList;
 public class ContactList extends PaginationList<ContactIndexDto> {
 
 	private final ContactCriteria contactCriteria = new ContactCriteria();
-	private final EventReferenceDto eventRef;
 
 	public ContactList(EventParticipantReferenceDto eventParticipantRef) {
 		super(5);
 		contactCriteria.setEventParticipant(eventParticipantRef);
-		eventRef = FacadeProvider.getEventFacade().getReferenceByEventParticipant(eventParticipantRef.getUuid());
 	}
 
 	@Override
@@ -83,11 +81,7 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 		}
 	}
 
-	protected void contactOnlyWithSourceCaseInEvent(boolean value) {
-		if (value) {
-			contactCriteria.setOnlyContactsWithSourceCaseInEvent(eventRef);
-		} else {
-			contactCriteria.setOnlyContactsWithSourceCaseInEvent(null);
-		}
+	protected void filterContactListBySourceCaseInEvent(EventReferenceDto eventRef) {
+		contactCriteria.setOnlyContactsWithSourceCaseInEvent(eventRef);
 	}
 }
