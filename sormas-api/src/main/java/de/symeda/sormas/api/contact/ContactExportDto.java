@@ -139,6 +139,7 @@ public class ContactExportDto implements Serializable {
 	private final Long eventCount;
 	private String latestEventId;
 	private String latestEventTitle;
+	private String externalID;
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
@@ -156,7 +157,7 @@ public class ContactExportDto implements Serializable {
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
-							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler, long eventCount,
+							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler, long eventCount, String externalID,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
@@ -222,6 +223,7 @@ public class ContactExportDto implements Serializable {
 		this.contactWithRodent = contactWithRodent;
 		this.returningTraveler = returningTraveler;
 		this.eventCount = eventCount;
+		this.externalID = externalID;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -261,26 +263,31 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(1)
+	public String getExternalID() {
+		return externalID;
+	}
+
+	@Order(2)
 	public String getSourceCaseUuid() {
 		return sourceCaseUuid;
 	}
 
-	@Order(2)
+	@Order(3)
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
 
-	@Order(3)
+	@Order(4)
 	public String getDisease() {
 		return disease;
 	}
 
-	@Order(4)
+	@Order(5)
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}
 
-	@Order(5)
+	@Order(6)
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
@@ -325,7 +332,7 @@ public class ContactExportDto implements Serializable {
 		return district;
 	}
 
-	@Order(17)
+	@Order(18)
 	public String getCommunity() {
 		return community;
 	}
