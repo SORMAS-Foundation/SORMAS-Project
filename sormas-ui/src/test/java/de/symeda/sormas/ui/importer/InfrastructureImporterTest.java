@@ -84,11 +84,11 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
-		// Import region
+		// Import country
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").getFile());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(countryCsvFile, user.toReference(), InfrastructureType.COUNTRY);
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
-		assertEquals(2, getCountryFacade().count(new CountryCriteria()));
+		assertEquals(1, getCountryFacade().count(new CountryCriteria()));
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").getFile());
