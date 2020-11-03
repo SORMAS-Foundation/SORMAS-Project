@@ -315,6 +315,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 
+		Subquery<Long> contactCount = cq.subquery(Long.class);
+		Root<Contact> contact = contactCount.from(Contact.class);
+		contactCount.select(cb.count(contact));
+		contactCount.where(cb.equal(contact.join(Contact.PERSON).get(Person.UUID), person.get(Person.UUID)));
+		if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
+			contactCount.where(
+				contactCount.getRestriction(),
+				contact.join(Contact.CAZE).get(Case.UUID).in(event.join(Event.EVENT_PERSONS).join(EventParticipant.RESULTING_CASE).get(Case.UUID)));
+		}
+
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.ID),
 			person.get(Person.ID),
@@ -366,7 +376,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			address.get(Location.POSTAL_CODE),
 			person.get(Person.PHONE),
 
-			resultingCase.get(Case.UUID));
+			resultingCase.get(Case.UUID),
+
+			contactCount);
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
 		cq.where(filter);

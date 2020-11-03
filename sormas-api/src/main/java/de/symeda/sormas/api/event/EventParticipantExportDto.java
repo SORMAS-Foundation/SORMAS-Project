@@ -65,6 +65,7 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String PERSON_NATIONAL_HEALTH_ID = "personNationalHealthId";
 	public static final String EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION = "eventParticipantInvolvmentDescription";
 	public static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
+	public static final String CONTACT_COUNT = "contactCount";
 
 	private long id;
 	private long personId;
@@ -139,6 +140,8 @@ public class EventParticipantExportDto implements Serializable {
 
 	private EventParticipantJurisdictionDto jurisdiction;
 
+	private long contactCount;
+
 	//@formatter:off
     public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid, 
 									 
@@ -147,7 +150,7 @@ public class EventParticipantExportDto implements Serializable {
 									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
 									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
 									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
-									 String additionalInformation, String postalCode, String phone, String caseUuid) {
+									 String additionalInformation, String postalCode, String phone, String caseUuid, Long contactCount) {
     	//@formatter:on
 
 		this.id = id;
@@ -193,6 +196,8 @@ public class EventParticipantExportDto implements Serializable {
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.caseUuid = caseUuid;
+
+		this.contactCount = contactCount;
 
 		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}
@@ -430,6 +435,12 @@ public class EventParticipantExportDto implements Serializable {
 	@ExportProperty(EventParticipantExportDto.EVENT_HOUSE_NUMBER)
 	public String getEventHouseNumber() {
 		return eventHouseNumber;
+	}
+
+	@Order(65)
+	@ExportProperty(EventParticipantExportDto.CONTACT_COUNT)
+	public Long getContactCount() {
+		return contactCount;
 	}
 
 	public List<EmbeddedSampleExportDto> getEventParticipantSamples() {
