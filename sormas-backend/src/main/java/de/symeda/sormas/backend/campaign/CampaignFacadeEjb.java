@@ -32,8 +32,6 @@ import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
-import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElementWithCaption;
-import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -194,7 +192,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					.map(campaignFormMetaReferenceDto -> campaignFormMetaService.getByUuid(campaignFormMetaReferenceDto.getUuid()))
 					.collect(Collectors.toSet()));
 		}
-		final List<CampaignDashboardElementWithCaption> campaignDashboardElements = source.getCampaignDashboardElements();
+		final List<CampaignDashboardElement> campaignDashboardElements = source.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
 			target.setDashboardElements(
 				campaignDashboardElements.stream()
@@ -215,7 +213,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	private void validate(CampaignDto campaignDto) {
-		final List<CampaignDashboardElementWithCaption> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
+		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
 			for (CampaignDashboardElement cde : campaignDashboardElements) {
 				final String diagramId = cde.getDiagramId();
@@ -277,9 +275,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setCampaignFormMetas(
 			source.getCampaignFormMetas().stream().map(campaignFormMeta -> campaignFormMeta.toReference()).collect(Collectors.toSet()));
 
-		final List<CampaignDashboardElementWithCaption> cdewcs = new ArrayList<>();
-		addCampaignDashboardElementsWithCaption(cdewcs, source);
-		target.setCampaignDashboardElements(cdewcs.isEmpty() ? null : cdewcs);
+		target.setCampaignDashboardElements(source.getDashboardElements());
 
 		return target;
 	}
@@ -290,13 +286,21 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	@Override
-	public List<CampaignDashboardElementWithCaption> getCampaignDashboardElements(String campaignUuid) {
-		final List<CampaignDashboardElementWithCaption> result = new ArrayList<>();
+	public List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid) {
+		final List<CampaignDashboardElement> result = new ArrayList<>();
 		if (campaignUuid != null) {
 			final Campaign campaign = campaignService.getByUuid(campaignUuid);
-			addCampaignDashboardElementsWithCaption(result, campaign);
+			final List<CampaignDashboardElement> dashboardElements = campaign.getDashboardElements();
+			if (dashboardElements != null) {
+				result.addAll(dashboardElements);
+			}
 		} else {
-			campaignService.getAllActive().forEach(campaign -> addCampaignDashboardElementsWithCaption(result, campaign));
+			campaignService.getAllActive().forEach(campaign -> {
+				final List<CampaignDashboardElement> dashboardElements = campaign.getDashboardElements();
+				if (dashboardElements != null) {
+					result.addAll(dashboardElements);
+				}
+			});
 		}
 		result.forEach(cde -> {
 			if (cde.getTabId() == null) {
@@ -313,25 +317,6 @@ public class CampaignFacadeEjb implements CampaignFacade {
 			}
 		});
 		return result.stream().sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder)).collect(Collectors.toList());
-	}
-
-	private void addCampaignDashboardElementsWithCaption(List<CampaignDashboardElementWithCaption> result, Campaign campaign) {
-		List<CampaignDashboardElement> dashboardElements = campaign.getDashboardElements();
-		if (dashboardElements != null) {
-
-			result.addAll(dashboardElements.stream().map(cde -> {
-				final String diagramId = cde.getDiagramId();
-				final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDiagramDefinitionFacade.getByDiagramId(diagramId);
-				final CampaignDashboardElementWithCaption elementWithCaption = new CampaignDashboardElementWithCaption(
-					diagramId,
-					campaignDiagramDefinitionDto != null ? campaignDiagramDefinitionDto.getDiagramCaption() : diagramId,
-					cde.getTabId(),
-					cde.getOrder(),
-					cde.getWidth(),
-					cde.getHeight());
-				return elementWithCaption;
-			}).collect(Collectors.toList()));
-		}
 	}
 
 	@Override

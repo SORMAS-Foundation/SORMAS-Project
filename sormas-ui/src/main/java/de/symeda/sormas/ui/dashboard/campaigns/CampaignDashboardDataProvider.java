@@ -10,7 +10,6 @@ import java.util.Optional;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
-import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElementWithCaption;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
@@ -34,7 +33,7 @@ public class CampaignDashboardDataProvider {
 
 		FacadeProvider.getCampaignFacade().validate(campaign);
 
-		final List<CampaignDashboardElementWithCaption> campaignDashboardElements =
+		final List<CampaignDashboardElement> campaignDashboardElements =
 			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign != null ? campaign.getUuid() : null);
 		final List<CampaignDiagramDefinitionDto> campaignDiagramDefinitions = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
 

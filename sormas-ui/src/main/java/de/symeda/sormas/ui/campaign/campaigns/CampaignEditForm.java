@@ -24,10 +24,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElementWithCaption;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -153,7 +151,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 		getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 
-		final List<CampaignDashboardElementWithCaption> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
+		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
