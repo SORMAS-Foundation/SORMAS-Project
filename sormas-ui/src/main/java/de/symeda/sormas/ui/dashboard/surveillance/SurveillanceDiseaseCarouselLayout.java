@@ -100,20 +100,15 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 
 		carouselMenu = new SubMenu();
 
-//		for (Disease disease : diseases) {
-//			carouselMenu.addView(disease.getName(), disease.toShortString(), (e) -> {
-//				this.changeSelectedDisease(disease, true);
-//			});
-//		}
+		for (Disease disease : diseases) {
+			carouselMenu.addView(disease.getName(), disease.toShortString(), (e) -> {
+				this.changeSelectedDisease(disease, true);
+			});
+		}
 
-//		if (diseases.size() > 0) {
-//			this.setActiveDisease(diseases.get(0), false);
-//		}
-
-		carouselMenu.addView(Disease.CORONAVIRUS.getName(), Disease.CORONAVIRUS.toShortString(), (e) -> {
-			this.changeSelectedDisease(Disease.CORONAVIRUS, true);
-		});
-		this.setActiveDisease(Disease.CORONAVIRUS, false);
+		if (diseases.size() > 0) {
+			this.setActiveDisease(diseases.get(0), false);
+		}
 
 		layout.addComponent(carouselMenu);
 
