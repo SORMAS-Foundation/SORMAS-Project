@@ -144,7 +144,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 242;
+	public static final int DATABASE_VERSION = 241;
 
 	private static DatabaseHelper instance = null;
 
@@ -1708,10 +1708,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 239;
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN exposureDetailsKnown varchar(255);");
 
-			case 241:
-				currentVersion = 241;
+			case 240:
+				currentVersion = 240;
 
 				migrateEpiData();
+
+				getDao(EpiData.class).executeRaw("ALTER TABLE epidata RENAME TO tmp_epidata;");
+				TableUtils.createTable(connectionSource, EpiData.class);
+				getDao(EpiData.class).executeRaw(
+					"INSERT INTO epidata(exposureDetailsKnown, contactWithSourceCaseKnown, areaInfectedAnimals, changeDate, creationDate, "
+						+ "id, lastOpenedDate, localChangeDate, modified, snapshot, uuid, pseudonymized) "
+						+ "SELECT exposureDetailsKnown, contactWithSourceCaseKnown, wildbirds, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid, pseudonymized "
+						+ "FROM tmp_epidata;");
+				getDao(EpiData.class).executeRaw("DROP TABLE tmp_epidata;");
 
 				// ATTENTION: break should only be done after last version
 				break;
@@ -1736,7 +1745,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private void formatRawResultDate(Object[] result, int index) {
 		if (result[index] != null && result[index] instanceof Date) {
-			Array.set(result, index, ((Date) result[index]).getTime());
+			long time = ((Date) result[index]).getTime();
+			if (time == 0L) {
+				Array.set(result, index, null);
+			} else {
+				Array.set(result, index, time);
+			}
 		}
 	}
 
