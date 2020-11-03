@@ -36,7 +36,7 @@ public class ExternalVisitsResourceTest extends TestCase {
 		});
 
 		String newSwaggerDocuPath = System.getProperty("user.dir");
-		newSwaggerDocuPath = newSwaggerDocuPath + "/target/swagger.json";
+		newSwaggerDocuPath = newSwaggerDocuPath + "/target/test-classes/swagger.json";
 		String newSwaggerDocu = fileToString(newSwaggerDocuPath);
 		Map<String, Object> newSwaggerDocuMap = objectMapper.readValue(newSwaggerDocu, new TypeReference<Map<String, Object>>() {
 		});
