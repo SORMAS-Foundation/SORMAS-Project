@@ -110,18 +110,11 @@ public class KeycloakService {
 
 		try {
 			JSONObject json = JSONObjectUtils.parse(oidcJson.get());
-			ResteasyClient RestClient = null;
-                        if (configFacade.getProxyHost() != null && configFacade.getProxyProtocol() != null){
-				RestClient = new ResteasyClientBuilder().defaultProxy(configFacade.getProxyHost(), configFacade.getProxyPort(), configFacade.getProxyProtocol()).build();
-			} else {
-				RestClient = new ResteasyClientBuilder().build();
-			}
 			keycloak = KeycloakBuilder.builder()
 				.realm(json.getAsString(OIDC_REALM))
 				.serverUrl(json.getAsString(OIDC_SERVER_URL))
 				.clientId("sormas-backend")
 				.clientSecret(JSONObjectUtils.getJSONObject(json, OIDC_CREDENTIALS).getAsString(OIDC_SECRET))
-				.resteasyClient(RestClient)
 				.grantType(OAuth2Constants.CLIENT_CREDENTIALS)
 				.build();
 
