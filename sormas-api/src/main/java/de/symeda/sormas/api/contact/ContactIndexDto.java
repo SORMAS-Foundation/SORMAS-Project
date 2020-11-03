@@ -124,7 +124,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 				caseClassification,
 				caseReportingUserUid,
 				caseRegionUuid,
-				caseDistrictUuid,
+				caseDistrictUud,
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid,
