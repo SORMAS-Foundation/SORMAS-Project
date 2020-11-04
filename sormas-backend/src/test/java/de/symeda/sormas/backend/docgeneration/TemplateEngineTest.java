@@ -20,29 +20,28 @@ import org.junit.Test;
 import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.backend.AbstractBeanTest;
 import fr.opensagres.xdocreport.core.XDocReportException;
 
-public class TemplateEngineTest extends AbstractBeanTest {
+public class TemplateEngineTest {
 
 	private TemplateEngine templateEngine;
-	private String testCasesDirPath;
+	private String testCasesDocxDirPath;
 
 	@Before
 	public void setup() {
 		templateEngine = new TemplateEngine();
-		testCasesDirPath = getClass().getResource("/docgeneration/testcases").getPath();
+		testCasesDocxDirPath = getClass().getResource("/docgeneration/testcasesDocx").getPath();
 	}
 
 	@Test
-	public void genericTestCasesTest() throws IOException, XDocReportException {
-		File testCasesDir = new File(testCasesDirPath);
+	public void genericTestCasesDocxTest() throws IOException, XDocReportException {
+		File testCasesDir = new File(testCasesDocxDirPath);
 		File[] testcasesDocx = testCasesDir.listFiles((d, name) -> name.endsWith(".docx"));
 
 		for (File testcaseDocx : testcasesDocx) {
 			String testcaseBasename = FilenameUtils.getBaseName(testcaseDocx.getName());
-			File testcaseProperties = new File(testCasesDirPath + File.separator + testcaseBasename + ".properties");
-			File testcaseCmpText = new File(testCasesDirPath + File.separator + testcaseBasename + ".txt");
+			File testcaseProperties = new File(testCasesDocxDirPath + File.separator + testcaseBasename + ".properties");
+			File testcaseCmpText = new File(testCasesDocxDirPath + File.separator + testcaseBasename + ".cmp");
 
 			if (testcaseProperties.exists()) {
 				Set<String> variables = templateEngine.extractTemplateVariables(new FileInputStream(testcaseDocx));
@@ -81,8 +80,8 @@ public class TemplateEngineTest extends AbstractBeanTest {
 		Properties properties = new Properties();
 		properties.put("person", personDto);
 
-		String testcaseDocx = testCasesDirPath + File.separator + "PropertyAccessTest.docx";
-		String testcaseCmpText = testCasesDirPath + File.separator + "PropertyAccessTest.txt";
+		String testcaseDocx = testCasesDocxDirPath + File.separator + "PropertyAccessTest.docx";
+		String testcaseCmpText = testCasesDocxDirPath + File.separator + "PropertyAccessTest.txt";
 
 		InputStream generatedFile = templateEngine.generateDocument(properties, new FileInputStream(testcaseDocx));
 

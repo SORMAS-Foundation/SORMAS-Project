@@ -13,15 +13,7 @@ public interface QuarantineOrderFacade {
 
 	byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws IOException;
 
-	byte[] getTemplate(String templateName) throws IOException;
-
 	List<String> getAvailableTemplates();
 
-	boolean isExistingTemplate(String templateName);
-
 	List<String> getAdditionalVariables(String templateName) throws IOException;
-
-	void writeQuarantineTemplate(String templateName, byte[] document) throws IOException;
-
-	boolean deleteQuarantineTemplate(String templateName);
 }

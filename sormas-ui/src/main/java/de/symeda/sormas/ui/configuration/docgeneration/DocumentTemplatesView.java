@@ -26,6 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -42,41 +43,44 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 
 	private ViewConfiguration viewConfiguration;
 	private VerticalLayout gridLayout;
-	private QuarantineTemplatesGrid quarantineTemplatesGrid;
+	private DocumentTemplatesGrid documentTemplatesGrid;
 
 	public DocumentTemplatesView() {
-
 		super(VIEW_NAME);
+		try {
 
-		viewConfiguration = ViewModelProviders.of(DocumentTemplatesView.class).get(ViewConfiguration.class);
+			viewConfiguration = ViewModelProviders.of(DocumentTemplatesView.class).get(ViewConfiguration.class);
 
-		gridLayout = new VerticalLayout();
+			gridLayout = new VerticalLayout();
 
-		// Add Quarantine Template Section
-		quarantineTemplatesGrid = new QuarantineTemplatesGrid();
-		quarantineTemplatesGrid.setWidth("500px"); // Remove this line to fit whole page
-		Label quarantineTemplatesLabel = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_templates));
-		quarantineTemplatesLabel.addStyleName(H3);
-		gridLayout.addComponent(quarantineTemplatesLabel);
-		gridLayout.addComponent(quarantineTemplatesGrid);
+			// Add Quarantine Template Section
+			documentTemplatesGrid = new DocumentTemplatesGrid(DocumentWorkflow.QUARANTINE_ORDER);
+			documentTemplatesGrid.setWidth("500px"); // Remove this line to fit whole page
+			Label quarantineTemplatesLabel = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_templates));
+			quarantineTemplatesLabel.addStyleName(H3);
+			gridLayout.addComponent(quarantineTemplatesLabel);
+			gridLayout.addComponent(documentTemplatesGrid);
 
-		gridLayout.setWidth(100, Unit.PERCENTAGE);
-		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
-		gridLayout.setExpandRatio(quarantineTemplatesGrid, 1); // Ensure that everything stays at the top
-		gridLayout.setSizeFull();
-		gridLayout.setStyleName("crud-main-layout");
+			gridLayout.setWidth(100, Unit.PERCENTAGE);
+			gridLayout.setMargin(true);
+			gridLayout.setSpacing(false);
+			gridLayout.setExpandRatio(documentTemplatesGrid, 1); // Ensure that everything stays at the top
+			gridLayout.setSizeFull();
+			gridLayout.setStyleName("crud-main-layout");
 
-		addHeaderComponent(buildUploadButton());
+			addHeaderComponent(buildUploadButton());
 
-		addComponent(gridLayout);
+			addComponent(gridLayout);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	Button buildUploadButton() {
 		return ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate), VaadinIcons.UPLOAD, e -> {
 			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout());
 			window.setCaption(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate));
-			window.addCloseListener(c -> quarantineTemplatesGrid.reload());
+			window.addCloseListener(c -> documentTemplatesGrid.reload());
 		}, ValoTheme.BUTTON_PRIMARY);
 	}
 }

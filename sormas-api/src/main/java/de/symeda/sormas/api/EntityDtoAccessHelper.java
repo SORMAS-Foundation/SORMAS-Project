@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class EntityDtoAccessHelper {
@@ -29,7 +31,8 @@ public class EntityDtoAccessHelper {
 			Class<?> superclass = entityClass.getSuperclass();
 			entityClass = HasUuid.class.isAssignableFrom(superclass) ? (Class<? extends HasUuid>) superclass : null;
 		}
-		throw new IllegalArgumentException("No property " + propertyKey + " in class " + entity.getClass().getSimpleName());
+		throw new IllegalArgumentException(
+			"No property " + propertyKey + " in class " + (entity.getClass() != null ? entity.getClass().getSimpleName() : "<null>"));
 	}
 
 	public static Object getPropertyPathValue(HasUuid entity, String propertyPath) {
@@ -46,7 +49,7 @@ public class EntityDtoAccessHelper {
 			boolean isResolvable = referenceDtoResolver != null && ReferenceDto.class.isAssignableFrom(currentEntity.getClass());
 
 			if (!HasUuid.class.isAssignableFrom(currentEntity.getClass())) {
-				String errorPropertyPath = entity.getClass().getSimpleName() + "." + String.join(".", Arrays.copyOfRange(propertyKeys, 0, i));
+				String errorPropertyPath = entity.getClass().getSimpleName() + "." + StringUtils.join(Arrays.copyOfRange(propertyKeys, 0, i), ".");
 				throw new IllegalArgumentException(errorPropertyPath + " is not an EntityDto or ReferenceDto");
 			}
 			Object propertyValue = null;

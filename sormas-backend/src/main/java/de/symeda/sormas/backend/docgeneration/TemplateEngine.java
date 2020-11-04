@@ -10,9 +10,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
@@ -23,8 +20,7 @@ import fr.opensagres.xdocreport.template.TemplateEngineKind;
 
 public class TemplateEngine {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private static Pattern variablePattern = Pattern.compile("([{] *([A-Za-z0-9.]+) *[}]| *([A-Za-z0-9.]+) *)");
+	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *([A-Za-z0-9.]+) *[}]| *([A-Za-z0-9.]+) *)");
 
 	public Set<String> extractTemplateVariables(InputStream templateFile) throws IOException, XDocReportException {
 		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
@@ -35,7 +31,7 @@ public class TemplateEngine {
 		Set<String> variables = new HashSet<>();
 		for (FieldExtractor field : extractor.getFields()) {
 			String fieldName = field.getName();
-			Matcher matcher = variablePattern.matcher(fieldName);
+			Matcher matcher = VARIABLE_PATTERN.matcher(fieldName);
 			if (matcher.matches()) {
 				String withBrackets = matcher.group(2);
 				String withoutBrackets = matcher.group(3);

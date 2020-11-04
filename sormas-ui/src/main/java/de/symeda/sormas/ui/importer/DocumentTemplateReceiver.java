@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
+import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,7 +73,7 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 		}
 
 		// Check for duplicate files
-		if (FacadeProvider.getQuarantineOrderFacade().isExistingTemplate(fName)) {
+		if (FacadeProvider.getDocumentTemplateFacade().isExistingTemplate(QUARANTINE_ORDER, fName)) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingFileExists),
 				new Label(String.format(I18nProperties.getString(Strings.infoDocumentAlreadyExists), fName)),
@@ -92,7 +94,7 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 		try {
 			byte[] filecontent = Files.readAllBytes(file.toPath());
 			// This should be more general for reusability
-			FacadeProvider.getQuarantineOrderFacade().writeQuarantineTemplate(fName, filecontent);
+			FacadeProvider.getDocumentTemplateFacade().writeDocumentTemplate(QUARANTINE_ORDER, fName, filecontent);
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingUploadSuccess),
 				I18nProperties.getString(Strings.messageUploadSuccessful));

@@ -15,22 +15,26 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class QuarantineTemplatesGrid extends Grid<String> {
+public class DocumentTemplatesGrid extends Grid<String> {
 
 	private static final long serialVersionUID = 2589713987152595369L;
 
-	public QuarantineTemplatesGrid() {
+	private final DocumentWorkflow documentWorkflow;
+
+	public DocumentTemplatesGrid(DocumentWorkflow documentWorkflow) {
 		super(String.class);
+		this.documentWorkflow = documentWorkflow;
 		setSizeFull();
 
-		ListDataProvider<String> dataProvider = DataProvider.fromStream(FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates().stream());
+		ListDataProvider<String> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow).stream());
 		setDataProvider(dataProvider);
 
 		removeAllColumns();
@@ -44,7 +48,7 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 
 	public void reload() {
 		// This is bad practice but it works (unlike refreshAll), and in this case its sufficient
-		setItems(FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates());
+		setItems(FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow));
 		getDataProvider().refreshAll();
 	}
 
@@ -55,7 +59,7 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 			e -> VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), templateFileName), () -> {
 					try {
-						FacadeProvider.getQuarantineOrderFacade().deleteQuarantineTemplate(templateFileName);
+						FacadeProvider.getDocumentTemplateFacade().deleteDocumentTemplate(documentWorkflow, templateFileName);
 					} catch (IllegalArgumentException ex) {
 						new Notification(
 							I18nProperties.getString(Strings.errorDeletingDocumentTemplate),
@@ -71,9 +75,8 @@ public class QuarantineTemplatesGrid extends Grid<String> {
 		Button viewButton = new Button(VaadinIcons.DOWNLOAD);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
-			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 			try {
-				return new ByteArrayInputStream(quarantineOrderFacade.getTemplate(templateFileName));
+				return new ByteArrayInputStream(FacadeProvider.getDocumentTemplateFacade().getDocumentTemplate(documentWorkflow, templateFileName));
 			} catch (IOException | IllegalArgumentException e) {
 				new Notification(
 					String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFileName),

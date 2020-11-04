@@ -2,23 +2,34 @@ package de.symeda.sormas.api.docgeneneration;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+
+import javax.ejb.Remote;
 
 import de.symeda.sormas.api.EntityDto;
 
+@Remote
 public interface DocumentTemplateFacade {
 
-	byte[] generateDocument(String templateName, EntityDto entityDto, Properties extraProperties) throws IOException;
+	byte[] generateDocumentFromEntities(
+		DocumentWorkflow documentWorkflow,
+		String templateName,
+		Map<String, EntityDto> entities,
+		Properties extraProperties)
+		throws IOException;
 
-	List<String> getAvailableTemplates();
+	byte[] generateDocument(DocumentWorkflow documentWorkflow, String templateName, Properties properties) throws IOException;
 
-	boolean isExistingTemplate(String templateName);
+	List<String> getAvailableTemplates(DocumentWorkflow documentWorkflow);
 
-	List<String> getAdditionalVariables(String templateName) throws IOException;
+	List<String> getAdditionalVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException;
 
-	void writeQuarantineTemplate(String templateName, byte[] document) throws IOException;
+	boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName);
 
-	boolean deleteQuarantineTemplate(String templateName);
+	void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, byte[] document) throws IOException;
 
-	byte[] getTemplate(String templateName) throws IOException;
+	boolean deleteDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName);
+
+	byte[] getDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName) throws IOException;
 }

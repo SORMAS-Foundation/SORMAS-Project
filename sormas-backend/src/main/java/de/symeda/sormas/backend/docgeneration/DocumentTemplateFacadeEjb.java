@@ -10,8 +10,11 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -26,6 +29,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -48,14 +52,8 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 @Stateless(name = "DocumentTemplateFacade")
 public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
-	// ROOT_ENTITY_NAME defines the root variable in document template.
-	// In templates quarantine orders, the root variable "case" refers
-	// to either a CaseDataDto or a ContactDto, depending on from where
-	// it is called. So "${case.person.firstName}" in the template refers
-	// to the case's or contact's person's first name in either case.
-	public static final String ROOT_ENTITY_NAME = "case";
-
 	private static final String DEFAULT_NULL_REPLACEMENT = "./.";
+	private static final Pattern BASENAME_PATTERN = Pattern.compile("^([^.]+)([.].*)?");
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
@@ -84,9 +82,14 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	private TemplateEngine templateEngine = new TemplateEngine();
 
 	@Override
-	public byte[] generateDocument(String templateName, EntityDto entityDto, Properties extraProperties) throws IOException {
+	public byte[] generateDocumentFromEntities(
+		DocumentWorkflow documentWorkflow,
+		String templateName,
+		Map<String, EntityDto> entities,
+		Properties extraProperties)
+		throws IOException {
 		// 1. Read template from custom directory
-		File templateFile = getTemplateFile(templateName);
+		File templateFile = getTemplateFile(documentWorkflow, templateName);
 
 		// 2. Extract document variables
 		Set<String> propertyKeys = getTemplateVariables(templateFile);
@@ -101,10 +104,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
 
-		if (entityDto != null) {
-			for (String propertyKey : propertyKeys) {
-				if (isEntityVariable(propertyKey)) {
-					String propertyPath = propertyKey.replace(ROOT_ENTITY_NAME + ".", "");
+		for (String propertyKey : propertyKeys) {
+			if (isEntityVariable(documentWorkflow, propertyKey)) {
+				String variableBaseName = getVariableBaseName(propertyKey);
+				EntityDto entityDto = entities.get(variableBaseName);
+				if (entityDto != null) {
+					String propertyPath = propertyKey.replaceFirst(variableBaseName + ".", "");
 					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entityDto, propertyPath, referenceDtoResolver);
 					properties.setProperty(propertyKey, propertyValue);
 				}
@@ -129,6 +134,16 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 		// 5. generate document
 
+		return getGenerateDocument(templateFile, properties);
+	}
+
+	@Override
+	public byte[] generateDocument(DocumentWorkflow documentWorkflow, String templateName, Properties properties) throws IOException {
+		File templateFile = getTemplateFile(documentWorkflow, templateName);
+		return getGenerateDocument(templateFile, properties);
+	}
+
+	private byte[] getGenerateDocument(File templateFile, Properties properties) throws IOException {
 		try {
 			return IOUtils.toByteArray(templateEngine.generateDocument(properties, new FileInputStream(templateFile)));
 		} catch (XDocReportException e) {
@@ -137,41 +152,38 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	public List<String> getAvailableTemplates() {
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+	public List<String> getAvailableTemplates(DocumentWorkflow documentWorkflow) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
 		File workflowTemplateDir = new File(workflowTemplateDirPath);
 		if (!workflowTemplateDir.exists() || !workflowTemplateDir.isDirectory()) {
 			return Collections.emptyList();
 		}
-		File[] availableTemplates = workflowTemplateDir.listFiles((d, name) -> name.endsWith(".docx"));
+		File[] availableTemplates =
+			workflowTemplateDir.listFiles((d, name) -> name.toLowerCase().endsWith("." + documentWorkflow.getFileExtension()));
 		if (availableTemplates == null) {
 			return Collections.emptyList();
 		}
 		return Arrays.stream(availableTemplates).map(File::getName).sorted(String::compareTo).collect(Collectors.toList());
 	}
 
-	private String getWorkflowTemplateDirPath() {
-		return configFacade.getCustomFilesPath() + File.separator + "docgeneration" + File.separator + "quarantine";
-	}
-
 	@Override
-	public boolean isExistingTemplate(String templateName) {
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+	public boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
 		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
 		File templateFile = new File(templateFileName);
 		return templateFile.exists();
 	}
 
 	@Override
-	public List<String> getAdditionalVariables(String templateName) throws IOException {
-		File templateFile = getTemplateFile(templateName);
+	public List<String> getAdditionalVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException {
+		File templateFile = getTemplateFile(documentWorkflow, templateName);
 		Set<String> propertyKeys = getTemplateVariables(templateFile);
-		return propertyKeys.stream().filter(e -> !isEntityVariable(e)).sorted(String::compareTo).collect(Collectors.toList());
+		return propertyKeys.stream().filter(e -> !isEntityVariable(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList());
 	}
 
 	@Override
-	public void writeQuarantineTemplate(String templateName, byte[] document) throws IOException {
-		if (!"docx".equalsIgnoreCase(FilenameUtils.getExtension(templateName))) {
+	public void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, byte[] document) throws IOException {
+		if (!documentWorkflow.getFileExtension().equalsIgnoreCase(FilenameUtils.getExtension(templateName))) {
 			throw new IllegalArgumentException(I18nProperties.getString(Strings.headingWrongFileType));
 		}
 		String path = FilenameUtils.getPath(templateName);
@@ -179,7 +191,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), templateName));
 		}
 
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
 		templateEngine.validateTemplate(new ByteArrayInputStream(document));
 
 		Files.createDirectories(Paths.get(workflowTemplateDirPath));
@@ -190,8 +202,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	public boolean deleteQuarantineTemplate(String fileName) {
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+	public boolean deleteDocumentTemplate(DocumentWorkflow documentWorkflow, String fileName) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
 		File templateFile = new File(workflowTemplateDirPath + File.separator + fileName);
 		if (templateFile.exists() && templateFile.isFile()) {
 			return templateFile.delete();
@@ -201,12 +213,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	public byte[] getTemplate(String templateName) throws IOException {
-		return FileUtils.readFileToByteArray(getTemplateFile(templateName));
+	public byte[] getDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName) throws IOException {
+		return FileUtils.readFileToByteArray(getTemplateFile(documentWorkflow, templateName));
 	}
 
-	private File getTemplateFile(String templateName) {
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath();
+	private File getTemplateFile(DocumentWorkflow documentWorkflow, String templateName) {
+		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
 		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
 		File templateFile = new File(templateFileName);
 
@@ -224,8 +236,22 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 	}
 
-	private boolean isEntityVariable(String propertyKey) {
-		return propertyKey.startsWith(ROOT_ENTITY_NAME + ".");
+	private boolean isEntityVariable(DocumentWorkflow documentWorkflow, String propertyKey) {
+		if (propertyKey == null) {
+			return false;
+		}
+		String basename = getVariableBaseName(propertyKey);
+		return documentWorkflow.getRootEntityNames().contains(basename);
+	}
+
+	private String getVariableBaseName(String propertyKey) {
+		String propertyKeyLowerCase = propertyKey.toLowerCase();
+		Matcher matcher = BASENAME_PATTERN.matcher(propertyKeyLowerCase);
+		return matcher.matches() ? matcher.group(1) : "";
+	}
+
+	private String getWorkflowTemplateDirPath(DocumentWorkflow documentWorkflow) {
+		return configFacade.getCustomFilesPath() + File.separator + "docgeneration" + File.separator + documentWorkflow.getTemplateDirectory();
 	}
 
 	private EntityDtoAccessHelper.IReferenceDtoResolver getReferenceDtoResolver() {
