@@ -209,7 +209,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
-			TableUtils.createTable(connectionSource, CampaignFormData.class);
+			TableUtils.clearTable(connectionSource, CampaignFormData.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -221,8 +221,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
 				TableUtils.clearTable(connectionSource, Region.class);
-				TableUtils.createTable(connectionSource, Campaign.class);
-				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
+				TableUtils.clearTable(connectionSource, Campaign.class);
+				TableUtils.clearTable(connectionSource, CampaignFormMeta.class);
 
 				ConfigProvider.init(instance.context);
 			}
