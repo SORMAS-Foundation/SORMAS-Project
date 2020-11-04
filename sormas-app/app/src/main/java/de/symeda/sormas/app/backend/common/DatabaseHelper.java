@@ -1725,7 +1725,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 238:
 				currentVersion = 238;
 				getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN origin varchar(255);");
-				getDao(Visit.class).executeRaw("UPDATE visit SET origin='USER'");
+				getDao(Visit.class).executeRaw("UPDATE visits SET origin='USER'");
 
 			case 239:
 				currentVersion = 239;
