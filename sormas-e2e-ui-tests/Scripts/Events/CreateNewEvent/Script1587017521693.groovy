@@ -20,7 +20,9 @@ WebUI.click(findTestObject('Events/NewEventView/div_Disease_v-filterselect-butto
 
 WebUI.click(findTestObject('Events/NewEventView/td_Disease_COVID-19'))
 
-WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'Robo Marathon Event')
+WebUI.setText(findTestObject('Events/NewEventView/input_Title_eventTitle'), 'Robo Marathon Event')
+
+WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'This is a Robo Marathon Event')
 
 //WebUI.click(findTestObject('Events/NewEventView/div_Source type_v-filterselect-button'))
 
@@ -64,7 +66,7 @@ WebUI.click(findTestObject('Events/NewEventView/td_Voreingestellter Landkreis'))
 
 WebUI.click(findTestObject('Events/NewEventView/span_Community_CharlottenburgWilmersdorf-DDItem')) */
 
-WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 

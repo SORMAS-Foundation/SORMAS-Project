@@ -377,14 +377,25 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<MapContactDto> getContactsForMap(
-		Region region,
-		District district,
-		Disease disease,
-		Date fromDate,
-		Date toDate,
-		User user,
-		List<String> caseUuids) {
+	public Long countContactsForMap(Region region, District district, Disease disease, List<String> caseUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> contact = cq.from(getElementClass());
+		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
+
+		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, region, district, disease, caseUuids);
+
+		if (filter != null) {
+			cq.where(filter);
+			cq.select(cb.count(caze.get(Case.ID)));
+
+			return em.createQuery(cq).getSingleResult();
+		}
+
+		return 0L;
+	}
+
+	public List<MapContactDto> getContactsForMap(Region region, District district, Disease disease, List<String> caseUuids) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapContactDto> cq = cb.createQuery(MapContactDto.class);
@@ -395,35 +406,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
-		Predicate filter = createActiveContactsFilter(cb, contact);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
-
-		if (!CollectionUtils.isEmpty(caseUuids)) {
-			Path<Object> contactCaseUuid = contact.get(Contact.CAZE).get(Case.UUID);
-			Predicate caseFilter = cb.or(cb.isNull(contact.get(Contact.CAZE)), contactCaseUuid.in(caseUuids));
-			if (filter != null) {
-				filter = cb.and(filter, caseFilter);
-			} else {
-				filter = caseFilter;
-			}
-		} else {
-			Predicate contactWithoutCaseFilter = cb.isNull(contact.get(Contact.CAZE));
-			if (filter != null) {
-				filter = cb.and(filter, contactWithoutCaseFilter);
-			} else {
-				filter = contactWithoutCaseFilter;
-			}
-		}
-
-		filter = AbstractAdoService.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze));
-
-		// Only retrieve contacts that are currently under follow-up
-		Predicate followUpFilter = cb.equal(contact.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
-		if (filter != null) {
-			filter = cb.and(filter, followUpFilter);
-		} else {
-			filter = followUpFilter;
-		}
+		Predicate filter = createMapContactsFilter(cb, cq, contact, caze, region, district, disease, caseUuids);
 
 		List<MapContactDto> result;
 		if (filter != null) {
@@ -459,6 +442,48 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		return result;
+	}
+
+	private Predicate createMapContactsFilter(
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		Root<Contact> contactRoot,
+		Join<Contact, Case> cazeJoin,
+		Region region,
+		District district,
+		Disease disease,
+		List<String> caseUuids) {
+		Predicate filter = createActiveContactsFilter(cb, contactRoot);
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contactRoot));
+
+		if (!CollectionUtils.isEmpty(caseUuids)) {
+			Path<Object> contactCaseUuid = contactRoot.get(Contact.CAZE).get(Case.UUID);
+			Predicate caseFilter = cb.or(cb.isNull(contactRoot.get(Contact.CAZE)), contactCaseUuid.in(caseUuids));
+			if (filter != null) {
+				filter = cb.and(filter, caseFilter);
+			} else {
+				filter = caseFilter;
+			}
+		} else {
+			Predicate contactWithoutCaseFilter = cb.isNull(contactRoot.get(Contact.CAZE));
+			if (filter != null) {
+				filter = cb.and(filter, contactWithoutCaseFilter);
+			} else {
+				filter = contactWithoutCaseFilter;
+			}
+		}
+
+		filter = AbstractAdoService.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contactRoot, cazeJoin));
+
+		// Only retrieve contacts that are currently under follow-up
+		Predicate followUpFilter = cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
+		if (filter != null) {
+			filter = cb.and(filter, followUpFilter);
+		} else {
+			filter = followUpFilter;
+		}
+
+		return filter;
 	}
 
 	public List<DashboardContactDto> getContactsForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {

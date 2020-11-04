@@ -39,7 +39,7 @@ WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/div_Test res
 WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/td_Pending'))
 
 WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/label_No'))
-WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/div_Save'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 

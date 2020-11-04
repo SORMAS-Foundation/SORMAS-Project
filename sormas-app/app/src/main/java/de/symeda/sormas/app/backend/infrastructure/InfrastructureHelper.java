@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.infrastructure;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.app.backend.campaign.CampaignDtoHelper;
@@ -53,7 +54,9 @@ public class InfrastructureHelper {
 		DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
 		new FeatureConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations());
-		new CampaignDtoHelper().handlePulledList(DatabaseHelper.getCampaignDao(), infrastructureData.getCampaigns());
-		new CampaignFormMetaDtoHelper().handlePulledList(DatabaseHelper.getCampaignFormMetaDao(), infrastructureData.getCampaignFormMetas());
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			new CampaignDtoHelper().handlePulledList(DatabaseHelper.getCampaignDao(), infrastructureData.getCampaigns());
+			new CampaignFormMetaDtoHelper().handlePulledList(DatabaseHelper.getCampaignFormMetaDao(), infrastructureData.getCampaignFormMetas());
+		}
 	}
 }

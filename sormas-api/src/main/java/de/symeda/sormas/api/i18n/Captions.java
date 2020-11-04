@@ -1362,6 +1362,7 @@ public interface Captions {
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String sex = "sex";
+	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
 	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";

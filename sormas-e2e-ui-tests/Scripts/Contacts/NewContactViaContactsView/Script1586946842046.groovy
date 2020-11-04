@@ -47,14 +47,14 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/td_selectRow'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Confirm'))
 
-WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Save'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 // 'check if "Pick or create person" dialog is shown' ans select create-new-person
-boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/label_Select a matching person'), 2, FailureHandling.OPTIONAL)
+boolean checkDialog = WebUI.verifyElementPresent(findTestObject('ReusableORs/div_Select a matching person'), 2, FailureHandling.OPTIONAL)
 if (checkDialog) {
-	WebUI.click(findTestObject('Contacts/CasesView/NewContact/label_Create a new person'))
+	WebUI.click(findTestObject('ReusableORs/div_Create a new person'))
 
-	WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/pick_person_save'))
+	WebUI.click(findTestObject('ReusableORs/div_Save'))
 }
 WebUI.delay(1)
 

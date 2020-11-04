@@ -1,16 +1,18 @@
 package de.symeda.sormas.backend.campaign.diagram;
 
-import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
-import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
-import de.symeda.sormas.backend.util.DtoHelper;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "CampaignDiagramDefinitionFacade")
 public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefinitionFacade {
@@ -34,6 +36,16 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 	@Override
 	public List<CampaignDiagramDefinitionDto> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean exists(String diagramId) {
+		return service.diagramExists(diagramId);
+	}
+
+	@Override
+	public CampaignDiagramDefinitionDto getByDiagramId(String diagramId) {
+		return toDto(service.getByDiagramId(diagramId));
 	}
 
 	public CampaignDiagramDefinition fromDto(@NotNull CampaignDiagramDefinitionDto source) {

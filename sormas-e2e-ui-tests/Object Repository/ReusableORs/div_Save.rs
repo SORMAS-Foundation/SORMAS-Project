@@ -3,17 +3,21 @@
    <description></description>
    <name>div_Save</name>
    <tag></tag>
-   <elementGuidId>ec1c231b-4995-463e-8229-5879c3a17711</elementGuidId>
+   <elementGuidId>fd4a966e-7560-48a9-9805-f49276e6cffb</elementGuidId>
    <selectorCollection>
       <entry>
          <key>XPATH</key>
          <value>//div[@id='commit']</value>
       </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//div[@id = 'commit']</value>
+      </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>tag</name>
       <type>Main</type>
@@ -48,7 +52,7 @@
       <value>commit</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>
@@ -73,7 +77,7 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[3]/div/div[2]/div/div/div[3]/div</value>
+      <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div[2]/div/div/div[3]/div</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
@@ -87,20 +91,20 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='General practitioner name and contact details'])[1]/following::div[9]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Comments on task'])[2]/following::div[13]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)=concat('id(', '&quot;', 'commit', '&quot;', ')')])[1]/preceding::div[1]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Arrow down key opens calendar element for choosing the date'])[1]/preceding::div[4]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[3]/div/div[2]/div/div/div[3]/div</value>
+      <value>//div[3]/div/div/div[3]/div/div/div[2]/div/div/div[3]/div</value>
    </webElementXpaths>
 </WebElementEntity>

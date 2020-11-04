@@ -284,8 +284,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			caze.getRegion(),
 			caze.getDistrict(),
 			caze.getDisease(),
-			DateHelper.subtractDays(new Date(), 1),
-			DateHelper.addDays(new Date(), 1),
 			Arrays.asList(mapCaseDto));
 
 		// List should have one entry
