@@ -22,7 +22,6 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.enterprise.inject.Alternative;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.symeda.sormas.backend.util.ClientHelper;
 
 @Alternative
 public class SormasToSormasRestClient {
@@ -48,7 +48,7 @@ public class SormasToSormasRestClient {
 	public Response post(String host, String endpoint, String authToken, Object entity)
 		throws JsonProcessingException, ProcessingException, KeyManagementException, NoSuchAlgorithmException {
 
-		return ClientBuilder.newBuilder()
+		return ClientHelper.newBuilder()
 			.build()
 			.target(String.format(SORMAS_REST_URL_TEMPLATE, host, endpoint))
 			.request()

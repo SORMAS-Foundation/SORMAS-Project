@@ -27,20 +27,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.utils.AbstractView;
-import org.apache.commons.lang3.StringUtils;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
