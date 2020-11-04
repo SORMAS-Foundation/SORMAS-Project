@@ -115,7 +115,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Boolean includeContactsFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsSharingEventWithSourceCase;
 	private EventParticipantReferenceDto eventParticipant;
-	private EventReferenceDto onlyContactsWithSourceCaseInEvent;
+	private EventReferenceDto onlyContactsWithSourceCaseInGivenEvent;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -550,17 +550,17 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public void setOnlyContactsWithSourceCaseInEvent(EventReferenceDto onlyContactsWithSourceCaseInEvent) {
-		this.onlyContactsWithSourceCaseInEvent = onlyContactsWithSourceCaseInEvent;
+	public void setOnlyContactsWithSourceCaseInGivenEvent(EventReferenceDto onlyContactsWithSourceCaseInGivenEvent) {
+		this.onlyContactsWithSourceCaseInGivenEvent = onlyContactsWithSourceCaseInGivenEvent;
 	}
 
 	@IgnoreForUrl
-	public EventReferenceDto getOnlyContactsWithSourceCaseInEvent() {
-		return onlyContactsWithSourceCaseInEvent;
+	public EventReferenceDto getOnlyContactsWithSourceCaseInGivenEvent() {
+		return onlyContactsWithSourceCaseInGivenEvent;
 	}
 
-	public ContactCriteria onlyContactsWithSourceCaseInEvent(EventReferenceDto onlyContactsWithSourceCaseInEvent) {
-		this.onlyContactsWithSourceCaseInEvent = onlyContactsWithSourceCaseInEvent;
+	public ContactCriteria onlyContactsWithSourceCaseInGivenEvent(EventReferenceDto onlyContactsWithSourceCaseInGivenEvent) {
+		this.onlyContactsWithSourceCaseInGivenEvent = onlyContactsWithSourceCaseInGivenEvent;
 		return this;
 	}
 }

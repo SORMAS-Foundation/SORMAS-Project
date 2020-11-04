@@ -59,17 +59,17 @@ public class ContactListComponent extends VerticalLayout {
 		setSpacing(false);
 
 		EventReferenceDto eventRef = FacadeProvider.getEventFacade().getReferenceByEventParticipant(eventParticipantRef.getUuid());
-		CheckBox contactOnlyWithSourceCaseInEvent = new CheckBox(I18nProperties.getCaption(Captions.contactOnlyWithSourceCaseInEvent));
-		contactOnlyWithSourceCaseInEvent.addStyleNames(CssStyles.CHECKBOX_FILTER_INLINE, CssStyles.VSPACE_4);
-		contactOnlyWithSourceCaseInEvent.addValueChangeListener(e -> {
+		CheckBox contactOnlyWithSourceCaseInGivenEvent = new CheckBox(I18nProperties.getCaption(Captions.contactOnlyWithSourceCaseInEvent));
+		contactOnlyWithSourceCaseInGivenEvent.addStyleNames(CssStyles.CHECKBOX_FILTER_INLINE, CssStyles.VSPACE_4);
+		contactOnlyWithSourceCaseInGivenEvent.addValueChangeListener(e -> {
 			if (e.getValue()) {
-				contactList.filterContactListBySourceCaseInEvent(eventRef);
+				contactList.filterContactListBySourceCaseInGivenEvent(eventRef);
 			} else {
-				contactList.filterContactListBySourceCaseInEvent(null);
+				contactList.filterContactListBySourceCaseInGivenEvent(null);
 			}
 			contactList.reload();
 		});
-		addComponent(contactOnlyWithSourceCaseInEvent);
+		addComponent(contactOnlyWithSourceCaseInGivenEvent);
 
 		list = contactList;
 		addComponent(list);

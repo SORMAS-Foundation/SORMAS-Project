@@ -81,7 +81,7 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 		}
 	}
 
-	protected void filterContactListBySourceCaseInEvent(EventReferenceDto eventRef) {
-		contactCriteria.setOnlyContactsWithSourceCaseInEvent(eventRef);
+	protected void filterContactListBySourceCaseInGivenEvent(EventReferenceDto eventRef) {
+		contactCriteria.setOnlyContactsWithSourceCaseInGivenEvent(eventRef);
 	}
 }
