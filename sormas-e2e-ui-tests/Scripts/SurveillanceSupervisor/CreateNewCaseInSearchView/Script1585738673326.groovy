@@ -61,13 +61,13 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/div_PresentConditionOfPerso
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_PresentConditionOfPerson_alive_DDItem'))
 
-WebUI.click(findTestObject('Surveillance/NewCaseView/div_Save_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(3)
 
 if (WebUI.verifyElementPresent(findTestObject('Surveillance/NewCaseView/Comfirmation/div_check_confimation_lbl'), 5)) {
     
-    WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_Select a matching person'))
+    WebUI.click(findTestObject('ReusableORs/div_Select a matching person'))
     //WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/select_firstcell'))
 
     WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_confirm_btn'))

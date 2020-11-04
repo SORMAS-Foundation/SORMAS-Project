@@ -36,3 +36,5 @@ WebUI.delay(2)
 WebUI.verifyElementPresent(findTestObject('Imports/Import successful'), 1)
 
 WebUI.click(findTestObject('Imports/div_Close'))
+
+WebUI.closeBrowser()
