@@ -54,8 +54,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		Integer approximateAge,
 		ApproximateAgeType approximateAgeType,
 		String involvementDescription,
-		String reportingUserUuid,
-		long contactCount) {
+		String reportingUserUuid) {
 
 		this.uuid = uuid;
 		this.personUuid = personUuid;
@@ -66,7 +65,6 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.involvementDescription = involvementDescription;
-		this.contactCount = contactCount;
 
 		this.eventJurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}

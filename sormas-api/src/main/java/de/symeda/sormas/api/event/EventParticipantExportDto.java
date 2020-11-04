@@ -150,7 +150,7 @@ public class EventParticipantExportDto implements Serializable {
 									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
 									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
 									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
-									 String additionalInformation, String postalCode, String phone, String caseUuid, Long contactCount) {
+									 String additionalInformation, String postalCode, String phone, String caseUuid) {
     	//@formatter:on
 
 		this.id = id;
@@ -196,8 +196,6 @@ public class EventParticipantExportDto implements Serializable {
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.caseUuid = caseUuid;
-
-		this.contactCount = contactCount;
 
 		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}
@@ -441,6 +439,10 @@ public class EventParticipantExportDto implements Serializable {
 	@ExportProperty(EventParticipantExportDto.CONTACT_COUNT)
 	public Long getContactCount() {
 		return contactCount;
+	}
+
+	public void setContactCount(Long contactCount) {
+		this.contactCount = contactCount;
 	}
 
 	public List<EmbeddedSampleExportDto> getEventParticipantSamples() {
