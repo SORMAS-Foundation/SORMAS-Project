@@ -38,13 +38,13 @@ WebUI.click(findTestObject('Surveillance/CaseView/Contacts/NewContact/span_Relat
 WebUI.setText(findTestObject('Surveillance/CaseView/Contacts/NewContact/textarea_DescriptionOfHowContactTookPlace_TArea'), 
     'test')
 
-WebUI.click(findTestObject('Surveillance/CaseView/Contacts/NewContact/div_SaveContact_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(2)
 
 WebUI.click(findTestObject('Surveillance/CaseView/Contacts/NewContact/label_CreateANewPerson_option'))
 
-WebUI.click(findTestObject('Surveillance/CaseView/Contacts/NewContact/div_SaveContact_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 

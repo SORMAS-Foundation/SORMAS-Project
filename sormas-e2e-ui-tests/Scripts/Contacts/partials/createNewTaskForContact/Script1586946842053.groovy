@@ -26,7 +26,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/span_Surveillance SU
 //WebUI.setText(findTestObject('Contacts/ContactInformationView/newTask_dlg_zugewiesen_button'), 'Berlin CONTACT - Surveillance Officer, Contact Officer (41)')
 
 if (create){
-	WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_save_button'))
+	WebUI.click(findTestObject('ReusableORs/div_Save'))
 } else {
 	WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_cancel_button'))
 }
