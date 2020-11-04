@@ -322,6 +322,30 @@
     padding-top: 16px;
     z-index: 11;
   }
+  .sticky-bottom-bar > :last-child::after {
+    content: " ";
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    margin-left: -12px;
+    border-width: 12px;
+    border-style: solid;
+    border-color: red transparent transparent transparent;
+  }
+  .sticky-bottom-bar > :nth-last-child(2) {
+    position:relative;
+  }
+  .sticky-bottom-bar > :nth-last-child(2)::after {
+    content: " ";
+    position: absolute;
+    bottom: -63px;
+    left: 50%;
+    @include transform(translateX(-50%));
+    width: 29px;
+    height: 19px;
+    background-color: white;
+    z-index:12;
+  }
 
   .spacing-small {
   	.v-spacing {
