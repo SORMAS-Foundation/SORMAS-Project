@@ -1,5 +1,12 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
@@ -9,13 +16,6 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class CampaignDashboardDataProvider {
 
@@ -30,6 +30,8 @@ public class CampaignDashboardDataProvider {
 	public void refreshData() {
 		campaignFormDataMap.clear();
 		campaignFormTotalsMap.clear();
+
+		FacadeProvider.getCampaignFacade().validate(campaign);
 
 		final List<CampaignDashboardElement> campaignDashboardElements =
 			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign != null ? campaign.getUuid() : null);
