@@ -1027,6 +1027,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	public Long countCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+
+		return caseService.countCasesForMap(region, district, disease, from, to);
+	}
+
 	@Override
 	public List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to) {
 

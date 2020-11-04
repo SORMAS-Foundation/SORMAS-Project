@@ -102,12 +102,12 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 
 		for (Disease disease : diseases) {
 			carouselMenu.addView(disease.getName(), disease.toShortString(), (e) -> {
-				this.changeSelectedDisease(disease);
+				this.changeSelectedDisease(disease, true);
 			});
 		}
 
 		if (diseases.size() > 0) {
-			this.setActiveDisease(diseases.get(0));
+			this.setActiveDisease(diseases.get(0), false);
 		}
 
 		layout.addComponent(carouselMenu);
@@ -169,19 +169,21 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		});
 
 		// enabled by default
-		autoSlide.setValue(true);
+		autoSlide.setValue(false);
 
 		return autoSlide;
 	}
 
-	private void setActiveDisease(Disease selectedDisease) {
+	private void setActiveDisease(Disease selectedDisease, boolean doRefresh) {
 		carouselMenu.setActiveView(selectedDisease.getName());
-		this.changeSelectedDisease(selectedDisease);
+		this.changeSelectedDisease(selectedDisease, doRefresh);
 	}
 
-	private void changeSelectedDisease(Disease disease) {
+	private void changeSelectedDisease(Disease disease, boolean doRefresh) {
 		this.dashboardDataProvider.setDisease(disease);
-		refresh();
+		if (doRefresh) {
+			refresh();
+		}
 	}
 
 	@Override
@@ -211,7 +213,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 						}
 					}
 
-					this.setActiveDisease(diseases.get(nextDiseaseIndex));
+					this.setActiveDisease(diseases.get(nextDiseaseIndex), true);
 				});
 			}
 		} else {

@@ -813,6 +813,7 @@ public interface Strings {
 	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";
 	String unsavedChanges_warningTitle = "unsavedChanges.warningTitle";
 	String until = "until";
+	String warningDashboardMapTooManyMarkers = "warningDashboardMapTooManyMarkers";
 	String warningNetworkDiagramTooManyContacts = "warningNetworkDiagramTooManyContacts";
 	String week = "week";
 	String weekShort = "weekShort";

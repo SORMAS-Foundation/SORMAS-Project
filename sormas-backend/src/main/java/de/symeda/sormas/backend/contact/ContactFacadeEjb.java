@@ -366,27 +366,26 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
+	public Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, List<MapCaseDto> mapCaseDtos) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+		List<String> caseUuids = mapCaseDtos.stream().map(MapCaseDto::getUuid).collect(Collectors.toList());
+
+		return contactService.countContactsForMap(region, district, disease, caseUuids);
+	}
+
+	@Override
 	public List<MapContactDto> getContactsForMap(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
 		Disease disease,
-		Date fromDate,
-		Date toDate,
 		List<MapCaseDto> mapCaseDtos) {
 
-		User user = userService.getCurrentUser();
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		List<String> caseUuids = new ArrayList<>();
-		for (MapCaseDto mapCaseDto : mapCaseDtos) {
-			caseUuids.add(mapCaseDto.getUuid());
-		}
+		List<String> caseUuids = mapCaseDtos.stream().map(MapCaseDto::getUuid).collect(Collectors.toList());
 
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return contactService.getContactsForMap(region, district, disease, fromDate, toDate, user, caseUuids);
+		return contactService.getContactsForMap(region, district, disease, caseUuids);
 	}
 
 	@Override

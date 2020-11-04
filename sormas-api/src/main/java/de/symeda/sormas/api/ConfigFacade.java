@@ -110,5 +110,7 @@ public interface ConfigFacade {
 
 	String getAuthenticationProvider();
 
-	public boolean isExternalJournalActive();
+	boolean isExternalJournalActive();
+
+	int getDashboardMapMarkerLimit();
 }
