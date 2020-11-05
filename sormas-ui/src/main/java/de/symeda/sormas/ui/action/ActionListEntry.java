@@ -83,6 +83,7 @@ public class ActionListEntry extends HorizontalLayout {
 		Whitelist whitelist = Whitelist.relaxed();
 		whitelist.addTags("hr", "font");
 		whitelist.addAttributes("font", "size", "face", "color");
+		whitelist.addAttributes("div", "align");
 		Label description = new Label(Jsoup.clean(action.getDescription(), whitelist), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		descReplyLayout.addComponent(description);
