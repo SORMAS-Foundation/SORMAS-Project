@@ -87,6 +87,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private Button resetButton;
 	private Button applyButton;
 
+	private DateFilterType currentDateFilterType;
+
 	private HorizontalLayout customDateFilterLayout;
 
 	private Runnable dateFilterChangeCallback;
@@ -209,6 +211,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		CssStyles.style(btnPeriodBefore, CssStyles.BUTTON_FILTER_DARK);
 		CssStyles.removeStyles(btnPeriodBefore, CssStyles.BUTTON_FILTER_LIGHT);
 		activeComparisonButton = btnPeriodBefore;
+		currentDateFilterType = DateFilterType.THIS_WEEK;
 		setDateFilter(DateHelper.getStartOfWeek(new Date()), new Date());
 		updateComparisonButtons(DateFilterType.THIS_WEEK, DateHelper.getStartOfWeek(new Date()), new Date(), false);
 		btnCurrentPeriod.setCaption(btnThisWeek.getCaption());
@@ -227,6 +230,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			String.format(I18nProperties.getCaption(Captions.dashboardToday), DateFormatHelper.formatDate(new Date())),
 			dateFilterButtons);
 		btnToday.addClickListener(e -> {
+			currentDateFilterType = DateFilterType.TODAY;
 			Date now = new Date();
 			Date from = DateHelper.getStartOfDay(now);
 			Date to = now;
@@ -241,6 +245,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				.format(I18nProperties.getCaption(Captions.dashboardYesterday), DateFormatHelper.formatDate(DateHelper.subtractDays(new Date(), 1))),
 			dateFilterButtons);
 		btnYesterday.addClickListener(e -> {
+			currentDateFilterType = DateFilterType.YESTERDAY;
 			Date now = new Date();
 			Date from = DateHelper.getStartOfDay(DateHelper.subtractDays(now, 1));
 			Date to = DateHelper.getEndOfDay(DateHelper.subtractDays(now, 1));
@@ -256,6 +261,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				DateHelper.getEpiWeek(new Date()).toString(new Date(), I18nProperties.getUserLanguage())),
 			dateFilterButtons);
 		btnThisWeek.addClickListener(e -> {
+			currentDateFilterType = DateFilterType.THIS_WEEK;
 			Date now = new Date();
 			Date from = DateHelper.getStartOfWeek(now);
 			Date to = now;
@@ -271,6 +277,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				DateHelper.getPreviousEpiWeek(new Date()).toString(I18nProperties.getUserLanguage())),
 			dateFilterButtons);
 		btnLastWeek.addClickListener(e -> {
+			currentDateFilterType = DateFilterType.LAST_WEEK;
 			Date now = new Date();
 			Date from = DateHelper.getStartOfWeek(DateHelper.subtractWeeks(now, 1));
 			Date to = DateHelper.getEndOfWeek(DateHelper.subtractWeeks(now, 1));
@@ -286,6 +293,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				DateFormatHelper.buildPeriodString(DateHelper.getStartOfYear(new Date()), new Date())),
 			dateFilterButtons);
 		btnThisYear.addClickListener(e -> {
+			currentDateFilterType = DateFilterType.THIS_YEAR;
 			Date now = new Date();
 			Date from = DateHelper.getStartOfYear(now);
 			Date to = now;
@@ -508,20 +516,21 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void updateComparisonDates() {
 		if (activeComparisonButton == btnPeriodBefore) {
+			int activePeriodLength = currentDateFilterType == DateFilterType.THIS_WEEK
+				? 7
+				: DateHelper.getDaysBetween(dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate());
+			dashboardDataProvider.setPreviousFromDate(DateHelper.subtractDays(dashboardDataProvider.getFromDate(), activePeriodLength));
+			dashboardDataProvider.setPreviousToDate(DateHelper.subtractDays(dashboardDataProvider.getToDate(), activePeriodLength));
+		} else if (currentDateFilterType == DateFilterType.THIS_WEEK || currentDateFilterType == DateFilterType.LAST_WEEK) {
+			Date previousEpiWeekStart =
+				DateHelper.getEpiWeekStart(DateHelper.getEpiWeekYearBefore(DateHelper.getEpiWeek(dashboardDataProvider.getFromDate())));
+			dashboardDataProvider.setPreviousFromDate(previousEpiWeekStart);
 			int activePeriodLength = DateHelper.getDaysBetween(dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate());
-			setDateComparisonFilter(
-				DateHelper.subtractDays(dashboardDataProvider.getFromDate(), activePeriodLength),
-				DateHelper.subtractDays(dashboardDataProvider.getToDate(), activePeriodLength));
+			dashboardDataProvider.setPreviousToDate(DateHelper.addDays(previousEpiWeekStart, activePeriodLength - 1));
 		} else {
-			setDateComparisonFilter(
-				DateHelper.subtractYears(dashboardDataProvider.getFromDate(), 1),
-				DateHelper.subtractYears(dashboardDataProvider.getToDate(), 1));
+			dashboardDataProvider.setPreviousFromDate(DateHelper.subtractYears(dashboardDataProvider.getFromDate(), 1));
+			dashboardDataProvider.setPreviousToDate(DateHelper.subtractYears(dashboardDataProvider.getToDate(), 1));
 		}
-	}
-
-	private void setDateComparisonFilter(Date from, Date to) {
-		dashboardDataProvider.setPreviousFromDate(from);
-		dashboardDataProvider.setPreviousToDate(to);
 	}
 
 	public void setInfoLabelText(String text) {
