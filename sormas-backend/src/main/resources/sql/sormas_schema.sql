@@ -5538,4 +5538,9 @@ ALTER TABLE events ALTER COLUMN eventdesc DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (273, 'Drop not null constraint from event description #3223');
 
+-- 2020-11-05 Drop not null constraint from event history description #3391
+ALTER TABLE events_history ALTER COLUMN eventdesc DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (274, 'Drop not null constraint from event history description #3391');
+
 -- *** Insert new sql commands BEFORE this line ***
