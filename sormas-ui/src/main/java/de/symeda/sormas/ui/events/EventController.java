@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -41,7 +43,9 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -97,7 +101,7 @@ public class EventController {
 
 					EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 					if (!eventIndexDto.contains(selectedEvent)) {
-						createEventParticipantWithCase(eventReferenceDto, caseDataDto, caseRef);
+						linkCaseToEvent(eventReferenceDto, caseDataDto, caseRef);
 					}
 				} else {
 					create(caseRef);
@@ -113,8 +117,22 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void createEventParticipantWithCase(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
+	public void linkCaseToEvent(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
 		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
+		// Check whether Person is already enlisted as EventParticipant in this Event
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().event(eventReferenceDto);
+		ListDataProvider<EventParticipantIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(eventParticipantCriteria, null, null, null).stream());
+		for (EventParticipantIndexDto eventParticipantIndex : dataProvider.getItems()) {
+			if (eventParticipantIndex.getPersonUuid().equals(personDto.getUuid())) {
+				EventParticipantDto eventParticipant =
+					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantIndex.getUuid());
+				eventParticipant.setResultingCase(caseRef);
+				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+				return;
+			}
+		}
+		// Create new EventParticipant for this Person
 		EventParticipantDto eventParticipantDto;
 		eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
@@ -195,7 +213,7 @@ public class EventController {
 					if (caseRef != null) {
 						EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
 
-						createEventParticipantWithCase(createdEvent, finalCaseDataDto, caseRef);
+						linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
 						SormasUI.refreshView();
 					} else {
 						navigateToParticipants(dto.getUuid());
