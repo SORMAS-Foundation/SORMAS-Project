@@ -515,7 +515,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private void updateComparisonDates() {
-		if (activeComparisonButton == btnPeriodBefore) {
+		if (currentDateFilterType != DateFilterType.THIS_YEAR && activeComparisonButton == btnPeriodBefore) {
 			int activePeriodLength = currentDateFilterType == DateFilterType.THIS_WEEK
 				? 7
 				: DateHelper.getDaysBetween(dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate());
