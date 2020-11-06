@@ -2753,6 +2753,19 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public Date getOldestCaseOutcomeDate() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
+		Root<Case> from = cq.from(Case.class);
+
+		final Path<Timestamp> reportDate = from.get(Case.OUTCOME_DATE);
+		cq.select(cb.least(reportDate));
+		cq.where(cb.greaterThan(from.get(Case.OUTCOME_DATE), DateHelper.getDateZero(2000, 1, 1)));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
 	public boolean isArchived(String caseUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
