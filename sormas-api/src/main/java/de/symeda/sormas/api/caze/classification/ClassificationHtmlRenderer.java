@@ -17,14 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
-import static de.symeda.sormas.api.utils.HtmlHelper.escapeAndUnescapeBasicTags;
-import static de.symeda.sormas.api.utils.HtmlHelper.unescapeBasicTags;
-
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -176,7 +174,7 @@ public final class ClassificationHtmlRenderer {
 		html.append("<h1 style=\"text-align: center; color: #005A9C;\">").append(I18nProperties.getString(Strings.classificationClassificationRules)).append("</h1>");
 		html.append("<h4 style=\"text-align: center;\">")
 				.append(I18nProperties.getString(Strings.classificationGeneratedFor))
-				.append(" ").append(StringEscapeUtils.escapeHtml4(InfoProvider.get().getVersion()))
+				.append(" ").append(Jsoup.clean(InfoProvider.get().getVersion(), Whitelist.none()))
 				.append(StringUtils.wrap(I18nProperties.getString(Strings.on), " "))
 				.append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.at), " "))
 				.append(DateHelper.formatLocalDateTime(new Date(), language)).append("</h4>");
@@ -241,7 +239,7 @@ public final class ClassificationHtmlRenderer {
 		for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
-				subCriteriaSb.append("- " + escapeAndUnescapeBasicTags(subCriteria.buildDescription() + "</br>"));
+				subCriteriaSb.append("- " + Jsoup.clean(subCriteria.buildDescription() + "</br>", Whitelist.basic()));
 			} else if (subCriteria instanceof ClassificationCollectiveCriteria
 				&& !(subCriteria instanceof ClassificationAllOfCriteriaDto)
 				&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
@@ -273,7 +271,7 @@ public final class ClassificationHtmlRenderer {
 		//@formatter:off
 		return "<div class='classification-rules'>"
 				+ "<div class='main-criteria main-criteria-"
-				+ StringEscapeUtils.escapeHtml4(criteriaType.toString())
+				+ Jsoup.clean(criteriaType.toString(), Whitelist.none())
 				+ "'>"
 				+ content
 				+ "</div></div>";
@@ -287,7 +285,7 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='headline'>"
-				+ StringEscapeUtils.escapeHtml4(headline)
+				+ Jsoup.clean(headline, Whitelist.basic())
 				+ "</div>";
 		//@formatter:on
 	}
@@ -296,13 +294,13 @@ public final class ClassificationHtmlRenderer {
 	 * Creates a div containing an info text.
 	 */
 	private static String createInfoDiv() {
-		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(I18nProperties.getString(Strings.classificationInfoText)));
+		return Jsoup.clean(I18nProperties.getString(Strings.classificationInfoText), Whitelist.basic());
 	}
 
 	private static String createInfoDiv(int requirementsNumber) {
-		return unescapeBasicTags(
-			StringEscapeUtils.escapeHtml4(
-				String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber))));
+		return Jsoup.clean(
+			String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber)),
+			Whitelist.basic());
 	}
 
 	/**
@@ -334,7 +332,7 @@ public final class ClassificationHtmlRenderer {
 	 * Specific tags are allowed to be contained in i18n strings and are thus unescaped
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(text) + "<br>");
+		return Jsoup.clean(text + "<br>", Whitelist.basic());
 	}
 
 	private enum ClassificationCriteriaType {
