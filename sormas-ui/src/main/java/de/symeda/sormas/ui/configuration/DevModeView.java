@@ -17,6 +17,23 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
@@ -30,9 +47,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -56,6 +75,9 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.UserProvider;
@@ -63,23 +85,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateHelper8;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -91,6 +96,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private Binder<CaseGenerationConfig> caseGeneratorConfigBinder = new Binder<>();
 	private Binder<ContactGenerationConfig> contactGeneratorConfigBinder = new Binder<>();
+
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
 	public DevModeView() {
 
@@ -336,8 +343,10 @@ public class DevModeView extends AbstractConfigurationView {
 			Class<? extends EntityDto> entityClass = entity.getClass();
 			List<Method> setters = setters(entityClass);
 			for (Method setter : setters) {
-				if (randomPercent(40)) {
-					continue; // leave some empty/default
+				String propertyId = setter.getName().substring(3, 4).toLowerCase() + setter.getName().substring(4);
+				// leave some empty/default
+				if (randomPercent(40) || !fieldVisibilityCheckers.isVisible(entityClass, propertyId)) {
+					continue;
 				}
 				Class<?> parameterType = setter.getParameterTypes()[0];
 				// doesn't make sense
@@ -433,6 +442,9 @@ public class DevModeView extends AbstractConfigurationView {
 				disease = random(diseases);
 			}
 
+			fieldVisibilityCheckers = new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()));
+
 			LocalDateTime referenceDateTime = getReferenceDateTime(i, config.getCaseCount(), baseOffset, disease, config.getStartDate(), daysBetween);
 
 			// person
@@ -498,6 +510,9 @@ public class DevModeView extends AbstractConfigurationView {
 			if (disease == null) {
 				disease = random(diseases);
 			}
+
+			fieldVisibilityCheckers = new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()));
 
 			LocalDateTime referenceDateTime =
 				getReferenceDateTime(i, config.getContactCount(), baseOffset, disease, config.getStartDate(), daysBetween);
@@ -578,7 +593,7 @@ public class DevModeView extends AbstractConfigurationView {
 					}
 
 					for (LocalDateTime date : followUpDates) {
-						VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease());
+						VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease(), VisitOrigin.USER);
 						fillEntity(visit, date);
 						visit.setVisitUser(userReference);
 						visit.setVisitDateTime(DateHelper8.toDate(date));

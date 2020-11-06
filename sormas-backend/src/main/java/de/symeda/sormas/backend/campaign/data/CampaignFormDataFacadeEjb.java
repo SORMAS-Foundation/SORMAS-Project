@@ -20,6 +20,29 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -44,6 +67,7 @@ import de.symeda.sormas.backend.campaign.CampaignService;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.Community;
@@ -60,26 +84,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Stateless(name = "CampaignFormDataFacade")
 public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
@@ -94,9 +98,6 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@EJB
 	private CampaignFormMetaService campaignFormMetaService;
-
-	@EJB
-	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	@EJB
 	private RegionService regionService;
@@ -236,7 +237,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			communityJoin.get(Community.NAME),
 			root.get(CampaignFormData.FORM_DATE));
 
-		Predicate filter = campaignFormDataService.createCriteriaFilter(criteria, cb, root);
+		Predicate filter = AbstractAdoService
+			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -286,6 +288,23 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	}
 
 	@Override
+	public List<String> getAllActiveUuids() {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return campaignFormDataService.getAllActiveUuids();
+	}
+
+	@Override
+	public List<CampaignFormDataDto> getAllActiveAfter(Date date) {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+		return campaignFormDataService.getAllActiveAfter(date).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria) {
 
 		List<CampaignDiagramDataDto> resultData = new ArrayList<>();
@@ -303,9 +322,10 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = '" + district.getUuid() + "'" : "";
 			final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = '" + campaign.getUuid() +  "'" : "";
 			final String jurisdictionGrouping =
-					(district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
-					region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : "")
-							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME;
+					district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
+							region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : 
+									area != null ? ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME :
+											", " + Area.TABLE_NAME + "." + Area.UUID + ", " + Area.TABLE_NAME + "." + Area.NAME;
 			//@formatter:on
 
 			// SELECT
@@ -339,13 +359,15 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				selectBuilder.append(", null as fieldId, null as fieldCaption, count(formId) as sumValue,");
 			}
 
-			selectBuilder.append(Region.TABLE_NAME)
-				.append(".")
-				.append(Region.UUID)
-				.append(", ")
-				.append(Region.TABLE_NAME)
-				.append(".")
-				.append(Region.NAME);
+			if (district != null) {
+				appendInfrastructureSelection(selectBuilder, Community.TABLE_NAME, Community.NAME);
+			} else if (region != null) {
+				appendInfrastructureSelection(selectBuilder, District.TABLE_NAME, District.NAME);
+			} else if (area != null) {
+				appendInfrastructureSelection(selectBuilder, Region.TABLE_NAME, Region.NAME);
+			} else {
+				appendInfrastructureSelection(selectBuilder, Area.TABLE_NAME, Area.NAME);
+			}
 
 			// JOINS
 			StringBuilder joinBuilder = new StringBuilder(" LEFT JOIN ").append(CampaignFormMeta.TABLE_NAME)
@@ -475,13 +497,18 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		return resultData;
 	}
 
+	private void appendInfrastructureSelection(StringBuilder sb, String tableNameField, String nameField) {
+		sb.append(tableNameField).append(".").append(AbstractDomainObject.UUID).append(", ").append(tableNameField).append(".").append(nameField);
+	}
+
 	@Override
 	public long count(CampaignFormDataCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 
-		Predicate filter = campaignFormDataService.createCriteriaFilter(criteria, cb, root);
+		Predicate filter = AbstractAdoService
+				.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
 		}

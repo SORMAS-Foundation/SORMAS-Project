@@ -131,9 +131,8 @@ public class ContactVisitsView extends AbstractContactView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
-			newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria));
-			}, ValoTheme.BUTTON_PRIMARY);
+			newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria)), ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);
 			topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);

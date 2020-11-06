@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -58,15 +59,18 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
@@ -161,6 +165,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			cq.multiselect(
 				event.get(Event.UUID),
 				event.get(Event.EVENT_STATUS),
+				event.get(Event.EVENT_INVESTIGATION_STATUS),
 				event.get(Event.DISEASE),
 				event.get(Event.DISEASE_DETAILS),
 				event.get(Event.START_DATE),
@@ -422,6 +427,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getEventStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
 		}
+		if (eventCriteria.getEventInvestigationStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_INVESTIGATION_STATUS), eventCriteria.getEventInvestigationStatus()));
+		}
 		if (eventCriteria.getTypeOfPlace() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));
 		}
@@ -592,5 +600,37 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			cb.coalesce(cb.coalesce(eventJoin.get(Event.END_DATE), eventJoin.get(Event.START_DATE)), eventJoin.get(Event.REPORT_DATE_TIME)));
 
 		return em.createQuery(eventsCq).getResultList();
+	}
+
+	public List<ContactEventSummaryDetails> getEventSummaryDetailsByContacts(List<String> contactUuids) {
+		if (contactUuids.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<ContactEventSummaryDetails> eventSummaryDetailsList = new ArrayList<>();
+
+		IterableHelper.executeBatched(contactUuids, ModelConstants.PARAMETER_LIMIT, batchedContactUuids -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ContactEventSummaryDetails> eventsCq = cb.createQuery(ContactEventSummaryDetails.class);
+			Root<EventParticipant> eventsCqRoot = eventsCq.from(EventParticipant.class);
+			Join<EventParticipant, Event> eventJoin = eventsCqRoot.join(EventParticipant.EVENT, JoinType.INNER);
+			Join<Person, Contact> contactJoin = eventsCqRoot.join(EventParticipant.PERSON, JoinType.INNER).join(Person.CONTACTS, JoinType.INNER);
+
+			eventsCq.where(
+				cb.and(
+					contactJoin.get(AbstractDomainObject.UUID).in(batchedContactUuids),
+					cb.isFalse(eventJoin.get(Event.DELETED)),
+					cb.isFalse(eventJoin.get(Event.ARCHIVED)),
+					cb.isFalse(eventsCqRoot.get(EventParticipant.DELETED))));
+			eventsCq.multiselect(
+				contactJoin.get(Contact.UUID),
+				eventJoin.get(Event.UUID),
+				eventJoin.get(Event.EVENT_TITLE),
+				cb.coalesce(cb.coalesce(eventJoin.get(Event.END_DATE), eventJoin.get(Event.START_DATE)), eventJoin.get(Event.REPORT_DATE_TIME)));
+
+			eventSummaryDetailsList.addAll(em.createQuery(eventsCq).getResultList());
+		});
+
+		return eventSummaryDetailsList;
 	}
 }

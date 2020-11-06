@@ -24,23 +24,28 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import java.util.Arrays;
 
 import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final String EVENT_STATUS_CHECKBOX = "eventStatusCheckbox";
+	private static final String EVENT_INVESTIGATION_STATUS_CHECKBOX = "eventInvestigationStatusCheckbox";
 
-	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, EVENT_STATUS_CHECKBOX) + fluidRowLocs(EventDto.EVENT_STATUS);
+	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, EVENT_STATUS_CHECKBOX)
+		+ fluidRowLocs(EventDto.EVENT_STATUS)
+		+ fluidRowLocsCss(VSPACE_4, EVENT_INVESTIGATION_STATUS_CHECKBOX)
+		+ fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS);
 
 	private CheckBox eventStatusCheckBox;
+	private CheckBox eventInvestigationStatusCheckbox;
 
 	public BulkEventDataForm() {
 		super(EventDto.class, EventDto.I18N_PREFIX);
@@ -52,13 +57,28 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 	protected void addFields() {
 		eventStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventStatus));
 		getContent().addComponent(eventStatusCheckBox, EVENT_STATUS_CHECKBOX);
-		OptionGroup eventStatus = addField(EventDto.EVENT_STATUS, OptionGroup.class);
+		NullableOptionGroup eventStatus = addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		eventStatus.setEnabled(false);
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), eventStatusCheckBox, Arrays.asList(EventDto.EVENT_STATUS), Arrays.asList(true));
 
 		eventStatusCheckBox.addValueChangeListener(e -> {
 			eventStatus.setEnabled((boolean) e.getProperty().getValue());
+		});
+
+		eventInvestigationStatusCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventInvestigationStatus));
+		getContent().addComponent(eventInvestigationStatusCheckbox, EVENT_INVESTIGATION_STATUS_CHECKBOX);
+		NullableOptionGroup eventInvestigationStatus = addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
+		eventInvestigationStatus.setEnabled(false);
+
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			eventInvestigationStatusCheckbox,
+			Arrays.asList(EventDto.EVENT_INVESTIGATION_STATUS),
+			Arrays.asList(true));
+
+		eventInvestigationStatusCheckbox.addValueChangeListener(e -> {
+			eventInvestigationStatus.setEnabled((boolean) e.getProperty().getValue());
 		});
 	}
 
@@ -69,5 +89,9 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 
 	public CheckBox getEventStatusCheckBox() {
 		return eventStatusCheckBox;
+	}
+
+	public CheckBox getEventInvestigationStatusCheckbox() {
+		return eventInvestigationStatusCheckbox;
 	}
 }

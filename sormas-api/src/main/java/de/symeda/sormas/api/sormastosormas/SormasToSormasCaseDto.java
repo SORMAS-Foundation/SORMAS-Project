@@ -30,7 +30,9 @@ public class SormasToSormasCaseDto implements Serializable {
 
 	private CaseDataDto caze;
 
-	private List<AssociatedContactDto> associatedContacts;
+	private List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts;
+
+	private List<SormasToSormasSampleDto> samples;
 
 	private SormasToSormasOriginInfoDto originInfo;
 
@@ -51,12 +53,20 @@ public class SormasToSormasCaseDto implements Serializable {
 		return caze;
 	}
 
-	public List<AssociatedContactDto> getAssociatedContacts() {
+	public List<SormasToSormasCaseDto.AssociatedContactDto> getAssociatedContacts() {
 		return associatedContacts;
 	}
 
-	public void setAssociatedContacts(List<AssociatedContactDto> associatedContacts) {
+	public void setAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
 		this.associatedContacts = associatedContacts;
+	}
+
+	public List<SormasToSormasSampleDto> getSamples() {
+		return samples;
+	}
+
+	public void setSamples(List<SormasToSormasSampleDto> samples) {
+		this.samples = samples;
 	}
 
 	public SormasToSormasOriginInfoDto getOriginInfo() {

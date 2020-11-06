@@ -32,6 +32,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,7 +51,6 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -79,6 +79,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -792,7 +793,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return HTML_LAYOUT;
 	}
 
-	public void initializeSymptomRequirementsForVisit(OptionGroup visitStatus) {
+	public void initializeSymptomRequirementsForVisit(NullableOptionGroup visitStatus) {
 		FieldHelper.addSoftRequiredStyleWhen(
 			getFieldGroup(),
 			visitStatus,
@@ -885,7 +886,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Object targetPropertyId,
 		List<String> sourcePropertyIds,
 		List<Object> sourceValues,
-		OptionGroup visitStatusField) {
+		NullableOptionGroup visitStatusField) {
 
 		for (Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
@@ -901,7 +902,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		if (visitStatusField != null) {
-			if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) && visitStatusField.getValue() == VisitStatus.COOPERATIVE) {
+			if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) && visitStatusField.getNullableValue() == VisitStatus.COOPERATIVE) {
 				FieldHelper.addSoftRequiredStyle(targetField);
 			} else {
 				FieldHelper.removeSoftRequiredStyle(targetField);
@@ -1036,27 +1037,35 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		Button button = ButtonHelper.createButton(caption, event -> {
 			for (Object symptomId : unconditionalSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(symptomState);
+				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
+					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+					value.add(symptomState);
+					symptom.setValue(value);
 				}
 			}
 			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(symptomState);
+				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
+					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+					value.add(symptomState);
+					symptom.setValue(value);
 				}
 			}
 			for (Object symptomId : lesionsFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(symptomState);
+				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
+					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+					value.add(symptomState);
+					symptom.setValue(value);
 				}
 			}
 			for (Object symptomId : monkeypoxImageFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(symptomState);
+				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
+					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+					value.add(symptomState);
+					symptom.setValue(value);
 				}
 			}
 		}, ValoTheme.BUTTON_LINK);

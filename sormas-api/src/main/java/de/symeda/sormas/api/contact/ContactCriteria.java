@@ -26,6 +26,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -44,6 +45,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String QUARANTINE_TYPE = "quarantineType";
 	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
 	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
@@ -56,6 +58,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
+	public static final String EVENT_LIKE = "eventLike";
+	public static final String INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS = "includeContactsFromOtherJurisdictions";
+	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -79,6 +84,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
 	 * even if a followUpUntilFrom is specified
 	 */
+	private SymptomJournalStatus symptomJournalStatus;
 	private Boolean followUpUntilToPrecise;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
@@ -102,6 +108,10 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Integer birthdateMM;
 	private Integer birthdateDD;
 	private YesNoUnknown returningTraveler;
+	private String eventLike;
+	private String eventUuid;
+	private Boolean includeContactsFromOtherJurisdictions = Boolean.FALSE;
+	private Boolean onlyContactsSharingEventWithSourceCase;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -287,6 +297,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return followUpUntilTo;
 	}
 
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
 	public Boolean getFollowUpUntilToPrecise() {
 		return followUpUntilToPrecise;
 	}
@@ -428,7 +446,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return person;
 	}
 
-	public ContactCriteria person(PersonReferenceDto person) {
+	public ContactCriteria setPerson(PersonReferenceDto person) {
 		this.person = person;
 		return this;
 	}
@@ -463,5 +481,54 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
+	}
+
+	public void setEventLike(String eventLike) {
+		this.eventLike = eventLike;
+	}
+
+	@IgnoreForUrl
+	public String getEventLike() {
+		return eventLike;
+	}
+
+	public ContactCriteria eventLike(String eventLike) {
+		setEventLike(eventLike);
+		return this;
+	}
+
+	public void setEventUuid(String eventUuid) {
+		this.eventUuid = eventUuid;
+	}
+
+	public String getEventUuid() {
+		return eventUuid;
+	}
+
+	public ContactCriteria eventUuid(String eventUuid) {
+		setEventUuid(eventUuid);
+		return this;
+	}
+
+	public void setOnlyContactsSharingEventWithSourceCase(Boolean onlyContactsSharingEventWithSourceCase) {
+		this.onlyContactsSharingEventWithSourceCase = onlyContactsSharingEventWithSourceCase;
+	}
+
+	@IgnoreForUrl
+	public Boolean getOnlyContactsSharingEventWithSourceCase() {
+		return onlyContactsSharingEventWithSourceCase;
+	}
+
+	public ContactCriteria onlyContactsSharingEventWithSourceCase(Boolean onlyContactsSharingEventWithSourceCase) {
+		this.onlyContactsSharingEventWithSourceCase = onlyContactsSharingEventWithSourceCase;
+		return this;
+	}
+
+	public Boolean getIncludeContactsFromOtherJurisdictions() {
+		return includeContactsFromOtherJurisdictions;
+	}
+
+	public void setIncludeContactsFromOtherJurisdictions(Boolean includeContactsFromOtherJurisdictions) {
+		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
 	}
 }

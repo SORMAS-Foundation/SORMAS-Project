@@ -1,7 +1,10 @@
 package de.symeda.sormas.app.backend.infrastructure;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
+import de.symeda.sormas.app.backend.campaign.CampaignDtoHelper;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -29,6 +32,8 @@ public class InfrastructureHelper {
 		changeDates.setDiseaseConfigurationChangeDate(DatabaseHelper.getDiseaseConfigurationDao().getLatestChangeDate());
 		changeDates.setUserRoleConfigurationChangeDate(DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate());
 		changeDates.setFeatureConfigurationChangeDate(DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate());
+		changeDates.setCampaignChangeDate(DatabaseHelper.getCampaignDao().getLatestChangeDate());
+		changeDates.setCampaignFormMetaChangeDate(DatabaseHelper.getCampaignFormMetaDao().getLatestChangeDate());
 
 		return changeDates;
 	}
@@ -49,5 +54,9 @@ public class InfrastructureHelper {
 		DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
 		new FeatureConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations());
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			new CampaignDtoHelper().handlePulledList(DatabaseHelper.getCampaignDao(), infrastructureData.getCampaigns());
+			new CampaignFormMetaDtoHelper().handlePulledList(DatabaseHelper.getCampaignFormMetaDao(), infrastructureData.getCampaignFormMetas());
+		}
 	}
 }

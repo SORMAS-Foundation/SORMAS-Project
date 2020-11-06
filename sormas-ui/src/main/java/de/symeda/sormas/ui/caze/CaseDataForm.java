@@ -43,6 +43,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -109,6 +110,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -301,9 +303,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
 		addField(CaseDataDto.EXTERNAL_ID, TextField.class);
 
-		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
-		addField(CaseDataDto.OUTCOME, OptionGroup.class);
-		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
+		addField(CaseDataDto.INVESTIGATION_STATUS, NullableOptionGroup.class);
+		addField(CaseDataDto.OUTCOME, NullableOptionGroup.class);
+		addField(CaseDataDto.SEQUELAE, NullableOptionGroup.class);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(CaseDataDto.REPORTING_TYPE);
 		}
@@ -311,9 +313,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
-		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
-		addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
+		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
@@ -331,7 +333,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
 		} else {
-			final OptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
+			final NullableOptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, NullableOptionGroup.class);
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
 		}
@@ -368,23 +370,23 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		TextField quarantineTypeDetails = addField(CaseDataDto.QUARANTINE_TYPE_DETAILS, TextField.class);
 		quarantineTypeDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 
-		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
+		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE, NullableOptionGroup.class);
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
-		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, OptionGroup.class);
+		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, NullableOptionGroup.class);
 		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
 			CaseDataDto.QUARANTINE,
-			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+			QuarantineType.QUARANTINE_IN_EFFECT,
 			true);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY) || isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				CaseDataDto.QUARANTINE,
-				Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
+				QuarantineType.QUARANTINE_IN_EFFECT,
 				true);
 		}
 		FieldHelper.setVisibleWhen(
@@ -573,9 +575,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		addField(CaseDataDto.PREGNANT, OptionGroup.class);
-		addField(CaseDataDto.POSTPARTUM, OptionGroup.class);
-		addField(CaseDataDto.TRIMESTER, OptionGroup.class);
+		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
+		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
 		addFields(
@@ -866,7 +868,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getField(CaseDataDto.CLASSIFICATION_USER).setVisible(false);
 				Label classifiedBySystemLabel = new Label(I18nProperties.getCaption(Captions.system));
 				classifiedBySystemLabel.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLASSIFIED_BY));
-				getContent().addComponent(classifiedBySystemLabel, CLASSIFIED_BY_SYSTEM_LOC);
+				// ensure correct formatting
+				GridLayout tempLayout = new GridLayout();
+				tempLayout.addComponent(classifiedBySystemLabel);
+				getContent().addComponent(tempLayout, CLASSIFIED_BY_SYSTEM_LOC);
 			}
 
 			updateFollowUpStatusComponents();
@@ -1290,7 +1295,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private void onValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
-		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
 			CaseDataDto caze = this.getInternalValue();
 			if (caze != null) {
 				quarantineFrom.setValue(caze.getQuarantineFrom());

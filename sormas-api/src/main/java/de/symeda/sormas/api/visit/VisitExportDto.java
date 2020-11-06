@@ -5,6 +5,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
@@ -44,6 +45,8 @@ public class VisitExportDto implements Serializable {
 
 	private String personUuid;
 
+	private VisitOrigin origin;
+
 	public VisitExportDto(
 		Long id,
 		String uuid,
@@ -58,6 +61,7 @@ public class VisitExportDto implements Serializable {
 		String visitRemarks,
 		Double reportLat,
 		Double reportLon,
+		VisitOrigin origin,
 		String personUuid) {
 
 		this.id = id;
@@ -74,6 +78,7 @@ public class VisitExportDto implements Serializable {
 		this.reportLat = reportLat;
 		this.reportLon = reportLon;
 		this.personUuid = personUuid;
+		this.origin = origin;
 	}
 
 	public Long getId() {
@@ -162,6 +167,14 @@ public class VisitExportDto implements Serializable {
 
 	@Order(8)
 	@ExportTarget(visitExportTypes = VisitExportType.CONTACT_VISITS)
+	@ExportProperty(VisitDto.ORIGIN)
+	@ExportGroup(ExportGroupType.CORE)
+	public VisitOrigin getOrigin() {
+		return origin;
+	}
+
+	@Order(9)
+	@ExportTarget(visitExportTypes = VisitExportType.CONTACT_VISITS)
 	@ExportProperty(VisitDto.SYMPTOMS)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public SymptomsDto getSymptoms() {
@@ -218,5 +231,9 @@ public class VisitExportDto implements Serializable {
 
 	public String getPersonUuid() {
 		return personUuid;
+	}
+
+	public void setOrigin(VisitOrigin origin) {
+		this.origin = origin;
 	}
 }

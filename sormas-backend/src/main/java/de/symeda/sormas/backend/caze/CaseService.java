@@ -100,6 +100,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -145,6 +146,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+
+	@EJB
+	private CaseJurisdictionChecker caseJurisdictionChecker;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public CaseService() {
 		super(Case.class);
@@ -232,6 +238,23 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> caze = cq.from(getElementClass());
+
+		Predicate filter = createMapCasesFilter(cb, cq, caze, region, district, disease, from, to);
+
+		if (filter != null) {
+			cq.where(filter);
+			cq.select(cb.count(caze.get(Case.ID)));
+
+			return em.createQuery(cq).getSingleResult();
+		}
+
+		return 0L;
+	}
+
 	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -240,37 +263,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter = createActiveCasesFilter(cb, caze);
-		filter = AbstractAdoService
-			.and(cb, filter, createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(true).excludeCasesFromContacts(true)));
-		filter = AbstractAdoService.and(cb, filter, createCaseRelevanceFilter(cb, caze, from, to));
-
-		if (region != null) {
-			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
-
-		if (district != null) {
-			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
+		Predicate filter = createMapCasesFilter(cb, cq, caze, region, district, disease, from, to);
 
 		List<MapCaseDto> result;
 		if (filter != null) {
@@ -302,6 +295,50 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return result;
+	}
+
+	private Predicate createMapCasesFilter(
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		Root<Case> root,
+		Region region,
+		District district,
+		Disease disease,
+		Date from,
+		Date to) {
+		Predicate filter = createActiveCasesFilter(cb, root);
+		filter = AbstractAdoService
+			.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeSharedCases(true).excludeCasesFromContacts(true)));
+		filter = AbstractAdoService.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
+
+		if (region != null) {
+			Predicate regionFilter = cb.equal(root.get(Case.REGION), region);
+			if (filter != null) {
+				filter = cb.and(filter, regionFilter);
+			} else {
+				filter = regionFilter;
+			}
+		}
+
+		if (district != null) {
+			Predicate districtFilter = cb.equal(root.get(Case.DISTRICT), district);
+			if (filter != null) {
+				filter = cb.and(filter, districtFilter);
+			} else {
+				filter = districtFilter;
+			}
+		}
+
+		if (disease != null) {
+			Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), disease);
+			if (filter != null) {
+				filter = cb.and(filter, diseaseFilter);
+			} else {
+				filter = diseaseFilter;
+			}
+		}
+
+		return filter;
 	}
 
 	public String getHighestEpidNumber(String epidNumberPrefix, String caseUuid, Disease caseDisease) {
@@ -727,6 +764,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return cb.and(cb.isFalse(root.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
 	}
 
+	public Predicate createActiveCasesFilter(CriteriaBuilder cb, Join<?, Case> join) {
+		return cb.and(cb.isFalse(join.get(Case.ARCHIVED)), cb.isFalse(join.get(Case.DELETED)));
+	}
+
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link CaseCriteria}.
 	 * This essentially removes {@link CoreAdo#deleted} cases from the queries.
@@ -846,9 +887,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
 			// whoever created the case or is assigned to it is allowed to access it
-			filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
-			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
-			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.CASE_OFFICER).get(User.ID), currentUser.getId()));
+			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
+				filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
+				filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
+				filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.CASE_OFFICER).get(User.ID), currentUser.getId()));
+			}
 
 			switch (jurisdictionLevel) {
 			case REGION:
@@ -1134,5 +1177,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cu.where(root.get(Case.UUID).in(caseUuids));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public boolean isCaseEditAllowed(Case caze) {
+		if (caze.getSormasToSormasOriginInfo() != null) {
+			return caze.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		}
+
+		return caseJurisdictionChecker.isInJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
 	}
 }

@@ -31,7 +31,7 @@ WebUI.click(findTestObject('Surveillance/CaseView/Task/span_Surveillance SUPERVI
 
 WebUI.setText(findTestObject('Surveillance/CaseView/Task/textarea_Comment_TArea'), Helper.generateString('comment', 5))
 
-WebUI.click(findTestObject('Surveillance/CaseView/Task/div_SaveTask_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 

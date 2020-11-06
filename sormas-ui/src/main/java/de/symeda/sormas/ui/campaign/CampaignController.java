@@ -34,6 +34,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -42,6 +43,7 @@ import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataEditForm;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignView;
+import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -156,12 +158,21 @@ public class CampaignController {
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> view =
 			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
+
 				@Override
 				public void discard() {
 					super.discard();
 					campaignEditForm.discard();
 				}
 			};
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+			CampaignDto finalCampaignDto = campaignDto;
+			view.addDeleteListener(() -> {
+				FacadeProvider.getCampaignFacade().deleteCampaign(finalCampaignDto.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityCampaign));
+		}
 
 		view.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
@@ -185,7 +196,10 @@ public class CampaignController {
 
 		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
 		if (campaignFormData == null) {
-			campaignFormData = CampaignFormDataDto.build(null, campaignForm, null, null, null);
+
+			final UserDto currentUser = UserProvider.getCurrent().getUser();
+			campaignFormData =
+				CampaignFormDataDto.build(null, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		form.setValue(campaignFormData);
@@ -237,6 +251,7 @@ public class CampaignController {
 		String navigationState = CampaignView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
+
 	public void navigateToFormDataView(String uuid) {
 		String navigationState = CampaignFormDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);

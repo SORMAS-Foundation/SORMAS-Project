@@ -37,7 +37,6 @@ import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -67,6 +66,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
@@ -77,7 +77,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 
 	private ComboBox birthDateDay;
-	private OptionGroup facilityOrHome;
+	private NullableOptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
 
@@ -112,7 +112,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	@Override
 	protected void addFields() {
 
-		OptionGroup ogCaseOrigin = addField(CaseDataDto.CASE_ORIGIN, OptionGroup.class);
+		NullableOptionGroup ogCaseOrigin = addField(CaseDataDto.CASE_ORIGIN, NullableOptionGroup.class);
 		ogCaseOrigin.setRequired(true);
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
@@ -122,9 +122,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
-		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
-		addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
+		NullableOptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
@@ -178,7 +178,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -205,7 +205,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
-			if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
+			if (!TypeOfPlace.HOME.equals(facilityOrHome.getNullableValue())) {
 				FieldHelper.removeItems(facility);
 			}
 			FieldHelper.removeItems(community);
@@ -524,7 +524,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
 			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
-			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getPhone());
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();

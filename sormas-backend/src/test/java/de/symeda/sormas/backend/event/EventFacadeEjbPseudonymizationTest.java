@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -111,7 +112,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {
-		return creator.createEvent(EventStatus.SIGNAL, "Test title", "Test Description", user.toReference(), e -> {
+		return creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user.toReference(), e -> {
 			e.setSurveillanceOfficer(user.toReference());
 		});
 	}

@@ -55,6 +55,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
@@ -112,7 +113,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	protected void addCommonFields() {
 
-		final OptionGroup samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, OptionGroup.class);
+		final NullableOptionGroup samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, NullableOptionGroup.class);
 		samplePurpose.addValueChangeListener(e -> updateRequestedTestFields());
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		final DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
@@ -145,7 +146,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	protected void defaultValueChangeListener() {
 
-		final OptionGroup samplePurposeField = (OptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
+		final NullableOptionGroup samplePurposeField = (NullableOptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
 		final Field<?> receivedField = getField(SampleDto.RECEIVED);
 		final Field<?> shippedField = getField(SampleDto.SHIPPED);
 

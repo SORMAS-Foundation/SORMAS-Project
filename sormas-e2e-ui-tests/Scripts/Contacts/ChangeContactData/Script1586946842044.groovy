@@ -53,7 +53,7 @@ WebUI.delay(0.5)
 
 //WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/span_Berlin CONTACT - Surveillance Officer _08c6e0'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Save'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 // CHECK
 WebUI.refresh()
@@ -127,6 +127,6 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_'))*/
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Save'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.closeBrowser()

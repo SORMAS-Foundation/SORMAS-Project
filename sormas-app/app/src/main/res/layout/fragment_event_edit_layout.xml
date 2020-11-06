@@ -33,6 +33,7 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="eventStatusClass" type="Class" />
+        <variable name="eventInvestigationStatusClass" type="Class" />
         <variable name="isMultiDayEvent" type="Boolean" />
     </data>
 
@@ -114,15 +115,37 @@
                 app:value="@={data.endDate}" />
         </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/event_eventInvestigationStatus"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{eventInvestigationStatusClass}"
+                app:value="@={data.eventInvestigationStatus}"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/event_eventInvestigationStartDate"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@={data.eventInvestigationStartDate}" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/event_eventInvestigationEndDate"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@={data.eventInvestigationEndDate}" />
+            </LinearLayout>
+
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/event_eventTitle"
                 style="@style/ControlSingleColumnStyle"
+                app:required="true"
                 app:value="@={data.eventTitle}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/event_eventDesc"
                 style="@style/ControlSingleColumnStyle"
-                app:required="true"
                 app:value="@={data.eventDesc}" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField

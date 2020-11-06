@@ -74,7 +74,7 @@ public class CampaignImportLayout extends AbstractImportLayout {
 		ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, null, null, null);
 		addComponent(importCsvComponent);
 		ComboBox cbCampaign = new ComboBox();
-		cbCampaign.setItems(FacadeProvider.getCampaignFacade().getAllCampaignsAsReference());
+		cbCampaign.setItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
 		cbCampaign.addValueChangeListener(event -> {
 			if (Objects.nonNull(cbCampaign.getValue())) {
 				this.getComponent(2).setEnabled(true);

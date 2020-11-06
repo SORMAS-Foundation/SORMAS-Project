@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
@@ -46,7 +47,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.databinding.FragmentSymptomsReadLayoutBinding;
 
-public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadLayoutBinding, Symptoms, Case> {
+public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadLayoutBinding, Symptoms, AbstractDomainObject> {
 
 	public static final String TAG = SymptomsReadFragment.class.getSimpleName();
 
@@ -191,5 +192,15 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
 
 		Collections.sort(yesResult, String.CASE_INSENSITIVE_ORDER);
 		Collections.sort(unknownResult, String.CASE_INSENSITIVE_ORDER);
+	}
+
+	@Override
+	public boolean showEditAction() {
+		AbstractDomainObject ado = getActivityRootData();
+		if (ado instanceof Visit) {
+			Visit visit = (Visit) getActivityRootData();
+			return VisitOrigin.USER.equals(visit.getOrigin());
+		}
+		return true;
 	}
 }

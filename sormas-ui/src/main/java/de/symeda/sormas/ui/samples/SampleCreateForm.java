@@ -8,7 +8,6 @@ import java.util.Date;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.Disease;
@@ -20,6 +19,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class SampleCreateForm extends AbstractSampleForm {
 
@@ -42,7 +42,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		addCommonFields();
 		CheckBox includeTestField = addCustomField(Captions.sampleIncludeTestOnCreation, Boolean.class, CheckBox.class);
 		ComboBox pathogenTestResultField = addCustomField(PathogenTestDto.TEST_RESULT, PathogenTestResultType.class, ComboBox.class);
-		OptionGroup testVerifiedField = addCustomField(PathogenTestDto.TEST_RESULT_VERIFIED, Boolean.class, OptionGroup.class);
+		NullableOptionGroup testVerifiedField = addCustomField(PathogenTestDto.TEST_RESULT_VERIFIED, Boolean.class, NullableOptionGroup.class);
 		ComboBox testTypeField = addCustomField(PathogenTestDto.TEST_TYPE, PathogenTestType.class, ComboBox.class);
 		ComboBox testDiseaseField = addCustomField(PathogenTestDto.TESTED_DISEASE, Disease.class, ComboBox.class);
 		DateTimeField testDateField = addCustomField(PathogenTestDto.TEST_DATE_TIME, Date.class, DateTimeField.class);
@@ -86,7 +86,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 		addValueChangeListener(e -> {
 			defaultValueChangeListener();
-			final OptionGroup samplePurposeField = (OptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
+			final NullableOptionGroup samplePurposeField = (NullableOptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
 			samplePurposeField.setValue(SamplePurpose.EXTERNAL);
 			getField(SampleDto.PATHOGEN_TEST_RESULT).setVisible(false);
 		});
@@ -100,7 +100,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 	private void setPathogenTestFieldCaptions() {
 
 		final ComboBox testResult = (ComboBox) getField(PathogenTestDto.TEST_RESULT);
-		final OptionGroup testResultVerified = (OptionGroup) getField(PathogenTestDto.TEST_RESULT_VERIFIED);
+		final NullableOptionGroup testResultVerified = (NullableOptionGroup) getField(PathogenTestDto.TEST_RESULT_VERIFIED);
 		final ComboBox testTypeField = (ComboBox) getField(PathogenTestDto.TEST_TYPE);
 		final ComboBox testedDiseaseField = (ComboBox) getField(PathogenTestDto.TESTED_DISEASE);
 		final DateTimeField testDateField = (DateTimeField) getField(PathogenTestDto.TEST_DATE_TIME);

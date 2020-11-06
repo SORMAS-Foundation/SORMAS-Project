@@ -16,7 +16,7 @@ WebUI.delay(1)
 
 int unfilteredRows = Table.getNumberOfTableRows()
 
-//WebUI.click(findTestObject('Contacts/ContactsOverview/dropped_contacts_filter'))
+//WebUI.click(findTestObject('Contacts/ContactsOverview/div_Dropped'))
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/span_Only high priority contacts'))

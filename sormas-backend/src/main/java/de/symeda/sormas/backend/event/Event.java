@@ -37,6 +37,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
@@ -57,6 +58,9 @@ public class Event extends CoreAdo {
 
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
+	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESC = "eventDesc";
@@ -85,6 +89,9 @@ public class Event extends CoreAdo {
 	public static final String ARCHIVED = "archived";
 
 	private EventStatus eventStatus;
+	private EventInvestigationStatus eventInvestigationStatus;
+	private Date eventInvestigationStartDate;
+	private Date eventInvestigationEndDate;
 	private List<EventParticipant> eventPersons;
 	private String externalId;
 	private String eventTitle;
@@ -126,6 +133,33 @@ public class Event extends CoreAdo {
 		this.eventStatus = eventStatus;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public EventInvestigationStatus getEventInvestigationStatus() {
+		return eventInvestigationStatus;
+	}
+
+	public void setEventInvestigationStatus(EventInvestigationStatus eventInvestigationStatus) {
+		this.eventInvestigationStatus = eventInvestigationStatus;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEventInvestigationStartDate() {
+		return eventInvestigationStartDate;
+	}
+
+	public void setEventInvestigationStartDate(Date eventInvestigationStartDate) {
+		this.eventInvestigationStartDate = eventInvestigationStartDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEventInvestigationEndDate() {
+		return eventInvestigationEndDate;
+	}
+
+	public void setEventInvestigationEndDate(Date eventInvestigationEndDate) {
+		this.eventInvestigationEndDate = eventInvestigationEndDate;
+	}
+
 	@OneToMany(cascade = {}, mappedBy = EventParticipant.EVENT)
 	public List<EventParticipant> getEventPersons() {
 		return eventPersons;
@@ -153,7 +187,7 @@ public class Event extends CoreAdo {
 		this.eventTitle = eventTitle;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG, nullable = false)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getEventDesc() {
 		return eventDesc;
 	}
@@ -374,7 +408,7 @@ public class Event extends CoreAdo {
 
 	@Override
 	public String toString() {
-		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getStartDate());
+		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
 	}
 
 	public Float getReportLatLonAccuracy() {

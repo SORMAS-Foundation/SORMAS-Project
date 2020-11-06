@@ -23,7 +23,7 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/div_Converted to case'))
 convertedToCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('convertedToCases:' + convertedToCases)
 
-WebUI.click(findTestObject('Contacts/ContactsOverview/dropped_contacts_filter'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Dropped'))
 droppedCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('droppedCases:' + droppedCases)
 
