@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.docgeneration;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +21,6 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
@@ -110,8 +108,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				EntityDto entityDto = entities.get(variableBaseName);
 				if (entityDto != null) {
 					String propertyPath = propertyKey.replaceFirst(variableBaseName + ".", "");
-					String propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entityDto, propertyPath, referenceDtoResolver);
-					properties.setProperty(propertyKey, propertyValue);
+					Object propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entityDto, propertyPath, referenceDtoResolver);
+					properties.put(propertyKey, propertyValue);
 				}
 			}
 		}
@@ -127,7 +125,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 		// 4. fill null properties
 		for (String propertyKey : propertyKeys) {
-			if (StringUtils.isBlank(properties.getProperty(propertyKey))) {
+			Object property = properties.get(propertyKey);
+			if (property == null || StringUtils.isBlank(property.toString())) {
 				properties.setProperty(propertyKey, DEFAULT_NULL_REPLACEMENT);
 			}
 		}
@@ -145,7 +144,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	private byte[] getGenerateDocument(File templateFile, Properties properties) throws IOException {
 		try {
-			return IOUtils.toByteArray(templateEngine.generateDocument(properties, new FileInputStream(templateFile)));
+			return templateEngine.generateDocumentDocx(properties, templateFile);
 		} catch (XDocReportException e) {
 			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), e.getMessage()));
 		}
@@ -192,7 +191,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
-		templateEngine.validateTemplate(new ByteArrayInputStream(document));
+		templateEngine.validateTemplateDocx(new ByteArrayInputStream(document));
 
 		Files.createDirectories(Paths.get(workflowTemplateDirPath));
 		try (FileOutputStream fileOutputStream =
@@ -230,7 +229,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	private Set<String> getTemplateVariables(File templateFile) throws IOException {
 		try {
-			return templateEngine.extractTemplateVariables(new FileInputStream(templateFile));
+			return templateEngine.extractTemplateVariablesDocx(templateFile);
 		} catch (XDocReportException e) {
 			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
 		}

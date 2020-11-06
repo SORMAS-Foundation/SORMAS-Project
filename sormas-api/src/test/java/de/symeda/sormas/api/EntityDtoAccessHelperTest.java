@@ -84,14 +84,14 @@ public class EntityDtoAccessHelperTest {
 			assertNull(EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "blubber.blubber"));
 			fail("expected: IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			assertEquals("No property blubber in class CaseDataDto", e.getMessage());
+			assertEquals("In CaseDataDto: No property blubber in class CaseDataDto", e.getMessage());
 		}
 
 		try {
 			assertNull(EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "disease.blubber"));
 			fail("expected: IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			assertEquals("CaseDataDto.disease is not an EntityDto or ReferenceDto", e.getMessage());
+			assertEquals("In CaseDataDto.disease: No property blubber in class Disease", e.getMessage());
 		}
 	}
 
@@ -134,7 +134,9 @@ public class EntityDtoAccessHelperTest {
 		caseDataDto.setPerson(personReferenceDto);
 		caseDataDto.setHospitalization(hospitalizationDto);
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "person.firstName", referenceDtoResolver));
-		assertEquals("No", EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "hospitalization.isolated", referenceDtoResolver));
+		assertEquals(
+			YesNoUnknown.NO,
+			EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "hospitalization.isolated", referenceDtoResolver));
 		assertEquals(
 			"9/18/2020",
 			EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "hospitalization.dischargeDate", referenceDtoResolver));

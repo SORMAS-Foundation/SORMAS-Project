@@ -3,7 +3,8 @@ package de.symeda.sormas.api.docgeneneration;
 public enum TemplateFileType {
 
 	DOCX("docx"),
-	TXT("txt");
+	TXT("txt"),
+	HTML("html");
 
 	private String extension;
 

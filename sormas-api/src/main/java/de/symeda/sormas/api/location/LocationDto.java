@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonAddressType;
@@ -274,6 +276,7 @@ public class LocationDto extends PseudonymizableDto {
 			additionalInformation);
 	}
 
+	@JsonIgnore
 	public boolean isEmptyLocation() {
 		return details == null
 			&& city == null

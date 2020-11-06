@@ -1,0 +1,9 @@
+$event.eventTitle
+================
+
+$event.eventDesc
+
+Participants:
+#foreach($participant in $eventParticipants)
+  $participant.person.getFirstName() $participant.person.getLastName()
+#end

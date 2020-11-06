@@ -8,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -41,8 +40,6 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	private ContactDto contactDto;
 	private PersonDto personDto;
 
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
 	@Before
 	public void setup() throws ParseException {
 		quarantineOrderFacadeEjb = getQuarantineOrderFacade();
@@ -67,9 +64,9 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		caseDataDto = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
 		caseDataDto.setPerson(personDto.toReference());
-		caseDataDto.setQuarantineFrom(dateFormat.parse("10/09/2020"));
-		caseDataDto.setQuarantineTo(dateFormat.parse("24/09/2020"));
-		caseDataDto.setQuarantineOrderedOfficialDocumentDate(dateFormat.parse("09/09/2020"));
+		caseDataDto.setQuarantineFrom(DATE_FORMAT.parse("10/09/2020"));
+		caseDataDto.setQuarantineTo(DATE_FORMAT.parse("24/09/2020"));
+		caseDataDto.setQuarantineOrderedOfficialDocumentDate(DATE_FORMAT.parse("09/09/2020"));
 		getCaseFacade().saveCase(caseDataDto);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -85,9 +82,9 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		contactDto = creator.createContact(user.toReference(), personDto.toReference());
 		contactDto.setCaze(caseDataDto.toReference());
-		contactDto.setQuarantineFrom(dateFormat.parse("10/09/2020"));
-		contactDto.setQuarantineTo(dateFormat.parse("24/09/2020"));
-		contactDto.setQuarantineOrderedOfficialDocumentDate(dateFormat.parse("09/09/2020"));
+		contactDto.setQuarantineFrom(DATE_FORMAT.parse("10/09/2020"));
+		contactDto.setQuarantineTo(DATE_FORMAT.parse("24/09/2020"));
+		contactDto.setQuarantineOrderedOfficialDocumentDate(DATE_FORMAT.parse("09/09/2020"));
 		getContactFacade().saveContact(contactDto);
 	}
 

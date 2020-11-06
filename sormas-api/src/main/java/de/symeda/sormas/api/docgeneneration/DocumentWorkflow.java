@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.docgeneneration;
 
 import static de.symeda.sormas.api.docgeneneration.TemplateFileType.DOCX;
+import static de.symeda.sormas.api.docgeneneration.TemplateFileType.HTML;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,8 @@ public enum DocumentWorkflow {
 	// to either a CaseDataDto or a ContactDto, depending on from where
 	// it is called. So "${case.person.firstName}" in the template refers
 	// to the case's or contact's person's first name in either case.
-	QUARANTINE_ORDER("quarantine", DOCX, "case");
+	QUARANTINE_ORDER("quarantine", DOCX, "case"),
+	EVENT_HANDOUT("eventHandout", HTML, "event", "eventActions", "eventParticipants");
 
 	private String templateDirectory;
 	private TemplateFileType fileType;
