@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import elemental.json.JsonValue;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class V7ShortStringRenderer extends HtmlRenderer {
@@ -39,7 +41,7 @@ public class V7ShortStringRenderer extends HtmlRenderer {
 				value = value.substring(0, length);
 				value += "...";
 			}
-			return super.encode(StringEscapeUtils.escapeHtml4(value));
+			return super.encode(Jsoup.clean(value, Whitelist.none()));
 		} else {
 			return null;
 		}

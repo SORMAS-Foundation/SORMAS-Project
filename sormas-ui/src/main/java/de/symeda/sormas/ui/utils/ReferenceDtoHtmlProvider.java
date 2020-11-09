@@ -17,7 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import org.apache.commons.text.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
 import com.vaadin.data.ValueProvider;
 
@@ -33,8 +34,8 @@ public class ReferenceDtoHtmlProvider implements ValueProvider<ReferenceDto, Str
 		String html;
 		if (source != null) {
 			String uuid = source.getUuid();
-			html = "<a title='" + StringEscapeUtils.escapeHtml4(uuid) + "'>" + StringEscapeUtils.escapeHtml4(DataHelper.getShortUuid(uuid)) + "</a> ("
-				+ StringEscapeUtils.escapeHtml4(source.getCaption()) + ")";
+			html = "<a title='" + Jsoup.clean(uuid, Whitelist.none()) + "'>" + Jsoup.clean(DataHelper.getShortUuid(uuid), Whitelist.none()) + "</a> ("
+				+ Jsoup.clean(source.getCaption(), Whitelist.none()) + ")";
 		} else {
 			html = "";
 		}

@@ -17,11 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import elemental.json.JsonValue;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class V7UuidRenderer extends HtmlRenderer {
@@ -30,7 +32,8 @@ public class V7UuidRenderer extends HtmlRenderer {
 	public JsonValue encode(String value) {
 
 		if (value != null && !value.isEmpty()) {
-			value = "<a title='" + StringEscapeUtils.escapeHtml4(value) + "'>" + StringEscapeUtils.escapeHtml4(DataHelper.getShortUuid(value)) + "</a>";
+			value =
+				"<a title='" + Jsoup.clean(value, Whitelist.none()) + "'>" + Jsoup.clean(DataHelper.getShortUuid(value), Whitelist.none()) + "</a>";
 			return super.encode(value);
 		} else {
 			return null;

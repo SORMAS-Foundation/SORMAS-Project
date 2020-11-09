@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
@@ -25,7 +28,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import elemental.json.JsonValue;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class V7CaseUuidRenderer extends HtmlRenderer {
@@ -40,13 +42,13 @@ public class V7CaseUuidRenderer extends HtmlRenderer {
 	public JsonValue encode(String value) {
 
 		if (withCreateCaseIfEmpty && (value == null || value.isEmpty())) {
-			value = "<a title='" + I18nProperties.getString(Strings.headingCreateNewCase) + "'>" + I18nProperties.getCaption(Captions.actionCreate)
-				+ "</a> " + VaadinIcons.EDIT.getHtml();
+			value = "<a title='" + Jsoup.clean(I18nProperties.getString(Strings.headingCreateNewCase), Whitelist.basic()) + "'>"
+				+ Jsoup.clean(I18nProperties.getCaption(Captions.actionCreate), Whitelist.basic()) + "</a> " + VaadinIcons.EDIT.getHtml();
 			return super.encode(value);
 		}
 
 		if (value != null && !value.isEmpty()) {
-			value = "<a title='" + value + "'>" + StringEscapeUtils.escapeHtml4(DataHelper.getShortUuid(value)) + "</a>";
+			value = "<a title='" + value + "'>" + Jsoup.clean(DataHelper.getShortUuid(value), Whitelist.none()) + "</a>";
 			return super.encode(value);
 		} else {
 			return null;

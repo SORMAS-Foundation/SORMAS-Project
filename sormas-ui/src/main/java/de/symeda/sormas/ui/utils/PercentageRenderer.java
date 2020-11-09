@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import elemental.json.JsonValue;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class PercentageRenderer extends HtmlRenderer {
@@ -28,7 +30,7 @@ public class PercentageRenderer extends HtmlRenderer {
 	@Override
 	public JsonValue encode(String value) {
 		if (value != null && !value.isEmpty()) {
-			return super.encode(StringEscapeUtils.escapeHtml4(value) + "%");
+			return super.encode(Jsoup.clean(value, Whitelist.none()) + "%");
 		} else {
 			return null;
 		}

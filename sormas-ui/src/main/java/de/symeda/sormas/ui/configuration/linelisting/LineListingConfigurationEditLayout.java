@@ -3,6 +3,9 @@ package de.symeda.sormas.ui.configuration.linelisting;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -24,7 +27,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class LineListingConfigurationEditLayout extends VerticalLayout {
@@ -67,7 +69,7 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 					I18nProperties.getString(
 						regionName != null ? Strings.infoLineListingConfigurationRegionEdit : Strings.infoLineListingConfigurationNationEdit),
 					disease.toString(),
-					StringEscapeUtils.escapeHtml4(regionName)),
+					Jsoup.clean(regionName, Whitelist.none())),
 			ContentMode.HTML);
 		CssStyles.style(lblInfo, CssStyles.VSPACE_4);
 		addComponent(lblInfo);

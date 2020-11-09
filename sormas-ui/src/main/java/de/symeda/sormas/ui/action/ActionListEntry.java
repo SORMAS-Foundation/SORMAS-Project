@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.vaadin.icons.VaadinIcons;
@@ -37,7 +40,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class ActionListEntry extends HorizontalLayout {
@@ -78,11 +80,11 @@ public class ActionListEntry extends HorizontalLayout {
 		descReplyLayout.addStyleName(CssStyles.RICH_TEXT_CONTENT_CONTAINER);
 		withContentLayout.addComponents(descReplyLayout);
 
-		Label description = new Label(StringEscapeUtils.escapeHtml4(action.getDescription()), ContentMode.HTML);
+		Label description = new Label(Jsoup.clean(action.getDescription(), Whitelist.basic()), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		descReplyLayout.addComponent(description);
 		if (!Strings.isNullOrEmpty(action.getReply())) {
-			Label replyLabel = new Label(StringEscapeUtils.escapeHtml4(action.getReply()), ContentMode.HTML);
+			Label replyLabel = new Label(Jsoup.clean(action.getReply(), Whitelist.basic()), ContentMode.HTML);
 			replyLabel.setWidth(100, Unit.PERCENTAGE);
 			replyLabel.addStyleName(CssStyles.REPLY);
 			descReplyLayout.addComponent(replyLabel);
