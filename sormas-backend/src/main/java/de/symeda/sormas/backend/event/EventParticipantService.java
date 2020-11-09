@@ -225,6 +225,20 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return resultList;
 	}
 
+	public EventParticipant getByEventAndPerson(String eventUuid, String personUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
+		Root<EventParticipant> from = cq.from(getElementClass());
+
+		cq.where(
+			createDefaultFilter(cb, from),
+			cb.equal(from.join(EventParticipant.PERSON).get(Person.UUID), personUuid),
+			cb.equal(from.join(EventParticipant.EVENT).get(Event.UUID), eventUuid));
+
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
 	@Override
 	public void delete(EventParticipant eventParticipant) {
 

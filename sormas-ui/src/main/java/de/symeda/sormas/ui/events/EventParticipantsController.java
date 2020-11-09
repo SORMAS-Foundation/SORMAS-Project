@@ -24,9 +24,9 @@ import java.util.function.Consumer;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -162,8 +162,12 @@ public class EventParticipantsController {
 			() -> {
 				EventParticipantReferenceDto eventParticipantRef =
 					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
-				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantRef);
-				callback.run();
+				if (eventParticipantRef != null) {
+					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantRef);
+					callback.run();
+				} else {
+					Notification.show(I18nProperties.getString(Strings.errorOccurred), Type.ERROR_MESSAGE);
+				}
 			});
 	}
 
