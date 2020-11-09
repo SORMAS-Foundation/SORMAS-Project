@@ -37,6 +37,8 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
+import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -973,6 +975,15 @@ public class TestDataCreator {
 		campaign = beanTest.getCampaignFacade().saveCampaign(campaign);
 
 		return campaign;
+	}
+
+	public CampaignDiagramDefinitionDto createCampaignDiagramDefinition(String diagramId, String diagramCaption){
+		CampaignDiagramDefinitionDto campaignDiagramDefinition = CampaignDiagramDefinitionDto.build();
+		campaignDiagramDefinition.setDiagramType(DiagramType.COLUMN);
+		campaignDiagramDefinition.setDiagramId(diagramId);
+		campaignDiagramDefinition.setDiagramCaption(diagramCaption);
+
+		return campaignDiagramDefinition;
 	}
 
 	public CampaignFormMetaDto createCampaignForm(CampaignDto campaign) throws IOException {
