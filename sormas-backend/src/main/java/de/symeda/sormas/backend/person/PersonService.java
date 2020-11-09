@@ -320,6 +320,7 @@ public class PersonService extends AbstractAdoService<Person> {
 			Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
 			Predicate personEventParticipantPredicate =
 				and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
+
 			caseContactEventParticipantLinkPredicate =
 				or(cb, caseContactEventParticipantLinkPredicate, personContactPredicate, personEventParticipantPredicate);
 		}
