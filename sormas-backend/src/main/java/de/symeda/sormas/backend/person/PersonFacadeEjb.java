@@ -48,6 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -375,6 +376,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
 		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
+		filter = ContactService.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
+		filter = ContactService.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
+
 		if (since != null) {
 			filter = PersonService.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
 		}
@@ -401,6 +405,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
 		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
+		filter = ContactService.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
+		filter = ContactService.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
 
 		if (uuid != null) {
 			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
