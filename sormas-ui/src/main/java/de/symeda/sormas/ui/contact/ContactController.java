@@ -27,29 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.caze.CasesView;
-import de.symeda.sormas.ui.utils.AbstractView;
-import org.apache.commons.lang3.StringUtils;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
-import de.symeda.sormas.api.externaljournal.RegisterResult;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.ui.utils.CssStyles;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -60,10 +37,14 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
@@ -72,16 +53,21 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
+import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
+import de.symeda.sormas.api.externaljournal.RegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -89,12 +75,15 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.CaseSelectionField;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
+import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -213,7 +202,7 @@ public class ContactController {
 				person.setEmailAddress(createForm.getEmailAddress());
 
 				ControllerProvider.getPersonController()
-					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
+					.selectOrCreatePerson(person, false, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
 						if (selectedPerson != null) {
 							dto.setPerson(selectedPerson);
 
@@ -567,7 +556,7 @@ public class ContactController {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {
 			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
-					|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
+				|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
 				openPatientDiaryEnrollPage(person.getUuid());
 			} else {
 				RegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);

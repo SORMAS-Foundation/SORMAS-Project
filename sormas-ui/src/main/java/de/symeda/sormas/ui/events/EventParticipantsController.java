@@ -72,29 +72,34 @@ public class EventParticipantsController {
 				person.setLastName(createForm.getPersonLastName());
 
 				ControllerProvider.getPersonController()
-					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
-						if (selectedPerson != null) {
-							EventParticipantCriteria criteria = new EventParticipantCriteria();
-							criteria.event(eventRef);
-							List<EventParticipantIndexDto> currentEventParticipants =
-								(List<EventParticipantIndexDto>) FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
-							Boolean alreadyParticipant = false;
-							for (EventParticipantIndexDto participant : currentEventParticipants) {
-								if (selectedPerson.getUuid().equals(participant.getPersonUuid())) {
-									alreadyParticipant = true;
-									break;
+					.selectOrCreatePerson(
+						person,
+						false,
+						I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
+						selectedPerson -> {
+							if (selectedPerson != null) {
+								EventParticipantCriteria criteria = new EventParticipantCriteria();
+								criteria.event(eventRef);
+								List<EventParticipantIndexDto> currentEventParticipants =
+									(List<EventParticipantIndexDto>) FacadeProvider.getEventParticipantFacade()
+										.getIndexList(criteria, null, null, null);
+								Boolean alreadyParticipant = false;
+								for (EventParticipantIndexDto participant : currentEventParticipants) {
+									if (selectedPerson.getUuid().equals(participant.getPersonUuid())) {
+										alreadyParticipant = true;
+										break;
+									}
+								}
+								if (alreadyParticipant) {
+									throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+								} else {
+									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
+									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+									Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
+									ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
 								}
 							}
-							if (alreadyParticipant) {
-								throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
-							} else {
-								dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
-								EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
-								Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-								ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
-							}
-						}
-					});
+						});
 			}
 		});
 

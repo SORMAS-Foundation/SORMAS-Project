@@ -43,11 +43,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.person.PersonDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -307,18 +307,22 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate caseUserFilter = caseService.createUserFilter(cb, personQuery, personCaseJoin);
 		Predicate personCasePredicate = and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
 
-		// Persons of active contacts
-		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, personContactJoin);
-		Predicate contactUserFilter = contactService.createUserFilter(cb, personQuery, personContactJoin);
-		Predicate personContactPredicate = and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
+		caseContactEventParticipantLinkPredicate = personCasePredicate;
 
-		// Persons of event participants in active events
-		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin);
-		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
-		Predicate personEventParticipantPredicate =
-			and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
+		if (!criteria.isOnlyInActiveCases()) {
+			// Persons of active contacts
+			Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, personContactJoin);
+			Predicate contactUserFilter = contactService.createUserFilter(cb, personQuery, personContactJoin);
+			Predicate personContactPredicate = and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
 
-		caseContactEventParticipantLinkPredicate = or(cb, personCasePredicate, personContactPredicate, personEventParticipantPredicate);
+			// Persons of event participants in active events
+			Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin);
+			Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
+			Predicate personEventParticipantPredicate =
+				and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
+			caseContactEventParticipantLinkPredicate =
+				or(cb, caseContactEventParticipantLinkPredicate, personContactPredicate, personEventParticipantPredicate);
+		}
 
 		personQuery.where(and(cb, personSimilarityFilter, caseContactEventParticipantLinkPredicate));
 		personQuery.distinct(true);

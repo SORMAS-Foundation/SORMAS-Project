@@ -162,18 +162,24 @@ public class CaseController {
 	}
 
 	public void createFromContact(ContactDto contact) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
-		caseCreateComponent.addCommitListener(new CommitListener() {
 
-			@Override
-			public void onCommit() {
-				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-				updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-				FacadeProvider.getContactFacade().saveContact(updatedContact);
-			}
-		});
+		final PersonDto duplicatePerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		ControllerProvider.getPersonController()
+			.selectOrCreatePerson(duplicatePerson, true, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+				if (selectedPerson != null) {
+					CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
+					caseCreateComponent.addCommitListener(new CommitListener() {
 
-		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+						@Override
+						public void onCommit() {
+							ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+							updatedContact.setContactClassification(ContactClassification.CONFIRMED);
+							FacadeProvider.getContactFacade().saveContact(updatedContact);
+						}
+					});
+					VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+				}
+			});
 	}
 
 	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
@@ -479,21 +485,25 @@ public class CaseController {
 					duplicatePerson.setEmailAddress(createForm.getEmailAddress());
 
 					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
-							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
+						.selectOrCreatePerson(
+							duplicatePerson,
+							false,
+							I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+							selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(selectedPerson);
 
-								selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
-									if (uuid == null) {
-										dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-										saveCase(dto);
-										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
-									} else {
-										navigateToView(CaseDataView.VIEW_NAME, uuid, null);
-									}
-								});
-							}
-						});
+									selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+										if (uuid == null) {
+											dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
+											saveCase(dto);
+											navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+										} else {
+											navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+										}
+									});
+								}
+							});
 				}
 			}
 		});
@@ -1286,7 +1296,7 @@ public class CaseController {
 			newPerson.setSex(caseLineDto.getSex());
 
 			ControllerProvider.getPersonController()
-				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+				.selectOrCreatePerson(newPerson, false, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
 					if (selectedPerson != null) {
 						newCase.setPerson(selectedPerson);
 

@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
@@ -234,7 +234,7 @@ public class CaseImporter extends DataImporter {
 	protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
 		currentUI.accessSynchronously(() -> {
 			PersonSelectionField personSelect =
-				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCaseImport));
+				new PersonSelectionField(newPerson, false, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCaseImport));
 			personSelect.setWidth(1024, Unit.PIXELS);
 
 			if (personSelect.hasMatches()) {

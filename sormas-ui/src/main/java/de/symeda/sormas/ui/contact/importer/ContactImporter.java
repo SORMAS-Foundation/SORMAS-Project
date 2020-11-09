@@ -231,7 +231,7 @@ public class ContactImporter extends DataImporter {
 
 		currentUI.accessSynchronously(() -> {
 			PersonSelectionField personSelect =
-				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContactImport));
+				new PersonSelectionField(newPerson, false, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContactImport));
 			personSelect.setWidth(1024, Unit.PIXELS);
 
 			if (personSelect.hasMatches()) {

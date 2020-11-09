@@ -50,11 +50,11 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	private RadioButtonGroup<String> rbCreatePerson;
 	private Consumer<Boolean> selectionChangeCallback;
 
-	public PersonSelectionField(PersonDto referencePerson, String infoText) {
+	public PersonSelectionField(PersonDto referencePerson, Boolean checkOnlyWithinActiveCases, String infoText) {
 		this.referencePerson = referencePerson;
 		this.infoText = infoText;
 
-		initializeGrid();
+		initializeGrid(checkOnlyWithinActiveCases);
 	}
 
 	private void addInfoComponent() {
@@ -152,7 +152,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		mainLayout.addComponent(rbSelectPerson);
 	}
 
-	private void initializeGrid() {
+	private void initializeGrid(Boolean onlyInActiveCases) {
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
 			.lastName(referencePerson.getLastName())
 			.sex(referencePerson.getSex())
@@ -161,6 +161,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 			.birthdateYYYY(referencePerson.getBirthdateYYYY())
 			.passportNumber(referencePerson.getPassportNumber())
 			.nationalHealthId(referencePerson.getNationalHealthId());
+		criteria.onlyInActiveCases(onlyInActiveCases);
 		personGrid = new PersonSelectionGrid(criteria);
 
 		personGrid.addSelectionListener(e -> {

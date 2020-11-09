@@ -14,6 +14,7 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	private Integer birthdateDD;
 	private String passportNumber;
 	private String nationalHealthId;
+	private Boolean onlyInActiveCases = Boolean.FALSE;
 
 	@IgnoreForUrl
 	public String getFirstName() {
@@ -93,5 +94,13 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	public PersonSimilarityCriteria nationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
 		return this;
+	}
+
+	public Boolean isOnlyInActiveCases() {
+		return onlyInActiveCases;
+	}
+
+	public void onlyInActiveCases(Boolean onlyInActiveCases) {
+		this.onlyInActiveCases = onlyInActiveCases;
 	}
 }

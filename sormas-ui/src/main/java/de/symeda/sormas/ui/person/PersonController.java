@@ -54,8 +54,12 @@ public class PersonController {
 
 	}
 
-	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer) {
-		PersonSelectionField personSelect = new PersonSelectionField(person, infoText);
+	public void selectOrCreatePerson(
+		final PersonDto person,
+		Boolean checkOnlyWithinActiveCases,
+		String infoText,
+		Consumer<PersonReferenceDto> resultConsumer) {
+		PersonSelectionField personSelect = new PersonSelectionField(person, checkOnlyWithinActiveCases, infoText);
 		personSelect.setWidth(1024, Unit.PIXELS);
 
 		if (personSelect.hasMatches()) {
