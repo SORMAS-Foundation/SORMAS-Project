@@ -210,6 +210,20 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
 	}
 
+	public Event getEventReferenceByEventParticipant(String eventParticipantUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(Event.class);
+		Root<Event> event = cq.from(Event.class);
+
+		Predicate filter = createDefaultFilter(cb, event);
+		filter = and(cb, filter, cb.equal(event.get(Event.EVENT_PERSONS), eventParticipantUuid));
+		filter = and(cb, filter, createUserFilter(cb, cq, event));
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
 	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

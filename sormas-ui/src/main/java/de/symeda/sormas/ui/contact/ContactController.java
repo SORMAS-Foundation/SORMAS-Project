@@ -27,29 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.caze.CasesView;
-import de.symeda.sormas.ui.utils.AbstractView;
-import org.apache.commons.lang3.StringUtils;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
-import de.symeda.sormas.api.externaljournal.RegisterResult;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.ui.utils.CssStyles;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -60,10 +37,14 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
@@ -72,16 +53,23 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
+import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
+import de.symeda.sormas.api.externaljournal.RegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -89,12 +77,15 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.CaseSelectionField;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
+import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -117,7 +108,7 @@ public class ContactController {
 	}
 
 	public void create() {
-		create(null);
+		create((CaseReferenceDto) null);
 	}
 
 	public void create(CaseReferenceDto caseRef) {
@@ -127,6 +118,12 @@ public class ContactController {
 			caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
 		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
+	}
+
+	public void create(EventParticipantReferenceDto eventParticipantRef) {
+		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(eventParticipant);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 
@@ -188,6 +185,22 @@ public class ContactController {
 		return contact;
 	}
 
+	private ContactDto createNewContact(EventParticipantDto eventParticipant) {
+		ContactDto contact = ContactDto.build(eventParticipant);
+
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+		contact.setReportingUser(userReference);
+
+		return contact;
+	}
+
+	private ContactDto createNewContact(EventParticipantDto eventParticipant, Disease disease) {
+		ContactDto contact = createNewContact(eventParticipant);
+		contact.setDisease(disease);
+
+		return contact;
+	}
+
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
 
 		ContactCreateForm createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null);
@@ -237,6 +250,56 @@ public class ContactController {
 							});
 						}
 					});
+			}
+		});
+
+		return createComponent;
+	}
+
+	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(EventParticipantDto eventParticipant) {
+		final ContactCreateForm createForm;
+		final Disease disease;
+		if (eventParticipant.getResultingCase() != null) {
+			disease = FacadeProvider.getCaseFacade().getCaseDataByUuid(eventParticipant.getResultingCase().getUuid()).getDisease();
+			createForm = new ContactCreateForm(disease, true);
+		} else {
+			disease = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()).getDisease();
+			createForm = new ContactCreateForm(disease, false);
+		}
+
+		createForm.setValue(createNewContact(eventParticipant, disease));
+		createForm.setPerson(eventParticipant.getPerson());
+		createForm.setPersonDetailsReadOnly();
+		createForm.setDiseaseReadOnly();
+
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
+			createForm.getFieldGroup());
+
+		createComponent.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				final ContactDto dto = createForm.getValue();
+				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+
+				// set the contact person's address to the one of the case when it is currently empty and
+				// the relationship with the case has been set to living in the same household
+				if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
+					if (personDto.getAddress().isEmptyLocation()) {
+						CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
+						personDto.getAddress().setRegion(caseDto.getRegion());
+						personDto.getAddress().setDistrict(caseDto.getDistrict());
+						personDto.getAddress().setCommunity(caseDto.getCommunity());
+					}
+					FacadeProvider.getPersonFacade().savePerson(personDto);
+				}
+
+				selectOrCreateContact(dto, personDto, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
+					if (selectedContactUuid != null) {
+						editData(selectedContactUuid);
+					}
+				});
+
 			}
 		});
 
@@ -567,7 +630,7 @@ public class ContactController {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {
 			if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
-					|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
+				|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
 				openPatientDiaryEnrollPage(person.getUuid());
 			} else {
 				RegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
@@ -652,5 +715,14 @@ public class ContactController {
 		});
 
 		return editView;
+	}
+
+	public void deleteContact(ContactIndexDto contact, Runnable callback) {
+		VaadinUiUtil.showDeleteConfirmationWindow(
+			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
+			() -> {
+				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				callback.run();
+			});
 	}
 }
