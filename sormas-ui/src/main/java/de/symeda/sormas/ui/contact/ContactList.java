@@ -19,8 +19,8 @@ package de.symeda.sormas.ui.contact;
 
 import java.util.List;
 
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -52,6 +52,7 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 		if (!contactList.isEmpty()) {
 			showPage(1);
 		} else {
+			removeAllComponents();
 			updatePaginationLayout();
 			Label noContactsLabel = new Label(I18nProperties.getCaption(Captions.contactNoContactsForEventParticipant));
 			listLayout.addComponent(noContactsLabel);
