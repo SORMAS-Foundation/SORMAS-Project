@@ -72,6 +72,7 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());
+		target.setOrigin(source.getOrigin());
 		target.setVisitUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getVisitUser()));
 
 		target.setReportLat(source.getReportLat());
@@ -104,6 +105,7 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());
+		target.setOrigin(source.getOrigin());
 
 		if (source.getVisitUser() != null) {
 			User user = DatabaseHelper.getUserDao().queryForId(source.getVisitUser().getId());

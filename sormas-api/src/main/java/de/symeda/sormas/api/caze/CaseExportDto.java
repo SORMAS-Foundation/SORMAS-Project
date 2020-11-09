@@ -235,6 +235,7 @@ public class CaseExportDto implements Serializable {
 	private String latestEventId;
 	private String latestEventTitle;
 	private EventStatus latestEventStatus;
+	private String externalID;
 
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
@@ -261,7 +262,7 @@ public class CaseExportDto implements Serializable {
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
 						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
-						 long eventCount) {
+						 long eventCount, String externalID) {
 		//@formatter:on
 
 		this.id = id;
@@ -334,6 +335,7 @@ public class CaseExportDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.eventCount = eventCount;
+		this.externalID = externalID;
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -411,6 +413,16 @@ public class CaseExportDto implements Serializable {
 	}
 
 	@Order(4)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.EXTERNAL_ID)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getExternalID() {
+		return externalID;
+	}
+
+	@Order(5)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1583,5 +1595,9 @@ public class CaseExportDto implements Serializable {
 
 	public void setLatestEventStatus(EventStatus latestEventStatus) {
 		this.latestEventStatus = latestEventStatus;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
 	}
 }

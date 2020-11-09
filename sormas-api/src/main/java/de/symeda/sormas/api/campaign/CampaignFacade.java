@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.campaign;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -12,7 +13,7 @@ public interface CampaignFacade {
 
 	List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<CampaignReferenceDto> getAllCampaignsAsReference();
+	List<CampaignReferenceDto> getAllActiveCampaignsAsReference();
 
 	CampaignReferenceDto getLastStartedCampaign();
 
@@ -33,4 +34,12 @@ public interface CampaignFacade {
 	CampaignReferenceDto getReferenceByUuid(String uuid);
 
 	boolean exists(String uuid);
+
+	List<CampaignDto> getAllAfter(Date campaignChangeDate);
+
+	List<CampaignDto> getByUuids(List<String> uuids);
+
+	List<String> getAllActiveUuids();
+
+	void validate(CampaignReferenceDto campaignReferenceDto);
 }

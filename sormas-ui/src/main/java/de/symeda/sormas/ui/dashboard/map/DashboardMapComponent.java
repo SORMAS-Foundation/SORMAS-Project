@@ -40,6 +40,7 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -80,6 +81,7 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -103,6 +105,9 @@ public class DashboardMapComponent extends VerticalLayout {
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;
 	private final LeafletMap map;
+	private final CssLayout overlayBackground;
+	private final VerticalLayout overlayLayout;
+	private final Label overlayMessageLabel;
 	private PopupButton legendDropdown;
 
 	// Layers
@@ -123,7 +128,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private List<MapCaseDto> mapAndFacilityCases = new ArrayList<>();
 	private List<MapContactDto> mapContactDtos = new ArrayList<>();
 
-	// Markers
+	// Map data
 	private final List<FacilityReferenceDto> markerCaseFacilities = new ArrayList<FacilityReferenceDto>();
 	private final List<MapContactDto> markerContacts = new ArrayList<MapContactDto>();
 	private final List<DashboardEventDto> markerEvents = new ArrayList<DashboardEventDto>();
@@ -198,12 +203,43 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		// Add components
 		addComponent(createHeader());
-		addComponent(map);
+
+		CssLayout mapLayout = new CssLayout();
+		mapLayout.setSizeFull();
+		mapLayout.setStyleName(DashboardCssStyles.MAP_CONTAINER);
+
+		map.addStyleName(DashboardCssStyles.MAP_COMPONENT);
+		mapLayout.addComponent(map);
+
+		overlayBackground = new CssLayout();
+		overlayBackground.setStyleName(DashboardCssStyles.MAP_OVERLAY_BACKGROUND);
+		overlayBackground.setVisible(false);
+		mapLayout.addComponent(overlayBackground);
+
+		overlayMessageLabel = new Label();
+		overlayMessageLabel.addStyleNames(CssStyles.ALIGN_CENTER, CssStyles.LABEL_WHITE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+
+		Button button = ButtonHelper.createButton(Captions.showPlacesOnMap, (e) -> {
+			refreshMap(true);
+		});
+
+		overlayLayout = new VerticalLayout(overlayMessageLabel, button);
+		overlayLayout.setStyleName(DashboardCssStyles.MAP_OVERLAY);
+		overlayLayout.setHeightFull();
+		overlayLayout.setComponentAlignment(overlayMessageLabel, Alignment.MIDDLE_CENTER);
+		overlayLayout.setExpandRatio(overlayMessageLabel, 0);
+		overlayLayout.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
+		overlayLayout.setExpandRatio(button, 0);
+		overlayLayout.setVisible(false);
+		mapLayout.addComponent(overlayLayout);
+
+		addComponent(mapLayout);
+		setExpandRatio(mapLayout, 1);
+
 		addComponent(createFooter());
-		setExpandRatio(map, 1);
 	}
 
-	public void refreshMap() {
+	private void refreshMap(boolean forced) {
 		clearRegionShapes();
 		clearCaseMarkers();
 		clearContactMarkers();
@@ -216,13 +252,75 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		Date fromDate = dashboardDataProvider.getFromDate();
 		Date toDate = dashboardDataProvider.getToDate();
-		RegionReferenceDto region = dashboardDataProvider.getRegion();
-		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
-		Disease disease = dashboardDataProvider.getDisease();
 
 		if (showRegions) {
 			showRegionsShapes(caseMeasure, fromDate, toDate, dashboardDataProvider.getDisease());
 		}
+
+		int maxDisplayCount = FacadeProvider.getConfigFacade().getDashboardMapMarkerLimit();
+		Long count = 0L;
+		if (!forced && maxDisplayCount >= 0) {
+			count = getMarkerCount(fromDate, toDate, maxDisplayCount);
+		}
+
+		if (!forced && maxDisplayCount >= 0 && count > maxDisplayCount) {
+			showMapOverlay(count);
+		} else {
+			hideMapOverlay();
+
+			loadMapData(fromDate, toDate);
+			updatePeriodFilters();
+		}
+	}
+
+	public void refreshMap() {
+		refreshMap(false);
+	}
+
+	private void showMapOverlay(Long count) {
+		overlayBackground.setVisible(true);
+		overlayLayout.setVisible(true);
+		overlayMessageLabel.setValue(String.format(I18nProperties.getString(Strings.warningDashboardMapTooManyMarkers), count));
+	}
+
+	private void hideMapOverlay() {
+		overlayBackground.setVisible(false);
+		overlayLayout.setVisible(false);
+	}
+
+	private Long getMarkerCount(Date fromDate, Date toDate, int maxCount) {
+		RegionReferenceDto region = dashboardDataProvider.getRegion();
+		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
+		Disease disease = dashboardDataProvider.getDisease();
+
+		Long count = 0L;
+
+		if (showCases) {
+			count += FacadeProvider.getCaseFacade().countCasesForMap(region, district, disease, fromDate, toDate);
+		}
+
+		if (count < maxCount && showContacts) {
+			if (!showCases) {
+				// Case lists need to be filled even when cases are hidden because they are
+				// needed to retrieve the contacts
+				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
+			}
+
+			count += FacadeProvider.getContactFacade().countContactsForMap(region, district, disease, mapAndFacilityCases);
+		}
+
+		if (showEvents) {
+			count += dashboardDataProvider.getEvents().size();
+		}
+
+		return count;
+	}
+
+	private void loadMapData(Date fromDate, Date toDate) {
+		RegionReferenceDto region = dashboardDataProvider.getRegion();
+		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
+		Disease disease = dashboardDataProvider.getDisease();
+
 		if (showCases) {
 			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
 		}
@@ -232,7 +330,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				// needed to retrieve the contacts
 				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
 			}
-			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate, toDate, mapAndFacilityCases));
+			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, mapAndFacilityCases));
 		}
 		if (showEvents) {
 			showEventMarkers(dashboardDataProvider.getEvents());
@@ -240,8 +338,6 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		// Re-create the map key layout to only show the keys for the selected layers
 		legendDropdown.setContent(createLegend());
-
-		updatePeriodFilters();
 	}
 
 	public List<CaseDataDto> getCasesForFacility(FacilityReferenceDto facility) {
@@ -329,7 +425,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				caseClassificationOptions.setValue(caseClassificationOption);
 				caseClassificationOptions.addValueChangeListener(event -> {
 					caseClassificationOption = (MapCaseClassificationOption) event.getProperty().getValue();
-					refreshMap();
+					refreshMap(true);
 				});
 				layersLayout.addComponent(caseClassificationOptions);
 
@@ -339,7 +435,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
 				mapCaseDisplayModeSelect.addValueChangeListener(event -> {
 					mapCaseDisplayMode = (MapCaseDisplayMode) event.getProperty().getValue();
-					refreshMap();
+					refreshMap(true);
 				});
 
 				HorizontalLayout showCasesLayout = new HorizontalLayout();
@@ -354,7 +450,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						showCases = (boolean) e.getProperty().getValue();
 						mapCaseDisplayModeSelect.setEnabled(showCases);
 						mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
-						refreshMap();
+						refreshMap(true);
 					});
 					showCasesLayout.addComponent(showCasesCheckBox);
 
@@ -385,7 +481,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					showConfirmedContactsCheckBox.setValue(true);
 					showUnconfirmedContactsCheckBox.setEnabled(showContacts);
 					showUnconfirmedContactsCheckBox.setValue(true);
-					refreshMap();
+					refreshMap(true);
 				});
 				layersLayout.addComponent(showContactsCheckBox);
 
@@ -393,7 +489,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				showConfirmedContactsCheckBox.setValue(showConfirmedContacts);
 				showConfirmedContactsCheckBox.addValueChangeListener(e -> {
 					showConfirmedContacts = (boolean) e.getProperty().getValue();
-					refreshMap();
+					refreshMap(true);
 				});
 				layersLayout.addComponent(showConfirmedContactsCheckBox);
 
@@ -402,7 +498,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				showUnconfirmedContactsCheckBox.setValue(showUnconfirmedContacts);
 				showUnconfirmedContactsCheckBox.addValueChangeListener(e -> {
 					showUnconfirmedContacts = (boolean) e.getProperty().getValue();
-					refreshMap();
+					refreshMap(true);
 				});
 				layersLayout.addComponent(showUnconfirmedContactsCheckBox);
 
@@ -416,7 +512,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				showEventsCheckBox.setValue(showEvents);
 				showEventsCheckBox.addValueChangeListener(e -> {
 					showEvents = (boolean) e.getProperty().getValue();
-					refreshMap();
+					refreshMap(true);
 				});
 				layersLayout.addComponent(showEventsCheckBox);
 
@@ -429,7 +525,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					regionMapVisualizationSelect.setValue(caseMeasure);
 					regionMapVisualizationSelect.addValueChangeListener(event -> {
 						caseMeasure = (CaseMeasure) event.getProperty().getValue();
-						refreshMap();
+						refreshMap(true);
 					});
 
 					HorizontalLayout showRegionsLayout = new HorizontalLayout();
@@ -444,7 +540,7 @@ public class DashboardMapComponent extends VerticalLayout {
 							showRegions = (boolean) e.getProperty().getValue();
 							regionMapVisualizationSelect.setEnabled(showRegions);
 							regionMapVisualizationSelect.setValue(caseMeasure);
-							refreshMap();
+							refreshMap(true);
 						});
 						showRegionsLayout.addComponent(showRegionsCheckBox);
 
@@ -466,7 +562,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				hideOtherCountriesCheckBox.setValue(hideOtherCountries);
 				hideOtherCountriesCheckBox.addValueChangeListener(e -> {
 					hideOtherCountries = (boolean) e.getProperty().getValue();
-					refreshMap();
+					refreshMap(true);
 				});
 				layersLayout.addComponent(hideOtherCountriesCheckBox);
 
@@ -577,7 +673,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			reloadPeriodFiltersFlag = PeriodFilterReloadFlag.DONT_RELOAD;
 
-			refreshMap();
+			refreshMap(true);
 		});
 		cmbPeriodFilter.addItemSetChangeListener(e -> {
 			cmbPeriodFilter.setEnabled(cmbPeriodFilter.size() > 0);
@@ -615,7 +711,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			dateTo = null;
 
 			if (reloadFlag != PeriodFilterReloadFlag.RELOAD_AND_KEEP_VALUE)
-				refreshMap();
+				refreshMap(true);
 
 			return;
 		}

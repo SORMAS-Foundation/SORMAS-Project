@@ -6,12 +6,20 @@
  	version="3.1">
  	
 	<display-name>SORMAS Web Interface</display-name>
+	<context-param>
+		<description>Vaadin Production Mode</description>
+		<param-name>productionMode</param-name>
+		<param-value>true</param-value>
+	</context-param>
 	
 	<security-role>
 	  <role-name>USER</role-name>
 	</security-role>
 	<security-role>
 	  <role-name>ADMIN</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>ADMIN_SUPERVISOR</role-name>
 	</security-role>
 	<security-role>
 	  <role-name>SURVEILLANCE_SUPERVISOR</role-name>

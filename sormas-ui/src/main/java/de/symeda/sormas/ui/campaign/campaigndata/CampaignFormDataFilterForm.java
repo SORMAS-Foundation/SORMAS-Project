@@ -58,12 +58,6 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	@Override
 	protected void addFields() {
-		ComboBox cbCampaign = addField(
-			FieldConfiguration.withCaptionAndPixelSized(
-				CampaignFormDataCriteria.CAMPAIGN,
-				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN),
-				200));
-		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllCampaignsAsReference());
 
 		cbCampaignForm = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
@@ -72,7 +66,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				200));
 		cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 
-		FieldHelper.addSoftRequiredStyle(cbCampaign, cbCampaignForm);
+		FieldHelper.addSoftRequiredStyle(cbCampaignForm);
 
 		if (formMetaChangedCallback != null) {
 			cbCampaignForm.addValueChangeListener(e -> {
@@ -152,9 +146,9 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	@Override
 	protected void applyDependenciesOnNewValue(CampaignFormDataCriteria criteria) {
-		ComboBox cbRegion = (ComboBox) getField(CampaignFormDataDto.REGION);
-		ComboBox cbDistrict = (ComboBox) getField(CampaignFormDataDto.DISTRICT);
-		ComboBox cbCommunity = (ComboBox) getField(CampaignFormDataDto.COMMUNITY);
+		final ComboBox cbRegion = getField(CampaignFormDataDto.REGION);
+		final ComboBox cbDistrict = getField(CampaignFormDataDto.DISTRICT);
+		final ComboBox cbCommunity = getField(CampaignFormDataDto.COMMUNITY);
 
 		if (cbRegion != null && cbDistrict != null) {
 			RegionReferenceDto region = criteria.getRegion();
@@ -180,4 +174,5 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			cbCampaignForm.addValueChangeListener(e -> formMetaChangedCallback.accept((CampaignFormMetaReferenceDto) e.getProperty().getValue()));
 		}
 	}
+
 }

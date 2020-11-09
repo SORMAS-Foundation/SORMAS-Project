@@ -80,6 +80,26 @@
                     app:value="@{data.endDate}" />
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_eventInvestigationStatus"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.eventInvestigationStatus}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_eventInvestigationStartDate"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.eventInvestigationStartDate}" />
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_eventInvestigationEndDate"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.eventInvestigationEndDate}" />
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

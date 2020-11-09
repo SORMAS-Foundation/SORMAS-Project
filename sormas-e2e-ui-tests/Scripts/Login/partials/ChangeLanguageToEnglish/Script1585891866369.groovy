@@ -10,5 +10,5 @@ WebUI.click(findTestObject('Login/SettingsDialog/div_language_v-filterselect-but
 
 WebUI.click(findTestObject('Login/SettingsDialog/td_English'))
 
-WebUI.click(findTestObject('Login/SettingsDialog/div_Save_button'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 

@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.campaign;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -11,7 +14,10 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -64,5 +70,58 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 			}
 		}
 		return filter;
+	}
+
+	public List<String> getAllActiveUuids() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Campaign> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and();
+
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = AbstractAdoService.and(cb, cb.isFalse(from.get(Campaign.ARCHIVED)), userFilter);
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Campaign.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Campaign> getAllAfter(Date since, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
+		Root<Campaign> root = cq.from(getElementClass());
+
+		Predicate filter = createUserFilter(cb, cq, root);
+		if (since != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, root, since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
+
+		List<Campaign> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+
+	public List<Campaign> getAllActive() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
+		Root<Campaign> from = cq.from(getElementClass());
+		cq.where(cb.isFalse(from.get(Campaign.DELETED)));
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

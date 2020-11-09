@@ -111,7 +111,7 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
 	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
-  public static final String RETURNING_TRAVELER = "returningTraveler";
+	public static final String RETURNING_TRAVELER = "returningTraveler";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -164,6 +164,9 @@ public class ContactDto extends PseudonymizableDto {
 	private ContactRelation relationToCase;
 	@SensitiveData
 	private String relationDescription;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
 
 	private boolean highPriority;
@@ -754,7 +757,7 @@ public class ContactDto extends PseudonymizableDto {
 	public void setHealthConditions(HealthConditionsDto healthConditions) {
 		this.healthConditions = healthConditions;
 	}
-  
+
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -787,11 +790,11 @@ public class ContactDto extends PseudonymizableDto {
 		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
 	}
 
-  public YesNoUnknown getReturningTraveler() {
+	public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
 	}
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
-  }
+	}
 }

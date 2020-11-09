@@ -9,6 +9,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.AreaReferenceDto;
@@ -49,9 +50,11 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private void createCampaignFilter() {
+		campaignFilter.setRequired(true);
+		campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
 		campaignFilter.setWidth(200, Unit.PIXELS);
 		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
-		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllCampaignsAsReference().toArray());
+		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference().toArray());
 		campaignFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
 			dashboardView.refreshDashboard();
@@ -67,21 +70,23 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	@SuppressWarnings("deprecation")
 	private void createJurisdictionFilters() {
-		final AreaReferenceDto userArea = UserProvider.getCurrent().getUser().getArea();
 		final RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
+		final AreaReferenceDto userArea =
+			userRegion != null ? FacadeProvider.getRegionFacade().getRegionByUuid(userRegion.getUuid()).getArea() : null;
 		final DistrictReferenceDto userDistrict = UserProvider.getCurrent().getUser().getDistrict();
 
 		dashboardDataProvider.setArea(userArea);
 		if (userArea == null && userRegion == null) {
-			setFilterVisibilitiesBasedOnArea(areaFilter.getValue());
+			enableFiltersBasedOnArea(areaFilter.getValue());
+			areaFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_area));
 			areaFilter.setWidth(200, Unit.PIXELS);
-			areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptArea));
+			areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllAreas));
 			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 			areaFilter.addValueChangeListener(e -> {
 				final Object value = areaFilter.getValue();
 				dashboardDataProvider.setArea((AreaReferenceDto) value);
 				dashboardView.refreshDashboard();
-				setFilterVisibilitiesBasedOnArea(value);
+				enableFiltersBasedOnArea(value);
 			});
 			addComponent(areaFilter);
 			dashboardDataProvider.setArea((AreaReferenceDto) areaFilter.getValue());
@@ -89,14 +94,15 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		dashboardDataProvider.setRegion(userRegion);
 		if (userRegion == null) {
-			setFilterVisibilitiesBasedOnRegion(regionFilter.getValue());
+			enableFiltersBasedOnRegion(regionFilter.getValue());
+			regionFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_region));
 			regionFilter.setWidth(200, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptRegion));
+			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
 			regionFilter.addValueChangeListener(e -> {
 				final Object value = regionFilter.getValue();
 				dashboardDataProvider.setRegion((RegionReferenceDto) value);
 				dashboardView.refreshDashboard();
-				setFilterVisibilitiesBasedOnRegion(value);
+				enableFiltersBasedOnRegion(value);
 			});
 			addComponent(regionFilter);
 			dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
@@ -104,8 +110,9 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		dashboardDataProvider.setDistrict(userDistrict);
 		if (userRegion != null || userDistrict == null) {
+			districtFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_district));
 			districtFilter.setWidth(200, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptDistrict));
+			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 			if (userRegion != null) {
 				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
 			}
@@ -118,26 +125,26 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		}
 	}
 
-	private void setFilterVisibilitiesBasedOnRegion(Object value) {
+	private void enableFiltersBasedOnRegion(Object value) {
 		if (value != null) {
-			districtFilter.setVisible(true);
+			districtFilter.setEnabled(true);
 			districtFilter.removeAllItems();
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(((RegionReferenceDto) value).getUuid()));
 		} else {
-			districtFilter.setVisible(false);
+			districtFilter.setEnabled(false);
 			districtFilter.clear();
 		}
 	}
 
-	private void setFilterVisibilitiesBasedOnArea(Object value) {
+	private void enableFiltersBasedOnArea(Object value) {
 		if (value != null) {
 			regionFilter.removeAllItems();
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
-			regionFilter.setVisible(true);
+			regionFilter.setEnabled(true);
 		} else {
-			regionFilter.setVisible(false);
+			regionFilter.setEnabled(false);
 			regionFilter.clear();
-			districtFilter.setVisible(false);
+			districtFilter.setEnabled(false);
 			districtFilter.clear();
 		}
 	}

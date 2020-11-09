@@ -30,6 +30,7 @@ import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
@@ -38,6 +39,7 @@ import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
@@ -226,6 +228,23 @@ public class LocationDialog extends FormDialog {
 			contentBinding.locationAddressType.initializeSpinner(DataUtils.getEnumItems(PersonAddressType.class));
 		}
 		contentBinding.locationAddressType.setValidationCallback(() -> contentBinding.locationAddressType.getValue() != null);
+
+		contentBinding.locationAddressType.addValueChangedListener(e -> {
+			FacilityTypeGroup oldGroup = (FacilityTypeGroup) contentBinding.facilityTypeGroup.getValue();
+			FacilityType oldType = (FacilityType) contentBinding.locationFacilityType.getValue();
+			Facility oldFacility = (Facility) contentBinding.locationFacility.getValue();
+			String oldDetails = contentBinding.locationFacilityDetails.getValue();
+			contentBinding.facilityTypeGroup.setSpinnerData(null);
+			if (PersonAddressType.HOME.equals(contentBinding.locationAddressType.getValue())) {
+				contentBinding.facilityTypeGroup.setSpinnerData(DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups()));
+			} else {
+				contentBinding.facilityTypeGroup.setSpinnerData(DataUtils.getEnumItems(FacilityTypeGroup.class));
+			}
+			contentBinding.facilityTypeGroup.setValue(oldGroup);
+			contentBinding.locationFacilityType.setValue(oldType);
+			contentBinding.locationFacility.setValue(oldFacility);
+			contentBinding.locationFacilityDetails.setValue(oldDetails);
+		});
 	}
 
 }

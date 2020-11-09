@@ -34,6 +34,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
+import de.symeda.sormas.ui.docgeneration.DocGenerationComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.survnet.SurvnetGateway;
@@ -79,7 +80,8 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DocGenerationComponent.QUARANTINE_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -116,17 +118,17 @@ public class CaseDataView extends AbstractCaseView {
 			sampleLocLayout.setSpacing(false);
 
 			SampleListComponent sampleList = new SampleListComponent(getCaseRef());
-			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
+			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-
-				Label infoSample = new Label(
+				sampleList.addStyleName(CssStyles.VSPACE_NONE);
+				Label sampleInfo = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
 					ContentMode.HTML);
-				infoSample.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
+				sampleInfo.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
 
-				sampleLocLayout.addComponent(infoSample);
+				sampleLocLayout.addComponent(sampleInfo);
 			}
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
@@ -141,12 +143,12 @@ public class CaseDataView extends AbstractCaseView {
 		eventLayout.addComponent(eventList);
 		layout.addComponent(eventLayout, EVENTS_LOC);
 
-		VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
-		sormasToSormasLocLayout.setMargin(false);
-		sormasToSormasLocLayout.setSpacing(false);
-
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {
+			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+			sormasToSormasLocLayout.setMargin(false);
+			sormasToSormasLocLayout.setSpacing(false);
+
 			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(caze, sormasToSormasEnabled);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
@@ -155,6 +157,8 @@ public class CaseDataView extends AbstractCaseView {
 		}
 
 		SurvnetGateway.addComponentToLayout(layout, () -> Arrays.asList(caze.getUuid()));
+
+		DocGenerationComponent.addComponentToLayout(layout, getCaseRef(), caze.getQuarantine());
 
 		setCaseEditPermission(container);
 	}

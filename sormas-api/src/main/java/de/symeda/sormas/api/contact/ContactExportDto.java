@@ -134,6 +134,11 @@ public class ContactExportDto implements Serializable {
 
 	private ContactJurisdictionDto jurisdiction;
 
+	private final Long eventCount;
+	private String latestEventId;
+	private String latestEventTitle;
+	private String externalID;
+
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
@@ -149,8 +154,7 @@ public class ContactExportDto implements Serializable {
 							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler,
-							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
+							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, long eventCount, String externalID,							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//@formatter:on
@@ -210,6 +214,8 @@ public class ContactExportDto implements Serializable {
 		this.epiDataId = epiDataId;
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
+		this.eventCount = eventCount;
+		this.externalID = externalID;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -249,26 +255,31 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(1)
+	public String getExternalID() {
+		return externalID;
+	}
+
+	@Order(2)
 	public String getSourceCaseUuid() {
 		return sourceCaseUuid;
 	}
 
-	@Order(2)
+	@Order(3)
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
 
-	@Order(3)
+	@Order(4)
 	public String getDisease() {
 		return disease;
 	}
 
-	@Order(4)
+	@Order(5)
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}
 
-	@Order(5)
+	@Order(6)
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
@@ -313,7 +324,7 @@ public class ContactExportDto implements Serializable {
 		return district;
 	}
 
-	@Order(17)
+	@Order(18)
 	public String getCommunity() {
 		return community;
 	}
@@ -569,6 +580,29 @@ public class ContactExportDto implements Serializable {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
+	}
+
+	@Order(71)
+	public String getLatestEventId() {
+		return latestEventId;
+	}
+
+	public void setLatestEventId(String latestEventId) {
+		this.latestEventId = latestEventId;
+	}
+
+	@Order(72)
+	public String getLatestEventTitle() {
+		return latestEventTitle;
+	}
+
+	public void setLatestEventTitle(String latestEventTitle) {
+		this.latestEventTitle = latestEventTitle;
+	}
+
+	@Order(73)
+	public long getEventCount() {
+		return this.eventCount;
 	}
 
 	public void setId(long id) {

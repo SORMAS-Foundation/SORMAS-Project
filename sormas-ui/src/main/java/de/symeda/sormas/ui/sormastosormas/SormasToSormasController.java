@@ -15,21 +15,31 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class SormasToSormasController {
@@ -37,16 +47,52 @@ public class SormasToSormasController {
 	public SormasToSormasController() {
 	}
 
-	public void shareCaseToSormas(CaseReferenceDto caze, SormasToSormasListComponent listComponent) {
-		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareCase(caze.getUuid(), options), listComponent, true);
+	public void shareCaseFormDetailsPage(CaseReferenceDto caze, SormasToSormasListComponent listComponent) {
+		shareToSormasFromDetailPage(
+			(options) -> FacadeProvider.getSormasToSormasFacade().shareCases(Collections.singletonList(caze.getUuid()), options),
+			listComponent,
+			new SormasToSormasOptionsForm(true));
 	}
 
-	public void shareContactToSormas(ContactReferenceDto contact, SormasToSormasListComponent listComponent) {
-		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareContact(contact.getUuid(), options), listComponent, false);
+	public void shareSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+		shareToSormas((options) -> {
+			FacadeProvider.getSormasToSormasFacade()
+				.shareCases(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()), options);
+			callback.run();
+		}, new SormasToSormasOptionsForm(true));
 	}
 
-	private void shareToSormas(HandleShareWithOptions handleShareWithOptions, SormasToSormasListComponent listComponent, boolean isForCase) {
-		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(isForCase);
+	public void shareContactFromDetailsPage(ContactReferenceDto contact, SormasToSormasListComponent listComponent) {
+		shareToSormasFromDetailPage(
+			(options) -> FacadeProvider.getSormasToSormasFacade().shareContacts(Collections.singletonList(contact.getUuid()), options),
+			listComponent,
+			new SormasToSormasOptionsForm(false));
+	}
+
+	public void shareSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+		shareToSormas((options) -> {
+			FacadeProvider.getSormasToSormasFacade()
+				.shareContacts(selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()), options);
+			callback.run();
+		}, new SormasToSormasOptionsForm(false));
+	}
+
+	private void shareToSormasFromDetailPage(
+		HandleShareWithOptions handleShareWithOptions,
+		SormasToSormasListComponent listComponent,
+		SormasToSormasOptionsForm optionsForm) {
+		shareToSormas(options -> {
+			handleShareWithOptions.handle(options);
+
+			if (options.isHandOverOwnership()) {
+				SormasUI.refreshView();
+			} else {
+				listComponent.reloadList();
+			}
+		}, optionsForm);
+	}
+
+	private void shareToSormas(HandleShareWithOptions handleShareWithOptions, SormasToSormasOptionsForm optionsForm) {
 		optionsForm.setValue(new SormasToSormasOptionsDto());
 
 		CommitDiscardWrapperComponent<SormasToSormasOptionsForm> optionsCommitDiscard =
@@ -61,24 +107,60 @@ public class SormasToSormasController {
 
 			try {
 				handleShareWithOptions.handle(options);
-
 				optionsPopup.close();
-
-				if (options.isHandOverOwnership()) {
-					SormasUI.refreshView();
-				} else {
-					listComponent.reloadList();
-				}
 			} catch (SormasToSormasException ex) {
-				Label messageLabel = new Label(ex.getMessage(), ContentMode.HTML);
-				messageLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
-				VaadinUiUtil.showPopupWindow(new VerticalLayout(messageLabel), I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle));
+				Component messageComponent = buildShareErrorMessage(ex);
+				messageComponent.setWidth(100, Sizeable.Unit.PERCENTAGE);
+				VaadinUiUtil
+					.showPopupWindow(new VerticalLayout(messageComponent), I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle));
 			}
 		});
 
 		optionsCommitDiscard.addDiscardListener(() -> {
 			optionsPopup.close();
 		});
+	}
+
+	private Component buildShareErrorMessage(SormasToSormasException ex) {
+		Label errorMessageLabel = new Label(ex.getMessage(), ContentMode.HTML);
+
+		if (ex.getErrors() == null || ex.getErrors().size() == 0) {
+			return errorMessageLabel;
+		}
+
+		VerticalLayout[] errorLayouts = ex.getErrors().entrySet().stream().map(e -> {
+			Label groupLabel = new Label(e.getKey());
+			groupLabel.addStyleNames(CssStyles.LABEL_BOLD);
+
+			VerticalLayout groupErrorsLayout = new VerticalLayout(formatGroupErrors(e.getValue()));
+			groupErrorsLayout.setMargin(false);
+			groupErrorsLayout.setSpacing(false);
+			groupErrorsLayout.setStyleName(CssStyles.HSPACE_LEFT_3);
+
+			VerticalLayout layout = new VerticalLayout(groupLabel, groupErrorsLayout);
+			layout.setMargin(false);
+			layout.setSpacing(false);
+
+			return layout;
+		}).toArray(VerticalLayout[]::new);
+
+		VerticalLayout errorsLayout = new VerticalLayout(errorMessageLabel);
+		errorsLayout.addComponents(errorLayouts);
+		errorsLayout.setMargin(false);
+		errorsLayout.setSpacing(false);
+
+		return errorsLayout;
+	}
+
+	private Component[] formatGroupErrors(ValidationErrors errors) {
+		return errors.getErrors().entrySet().stream().map(e -> {
+			Label groupLabel = new Label(e.getKey() + ":");
+			groupLabel.addStyleName(CssStyles.LABEL_BOLD);
+			HorizontalLayout layout = new HorizontalLayout(groupLabel, new Label(String.join(", ", e.getValue())));
+			layout.setMargin(false);
+
+			return layout;
+		}).toArray(Component[]::new);
 	}
 
 	private interface HandleShareWithOptions {

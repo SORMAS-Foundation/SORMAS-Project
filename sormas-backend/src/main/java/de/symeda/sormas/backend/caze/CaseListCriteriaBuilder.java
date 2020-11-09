@@ -120,7 +120,11 @@ public class CaseListCriteriaBuilder {
 			cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
 		}
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze);
+		CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();
+		if (caseCriteria != null) {
+			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
+		}
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, caseUserFilterCriteria);
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);

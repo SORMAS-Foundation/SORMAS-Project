@@ -42,7 +42,7 @@ WebUI.click(findTestObject('Surveillance/CaseView/Sample/td_Voreingestelltes Lab
 
 WebUI.setText(findTestObject('Surveillance/CaseView/Sample/textarea_Comment_TArea'), Helper.generateString('comment', 6))
 
-WebUI.click(findTestObject('Surveillance/CaseView/Sample/div_SaveSample_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 

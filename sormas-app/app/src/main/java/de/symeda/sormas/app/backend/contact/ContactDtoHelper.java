@@ -275,6 +275,10 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 			target.setHealthConditions(null);
 		}
 
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
+		}
+
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 

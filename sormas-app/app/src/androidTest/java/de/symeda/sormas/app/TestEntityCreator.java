@@ -146,6 +146,8 @@ public class TestEntityCreator {
 		String eventTitle = "FirstEventTitle";
 		String eventDesc = "FirstEventDescription";
 		Date eventDate = DateHelper.subtractDays(new Date(), 2);
+		Date eventInvestigationStartDate = DateHelper.subtractDays(new Date(), 1);
+		Date eventInvestigationEndDate = new Date();
 		TypeOfPlace typeOfPlace = TypeOfPlace.PUBLIC_PLACE;
 		String srcFirstName = "Emil";
 		String srcLastName = "Mpenza";
@@ -153,6 +155,8 @@ public class TestEntityCreator {
 
 		Event event = DatabaseHelper.getEventDao().build();
 		event.setEventTitle(eventTitle);
+		event.setEventInvestigationStartDate(eventInvestigationStartDate);
+		event.setEventInvestigationEndDate(eventInvestigationEndDate);
 		event.setEventDesc(eventDesc);
 		event.setStartDate(eventDate);
 		event.setTypeOfPlace(typeOfPlace);

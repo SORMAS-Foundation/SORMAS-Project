@@ -1079,29 +1079,37 @@ public class CaseController {
 		classificationRulesLayout.setMargin(true);
 
 		if (diseaseCriteria != null) {
-			Label suspectContent = new Label();
-			suspectContent.setContentMode(ContentMode.HTML);
-			suspectContent.setWidth(100, Unit.PERCENTAGE);
-			suspectContent.setValue(ClassificationHtmlRenderer.createSuspectHtmlString(diseaseCriteria));
-			classificationRulesLayout.addComponent(suspectContent);
+			if (diseaseCriteria.getSuspectCriteria() != null) {
+				Label suspectContent = new Label();
+				suspectContent.setContentMode(ContentMode.HTML);
+				suspectContent.setWidth(100, Unit.PERCENTAGE);
+				suspectContent.setValue(ClassificationHtmlRenderer.createSuspectHtmlString(diseaseCriteria));
+				classificationRulesLayout.addComponent(suspectContent);
+			}
 
-			Label probableContent = new Label();
-			probableContent.setContentMode(ContentMode.HTML);
-			probableContent.setWidth(100, Unit.PERCENTAGE);
-			probableContent.setValue(ClassificationHtmlRenderer.createProbableHtmlString(diseaseCriteria));
-			classificationRulesLayout.addComponent(probableContent);
+			if (diseaseCriteria.getProbableCriteria() != null) {
+				Label probableContent = new Label();
+				probableContent.setContentMode(ContentMode.HTML);
+				probableContent.setWidth(100, Unit.PERCENTAGE);
+				probableContent.setValue(ClassificationHtmlRenderer.createProbableHtmlString(diseaseCriteria));
+				classificationRulesLayout.addComponent(probableContent);
+			}
 
-			Label confirmedContent = new Label();
-			confirmedContent.setContentMode(ContentMode.HTML);
-			confirmedContent.setWidth(100, Unit.PERCENTAGE);
-			confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
-			classificationRulesLayout.addComponent(confirmedContent);
+			if (diseaseCriteria.getConfirmedCriteria() != null) {
+				Label confirmedContent = new Label();
+				confirmedContent.setContentMode(ContentMode.HTML);
+				confirmedContent.setWidth(100, Unit.PERCENTAGE);
+				confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
+				classificationRulesLayout.addComponent(confirmedContent);
+			}
 
-			Label notACaseContent = new Label();
-			notACaseContent.setContentMode(ContentMode.HTML);
-			notACaseContent.setWidth(100, Unit.PERCENTAGE);
-			notACaseContent.setValue(ClassificationHtmlRenderer.createNotACaseHtmlString(diseaseCriteria));
-			classificationRulesLayout.addComponent(notACaseContent);
+			if (diseaseCriteria.getNotACaseCriteria() != null) {
+				Label notACaseContent = new Label();
+				notACaseContent.setContentMode(ContentMode.HTML);
+				notACaseContent.setWidth(100, Unit.PERCENTAGE);
+				notACaseContent.setValue(ClassificationHtmlRenderer.createNotACaseHtmlString(diseaseCriteria));
+				classificationRulesLayout.addComponent(notACaseContent);
+			}
 		}
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);

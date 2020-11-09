@@ -23,7 +23,7 @@ WebUI.click(findTestObject('Object Repository/Tasks/div_Assigned to_v-filtersele
 //WebUI.setText(findTestObject('Object Repository/Tasks/div_Assigned to_v-filterselect-button'), 'Surveillance SUPERVISOR')
 WebUI.click(findTestObject('Object Repository/Tasks/span_Surveillance SUPERVISOR - berwachungsleitung (4)'))
 
-WebUI.click(findTestObject('Object Repository/Tasks/div_Save'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 WebUI.delay(1)
 
 int newNumberOfRows = Table.getNumberOfTableRows()

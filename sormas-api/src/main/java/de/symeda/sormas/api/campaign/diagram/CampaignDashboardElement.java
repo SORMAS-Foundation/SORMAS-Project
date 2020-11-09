@@ -1,63 +1,70 @@
 package de.symeda.sormas.api.campaign.diagram;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class CampaignDashboardElement implements Serializable {
 
-    private String diagramId;
-    private String tabId;
-    private Integer order;
-    private Integer width;
-    private Integer height;
+	public static String DIAGRAM_ID = "diagramId";
+	public static String TAB_ID = "tabId";
+	public static String ORDER = "order";
+	public static String WIDTH = "width";
+	public static String HEIGHT = "height";
 
-    public CampaignDashboardElement() {
-    }
+	private String diagramId;
+	private String tabId;
+	private Integer order;
+	private Integer width;
+	private Integer height;
 
-    public CampaignDashboardElement(String diagramId, String tabId, Integer order, Integer width, Integer height) {
-        this.diagramId = diagramId;
-        this.tabId = tabId;
-        this.order = order;
-        this.width = width;
-        this.height = height;
-    }
+	public CampaignDashboardElement() {
+	}
 
-    public String getDiagramId() {
-        return diagramId;
-    }
+	public CampaignDashboardElement(String diagramId, String tabId, Integer order, Integer width, Integer height) {
+		this.diagramId = diagramId;
+		this.tabId = tabId;
+		this.order = order;
+		this.width = width;
+		this.height = height;
+	}
 
-    public void setDiagramId(String diagramId) {
-        this.diagramId = diagramId;
-    }
+	public String getDiagramId() {
+		return diagramId;
+	}
 
-    public String getTabId() {
-        return tabId;
-    }
+	public void setDiagramId(String diagramId) {
+		this.diagramId = diagramId;
+	}
 
-    public void setTabId(String tabId) {
-        this.tabId = tabId;
-    }
+	public String getTabId() {
+		return tabId;
+	}
 
-    public Integer getOrder() {
-        return order;
-    }
+	public void setTabId(String tabId) {
+		this.tabId = tabId;
+	}
 
-    public void setOrder(Integer order) {
-        this.order = order;
-    }
+	public Integer getOrder() {
+		return order;
+	}
 
-    public Integer getWidth() {
-        return width;
-    }
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
 
-    public void setWidth(Integer width) {
-        this.width = width;
-    }
+	public Integer getWidth() {
+		return width;
+	}
 
-    public Integer getHeight() {
-        return height;
-    }
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
 
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
 }

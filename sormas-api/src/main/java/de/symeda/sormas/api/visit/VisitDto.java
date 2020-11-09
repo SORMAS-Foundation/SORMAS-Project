@@ -20,6 +20,7 @@ package de.symeda.sormas.api.visit;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -43,6 +44,7 @@ public class VisitDto extends PseudonymizableDto {
 	public static final String SYMPTOMS = "symptoms";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String ORIGIN = "origin";
 
 	@Required
 	private PersonReferenceDto person;
@@ -64,8 +66,9 @@ public class VisitDto extends PseudonymizableDto {
 	private Double reportLon;
 
 	private Float reportLatLonAccuracy;
+	private VisitOrigin origin;
 
-	public static VisitDto build(PersonReferenceDto contactPerson, Disease disease) {
+	public static VisitDto build(PersonReferenceDto contactPerson, Disease disease, VisitOrigin origin) {
 
 		VisitDto visit = new VisitDto();
 		visit.setUuid(DataHelper.createUuid());
@@ -77,6 +80,7 @@ public class VisitDto extends PseudonymizableDto {
 		visit.setSymptoms(symptoms);
 
 		visit.setVisitDateTime(new Date());
+		visit.setOrigin(origin);
 
 		return visit;
 	}
@@ -91,9 +95,10 @@ public class VisitDto extends PseudonymizableDto {
 		SymptomsDto symptoms,
 		Double reportLat,
 		Double reportLon,
-		Float reportLatLonAccuracy) {
+		Float reportLatLonAccuracy,
+		VisitOrigin origin) {
 
-		final VisitDto visit = build(person, disease);
+		final VisitDto visit = build(person, disease, origin);
 
 		if (visitDateTime != null) {
 			visit.setVisitDateTime(visitDateTime);
@@ -190,6 +195,14 @@ public class VisitDto extends PseudonymizableDto {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	public VisitOrigin getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(VisitOrigin origin) {
+		this.origin = origin;
 	}
 
 	public VisitReferenceDto toReference() {

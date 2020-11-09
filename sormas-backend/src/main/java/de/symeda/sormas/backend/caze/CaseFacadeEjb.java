@@ -69,6 +69,7 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
@@ -155,7 +156,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
-import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
@@ -172,6 +173,7 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.MessageSubject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -229,7 +231,6 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -362,8 +363,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
-	@EJB
-	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -402,7 +401,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> root = cq.from(Case.class);
 		CaseJoins<Case> joins = new CaseJoins<>(root);
-		Predicate filter = caseService.createUserFilter(cb, cq, root);
+
+		CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();
+		if (caseCriteria != null) {
+			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
+		}
+		Predicate filter = caseService.createUserFilter(cb, cq, root, caseUserFilterCriteria);
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, root, joins);
@@ -565,7 +569,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN), 
 				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
-				eventCountSq
+				eventCountSq,
+				caseRoot.get(Case.EXTERNAL_ID)
 				);
 		//@formatter:on
 
@@ -1024,6 +1029,13 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.select(cb.count(caze));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public Long countCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to) {
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+
+		return caseService.countCasesForMap(region, district, disease, from, to);
 	}
 
 	@Override
@@ -1724,13 +1736,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
 				newCase.getRegion(),
 				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
 				UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(
 						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_CASE_CLASSIFICATION_CHANGED),
+						MessageSubject.CASE_CLASSIFICATION_CHANGED,
 						String.format(
 							I18nProperties.getString(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
 							DataHelper.getShortUuid(newCase.getUuid()),
@@ -1753,13 +1766,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
 				newCase.getRegion(),
 				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.ADMIN_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
 				UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(
 						recipient,
-						I18nProperties.getString(MessagingService.SUBJECT_DISEASE_CHANGED),
+						MessageSubject.DISEASE_CHANGED,
 						String.format(
 							I18nProperties.getString(MessagingService.CONTENT_DISEASE_CHANGED),
 							DataHelper.getShortUuid(newCase.getUuid()),
@@ -2509,12 +2523,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (assignee == null) {
-			if (caze.getReportingUser() != null && caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+			if (caze.getReportingUser() != null
+				&& (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)
+					|| caze.getReportingUser().getUserRoles().contains(UserRole.ADMIN_SUPERVISOR))) {
 				// 3) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else if (caze.getRegion() != null) {
 				// 4) Assign a random surveillance supervisor from the case region
-				List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+				List<User> supervisors =
+					userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
 				if (!supervisors.isEmpty()) {
 					Random rand = new Random();
 					assignee = supervisors.get(rand.nextInt(supervisors.size()));
@@ -2651,13 +2668,17 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendInvestigationDoneNotifications(Case caze) {
 
-		List<User> messageRecipients = userService
-			.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+		List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
+			caze.getRegion(),
+			UserRole.SURVEILLANCE_SUPERVISOR,
+			UserRole.ADMIN_SUPERVISOR,
+			UserRole.CASE_SUPERVISOR,
+			UserRole.CONTACT_SUPERVISOR);
 		for (User recipient : messageRecipients) {
 			try {
 				messagingService.sendMessage(
 					recipient,
-					I18nProperties.getString(MessagingService.SUBJECT_CASE_INVESTIGATION_DONE),
+					MessageSubject.CASE_INVESTIGATION_DONE,
 					String
 						.format(I18nProperties.getString(MessagingService.CONTENT_CASE_INVESTIGATION_DONE), DataHelper.getShortUuid(caze.getUuid())),
 					MessageType.EMAIL,
@@ -2961,7 +2982,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		final Stream<Selection<?>> select = Stream.of(
 			caze.get(Case.UUID),
-			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			caze.get(Case.REPORT_DATE),
@@ -2987,10 +3007,13 @@ public class CaseFacadeEjb implements CaseFacade {
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = caze.get(sortProperty.propertyName);
 					break;
-				case FollowUpDto.PERSON:
+				case FollowUpDto.FIRST_NAME:
 					expression = joins.getPerson().get(Person.FIRST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				case FollowUpDto.LAST_NAME:
 					expression = joins.getPerson().get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -3023,6 +3046,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				visitsCqRoot.get(Case.UUID),
 				visitsJoin.get(Visit.VISIT_DATE_TIME),
 				visitsJoin.get(Visit.VISIT_STATUS),
+				visitsJoin.get(Visit.ORIGIN),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
 			// Sort by visit date so that we'll have the latest visit of each day
 			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
@@ -3043,7 +3067,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
-				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
+				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (boolean) v[4]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
 			});
 		}
@@ -3060,10 +3084,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	public Boolean isCaseEditAllowed(String caseUuid) {
 		Case caze = caseService.getByUuid(caseUuid);
 
-		if (caze.getSormasToSormasOriginInfo() != null) {
-			return caze.getSormasToSormasOriginInfo().isOwnershipHandedOver();
-		}
-
-		return caseJurisdictionChecker.isInJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
+		return caseService.isCaseEditAllowed(caze);
 	}
 }

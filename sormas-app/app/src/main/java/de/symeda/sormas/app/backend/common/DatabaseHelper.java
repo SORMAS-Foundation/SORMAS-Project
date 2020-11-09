@@ -19,12 +19,8 @@ import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -38,15 +34,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.epidata.AnimalCondition;
-import de.symeda.sormas.api.exposure.AnimalContactType;
-import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.exposure.HabitationType;
-import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.backend.campaign.Campaign;
+import de.symeda.sormas.app.backend.campaign.CampaignDao;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataDao;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDao;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -69,13 +63,17 @@ import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDao;
 import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurialDao;
 import de.symeda.sormas.app.backend.epidata.EpiDataDao;
+import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.app.backend.epidata.EpiDataGatheringDao;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravelDao;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.event.EventParticipantDao;
-import de.symeda.sormas.app.backend.exposure.Exposure;
-import de.symeda.sormas.app.backend.exposure.ExposureDao;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
@@ -144,7 +142,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 241;
+	public static final int DATABASE_VERSION = 246;
 
 	private static DatabaseHelper instance = null;
 
@@ -201,7 +199,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Hospitalization.class);
 			TableUtils.clearTable(connectionSource, PreviousHospitalization.class);
 			TableUtils.clearTable(connectionSource, EpiData.class);
-			TableUtils.clearTable(connectionSource, Exposure.class);
+			TableUtils.clearTable(connectionSource, EpiDataBurial.class);
+			TableUtils.clearTable(connectionSource, EpiDataGathering.class);
+			TableUtils.clearTable(connectionSource, EpiDataTravel.class);
 			TableUtils.clearTable(connectionSource, WeeklyReport.class);
 			TableUtils.clearTable(connectionSource, WeeklyReportEntry.class);
 			TableUtils.clearTable(connectionSource, AggregateReport.class);
@@ -209,6 +209,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
+			TableUtils.clearTable(connectionSource, CampaignFormData.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -220,6 +221,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
 				TableUtils.clearTable(connectionSource, Region.class);
+				TableUtils.clearTable(connectionSource, Campaign.class);
+				TableUtils.clearTable(connectionSource, CampaignFormMeta.class);
 
 				ConfigProvider.init(instance.context);
 			}
@@ -275,7 +278,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Hospitalization.class);
 			TableUtils.createTable(connectionSource, PreviousHospitalization.class);
 			TableUtils.createTable(connectionSource, EpiData.class);
-			TableUtils.createTable(connectionSource, Exposure.class);
+			TableUtils.createTable(connectionSource, EpiDataBurial.class);
+			TableUtils.createTable(connectionSource, EpiDataGathering.class);
+			TableUtils.createTable(connectionSource, EpiDataTravel.class);
 			TableUtils.createTable(connectionSource, SyncLog.class);
 			TableUtils.createTable(connectionSource, WeeklyReport.class);
 			TableUtils.createTable(connectionSource, WeeklyReportEntry.class);
@@ -283,6 +288,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Outbreak.class);
 			TableUtils.createTable(connectionSource, DiseaseClassificationCriteria.class);
 			TableUtils.createTable(connectionSource, SormasToSormasOriginInfo.class);
+			TableUtils.createTable(connectionSource, Campaign.class);
+			TableUtils.createTable(connectionSource, CampaignFormData.class);
+			TableUtils.createTable(connectionSource, CampaignFormMeta.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -827,6 +835,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 			case 147:
 				currentVersion = 147;
@@ -869,6 +880,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 			case 149:
 				currentVersion = 149;
@@ -974,6 +988,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 			case 159:
 				currentVersion = 159;
@@ -1021,6 +1038,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 			case 162:
@@ -1413,11 +1433,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Sample.class).executeRaw("ALTER TABLE contacts ADD COLUMN epiData_id bigint REFERENCES epidata (id);");
 				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 			case 211:
 				// Re-synchronize all contacts and epi data to prevent missing embedded entities
 				currentVersion = 211;
 				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 			case 212:
 				// Re-synchronize all contacts and epi data to prevent missing embedded entities
@@ -1430,6 +1456,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
@@ -1459,6 +1488,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN pseudonymized boolean;");
 				getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN pseudonymized boolean;");
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN pseudonymized boolean;");
+				getDao(EpiDataGathering.class).executeRaw("ALTER TABLE epidatagathering ADD COLUMN pseudonymized boolean;");
+				getDao(EpiDataTravel.class).executeRaw("ALTER TABLE epidatatravel ADD COLUMN pseudonymized boolean;");
+				getDao(EpiDataBurial.class).executeRaw("ALTER TABLE epidataburial ADD COLUMN pseudonymized boolean;");
 				getDao(MaternalHistory.class).executeRaw("ALTER TABLE maternalHistory ADD COLUMN pseudonymized boolean;");
 				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN pseudonymized boolean;");
 				getDao(HealthConditions.class).executeRaw("ALTER TABLE healthConditions ADD COLUMN pseudonymized boolean;");
@@ -1531,6 +1563,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
@@ -1605,7 +1640,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN facilityDetails varchar(512);");
 
 				GenericRawResults<Object[]> rawResult = getDao(Person.class).queryRaw(
-					"SELECT occupationRegion_id, occupationDistrict_id, occupationCommunity_id, occupationFacility_id, occupationFacilityDetails, occupationFacilityType, id FROM person WHERE changeDate = 0 AND snapshot = 0 AND (occupationRegion_id IS NOT NULL OR occupationFacilityType IS NOT NULL);",
+					"SELECT occupationRegion_id, occupationDistrict_id, occupationCommunity_id, occupationFacility_id, occupationFacilityDetails, occupationFacilityType, id FROM person WHERE changeDate IS 0 AND (occupationRegion_id IS NOT NULL OR occupationFacilityType IS NOT NULL);",
 					new DataType[] {
 						DataType.BIG_INTEGER,
 						DataType.BIG_INTEGER,
@@ -1683,6 +1718,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 237:
 				currentVersion = 237;
+				TableUtils.createTable(connectionSource, Campaign.class);
+				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
+				TableUtils.createTable(connectionSource, CampaignFormData.class);
+
+			case 238:
+				currentVersion = 238;
+				getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN origin varchar(255);");
+				getDao(Visit.class).executeRaw("UPDATE visits SET origin='USER'");
+
+			case 239:
+				currentVersion = 239;
+				getDao(Sample.class)
+					.executeRaw("ALTER TABLE samples ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN ownershipHandedOver boolean;");
+
+			case 240:
+				currentVersion = 240;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationStatus varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationStartDate timestamp;");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationEndDate timestamp;");
+
+			case 241:
+				currentVersion = 241;
 				TableUtils.createTable(connectionSource, Exposure.class);
 
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN exposureDetailsKnown varchar(255);");
@@ -1698,18 +1756,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EpiData.class).executeRaw("DROP TABLE epidatatravel;");
 				getDao(EpiData.class).executeRaw("DROP TABLE epidataburial;");
 
-			case 238:
-				currentVersion = 238;
+			case 242:
+				currentVersion = 242;
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN contactWithSourceCaseKnown varchar(255);");
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN highTransmissionRiskArea varchar(255);");
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN largeOutbreaksArea varchar(255);");
 
-			case 239:
-				currentVersion = 239;
+			case 243:
+				currentVersion = 243;
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN exposureDetailsKnown varchar(255);");
 
-			case 240:
-				currentVersion = 240;
+			case 245:
+				currentVersion = 245;
 
 				migrateEpiData();
 
@@ -1731,282 +1789,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		Exception ex) {
 			throw new RuntimeException("Database upgrade failed for version " + currentVersion + ": " + ex.getMessage(), ex);
-		}
-	}
-
-	private void formatRawResultString(Object[] result, int index, boolean doNullCheck) {
-		if (doNullCheck && DataHelper.isNullOrEmpty((String) result[index])) {
-			Array.set(result, index, null);
-		}
-		if (!DataHelper.isNullOrEmpty((String) result[index])) {
-			Array.set(result, index, "'" + result[index] + "'");
-		}
-	}
-
-	private void formatRawResultDate(Object[] result, int index) {
-		if (result[index] != null && result[index] instanceof Date) {
-			long time = ((Date) result[index]).getTime();
-			if (time == 0L) {
-				Array.set(result, index, null);
-			} else {
-				Array.set(result, index, time);
-			}
-		}
-	}
-
-	private void migrateEpiData() throws SQLException {
-		getDao(EpiData.class)
-			.executeRaw("UPDATE epidata SET wildbirds = 'YES', poultryEat = 'YES' WHERE poultry = 'YES' AND changeDate = 0 AND snapshot = 0;");
-
-		// Epi data field names sometimes don't match the actual field names because the columns were renamed in the past
-		migrateEpiDataField("processingConfirmedCaseFluidUnsafe", Exposure.HANDLING_SAMPLES, YesNoUnknown.YES, ExposureType.WORK);
-		migrateEpiDataField("percutaneousCaseBlood", Exposure.PERCUTANEOUS, YesNoUnknown.YES, ExposureType.WORK);
-		migrateEpiDataField("wildbirdsLocation", Exposure.PHYSICAL_CONTACT_WITH_BODY, YesNoUnknown.YES, ExposureType.BURIAL);
-		migrateEpiDataField("wildbirdsDetails", Exposure.HANDLING_SAMPLES, YesNoUnknown.YES, ExposureType.WORK);
-		migrateEpiDataField(
-			"poultrySick",
-			Exposure.ANIMAL_CONDITION,
-			AnimalCondition.DEAD,
-			ExposureType.ANIMAL_CONTACT,
-			"poultryDate",
-			"poultryDate",
-			"poultrySickDetails",
-			"poultryLocation");
-		migrateEpiDataField(
-			"poultryEat",
-			Exposure.EATING_RAW_ANIMAL_PRODUCTS,
-			YesNoUnknown.YES,
-			ExposureType.ANIMAL_CONTACT,
-			null,
-			null,
-			"poultryDetails",
-			null);
-		migrateEpiDataField("rodents", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.RODENT, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("bats", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.BAT, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("primates", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.PRIMATE, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("swine", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.SWINE, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("birds", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.POULTRY, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("rabbits", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.RABBIT, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("cattle", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.CATTLE, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("dogs", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.DOG, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("cats", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.CAT, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("canidae", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.CANIDAE, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("camels", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.CAMEL, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("snakes", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.SNAKE, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("tickBite", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.TICK, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("fleaBite", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.FLEA, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("otherAnimals", Exposure.TYPE_OF_ANIMAL, TypeOfAnimal.OTHER, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("waterBody", Exposure.BODY_OF_WATER, YesNoUnknown.YES, ExposureType.OTHER, null, null, "waterBodyDetails", null);
-		migrateEpiDataField("visitedHealthFacility", Exposure.HABITATION_TYPE, HabitationType.MEDICAL, ExposureType.HABITATION);
-		migrateEpiDataField("visitedAnimalMarket", Exposure.ANIMAL_MARKET, YesNoUnknown.YES, ExposureType.OTHER);
-		migrateEpiDataField("areaConfirmedCases", Exposure.RISK_AREA, YesNoUnknown.YES, ExposureType.TRAVEL);
-		migrateEpiDataField("kindOfExposureBite", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.BITE, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("kindOfExposureTouch", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.TOUCH, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("kindOfExposureScratch", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.SCRATCH, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("kindOfExposureLick", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.LICK, ExposureType.ANIMAL_CONTACT);
-		migrateEpiDataField("kindOfExposureOther", Exposure.ANIMAL_CONTACT_TYPE, AnimalContactType.OTHER, ExposureType.ANIMAL_CONTACT);
-
-		GenericRawResults<Object[]> lastExposureInfo = getDao(EpiData.class).queryRaw(
-			"SELECT id, dateOfLastExposure, placeOfLastExposure, animalCondition, animalVaccinationStatus, prophylaxisStatus, dateOfProphylaxis"
-				+ " FROM epidata WHERE changeDate = 0 AND snapshot = 0 AND (dateOfLastExposure IS NOT NULL OR placeOfLastExposure IS NOT NULL"
-				+ " OR animalCondition IS NOT NULL OR animalVaccinationStatus IS NOT NULL OR prophylaxisStatus IS NOT NULL OR dateOfProphylaxis IS NOT NULL);",
-			new DataType[] {
-				DataType.BIG_INTEGER,
-				DataType.DATE_LONG,
-				DataType.STRING,
-				DataType.ENUM_STRING,
-				DataType.ENUM_STRING,
-				DataType.ENUM_STRING,
-				DataType.DATE_LONG });
-
-		for (Object[] result : lastExposureInfo) {
-			formatRawResultString(result, 2, true);
-			formatRawResultString(result, 3, false);
-			formatRawResultString(result, 5, false);
-			formatRawResultDate(result, 1);
-			formatRawResultDate(result, 6);
-
-			long locationId = insertLocation((String) result[2]);
-			Vaccination vaccinationStatus = result[4] != null ? Vaccination.valueOf((String) result[4]) : null;
-
-			String exposureQuery = "INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
-				+ "startDate, endDate, animalCondition, animalVaccinated, prophylaxis, prophylaxisDate, description, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ result[0] + ", " + locationId + ", '" + ExposureType.ANIMAL_CONTACT.name() + "', " + result[1] + ", " + result[1] + ", " + result[3]
-				+ ", "
-				+ (vaccinationStatus == Vaccination.VACCINATED
-					? "'" + YesNoUnknown.YES.name() + "'"
-					: vaccinationStatus == Vaccination.UNVACCINATED
-						? "'" + YesNoUnknown.NO.name() + "'"
-						: vaccinationStatus == Vaccination.UNKNOWN ? "'" + YesNoUnknown.UNKNOWN.name() + "'" : null)
-				+ ", " + result[5] + ", " + result[6] + ", "
-				+ "'Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(exposureQuery);
-		}
-
-		getDao(Exposure.class).executeRaw(
-			"UPDATE exposures SET typeOfAnimalDetails = (SELECT otherAnimalsDetails FROM epidata WHERE id = exposures.epidata_id AND exposures.typeOfAnimal = 'OTHER');");
-		getDao(Exposure.class).executeRaw(
-			"UPDATE exposures SET animalContactTypeDetails = (SELECT kindOfExposureDetails FROM epidata WHERE id = exposures.epidata_id AND exposures.animalContactType = 'OTHER');");
-		getDao(Exposure.class).executeRaw(
-			"UPDATE exposures SET waterSource = (SELECT waterSource FROM epidata WHERE id = exposures.epidata_id AND exposures.bodyOfWater = 'YES');");
-		getDao(Exposure.class).executeRaw(
-			"UPDATE exposures SET waterSourceDetails = (SELECT waterSourceOther FROM epidata WHERE id = exposures.epidata_id AND exposures.bodyOfWater = 'YES');");
-		getDao(Exposure.class).executeRaw(
-			"UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure; this exposure may be merged with another exposure with animal contact' WHERE exposureType = 'ANIMAL_CONTACT' AND typeOfAnimal IS NULL;");
-		getDao(EpiData.class).executeRaw(
-			"UPDATE epidata SET contactWithSourceCaseKnown = 'YES' WHERE snapshot = 0 AND changeDate = 0 AND (directContactConfirmedCase = 'YES' OR directContactProbableCase = 'YES' OR closeContactProbableCase = 'YES' OR contactWithSourceRespiratoryCase = 'YES');");
-
-		getDao(EpiData.class).executeRaw(
-			"UPDATE epidata SET exposureDetailsKnown = 'YES' WHERE snapshot = 0 AND changeDate = 0 AND (exposureDetailsKnown IS NULL OR exposureDetailsKnown != 'YES') "
-				+ "AND (SELECT COUNT(id) FROM exposures WHERE exposures.epidata_id = epidata.id LIMIT 1) > 0;");
-	}
-
-	private void migrateEpiDataField(String epiDataFieldName, String exposuresFieldName, Enum<?> exposuresFieldValue, ExposureType exposureType)
-		throws SQLException {
-		migrateEpiDataField(epiDataFieldName, exposuresFieldName, exposuresFieldValue, exposureType, null, null, null, null);
-	}
-
-	private void migrateEpiDataField(
-		String epiDataFieldName,
-		String exposuresFieldName,
-		Enum<?> exposuresFieldValue,
-		ExposureType exposureType,
-		String startDateFieldName,
-		String endDateFieldName,
-		String descriptionFieldName,
-		String locationDetailsFieldName)
-		throws SQLException {
-
-		GenericRawResults<Object[]> epiDataInfo = getDao(EpiData.class).queryRaw(
-			"SELECT id, " + startDateFieldName + ", " + endDateFieldName + ", " + descriptionFieldName + ", " + locationDetailsFieldName
-				+ " FROM epidata WHERE changeDate = 0 AND snapshot = 0 AND " + epiDataFieldName + " = 'YES';",
-			new DataType[] {
-				DataType.BIG_INTEGER,
-				DataType.DATE_LONG,
-				DataType.DATE_LONG,
-				DataType.STRING,
-				DataType.STRING });
-
-		for (Object[] result : epiDataInfo) {
-			formatRawResultString(result, 3, true);
-			formatRawResultString(result, 4, true);
-			formatRawResultDate(result, 1);
-			formatRawResultDate(result, 2);
-
-			long locationId = insertLocation((String) result[4]);
-
-			String exposureQuery = "INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
-				+ exposuresFieldName + ", " + "startDate, endDate, description, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ result[0] + ", " + locationId + ", '" + exposureType.name() + "', '" + exposuresFieldValue.name() + "', " + result[1] + ", "
-				+ result[2] + ", " + result[3] + ", 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(exposureQuery);
-		}
-	}
-
-	private long insertLocation(String locationDetails) throws SQLException {
-		String locationQuery =
-			"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ locationDetails + ", 0, 0, 0);";
-		getDao(Location.class).executeRaw(locationQuery);
-
-		return getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
-	}
-
-	private void migrateEmbeddedEpiDataToExposures() throws SQLException {
-		GenericRawResults<Object[]> newBurials = getDao(EpiData.class).queryRaw(
-			"SELECT epiData_id, burialAddress_id, burialPersonName, burialRelation,"
-				+ "burialTouching, burialIll, burialDateFrom, burialDateTo FROM epidataburial WHERE changeDate = 0 AND snapshot = 0;",
-			new DataType[] {
-				DataType.BIG_INTEGER,
-				DataType.BIG_INTEGER,
-				DataType.STRING,
-				DataType.STRING,
-				DataType.ENUM_STRING,
-				DataType.ENUM_STRING,
-				DataType.DATE_LONG,
-				DataType.DATE_LONG });
-
-		for (Object[] burial : newBurials) {
-			formatRawResultString(burial, 2, true);
-			formatRawResultString(burial, 3, true);
-			formatRawResultString(burial, 4, false);
-			formatRawResultString(burial, 5, false);
-			formatRawResultDate(burial, 6);
-			formatRawResultDate(burial, 7);
-
-			String burialQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, deceasedPersonName, deceasedPersonRelation, "
-					+ "physicalContactWithBody, deceasedPersonIll, startDate, endDate, exposureType, pseudonymized, modified, snapshot) VALUES ('"
-					+ DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ burial[0] + ", " + burial[1] + ", " + burial[2] + ", " + burial[3] + ", " + burial[4] + ", " + burial[5] + ", " + burial[6]
-					+ ", " + burial[7] + ", 'BURIAL', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(burialQuery);
-		}
-
-		GenericRawResults<Object[]> newGatherings = getDao(EpiData.class).queryRaw(
-			"SELECT epiData_id, gatheringAddress_id, gatheringDate, description FROM epidatagathering WHERE changeDate = 0 AND snapshot = 0;",
-			new DataType[] {
-				DataType.BIG_INTEGER,
-				DataType.BIG_INTEGER,
-				DataType.DATE_LONG,
-				DataType.STRING });
-
-		for (Object[] gathering : newGatherings) {
-			formatRawResultString(gathering, 3, true);
-			formatRawResultDate(gathering, 2);
-
-			String gatheringQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, "
-					+ "description, exposureType, pseudonymized, modified, snapshot) VALUES ('" + DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ gathering[0] + ", " + gathering[1] + ", " + gathering[2] + ", " + gathering[2] + ", " + gathering[3]
-					+ ", 'GATHERING', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(gatheringQuery);
-		}
-
-		GenericRawResults<Object[]> newTravels = getDao(EpiData.class).queryRaw(
-			"SELECT epiData_id, travelDateFrom, travelDateTo, travelType, travelDestination FROM epidatatravel WHERE changeDate = 0 AND snapshot = 0;",
-			new DataType[] {
-				DataType.BIG_INTEGER,
-				DataType.DATE_LONG,
-				DataType.DATE_LONG,
-				DataType.ENUM_STRING,
-				DataType.STRING });
-
-		for (Object[] travel : newTravels) {
-			formatRawResultDate(travel, 1);
-			formatRawResultDate(travel, 2);
-
-			String detailsString = Stream.of((String) travel[3] != null ? ((String) travel[3]).replace("_", " ") : null, (String) travel[4])
-				.filter(Objects::nonNull)
-				.collect(Collectors.joining(", "));
-
-			if (detailsString != null) {
-				detailsString = "'" + detailsString + "'";
-			}
-
-			String locationQuery =
-				"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) VALUES ('"
-					+ DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ detailsString + ", 0, 0, 0);";
-			getDao(Location.class).executeRaw(locationQuery);
-
-			long locationId = getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
-
-			String travelQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, exposureType, "
-					+ "pseudonymized, modified, snapshot) VALUES ('" + DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ travel[0] + ", " + locationId + ", " + travel[1] + ", " + travel[2] + ", 'TRAVEL', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(travelQuery);
 		}
 	}
 
@@ -2042,7 +1824,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Hospitalization.class, true);
 			TableUtils.dropTable(connectionSource, PreviousHospitalization.class, true);
 			TableUtils.dropTable(connectionSource, EpiData.class, true);
-			TableUtils.dropTable(connectionSource, Exposure.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataBurial.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataGathering.class, true);
+			TableUtils.dropTable(connectionSource, EpiDataTravel.class, true);
 			TableUtils.dropTable(connectionSource, SyncLog.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReport.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReportEntry.class, true);
@@ -2051,6 +1835,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, DiseaseClassificationCriteria.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseConfiguration.class, true);
 			TableUtils.dropTable(connectionSource, FeatureConfiguration.class, true);
+			TableUtils.dropTable(connectionSource, Campaign.class, true);
+			TableUtils.dropTable(connectionSource, CampaignFormMeta.class, true);
+			TableUtils.dropTable(connectionSource, CampaignFormData.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
@@ -2138,8 +1925,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new PreviousHospitalizationDao((Dao<PreviousHospitalization, Long>) innerDao);
 				} else if (type.equals(EpiData.class)) {
 					dao = (AbstractAdoDao<ADO>) new EpiDataDao((Dao<EpiData, Long>) innerDao);
-				} else if (type.equals(Exposure.class)) {
-					dao = (AbstractAdoDao<ADO>) new ExposureDao((Dao<Exposure, Long>) innerDao);
+				} else if (type.equals(EpiDataGathering.class)) {
+					dao = (AbstractAdoDao<ADO>) new EpiDataGatheringDao((Dao<EpiDataGathering, Long>) innerDao);
+				} else if (type.equals(EpiDataBurial.class)) {
+					dao = (AbstractAdoDao<ADO>) new EpiDataBurialDao((Dao<EpiDataBurial, Long>) innerDao);
+				} else if (type.equals(EpiDataTravel.class)) {
+					dao = (AbstractAdoDao<ADO>) new EpiDataTravelDao((Dao<EpiDataTravel, Long>) innerDao);
 				} else if (type.equals(WeeklyReport.class)) {
 					dao = (AbstractAdoDao<ADO>) new WeeklyReportDao((Dao<WeeklyReport, Long>) innerDao);
 				} else if (type.equals(WeeklyReportEntry.class)) {
@@ -2152,6 +1943,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new DiseaseClassificationCriteriaDao((Dao<DiseaseClassificationCriteria, Long>) innerDao);
 				} else if (type.equals(SormasToSormasOriginInfo.class)) {
 					dao = (AbstractAdoDao<ADO>) new SormasToSormasOriginInfoDao((Dao<SormasToSormasOriginInfo, Long>) innerDao);
+				} else if (type.equals(Campaign.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignDao((Dao<Campaign, Long>) innerDao);
+				} else if (type.equals(CampaignFormMeta.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignFormMetaDao((Dao<CampaignFormMeta, Long>) innerDao);
+				} else if (type.equals(CampaignFormData.class)) {
+					dao = (AbstractAdoDao<ADO>) new CampaignFormDataDao((Dao<CampaignFormData, Long>) innerDao);
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}
@@ -2337,8 +2134,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (EpiDataDao) getAdoDao(EpiData.class);
 	}
 
-	public static ExposureDao getExposureDao() {
-		return (ExposureDao) getAdoDao(Exposure.class);
+	public static EpiDataBurialDao getEpiDataBurialDao() {
+		return (EpiDataBurialDao) getAdoDao(EpiDataBurial.class);
+	}
+
+	public static EpiDataGatheringDao getEpiDataGatheringDao() {
+		return (EpiDataGatheringDao) getAdoDao(EpiDataGathering.class);
+	}
+
+	public static EpiDataTravelDao getEpiDataTravelDao() {
+		return (EpiDataTravelDao) getAdoDao(EpiDataTravel.class);
 	}
 
 	public static WeeklyReportDao getWeeklyReportDao() {
@@ -2359,6 +2164,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static AggregateReportDao getAggregateReportDao() {
 		return (AggregateReportDao) getAdoDao(AggregateReport.class);
+	}
+
+	public static CampaignDao getCampaignDao() {
+		return (CampaignDao) getAdoDao(Campaign.class);
+	}
+
+	public static CampaignFormMetaDao getCampaignFormMetaDao() {
+		return (CampaignFormMetaDao) getAdoDao(CampaignFormMeta.class);
+	}
+
+	public static CampaignFormDataDao getCampaignFormDataDao() {
+		return (CampaignFormDataDao) getAdoDao(CampaignFormData.class);
 	}
 
 	/**

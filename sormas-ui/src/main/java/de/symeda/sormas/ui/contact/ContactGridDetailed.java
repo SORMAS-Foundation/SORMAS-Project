@@ -52,6 +52,11 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 	}
 
 	@Override
+	public Stream<String> getEventColumns() {
+		return Stream.of(ContactIndexDetailedDto.LATEST_EVENT_ID, ContactIndexDetailedDto.LATEST_EVENT_TITLE);
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	protected void initColumns() {
 
@@ -74,5 +79,14 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
 			}
 		}));
+
+		getColumn(ContactIndexDetailedDto.LATEST_EVENT_ID).setWidth(80).setSortable(false);
+		getColumn(ContactIndexDetailedDto.LATEST_EVENT_TITLE).setWidth(150).setSortable(false);
+		((Column<ContactIndexDetailedDto, String>) getColumn(ContactIndexDetailedDto.LATEST_EVENT_ID)).setRenderer(new UuidRenderer());
+		addItemClickListener(
+			new ShowDetailsListener<>(
+				ContactIndexDetailedDto.LATEST_EVENT_ID,
+				c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
+
 	}
 }

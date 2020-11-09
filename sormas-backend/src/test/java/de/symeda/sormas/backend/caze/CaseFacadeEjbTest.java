@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.VisitOrigin;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +63,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -409,8 +411,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
 
-		EventDto event1 = creator.createEvent(EventStatus.SIGNAL, "Signal foo", "A long description for this event", user.toReference(), eventDto -> {
-		});
+		EventDto event1 = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Signal foo",
+			"A long description for this event",
+			user.toReference(),
+			eventDto -> {
+			});
 
 		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
 		EventParticipantDto event1Participant2 = creator.createEventParticipant(event1.toReference(), person2, user.toReference());
@@ -1106,7 +1114,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.getSymptoms().setChestPain(SymptomState.YES);
 
 		// Add a new visit to the case
-		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate(), VisitStatus.COOPERATIVE);
+		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		visit.getSymptoms().setChestPain(SymptomState.NO);
 

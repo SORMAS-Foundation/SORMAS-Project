@@ -372,7 +372,7 @@ public class CasesView extends AbstractView {
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
 				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
 					VaadinUiUtil.showConfirmationPopup(
@@ -678,30 +678,40 @@ public class CasesView extends AbstractView {
 			if (viewConfiguration.getViewType().isCaseOverview()) {
 				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 				// Bulk operation dropdown
-				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				if (isBulkEditAllowed()) {
+					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
+
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.bulkEdit),
 							VaadinIcons.ELLIPSIS_H,
-							mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(caseGrid.asMultiSelect().getSelectedItems())),
+							mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(caseGrid.asMultiSelect().getSelectedItems()),
+							hasBulkOperationsRight),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.bulkDelete),
 							VaadinIcons.TRASH,
 							selectedItem -> ControllerProvider.getCaseController()
-								.deleteAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
+								.deleteAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							hasBulkOperationsRight),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionArchive),
 							VaadinIcons.ARCHIVE,
 							mi -> ControllerProvider.getCaseController()
 								.archiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+							hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionDearchive),
 							VaadinIcons.ARCHIVE,
 							mi -> ControllerProvider.getCaseController()
 								.dearchiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+							hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.sormasToSormasShare),
+							VaadinIcons.SHARE,
+							mi -> ControllerProvider.getSormasToSormasController()
+								.shareSelectedCases(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()));
 
 					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -759,5 +769,10 @@ public class CasesView extends AbstractView {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
+	}
+
+	private boolean isBulkEditAllowed() {
+		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
+			|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 	}
 }

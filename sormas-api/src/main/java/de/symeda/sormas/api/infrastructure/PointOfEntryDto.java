@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.infrastructure;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -15,6 +17,8 @@ public class PointOfEntryDto extends EntityDto {
 	public static final String OTHER_SEAPORT_UUID = "SORMAS-CONSTID-OTHERS-SEAPORTX";
 	public static final String OTHER_GROUND_CROSSING_UUID = "SORMAS-CONSTIG-OTHERS-GROUNDCR";
 	public static final String OTHER_POE_UUID = "SORMAS-CONSTID-OTHERS-OTHERPOE";
+	public static final List<String> CONSTANT_POE_UUIDS =
+		Arrays.asList(OTHER_AIRPORT_UUID, OTHER_SEAPORT_UUID, OTHER_GROUND_CROSSING_UUID, OTHER_POE_UUID);
 	public static final String OTHER_AIRPORT = "OTHER_AIRPORT";
 	public static final String OTHER_SEAPORT = "OTHER_SEAPORT";
 	public static final String OTHER_GROUND_CROSSING = "OTHER_GROUND_CROSSING";
@@ -172,5 +176,9 @@ public class PointOfEntryDto extends EntityDto {
 	@Override
 	public String toString() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
+	}
+
+	public PointOfEntryReferenceDto toReference() {
+		return new PointOfEntryReferenceDto(getUuid(), toString());
 	}
 }
