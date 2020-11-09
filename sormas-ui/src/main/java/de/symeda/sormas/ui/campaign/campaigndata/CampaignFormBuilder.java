@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Sets;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.Sizeable.Unit;
@@ -271,7 +272,7 @@ public class CampaignFormBuilder {
 	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
-			((NullableOptionGroup) field).setValue(value);
+			((NullableOptionGroup) field).setValue(Sets.newHashSet(value));
 			break;
 		case TEXT:
 		case NUMBER:
@@ -328,7 +329,14 @@ public class CampaignFormBuilder {
 	}
 
 	public List<CampaignFormDataEntry> getFormValues() {
-		return fields.keySet().stream().map(id -> new CampaignFormDataEntry(id, fields.get(id).getValue())).collect(Collectors.toList());
+		return fields.keySet().stream().map(id -> {
+			Field<?> field = fields.get(id);
+			if (field instanceof NullableOptionGroup) {
+				return new CampaignFormDataEntry(id, ((NullableOptionGroup) field).getNullableValue());
+			} else {
+				return new CampaignFormDataEntry(id, field.getValue());
+			}
+		}).collect(Collectors.toList());
 	}
 
 	public void validateFields() throws Validator.InvalidValueException {
