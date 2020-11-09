@@ -113,4 +113,7 @@ public interface ConfigFacade {
 	boolean isExternalJournalActive();
 
 	int getDashboardMapMarkerLimit();
+
+	boolean isSmsServiceSetUp();
+
 }
