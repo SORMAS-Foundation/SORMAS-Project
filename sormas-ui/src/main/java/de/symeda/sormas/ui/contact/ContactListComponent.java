@@ -59,7 +59,7 @@ public class ContactListComponent extends VerticalLayout {
 		setSpacing(false);
 
 		EventReferenceDto eventRef = FacadeProvider.getEventFacade().getReferenceByEventParticipant(eventParticipantRef.getUuid());
-		CheckBox contactOnlyWithSourceCaseInGivenEvent = new CheckBox(I18nProperties.getCaption(Captions.contactOnlyWithSourceCaseInEvent));
+		CheckBox contactOnlyWithSourceCaseInGivenEvent = new CheckBox(I18nProperties.getCaption(Captions.contactOnlyWithSourceCaseInGivenEvent));
 		contactOnlyWithSourceCaseInGivenEvent.addStyleNames(CssStyles.CHECKBOX_FILTER_INLINE, CssStyles.VSPACE_4);
 		contactOnlyWithSourceCaseInGivenEvent.addValueChangeListener(e -> {
 			if (e.getValue()) {
