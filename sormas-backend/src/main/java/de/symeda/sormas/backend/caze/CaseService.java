@@ -1111,7 +1111,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				caze.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 			}
 		} else {
-			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
+			int followUpDuration = diseaseConfigurationFacade.getCaseFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
 			LocalDate untilDate = caze.isOverwriteFollowUpUntil()
 				|| (caze.getFollowUpUntil() != null && DateHelper8.toLocalDate(caze.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration)))
