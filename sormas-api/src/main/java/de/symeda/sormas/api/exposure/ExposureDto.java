@@ -36,6 +36,9 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Exposure";
 
+	public static final String EXPOSURE_TYPE = "exposureType";
+	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String DESCRIPTION = "description";
 	public static final String HANDLING_SAMPLES = "handlingSamples";
 	public static final String PERCUTANEOUS = "percutaneous";
 	public static final String RISK_AREA = "riskArea";
@@ -49,6 +52,8 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	private String description;
 	private ExposureType exposureType;
+	@SensitiveData
+	private String exposureTypeDetails;
 	private LocationDto location;
 
 	// Type of Place
@@ -160,6 +165,14 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setExposureType(ExposureType exposureType) {
 		this.exposureType = exposureType;
+	}
+
+	public String getExposureTypeDetails() {
+		return exposureTypeDetails;
+	}
+
+	public void setExposureTypeDetails(String exposureTypeDetails) {
+		this.exposureTypeDetails = exposureTypeDetails;
 	}
 
 	public LocationDto getLocation() {

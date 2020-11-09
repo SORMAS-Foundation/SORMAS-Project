@@ -58,6 +58,7 @@ public class Exposure extends AbstractDomainObject {
 	public static final String EPI_DATA = "epiData";
 	public static final String LOCATION = "location";
 	public static final String EXPOSURE_TYPE = "exposureType";
+	public static final String CONTACT_TO_CASE = "contactToCase";
 
 	private EpiData epiData;
 	private User reportingUser;
@@ -65,6 +66,7 @@ public class Exposure extends AbstractDomainObject {
 	private Date endDate;
 	private String description;
 	private ExposureType exposureType;
+	private String exposureTypeDetails;
 	private Location location;
 
 	// Type of Place
@@ -171,6 +173,15 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setExposureType(ExposureType exposureType) {
 		this.exposureType = exposureType;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExposureTypeDetails() {
+		return exposureTypeDetails;
+	}
+
+	public void setExposureTypeDetails(String exposureTypeDetails) {
+		this.exposureTypeDetails = exposureTypeDetails;
 	}
 
 	@OneToOne(cascade = CascadeType.ALL)

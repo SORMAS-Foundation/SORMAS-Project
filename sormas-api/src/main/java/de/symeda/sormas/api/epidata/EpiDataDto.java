@@ -36,6 +36,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String CONTACT_WITH_SOURCE_CASE_KNOWN = "contactWithSourceCaseKnown";
 	public static final String EXPOSURES = "exposures";
 	public static final String AREA_INFECTED_ANIMALS = "areaInfectedAnimals";
+	public static final String HIGH_TRANSMISSION_RISK_AREA = "highTransmissionRiskArea";
+	public static final String LARGE_OUTBREAKS_AREA = "largeOutbreaksArea";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown contactWithSourceCaseKnown;

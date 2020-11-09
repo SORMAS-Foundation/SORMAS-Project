@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonAddressType;
@@ -295,5 +297,12 @@ public class LocationDto extends PseudonymizableDto {
 
 	public static String buildStreetAndHouseNumberCaption(String street, String houseNumber) {
 		return DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber);
+	}
+
+	public String buildAddressCaption() {
+		return StringUtils.join(
+			DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber),
+			DataHelper.toStringNullable(postalCode) + " " + DataHelper.toStringNullable(city),
+			", ");
 	}
 }

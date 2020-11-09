@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -53,6 +54,11 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private ContactService contactService;
 	@EJB
 	private UserService userService;
+
+	@Override
+	public Map<String, String> getExposureSourceCaseNames(List<String> exposureUuids) {
+		return service.getExposureSourceCaseNames(exposureUuids);
+	}
 
 	public EpiData fromDto(EpiDataDto source) {
 
@@ -125,6 +131,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setEatingRawAnimalProducts(source.getEatingRawAnimalProducts());
 		target.setEndDate(source.getEndDate());
 		target.setExposureType(source.getExposureType());
+		target.setExposureTypeDetails(source.getExposureTypeDetails());
 		target.setGatheringDetails(source.getGatheringDetails());
 		target.setGatheringType(source.getGatheringType());
 		target.setHabitationDetails(source.getHabitationDetails());
@@ -217,6 +224,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setEatingRawAnimalProducts(source.getEatingRawAnimalProducts());
 		target.setEndDate(source.getEndDate());
 		target.setExposureType(source.getExposureType());
+		target.setExposureTypeDetails(source.getExposureTypeDetails());
 		target.setGatheringDetails(source.getGatheringDetails());
 		target.setGatheringType(source.getGatheringType());
 		target.setHabitationDetails(source.getHabitationDetails());

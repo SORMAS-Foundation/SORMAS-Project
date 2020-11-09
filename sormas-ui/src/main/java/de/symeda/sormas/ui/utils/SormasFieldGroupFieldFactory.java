@@ -26,6 +26,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
+import de.symeda.sormas.ui.epidata.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
@@ -118,6 +119,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) field;
 		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (ExposuresField.class.isAssignableFrom(fieldType)) {
+			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {

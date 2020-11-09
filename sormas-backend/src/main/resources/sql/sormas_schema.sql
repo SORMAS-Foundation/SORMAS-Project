@@ -5565,6 +5565,7 @@ CREATE TABLE exposures(
     enddate timestamp,
     description text,
     exposuretype varchar(255),
+    exposuretypedetails text,
     location_id bigint not null,
     typeofplace varchar(255),
     typeofplacedetails text,
@@ -5766,11 +5767,11 @@ SELECT id as epidata_id,
        nextval('entity_seq') as location_id,
        nextval('entity_seq') as exposure_id,
        overlay(overlay(overlay(
-                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
-                               placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as location_uuid,
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
        overlay(overlay(overlay(
-                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
-                               placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as exposure_uuid,
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid,
        dateoflastexposure,
        placeoflastexposure,
        animalcondition,

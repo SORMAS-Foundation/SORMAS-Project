@@ -804,7 +804,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		contact.setRegion(remoteRdcf.region);
 		contact.setDistrict(remoteRdcf.district);
 		contact.setCommunity(remoteRdcf.community);
-		contact.getEpiData().setAnimalCondition(AnimalCondition.PROCESSED);
+		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+		exposure.setAnimalCondition(AnimalCondition.PROCESSED);
+		contact.getEpiData().getExposures().add(exposure);
 		return contact;
 	}
 

@@ -292,6 +292,7 @@ public interface Strings {
 	String headingEditVisit = "headingEditVisit";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
 	String headingEpiCurve = "headingEpiCurve";
+	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingEventData = "headingEventData";
 	String headingEventNotDeleted = "headingEventNotDeleted";
@@ -301,6 +302,7 @@ public interface Strings {
 	String headingEventsDeleted = "headingEventsDeleted";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
 	String headingExportFailed = "headingExportFailed";
+	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingFileExists = "headingFileExists";
@@ -451,7 +453,10 @@ public interface Strings {
 	String infoDownloadImportGuide = "infoDownloadImportGuide";
 	String infoDownloadImportTemplate = "infoDownloadImportTemplate";
 	String infoEditExportConfiguration = "infoEditExportConfiguration";
+	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
+	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoExportNoFilters = "infoExportNoFilters";
+	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoImportCsvFile = "infoImportCsvFile";
 	String infoImportProcess = "infoImportProcess";
