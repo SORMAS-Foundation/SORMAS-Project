@@ -272,14 +272,10 @@ public class EventController {
 				FacadeProvider.getEventFacade().saveEvent(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.TRAY_NOTIFICATION);
 
-				if (contact.getCaze() != null) {
-					EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
+				EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
 
-					createEventParticipantWithContact(createdEvent, contact);
-					SormasUI.refreshView();
-				} else {
-					navigateToParticipants(dto.getUuid());
-				}
+				createEventParticipantWithContact(createdEvent, contact);
+				SormasUI.refreshView();
 			}
 		});
 
