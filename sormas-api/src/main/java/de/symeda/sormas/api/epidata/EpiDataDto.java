@@ -20,9 +20,11 @@ package de.symeda.sormas.api.epidata;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -43,6 +45,14 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown contactWithSourceCaseKnown;
 	private YesNoUnknown highTransmissionRiskArea;
 	private YesNoUnknown largeOutbreaksArea;
+	@Diseases({
+		Disease.AFP,
+		Disease.GUINEA_WORM,
+		Disease.NEW_INFLUENZA,
+		Disease.ANTHRAX,
+		Disease.POLIO,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private YesNoUnknown areaInfectedAnimals;
 
 	private List<ExposureDto> exposures = new ArrayList<>();

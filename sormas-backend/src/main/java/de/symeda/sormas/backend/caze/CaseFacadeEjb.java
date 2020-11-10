@@ -677,7 +677,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
 				sourceCaseClassifications = contactService.getSourceCaseClassifications(resultCaseIds)
 					.stream()
-					.collect(Collectors.toMap(e -> (Long) e[0], e -> (CaseClassification) e[1]));
+					.collect(
+						Collectors
+							.toMap(e -> (Long) e[0], e -> (CaseClassification) e[1], (c1, c2) -> c1.getSeverity() >= c2.getSeverity() ? c1 : c2));
 			}
 
 			List<Long> caseIdsWithOutbreak = null;

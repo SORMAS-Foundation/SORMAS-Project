@@ -5564,12 +5564,13 @@ CREATE TABLE exposures(
     startdate timestamp,
     enddate timestamp,
     description text,
-    exposuretype varchar(255),
+    exposuretype varchar(255) not null,
     exposuretypedetails text,
     location_id bigint not null,
     typeofplace varchar(255),
     typeofplacedetails text,
     meansoftransport varchar(255),
+    meansoftransportdetails text,
     connectionnumber varchar(512),
     seatnumber varchar(512),
     indoors varchar(255),
@@ -5824,5 +5825,9 @@ UPDATE epidata SET exposuredetailsknown = 'YES' WHERE (exposuredetailsknown IS N
 UPDATE epidata SET changedate = now();
 
 INSERT INTO schema_version (version_number, comment) VALUES (276, 'Epi data migration #2949');
+
+-- 2020-10-21 Set contact with source case known for all existing cases #2946
+UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id > 0);
+
 
 -- *** Insert new sql commands BEFORE this line ***

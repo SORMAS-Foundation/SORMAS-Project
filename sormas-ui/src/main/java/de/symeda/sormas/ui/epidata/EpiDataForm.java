@@ -25,17 +25,27 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -49,21 +59,30 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_EPI_DATA_FIELDS_HINT = "locEpiDataFieldsHint";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT = 
+	private static final String MAIN_HTML_LAYOUT = 
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) + 
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
 			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) + 
-			loc(EpiDataDto.AREA_INFECTED_ANIMALS) +
+			loc(EpiDataDto.AREA_INFECTED_ANIMALS);
+	
+	private static final String SOURCE_CONTACTS_HTML_LAYOUT =
 			locCss(VSPACE_TOP_3, LOC_SOURCE_CASE_CONTACTS_HEADING) +
 			loc(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
 	//@formatter:on
 
 	private final Disease disease;
+	private final Class<? extends EntityDto> parentClass;
+	private final Consumer<Boolean> sourceContactsToggleCallback;
+	private final boolean isPseudonymized;
 
-	public EpiDataForm(Disease disease, boolean isPseudonymized) {
+	public EpiDataForm(
+		Disease disease,
+		Class<? extends EntityDto> parentClass,
+		boolean isPseudonymized,
+		Consumer<Boolean> sourceContactsToggleCallback) {
 		super(
 			EpiDataDto.class,
 			EpiDataDto.I18N_PREFIX,
@@ -71,6 +90,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			FieldVisibilityCheckers.withDisease(disease),
 			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 		this.disease = disease;
+		this.parentClass = parentClass;
+		this.sourceContactsToggleCallback = sourceContactsToggleCallback;
+		this.isPseudonymized = isPseudonymized;
 		addFields();
 	}
 
@@ -82,12 +104,22 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		addHeadingsAndInfoTexts();
 
-		addField(EpiDataDto.EXPOSURE_DETAILS_KNOWN, NullableOptionGroup.class);
-		addField(EpiDataDto.EXPOSURES, ExposuresField.class);
+		NullableOptionGroup ogExposureDetailsKnown = addField(EpiDataDto.EXPOSURE_DETAILS_KNOWN, NullableOptionGroup.class);
+		ExposuresField exposuresField = addField(EpiDataDto.EXPOSURES, ExposuresField.class);
+		exposuresField.setEpiDataParentClass(parentClass);
+		exposuresField.setWidthFull();
+		exposuresField.setPseudonymized(isPseudonymized);
 		addField(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA, NullableOptionGroup.class);
 		addField(EpiDataDto.LARGE_OUTBREAKS_AREA, NullableOptionGroup.class);
 		addField(EpiDataDto.AREA_INFECTED_ANIMALS, NullableOptionGroup.class);
-		addField(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN, NullableOptionGroup.class);
+		NullableOptionGroup ogContactWithSourceCaseKnown = addField(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN, NullableOptionGroup.class);
+
+		if (sourceContactsToggleCallback != null) {
+			ogContactWithSourceCaseKnown.addValueChangeListener(e -> {
+				YesNoUnknown sourceContactsKnown = (YesNoUnknown) FieldHelper.getNullableSourceFieldValue((Field) e.getProperty());
+				sourceContactsToggleCallback.accept(YesNoUnknown.YES == sourceContactsKnown);
+			});
+		}
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -98,6 +130,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		exposuresField.addValueChangeListener(e -> {
+			ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue()));
+		});
 	}
 
 	private void addHeadingsAndInfoTexts() {
@@ -120,8 +156,16 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			LOC_SOURCE_CASE_CONTACTS_HEADING);
 	}
 
+	public void disableContactWithSourceCaseKnownField() {
+		setEnabled(false, EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
+	}
+
+	public void setGetSourceContactsCallback(Supplier<List<ContactReferenceDto>> callback) {
+		((ExposuresField) getField(EpiDataDto.EXPOSURES)).setGetSourceContactsCallback(callback);
+	}
+
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		return parentClass == CaseDataDto.class ? MAIN_HTML_LAYOUT + SOURCE_CONTACTS_HTML_LAYOUT : MAIN_HTML_LAYOUT;
 	}
 }

@@ -143,6 +143,7 @@ public interface Strings {
 	String entityEvent = "entityEvent";
 	String entityEventParticipant = "entityEventParticipant";
 	String entityEvents = "entityEvents";
+	String entityExposure = "entityExposure";
 	String entityGathering = "entityGathering";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPrescription = "entityPrescription";
@@ -198,11 +199,13 @@ public interface Strings {
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAdjustQuarantine = "headingAdjustQuarantine";
 	String headingAllContacts = "headingAllContacts";
+	String headingAnimalContactDetails = "headingAnimalContactDetails";
 	String headingAnimalContacts = "headingAnimalContacts";
 	String headingArchiveCampaign = "headingArchiveCampaign";
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
+	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";
 	String headingCampaignData = "headingCampaignData";
@@ -302,6 +305,7 @@ public interface Strings {
 	String headingEventsDeleted = "headingEventsDeleted";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
 	String headingExportFailed = "headingExportFailed";
+	String headingExposureDetails = "headingExposureDetails";
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
@@ -397,6 +401,7 @@ public interface Strings {
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
+	String headingSourceContacts = "headingSourceContacts";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingTasksDeleted = "headingTasksDeleted";
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
@@ -436,6 +441,7 @@ public interface Strings {
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
+	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
 	String infoCustomCaseExport = "infoCustomCaseExport";
@@ -457,6 +463,7 @@ public interface Strings {
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
+	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoImportCsvFile = "infoImportCsvFile";
 	String infoImportProcess = "infoImportProcess";
@@ -475,6 +482,7 @@ public interface Strings {
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
+	String infoNoSourceCase = "infoNoSourceCase";
 	String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";

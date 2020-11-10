@@ -19,8 +19,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
 
@@ -30,6 +32,17 @@ public class ExposureService extends AbstractAdoService<Exposure> {
 
 	public ExposureService() {
 		super(Exposure.class);
+	}
+
+	public void removeContactFromExposures(Long contactId) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Exposure> cu = cb.createCriteriaUpdate(getElementClass());
+		Root<Exposure> root = cu.from(getElementClass());
+
+		cu.where(cb.equal(root.get(Exposure.CONTACT_TO_CASE), contactId));
+		cu.set(Exposure.CONTACT_TO_CASE, null);
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 	@SuppressWarnings("rawtypes")

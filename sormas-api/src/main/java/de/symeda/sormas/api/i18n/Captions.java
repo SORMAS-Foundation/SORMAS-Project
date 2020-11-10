@@ -302,6 +302,7 @@ public interface Captions {
 	String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
 	String CaseExport_ageGroup = "CaseExport.ageGroup";
 	String CaseExport_associatedWithOutbreak = "CaseExport.associatedWithOutbreak";
+	String CaseExport_burialAttended = "CaseExport.burialAttended";
 	String CaseExport_burialInfo = "CaseExport.burialInfo";
 	String CaseExport_contactWithRodent = "CaseExport.contactWithRodent";
 	String CaseExport_country = "CaseExport.country";
@@ -332,6 +333,7 @@ public interface Captions {
 	String CaseExport_sampleResult2 = "CaseExport.sampleResult2";
 	String CaseExport_sampleResult3 = "CaseExport.sampleResult3";
 	String CaseExport_sampleTaken = "CaseExport.sampleTaken";
+	String CaseExport_traveled = "CaseExport.traveled";
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
@@ -545,6 +547,7 @@ public interface Captions {
 	String contactRemoveCase = "contactRemoveCase";
 	String contactResumeFollowUp = "contactResumeFollowUp";
 	String contactSelect = "contactSelect";
+	String contactSourceCase = "contactSourceCase";
 	String convertContactToCase = "convertContactToCase";
 	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String creationDate = "creationDate";
@@ -724,6 +727,7 @@ public interface Captions {
 	String EpiData_exposures = "EpiData.exposures";
 	String EpiData_highTransmissionRiskArea = "EpiData.highTransmissionRiskArea";
 	String EpiData_largeOutbreaksArea = "EpiData.largeOutbreaksArea";
+	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
 	String epiWeekFrom = "epiWeekFrom";
 	String epiWeekTo = "epiWeekTo";
 	String Event = "Event";
@@ -849,6 +853,7 @@ public interface Captions {
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
 	String Exposure_exposureType = "Exposure.exposureType";
+	String Exposure_exposureTypeDetails = "Exposure.exposureTypeDetails";
 	String Exposure_gatheringDetails = "Exposure.gatheringDetails";
 	String Exposure_gatheringType = "Exposure.gatheringType";
 	String Exposure_habitationType = "Exposure.habitationType";
@@ -859,6 +864,7 @@ public interface Captions {
 	String Exposure_location = "Exposure.location";
 	String Exposure_longFaceToFaceContact = "Exposure.longFaceToFaceContact";
 	String Exposure_meansOfTransport = "Exposure.meansOfTransport";
+	String Exposure_meansOfTransportDetails = "Exposure.meansOfTransportDetails";
 	String Exposure_otherProtectiveMeasures = "Exposure.otherProtectiveMeasures";
 	String Exposure_outdoors = "Exposure.outdoors";
 	String Exposure_percutaneous = "Exposure.percutaneous";
@@ -867,6 +873,8 @@ public interface Captions {
 	String Exposure_prophylaxis = "Exposure.prophylaxis";
 	String Exposure_prophylaxisDate = "Exposure.prophylaxisDate";
 	String Exposure_protectiveMeasuresDetails = "Exposure.protectiveMeasuresDetails";
+	String Exposure_riskArea = "Exposure.riskArea";
+	String Exposure_riskAreaShort = "Exposure.riskAreaShort";
 	String Exposure_seatNumber = "Exposure.seatNumber";
 	String Exposure_shortDistance = "Exposure.shortDistance";
 	String Exposure_startDate = "Exposure.startDate";

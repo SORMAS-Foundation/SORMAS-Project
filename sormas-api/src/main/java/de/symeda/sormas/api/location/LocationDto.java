@@ -300,9 +300,18 @@ public class LocationDto extends PseudonymizableDto {
 	}
 
 	public String buildAddressCaption() {
-		return StringUtils.join(
-			DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber),
-			DataHelper.toStringNullable(postalCode) + " " + DataHelper.toStringNullable(city),
-			", ");
+		String streetAndNumber = DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber);
+		String postalAndCity = DataHelper.toStringNullable(postalCode) + " " + DataHelper.toStringNullable(city);
+		if (StringUtils.isNotBlank(streetAndNumber)) {
+			if (StringUtils.isNotBlank(postalAndCity)) {
+				return streetAndNumber + ", " + postalAndCity;
+			} else {
+				return streetAndNumber;
+			}
+		} else if (StringUtils.isNotBlank(postalAndCity)) {
+			return postalAndCity;
+		} else {
+			return "";
+		}
 	}
 }

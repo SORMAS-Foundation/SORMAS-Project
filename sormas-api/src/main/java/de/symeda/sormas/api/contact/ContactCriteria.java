@@ -67,6 +67,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private UserRole reportingUserRole;
 	private Disease disease;
 	private CaseReferenceDto caze;
+	private CaseReferenceDto resultingCase;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -141,6 +142,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria caze(CaseReferenceDto caze) {
 		this.caze = caze;
+		return this;
+	}
+
+	public CaseReferenceDto getResultingCase() {
+		return resultingCase;
+	}
+
+	public ContactCriteria resultingCase(CaseReferenceDto resultingCase) {
+		this.resultingCase = resultingCase;
 		return this;
 	}
 

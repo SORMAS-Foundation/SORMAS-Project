@@ -47,6 +47,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -237,7 +238,10 @@ public class ContactsView extends AbstractView {
 											I18nProperties.getPrefixCaption(
 												SymptomsDto.I18N_PREFIX,
 												propertyId,
-												I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
+												I18nProperties.getPrefixCaption(
+													HospitalizationDto.I18N_PREFIX,
+													propertyId,
+													I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId))))))));
 						if (Date.class.isAssignableFrom(type)) {
 							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 						}

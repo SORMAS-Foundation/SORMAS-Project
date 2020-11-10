@@ -73,6 +73,7 @@ public class Exposure extends AbstractDomainObject {
 	private TypeOfPlace typeOfPlace;
 	private String typeOfPlaceDetails;
 	private MeansOfTransport meansOfTransport;
+	private String meansOfTransportDetails;
 	private String connectionNumber;
 	private String seatNumber;
 
@@ -520,6 +521,15 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setMeansOfTransport(MeansOfTransport meansOfTransport) {
 		this.meansOfTransport = meansOfTransport;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getMeansOfTransportDetails() {
+		return meansOfTransportDetails;
+	}
+
+	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
+		this.meansOfTransportDetails = meansOfTransportDetails;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

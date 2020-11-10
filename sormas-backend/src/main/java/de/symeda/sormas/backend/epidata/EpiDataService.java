@@ -69,7 +69,7 @@ public class EpiDataService extends AbstractAdoService<EpiData> {
 
 		IterableHelper.executeBatched(exposureUuids, ModelConstants.PARAMETER_LIMIT, batchedExposureUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<String[]> cq = cb.createQuery(String[].class);
+			CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 			Root<Exposure> root = cq.from(Exposure.class);
 			Join<Exposure, Contact> contactJoin = root.join(Exposure.CONTACT_TO_CASE);
 			Join<Contact, Case> caseJoin = contactJoin.join(Contact.CAZE);
@@ -78,10 +78,10 @@ public class EpiDataService extends AbstractAdoService<EpiData> {
 			cq.where(root.get(AbstractDomainObject.UUID).in(batchedExposureUuids));
 			cq.multiselect(root.get(AbstractDomainObject.UUID), casePersonJoin.get(Person.FIRST_NAME), casePersonJoin.get(Person.LAST_NAME));
 
-			List<String[]> resultList = em.createQuery(cq).getResultList();
+			List<Object[]> resultList = em.createQuery(cq).getResultList();
 
-			for (String[] result : resultList) {
-				sourceCaseNameMap.put(result[0], DataHelper.toStringNullable(result[1]) + " " + DataHelper.toStringNullable(result[2]));
+			for (Object[] result : resultList) {
+				sourceCaseNameMap.put((String) result[0], DataHelper.toStringNullable(result[1]) + " " + DataHelper.toStringNullable(result[2]));
 			}
 		});
 
