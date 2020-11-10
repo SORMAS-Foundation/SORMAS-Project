@@ -69,9 +69,6 @@ public class InfrastructureImporter extends DataImporter {
 		case POINT_OF_ENTRY:
 			newEntityDto = PointOfEntryDto.build();
 			break;
-		case COUNTRY:
-			newEntityDto = CountryDto.build();
-			break;
 		case REGION:
 			newEntityDto = RegionDto.build();
 			break;
@@ -111,9 +108,6 @@ public class InfrastructureImporter extends DataImporter {
 					break;
 				case POINT_OF_ENTRY:
 					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto);
-					break;
-				case COUNTRY:
-					FacadeProvider.getCountryFacade().saveCountry((CountryDto) newEntityDto);
 					break;
 				case REGION:
 					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto);

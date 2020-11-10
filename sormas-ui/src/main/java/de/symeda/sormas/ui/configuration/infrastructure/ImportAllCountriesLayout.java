@@ -15,6 +15,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
+import de.symeda.sormas.ui.caze.importer.CountryImporter;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportLayoutComponent;
@@ -31,8 +32,8 @@ public class ImportAllCountriesLayout extends AbstractImportLayout {
 			File countriesFile = Paths.get(countriesFileUri).toFile();
 			resetDownloadErrorReportButton();
 			try {
-				DataImporter importer = new InfrastructureImporter(countriesFile, currentUser, InfrastructureType.COUNTRY);
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+				CountryImporter importer = new CountryImporter(countriesFile, currentUser);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

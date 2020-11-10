@@ -71,7 +71,7 @@ public abstract class DataImporter {
 	/**
 	 * The input CSV file that contains the data to be imported.
 	 */
-	private File inputFile;
+	protected File inputFile;
 	/**
 	 * Whether or not the import file is supposed to have an additional row on top containing the entity name.
 	 * This is necessary for importers that also import data that is not referenced in the root entity,
@@ -116,10 +116,9 @@ public abstract class DataImporter {
 	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible)
 		throws IOException, CsvValidationException {
 
-		ImportProgressLayout progressLayout =
-			new ImportProgressLayout(readImportFileLength(inputFile), currentUI, this::cancelImport, duplicatesPossible);
+		ImportProgressLayout progressLayout = this.getImportProgressLayout(currentUI, duplicatesPossible);
 
-		importedLineCallback = result -> progressLayout.updateProgress(result);
+		importedLineCallback = progressLayout::updateProgress;
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingDataImport));
@@ -184,6 +183,13 @@ public abstract class DataImporter {
 		});
 
 		importThread.start();
+	}
+
+	/**
+	 * Can be overriden by subclasses to provide alternative progress layouts
+	 */
+	protected ImportProgressLayout getImportProgressLayout(UI currentUI, boolean duplicatesPossible) throws IOException, CsvValidationException {
+		return new ImportProgressLayout(readImportFileLength(inputFile), currentUI, this::cancelImport, duplicatesPossible);
 	}
 
 	/**
@@ -269,7 +275,7 @@ public abstract class DataImporter {
 	}
 
 	protected Writer createErrorReportWriter() throws IOException {
-		File errorReportFile = new File(errorReportFilePath.toString());
+		File errorReportFile = new File(errorReportFilePath);
 		if (errorReportFile.exists()) {
 			errorReportFile.delete();
 		}
