@@ -18,6 +18,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -162,7 +163,7 @@ public class ExternalJournalService {
 	 * @param contact
 	 *            a contact assigned to a person already available in the external journal
 	 * @param previousFollowUpUntilDate
-	 * 			the follow-up end date before the update
+	 *            the follow-up end date before the update
 	 */
 	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
 		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
@@ -181,18 +182,16 @@ public class ExternalJournalService {
 	/**
 	 * Notify external journals that a person has been updated
 	 * 
-	 * @param existingPerson
+	 * @param existingJournalPerson
 	 *            the person already available in the external journal
-	 * @param updatedPerson
-	 *            the updated person in SORMAS
 	 */
-	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-		if (shouldNotify(existingPerson, updatedPerson)) {
+	public void notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
+		if (shouldNotify(existingJournalPerson)) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
-				notifySymptomJournal(existingPerson.getUuid());
+				notifySymptomJournal(existingJournalPerson.getUuid());
 			}
 			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
-				notifyPatientDiary(existingPerson.getUuid());
+				notifyPatientDiary(existingJournalPerson.getUuid());
 			}
 		}
 	}
@@ -201,19 +200,12 @@ public class ExternalJournalService {
 	 * Note: This method just checks for changes in the Person data.
 	 * It can not check for Contact related data such as FollowUpUntil dates.
 	 */
-	private boolean shouldNotify(PersonDto existingPerson, PersonDto updatedPerson) {
-		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(existingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(existingPerson.getSymptomJournalStatus());
-		boolean relevantFieldsUpdated = Comparator.comparing(PersonDto::getFirstName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getLastName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getEmailAddress, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getPhone, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateDD, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateMM, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateYYYY, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getSex, Comparator.nullsLast(Comparator.naturalOrder()))
-			.compare(existingPerson, updatedPerson)
-			!= 0;
+	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
+		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
+		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
+			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus());
+		JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
+		boolean relevantFieldsUpdated = !existingJournalPerson.equals(updatedJournalPerson);
 		return relevantPerson && relevantFieldsUpdated;
 	}
 
@@ -272,6 +264,7 @@ public class ExternalJournalService {
 	/**
 	 * Attempts to register a new patient in the CLIMEDO patient diary.
 	 * Sets the person symptom journal status to REGISTERED if successful.
+	 * 
 	 * @param person
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
@@ -311,7 +304,9 @@ public class ExternalJournalService {
 
 	/**
 	 * Check whether a person has valid data in orderd to be registered in the patient diary
-	 * @param person the person to validate
+	 * 
+	 * @param person
+	 *            the person to validate
 	 * @return the result of the validation
 	 */
 	public ExternalPersonValidation validatePatientDiaryPerson(PersonDto person) {
