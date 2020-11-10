@@ -5552,4 +5552,24 @@ UPDATE diseaseconfiguration SET casefollowupduration = followupduration;
 UPDATE diseaseconfiguration SET eventparticipantfollowupduration = followupduration;
 
 INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-up duration #3100');
+
+-- 2020-11-10 Add documents
+
+CREATE TABLE documents (
+    id bigint PRIMARY KEY NOT NULL,
+    uuid character varying(36) NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    uploadinguser_id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    contenttype character varying(255) NOT NULL,
+    size bigint NOT NULL,
+    relatedentity_uuid character varying(36) NOT NULL,
+    relatedentity_type character varying(255) NOT NULL,
+
+    CONSTRAINT fk_documents_uploadinguser_id FOREIGN KEY (uploadinguser_id) REFERENCES users(id)
+);
+
+INSERT INTO schema_version (version_number, comment) VALUES (276, 'Add documents #2328');
+
 -- *** Insert new sql commands BEFORE this line ***

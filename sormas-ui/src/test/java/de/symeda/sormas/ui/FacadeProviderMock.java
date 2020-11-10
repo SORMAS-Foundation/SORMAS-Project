@@ -6,6 +6,8 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.document.DocumentFacade;
+import de.symeda.sormas.api.document.DocumentStorageFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -32,6 +34,8 @@ import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFa
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentStorageFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -114,6 +118,12 @@ public final class FacadeProviderMock extends FacadeProvider {
 		}
 		if (CaseImportFacade.class == clazz) {
 			return (P) bm.getBean(CaseImportFacadeEjbLocal.class);
+		}
+		if (DocumentFacade.class == clazz) {
+			return (P) bm.getBean(DocumentFacadeEjb.DocumentFacadeEjbLocal.class);
+		}
+		if (DocumentStorageFacade.class == clazz) {
+			return (P) bm.getBean(DocumentStorageFacadeEjb.class);
 		}
 
 		return null;
