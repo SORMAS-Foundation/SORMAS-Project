@@ -179,8 +179,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		DtoHelper.fillDto(dto, entity);
 
 		String isoCode = entity.getIsoCode();
-		String nameLanguageKey = isoCode != null ? "country." + isoCode.toUpperCase() + ".name" : null;
-		String displayName = ObjectUtils.firstNonNull(I18nProperties.getString(nameLanguageKey), entity.getDefaultName());
+		String displayName = I18nProperties.getCountryName(isoCode, entity.getDefaultName());
 		dto.setDisplayName(displayName);
 		dto.setDefaultName(entity.getDefaultName());
 		dto.setArchived(entity.isArchived());
