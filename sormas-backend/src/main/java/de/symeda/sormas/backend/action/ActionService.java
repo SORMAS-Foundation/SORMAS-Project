@@ -42,6 +42,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.location.Location;
@@ -218,8 +219,9 @@ public class ActionService extends AbstractAdoService<Action> {
 
 		From<Action, Action> action = joins.getRoot();
 		From<Action, Event> event = joins.getEvent(JoinType.INNER);
+		EventJoins<Action> eventJoins = new EventJoins<>(event);
 
-		Predicate filter = eventService.buildCriteriaFilter(criteria, cb, event);
+		Predicate filter = eventService.buildCriteriaFilter(criteria, cb, event, eventJoins);
 
 		if (criteria.getActionChangeDateFrom() != null && criteria.getActionChangeDateTo() != null) {
 			filter =
