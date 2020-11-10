@@ -449,6 +449,7 @@ public interface Strings {
 	String infoDownloadExport = "infoDownloadExport";
 	String infoDownloadImportGuide = "infoDownloadImportGuide";
 	String infoDownloadImportTemplate = "infoDownloadImportTemplate";
+	String infoDuplicateCaseOnConvertingContactToCase = "infoDuplicateCaseOnConvertingContactToCase";
 	String infoEditExportConfiguration = "infoEditExportConfiguration";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoHowToMergeCases = "infoHowToMergeCases";

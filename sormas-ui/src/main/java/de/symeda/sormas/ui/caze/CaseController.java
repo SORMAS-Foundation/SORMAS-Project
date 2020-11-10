@@ -165,21 +165,25 @@ public class CaseController {
 
 		final PersonDto duplicatePerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		ControllerProvider.getPersonController()
-			.selectOrCreatePerson(duplicatePerson, true, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
-				if (selectedPerson != null) {
-					CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
-					caseCreateComponent.addCommitListener(new CommitListener() {
+			.selectOrCreatePerson(
+				duplicatePerson,
+				true,
+				I18nProperties.getString(Strings.infoDuplicateCaseOnConvertingContactToCase),
+				selectedPerson -> {
+					if (selectedPerson != null) {
+						CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
+						caseCreateComponent.addCommitListener(new CommitListener() {
 
-						@Override
-						public void onCommit() {
-							ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-							updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-							FacadeProvider.getContactFacade().saveContact(updatedContact);
-						}
-					});
-					VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
-				}
-			});
+							@Override
+							public void onCommit() {
+								ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+								updatedContact.setContactClassification(ContactClassification.CONFIRMED);
+								FacadeProvider.getContactFacade().saveContact(updatedContact);
+							}
+						});
+						VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+					}
+				});
 	}
 
 	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
