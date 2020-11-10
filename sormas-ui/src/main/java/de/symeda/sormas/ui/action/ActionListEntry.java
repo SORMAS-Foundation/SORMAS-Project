@@ -40,6 +40,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class ActionListEntry extends HorizontalLayout {
@@ -80,11 +81,15 @@ public class ActionListEntry extends HorizontalLayout {
 		descReplyLayout.addStyleName(CssStyles.RICH_TEXT_CONTENT_CONTAINER);
 		withContentLayout.addComponents(descReplyLayout);
 
-		Label description = new Label(Jsoup.clean(action.getDescription(), Whitelist.basic()), ContentMode.HTML);
+		Whitelist whitelist = Whitelist.relaxed();
+		whitelist.addTags("hr", "font");
+		whitelist.addAttributes("font", "size", "face", "color");
+		whitelist.addAttributes("div", "align");
+		Label description = new Label(Jsoup.clean(action.getDescription(), whitelist), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		descReplyLayout.addComponent(description);
 		if (!Strings.isNullOrEmpty(action.getReply())) {
-			Label replyLabel = new Label(Jsoup.clean(action.getReply(), Whitelist.basic()), ContentMode.HTML);
+			Label replyLabel = new Label(Jsoup.clean(action.getReply(), whitelist), ContentMode.HTML);
 			replyLabel.setWidth(100, Unit.PERCENTAGE);
 			replyLabel.addStyleName(CssStyles.REPLY);
 			descReplyLayout.addComponent(replyLabel);

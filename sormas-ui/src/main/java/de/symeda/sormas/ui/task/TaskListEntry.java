@@ -65,6 +65,7 @@ public class TaskListEntry extends HorizontalLayout {
 
 		Label taskTypeLabel = new Label(DataHelper.toStringNullable(task.getTaskType()));
 		CssStyles.style(taskTypeLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+		taskTypeLabel.setWidth(50, Unit.PERCENTAGE);
 		topLeftLayout.addComponent(taskTypeLabel);
 
 		Label suggestedStartLabel = new Label(

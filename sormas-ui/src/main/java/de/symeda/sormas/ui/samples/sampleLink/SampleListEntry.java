@@ -77,6 +77,7 @@ public class SampleListEntry extends HorizontalLayout {
 
 			Label materialLabel = new Label(DataHelper.toStringNullable(sample.getSampleMaterial()));
 			CssStyles.style(materialLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			materialLabel.setWidth(50, Unit.PERCENTAGE);
 			topLeftLayout.addComponent(materialLabel);
 
 			Label dateTimeLabel = new Label(
