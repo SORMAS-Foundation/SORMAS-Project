@@ -402,7 +402,7 @@ public class CaseController {
 
 				if (convertedContact != null) {
 
-					int incubationPeriod = FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(dto.getDisease());
+					int incubationPeriod = FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(dto.getDisease());
 					List<VisitDto> visits = FacadeProvider.getVisitFacade()
 						.getVisitsByContactAndPeriod(
 							convertedContact.toReference(),
