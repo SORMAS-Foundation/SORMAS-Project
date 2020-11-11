@@ -1,250 +1,202 @@
+## All WHO countries
 "defaultName","externalId","isoCode","unoCode","archived"
-Switzerland,8100,CHE,756,FALSE
-Albania,8201,ALB,8,FALSE
-Andorra,8202,AND,20,FALSE
-Belgium,8204,BEL,56,FALSE
-Bulgaria,8205,BGR,100,FALSE
-Denmark,8206,DNK,208,FALSE
-Germany,8207,DEU,276,FALSE
-Faeroe Islands,8210,FRO,234,FALSE
-Finland,8211,FIN,246,FALSE
-France,8212,FRA,250,FALSE
-Gibraltar,8213,GIB,292,FALSE
-Greece,8214,GRC,300,FALSE
-United Kingdom,8215,GBR,826,FALSE
-Ireland,8216,IRL,372,FALSE
-Iceland,8217,ISL,352,FALSE
-Italy,8218,ITA,380,FALSE
-Liechtenstein,8222,LIE,438,FALSE
-Luxembourg,8223,LUX,442,FALSE
-Malta,8224,MLT,470,FALSE
-Isle of Man,8225,IMN,833,FALSE
-Monaco,8226,MCO,492,FALSE
-Netherlands,8227,NLD,528,FALSE
-Norway,8228,NOR,578,FALSE
-Austria,8229,AUT,40,FALSE
-Poland,8230,POL,616,FALSE
-Portugal,8231,PRT,620,FALSE
-Romania,8232,ROU,642,FALSE
-San Marino,8233,SMR,674,FALSE
-Sweden,8234,SWE,752,FALSE
-Spain,8236,ESP,724,FALSE
-Turkey,8239,TUR,792,FALSE
-Hungary,8240,HUN,348,FALSE
-Vatican City,8241,VAT,336,FALSE
-Cyprus,8242,CYP,196,FALSE
-Slovakia,8243,SVK,703,FALSE
-Czechia,8244,CZE,203,FALSE
-Serbia,8248,SRB,688,FALSE
-Croatia,8250,HRV,191,FALSE
-Slovenia,8251,SVN,705,FALSE
-Bosnia and Herzegovina,8252,BIH,70,FALSE
-Montenegro,8254,MNE,499,FALSE
-North Macedonia,8255,MKD,807,FALSE
-Estonia,8260,EST,233,FALSE
-Latvia,8261,LVA,428,FALSE
-Lithuania,8262,LTU,440,FALSE
-Moldova,8263,MDA,498,FALSE
-Russia,8264,RUS,643,FALSE
-Ukraine,8265,UKR,804,FALSE
-Belarus,8266,BLR,112,FALSE
-Jersey,8271,JEY,832,FALSE
-Guernsey,8272,GGY,831,FALSE
-Svalbard and Jan Mayen,8273,SJM,744,FALSE
-Aland Islands,8274,ALA,248,FALSE
-Equatorial Guinea,8301,GNQ,226,FALSE
-Ethiopia,8302,ETH,231,FALSE
-Djibouti,8303,DJI,262,FALSE
-Algeria,8304,DZA,12,FALSE
-Angola,8305,AGO,24,FALSE
-Botswana,8307,BWA,72,FALSE
-Burundi,8308,BDI,108,FALSE
-Benin,8309,BEN,204,FALSE
-Côte d'Ivoire,8310,CIV,384,FALSE
-Gabon,8311,GAB,266,FALSE
-Gambia,8312,GMB,270,FALSE
-Ghana,8313,GHA,288,FALSE
-Guinea-Bissau,8314,GNB,624,FALSE
-Guinea,8315,GIN,324,FALSE
-Cameroon,8317,CMR,120,FALSE
-Cabo Verde,8319,CPV,132,FALSE
-Kenya,8320,KEN,404,FALSE
-Comoros,8321,COM,174,FALSE
-Congo (Brazzaville),8322,COG,178,FALSE
-Congo (Kinshasa),8323,COD,180,FALSE
-Lesotho,8324,LSO,426,FALSE
-Liberia,8325,LBR,430,FALSE
-Libya,8326,LBY,434,FALSE
-Madagascar,8327,MDG,450,FALSE
-Malawi,8329,MWI,454,FALSE
-Mali,8330,MLI,466,FALSE
-Morocco,8331,MAR,504,FALSE
-Mauritania,8332,MRT,478,FALSE
-Mauritius,8333,MUS,480,FALSE
-Mozambique,8334,MOZ,508,FALSE
-Niger,8335,NER,562,FALSE
-Nigeria,8336,NGA,566,FALSE
-Burkina Faso,8337,BFA,854,FALSE
-Réunion,8339,REU,638,FALSE
-Zimbabwe,8340,ZWE,716,FALSE
-Rwanda,8341,RWA,646,FALSE
-Zambia,8343,ZMB,894,FALSE
-São Tomé and Príncipe,8344,STP,678,FALSE
-Senegal,8345,SEN,686,FALSE
-Seychelles,8346,SYC,690,FALSE
-Sierra Leone,8347,SLE,694,FALSE
-Somalia,8348,SOM,706,FALSE
-South Africa,8349,ZAF,710,FALSE
-Sudan,8350,SDN,729,FALSE
-Namibia,8351,NAM,516,FALSE
-Eswatini,8352,SWZ,748,FALSE
-Tanzania,8353,TZA,834,FALSE
-Togo,8354,TGO,768,FALSE
-Chad,8356,TCD,148,FALSE
-Tunisia,8357,TUN,788,FALSE
-Uganda,8358,UGA,800,FALSE
-Egypt,8359,EGY,818,FALSE
-Central African Republic,8360,CAF,140,FALSE
-Mayotte,8361,MYT,175,FALSE
-Eritrea,8362,ERI,232,FALSE
-South Sudan,8363,SSD,728,FALSE
-British Territories in the Indian Ocean,8371,IOT,,FALSE
-Western Sahara,8372,ESH,732,FALSE
-"Saint Helena, Ascension and Tristan da Cunha",,SHN,,FALSE
-Argentina,8401,ARG,32,FALSE
-Bahamas,8402,BHS,44,FALSE
-Barbados,8403,BRB,52,FALSE
-Bermuda,8404,BMU,60,FALSE
-Bolivia,8405,BOL,68,FALSE
-Brazil,8406,BRA,76,FALSE
-Chile,8407,CHL,152,FALSE
-Costa Rica,8408,CRI,188,FALSE
-Dominican Republic,8409,DOM,214,FALSE
-Ecuador,8410,ECU,218,FALSE
-El Salvador,8411,SLV,222,FALSE
-Falkland Islands,8412,FLK,238,FALSE
-Greenland,8413,GRL,304,FALSE
-Guadeloupe,8414,GLP,312,FALSE
-Guatemala,8415,GTM,320,FALSE
-French Guyana,8416,GUF,254,FALSE
-Guyana,8417,GUY,328,FALSE
-Haiti,8418,HTI,332,FALSE
-Belize,8419,BLZ,84,FALSE
-Honduras,8420,HND,340,FALSE
-Jamaica,8421,JAM,388,FALSE
-Canada,8423,CAN,124,FALSE
-Colombia,8424,COL,170,FALSE
-Cuba,8425,CUB,192,FALSE
-Martinique,8426,MTQ,474,FALSE
-Mexico,8427,MEX,484,FALSE
-Nicaragua,8429,NIC,558,FALSE
-Panama,8430,PAN,591,FALSE
-Paraguay,8431,PRY,600,FALSE
-Peru,8432,PER,604,FALSE
-Puerto Rico,8433,PRI,630,FALSE
-Saint Pierre and Miquelon,8434,SPM,666,FALSE
-Suriname,8435,SUR,740,FALSE
-Trinidad and Tobago,8436,TTO,780,FALSE
-Uruguay,8437,URY,858,FALSE
-Venezuela,8438,VEN,862,FALSE
-United States,8439,USA,840,FALSE
-Dominica,8440,DMA,212,FALSE
-Grenada,8441,GRD,308,FALSE
-Antigua and Barbuda,8442,ATG,28,FALSE
-Saint Lucia,8443,LCA,662,FALSE
-Saint Vincent and the Grenadines,8444,VCT,670,FALSE
-Saint Kitts and Nevis,8445,KNA,659,FALSE
-Anguilla,8446,AIA,660,FALSE
-Saint Martin (France),8448,MAF,663,FALSE
-Saint Barthélemy,8449,BLM,652,FALSE
-US Virgin Islands,8472,VIR,850,FALSE
-Cayman Islands,8473,CYM,136,FALSE
-Turks and Caicos Islands,8474,TCA,796,FALSE
-Montserrat,8475,MSR,500,FALSE
-British Virgin Islands,8476,VGB,92,FALSE
-Aruba,8482,ABW,533,FALSE
-South Georgia and the South Sandwich Islands,8483,SGS,,FALSE
-Curaçao,8484,CUW,531,FALSE
-Sint Maarten (Netherlands),8485,SXM,534,FALSE
-"Bonaire, Saint Eustatius and Saba",8486,BES,535,FALSE
-Afghanistan,8501,AFG,4,FALSE
-Bahrain,8502,BHR,48,FALSE
-Bhutan,8503,BTN,64,FALSE
-Brunei,8504,BRN,96,FALSE
-Myanmar,8505,MMR,104,FALSE
-Sri Lanka,8506,LKA,144,FALSE
-Taiwan (Chinese Taipei),8507,TWN,,FALSE
-China,8508,CHN,156,FALSE
-Hong Kong,8509,HKG,344,FALSE
-India,8510,IND,356,FALSE
-Indonesia,8511,IDN,360,FALSE
-Iraq,8512,IRQ,368,FALSE
-Iran,8513,IRN,364,FALSE
-Israel,8514,ISR,376,FALSE
-Japan,8515,JPN,392,FALSE
-Yemen,8516,YEM,887,FALSE
-Jordan,8517,JOR,400,FALSE
-Cambodia,8518,KHM,116,FALSE
-Qatar,8519,QAT,634,FALSE
-Kuwait,8521,KWT,414,FALSE
-Laos,8522,LAO,418,FALSE
-Lebanon,8523,LBN,422,FALSE
-Macao,8524,MAC,446,FALSE
-Malaysia,8525,MYS,458,FALSE
-Maldives,8526,MDV,462,FALSE
-Oman,8527,OMN,512,FALSE
-Mongolia,8528,MNG,496,FALSE
-Nepal,8529,NPL,524,FALSE
-North Korea,8530,PRK,408,FALSE
-United Arab Emirates,8532,ARE,784,FALSE
-Pakistan,8533,PAK,586,FALSE
-Philippines,8534,PHL,608,FALSE
-Saudi Arabia,8535,SAU,682,FALSE
-Singapore,8537,SGP,702,FALSE
-South Korea,8539,KOR,410,FALSE
-Syria,8541,SYR,760,FALSE
-Thailand,8542,THA,764,FALSE
-Vietnam,8545,VNM,704,FALSE
-Bangladesh,8546,BGD,50,FALSE
-Timor-Leste,8547,TLS,626,FALSE
-Palestine,8550,PSE,275,FALSE
-Armenia,8560,ARM,51,FALSE
-Azerbaijan,8561,AZE,31,FALSE
-Georgia,8562,GEO,268,FALSE
-Kazakhstan,8563,KAZ,398,FALSE
-Kyrgyzstan,8564,KGZ,417,FALSE
-Tajikistan,8565,TJK,762,FALSE
-Turkmenistan,8566,TKM,795,FALSE
-Uzbekistan,8567,UZB,860,FALSE
-Australia,8601,AUS,36,FALSE
-Fiji,8602,FJI,242,FALSE
-Nauru,8604,NRU,520,FALSE
-Vanuatu,8605,VUT,548,FALSE
-New Caledonia,8606,NCL,540,FALSE
-New Zealand,8607,NZL,554,FALSE
-Papua New Guinea,8608,PNG,598,FALSE
-Tonga,8610,TON,776,FALSE
-Wallis and Futuna,8611,WLF,876,FALSE
-Samoa,8612,WSM,882,FALSE
-Solomon Islands,8614,SLB,90,FALSE
-Tuvalu,8615,TUV,798,FALSE
-Kiribati,8616,KIR,296,FALSE
-Marshall Islands,8617,MHL,584,FALSE
-Micronesia,8618,FSM,583,FALSE
-Palau,8619,PLW,585,FALSE
-American Samoa,8621,ASM,16,FALSE
-Northern Marianas,8630,MNP,580,FALSE
-Guam,8632,GUM,316,FALSE
-United States Minor Outlying Islands,8637,UMI,,FALSE
-Cocos (Keeling) Islands,8652,CCK,,FALSE
-Heard Island and McDonald Islands,8653,HMD,,FALSE
-Norfolk Island,8654,NFK,574,FALSE
-Christmas Island,8655,CXR,,FALSE
-French Polynesia,8671,PYF,258,FALSE
-Cook Islands,8682,COK,184,FALSE
-Niue,8683,NIU,570,FALSE
-Tokelau,8684,TKL,772,FALSE
-Pitcairn Islands,8685,PCN,612,FALSE
-Antarctica,8701,ATA,,FALSE
-Bouvet Island,8702,BVT,,FALSE
-French Southern and Antarctic Lands,8703,ATF,,FALSE
+"Afghanistan","8501","AFG","4","FALSE"
+"Albania","8201","ALB","8","FALSE"
+"Algeria","8304","DZA","12","FALSE"
+"Andorra","8202","AND","20","FALSE"
+"Angola","8305","AGO","24","FALSE"
+"Antigua and Barbuda","8442","ATG","28","FALSE"
+"Argentina","8401","ARG","32","FALSE"
+"Armenia","8560","ARM","51","FALSE"
+"Australia","8601","AUS","36","FALSE"
+"Austria","8229","AUT","40","FALSE"
+"Azerbaijan","8561","AZE","31","FALSE"
+"Bahamas","8402","BHS","44","FALSE"
+"Bahrain","8502","BHR","48","FALSE"
+"Bangladesh","8546","BGD","50","FALSE"
+"Barbados","8403","BRB","52","FALSE"
+"Belarus","8266","BLR","112","FALSE"
+"Belgium","8204","BEL","56","FALSE"
+"Belize","8419","BLZ","84","FALSE"
+"Benin","8309","BEN","204","FALSE"
+"Bhutan","8503","BTN","64","FALSE"
+"Bolivia (Plurinational State of)","8405","BOL","68","FALSE"
+"Bosnia and Herzegovina","8252","BIH","70","FALSE"
+"Botswana","8307","BWA","72","FALSE"
+"Brazil","8406","BRA","76","FALSE"
+"Brunei Darussalam","8504","BRN","96","FALSE"
+"Bulgaria","8205","BGR","100","FALSE"
+"Burkina Faso","8337","BFA","854","FALSE"
+"Burundi","8308","BDI","108","FALSE"
+"Cabo Verde","8319","CPV","132","FALSE"
+"Cambodia","8518","KHM","116","FALSE"
+"Cameroon","8317","CMR","120","FALSE"
+"Canada","8423","CAN","124","FALSE"
+"Central African Republic","8360","CAF","140","FALSE"
+"Chad","8356","TCD","148","FALSE"
+"Chile","8407","CHL","152","FALSE"
+"China","8508","CHN","156","FALSE"
+"Colombia","8424","COL","170","FALSE"
+"Comoros","8321","COM","174","FALSE"
+"Congo (Brazzaville)","8322","COG","178","FALSE"
+"Cook Islands","8682","COK","184","FALSE"
+"Costa Rica","8408","CRI","188","FALSE"
+"Croatia","8250","HRV","191","FALSE"
+"Cuba","8425","CUB","192","FALSE"
+"Cyprus","8242","CYP","196","FALSE"
+"Czech Republic","8244","CZE","203","FALSE"
+"Democratic People's Republic of Korea","8530","PRK","408","FALSE"
+"Democratic Republic of the Congo","8323","COD","180","FALSE"
+"Denmark","8206","DNK","208","FALSE"
+"Djibouti","8303","DJI","262","FALSE"
+"Dominica","8440","DMA","212","FALSE"
+"Dominican Republic","8409","DOM","214","FALSE"
+"Ecuador","8410","ECU","218","FALSE"
+"Egypt","8359","EGY","818","FALSE"
+"El Salvador","8411","SLV","222","FALSE"
+"Equatorial Guinea","8301","GNQ","226","FALSE"
+"Eritrea","8362","ERI","232","FALSE"
+"Estonia","8260","EST","233","FALSE"
+"Eswatini","8352","SWZ","748","FALSE"
+"Ethiopia","8302","ETH","231","FALSE"
+"Fiji","8602","FJI","242","FALSE"
+"Finland","8211","FIN","246","FALSE"
+"France","8212","FRA","250","FALSE"
+"Gabon","8311","GAB","266","FALSE"
+"Gambia","8312","GMB","270","FALSE"
+"Georgia","8562","GEO","268","FALSE"
+"Germany","8207","DEU","276","FALSE"
+"Ghana","8313","GHA","288","FALSE"
+"Greece","8214","GRC","300","FALSE"
+"Greenland","8413","GRL","304","FALSE"
+"Grenada","8441","GRD","308","FALSE"
+"Guatemala","8415","GTM","320","FALSE"
+"Guinea","8315","GIN","324","FALSE"
+"Guinea-Bissau","8314","GNB","624","FALSE"
+"Guyana","8417","GUY","328","FALSE"
+"Haiti","8418","HTI","332","FALSE"
+"Honduras","8420","HND","340","FALSE"
+"Hungary","8240","HUN","348","FALSE"
+"Iceland","8217","ISL","352","FALSE"
+"India","8510","IND","356","FALSE"
+"Indonesia","8511","IDN","360","FALSE"
+"Iran (Islamic Republic of)","8513","IRN","364","FALSE"
+"Iraq","8512","IRQ","368","FALSE"
+"Ireland","8216","IRL","372","FALSE"
+"Israel","8514","ISR","376","FALSE"
+"Italy","8218","ITA","380","FALSE"
+"Jamaica","8421","JAM","388","FALSE"
+"Japan","8515","JPN","392","FALSE"
+"Jordan","8517","JOR","400","FALSE"
+"Kazakhstan","8563","KAZ","398","FALSE"
+"Kenya","8320","KEN","404","FALSE"
+"Kiribati","8616","KIR","296","FALSE"
+"Kuwait","8521","KWT","414","FALSE"
+"Kyrgyzstan","8564","KGZ","417","FALSE"
+"Lao People's Democratic Republic","8522","LAO","418","FALSE"
+"Latvia","8261","LVA","428","FALSE"
+"Lebanon","8523","LBN","422","FALSE"
+"Lesotho","8324","LSO","426","FALSE"
+"Liberia","8325","LBR","430","FALSE"
+"Libya","8326","LBY","434","FALSE"
+"Liechtenstein","8222","LIE","438","FALSE"
+"Lithuania","8262","LTU","440","FALSE"
+"Luxembourg","8223","LUX","442","FALSE"
+"Madagascar","8327","MDG","450","FALSE"
+"Malawi","8329","MWI","454","FALSE"
+"Malaysia","8525","MYS","458","FALSE"
+"Maldives","8526","MDV","462","FALSE"
+"Mali","8330","MLI","466","FALSE"
+"Malta","8224","MLT","470","FALSE"
+"Marshall Islands","8617","MHL","584","FALSE"
+"Mauritania","8332","MRT","478","FALSE"
+"Mauritius","8333","MUS","480","FALSE"
+"Mexico","8427","MEX","484","FALSE"
+"Micronesia (Federated States of)","8618","FSM","583","FALSE"
+"Monaco","8226","MCO","492","FALSE"
+"Mongolia","8528","MNG","496","FALSE"
+"Montenegro","8254","MNE","499","FALSE"
+"Morocco","8331","MAR","504","FALSE"
+"Mozambique","8334","MOZ","508","FALSE"
+"Myanmar","8505","MMR","104","FALSE"
+"Namibia","8351","NAM","516","FALSE"
+"Nauru","8604","NRU","520","FALSE"
+"Nepal","8529","NPL","524","FALSE"
+"Netherlands","8227","NLD","528","FALSE"
+"New Caledonia","8606","NCL","540","FALSE"
+"New Zealand","8607","NZL","554","FALSE"
+"Nicaragua","8429","NIC","558","FALSE"
+"Niger","8335","NER","562","FALSE"
+"Nigeria","8336","NGA","566","FALSE"
+"Niue","8683","NIU","570","FALSE"
+"North Macedonia","8255","MKD","807","FALSE"
+"Norway","8228","NOR","578","FALSE"
+"Oman","8527","OMN","512","FALSE"
+"Pakistan","8533","PAK","586","FALSE"
+"Palau","8619","PLW","585","FALSE"
+"Panama","8430","PAN","591","FALSE"
+"Papua New Guinea","8608","PNG","598","FALSE"
+"Paraguay","8431","PRY","600","FALSE"
+"Peru","8432","PER","604","FALSE"
+"Philippines","8534","PHL","608","FALSE"
+"Poland","8230","POL","616","FALSE"
+"Portugal","8231","PRT","620","FALSE"
+"Puerto Rico","8433","PRI","630","FALSE"
+"Qatar","8519","QAT","634","FALSE"
+"Republic of Korea","8539","KOR","410","FALSE"
+"Republic of Moldova","8263","MDA","498","FALSE"
+"Romania","8232","ROU","642","FALSE"
+"Russian Federation","8264","RUS","643","FALSE"
+"Rwanda","8341","RWA","646","FALSE"
+"Saint Kitts and Nevis","8445","KNA","659","FALSE"
+"Saint Lucia","8443","LCA","662","FALSE"
+"Saint Vincent and the Grenadines","8444","VCT","670","FALSE"
+"Samoa","8612","WSM","882","FALSE"
+"San Marino","8233","SMR","674","FALSE"
+"Sao Tome and Principe","8344","STP","678","FALSE"
+"Saudi Arabia","8535","SAU","682","FALSE"
+"Senegal","8345","SEN","686","FALSE"
+"Serbia","8248","SRB","688","FALSE"
+"Seychelles","8346","SYC","690","FALSE"
+"Sierra Leone","8347","SLE","694","FALSE"
+"Singapore","8537","SGP","702","FALSE"
+"Slovakia","8243","SVK","703","FALSE"
+"Slovenia","8251","SVN","705","FALSE"
+"Solomon Islands","8614","SLB","90","FALSE"
+"Somalia","8348","SOM","706","FALSE"
+"South Africa","8349","ZAF","710","FALSE"
+"South Sudan","8363","SSD","728","FALSE"
+"Spain","8236","ESP","724","FALSE"
+"Sri Lanka","8506","LKA","144","FALSE"
+"State of Palestine","8550","PSE","275","FALSE"
+"Sudan","8350","SDN","729","FALSE"
+"Suriname","8435","SUR","740","FALSE"
+"Sweden","8234","SWE","752","FALSE"
+"Switzerland","8100","CHE","756","FALSE"
+"Syrian Arab Republic","8541","SYR","760","FALSE"
+"Tajikistan","8565","TJK","762","FALSE"
+"Thailand","8542","THA","764","FALSE"
+"Timor-Leste","8547","TLS","626","FALSE"
+"Togo","8354","TGO","768","FALSE"
+"Tokelau","8684","TKL","772","FALSE"
+"Tonga","8610","TON","776","FALSE"
+"Trinidad and Tobago","8436","TTO","780","FALSE"
+"Tunisia","8357","TUN","788","FALSE"
+"Turkey","8239","TUR","792","FALSE"
+"Turkmenistan","8566","TKM","795","FALSE"
+"Tuvalu","8615","TUV","798","FALSE"
+"Uganda","8358","UGA","800","FALSE"
+"Ukraine","8265","UKR","804","FALSE"
+"United Arab Emirates","8532","ARE","784","FALSE"
+"United Kingdom of Great Britain and Northern Ireland","8215","GBR","826","FALSE"
+"United Republic of Tanzania","8353","TZA","834","FALSE"
+"United States of America","8439","USA","840","FALSE"
+"Uruguay","8437","URY","858","FALSE"
+"Uzbekistan","8567","UZB","860","FALSE"
+"Vanuatu","8605","VUT","548","FALSE"
+"Vatican City","8241","VAT","336","FALSE"
+"Venezuela (Bolivarian Republic of)","8438","VEN","862","FALSE"
+"Viet Nam","8545","VNM","704","FALSE"
+"Yemen","8516","YEM","887","FALSE"
+"Zambia","8343","ZMB","894","FALSE"
+"Zimbabwe","8340","ZWE","716","FALSE"
