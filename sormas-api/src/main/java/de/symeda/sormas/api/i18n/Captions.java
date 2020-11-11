@@ -707,6 +707,7 @@ public interface Captions {
 	String districtArchivedDistricts = "districtArchivedDistricts";
 	String districtName = "districtName";
 	String DocumentTemplate = "DocumentTemplate";
+	String DocumentTemplate_buttonUploadTemplate = "DocumentTemplate.buttonUploadTemplate";
 	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
 	String DocumentTemplate_exampleTemplateLibreOffice = "DocumentTemplate.exampleTemplateLibreOffice";
 	String DocumentTemplate_exampleTemplateWord = "DocumentTemplate.exampleTemplateWord";
