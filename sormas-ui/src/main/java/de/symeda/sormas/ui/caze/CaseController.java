@@ -181,6 +181,7 @@ public class CaseController {
 								FacadeProvider.getContactFacade().saveContact(updatedContact);
 							}
 						});
+
 						VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 					}
 				});
