@@ -356,11 +356,15 @@ public class ExternalJournalService {
 	}
 
 	private boolean isEmailAvailable(String emailAddress) {
-		return queryPatientDiary(EMAIL_QUERY_PARAM, emailAddress).getCount() == 0;
+		return queryPatientDiary(EMAIL_QUERY_PARAM, emailAddress)
+				.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"))
+				.getCount() == 0;
 	}
 
 	private boolean isPhoneAvailable(String phone) {
-		return queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, phone).getCount() == 0;
+		return queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, phone)
+				.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"))
+				.getCount() == 0;
 	}
 
 	/**
@@ -372,7 +376,7 @@ public class ExternalJournalService {
 	 *            the value of the property to match
 	 * @return result of query
 	 */
-	public PatientDiaryPersonQueryResponse queryPatientDiary(String key, String value) {
+	public Optional<PatientDiaryPersonQueryResponse> queryPatientDiary(String key, String value) {
 		try {
 			String probandsUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/probands";
 			String queryParam = "\"" + key + "\" = \"" + value + "\"";
@@ -383,7 +387,10 @@ public class ExternalJournalService {
 					.request(MediaType.APPLICATION_JSON)
 					.header("x-access-token", getPatientDiaryAuthToken())
 					.get();
-			return response.readEntity(PatientDiaryPersonQueryResponse.class);
+			if (response.getStatus() == NOT_FOUND_STATUS) {
+				return Optional.empty();
+			}
+			return Optional.ofNullable(response.readEntity(PatientDiaryPersonQueryResponse.class));
 		} catch (IOException e) {
 			logger.error("Could not retrieve patient query response: {}", e.getMessage());
 			throw new RuntimeException(e);
