@@ -30,7 +30,7 @@ public class LineListingActiveDistrictsLayout extends CssLayout {
 
 		for (FeatureConfigurationIndexDto config : configurations) {
 			StringBuilder captionBuilder = new StringBuilder();
-			captionBuilder.append("<b>").append(Jsoup.clean(config.getDistrictName(), Whitelist.basic())).append("</b><br/>");
+			captionBuilder.append("<b>").append(Jsoup.clean(config.getDistrictName(), Whitelist.none())).append("</b><br/>");
 			if (config.getEndDate() != null) {
 				captionBuilder.append(I18nProperties.getString(Strings.until)).append(" ").append(DateFormatHelper.formatDate(config.getEndDate()));
 			} else {

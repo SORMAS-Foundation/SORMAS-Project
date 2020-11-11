@@ -239,7 +239,7 @@ public final class ClassificationHtmlRenderer {
 		for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
-				subCriteriaSb.append("- " + Jsoup.clean(subCriteria.buildDescription() + "</br>", Whitelist.basic()));
+				subCriteriaSb.append("- " + Jsoup.clean(subCriteria.buildDescription(), Whitelist.basic()) + "</br>");
 			} else if (subCriteria instanceof ClassificationCollectiveCriteria
 				&& !(subCriteria instanceof ClassificationAllOfCriteriaDto)
 				&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
@@ -332,7 +332,7 @@ public final class ClassificationHtmlRenderer {
 	 * Specific tags are allowed to be contained in i18n strings and are thus unescaped
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return Jsoup.clean(text + "<br>", Whitelist.basic());
+		return (Jsoup.clean(text, Whitelist.basic()) + "<br>");
 	}
 
 	private enum ClassificationCriteriaType {
