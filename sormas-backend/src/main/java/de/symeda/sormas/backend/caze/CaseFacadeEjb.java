@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,6 +64,7 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -363,6 +367,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+	@EJB
+	private ExternalJournalService externalJournalService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -1451,6 +1457,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		validate(dto);
 
+		if (caze != null) {
+			handleExternalJournalPerson(dto);
+		}
+
 		caze = fillOrBuildEntity(dto, caze);
 
 		// Set version number on a new case
@@ -1468,6 +1478,19 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
 	}
+
+	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
+	private void handleExternalJournalPerson(CaseDataDto updatedCase) {
+		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+		/**
+		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
+		 * Changes of related data is assumed to be not yet persisted in the database.
+		 */
+		Runnable notify =
+				() -> externalJournalService.notifyExternalJournalPersonUpdate(personFacade.getPersonForJournal(updatedCase.getPerson().getUuid()));
+		executorService.schedule(notify, 5, TimeUnit.SECONDS);
+	}
+
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
 
