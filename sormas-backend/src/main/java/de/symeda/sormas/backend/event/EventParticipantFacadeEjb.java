@@ -200,6 +200,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
+	public EventParticipantDto getByUuid(String uuid) {
+		return convertToDto(
+			eventParticipantService.getByUuid(uuid),
+			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue)));
+	}
+
+	@Override
 	public List<EventParticipantIndexDto> getIndexList(
 		EventParticipantCriteria eventParticipantCriteria,
 		Integer first,
@@ -451,6 +458,18 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
 
 		return eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(eventParticipant);
+	}
+
+	@Override
+	public EventParticipantDto getFirst(EventParticipantCriteria criteria) {
+
+		if (criteria.getEvent() == null) {
+			return null;
+		}
+
+		return eventParticipantService.getFirst(criteria)
+			.map(e -> convertToDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
+			.orElse(null);
 	}
 
 	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
