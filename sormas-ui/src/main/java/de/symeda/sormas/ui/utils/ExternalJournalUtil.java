@@ -11,8 +11,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
-import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
-import de.symeda.sormas.api.externaljournal.RegisterResult;
+import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
+import de.symeda.sormas.api.externaljournal.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -92,7 +92,7 @@ public class ExternalJournalUtil {
      * Displays the result in a popup
      */
     public static void registerPatientDiaryPerson(PersonDto person) {
-        ExternalPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
+        PatientDiaryPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
         if (!validationResult.isValid()) {
             showPatientDiaryWarningPopup(validationResult.getMessage());
         } else {
@@ -100,7 +100,7 @@ public class ExternalJournalUtil {
                     || SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
                 openPatientDiaryEnrollPage(person.getUuid());
             } else {
-                RegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
+                PatientDiaryRegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
                 showPatientRegisterResultPopup(registerResult);
             }
         }
@@ -132,7 +132,7 @@ public class ExternalJournalUtil {
         popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
     }
 
-    private static void showPatientRegisterResultPopup(RegisterResult registerResult) {
+    private static void showPatientRegisterResultPopup(PatientDiaryRegisterResult registerResult) {
         VerticalLayout registrationResultLayout = new VerticalLayout();
         registrationResultLayout.setMargin(true);
         Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));

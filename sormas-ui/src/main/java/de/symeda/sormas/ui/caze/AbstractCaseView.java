@@ -24,7 +24,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.Property.ValueChangeEvent;
 import com.vaadin.v7.data.Property.ValueChangeListener;
 import com.vaadin.v7.ui.OptionGroup;
 
@@ -96,14 +95,10 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		viewModeToggle.setVisible(false);
 		addHeaderComponent(viewModeToggle);
 
-		viewModeToggleListener = new ValueChangeListener() {
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				viewConfiguration.setViewMode((ViewMode) event.getProperty().getValue());
-				// refresh
-				ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
-			}
+		viewModeToggleListener = (ValueChangeListener) event -> {
+			viewConfiguration.setViewMode((ViewMode) event.getProperty().getValue());
+			// refresh
+			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
 

@@ -20,12 +20,14 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -64,6 +66,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseCriteria.FACILITY_TYPE_GROUP, CaseCriteria.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY,
 			CaseDataDto.POINT_OF_ENTRY, CaseDataDto.SURVEILLANCE_OFFICER, CaseCriteria.REPORTING_USER_ROLE,
 			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO, CaseCriteria.FOLLOW_UP_UNTIL_TO,
+			ContactCriteria.SYMPTOM_JOURNAL_STATUS,
 			CaseCriteria.BIRTHDATE_YYYY,
 			CaseCriteria.BIRTHDATE_MM,
 			CaseCriteria.BIRTHDATE_DD)
@@ -104,7 +107,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
 
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
 		} else {
 			final ComboBox caseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
@@ -131,7 +134,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
 		UserDto user = UserProvider.getCurrent().getUser();
-		ComboBox regionField = null;
+		ComboBox regionField;
 		if (user.getRegion() == null) {
 			regionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
@@ -173,6 +176,12 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
 					200));
 			followUpUntilTo.removeAllValidators();
+			addField(
+					moreFiltersContainer,
+					FieldConfiguration.withCaptionAndPixelSized(
+							CaseCriteria.SYMPTOM_JOURNAL_STATUS,
+							I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
+							240));
 		}
 
 		addField(
@@ -668,10 +677,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	public void setValue(CaseCriteria newCriteria) throws ReadOnlyException, Converter.ConversionException {
 
 		super.setValue(newCriteria);
-		ComboBox typeField = (ComboBox) getField(CaseCriteria.FACILITY_TYPE);
+		ComboBox typeField = getField(CaseCriteria.FACILITY_TYPE);
 		if (newCriteria.getFacilityType() != null && typeField != null) {
 			typeField.setValue(newCriteria.getFacilityType());
-			ComboBox facilityField = (ComboBox) getField(CaseDataDto.HEALTH_FACILITY);
+			ComboBox facilityField = getField(CaseDataDto.HEALTH_FACILITY);
 			if (newCriteria.getHealthFacility() != null && facilityField != null) {
 				facilityField.setValue(newCriteria.getHealthFacility());
 			}

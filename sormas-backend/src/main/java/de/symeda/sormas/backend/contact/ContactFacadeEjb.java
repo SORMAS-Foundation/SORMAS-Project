@@ -517,7 +517,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<String> resultContactsUuids = exportContacts.stream().map(ContactExportDto::getUuid).collect(Collectors.toList());
 
 		if (!exportContacts.isEmpty()) {
-			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
+			List<Long> exportContactIds = exportContacts.stream().map(ContactExportDto::getId).collect(Collectors.toList());
 
 			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
@@ -652,7 +652,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<VisitSummaryExportDto> visitSummaries = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		if (!visitSummaries.isEmpty()) {
-			List<String> visitSummaryUuids = visitSummaries.stream().map(e -> e.getUuid()).collect(Collectors.toList());
+			List<String> visitSummaryUuids = visitSummaries.stream().map(VisitSummaryExportDto::getUuid).collect(Collectors.toList());
 
 			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
@@ -719,7 +719,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
 				.entrySet()
 				.stream()
-				.max((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
+				.max(Map.Entry.comparingByValue())
 				.get()
 				.getValue();
 		} else {
@@ -789,7 +789,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -829,7 +829,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		if (!resultList.isEmpty()) {
 
-			List<String> contactUuids = resultList.stream().map(d -> d.getUuid()).collect(Collectors.toList());
+			List<String> contactUuids = resultList.stream().map(FollowUpDto::getUuid).collect(Collectors.toList());
 
 			CriteriaQuery<Object[]> visitsCq = cb.createQuery(Object[].class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
@@ -985,9 +985,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
 
-			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[2] = caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
+			counts[0] = caseContactCounts.stream().min(Comparator.naturalOrder()).orElse(0L).intValue();
+			counts[1] = caseContactCounts.stream().max(Comparator.naturalOrder()).orElse(0L).intValue();
+			counts[2] = caseContactCounts.stream().reduce(0L, Long::sum).intValue() / caseIds.size();
 
 			return counts;
 		}
@@ -1150,10 +1150,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getCurrentUser();
 
-		List<DashboardQuarantineDataDto> dashboardContactsInQuarantine =
-			contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
-
-		return dashboardContactsInQuarantine;
+		return contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
 	}
 
 	@Override

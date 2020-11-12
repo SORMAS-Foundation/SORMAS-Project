@@ -83,12 +83,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
+	private Boolean followUpUntilToPrecise;
 	/**
 	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
 	 * even if a followUpUntilFrom is specified
 	 */
 	private SymptomJournalStatus symptomJournalStatus;
-	private Boolean followUpUntilToPrecise;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
 	private Boolean deleted = Boolean.FALSE;

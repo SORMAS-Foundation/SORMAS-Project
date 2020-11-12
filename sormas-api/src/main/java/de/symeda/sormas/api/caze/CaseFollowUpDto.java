@@ -21,24 +21,29 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.followup.FollowUpDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 
 public class CaseFollowUpDto extends FollowUpDto {
 
 	private static final long serialVersionUID = -7782443664670559221L;
 
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+
 	private Date symptomsOnsetDate;
 
 	private final CaseJurisdictionDto jurisdiction;
+	private SymptomJournalStatus symptomJournalStatus;
 
 	//@formatter:off
 	public CaseFollowUpDto(String uuid, String personFirstName, String personLastName,
-							  Date reportDate, Date symptomsOnsetDate, Date followUpUntil, Disease disease,
-							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid,
+							  Date reportDate, Date symptomsOnsetDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus,
+						      Disease disease, String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid,
 							  String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//formatter:on
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
 		this.symptomsOnsetDate = symptomsOnsetDate;
+		this.symptomJournalStatus = symptomJournalStatus;
 		this.jurisdiction = new CaseJurisdictionDto(
 				caseReportingUserUuid,
 				caseRegionUuid,
@@ -58,5 +63,13 @@ public class CaseFollowUpDto extends FollowUpDto {
 
 	public void setSymptomsOnsetDate(Date symptomsOnsetDate) {
 		this.symptomsOnsetDate = symptomsOnsetDate;
+	}
+
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
 	}
 }
