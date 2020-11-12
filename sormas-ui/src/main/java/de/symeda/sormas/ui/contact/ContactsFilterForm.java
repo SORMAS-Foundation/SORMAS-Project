@@ -350,11 +350,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	@Override
 	protected void applyDependenciesOnNewValue(ContactCriteria newValue) {
 
-		RegionReferenceDto region = newValue.getRegion();
-		DistrictReferenceDto district = newValue.getDistrict();
+		final RegionReferenceDto region = newValue.getRegion();
+		final DistrictReferenceDto district = newValue.getDistrict();
 		applyRegionAndDistrictFilterDependency(region, ContactCriteria.DISTRICT, district, ContactCriteria.COMMUNITY);
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = UserProvider.getCurrent().getUser();
 
 		ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {

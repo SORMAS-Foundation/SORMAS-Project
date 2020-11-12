@@ -346,28 +346,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PersonQuarantineEndDto> cq = cb.createQuery(PersonQuarantineEndDto.class);
-		Root<Contact> contactRoot = cq.from(Contact.class);
-		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
-
-		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
-		if (since != null) {
-			filter = PersonService.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.QUARANTINE_TO));
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.QUARANTINE_TO)));
-
-		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
-	}
-
-	@Override
 	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);

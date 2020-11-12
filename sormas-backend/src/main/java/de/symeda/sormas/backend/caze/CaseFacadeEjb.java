@@ -574,7 +574,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getEpiData().get(EpiData.RODENTS), caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES),
 				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE),
 				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
-				eventCountSq
+				eventCountSq,
+				caseRoot.get(Case.EXTERNAL_ID)
 				);
 		//@formatter:on
 
