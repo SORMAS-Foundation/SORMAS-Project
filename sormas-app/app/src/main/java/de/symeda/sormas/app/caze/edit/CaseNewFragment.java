@@ -188,6 +188,12 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.personPresentCondition.initializeSpinner(presentConditionList);
 
 		contentBinding.facilityOrHome.initializeSpinner(facilityOrHomeList);
+		contentBinding.facilityOrHome.addValueChangedListener(e -> {
+			if (e.getValue() == TypeOfPlace.FACILITY) {
+				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
+				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
+			}
+		});
 		contentBinding.facilityTypeGroup.initializeSpinner(facilityTypeGroupList);
 	}
 
@@ -204,17 +210,19 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.caseDataDistrict.setRequired(false);
 
 		User user = ConfigProvider.getUser();
+
+		if (user.getPointOfEntry() == null) {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+		}
+
 		if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT) && user.getHealthFacility() != null) {
 			// Hospital Informants are not allowed to create cases in another health facility
 			contentBinding.caseDataCommunity.setEnabled(false);
 			contentBinding.caseDataCommunity.setRequired(false);
 			contentBinding.caseDataHealthFacility.setEnabled(false);
 			contentBinding.caseDataHealthFacility.setRequired(false);
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 			contentBinding.facilityOrHome.setEnabled(false);
-			contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 			contentBinding.facilityTypeGroup.setEnabled(false);
-			contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
 			contentBinding.caseDataFacilityType.setEnabled(false);
 		}
 
