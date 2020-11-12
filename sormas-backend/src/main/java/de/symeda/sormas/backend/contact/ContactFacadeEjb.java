@@ -59,6 +59,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,6 +211,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -297,7 +300,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		}
 		if (existingContact != null) {
-			handleExternalJournalPerson(existingContactDto, dto);
+			handleExternalJournalPerson(dto);
 		}
 
 		if (handleChanges) {
@@ -315,9 +318,14 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-	private void handleExternalJournalPerson(ContactDto existingContact, ContactDto updatedContact) {
+	private void handleExternalJournalPerson(ContactDto updatedContact) {
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		Runnable notify = () -> externalJournalService.notifyExternalJournalFollowUpUntilUpdate(updatedContact, existingContact.getFollowUpUntil());
+		/**
+		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
+		 * Changes of related data is assumed to be not yet persisted in the database.
+		 */
+		JournalPersonDto existingContact = personFacade.getPersonForJournal(updatedContact.getPerson().getUuid());
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingContact);
 		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 

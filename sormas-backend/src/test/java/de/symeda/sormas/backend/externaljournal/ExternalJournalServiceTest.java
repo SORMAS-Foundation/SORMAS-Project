@@ -1,8 +1,10 @@
 package de.symeda.sormas.backend.externaljournal;
 
 import de.symeda.sormas.api.externaljournal.PatientDiaryPersonQueryResponse;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 
+import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -21,6 +23,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
@@ -33,14 +36,12 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		MockitoAnnotations.initMocks(this);
 		PatientDiaryPersonQueryResponse patientDiaryPersonQueryResponse = new PatientDiaryPersonQueryResponse();
 		patientDiaryPersonQueryResponse.setCount(0);
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test.de");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "heinz@test.de");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService)
-			.queryPatientDiary("Mobile phone", "+49 621 1218490");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService)
-			.queryPatientDiary("Mobile phone", "+49 621 1218491");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "0");;
+		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test.de");
+		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test");
+		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "heinz@test.de");
+		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "+49 621 1218490");
+		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "+49 621 1218491");
+		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "0");;
 	}
 
 	@Test
@@ -147,6 +148,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void givenRelevantChangeShouldNotify() {
+		PersonFacade personFacade = getPersonFacade();
 
 		// Define relevant properties
 		HashMap<String, Object> relevantProperties = new HashMap<String, Object>() {
@@ -166,17 +168,17 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		// Create two person with those properties
 		PersonDto person = new PersonDto();
-		PersonDto updatedPerson = new PersonDto();
 		person.setUuid(DataHelper.createUuid());
+		personFacade.savePerson(person);
+		JournalPersonDto journalPerson = personFacade.getPersonForJournal(person.getUuid());
 		for (Map.Entry<String, Object> property : relevantProperties.entrySet()) {
 			setPersonProperty(person, property.getKey(), property.getValue());
-			setPersonProperty(updatedPerson, property.getKey(), property.getValue());
 		}
-		assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(person, updatedPerson));
+		personFacade.savePerson(person);
+		assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 
 		// Define relevant changes
 		HashMap<String, Object> relevantChanges = new HashMap<String, Object>() {
-
 			{
 				put("FirstName", "Heinz");
 				put("LastName", "Müller");
@@ -190,28 +192,38 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		};
 		// Apply each change and make sure it makes notification considered necessary
 		for (String propertyName : relevantChanges.keySet()) {
-			setPersonProperty(updatedPerson, propertyName, relevantChanges.get(propertyName));
-			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(person, updatedPerson));
+			journalPerson = personFacade.getPersonForJournal(person.getUuid());
+			setPersonProperty(person, propertyName, relevantChanges.get(propertyName));
+			personFacade.savePerson(person);
+			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 
 			// Modify the SymptomJournalStatus of the original person
+			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
-			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(person, updatedPerson));
+			personFacade.savePerson(person);
+			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.REJECTED);
-			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(person, updatedPerson));
+			personFacade.savePerson(person);
+			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
-			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(person, updatedPerson));
+			personFacade.savePerson(person);
+			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.ACCEPTED);
-			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(person, updatedPerson));
+			personFacade.savePerson(person);
+			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 			person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
+			personFacade.savePerson(person);
 
 			// Apply any other relevant change and make sure notification is still considered necessary
 			for (String secondPropertyName : relevantChanges.keySet()) {
-				setPersonProperty(updatedPerson, secondPropertyName, relevantChanges.get(secondPropertyName));
-				assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(person, updatedPerson));
-				setPersonProperty(updatedPerson, secondPropertyName, relevantProperties.get(secondPropertyName));
+				journalPerson = personFacade.getPersonForJournal(person.getUuid());
+				setPersonProperty(person, secondPropertyName, relevantChanges.get(secondPropertyName));
+				personFacade.savePerson(person);
+				assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 			}
-			// reset updatedPerson
-			setPersonProperty(updatedPerson, propertyName, relevantProperties.get(propertyName));
 		}
 	}
 
@@ -228,10 +240,8 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		} catch (NoSuchMethodException e) {
 			// This probably means that the set method is gone, which may impose changes to the External Journal Interface
-			assertTrue(false);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+			fail();
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}

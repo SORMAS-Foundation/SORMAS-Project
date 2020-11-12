@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
@@ -33,6 +34,8 @@ public class JournalPersonDto implements Serializable {
 	private Sex sex;
 	@SensitiveData
 	private Date latestFollowUpEndDate;
+	@SensitiveData
+	private FollowUpStatus followUpStatus;
 
 	public String getUuid() {
 		return uuid;
@@ -122,4 +125,11 @@ public class JournalPersonDto implements Serializable {
 		this.latestFollowUpEndDate = latestFollowUpEndDate;
 	}
 
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
 }

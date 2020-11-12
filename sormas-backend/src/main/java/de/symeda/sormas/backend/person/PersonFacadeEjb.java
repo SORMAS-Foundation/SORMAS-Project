@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -48,6 +49,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.FollowUpStatusDto;
 import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -59,7 +62,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonNameDto;
-import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -288,6 +290,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
 			exportPerson.setSex(detailedPerson.getSex());
 			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(uuid));
+			exportPerson.setFollowUpStatus(getMostRelevantFollowUpStatusByUuid(uuid));
 			return exportPerson;
 		} else {
 			return null;
@@ -327,7 +330,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson, updatedPerson);
+		/**
+		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
+		 * Changes of related data is assumed to be not yet persisted in the database.
+		 */
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(getPersonForJournal(existingPerson.getUuid()));
 		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
@@ -389,8 +396,82 @@ public class PersonFacadeEjb implements PersonFacade {
 		cq.orderBy(cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
 
 		List<PersonFollowUpEndDto> resultlist = em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
-		return resultlist.get(0).getLatestFollowUpEndDate();
+		if (resultlist.isEmpty()) {
+			return null;
+		} else {
+			return resultlist.get(0).getLatestFollowUpEndDate();
+		}
 
+	}
+
+	@Override
+	public FollowUpStatus getMostRelevantFollowUpStatusByUuid(String uuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FollowUpStatusDto> cq = cb.createQuery(FollowUpStatusDto.class);
+
+		Root<Contact> contactRoot = cq.from(Contact.class);
+		Join<Contact, Person> personContactJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+		Predicate contactFilter = contactService.createUserFilter(cb, cq, contactRoot);
+		if (uuid != null) {
+			contactFilter = PersonService.and(cb, contactFilter, cb.equal(personContactJoin.get(Person.UUID), uuid));
+		}
+		if (contactFilter != null) {
+			cq.where(contactFilter);
+		}
+		cq.multiselect(personContactJoin.get(Person.UUID), contactRoot.get(Contact.FOLLOW_UP_STATUS));
+		List<FollowUpStatusDto> contactResultList = em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+
+		cq = cb.createQuery(FollowUpStatusDto.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+		Join<Case, Person> personCaseJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
+		Predicate caseFilter = caseService.createUserFilter(cb, cq, caseRoot);
+		if (uuid != null) {
+			caseFilter = PersonService.and(cb, caseFilter, cb.equal(personCaseJoin.get(Person.UUID), uuid));
+
+		}
+		if (caseFilter != null) {
+			cq.where(caseFilter);
+		}
+		cq.multiselect(personCaseJoin.get(Person.UUID), caseRoot.get(Case.FOLLOW_UP_STATUS));
+		List<FollowUpStatusDto> caseResultList = em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+
+		List<FollowUpStatusDto> resultList = Stream.concat(contactResultList.stream(), caseResultList.stream()).collect(Collectors.toList());
+
+		if (resultList.isEmpty()) {
+			return null;
+		} else {
+			for (FollowUpStatusDto status : resultList) {
+				if (FollowUpStatus.FOLLOW_UP.equals(status.getFollowUpStatus())) {
+					return FollowUpStatus.FOLLOW_UP;
+				}
+			}
+			if (listOnlyContainsStatus(resultList, FollowUpStatus.CANCELED)) {
+				return FollowUpStatus.CANCELED;
+			} else if (listOnlyContainsStatus(resultList, FollowUpStatus.COMPLETED)) {
+				return FollowUpStatus.COMPLETED;
+			} else if (listOnlyContainsStatus(resultList, FollowUpStatus.LOST)) {
+				return FollowUpStatus.LOST;
+			} else {
+				return FollowUpStatus.NO_FOLLOW_UP;
+			}
+		}
+	}
+
+	private boolean listOnlyContainsStatus(List<FollowUpStatusDto> list, FollowUpStatus prameterStatus) {
+		if (list.isEmpty()) {
+			return false;
+		}
+		if (prameterStatus == null) {
+			throw new IllegalArgumentException("Object given as parameter must not be null.");
+		}
+
+		for (FollowUpStatusDto status : list) {
+			if (!prameterStatus.equals(status)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
