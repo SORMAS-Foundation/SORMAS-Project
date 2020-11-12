@@ -594,7 +594,7 @@ public final class FieldHelper {
 			.collect(Collectors.toList());
 	}
 
-	private static Object getNullableSourceFieldValue(Field sourceField) {
+	public static Object getNullableSourceFieldValue(Field sourceField) {
 		if (sourceField instanceof NullableOptionGroup && ((NullableOptionGroup) sourceField).isMultiSelect()) {
 			return ((NullableOptionGroup) sourceField).getNullableValue();
 		} else {
