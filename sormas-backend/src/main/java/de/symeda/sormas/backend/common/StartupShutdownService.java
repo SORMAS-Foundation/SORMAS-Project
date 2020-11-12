@@ -715,6 +715,11 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
+		try {
+			importFacade.generateEventParticipantImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create eventparticipant import template .csv file.");
+		}
 	}
 
 	private void createMissingDiseaseConfigurations() {

@@ -81,6 +81,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -129,6 +130,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
+	private static final String EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_eventparticipant_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_line_listing_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
@@ -154,6 +156,21 @@ public class ImportFacadeEjb implements ImportFacade {
 		appendListOfFields(importColumns, PathogenTestDto.class, "", separator);
 
 		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
+	}
+
+	@Override
+	public void generateEventParticipantImportTemplateFile() throws IOException {
+
+		createExportDirectoryIfNecessary();
+
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.FIRST_NAME, String.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.LAST_NAME, String.class, separator));
+		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.INVOLVEMENT_DESCRIPTION, String.class, separator));
+
+		writeTemplate(Paths.get(getEventParticipantImportTemplateFilePath()), importColumns, true);
 	}
 
 	@Override
@@ -335,6 +352,14 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getEventParticipantImportTemplateFilePath() {
+
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
