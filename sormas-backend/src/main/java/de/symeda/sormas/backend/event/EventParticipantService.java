@@ -145,6 +145,9 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		if (criteria.getEvent() != null) {
 			filter = and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
 		}
+		if (criteria.getPerson() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
+		}
 
 		if (criteria.getFreeText() != null) {
 			String[] textFilters = criteria.getFreeText().split("\\s+");
