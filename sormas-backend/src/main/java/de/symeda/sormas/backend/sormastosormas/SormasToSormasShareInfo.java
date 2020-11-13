@@ -38,6 +38,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	public static final String CONTACT = "contact";
 	public static final String SAMPLE = "sample";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
+	public static final String ORGANIZATION_ID = "organizationId";
 
 	private Case caze;
 

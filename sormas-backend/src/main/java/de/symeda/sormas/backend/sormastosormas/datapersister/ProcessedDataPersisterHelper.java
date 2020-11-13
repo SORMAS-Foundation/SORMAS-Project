@@ -36,6 +36,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -47,12 +50,54 @@ public class ProcessedDataPersisterHelper {
 	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
+	@EJB
+	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
-	public void saveSamples(List<SormasToSormasSampleDto> samples, SormasToSormasOriginInfoDto sormasToSormasOriginInfo)
+	public void persistSharedSamples(List<SormasToSormasSampleDto> samples, SormasToSormasOriginInfoDto sormasToSormasOriginInfo)
 		throws SormasToSormasValidationException {
 		for (SormasToSormasSampleDto sormasToSormasSample : samples) {
 			SampleDto sample = sormasToSormasSample.getSample();
 			sample.setSormasToSormasOriginInfo(sormasToSormasOriginInfo);
+
+			handleValidationError(() -> sampleFacade.saveSample(sample), Captions.Sample, buildSampleValidationGroupName(sample));
+
+			for (PathogenTestDto pathogenTest : sormasToSormasSample.getPathogenTests()) {
+				handleValidationError(
+					() -> pathogenTestFacade.savePathogenTest(pathogenTest),
+					Captions.PathogenTest,
+					buildPathogenTestValidationGroupName(pathogenTest));
+			}
+
+			for (AdditionalTestDto additionalTest : sormasToSormasSample.getAdditionalTests()) {
+				handleValidationError(
+					() -> additionalTestFacade.saveAdditionalTest(additionalTest),
+					Captions.AdditionalTest,
+					buildValidationGroupName(Captions.AdditionalTest, additionalTest));
+			}
+		}
+	}
+
+	public void persistReturnedSamples(List<SormasToSormasSampleDto> samples, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
+
+		SormasToSormasOriginInfoDto savedOriginInfo = null;
+
+		for (SormasToSormasSampleDto sormasToSormasSample : samples) {
+			SampleDto sample = sormasToSormasSample.getSample();
+
+			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
+			if (sampleShareInfo == null) {
+				if (savedOriginInfo == null) {
+					savedOriginInfo = originInfoFacade.saveOriginInfo(originInfo);
+				}
+
+				sample.setSormasToSormasOriginInfo(savedOriginInfo);
+			} else {
+				sampleShareInfo.setOwnershipHandedOver(false);
+				shareInfoService.persist(sampleShareInfo);
+			}
 
 			handleValidationError(() -> sampleFacade.saveSample(sample), Captions.Sample, buildSampleValidationGroupName(sample));
 

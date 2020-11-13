@@ -27,6 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -93,6 +94,7 @@ public class ShareDataBuilderHelper {
 		contactDto.setReportingUser(null);
 		contactDto.setContactOfficer(null);
 		contactDto.setResultingCaseUser(null);
+		contactDto.setSormasToSormasOriginInfo(null);
 
 		return contactDto;
 	}
@@ -112,13 +114,15 @@ public class ShareDataBuilderHelper {
 	}
 
 	public List<SormasToSormasSampleDto> getSampleDtos(List<Sample> samples, Pseudonymizer pseudonymizer) {
-		return samples.stream()
-			.map(
-				s -> new SormasToSormasSampleDto(
-					sampleFacade.convertToDto(s, pseudonymizer),
-					s.getPathogenTests().stream().map(t -> pathogenTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()),
-					s.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList())))
-			.collect(Collectors.toList());
+		return samples.stream().map(s -> {
+			SampleDto sampleDto = sampleFacade.convertToDto(s, pseudonymizer);
+			sampleDto.setSormasToSormasOriginInfo(null);
+
+			return new SormasToSormasSampleDto(
+				sampleDto,
+				s.getPathogenTests().stream().map(t -> pathogenTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()),
+				s.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()));
+		}).collect(Collectors.toList());
 	}
 
 	private OrganizationServerAccessData getServerAccessData() throws SormasToSormasException {

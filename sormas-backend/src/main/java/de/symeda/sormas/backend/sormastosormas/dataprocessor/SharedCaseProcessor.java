@@ -70,39 +70,33 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 		List<SormasToSormasSampleDto> samples = sharedCase.getSamples();
 		SormasToSormasOriginInfoDto originInfo = sharedCase.getOriginInfo();
 
-		ValidationErrors caseErrors = validateCase(caze);
+		ValidationErrors caseValidationErrors = new ValidationErrors();
 
-		if (caseErrors.hasError()) {
-			validationErrors.put(buildCaseValidationGroupName(caze), caseErrors);
-		} else {
-			ValidationErrors caseValidationErrors = new ValidationErrors();
+		ValidationErrors originInfoErrorsErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.CaseData);
+		caseValidationErrors.addAll(originInfoErrorsErrors);
 
-			ValidationErrors originInfoErrorsErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.CaseData);
-			caseValidationErrors.addAll(originInfoErrorsErrors);
+		ValidationErrors caseDataErrors = processCaseData(caze, person);
+		caseValidationErrors.addAll(caseDataErrors);
 
-			ValidationErrors caseDataErrors = processCaseData(caze, person, originInfo);
-			caseValidationErrors.addAll(caseDataErrors);
+		if (caseValidationErrors.hasError()) {
+			validationErrors.put(buildCaseValidationGroupName(caze), caseValidationErrors);
+		}
 
-			if (caseValidationErrors.hasError()) {
-				validationErrors.put(buildCaseValidationGroupName(caze), caseValidationErrors);
-			}
+		if (associatedContacts != null) {
+			Map<String, ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts);
+			validationErrors.putAll(contactValidationErrors);
+		}
 
-			if (associatedContacts != null) {
-				Map<String, ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts, originInfo);
-				validationErrors.putAll(contactValidationErrors);
-			}
-
-			if (samples != null) {
-				Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
-				validationErrors.putAll(sampleErrors);
-			}
+		if (samples != null) {
+			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			validationErrors.putAll(sampleErrors);
 		}
 
 		if (validationErrors.size() > 0) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
-		return new ProcessedCaseData(person, caze, associatedContacts, samples);
+		return new ProcessedCaseData(person, caze, associatedContacts, samples, originInfo);
 	}
 
 	private ValidationErrors validateCase(CaseDataDto caze) throws ValidationRuntimeException {
@@ -114,7 +108,7 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 		return errors;
 	}
 
-	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person, SormasToSormasOriginInfoDto originInfo) {
+	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person) {
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(person);
@@ -142,8 +136,6 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 		ValidationErrors embeddedObjectErrors = processEmbeddedObjects(caze);
 		caseValidationErrors.addAll(embeddedObjectErrors);
 
-		caze.setSormasToSormasOriginInfo(originInfo);
-
 		return caseValidationErrors;
 	}
 
@@ -151,9 +143,8 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		if (caze.getHospitalization() != null) {
-			caze.getHospitalization().setUuid(DataHelper.createUuid());
+
 			caze.getHospitalization().getPreviousHospitalizations().forEach(ph -> {
-				ph.setUuid(DataHelper.createUuid());
 
 				DataHelper.Pair<InfrastructureData, List<String>> phInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
 					ph.getRegion(),
@@ -176,29 +167,8 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 			});
 		}
 
-		if (caze.getSymptoms() != null) {
-			caze.getSymptoms().setUuid(DataHelper.createUuid());
-		}
-
-		if (caze.getEpiData() != null) {
-			dataProcessorHelper.processEpiData(caze.getEpiData());
-		}
-
-		if (caze.getTherapy() != null) {
-			caze.getTherapy().setUuid(DataHelper.createUuid());
-		}
-
-		if (caze.getClinicalCourse() != null) {
-			caze.getClinicalCourse().setUuid(DataHelper.createUuid());
-
-			if (caze.getClinicalCourse().getHealthConditions() != null) {
-				dataProcessorHelper.processHealthConditions(caze.getClinicalCourse().getHealthConditions());
-			}
-		}
-
 		MaternalHistoryDto maternalHistory = caze.getMaternalHistory();
 		if (maternalHistory != null) {
-			maternalHistory.setUuid(DataHelper.createUuid());
 
 			DataHelper.Pair<InfrastructureData, List<String>> rashExposureInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
 				maternalHistory.getRashExposureRegion(),
@@ -219,16 +189,11 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 				});
 		}
 
-		if (caze.getPortHealthInfo() != null) {
-			caze.getPortHealthInfo().setUuid(DataHelper.createUuid());
-		}
-
 		return validationErrors;
 	}
 
 	private Map<String, ValidationErrors> processAssociatedContacts(
-		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts,
-		SormasToSormasOriginInfoDto originInfo) {
+		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : associatedContacts) {
@@ -241,7 +206,7 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 				continue;
 			}
 
-			ValidationErrors contactProcessingErrors = dataProcessorHelper.processContactData(contact, associatedContact.getPerson(), originInfo);
+			ValidationErrors contactProcessingErrors = dataProcessorHelper.processContactData(contact, associatedContact.getPerson());
 			contactErrors.addAll(contactProcessingErrors);
 
 			if (contactErrors.hasError()) {

@@ -21,14 +21,18 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleVal
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedContactData;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -40,8 +44,15 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private ProcessedDataPersisterHelper dataPersisterHelper;
+	@EJB
+	private SormasToSormasShareInfoService shareInfoService;
 
-	public void persistProcessedData(ProcessedContactData contactData) throws SormasToSormasValidationException {
+	public void persistSharedData(ProcessedContactData contactData) throws SormasToSormasValidationException {
+		persistSharedDataInTransaction(contactData);
+	}
+
+	@Transactional
+	private void persistSharedDataInTransaction(ProcessedContactData contactData) throws SormasToSormasValidationException {
 		handleValidationError(
 			() -> personFacade.savePerson(contactData.getPerson()),
 			Captions.Person,
@@ -52,7 +63,35 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 			buildContactValidationGroupName(contactData.getContact()));
 
 		if (contactData.getSamples() != null) {
-			dataPersisterHelper.saveSamples(contactData.getSamples(), savedContact.getSormasToSormasOriginInfo());
+			dataPersisterHelper.persistSharedSamples(contactData.getSamples(), savedContact.getSormasToSormasOriginInfo());
+		}
+	}
+
+	@Override
+	public void persistReturnedData(ProcessedContactData contactData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
+		persistReturnedDataInTransaction(contactData, originInfo);
+	}
+
+	@Transactional
+	private void persistReturnedDataInTransaction(ProcessedContactData contactData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
+		handleValidationError(
+			() -> personFacade.savePerson(contactData.getPerson()),
+			Captions.Person,
+			buildContactValidationGroupName(contactData.getContact()));
+		ContactDto savedContact = handleValidationError(
+			() -> contactFacade.saveContact(contactData.getContact()),
+			Captions.Contact,
+			buildContactValidationGroupName(contactData.getContact()));
+
+		SormasToSormasShareInfo contactShareInfo =
+			shareInfoService.getByContactAndOrganization(savedContact.getUuid(), originInfo.getOrganizationId());
+		contactShareInfo.setOwnershipHandedOver(false);
+		shareInfoService.persist(contactShareInfo);
+
+		if (contactData.getSamples() != null) {
+			dataPersisterHelper.persistReturnedSamples(contactData.getSamples(), originInfo);
 		}
 	}
 }

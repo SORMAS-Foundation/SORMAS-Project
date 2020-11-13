@@ -98,13 +98,13 @@ public class SormasToSormasController {
 
 	public void returnCase(CaseDataDto caze) {
 		handleReturn(options -> {
-			FacadeProvider.getSormasToSormasFacade().shareCases(Collections.singletonList(caze.getUuid()), options);
+			FacadeProvider.getSormasToSormasFacade().returnCase(caze.getUuid(), options);
 		}, caze.getSormasToSormasOriginInfo());
 	}
 
 	public void returnContact(ContactDto contact) {
 		handleReturn((options) -> {
-			FacadeProvider.getSormasToSormasFacade().shareCases(Collections.singletonList(contact.getUuid()), options);
+			FacadeProvider.getSormasToSormasFacade().returnContact(contact.getUuid(), options);
 		}, contact.getSormasToSormasOriginInfo());
 	}
 

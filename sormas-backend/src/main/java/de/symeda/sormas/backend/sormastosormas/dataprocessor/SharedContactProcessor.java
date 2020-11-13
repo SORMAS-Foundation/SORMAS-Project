@@ -27,16 +27,12 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedContactData;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 
@@ -44,8 +40,6 @@ import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 @LocalBean
 public class SharedContactProcessor implements SharedDataProcessor<SormasToSormasContactDto, ProcessedContactData> {
 
-	@EJB
-	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private SharedDataProcessorHelper dataProcessorHelper;
 
@@ -57,46 +51,27 @@ public class SharedContactProcessor implements SharedDataProcessor<SormasToSorma
 		List<SormasToSormasSampleDto> samples = sharedContact.getSamples();
 		SormasToSormasOriginInfoDto originInfo = sharedContact.getOriginInfo();
 
-		ValidationErrors contactErrors = validateContact(contact);
+		ValidationErrors contactValidationErrors = new ValidationErrors();
 
-		if (contactErrors.hasError()) {
-			validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
-		} else {
-			ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Contact);
-			contactErrors.addAll(originInfoErrors);
+		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Contact);
+		contactValidationErrors.addAll(originInfoErrors);
 
-			ValidationErrors contactDataErrors = dataProcessorHelper.processContactData(contact, person, originInfo);
-			contactErrors.addAll(contactDataErrors);
+		ValidationErrors contactDataErrors = dataProcessorHelper.processContactData(contact, person);
+		contactValidationErrors.addAll(contactDataErrors);
 
-			if (contactErrors.hasError()) {
-				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
-			}
+		if (contactValidationErrors.hasError()) {
+			validationErrors.put(buildContactValidationGroupName(contact), contactValidationErrors);
+		}
 
-			if (samples != null) {
-				Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
-				validationErrors.putAll(sampleErrors);
-			}
+		if (samples != null) {
+			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			validationErrors.putAll(sampleErrors);
 		}
 
 		if (validationErrors.size() > 0) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
-		return new ProcessedContactData(person, contact, samples);
-	}
-
-	private ValidationErrors validateContact(ContactDto contact) throws ValidationRuntimeException {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (contactFacade.exists(contact.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.Contact), I18nProperties.getValidationError(Validations.sormasToSormasContactExists));
-		}
-
-		if (contact.getCaze() != null && !contactFacade.exists(contact.getCaze().getUuid())) {
-			errors
-				.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasContactCaseNotExists));
-		}
-
-		return errors;
+		return new ProcessedContactData(person, contact, samples, originInfo);
 	}
 }

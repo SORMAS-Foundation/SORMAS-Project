@@ -29,9 +29,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -108,10 +106,7 @@ public class SharedDataProcessorHelper {
 	public ValidationErrors processPerson(PersonDto person) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		person.setUuid(DataHelper.createUuid());
-
 		LocationDto address = person.getAddress();
-		address.setUuid(DataHelper.createUuid());
 
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
 			loadLocalInfrastructure(address.getRegion(), address.getDistrict(), address.getCommunity(), null, null, null);
@@ -228,34 +223,12 @@ public class SharedDataProcessorHelper {
 		}
 	}
 
-	public void processEpiData(EpiDataDto epiData) {
-		epiData.setUuid(DataHelper.createUuid());
-		epiData.getBurials().forEach(b -> {
-			b.setUuid(DataHelper.createUuid());
-			b.getBurialAddress().setUuid(DataHelper.createUuid());
-		});
-		epiData.getTravels().forEach(t -> t.setUuid(DataHelper.createUuid()));
-		epiData.getGatherings().forEach(g -> {
-			g.setUuid(DataHelper.createUuid());
-			g.getGatheringAddress().setUuid(DataHelper.createUuid());
-		});
-	}
-
-	public void processHealthConditions(HealthConditionsDto healthConditions) {
-		healthConditions.setUuid(DataHelper.createUuid());
-	}
-
 	public Map<String, ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		samples.forEach(sormasToSormasSample -> {
 			SampleDto sample = sormasToSormasSample.getSample();
 			ValidationErrors sampleErrors = new ValidationErrors();
-
-			if (sampleFacade.exists(sample.getUuid())) {
-				sampleErrors
-					.add(I18nProperties.getCaption(Captions.Sample), I18nProperties.getValidationError(Validations.sormasToSormasSampleExists));
-			}
 
 			sample.setReportingUser(userService.getCurrentUser().toReference());
 
@@ -265,13 +238,12 @@ public class SharedDataProcessorHelper {
 			handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, sampleErrors, (infrastructureData -> {
 				sample.setLab(infrastructureData.facility);
 			}));
+
 			if (sampleErrors.hasError()) {
 				validationErrors.put(buildSampleValidationGroupName(sample), sampleErrors);
 			}
 
 			sormasToSormasSample.getPathogenTests().forEach(pathogenTest -> {
-				pathogenTest.setUuid(DataHelper.createUuid());
-
 				DataHelper.Pair<InfrastructureData, List<String>> ptInfrastructureAndErrors =
 					loadLocalInfrastructure(null, null, null, FacilityType.LABORATORY, pathogenTest.getLab(), null);
 
@@ -284,17 +256,12 @@ public class SharedDataProcessorHelper {
 					validationErrors.put(buildPathogenTestValidationGroupName(pathogenTest), pathogenTestErrors);
 				}
 			});
-
-			sormasToSormasSample.getAdditionalTests().forEach(additionalTest -> {
-				additionalTest.setUuid(DataHelper.createUuid());
-			});
-
 		});
 
 		return validationErrors;
 	}
 
-	public ValidationErrors processContactData(ContactDto contact, PersonDto person, SormasToSormasOriginInfoDto originInfo) {
+	public ValidationErrors processContactData(ContactDto contact, PersonDto person) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		processPerson(person);
@@ -310,17 +277,6 @@ public class SharedDataProcessorHelper {
 			contact.setDistrict(infrastructure.district);
 			contact.setCommunity(infrastructure.community);
 		}));
-
-		// init uuids
-		if (contact.getEpiData() != null) {
-			processEpiData(contact.getEpiData());
-		}
-
-		if (contact.getHealthConditions() != null) {
-			processHealthConditions(contact.getHealthConditions());
-		}
-
-		contact.setSormasToSormasOriginInfo(originInfo);
 
 		return validationErrors;
 	}

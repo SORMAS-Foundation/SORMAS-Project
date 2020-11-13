@@ -13,14 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.api.sormastosormas;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import javax.ejb.Remote;
 
-public interface ProcessedDataPersister<P> {
-
-	void persistSharedData(P prcessedData) throws SormasToSormasValidationException;
-
-	void persistReturnedData(P prcessedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException;
+@Remote
+public interface SormasToSormasOriginInfoFacade {
 }

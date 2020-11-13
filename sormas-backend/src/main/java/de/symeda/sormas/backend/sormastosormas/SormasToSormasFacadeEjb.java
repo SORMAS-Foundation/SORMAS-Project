@@ -19,15 +19,15 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CAS
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +46,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
@@ -60,9 +59,12 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
@@ -71,7 +73,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
@@ -79,6 +80,7 @@ import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -92,6 +94,7 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.databuilder.CaseShareData;
 import de.symeda.sormas.backend.sormastosormas.databuilder.CaseShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.databuilder.ContactShareData;
@@ -117,9 +120,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 	@EJB
-	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	private SormasToSormasShareInfoService shareInfoService;
 	@EJB
-	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
@@ -158,6 +161,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private CaseShareDataBuilder caseShareDataBuilder;
 	@EJB
 	private ContactShareDataBuilder contactShareDataBuilder;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacadeEjb;
 
 	private final ObjectMapper objectMapper;
 
@@ -168,7 +173,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	@Transactional
 	public void saveSharedCases(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasCaseDto[] sharedCases = decryptSharedData(encryptedData, SormasToSormasCaseDto[].class);
 
@@ -177,8 +181,18 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		for (SormasToSormasCaseDto sharedCase : sharedCases) {
 			try {
-				ProcessedCaseData processedCaseData = sharedCaseProcessor.processSharedData(sharedCase);
-				casesToSave.add(processedCaseData);
+				CaseDataDto caze = sharedCase.getCaze();
+
+				ValidationErrors caseErrors = validateSharedCase(caze);
+				if (caseErrors.hasError()) {
+					validationErrors.put(buildCaseValidationGroupName(caze), caseErrors);
+				} else {
+					ProcessedCaseData processedCaseData = sharedCaseProcessor.processSharedData(sharedCase);
+
+					processedCaseData.getCaze().setSormasToSormasOriginInfo(processedCaseData.getOriginInfo());
+
+					casesToSave.add(processedCaseData);
+				}
 			} catch (SormasToSormasValidationException validationException) {
 				validationErrors.putAll(validationException.getErrors());
 			}
@@ -189,12 +203,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 
 		for (ProcessedCaseData caseData : casesToSave) {
-			caseDataPersister.persistProcessedData(caseData);
+			caseDataPersister.persistSharedData(caseData);
 		}
 	}
 
 	@Override
-	@Transactional
 	public void saveSharedContacts(SormasToSormasEncryptedDataDto sharedData) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasContactDto[] sharedContacts = decryptSharedData(sharedData, SormasToSormasContactDto[].class);
 
@@ -203,8 +216,15 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		for (SormasToSormasContactDto sharedContact : sharedContacts) {
 			try {
-				ProcessedContactData processedContactData = sharedContactProcessor.processSharedData(sharedContact);
-				contactsToSave.add(processedContactData);
+				ContactDto contact = sharedContact.getContact();
+				ValidationErrors contactErrors = validateSharedContact(contact);
+				if (contactErrors.hasError()) {
+					validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
+				} else {
+					ProcessedContactData processedContactData = sharedContactProcessor.processSharedData(sharedContact);
+					processedContactData.getContact().setSormasToSormasOriginInfo(processedContactData.getOriginInfo());
+					contactsToSave.add(processedContactData);
+				}
 			} catch (SormasToSormasValidationException validationException) {
 				validationErrors.putAll(validationException.getErrors());
 			}
@@ -215,7 +235,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 
 		for (ProcessedContactData contactData : contactsToSave) {
-			contactDataPersister.persistProcessedData(contactData);
+			contactDataPersister.persistSharedData(contactData);
 		}
 	}
 
@@ -238,7 +258,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			samplesToSend.addAll(shareData.getSamples());
 		}
 
-		sendEntitiesToSormas(entitiesToSend, SAVE_SHARED_CASE_ENDPOINT, options);
+		sendEntitiesToSormas(
+			entitiesToSend,
+			options,
+			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, SAVE_SHARED_CASE_ENDPOINT, authToken, encryptedData));
 
 		casesToSend.forEach(caze -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setCaze(caze)));
 		contactsToSend.forEach((contact) -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setContact(contact)));
@@ -262,10 +285,133 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			samplesToSend.addAll(shareData.getSamples());
 		}
 
-		sendEntitiesToSormas(entitiesToSend, SAVE_SHARED_CONTACT_ENDPOINT, options);
+		sendEntitiesToSormas(
+			entitiesToSend,
+			options,
+			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, SAVE_SHARED_CONTACT_ENDPOINT, authToken, encryptedData));
 
 		contactsToSend.forEach(contact -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setContact(contact)));
 		samplesToSend.forEach(sample -> saveNewShareInfo(currentUser.toReference(), options, i -> i.setSample(sample)));
+	}
+
+	@Override
+	public void returnCase(String caseUuid, SormasToSormasOptionsDto options) throws SormasToSormasException {
+		options.setHandOverOwnership(true);
+		User currentUser = userService.getCurrentUser();
+
+		Case caze = caseService.getByUuid(caseUuid);
+		validateCasesBeforeSend(Collections.singletonList(caze));
+
+		CaseShareData shareData = caseShareDataBuilder.buildShareData(caze, currentUser, options);
+
+		sendEntitiesToSormas(
+			Collections.singletonList(shareData.getCaseShareData()),
+			options,
+			(host, authToken, encryptedData) -> sormasToSormasRestClient.put(host, SAVE_SHARED_CASE_ENDPOINT, authToken, encryptedData));
+
+		caze.getSormasToSormasOriginInfo().setOwnershipHandedOver(false);
+		originInfoService.persist(caze.getSormasToSormasOriginInfo());
+
+		shareData.getAssociatedContacts().forEach(c -> {
+			if (c.getSormasToSormasOriginInfo() == null) {
+				saveNewShareInfo(currentUser.toReference(), options, i -> i.setContact(c));
+			}
+		});
+
+		shareData.getSamples().forEach(s -> {
+			if (s.getSormasToSormasOriginInfo() == null) {
+				saveNewShareInfo(currentUser.toReference(), options, i -> i.setSample(s));
+			}
+		});
+	}
+
+	@Override
+	public void returnContact(String contactUuid, SormasToSormasOptionsDto options) throws SormasToSormasException {
+		options.setHandOverOwnership(true);
+		User currentUser = userService.getCurrentUser();
+
+		Contact contact = contactService.getByUuid(contactUuid);
+		validateContactsBeforeSend(Collections.singletonList(contact));
+
+		ContactShareData shareData = contactShareDataBuilder.buildShareData(contact, currentUser, options);
+
+		sendEntitiesToSormas(
+			Collections.singletonList(shareData.getContactShareData()),
+			options,
+			(host, authToken, encryptedData) -> sormasToSormasRestClient.put(host, SAVE_SHARED_CONTACT_ENDPOINT, authToken, encryptedData));
+
+		contact.getSormasToSormasOriginInfo().setOwnershipHandedOver(false);
+		originInfoService.persist(contact.getSormasToSormasOriginInfo());
+
+		shareData.getSamples().forEach(s -> {
+			if (s.getSormasToSormasOriginInfo() == null) {
+				saveNewShareInfo(currentUser.toReference(), options, i -> i.setSample(s));
+			}
+		});
+	}
+
+	@Override
+	public void saveReturnedCase(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
+		SormasToSormasCaseDto[] sharedCases = decryptSharedData(encryptedData, SormasToSormasCaseDto[].class);
+
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ProcessedCaseData> casesToSave = new ArrayList<>(sharedCases.length);
+
+		for (SormasToSormasCaseDto sharedCase : sharedCases) {
+			try {
+				CaseDataDto caze = sharedCase.getCaze();
+
+				ValidationErrors caseErrors = validateReturnedCase(caze);
+				if (caseErrors.hasError()) {
+					validationErrors.put(buildCaseValidationGroupName(caze), caseErrors);
+				} else {
+					ProcessedCaseData processedCaseData = sharedCaseProcessor.processSharedData(sharedCase);
+					casesToSave.add(processedCaseData);
+				}
+			} catch (SormasToSormasValidationException validationException) {
+				validationErrors.putAll(validationException.getErrors());
+			}
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasValidationException(validationErrors);
+		}
+
+		for (ProcessedCaseData caseData : casesToSave) {
+			caseDataPersister.persistReturnedData(caseData, caseData.getOriginInfo());
+		}
+	}
+
+	@Override
+	public void saveReturnedContact(SormasToSormasEncryptedDataDto sharedData) throws SormasToSormasException, SormasToSormasValidationException {
+		SormasToSormasContactDto[] sharedContacts = decryptSharedData(sharedData, SormasToSormasContactDto[].class);
+
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ProcessedContactData> contactsToSave = new ArrayList<>(sharedContacts.length);
+
+		for (SormasToSormasContactDto sharedContact : sharedContacts) {
+			try {
+				ContactDto contact = sharedContact.getContact();
+				ValidationErrors contactErrors = validateReturnedContact(contact);
+				if (contactErrors.hasError()) {
+					validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
+				} else {
+					ProcessedContactData processedContactData = sharedContactProcessor.processSharedData(sharedContact);
+					processedContactData.getContact().setSormasToSormasOriginInfo(processedContactData.getOriginInfo());
+					contactsToSave.add(processedContactData);
+				}
+			} catch (SormasToSormasValidationException validationException) {
+				validationErrors.putAll(validationException.getErrors());
+			}
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasValidationException(validationErrors);
+		}
+
+		for (ProcessedContactData contactData : contactsToSave) {
+			contactDataPersister.persistReturnedData(contactData, contactData.getOriginInfo());
+		}
 	}
 
 	@Override
@@ -279,7 +425,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
 		Root<SormasToSormasShareInfo> root = cq.from(SormasToSormasShareInfo.class);
 
-		Predicate filter = sormasToSormasShareInfoService.buildCriteriaFilter(criteria, cb, root);
+		Predicate filter = shareInfoService.buildCriteriaFilter(criteria, cb, root);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -348,10 +494,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		setAssociatedObject.accept(shareInfo);
 
-		sormasToSormasShareInfoService.ensurePersisted(shareInfo);
+		shareInfoService.ensurePersisted(shareInfo);
 	}
 
-	private void sendEntitiesToSormas(List<?> entities, String endpoint, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	private void sendEntitiesToSormas(List<?> entities, SormasToSormasOptionsDto options, RestCall restCall) throws SormasToSormasException {
 
 		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData()
 			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
@@ -363,9 +509,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		Response response;
 		try {
 			byte[] encryptedEntities = encryptionService.encrypt(objectMapper.writeValueAsBytes(entities), targetServerAccessData.getId());
-			response = sormasToSormasRestClient.post(
+			response = restCall.call(
 				targetServerAccessData.getHostName(),
-				endpoint,
 				"Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8),
 				new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedEntities));
 		} catch (JsonProcessingException e) {
@@ -374,7 +519,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		} catch (ResponseProcessingException e) {
 			LOGGER.error("Unable to process sormas response", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasResult));
-		} catch (NoSuchAlgorithmException | KeyManagementException | ProcessingException e) {
+		} catch (ProcessingException e) {
 			LOGGER.error("Unable to send data to sormas", e);
 
 			String processingErrorMessage = I18nProperties.getString(Strings.errorSormasToSormasSend);
@@ -422,50 +567,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return serverAccessDataService.getServerListItemById(id);
 	}
 
-	public SormasToSormasOriginInfo fromSormasToSormasOriginInfoDto(SormasToSormasOriginInfoDto source) {
-		if (source == null) {
-			return null;
-		}
-
-		SormasToSormasOriginInfo target = sormasToSormasOriginInfoService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new SormasToSormasOriginInfo();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
-
-		target.setOrganizationId(source.getOrganizationId());
-		target.setSenderName(source.getSenderName());
-		target.setSenderEmail(source.getSenderEmail());
-		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
-		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
-		target.setComment(source.getComment());
-
-		return target;
-	}
-
-	public static SormasToSormasOriginInfoDto toSormasToSormasOriginInfoDto(SormasToSormasOriginInfo source) {
-		if (source == null) {
-			return null;
-		}
-
-		SormasToSormasOriginInfoDto target = new SormasToSormasOriginInfoDto();
-
-		DtoHelper.fillDto(target, source);
-
-		target.setOrganizationId(source.getOrganizationId());
-		target.setSenderName(source.getSenderName());
-		target.setSenderEmail(source.getSenderEmail());
-		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
-		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
-		target.setComment(source.getComment());
-
-		return target;
-	}
-
 	public SormasToSormasShareInfoDto toSormasToSormasShareInfoDto(SormasToSormasShareInfo source) {
 		SormasToSormasShareInfoDto target = new SormasToSormasShareInfoDto();
 
@@ -494,9 +595,60 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return target;
 	}
 
+	private ValidationErrors validateSharedCase(CaseDataDto caze) throws ValidationRuntimeException {
+		ValidationErrors errors = new ValidationErrors();
+		if (caseFacade.exists(caze.getUuid())) {
+			errors.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasCaseExists));
+		}
+
+		return errors;
+	}
+
+	private ValidationErrors validateReturnedCase(CaseDataDto caze) throws ValidationRuntimeException {
+		ValidationErrors errors = new ValidationErrors();
+		if (!caseFacade.exists(caze.getUuid())) {
+			errors
+				.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasReturnCaseNotExists));
+		}
+
+		return errors;
+	}
+
+	private ValidationErrors validateSharedContact(ContactDto contact) throws ValidationRuntimeException {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (contactFacade.exists(contact.getUuid())) {
+			errors.add(I18nProperties.getCaption(Captions.Contact), I18nProperties.getValidationError(Validations.sormasToSormasContactExists));
+		}
+
+		if (contact.getCaze() != null && !contactFacade.exists(contact.getCaze().getUuid())) {
+			errors
+				.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasContactCaseNotExists));
+		}
+
+		return errors;
+	}
+
+	private ValidationErrors validateReturnedContact(ContactDto contact) throws ValidationRuntimeException {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (!contactFacade.exists(contact.getUuid())) {
+			errors.add(
+				I18nProperties.getCaption(Captions.Contact),
+				I18nProperties.getValidationError(Validations.sormasToSormasReturnContactNotExists));
+		}
+
+		return errors;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasFacadeEjbLocal extends SormasToSormasFacadeEjb {
 
+	}
+
+	private interface RestCall {
+
+		Response call(String host, String authToken, SormasToSormasEncryptedDataDto encryptedData) throws JsonProcessingException;
 	}
 }

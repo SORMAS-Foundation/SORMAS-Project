@@ -21,6 +21,7 @@ import java.util.List;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 
 public class ProcessedCaseData implements Serializable {
@@ -31,16 +32,19 @@ public class ProcessedCaseData implements Serializable {
 	private final CaseDataDto caze;
 	private final List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts;
 	private final List<SormasToSormasSampleDto> samples;
+	private final SormasToSormasOriginInfoDto originInfo;
 
 	public ProcessedCaseData(
 		PersonDto person,
 		CaseDataDto caze,
 		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts,
-		List<SormasToSormasSampleDto> samples) {
+		List<SormasToSormasSampleDto> samples,
+		SormasToSormasOriginInfoDto originInfo) {
 		this.person = person;
 		this.caze = caze;
 		this.associatedContacts = associatedContacts;
 		this.samples = samples;
+		this.originInfo = originInfo;
 	}
 
 	public PersonDto getPerson() {
@@ -57,5 +61,9 @@ public class ProcessedCaseData implements Serializable {
 
 	public List<SormasToSormasSampleDto> getSamples() {
 		return samples;
+	}
+
+	public SormasToSormasOriginInfoDto getOriginInfo() {
+		return originInfo;
 	}
 }

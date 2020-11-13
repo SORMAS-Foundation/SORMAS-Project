@@ -22,17 +22,22 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleVal
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedCaseData;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -46,8 +51,17 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private ProcessedDataPersisterHelper dataPersisterHelper;
+	@EJB
+	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
-	public void persistProcessedData(ProcessedCaseData caseData) throws SormasToSormasValidationException {
+	public void persistSharedData(ProcessedCaseData caseData) throws SormasToSormasValidationException {
+		persistSharedDataInTransaction(caseData);
+	}
+
+	@Transactional
+	private void persistSharedDataInTransaction(ProcessedCaseData caseData) throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getCaze();
 
 		handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
@@ -70,7 +84,56 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 		}
 
 		if (caseData.getSamples() != null) {
-			dataPersisterHelper.saveSamples(caseData.getSamples(), savedCase.getSormasToSormasOriginInfo());
+			dataPersisterHelper.persistSharedSamples(caseData.getSamples(), savedCase.getSormasToSormasOriginInfo());
+		}
+	}
+
+	public void persistReturnedData(ProcessedCaseData caseData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException {
+		persistReturnedDataInTransaction(caseData, originInfo);
+	}
+
+	@Transactional
+	private void persistReturnedDataInTransaction(ProcessedCaseData caseData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
+		CaseDataDto caze = caseData.getCaze();
+
+		handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
+		CaseDataDto savedCase = handleValidationError(() -> caseFacade.saveCase(caze), Captions.CaseData, buildCaseValidationGroupName(caze));
+
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(savedCase.getUuid(), originInfo.getOrganizationId());
+		shareInfo.setOwnershipHandedOver(false);
+		shareInfoService.persist(shareInfo);
+
+		SormasToSormasOriginInfoDto savedOriginInfo = null;
+
+		if (caseData.getAssociatedContacts() != null) {
+			for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : caseData.getAssociatedContacts()) {
+				ContactDto contact = associatedContact.getContact();
+
+				handleValidationError(
+					() -> personFacade.savePerson(associatedContact.getPerson()),
+					Captions.Person,
+					buildContactValidationGroupName(contact));
+
+				SormasToSormasShareInfo contactShareInfo =
+					shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
+				if (contactShareInfo == null) {
+					if (savedOriginInfo == null) {
+						savedOriginInfo = originInfoFacade.saveOriginInfo(originInfo);
+					}
+
+					contact.setSormasToSormasOriginInfo(savedOriginInfo);
+				} else {
+					contactShareInfo.setOwnershipHandedOver(false);
+					shareInfoService.persist(contactShareInfo);
+				}
+
+				handleValidationError(() -> contactFacade.saveContact(contact), Captions.Contact, buildContactValidationGroupName(contact));
+			}
+		}
+
+		if (caseData.getSamples() != null) {
+			dataPersisterHelper.persistReturnedSamples(caseData.getSamples(), savedOriginInfo == null ? originInfo : savedOriginInfo);
 		}
 	}
 }
