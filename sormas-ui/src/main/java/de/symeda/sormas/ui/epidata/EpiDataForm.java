@@ -340,7 +340,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		getContent().getComponent(ANIMAL_CAPTION_LOC).setVisible(animalsVisible);
 
 		boolean hadExposure = Arrays.stream(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES)
-			.map(property -> getField(property).getValue())
+			.map(property -> FieldHelper.getNullableSourceFieldValue(getField(property)))
 			.anyMatch(value -> value == YesNoUnknown.YES);
 
 		setVisible(hadExposure, EpiDataDto.EXPOSURE_DEPENDENT_PROPERTIES);

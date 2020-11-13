@@ -77,10 +77,10 @@ public final class FieldHelper {
 		// initialize
 		{
 			boolean readOnly;
-			if (sourceField.getValue() == null) {
+			if (getNullableSourceFieldValue(sourceField) == null) {
 				readOnly = readOnlyWhenNull;
 			} else {
-				readOnly = sourceValues.contains(sourceField.getValue());
+				readOnly = sourceValues.contains(getNullableSourceFieldValue(sourceField));
 			}
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
@@ -99,10 +99,10 @@ public final class FieldHelper {
 
 		sourceField.addValueChangeListener(event -> {
 			boolean readOnly;
-			if (sourceField.getValue() == null) {
+			if (getNullableSourceFieldValue(sourceField) == null) {
 				readOnly = readOnlyWhenNull;
 			} else {
-				readOnly = sourceValues.contains(event.getProperty().getValue());
+				readOnly = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
 			}
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
@@ -176,7 +176,7 @@ public final class FieldHelper {
 
 			// initialize
 			{
-				boolean visible = sourceValues.contains(sourceField.getValue());
+				boolean visible = sourceValues.contains(getNullableSourceFieldValue(sourceField));
 
 				targetFields.forEach(targetField -> {
 					targetField.setVisible(visible);
@@ -187,7 +187,7 @@ public final class FieldHelper {
 			}
 
 			sourceField.addValueChangeListener(event -> {
-				boolean visible = sourceValues.contains(event.getProperty().getValue());
+				boolean visible = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
 				targetFields.forEach(targetField -> {
 					targetField.setVisible(visible);
 					if (!visible && clearOnHidden && targetField.getValue() != null) {
@@ -202,13 +202,13 @@ public final class FieldHelper {
 		if (sourceField != null) {
 			// initialize
 			{
-				boolean matches = sourceValue.equals(sourceField.getValue());
+				boolean matches = sourceValue.equals(getNullableSourceFieldValue(sourceField));
 
 				targetField.setCaption(matches ? matchCaption : noMatchCaption);
 			}
 
 			sourceField.addValueChangeListener(event -> {
-				boolean matches = sourceValue.equals(sourceField.getValue());
+				boolean matches = sourceValue.equals(getNullableSourceFieldValue(sourceField));
 				targetField.setCaption(matches ? matchCaption : noMatchCaption);
 			});
 		}
@@ -323,7 +323,7 @@ public final class FieldHelper {
 
 			// initialize
 			{
-				boolean required = sourceValues.contains(sourceField.getValue());
+				boolean required = sourceValues.contains(getNullableSourceFieldValue(sourceField));
 
 				for (Field targetField : targetFields) {
 					if (!targetField.isVisible()) {
@@ -338,7 +338,7 @@ public final class FieldHelper {
 			}
 
 			sourceField.addValueChangeListener(event -> {
-				boolean required = sourceValues.contains(event.getProperty().getValue());
+				boolean required = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
 				required = required != requiredWhenNot;
 				for (Field targetField : targetFields) {
 					if (!targetField.isVisible()) {
@@ -372,7 +372,7 @@ public final class FieldHelper {
 
 		// initialize
 		{
-			boolean enabled = sourceValues.contains(sourceField.getValue());
+			boolean enabled = sourceValues.contains(getNullableSourceFieldValue(sourceField));
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setEnabled(enabled);
@@ -383,7 +383,7 @@ public final class FieldHelper {
 		}
 
 		sourceField.addValueChangeListener(event -> {
-			boolean enabled = sourceValues.contains(event.getProperty().getValue());
+			boolean enabled = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setEnabled(enabled);
@@ -508,7 +508,7 @@ public final class FieldHelper {
 
 		// initialize
 		{
-			boolean softRequired = sourceValues.contains(sourceField.getValue());
+			boolean softRequired = sourceValues.contains(getNullableSourceFieldValue(sourceField));
 			for (Field<?> targetField : targetFields) {
 				if (softRequired) {
 					addSoftRequiredStyle(targetField);
@@ -519,7 +519,7 @@ public final class FieldHelper {
 		}
 
 		sourceField.addValueChangeListener(event -> {
-			boolean softRequired = sourceValues.contains(event.getProperty().getValue());
+			boolean softRequired = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
 			for (Field<?> targetField : targetFields) {
 				if (softRequired) {
 					addSoftRequiredStyle(targetField);
@@ -544,7 +544,7 @@ public final class FieldHelper {
 
 		// initialize
 		{
-			boolean required = sourceValues.contains(sourceField.getValue());
+			boolean required = sourceValues.contains(getNullableSourceFieldValue(sourceField));
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
@@ -558,7 +558,7 @@ public final class FieldHelper {
 		}
 
 		sourceField.addValueChangeListener(event -> {
-			boolean required = sourceValues.contains(event.getProperty().getValue());
+			boolean required = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
@@ -592,5 +592,13 @@ public final class FieldHelper {
 		return Arrays.stream(enumClass.getEnumConstants())
 			.filter(constant -> checkers.isVisible(enumClass, constant.name()))
 			.collect(Collectors.toList());
+	}
+
+	public static Object getNullableSourceFieldValue(Field sourceField) {
+		if (sourceField instanceof NullableOptionGroup && ((NullableOptionGroup) sourceField).isMultiSelect()) {
+			return ((NullableOptionGroup) sourceField).getNullableValue();
+		} else {
+			return sourceField.getValue();
+		}
 	}
 }

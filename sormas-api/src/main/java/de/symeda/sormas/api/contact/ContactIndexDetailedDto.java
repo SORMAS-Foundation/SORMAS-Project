@@ -57,7 +57,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
 								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
-								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate,
+								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate, String externalID,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String districtName, String city, String street, String houseNumber, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName, int visitCount, long eventCount
@@ -68,7 +68,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid, communityUuid,
 				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil, symptomJournalStatus,
 				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, visitCount);
+				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, visitCount);
 		//@formatter:on
 
 		this.sex = sex;
