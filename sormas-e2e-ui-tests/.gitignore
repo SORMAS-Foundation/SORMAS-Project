@@ -7,7 +7,6 @@
 .DS_Store*
 .project
 .idea
-/settings/
 
 .gradle
 gradle*
