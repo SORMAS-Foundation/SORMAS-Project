@@ -53,20 +53,13 @@ public class DocumentStorageService {
 	}
 
 	/**
-	 * Delete file on disk when a document is (successfully) deleted in database.
-	 */
-	public void cleanupDeletedDocument(@Observes(during = TransactionPhase.AFTER_SUCCESS) DocumentDeleted event) {
-		delete(event.getDocument());
-	}
-
-	/**
 	 * Delete file on disk when a document failed to be saved in database.
 	 */
 	public void cleanupUnsavedDocument(@Observes(during = TransactionPhase.AFTER_FAILURE) DocumentSaved event) {
 		delete(event.getDocument());
 	}
 
-	private void delete(Document document) {
+	public void delete(Document document) {
 		Path path = computeFilePath(document);
 		try {
 			Files.deleteIfExists(path);

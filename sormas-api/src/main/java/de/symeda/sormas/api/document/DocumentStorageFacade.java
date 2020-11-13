@@ -26,4 +26,6 @@ public interface DocumentStorageFacade {
 	byte[] read(String uuid) throws IOException;
 
 	void store(String uuid, byte[] content) throws IOException;
+
+	void cleanupDeletedDocuments();
 }

@@ -5560,6 +5560,7 @@ CREATE TABLE documents (
     uuid character varying(36) NOT NULL,
     changedate timestamp without time zone NOT NULL,
     creationdate timestamp without time zone NOT NULL,
+    deleted boolean DEFAULT false,
     uploadinguser_id bigint NOT NULL,
     name character varying(255) NOT NULL,
     contenttype character varying(255) NOT NULL,

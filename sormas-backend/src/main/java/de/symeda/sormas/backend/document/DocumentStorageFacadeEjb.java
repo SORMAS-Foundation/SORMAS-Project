@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.document;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -40,6 +41,15 @@ public class DocumentStorageFacadeEjb implements DocumentStorageFacade {
 	public void store(String uuid, byte[] content) throws IOException {
 		Document document = documentService.getByUuid(uuid);
 		documentStorageService.save(document, content);
+	}
+
+	@Override
+	public void cleanupDeletedDocuments() {
+		List<Document> deleted = documentService.getDeletedDocuments();
+		for (Document document : deleted) {
+			documentStorageService.delete(document);
+			documentService.delete(document);
+		}
 	}
 
 	@LocalBean

@@ -43,13 +43,22 @@ public class DocumentService extends AbstractAdoService<Document> {
 		return null;
 	}
 
+	public void markAsDeleted(Document deleteme) {
+		deleteme.setDeleted(true);
+		em.persist(deleteme);
+		em.flush();
+	}
+
 	public List<Document> getRelatedToEntity(DocumentRelatedEntityType type, String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
 		Root<Document> from = cq.from(getElementClass());
 		from.fetch(Document.UPLOADING_USER);
 
-		Predicate filter = cb.and(cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type), cb.equal(from.get(Document.RELATED_ENTITY_UUID), uuid));
+		Predicate filter = cb.and(
+			cb.isFalse(from.get(Document.DELETED)),
+			cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
+			cb.equal(from.get(Document.RELATED_ENTITY_UUID), uuid));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(Document.CHANGE_DATE)));
@@ -64,6 +73,7 @@ public class DocumentService extends AbstractAdoService<Document> {
 		Root<Document> from = cq.from(getElementClass());
 
 		Predicate filter = cb.and(
+			cb.isFalse(from.get(Document.DELETED)),
 			cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
 			cb.equal(from.get(Document.RELATED_ENTITY_UUID), uuid),
 			cb.equal(from.get(Document.NAME), name));
@@ -76,5 +86,19 @@ public class DocumentService extends AbstractAdoService<Document> {
 		} catch (NoResultException nre) {
 			return null;
 		}
+	}
+
+	public List<Document> getDeletedDocuments() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
+		Root<Document> from = cq.from(getElementClass());
+
+		Predicate filter = cb.isTrue(from.get(Document.DELETED));
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Document.CHANGE_DATE)));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
 	}
 }

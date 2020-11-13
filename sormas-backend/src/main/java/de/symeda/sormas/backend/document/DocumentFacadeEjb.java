@@ -48,8 +48,6 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Inject
 	private Event<DocumentSaved> documentSavedEvent;
-	@Inject
-	private Event<DocumentDeleted> documentDeletedEvent;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -75,11 +73,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public void deleteDocument(String uuid) {
-		Document document = documentService.getByUuid(uuid);
-		if (document != null) {
-			documentService.delete(document);
-			documentDeletedEvent.fire(new DocumentDeleted(document));
-		}
+		// Only mark as delete here; actual deletion will be done in document storage cleanup via cron job
+		documentService.markAsDeleted(documentService.getByUuid(uuid));
 	}
 
 	@Override
