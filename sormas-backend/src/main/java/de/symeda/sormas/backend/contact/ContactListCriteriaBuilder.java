@@ -122,7 +122,8 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseCommunity().get(Community.UUID),
 			joins.getCaseHealthFacility().get(Facility.UUID),
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
-			contact.get(Contact.CHANGE_DATE));
+			contact.get(Contact.CHANGE_DATE),
+			contact.get(Contact.EXTERNAL_ID));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
@@ -140,6 +141,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.REPORT_DATE_TIME:
 		case ContactIndexDto.DISEASE:
 		case ContactIndexDto.CASE_CLASSIFICATION:
+		case ContactIndexDto.EXTERNAL_ID:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:
