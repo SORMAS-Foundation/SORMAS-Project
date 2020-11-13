@@ -47,8 +47,8 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 		final CampaignDto campaign = creator.createCampaign(user);
 		final ArrayList<CampaignDashboardElement> campaignDashboardElements = new ArrayList<>();
 		campaignDashboardElements.add(new CampaignDashboardElement("diagram1", "tab1", null, 1, 50, 50));
-		campaignDashboardElements.add(new CampaignDashboardElement("diagram2", "tab1", null, 1, 50, 50));
-		campaignDashboardElements.add(new CampaignDashboardElement("diagram3", "tab2", null, 1, 50, 50));
+		campaignDashboardElements.add(new CampaignDashboardElement("diagram2", "tab1", null, 2, 50, 50));
+		campaignDashboardElements.add(new CampaignDashboardElement("diagram3", "tab2", null, 3, 50, 50));
 		campaign.setCampaignDashboardElements(campaignDashboardElements);
 
 		getCampaignDiagramDefinitionFacade().save(creator.createCampaignDiagramDefinition("diagram1", "Diagram one"));
@@ -64,6 +64,7 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 		campaign.getCampaignDashboardElements().get(0).setSubTabId("subTab1");
 		try {
 			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
+			Assert.fail("Campaign dashboard elements subTabId is missing. Validation should catch this!");
 		} catch (ValidationRuntimeException e) {
 			Assert.assertEquals("Campaign dashboard elements subTabId of campaign CampaignName are missing!", e.getMessage());
 		}
@@ -72,6 +73,7 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 		campaign.getCampaignDashboardElements().get(1).setSubTabId("subTab2");
 		try {
 			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
+			Assert.fail("Campaign dashboard elements subTabId is missing. Validation should catch this!");
 		} catch (ValidationRuntimeException e) {
 			Assert.assertEquals("Campaign dashboard elements subTabId of campaign CampaignName are missing!", e.getMessage());
 		}
@@ -92,9 +94,11 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 			Assert.fail(e.getMessage());
 		}
 
-		campaign.getCampaignDashboardElements().get(0).setDiagramId("nonExistingDiagramId");
+		final String nonExistingDiagramId = "nonExistingDiagramId";
+		campaign.getCampaignDashboardElements().get(0).setDiagramId(nonExistingDiagramId);
 		try {
 			((CampaignFacadeEjb.CampaignFacadeEjbLocal) getCampaignFacade()).validate(campaign);
+			Assert.fail("Diagram " + nonExistingDiagramId + " does not exist. Validation should catch this!");
 		} catch (ValidationRuntimeException e) {
 			Assert.assertEquals("Diagram nonExistingDiagramId from campaign CampaignName does not exist!", e.getMessage());
 		}

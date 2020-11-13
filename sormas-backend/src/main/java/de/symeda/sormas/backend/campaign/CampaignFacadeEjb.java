@@ -206,12 +206,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
 
-            final Map<String, Boolean> oneSubTabIsNotNullOrEmptyMap = new HashMap<>();
-            campaignDashboardElements.stream().forEach(cde -> {
-                if (!oneSubTabIsNotNullOrEmptyMap.containsKey(cde.getTabId())){
-                    oneSubTabIsNotNullOrEmptyMap.put(cde.getTabId(), false);
-                }
-            });
+			final Map<String, Boolean> oneSubTabIsNotNullOrEmptyMap = new HashMap<>();
 
 			for (CampaignDashboardElement cde : campaignDashboardElements) {
 				final String diagramId = cde.getDiagramId();
@@ -233,15 +228,23 @@ public class CampaignFacadeEjb implements CampaignFacade {
 				}
 
 				if (cde.getSubTabId() == null || cde.getSubTabId().isEmpty()) {
-					if (oneSubTabIsNotNullOrEmptyMap.get(cde.getTabId())) {
+					if (oneSubTabIsNotNullOrEmptyMap.containsKey(cde.getTabId()) && oneSubTabIsNotNullOrEmptyMap.get(cde.getTabId())) {
 						throw new ValidationRuntimeException(
 							I18nProperties.getValidationError(
 								Validations.campaignDashboardChartValueNull,
 								CampaignDashboardElement.SUB_TAB_ID,
 								campaignDto.getName()));
 					}
+					oneSubTabIsNotNullOrEmptyMap.put(cde.getTabId(), false);
 				} else {
-                    oneSubTabIsNotNullOrEmptyMap.put(cde.getTabId(), true);
+					if (oneSubTabIsNotNullOrEmptyMap.containsKey(cde.getTabId()) && !oneSubTabIsNotNullOrEmptyMap.get(cde.getTabId())) {
+						throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(
+								Validations.campaignDashboardChartValueNull,
+								CampaignDashboardElement.SUB_TAB_ID,
+								campaignDto.getName()));
+					}
+					oneSubTabIsNotNullOrEmptyMap.put(cde.getTabId(), true);
 				}
 
 				if (cde.getOrder() == null) {
