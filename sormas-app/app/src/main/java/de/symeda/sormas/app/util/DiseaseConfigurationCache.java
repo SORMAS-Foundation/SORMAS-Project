@@ -44,6 +44,8 @@ public final class DiseaseConfigurationCache {
 	private List<Disease> aggregateDiseases = new ArrayList<>();
 	private List<Disease> followUpEnabledDiseases = new ArrayList<>();
 	private Map<Disease, Integer> followUpDurations = new HashMap<>();
+	private Map<Disease, Integer> caseFollowUpDurations = new HashMap<>();
+	private Map<Disease, Integer> eventParticipantFollowUpDurations = new HashMap<>();
 
 	private DiseaseConfigurationCache() {
 		for (Disease disease : Disease.values()) {
@@ -76,6 +78,16 @@ public final class DiseaseConfigurationCache {
 				followUpDurations.put(disease, configuration.getFollowUpDuration());
 			} else {
 				followUpDurations.put(disease, disease.getDefaultFollowUpDuration());
+			}
+			if (configuration.getCaseFollowUpDuration() != null) {
+				caseFollowUpDurations.put(disease, configuration.getCaseFollowUpDuration());
+			} else {
+				caseFollowUpDurations.put(disease, followUpDurations.get(disease));
+			}
+			if (configuration.getFollowUpDuration() != null) {
+				eventParticipantFollowUpDurations.put(disease, configuration.getFollowUpDuration());
+			} else {
+				eventParticipantFollowUpDurations.put(disease, followUpDurations.get(disease));
 			}
 		}
 	}
@@ -240,6 +252,14 @@ public final class DiseaseConfigurationCache {
 
 	public int getFollowUpDuration(Disease disease) {
 		return followUpDurations.get(disease);
+	}
+
+	public int getCaseFollowUpDuration(Disease disease) {
+		return caseFollowUpDurations.get(disease);
+	}
+
+	public int getEventParticipantFollowUpDuration(Disease disease) {
+		return eventParticipantFollowUpDurations.get(disease);
 	}
 
 	public static DiseaseConfigurationCache getInstance() {

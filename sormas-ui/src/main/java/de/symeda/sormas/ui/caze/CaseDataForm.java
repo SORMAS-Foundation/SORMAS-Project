@@ -942,7 +942,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				// Add follow-up until validator
 				Date minimumFollowUpUntilDate = DateHelper.addDays(
 					CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) diseaseField.getValue()));
+					FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()));
 				finalFollowUpUntil.addValidator(
 					new DateRangeValidator(
 						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),

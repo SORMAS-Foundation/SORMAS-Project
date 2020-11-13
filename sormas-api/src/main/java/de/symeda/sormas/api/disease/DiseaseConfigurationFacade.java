@@ -37,6 +37,10 @@ public interface DiseaseConfigurationFacade {
 
 	int getFollowUpDuration(Disease disease);
 
+	int getCaseFollowUpDuration(Disease disease);
+
+	int getEventParticipantFollowUpDuration(Disease disease);
+
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
 
 	Disease getDefaultDisease();
