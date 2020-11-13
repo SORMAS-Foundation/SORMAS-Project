@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -44,6 +46,11 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private DocumentService documentService;
 
+	@Inject
+	private Event<DocumentSaved> documentSavedEvent;
+	@Inject
+	private Event<DocumentDeleted> documentDeletedEvent;
+
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
 		return toDto(documentService.getByUuid(uuid));
@@ -61,12 +68,18 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		documentService.persist(document);
 		documentService.doFlush();
 
+		documentSavedEvent.fire(new DocumentSaved(document));
+
 		return toDto(document);
 	}
 
 	@Override
 	public void deleteDocument(String uuid) {
-		documentService.delete(documentService.getByUuid(uuid));
+		Document document = documentService.getByUuid(uuid);
+		if (document != null) {
+			documentService.delete(document);
+			documentDeletedEvent.fire(new DocumentDeleted(document));
+		}
 	}
 
 	@Override

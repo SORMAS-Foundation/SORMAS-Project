@@ -15,50 +15,31 @@
 package de.symeda.sormas.backend.document;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.document.DocumentStorageFacade;
 
 @Stateless(name = "DocumentStorageFacade")
 public class DocumentStorageFacadeEjb implements DocumentStorageFacade {
 
 	@EJB
-	private ConfigFacade configFacade;
+	private DocumentStorageService documentStorageService;
 	@EJB
 	private DocumentService documentService;
 
 	@Override
 	public byte[] read(String uuid) throws IOException {
-		return Files.readAllBytes(computeFilePath(uuid));
+		Document document = documentService.getByUuid(uuid);
+		return documentStorageService.read(document);
 	}
 
 	@Override
 	public void store(String uuid, byte[] content) throws IOException {
-		Path filePath = computeFilePath(uuid);
-		Files.createDirectories(filePath.getParent());
-		Files.write(filePath, content, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
-	}
-
-	@SuppressWarnings("deprecation")
-	private Path computeFilePath(String uuid) {
-		String basedir = configFacade.getDocumentFilesPath();
 		Document document = documentService.getByUuid(uuid);
-
-		return Paths.get(
-			basedir,
-			Integer.toString(1900 + document.getCreationDate().getYear()),
-			Integer.toString(1 + document.getCreationDate().getMonth()),
-			Integer.toString(document.getCreationDate().getDate()),
-			Integer.toString(document.getCreationDate().getHours()),
-			uuid);
+		documentStorageService.save(document, content);
 	}
 
 	@LocalBean
