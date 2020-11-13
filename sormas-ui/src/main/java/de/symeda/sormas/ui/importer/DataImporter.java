@@ -94,6 +94,10 @@ public abstract class DataImporter {
 	 * Whether or not the current import has resulted in at least one error.
 	 */
 	private boolean hasImportError;
+	/**
+	 * CSV separator used in the file
+	 */
+	private char csvSeparator;
 
 	protected UserReferenceDto currentUser;
 	private CSVWriter errorReportCsvWriter;
@@ -108,6 +112,8 @@ public abstract class DataImporter {
 			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
+
+		this.csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
 	}
 
 	/**
@@ -202,9 +208,9 @@ public abstract class DataImporter {
 
 		try (CSVReader csvReader = CSVUtils.createCSVReader(
 				Files.newBufferedReader(inputFile.toPath(), UTF_8),
-				FacadeProvider.getConfigFacade().getCsvSeparator(),
+				this.csvSeparator,
 				new CSVCommentLineValidator())) {
-			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
+			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), this.csvSeparator);
 
 			// Build dictionary of entity headers
 			String[] entityClasses;
@@ -299,7 +305,7 @@ public abstract class DataImporter {
 	protected int readImportFileLength(File inputFile) throws IOException, CsvValidationException {
 		int importFileLength = 0;
 		try (CSVReader caseCountReader =
-			CSVUtils.createCSVReader(new FileReader(inputFile), FacadeProvider.getConfigFacade().getCsvSeparator(), new CSVCommentLineValidator())) {
+			CSVUtils.createCSVReader(new FileReader(inputFile), this.csvSeparator, new CSVCommentLineValidator())) {
 
 			while (readNextValidLine(caseCountReader) != null) {
 				importFileLength++;
@@ -515,5 +521,9 @@ public abstract class DataImporter {
 		}
 		while (isCommentLine);
 		return nextValidLine;
+	}
+
+	public void setCsvSeparator(char csvSeparator) {
+		this.csvSeparator = csvSeparator;
 	}
 }

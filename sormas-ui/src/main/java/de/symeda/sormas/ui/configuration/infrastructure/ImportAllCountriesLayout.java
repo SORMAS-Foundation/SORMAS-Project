@@ -33,6 +33,7 @@ public class ImportAllCountriesLayout extends AbstractImportLayout {
 			resetDownloadErrorReportButton();
 			try {
 				CountryImporter importer = new CountryImporter(countriesFile, currentUser);
+				importer.setCsvSeparator(',');
 				importer.startImport(this::extendDownloadErrorReportButton, currentUI);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(

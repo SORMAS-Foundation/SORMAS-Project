@@ -65,6 +65,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			params);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			menu.addView(
+					CountriesView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				menu.addView(
 					AreasView.VIEW_NAME,
@@ -72,11 +77,6 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 					null,
 					false);
 			}
-			menu.addView(
-				CountriesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
 			menu.addView(
 				RegionsView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),

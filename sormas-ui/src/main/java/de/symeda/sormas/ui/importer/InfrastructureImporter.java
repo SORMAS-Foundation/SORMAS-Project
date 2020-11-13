@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import de.symeda.sormas.api.region.CountryDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
@@ -46,7 +45,7 @@ public class InfrastructureImporter extends DataImporter {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean firstLine)
-		throws IOException, InvalidColumnException, InterruptedException {
+		throws IOException, InvalidColumnException {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {

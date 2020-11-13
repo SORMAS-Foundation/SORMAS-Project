@@ -5,7 +5,10 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.function.Consumer;
+
+import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -88,7 +91,7 @@ public class CountryImporter extends InfrastructureImporter {
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
-
+					validateFieldLength(headerPathElementName, value);
 					if (!executeDefaultInvokings(pd, currentElement, value, entityPropertyPath)) {
 						throw new UnsupportedOperationException(
 							I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
@@ -107,6 +110,24 @@ public class CountryImporter extends InfrastructureImporter {
 				logger.error("Unexpected error when trying to import infrastructure data: " + e.getMessage());
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
 			}
+		}
+	}
+
+	private void validateFieldLength(String field, String value) throws ImportErrorException, InvalidColumnException {
+		try {
+			Size size = CountryDto.class.getDeclaredField(field).getAnnotation(Size.class);
+			if (StringUtils.isNotEmpty(value) && size != null) {
+				if (value.length() < size.min()) {
+					String message = "The value {0} has length {1} but the minimum length is {2}";
+					throw new ImportErrorException(MessageFormat.format(message, value, value.length(), size.min()));
+				}
+				if (value.length() > size.max()) {
+					String message = "The value {0} has length {1} but the maximum length is {2}";
+					throw new ImportErrorException(MessageFormat.format(message, value, value.length(), size.max()));
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			throw new InvalidColumnException(field);
 		}
 	}
 
