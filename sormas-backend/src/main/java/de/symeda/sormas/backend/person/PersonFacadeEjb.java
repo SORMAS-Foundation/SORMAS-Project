@@ -214,11 +214,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		CaseJoins<Case> joins = new CaseJoins<>(root);
 		Join<Case, Person> person = joins.getPerson();
 
-		Predicate filter = caseService.createUserFilter(
-			cb,
-			cq,
-			root,
-			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root, joins));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
@@ -343,28 +340,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (StringUtils.isEmpty(source.getLastName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
-	}
-
-	@Override
-	public List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PersonQuarantineEndDto> cq = cb.createQuery(PersonQuarantineEndDto.class);
-		Root<Contact> contactRoot = cq.from(Contact.class);
-		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
-
-		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
-		if (since != null) {
-			filter = PersonService.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.QUARANTINE_TO));
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.QUARANTINE_TO)));
-
-		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
 	}
 
 	@Override

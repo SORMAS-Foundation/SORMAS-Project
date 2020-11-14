@@ -226,7 +226,7 @@ public class EventController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
 			editView.addDeleteListener(() -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					FacadeProvider.getEventFacade().deleteEvent(event.getUuid());

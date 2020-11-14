@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
+import java.util.Optional;
+
 import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
 
 import com.google.common.base.MoreObjects;

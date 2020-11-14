@@ -121,12 +121,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	}
 
 	@GET
-	@Path("/quarantineEndDates/{since}")
-	public List<PersonQuarantineEndDto> getLatestQuarantineEndDates(@PathParam("since") long since) {
-		return FacadeProvider.getPersonFacade().getLatestQuarantineEndDates(new Date(since));
-	}
-
-	@GET
 	@Path("/followUpEndDates/{since}")
 	@Operation(summary = "Get follow up end dates",
 		description = "Get latest follow up end date assigned to the specified person. "
