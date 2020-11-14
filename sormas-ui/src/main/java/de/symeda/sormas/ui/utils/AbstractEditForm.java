@@ -240,6 +240,29 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		field.setWidth(100, Unit.PERCENTAGE);
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected <T extends Field> void formatField(T field, String propertyId, String customCaption) {
+
+		super.formatField(field, propertyId);
+
+		field.setCaption(customCaption);
+
+		if (field instanceof AbstractField) {
+			AbstractField<?> abstractField = (AbstractField) field;
+			abstractField.setDescription(I18nProperties.getPrefixDescription(propertyI18nPrefix, propertyId, abstractField.getDescription()));
+
+			if (hideValidationUntilNextCommit && !abstractField.isInvalidCommitted()) {
+				abstractField.setValidationVisible(false);
+			}
+		}
+
+		String validationError = I18nProperties.getPrefixValidationError(propertyI18nPrefix, propertyId, customCaption);
+		field.setRequiredError(validationError);
+
+		field.setWidth(100, Unit.PERCENTAGE);
+	}
+
 	protected void styleAsOptionGroupHorizontal(List<String> fields) {
 		for (String field : fields) {
 			CssStyles.style((NullableOptionGroup) getFieldGroup().getField(field), ValoTheme.OPTIONGROUP_HORIZONTAL);
