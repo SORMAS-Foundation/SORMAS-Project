@@ -17,13 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-
 import com.vaadin.data.ValueProvider;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 
 @SuppressWarnings("serial")
 public class ReferenceDtoHtmlProvider implements ValueProvider<ReferenceDto, String> {
@@ -34,8 +32,8 @@ public class ReferenceDtoHtmlProvider implements ValueProvider<ReferenceDto, Str
 		String html;
 		if (source != null) {
 			String uuid = source.getUuid();
-			html = "<a title='" + Jsoup.clean(uuid, Whitelist.none()) + "'>" + Jsoup.clean(DataHelper.getShortUuid(uuid), Whitelist.none()) + "</a> ("
-				+ Jsoup.clean(source.getCaption(), Whitelist.none()) + ")";
+			html = "<a title='" + HtmlHelper.cleanHtml(uuid) + "'>" + HtmlHelper.cleanHtml(DataHelper.getShortUuid(uuid)) + "</a> ("
+				+ HtmlHelper.cleanHtml(source.getCaption()) + ")";
 		} else {
 			html = "";
 		}

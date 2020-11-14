@@ -2,9 +2,6 @@ package de.symeda.sormas.ui.configuration.linelisting;
 
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -12,6 +9,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
@@ -30,7 +28,7 @@ public class LineListingActiveDistrictsLayout extends CssLayout {
 
 		for (FeatureConfigurationIndexDto config : configurations) {
 			StringBuilder captionBuilder = new StringBuilder();
-			captionBuilder.append("<b>").append(Jsoup.clean(config.getDistrictName(), Whitelist.none())).append("</b><br/>");
+			captionBuilder.append("<b>").append(HtmlHelper.cleanHtml(config.getDistrictName())).append("</b><br/>");
 			if (config.getEndDate() != null) {
 				captionBuilder.append(I18nProperties.getString(Strings.until)).append(" ").append(DateFormatHelper.formatDate(config.getEndDate()));
 			} else {

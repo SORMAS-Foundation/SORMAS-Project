@@ -17,8 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
@@ -37,6 +36,7 @@ import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -46,8 +46,6 @@ public class ActionListEntry extends HorizontalLayout {
 
 	private final ActionDto action;
 	private Button editButton;
-	public static final Whitelist WHITELIST_ACTIONS =
-		Whitelist.relaxed().addTags("hr", "font").addAttributes("font", "size", "face", "color").addAttributes("div", "align");
 
 	public ActionListEntry(ActionDto action) {
 
@@ -82,11 +80,11 @@ public class ActionListEntry extends HorizontalLayout {
 		descReplyLayout.addStyleName(CssStyles.RICH_TEXT_CONTENT_CONTAINER);
 		withContentLayout.addComponents(descReplyLayout);
 
-		Label description = new Label(Jsoup.clean(action.getDescription(), WHITELIST_ACTIONS), ContentMode.HTML);
+		Label description = new Label(cleanHtml(action.getDescription(), HtmlHelper.EventActionWhitelist), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		descReplyLayout.addComponent(description);
 		if (!Strings.isNullOrEmpty(action.getReply())) {
-			Label replyLabel = new Label(Jsoup.clean(action.getReply(), WHITELIST_ACTIONS), ContentMode.HTML);
+			Label replyLabel = new Label(cleanHtml(action.getReply(), HtmlHelper.EventActionWhitelist), ContentMode.HTML);
 			replyLabel.setWidth(100, Unit.PERCENTAGE);
 			replyLabel.addStyleName(CssStyles.REPLY);
 			descReplyLayout.addComponent(replyLabel);

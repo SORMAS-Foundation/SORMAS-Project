@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -53,6 +50,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.eventLink.EventSelectionField;
@@ -404,7 +402,7 @@ public class EventController {
 								String.format(
 									I18nProperties.getString(Strings.messageCountEventsNotDeleted),
 									String.format("<b>%s</b>", countNotDeletedEvents),
-									String.format("<b>%s</b>", Jsoup.clean(nonDeletableEvents.toString(), Whitelist.none()))),
+									String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEvents.toString()))),
 								I18nProperties.getString(Strings.messageEventsNotDeletedReason)),
 							ContentMode.HTML);
 						response.setWidth(600, Sizeable.Unit.PIXELS);

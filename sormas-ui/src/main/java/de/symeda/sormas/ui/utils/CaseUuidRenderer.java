@@ -19,9 +19,6 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.function.Function;
 
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -29,6 +26,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
@@ -50,7 +48,7 @@ public class CaseUuidRenderer extends HtmlRenderer {
 		}
 
 		if (value != null && !value.isEmpty()) {
-			value = "<a title='" + value + "'>" + Jsoup.clean(DataHelper.getShortUuid(value), Whitelist.none()) + "</a>";
+			value = "<a title='" + value + "'>" + HtmlHelper.cleanHtml(DataHelper.getShortUuid(value)) + "</a>";
 			return super.encode(value);
 		} else {
 			return null;
