@@ -23,7 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
@@ -80,24 +79,64 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	private TemplateEngine templateEngine = new TemplateEngine();
 
 	@Override
-	public byte[] generateDocumentFromEntities(
+	public byte[] generateDocumentDocxFromEntities(
 		DocumentWorkflow documentWorkflow,
 		String templateName,
-		Map<String, EntityDto> entities,
+		Map<String, Object> entities,
 		Properties extraProperties)
 		throws IOException {
+		if (!documentWorkflow.isDocx()) {
+			throw new IllegalArgumentException("Workflow " + documentWorkflow + " is not a .docs workflow");
+		}
+
 		// 1. Read template from custom directory
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
 
 		// 2. Extract document variables
 		Set<String> propertyKeys = getTemplateVariables(templateFile);
 
+		// 3. prepare properties
+		Properties properties = prepareProperties(documentWorkflow, entities, extraProperties, propertyKeys);
+
+		// 4. generate document
+		return generateDocumentDocx(templateFile, properties);
+	}
+
+	@Override
+	public String generateDocumentTxtFromEntities(
+		DocumentWorkflow documentWorkflow,
+		String templateName,
+		Map<String, Object> entities,
+		Properties extraProperties)
+		throws IOException {
+		if (documentWorkflow.isDocx()) {
+			throw new IllegalArgumentException("Workflow " + documentWorkflow + " is a .docs workflow");
+		}
+
+		// 1. Read template from custom directory
+		File templateFile = getTemplateFile(documentWorkflow, templateName);
+
+		// 2. Extract document variables
+		Set<String> propertyKeys = getTemplateVariables(templateFile);
+
+		// 3. prepare properties
+		Properties properties = prepareProperties(documentWorkflow, entities, extraProperties, propertyKeys);
+
+		// 4. generate document
+		return generateDocumentTxt(templateFile, properties);
+	}
+
+	private Properties prepareProperties(
+		DocumentWorkflow documentWorkflow,
+		Map<String, Object> entities,
+		Properties extraProperties,
+		Set<String> propertyKeys) {
 		Properties properties = new Properties();
 
-		// 3. Map template variables to case data if possible
+		// 1. Map template variables to entity data if possible
 		// Naming conventions according sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx, e.g.:
-		// Case.person.firstName
-		// Case.quarantineFrom
+		// <CaseDataDto>.person.firstName
+		// <CaseDataDto>.quarantineFrom
 		// Generic access as implemented in DataDictionaryGenerator.java
 
 		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
@@ -105,16 +144,16 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		for (String propertyKey : propertyKeys) {
 			if (isEntityVariable(documentWorkflow, propertyKey)) {
 				String variableBaseName = getVariableBaseName(propertyKey);
-				EntityDto entityDto = entities.get(variableBaseName);
-				if (entityDto != null) {
+				Object entity = entities.get(variableBaseName);
+				if (entity != null) {
 					String propertyPath = propertyKey.replaceFirst(variableBaseName + ".", "");
-					Object propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entityDto, propertyPath, referenceDtoResolver);
+					Object propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entity, propertyPath, referenceDtoResolver);
 					properties.put(propertyKey, propertyValue);
 				}
 			}
 		}
 
-		// 3. merge extra properties
+		// 2. merge extra properties
 
 		if (extraProperties != null) {
 			for (String extraPropertyKey : extraProperties.stringPropertyNames()) {
@@ -123,31 +162,27 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			}
 		}
 
-		// 4. fill null properties
+		// 3. fill null properties
 		for (String propertyKey : propertyKeys) {
 			Object property = properties.get(propertyKey);
 			if (property == null || StringUtils.isBlank(property.toString())) {
 				properties.setProperty(propertyKey, DEFAULT_NULL_REPLACEMENT);
 			}
 		}
-
-		// 5. generate document
-
-		return getGenerateDocument(templateFile, properties);
+		properties.put("F", new ObjectFormatter());
+		return properties;
 	}
 
-	@Override
-	public byte[] generateDocument(DocumentWorkflow documentWorkflow, String templateName, Properties properties) throws IOException {
-		File templateFile = getTemplateFile(documentWorkflow, templateName);
-		return getGenerateDocument(templateFile, properties);
-	}
-
-	private byte[] getGenerateDocument(File templateFile, Properties properties) throws IOException {
+	private byte[] generateDocumentDocx(File templateFile, Properties properties) throws IOException {
 		try {
 			return templateEngine.generateDocumentDocx(properties, templateFile);
 		} catch (XDocReportException e) {
 			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), e.getMessage()));
 		}
+	}
+
+	private String generateDocumentTxt(File templateFile, Properties properties) {
+		return templateEngine.generateDocumentTxt(properties, templateFile);
 	}
 
 	@Override
@@ -277,5 +312,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			return null;
 		};
 		return new EntityDtoAccessHelper.CachedReferenceDtoResolver(referenceDtoResolver);
+	}
+
+	public class ObjectFormatter {
+
+		public Object format(Object value) {
+			return EntityDtoAccessHelper.formatObject(value);
+		}
 	}
 }

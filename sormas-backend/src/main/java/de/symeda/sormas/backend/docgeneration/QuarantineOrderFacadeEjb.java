@@ -9,7 +9,6 @@ import java.util.Properties;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -40,7 +39,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	public byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws IOException {
 		String rootEntityUuid = rootEntityReference.getUuid();
 
-		Map<String, EntityDto> entities = new HashMap<>();
+		Map<String, Object> entities = new HashMap<>();
 		if (rootEntityReference instanceof CaseReferenceDto) {
 			entities.put(ROOT_ENTITY_NAME, caseFacade.getCaseDataByUuid(rootEntityUuid));
 		} else if (rootEntityReference instanceof ContactReferenceDto) {
@@ -49,7 +48,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
 		}
 
-		return documentTemplateFacade.generateDocumentFromEntities(DOCUMENT_WORKFLOW, templateName, entities, extraProperties);
+		return documentTemplateFacade.generateDocumentDocxFromEntities(DOCUMENT_WORKFLOW, templateName, entities, extraProperties);
 	}
 
 	@Override

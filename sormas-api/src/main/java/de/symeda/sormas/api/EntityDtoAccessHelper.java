@@ -86,6 +86,10 @@ public class EntityDtoAccessHelper {
 
 	public static Object getPropertyPathValueString(Object entity, String propertyPath, IReferenceDtoResolver referenceDtoResolver) {
 		Object value = getPropertyPathValue(entity, propertyPath, referenceDtoResolver);
+		return formatObject(value);
+	}
+
+	public static Object formatObject(Object value) {
 		if (value == null) {
 			return null;
 		} else if (value instanceof Date

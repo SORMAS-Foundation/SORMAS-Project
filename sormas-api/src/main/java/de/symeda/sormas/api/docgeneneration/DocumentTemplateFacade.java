@@ -7,19 +7,22 @@ import java.util.Properties;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.EntityDto;
-
 @Remote
 public interface DocumentTemplateFacade {
 
-	byte[] generateDocumentFromEntities(
+	byte[] generateDocumentDocxFromEntities(
 		DocumentWorkflow documentWorkflow,
 		String templateName,
-		Map<String, EntityDto> entities,
+		Map<String, Object> entities,
 		Properties extraProperties)
 		throws IOException;
 
-	byte[] generateDocument(DocumentWorkflow documentWorkflow, String templateName, Properties properties) throws IOException;
+	String generateDocumentTxtFromEntities(
+		DocumentWorkflow documentWorkflow,
+		String templateName,
+		Map<String, Object> entities,
+		Properties extraProperties)
+		throws IOException;
 
 	List<String> getAvailableTemplates(DocumentWorkflow documentWorkflow);
 

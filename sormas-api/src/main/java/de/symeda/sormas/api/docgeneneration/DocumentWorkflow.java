@@ -46,4 +46,8 @@ public enum DocumentWorkflow {
 	public String getFileExtension() {
 		return fileType.getExtension();
 	}
+
+	public boolean isDocx() {
+		return fileType == DOCX;
+	}
 }
