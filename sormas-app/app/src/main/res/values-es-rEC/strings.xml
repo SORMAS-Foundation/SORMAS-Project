@@ -404,7 +404,7 @@
     <string name="indicator_warning">ALERTA</string>
     <string name="info_add_cases_before_report_submit">¿Está seguro de que desea enviar estos números de casos para la semana epi seleccionada?</string>
     <string name="info_app_download">Descargando la nueva versión de SORMAS... Dependiendo de tu conexión a internet, esto puede tardar un tiempo.</string>
-    <string name="info_create_person">Si no pudiste <b/> encontrar a una persona que coincida con los datos personales que has introducido, haz clic en el botón \"Crear\".</string>
+    <string name="info_create_person">Si no pudiste <b></b> encontrar a una persona que coincida con los datos personales que has introducido, haz clic en el botón \"Crear\".</string>
     <string name="info_create_event">If you could <b>not</b> find the Event in the list above, click the \"Create\" button.</string>
     <string name="info_epidemiological_info">Por favor indique si algo de lo siguiente es relevante para el paciente durante el período de incubación o enfermedad.</string>
     <string name="info_initial_synchronization">Sincronización inicial con el servidor SORMAS.\nDescargar los datos de infraestructura tomará unos minutos.</string>
