@@ -12,10 +12,7 @@
 
 .gradle
 
+Reports
 
-# Exclude folder content (except .gitkeep)
-Reports/*
-!Reports/.gitkeep
+Checkpoints
 
-Checkpoints/*
-!Checkpoints/.gitkeep
