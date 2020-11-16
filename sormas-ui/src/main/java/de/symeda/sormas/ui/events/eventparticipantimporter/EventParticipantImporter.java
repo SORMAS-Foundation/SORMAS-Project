@@ -22,6 +22,7 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,7 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -46,13 +48,17 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.EventParticipantImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.importer.ImporterPersonHelper;
 import de.symeda.sormas.ui.person.PersonSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -286,6 +292,69 @@ public class EventParticipantImporter extends DataImporter {
 					// according to the types of the eventparticipant or person fields
 					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
+					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
+						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade()
+							.getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, null, person, currentElement), false);
+						if (district.isEmpty()) {
+							throw new ImportErrorException(
+								I18nProperties
+									.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildEntityProperty(entryHeaderPath)));
+						} else if (district.size() > 1) {
+							throw new ImportErrorException(
+								I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, district.get(0));
+						}
+					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
+						List<CommunityReferenceDto> community =
+							FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getPersonDistrict(pd.getName(), person), false);
+						if (community.isEmpty()) {
+							throw new ImportErrorException(
+								I18nProperties.getValidationError(
+									Validations.importEntryDoesNotExistDbOrDistrict,
+									entry,
+									buildEntityProperty(entryHeaderPath)));
+						} else if (community.size() > 1) {
+							throw new ImportErrorException(
+								I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, community.get(0));
+						}
+					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
+						DataHelper.Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData =
+							ImporterPersonHelper.getPersonDistrictAndCommunity(pd.getName(), person);
+						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade()
+							.getByNameAndType(
+								entry,
+								infrastructureData.getElement0(),
+								infrastructureData.getElement1(),
+								getTypeOfFacility(pd.getName(), currentElement),
+								false);
+						if (facility.isEmpty()) {
+							if (infrastructureData.getElement1() != null) {
+								throw new ImportErrorException(
+									I18nProperties.getValidationError(
+										Validations.importEntryDoesNotExistDbOrCommunity,
+										entry,
+										buildEntityProperty(entryHeaderPath)));
+							} else {
+								throw new ImportErrorException(
+									I18nProperties.getValidationError(
+										Validations.importEntryDoesNotExistDbOrDistrict,
+										entry,
+										buildEntityProperty(entryHeaderPath)));
+							}
+						} else if (facility.size() > 1 && infrastructureData.getElement1() == null) {
+							throw new ImportErrorException(
+								I18nProperties
+									.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
+						} else if (facility.size() > 1 && infrastructureData.getElement1() != null) {
+							throw new ImportErrorException(
+								I18nProperties
+									.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, facility.get(0));
+						}
 					} else {
 						throw new UnsupportedOperationException(
 							I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));

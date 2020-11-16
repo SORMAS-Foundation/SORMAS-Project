@@ -166,9 +166,36 @@ public class ImportFacadeEjb implements ImportFacade {
 		char separator = configFacade.getCsvSeparator();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.FIRST_NAME, String.class, separator));
-		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.LAST_NAME, String.class, separator));
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.INVOLVEMENT_DESCRIPTION, String.class, separator));
+
+		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
+
+		List<String> columnsToRemove = Arrays.asList(
+			PersonDto.PLACE_OF_BIRTH_COMMUNITY,
+			PersonDto.PLACE_OF_BIRTH_DISTRICT,
+			PersonDto.PLACE_OF_BIRTH_FACILITY,
+			PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS,
+			PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE,
+			PersonDto.PLACE_OF_BIRTH_REGION,
+			PersonDto.GESTATION_AGE_AT_BIRTH,
+			PersonDto.BIRTH_DATE,
+			PersonDto.BIRTH_DATE_MM,
+			PersonDto.BIRTH_DATE_DD,
+			PersonDto.BIRTH_DATE_YYYY,
+			PersonDto.BIRTH_WEIGHT,
+			PersonDto.PRESENT_CONDITION,
+			PersonDto.DEATH_DATE,
+			PersonDto.DEATH_PLACE_DESCRIPTION,
+			PersonDto.DEATH_PLACE_TYPE,
+			PersonDto.CAUSE_OF_DEATH,
+			PersonDto.CAUSE_OF_DEATH_DETAILS,
+			PersonDto.CAUSE_OF_DEATH_DISEASE,
+			PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS,
+			PersonDto.BURIAL_CONDUCTOR,
+			PersonDto.BURIAL_DATE,
+			PersonDto.BURIAL_PLACE_DESCRIPTION,
+			PersonDto.ADDRESSES);
+		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getEventParticipantImportTemplateFilePath()), importColumns, true);
 	}
