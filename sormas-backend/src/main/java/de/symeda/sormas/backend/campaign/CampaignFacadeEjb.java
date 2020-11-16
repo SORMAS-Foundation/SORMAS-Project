@@ -264,8 +264,17 @@ public class CampaignFacadeEjb implements CampaignFacade {
 						I18nProperties
 							.getValidationError(Validations.campaignDashboardChartValueNull, CampaignDashboardElement.WIDTH, campaignDto.getName()));
 				}
-
 			}
+
+			campaignDto.getCampaignFormMetas().forEach(campaignFormMetaReferenceDto -> {
+				if (campaignFormMetaReferenceDto == null || campaignFormMetaReferenceDto.getUuid() == null) {
+					throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(
+							Validations.campaignDashboardDataFormValueNull,
+							CampaignDto.CAMPAIGN_FORM_METAS,
+							campaignDto.getName()));
+				}
+			});
 		}
 	}
 
