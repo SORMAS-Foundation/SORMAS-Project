@@ -34,6 +34,7 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = -9174165215694877625L;
 
 	private TaskStatus taskStatus;
+	private TaskContext taskContext;
 	private TaskType taskType;
 	private UserReferenceDto assigneeUser;
 	private UserReferenceDto excludeAssigneeUser;
@@ -209,5 +210,18 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
+	}
+
+	public TaskContext getTaskContext() {
+		return taskContext;
+	}
+
+	public void setTaskContext(TaskContext taskContext) {
+		this.taskContext = taskContext;
+	}
+
+	public TaskCriteria taskContext(TaskContext taskContext) {
+		this.taskContext = taskContext;
+		return this;
 	}
 }

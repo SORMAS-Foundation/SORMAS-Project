@@ -256,6 +256,9 @@ public class TaskService extends AbstractAdoService<Task> {
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(event.get(Event.ARCHIVED), true))));
 			}
 		}
+		if (taskCriteria.getTaskContext() != null) {
+			filter = cb.and(filter, cb.equal(from.get(Task.TASK_CONTEXT), taskCriteria.getTaskContext()));
+		}
 
 		return filter;
 	}
