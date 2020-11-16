@@ -64,8 +64,8 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -217,7 +217,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Root<Event> event = cq.from(Event.class);
 
 		Predicate filter = createDefaultFilter(cb, event);
-		filter = and(cb, filter, cb.equal(event.get(Event.EVENT_PERSONS), eventParticipantUuid));
+		filter = and(cb, filter, cb.equal(event.join(Event.EVENT_PERSONS).get(EventParticipant.UUID), eventParticipantUuid));
 		filter = and(cb, filter, createUserFilter(cb, cq, event));
 		cq.where(filter);
 
