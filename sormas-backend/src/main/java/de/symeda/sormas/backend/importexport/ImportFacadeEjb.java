@@ -63,6 +63,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Provider;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -517,7 +520,23 @@ public class ImportFacadeEjb implements ImportFacade {
 				continue;
 			}
 
-			Method readMethod = null;
+			String currentCountry = configFacade.getCountryCode();
+			HideForCountriesExcept hideForCountriesExcept = field.getAnnotation(HideForCountriesExcept.class);
+			if (hideForCountriesExcept != null) {
+				boolean shouldHide = !Arrays.asList(hideForCountriesExcept.countries()).contains(currentCountry);
+				if (shouldHide) {
+					continue;
+				}
+			}
+			HideForCountries hideForCountries = field.getAnnotation(HideForCountries.class);
+			if (hideForCountries != null) {
+				boolean shouldHide = Arrays.asList(hideForCountries.countries()).contains(currentCountry);
+				if (shouldHide) {
+					continue;
+				}
+			}
+
+			Method readMethod;
 			try {
 				readMethod = clazz.getDeclaredMethod("get" + WordUtils.capitalize(field.getName()));
 			} catch (NoSuchMethodException e) {
@@ -529,7 +548,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 
 			// Fields without a getter or whose getters are declared in a superclass are ignored
-			if (readMethod == null || readMethod.getDeclaringClass() != clazz) {
+			if (readMethod.getDeclaringClass() != clazz) {
 				continue;
 			}
 			// Fields with the @ImportIgnore annotation are ignored
