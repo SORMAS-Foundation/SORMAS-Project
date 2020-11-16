@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
@@ -33,9 +36,6 @@ import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
-
-import java.io.Serializable;
-import java.util.Date;
 
 public class TaskIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -58,6 +58,8 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String TASK_STATUS = "taskStatus";
 	public static final String TASK_TYPE = "taskType";
 	public static final String CONTEXT_REFERENCE = "contextReference";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
 
 	private String uuid;
 	private TaskContext taskContext;
@@ -73,6 +75,8 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	@EmbeddedSensitiveData
 	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private ContactReferenceDto contact;
+	private String region;
+	private String district;
 
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -98,7 +102,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			String casePointOfEntryUuid, String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, 
 			String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, 
-			String eventDistrictUuid, String eventCommunityUuid) {
+			String eventDistrictUuid, String eventCommunityUuid, String region, String district) {
 	//@formatter:on
 
 		this.setUuid(uuid);
@@ -154,6 +158,8 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.creatorComment = creatorComment;
 		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
 		this.assigneeReply = assigneeReply;
+		this.district = district;
+		this.region = region;
 
 		this.jurisdiction = new TaskJurisdictionDto(creatorUserUuid, assigneeUserUuid, caseJurisdiction, contactJurisdiction, eventJurisdiction);
 	}
@@ -289,4 +295,19 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		return jurisdiction;
 	}
 
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
 }

@@ -98,6 +98,8 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			TaskIndexDto.CONTEXT_REFERENCE,
 			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_TYPE,
+			TaskIndexDto.REGION,
+			TaskIndexDto.DISTRICT,
 			TaskIndexDto.PRIORITY,
 			TaskIndexDto.SUGGESTED_START,
 			TaskIndexDto.DUE_DATE,

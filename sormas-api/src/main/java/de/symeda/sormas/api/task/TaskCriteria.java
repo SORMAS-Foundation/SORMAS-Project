@@ -26,6 +26,8 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
@@ -49,6 +51,8 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private Date statusChangeDateFrom;
 	private Date statusChangeDateTo;
 	private EntityRelevanceStatus relevanceStatus;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
 
 	public TaskStatus getTaskStatus() {
 		return taskStatus;
@@ -222,6 +226,32 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	public TaskCriteria taskContext(TaskContext taskContext) {
 		this.taskContext = taskContext;
+		return this;
+	}
+
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
+	}
+
+	public TaskCriteria region(RegionReferenceDto region) {
+		this.region = region;
+		return this;
+	}
+
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
+	}
+
+	public TaskCriteria district(DistrictReferenceDto district) {
+		this.district = district;
 		return this;
 	}
 }
