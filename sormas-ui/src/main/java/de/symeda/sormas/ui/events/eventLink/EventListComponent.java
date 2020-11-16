@@ -86,6 +86,7 @@ public class EventListComponent extends VerticalLayout {
 		if (contact.getCaze() != null) {
 			CheckBox contactOnlyWithSourceCaseInEvent = new CheckBox(I18nProperties.getCaption(Captions.eventOnlyWithContactSourceCaseInvolved));
 			contactOnlyWithSourceCaseInEvent.addStyleNames(CssStyles.CHECKBOX_FILTER_INLINE, CssStyles.VSPACE_4);
+			contactOnlyWithSourceCaseInEvent.setWidthFull();
 			contactOnlyWithSourceCaseInEvent.addValueChangeListener(e -> {
 				if (e.getValue()) {
 					eventList.filterEventListByCase(contact.getCaze());
