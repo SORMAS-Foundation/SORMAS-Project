@@ -1601,6 +1601,7 @@ public interface Captions {
 	String Task_assigneeUser = "Task.assigneeUser";
 	String Task_caze = "Task.caze";
 	String Task_contact = "Task.contact";
+	String Task_contextEntityName = "Task.contextEntityName";
 	String Task_contextReference = "Task.contextReference";
 	String Task_creatorComment = "Task.creatorComment";
 	String Task_creatorUser = "Task.creatorUser";

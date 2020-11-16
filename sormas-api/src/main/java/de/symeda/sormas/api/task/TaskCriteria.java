@@ -35,8 +35,11 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = -9174165215694877625L;
 
+	public static final String CONTEXT_ENTITY_FREE_TEXT = "contextEntityFreeText";
+
 	private TaskStatus taskStatus;
 	private TaskContext taskContext;
+	private String contextEntityFreeText;
 	private TaskType taskType;
 	private UserReferenceDto assigneeUser;
 	private UserReferenceDto excludeAssigneeUser;
@@ -252,6 +255,19 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	public TaskCriteria district(DistrictReferenceDto district) {
 		this.district = district;
+		return this;
+	}
+
+	public String getContextEntityFreeText() {
+		return contextEntityFreeText;
+	}
+
+	public void setContextEntityFreeText(String contextEntityFreeText) {
+		this.contextEntityFreeText = contextEntityFreeText;
+	}
+
+	public TaskCriteria contextEntityFreeText(String contextEntityFreeText) {
+		this.contextEntityFreeText = contextEntityFreeText;
 		return this;
 	}
 }

@@ -5,6 +5,7 @@ import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskIndexDto;
@@ -29,7 +30,8 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_STATUS,
 			TaskIndexDto.REGION,
-			TaskIndexDto.DISTRICT };
+			TaskIndexDto.DISTRICT,
+			TaskCriteria.CONTEXT_ENTITY_FREE_TEXT };
 	}
 
 	@Override
@@ -53,6 +55,12 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			final ComboBox districtField = addDistrictField();
 			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 		}
+
+		addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				TaskCriteria.CONTEXT_ENTITY_FREE_TEXT,
+				I18nProperties.getString(Strings.promptTaskContextEntitySearchField),
+				200));
 	}
 
 	private ComboBox addDistrictField() {

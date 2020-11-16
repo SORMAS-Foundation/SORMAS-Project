@@ -41,6 +41,7 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -49,6 +50,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -273,6 +275,24 @@ public class TaskService extends AbstractAdoService<Task> {
 						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
 						.otherwise(joins.getEventDistrict().get(District.UUID)));
 			filter = and(cb, filter, cb.equal(district, taskCriteria.getDistrict().getUuid()));
+		}
+		if (taskCriteria.getContextEntityFreeText() != null) {
+			String[] textFilters = taskCriteria.getContextEntityFreeText().split("\\s+");
+			for (String s : textFilters) {
+				String textFilter = "%" + s.toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(joins.getCaze().get(Case.UUID)), textFilter),
+						cb.like(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getContact().get(Contact.UUID)), textFilter),
+						cb.like(cb.lower(joins.getContactPerson().get(Person.LAST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getContactPerson().get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getEvent().get(Event.UUID)), textFilter),
+						cb.like(cb.lower(joins.getEvent().get(Event.EVENT_TITLE)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
 		}
 
 		return filter;
