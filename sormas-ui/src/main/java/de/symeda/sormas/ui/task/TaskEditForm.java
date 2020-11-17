@@ -252,11 +252,13 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	}
 
 	private HorizontalLayout getMissingInfoComponent(String caption) {
+		Label assigneeMissingInfoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + caption, ContentMode.HTML);
+		assigneeMissingInfoLabel.setWidthFull();
 
-		final HorizontalLayout assigneeMissingInfo =
-			new HorizontalLayout(new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + caption, ContentMode.HTML));
+		final HorizontalLayout assigneeMissingInfo = new HorizontalLayout(assigneeMissingInfoLabel);
 		assigneeMissingInfo.setSpacing(true);
 		assigneeMissingInfo.setMargin(new MarginInfo(false, false, true, false));
+		assigneeMissingInfo.setWidthFull();
 
 		return assigneeMissingInfo;
 	}
