@@ -136,7 +136,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
 		assigneeUser.addValueChangeListener(e -> {
 			updateByCreatingAndAssignee();
-			checkIfAssigneeEmailIsProvided((UserReferenceDto) e.getProperty().getValue());
+			checkIfAssigneeEmailOrPhoneIsProvided((UserReferenceDto) e.getProperty().getValue());
 		});
 		assigneeUser.setImmediate(true);
 
@@ -228,7 +228,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 	}
 
-	private void checkIfAssigneeEmailIsProvided(UserReferenceDto assigneeRef) {
+	private void checkIfAssigneeEmailOrPhoneIsProvided(UserReferenceDto assigneeRef) {
 
 		if (assigneeRef == null || FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TASK_NOTIFICATIONS)) {
 			return;
