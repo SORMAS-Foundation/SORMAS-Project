@@ -55,12 +55,10 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
-import java.util.Date;
 
 public class CaseDataDto extends PseudonymizableDto {
 
@@ -190,7 +188,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Outbreaks
-	@HideForCountries()
+	@HideForCountries(countries = {
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private String epidNumber;
 	@Outbreaks
 	@Required
@@ -362,7 +362,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String pointOfEntryDetails;
 	@SensitiveData
 	private String additionalDetails;
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
 	private boolean sharedToCountry;
 	private QuarantineType quarantine;

@@ -17,14 +17,16 @@ String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_e
 
 String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_event_community')
 
-WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'Edited Event')
+WebUI.setText(findTestObject('Events/NewEventView/input_Title_eventTitle'), 'VFX design Event')
+
+WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'This event is Edited')
 
 WebUI.scrollToElement(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'), 2)
 
 WebUI.click(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'))
 WebUI.setText(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'), (firstName + ' ') + lastName)
 
-WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 
@@ -44,15 +46,15 @@ WebUI.setText(findTestObject('Events/EditEventView/input_AddPerson_FirstName_inp
 
 WebUI.setText(findTestObject('Events/EditEventView/input_AddPerson_LastName_inputBox'), lastName)
 
-WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 
 if(WebUI.verifyElementPresent(findTestObject('Object Repository/Events/EditEventView/div_PickOrCreatePerson_lbl'), 2)) {
-	WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
+	WebUI.click(findTestObject('ReusableORs/div_Save'))
 }
 
-WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(2)
 

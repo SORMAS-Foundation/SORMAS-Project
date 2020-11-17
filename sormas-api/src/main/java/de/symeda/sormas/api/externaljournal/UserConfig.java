@@ -18,13 +18,16 @@
 
 package de.symeda.sormas.api.externaljournal;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * @author Alex Vidrean
  * @since 28-Oct-20
  */
-public class UserConfig {
+public class UserConfig implements Serializable, Cloneable {
+
+	private static final long serialVersionUID = -8361731947523951907L;
 
 	private String username;
 
@@ -59,5 +62,14 @@ public class UserConfig {
 	@Override
 	public int hashCode() {
 		return Objects.hash(username, password);
+	}
+
+	@Override
+	public UserConfig clone() {
+		try {
+			return (UserConfig) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("Clone failed", e);
+		}
 	}
 }

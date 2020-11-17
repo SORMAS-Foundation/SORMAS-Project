@@ -5538,4 +5538,18 @@ ALTER TABLE events ALTER COLUMN eventdesc DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (273, 'Drop not null constraint from event description #3223');
 
+-- 2020-11-05 Drop not null constraint from event history description #3391
+ALTER TABLE events_history ALTER COLUMN eventdesc DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (274, 'Drop not null constraint from event history description #3391');
+
+-- 2020-11-06 Split follow-up duration #3100
+ALTER TABLE diseaseconfiguration ADD COLUMN casefollowupduration integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN eventparticipantfollowupduration integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN casefollowupduration integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN eventparticipantfollowupduration integer;
+UPDATE diseaseconfiguration SET casefollowupduration = followupduration;
+UPDATE diseaseconfiguration SET eventparticipantfollowupduration = followupduration;
+
+INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-up duration #3100');
 -- *** Insert new sql commands BEFORE this line ***

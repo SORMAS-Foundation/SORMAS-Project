@@ -142,7 +142,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 241;
+	public static final int DATABASE_VERSION = 242;
 
 	private static DatabaseHelper instance = null;
 
@@ -209,7 +209,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
-			TableUtils.createTable(connectionSource, CampaignFormData.class);
+			TableUtils.clearTable(connectionSource, CampaignFormData.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
@@ -221,8 +221,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
 				TableUtils.clearTable(connectionSource, Region.class);
-				TableUtils.createTable(connectionSource, Campaign.class);
-				TableUtils.createTable(connectionSource, CampaignFormMeta.class);
+				TableUtils.clearTable(connectionSource, Campaign.class);
+				TableUtils.clearTable(connectionSource, CampaignFormMeta.class);
 
 				ConfigProvider.init(instance.context);
 			}
@@ -1725,7 +1725,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 238:
 				currentVersion = 238;
 				getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN origin varchar(255);");
-				getDao(Visit.class).executeRaw("UPDATE visit SET origin='USER'");
+				getDao(Visit.class).executeRaw("UPDATE visits SET origin='USER'");
 
 			case 239:
 				currentVersion = 239;
@@ -1738,6 +1738,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationStatus varchar(255);");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationStartDate timestamp;");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventInvestigationEndDate timestamp;");
+
+			case 241:
+				currentVersion = 241;
+				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseConfiguration ADD COLUMN caseFollowUpDuration integer;");
+				getDao(DiseaseConfiguration.class)
+					.executeRaw("ALTER TABLE diseaseConfiguration ADD COLUMN eventParticipantFollowUpDuration integer;");
+				getDao(DiseaseConfiguration.class).executeRaw("UPDATE diseaseConfiguration SET caseFollowUpDuration = followUpDuration;");
+				getDao(DiseaseConfiguration.class).executeRaw("UPDATE diseaseConfiguration SET eventParticipantFollowUpDuration = followUpDuration;");
 
 				// ATTENTION: break should only be done after last version
 				break;

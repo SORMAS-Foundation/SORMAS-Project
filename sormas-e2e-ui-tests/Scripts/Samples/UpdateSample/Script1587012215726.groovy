@@ -53,8 +53,8 @@ WebUI.sendKeys(findTestObject('Samples/SampleInformation/input_TypeOfSample'), K
 WebUI.click(findTestObject('Samples/SampleInformation/textarea_Comment_comment'))
 WebUI.setText(findTestObject('Samples/SampleInformation/textarea_Comment_comment'), 'Sample is edited')
 
-WebUI.scrollToElement(findTestObject('Object Repository/Samples/SampleInformation/save_Sample'), 2)
-WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/save_Sample'))
+WebUI.scrollToElement(findTestObject('ReusableORs/div_Save'), 2)
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.scrollToElement(findTestObject('Object Repository/Samples/SampleInformation/div_Samples list'), 2)
 WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/div_Samples list'))

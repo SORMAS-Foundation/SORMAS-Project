@@ -27,7 +27,7 @@ WebUI.setText(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_s
         'comment', 8))
 
 // Save change
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/div_Save_btn'))
+WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)
 

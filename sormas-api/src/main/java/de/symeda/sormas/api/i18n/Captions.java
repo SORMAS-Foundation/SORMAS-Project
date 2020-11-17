@@ -1362,6 +1362,7 @@ public interface Captions {
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String sex = "sex";
+	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
 	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
@@ -1654,6 +1655,7 @@ public interface Captions {
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
+	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
 	String View_campaign_campaigndata = "View.campaign.campaigndata";

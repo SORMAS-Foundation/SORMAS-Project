@@ -5,6 +5,12 @@ import java.util.Objects;
 
 public class CampaignDashboardElement implements Serializable {
 
+	public static String DIAGRAM_ID = "diagramId";
+	public static String TAB_ID = "tabId";
+	public static String ORDER = "order";
+	public static String WIDTH = "width";
+	public static String HEIGHT = "height";
+
 	private String diagramId;
 	private String tabId;
 	private Integer order;
@@ -60,24 +66,5 @@ public class CampaignDashboardElement implements Serializable {
 
 	public void setHeight(Integer height) {
 		this.height = height;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		CampaignDashboardElement that = (CampaignDashboardElement) o;
-		return Objects.equals(diagramId, that.diagramId)
-			&& Objects.equals(tabId, that.tabId)
-			&& Objects.equals(order, that.order)
-			&& Objects.equals(width, that.width)
-			&& Objects.equals(height, that.height);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(diagramId, tabId, order, width, height);
 	}
 }

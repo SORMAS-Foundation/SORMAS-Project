@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.utils.DataHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,7 +21,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
@@ -149,38 +147,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
 		assertTrue(getPersonFacade().isValidPersonUuid(person.getUuid()));
 		Assert.assertFalse(getPersonFacade().isValidPersonUuid("2341235234534"));
-	}
-
-	@Test
-	public void testGetLatestQuarantineEndDates() {
-		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
-
-		creator.createPerson(); // Person without contact
-		final PersonDto person1 = creator.createPerson();
-		final PersonDto person2 = creator.createPerson();
-		final ContactDto contact11 = creator.createContact(user.toReference(), person1.toReference());
-		final ContactDto contact12 = creator.createContact(user.toReference(), person1.toReference());
-		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
-
-		Date now = new Date();
-		contact11.setQuarantineTo(DateHelper.subtractDays(now, 20));
-		contact12.setQuarantineTo(DateHelper.subtractDays(now, 8));
-		contact2.setQuarantineTo(now);
-
-		getContactFacade().saveContact(contact11);
-		getContactFacade().saveContact(contact12);
-		getContactFacade().saveContact(contact2);
-
-		List<PersonQuarantineEndDto> quarantineEndDtos = getPersonFacade().getLatestQuarantineEndDates(null);
-
-		assertThat(quarantineEndDtos, hasSize(2));
-		Optional<PersonQuarantineEndDto> result1 = quarantineEndDtos.stream().filter(p -> p.getPersonUuid().equals(person1.getUuid())).findFirst();
-		assertTrue(result1.isPresent());
-		assertTrue(DateHelper.isSameDay(result1.get().getLatestQuarantineEndDate(), DateHelper.subtractDays(now, 8)));
-		Optional<PersonQuarantineEndDto> result2 = quarantineEndDtos.stream().filter(p -> p.getPersonUuid().equals(person2.getUuid())).findFirst();
-		assertTrue(result2.isPresent());
-		assertTrue(DateHelper.isSameDay(result2.get().getLatestQuarantineEndDate(), now));
 	}
 
 	@Test

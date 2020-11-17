@@ -5,7 +5,6 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -105,7 +104,7 @@ public class CampaignFormDataImporter extends DataImporter {
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(campaignFormData);
 			}
 		} catch (ImportErrorException e) {
-			writeImportError(values, e.getMessage());
+			writeImportError(values, e.getLocalizedMessage());
 			return ImportLineResult.ERROR;
 		}
 
@@ -220,8 +219,6 @@ public class CampaignFormDataImporter extends DataImporter {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
-				} catch (ParseException e) {
-					e.printStackTrace();
 				}
 			} else {
 				CampaignFormDataEntry formEntry = new CampaignFormDataEntry(entryHeaderPath[i], entry[i]);
@@ -241,7 +238,7 @@ public class CampaignFormDataImporter extends DataImporter {
 
 	@Override
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
-		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
+		throws InvocationTargetException, IllegalAccessException, ImportErrorException {
 		final boolean returnBoolean = super.executeDefaultInvokings(pd, element, entry, entryHeaderPath);
 		final Class<?> propertyType = pd.getPropertyType();
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
@@ -249,7 +246,8 @@ public class CampaignFormDataImporter extends DataImporter {
 			final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUserDto.getUserRoles());
 			if (jurisdictionLevel == JurisdictionLevel.REGION && !currentUserDto.getRegion().getCaption().equals(entry)) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryRegionNotInUsersJurisdiction, entry, buildEntityProperty(entryHeaderPath)));
+					I18nProperties
+						.getValidationError(Validations.importEntryRegionNotInUsersJurisdiction, entry, buildEntityProperty(entryHeaderPath)));
 			}
 		}
 		return returnBoolean;

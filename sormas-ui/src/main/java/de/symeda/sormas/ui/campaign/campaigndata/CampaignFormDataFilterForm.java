@@ -146,9 +146,9 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	@Override
 	protected void applyDependenciesOnNewValue(CampaignFormDataCriteria criteria) {
-		ComboBox cbRegion = (ComboBox) getField(CampaignFormDataDto.REGION);
-		ComboBox cbDistrict = (ComboBox) getField(CampaignFormDataDto.DISTRICT);
-		ComboBox cbCommunity = (ComboBox) getField(CampaignFormDataDto.COMMUNITY);
+		final ComboBox cbRegion = getField(CampaignFormDataDto.REGION);
+		final ComboBox cbDistrict = getField(CampaignFormDataDto.DISTRICT);
+		final ComboBox cbCommunity = getField(CampaignFormDataDto.COMMUNITY);
 
 		if (cbRegion != null && cbDistrict != null) {
 			RegionReferenceDto region = criteria.getRegion();

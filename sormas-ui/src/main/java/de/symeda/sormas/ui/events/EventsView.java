@@ -112,6 +112,7 @@ public class EventsView extends AbstractView {
 		} else {
 			grid = new EventActionsGrid(criteria, getClass());
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_actions));
 		}
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
