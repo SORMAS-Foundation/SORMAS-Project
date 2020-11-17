@@ -64,8 +64,8 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -151,10 +151,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
 		Root<Event> event = cq.from(getElementClass());
-		EventJoins<Event> eventJoins = new EventJoins<>(event);
+		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = createDefaultFilter(cb, event);
-		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event, eventJoins));
+		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event));
 		filter = and(cb, filter, createUserFilter(cb, cq, event));
 
 		List<DashboardEventDto> result;
@@ -170,14 +171,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				event.get(Event.START_DATE),
 				event.get(Event.REPORT_LAT),
 				event.get(Event.REPORT_LON),
-				eventJoins.getLocation().get(Location.LATITUDE),
-				eventJoins.getLocation().get(Location.LONGITUDE),
+				eventLocation.get(Location.LATITUDE),
+				eventLocation.get(Location.LONGITUDE),
 				event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
 				event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID),
-				eventJoins.getLocation().join(Location.REGION, JoinType.LEFT).get(Region.UUID),
-				eventJoins.getDistrict().get(District.NAME),
-				eventJoins.getDistrict().get(District.UUID),
-				eventJoins.getLocation().join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID));
+				eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID),
+				eventDistrict.get(District.NAME),
+				eventDistrict.get(District.UUID),
+				eventLocation.join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID));
 
 			result = em.createQuery(cq).getResultList();
 
@@ -193,13 +194,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Event> event = cq.from(Event.class);
-		EventJoins<Event> eventJoins = new EventJoins<>(event);
 
 		cq.multiselect(event.get(Event.DISEASE), cb.count(event));
 		cq.groupBy(event.get(Event.DISEASE));
 
 		Predicate filter = createDefaultFilter(cb, event);
-		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event, eventJoins));
+		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event));
 		filter = and(cb, filter, createUserFilter(cb, cq, event));
 
 		if (filter != null)
@@ -215,13 +215,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Event> event = cq.from(Event.class);
-		EventJoins<Event> eventJoins = new EventJoins<>(event);
 
 		cq.multiselect(event.get(Event.EVENT_STATUS), cb.count(event));
 		cq.groupBy(event.get(Event.EVENT_STATUS));
 
 		Predicate filter = createDefaultFilter(cb, event);
-		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event, eventJoins));
+		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event));
 		filter = and(cb, filter, createUserFilter(cb, cq, event));
 
 		if (filter != null)
@@ -413,15 +412,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super.delete(event);
 	}
 
-	public <T extends AbstractDomainObject> Predicate buildCriteriaFilter(
-		EventCriteria eventCriteria,
-		CriteriaBuilder cb,
-		From<T, Event> from,
-		EventJoins<T> eventJoins) {
+	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, From<?, Event> from) {
 
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {
-			filter = and(cb, filter, cb.isMember(eventCriteria.getReportingUserRole(), eventJoins.getReportingUser().get(User.USER_ROLES)));
+			filter = and(
+				cb,
+				filter,
+				cb.isMember(eventCriteria.getReportingUserRole(), from.join(Event.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
 		}
 		if (eventCriteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
@@ -446,13 +444,28 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			filter = and(cb, filter, cb.equal(from.get(Event.DELETED), eventCriteria.getDeleted()));
 		}
 		if (eventCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(eventJoins.getRegion().get(Region.UUID), eventCriteria.getRegion().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.REGION, JoinType.LEFT).get(Region.UUID),
+					eventCriteria.getRegion().getUuid()));
 		}
 		if (eventCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(eventJoins.getDistrict().get(District.UUID), eventCriteria.getDistrict().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID),
+					eventCriteria.getDistrict().getUuid()));
 		}
 		if (eventCriteria.getCommunity() != null) {
-			filter = and(cb, filter, cb.equal(eventJoins.getCommunity().get(Community.UUID), eventCriteria.getCommunity().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID),
+					eventCriteria.getCommunity().getUuid()));
 		}
 		if (eventCriteria.getReportedDateFrom() != null || eventCriteria.getReportedDateTo() != null) {
 			filter =
@@ -485,7 +498,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateTo()));
 		}
 		if (eventCriteria.getSurveillanceOfficer() != null) {
-			filter = and(cb, filter, cb.equal(eventJoins.getReportingUser().get(User.UUID), eventCriteria.getSurveillanceOfficer().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.equal(from.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), eventCriteria.getSurveillanceOfficer().getUuid()));
 		}
 		if (eventCriteria.getFreeText() != null) {
 			String[] textFilters = eventCriteria.getFreeText().split("\\s+");
@@ -503,19 +519,24 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getSrcType() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.SRC_TYPE), eventCriteria.getSrcType()));
 		}
+
 		if (eventCriteria.getCaze() != null) {
-			Join<EventParticipant, Case> caseJoin = eventJoins.getEventParticipant().join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
+			Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 
 			filter = and(cb, filter, cb.equal(caseJoin.get(Case.UUID), eventCriteria.getCaze().getUuid()));
 
-			filter = and(cb, filter, cb.isFalse(eventJoins.getEventParticipant().get(EventParticipant.DELETED)));
+			filter = and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 		}
 		if (eventCriteria.getPerson() != null) {
+			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
+			Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.LEFT);
+
 			filter = and(
 				cb,
 				filter,
-				cb.in(eventJoins.getPerson().get(Person.UUID)).value(eventCriteria.getPerson().getUuid()),
-				cb.isFalse(eventJoins.getEventParticipant().get(EventParticipant.DELETED)));
+				cb.in(personJoin.get(Person.UUID)).value(eventCriteria.getPerson().getUuid()),
+				cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 		}
 
 		return filter;
