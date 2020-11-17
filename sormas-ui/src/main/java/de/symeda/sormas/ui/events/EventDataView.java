@@ -30,6 +30,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
+import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -65,7 +66,8 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LINK_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LINK_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LINK_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -92,6 +94,10 @@ public class EventDataView extends AbstractEventView {
 		ActionStatsComponent actionList = new ActionStatsComponent(ActionContext.EVENT, getEventRef());
 		actionList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(actionList, ACTIONS_LOC);
+
+		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef());
+		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(eventDocuments, ACTIONS_LOC);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			layout.addComponent(
