@@ -45,6 +45,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
+import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
@@ -96,7 +97,8 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
-import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -472,11 +474,15 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public DocumentTemplateFacade getDocumentTemplateFacade() {
-		return getBean(DocumentTemplateFacadeEjb.class);
+		return getBean(DocumentTemplateFacadeEjbLocal.class);
 	}
 
 	public QuarantineOrderFacade getQuarantineOrderFacade() {
 		return getBean(QuarantineOrderFacadeEjb.class);
+	}
+
+	public EventDocumentFacade getEventDocumentFacade() {
+		return getBean(EventDocumentFacadeEjb.class);
 	}
 
 	public BAGExportFacade getBAGExportFacade() {

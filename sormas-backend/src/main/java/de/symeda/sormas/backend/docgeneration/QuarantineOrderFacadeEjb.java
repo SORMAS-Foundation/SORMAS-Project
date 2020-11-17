@@ -12,13 +12,13 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
 
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
@@ -33,7 +33,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	private ContactFacadeEjbLocal contactFacade;
 
 	@EJB
-	DocumentTemplateFacade documentTemplateFacade;
+	private DocumentTemplateFacadeEjbLocal documentTemplateFacade;
 
 	@Override
 	public byte[] getGeneratedDocument(String templateName, ReferenceDto rootEntityReference, Properties extraProperties) throws IOException {

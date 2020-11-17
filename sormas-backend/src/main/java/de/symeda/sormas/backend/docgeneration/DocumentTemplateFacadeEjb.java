@@ -17,16 +17,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.velocity.runtime.parser.ParseException;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -37,6 +40,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -76,6 +80,9 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	@EJB
 	private PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 
+	@EJB
+	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+
 	private TemplateEngine templateEngine = new TemplateEngine();
 
 	@Override
@@ -93,7 +100,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
 
 		// 2. Extract document variables
-		Set<String> propertyKeys = getTemplateVariables(templateFile);
+		Set<String> propertyKeys = getTemplateVariablesDocx(templateFile);
 
 		// 3. prepare properties
 		Properties properties = prepareProperties(documentWorkflow, entities, extraProperties, propertyKeys);
@@ -117,7 +124,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
 
 		// 2. Extract document variables
-		Set<String> propertyKeys = getTemplateVariables(templateFile);
+		Set<String> propertyKeys = getTemplateVariablesTxt(templateFile);
 
 		// 3. prepare properties
 		Properties properties = prepareProperties(documentWorkflow, entities, extraProperties, propertyKeys);
@@ -141,15 +148,28 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
 
-		for (String propertyKey : propertyKeys) {
-			if (isEntityVariable(documentWorkflow, propertyKey)) {
-				String variableBaseName = getVariableBaseName(propertyKey);
-				Object entity = entities.get(variableBaseName);
-				if (entity != null) {
-					String propertyPath = propertyKey.replaceFirst(variableBaseName + ".", "");
-					Object propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entity, propertyPath, referenceDtoResolver);
-					properties.put(propertyKey, propertyValue);
+		if (documentWorkflow.isDocx()) {
+			for (String propertyKey : propertyKeys) {
+				if (isEntityVariable(documentWorkflow, propertyKey)) {
+					String variableBaseName = getVariableBaseName(propertyKey);
+					Object entity = entities.get(variableBaseName);
+					if (entity != null) {
+						String propertyPath = propertyKey.replaceFirst(variableBaseName + ".", "");
+						Object propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entity, propertyPath, referenceDtoResolver);
+						System.out.println(propertyKey + ": " + propertyValue);
+						if (propertyValue != null) {
+							properties.put(propertyKey, propertyValue);
+						}
+					}
 				}
+			}
+		} else {
+			for (String entityKey : entities.keySet()) {
+				Object entity = entities.get(entityKey);
+				if (ReferenceDto.class.isAssignableFrom(entity.getClass())) {
+					entity = referenceDtoResolver.resolve((ReferenceDto) entity);
+				}
+				properties.put(entityKey, entity);
 			}
 		}
 
@@ -211,7 +231,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	@Override
 	public List<String> getAdditionalVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
-		Set<String> propertyKeys = getTemplateVariables(templateFile);
+		Set<String> propertyKeys = documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile);
 		return propertyKeys.stream().filter(e -> !isEntityVariable(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList());
 	}
 
@@ -262,10 +282,18 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return templateFile;
 	}
 
-	private Set<String> getTemplateVariables(File templateFile) throws IOException {
+	private Set<String> getTemplateVariablesDocx(File templateFile) throws IOException {
 		try {
 			return templateEngine.extractTemplateVariablesDocx(templateFile);
 		} catch (XDocReportException e) {
+			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
+		}
+	}
+
+	private Set<String> getTemplateVariablesTxt(File templateFile) throws IOException {
+		try {
+			return templateEngine.extractTemplateVariablesTxt(templateFile);
+		} catch (ParseException e) {
 			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
 		}
 	}
@@ -307,6 +335,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 					return facilityFacade.getByUuid(uuid);
 				} else if (PointOfEntryReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return pointOfEntryFacade.getByUuid(uuid);
+				} else if (EventReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return eventFacade.getEventByUuid(uuid);
 				}
 			}
 			return null;
@@ -319,5 +349,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		public Object format(Object value) {
 			return EntityDtoAccessHelper.formatObject(value);
 		}
+	}
+
+	@LocalBean
+	@Stateless
+	public static class DocumentTemplateFacadeEjbLocal extends DocumentTemplateFacadeEjb {
 	}
 }

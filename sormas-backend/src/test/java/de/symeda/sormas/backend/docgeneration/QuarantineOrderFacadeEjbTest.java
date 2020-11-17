@@ -100,7 +100,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void generateQuarantineOrderWrongRefernceTypeTest() throws IOException {
+	public void generateQuarantineOrderWrongReferenceTypeTest() throws IOException {
 		try {
 			generateQuarantineOrderTest(new ReferenceDto() {
 			});
@@ -127,7 +127,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		String docxText = xwpfWordExtractor.getText();
 
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/quarantine/Quarantine.txt"), writer, "UTF-8");
+		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/quarantine/Quarantine.cmp"), writer, "UTF-8");
 
 		String expected = writer.toString().replaceAll("\\r\\n?", "\n");
 		assertEquals(expected, docxText);

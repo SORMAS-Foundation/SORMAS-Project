@@ -7,27 +7,29 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.action.ActionCriteria;
-import de.symeda.sormas.api.action.ActionFacade;
-import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
-import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.backend.action.ActionFacadeEjb.ActionFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 
+@Stateless(name = "EventDocumentFacade")
 public class EventDocumentFacadeEjb implements EventDocumentFacade {
 
 	private static final DocumentWorkflow DOCUMENT_WORKFLOW = DocumentWorkflow.EVENT_HANDOUT;
 
 	@EJB
-	DocumentTemplateFacade documentTemplateFacade;
+	DocumentTemplateFacadeEjbLocal documentTemplateFacade;
 
 	@EJB
-	ActionFacade actionFacade;
+	ActionFacadeEjbLocal actionFacade;
 
 	@EJB
-	EventParticipantFacade eventParticipantFacade;
+	EventParticipantFacadeEjbLocal eventParticipantFacade;
 
 	@Override
 	public String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties) throws IOException {
