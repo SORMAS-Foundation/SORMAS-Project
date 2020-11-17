@@ -87,3 +87,4 @@ The following features are currently configurable:
 * **Area Infrastructure** `INFRASTRUCTURE_TYPE_AREA`: Enables an additional infrastructure level above region that is called area by default. Currently only used in the campaigns module.
 * **Case Follow-Up** `CASE_FOLLOWUP`: Enables the contact follow-up module for cases as well to allow a more detailed daily documentation of symptoms.
 * **Line Listing** `LINE_LISTING`: Whether or not using line listing for case entry is enabled in the specified jurisdiction for the specified disease. Configurable from the UI, no database interaction needed.
+* **Documents** `DOCUMENTS`: Enables document storage.

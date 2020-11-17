@@ -17,10 +17,12 @@ package de.symeda.sormas.ui.events;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentContext;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskContext;
@@ -94,10 +96,12 @@ public class EventDataView extends AbstractEventView {
 		actionList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(actionList, ACTIONS_LOC);
 
-		// TODO: user rights?
-		DocumentListComponent documentList = new DocumentListComponent(DocumentContext.EVENT, getEventRef(), UserRight.EVENT_EDIT);
-		documentList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(documentList, DOCUMENTS_LOC);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
+			// TODO: user rights?
+			DocumentListComponent documentList = new DocumentListComponent(DocumentContext.EVENT, getEventRef(), UserRight.EVENT_EDIT);
+			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(documentList, DOCUMENTS_LOC);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			layout.addComponent(
