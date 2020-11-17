@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.function.Consumer;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,7 +117,12 @@ public class CountryImporter extends InfrastructureImporter {
 	private void validateFieldLength(String field, String value) throws ImportErrorException, InvalidColumnException {
 		try {
 			Size size = CountryDto.class.getDeclaredField(field).getAnnotation(Size.class);
-			if (StringUtils.isNotEmpty(value) && size != null) {
+			boolean shouldNotBeBlank = CountryDto.class.isAnnotationPresent(NotBlank.class);
+			if (shouldNotBeBlank && StringUtils.isBlank(value)) {
+				String message = "The value {0} is blank.";
+				throw new ImportErrorException(MessageFormat.format(message, value));
+			}
+			if (size != null) {
 				if (value.length() < size.min()) {
 					String message = "The value {0} has length {1} but the minimum length is {2}";
 					throw new ImportErrorException(MessageFormat.format(message, value, value.length(), size.min()));
