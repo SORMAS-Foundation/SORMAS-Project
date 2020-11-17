@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.document;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +46,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	private UserService userService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private DocumentStorageService documentStorageService;
 
 	@Inject
 	private Event<DocumentSaved> documentSavedEvent;
@@ -55,7 +58,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	@Override
-	public DocumentDto saveDocument(DocumentDto dto) {
+	public DocumentDto saveDocument(DocumentDto dto, byte[] content) throws IOException {
 		Document existingDocument = dto.getUuid() == null ? documentService.getByUuid(dto.getUuid()) : null;
 		if (existingDocument != null) {
 			// TODO: add exception message
@@ -65,6 +68,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		Document document = fromDto(dto);
 		documentService.persist(document);
 		documentService.doFlush();
+
+		documentStorageService.save(document, content);
 
 		documentSavedEvent.fire(new DocumentSaved(document));
 
@@ -85,6 +90,21 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@Override
 	public String isExistingDocument(DocumentRelatedEntityType type, String uuid, String name) {
 		return documentService.isExisting(type, uuid, name);
+	}
+
+	@Override
+	public byte[] read(String uuid) throws IOException {
+		Document document = documentService.getByUuid(uuid);
+		return documentStorageService.read(document);
+	}
+
+	@Override
+	public void cleanupDeletedDocuments() {
+		List<Document> deleted = documentService.getDeletedDocuments();
+		for (Document document : deleted) {
+			documentStorageService.delete(document);
+			documentService.delete(document);
+		}
 	}
 
 	public Document fromDto(DocumentDto source) {

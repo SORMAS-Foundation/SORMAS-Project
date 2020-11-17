@@ -126,9 +126,7 @@ public class DocumentReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 			document.setRelatedEntityType(relatedEntityType);
 			document.setRelatedEntityUuid(relatedEntityUuid);
 
-			// document metadata must be saved before file can be stored
-			FacadeProvider.getDocumentFacade().saveDocument(document);
-			FacadeProvider.getDocumentStorageFacade().store(document.getUuid(), Files.readAllBytes(file.toPath()));
+			FacadeProvider.getDocumentFacade().saveDocument(document, Files.readAllBytes(file.toPath()));
 
 			callback.run();
 

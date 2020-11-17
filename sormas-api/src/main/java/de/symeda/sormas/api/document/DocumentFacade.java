@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api.document;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -23,11 +24,15 @@ public interface DocumentFacade {
 
 	DocumentDto getDocumentByUuid(String uuid);
 
-	DocumentDto saveDocument(DocumentDto dto);
+	DocumentDto saveDocument(DocumentDto dto, byte[] bytes) throws IOException;
 
 	void deleteDocument(String uuid);
 
 	List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid);
 
 	String isExistingDocument(DocumentRelatedEntityType type, String uuid, String name);
+
+	byte[] read(String uuid) throws IOException;
+
+	void cleanupDeletedDocuments();
 }

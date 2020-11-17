@@ -35,7 +35,6 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
-import de.symeda.sormas.api.document.DocumentStorageFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -315,10 +314,6 @@ public class FacadeProvider {
 
 	public static DocumentFacade getDocumentFacade() {
 		return get().lookupEjbRemote(DocumentFacade.class);
-	}
-
-	public static DocumentStorageFacade getDocumentStorageFacade() {
-		return get().lookupEjbRemote(DocumentStorageFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

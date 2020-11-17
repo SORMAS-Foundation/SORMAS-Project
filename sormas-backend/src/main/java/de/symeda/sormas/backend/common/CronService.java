@@ -34,7 +34,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.document.DocumentStorageFacadeEjb.DocumentStorageFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
@@ -63,7 +64,7 @@ public class CronService {
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
 	@EJB
-	private DocumentStorageFacadeEjbLocal documentStorageFacade;
+	private DocumentFacadeEjbLocal documentFacade;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
@@ -135,6 +136,6 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "25", second = "0", persistent = false)
 	public void cleanupDeletedDocuments() {
-		documentStorageFacade.cleanupDeletedDocuments();
+		documentFacade.cleanupDeletedDocuments();
 	}
 }

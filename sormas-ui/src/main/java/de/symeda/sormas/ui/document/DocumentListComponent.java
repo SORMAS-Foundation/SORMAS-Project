@@ -36,7 +36,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.document.DocumentContext;
 import de.symeda.sormas.api.document.DocumentDto;
-import de.symeda.sormas.api.document.DocumentStorageFacade;
+import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -148,9 +148,9 @@ public class DocumentListComponent extends VerticalLayout {
 		Button viewButton = new Button(VaadinIcons.DOWNLOAD);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
-			DocumentStorageFacade documentStorageFacade = FacadeProvider.getDocumentStorageFacade();
+			DocumentFacade documentFacade = FacadeProvider.getDocumentFacade();
 			try {
-				return new ByteArrayInputStream(documentStorageFacade.read(document.getUuid()));
+				return new ByteArrayInputStream(documentFacade.read(document.getUuid()));
 			} catch (IOException | IllegalArgumentException e) {
 				new Notification(
 					String.format(I18nProperties.getString(Strings.errorReadingDocument), document),
