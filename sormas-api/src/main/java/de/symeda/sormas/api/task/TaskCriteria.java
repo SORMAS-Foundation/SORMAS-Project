@@ -35,11 +35,11 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = -9174165215694877625L;
 
-	public static final String CONTEXT_ENTITY_FREE_TEXT = "contextEntityFreeText";
+	public static final String FREE_TEXT = "freeText";
 
 	private TaskStatus taskStatus;
 	private TaskContext taskContext;
-	private String contextEntityFreeText;
+	private String freeText;
 	private TaskType taskType;
 	private UserReferenceDto assigneeUser;
 	private UserReferenceDto excludeAssigneeUser;
@@ -258,16 +258,16 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public String getContextEntityFreeText() {
-		return contextEntityFreeText;
+	public String getFreeText() {
+		return freeText;
 	}
 
-	public void setContextEntityFreeText(String contextEntityFreeText) {
-		this.contextEntityFreeText = contextEntityFreeText;
+	public void setFreeText(String freeText) {
+		this.freeText = freeText;
 	}
 
-	public TaskCriteria contextEntityFreeText(String contextEntityFreeText) {
-		this.contextEntityFreeText = contextEntityFreeText;
+	public TaskCriteria freeText(String freeText) {
+		this.freeText = freeText;
 		return this;
 	}
 }

@@ -31,7 +31,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			TaskIndexDto.TASK_STATUS,
 			TaskIndexDto.REGION,
 			TaskIndexDto.DISTRICT,
-			TaskCriteria.CONTEXT_ENTITY_FREE_TEXT };
+			TaskCriteria.FREE_TEXT};
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 
 		addField(
 			FieldConfiguration.withCaptionAndPixelSized(
-				TaskCriteria.CONTEXT_ENTITY_FREE_TEXT,
+				TaskCriteria.FREE_TEXT,
 				I18nProperties.getString(Strings.promptTaskContextEntitySearchField),
 				200));
 	}

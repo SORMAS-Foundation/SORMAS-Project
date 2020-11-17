@@ -276,8 +276,8 @@ public class TaskService extends AbstractAdoService<Task> {
 						.otherwise(joins.getEventDistrict().get(District.UUID)));
 			filter = and(cb, filter, cb.equal(district, taskCriteria.getDistrict().getUuid()));
 		}
-		if (taskCriteria.getContextEntityFreeText() != null) {
-			String[] textFilters = taskCriteria.getContextEntityFreeText().split("\\s+");
+		if (taskCriteria.getFreeText() != null) {
+			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
 			for (String s : textFilters) {
 				String textFilter = "%" + s.toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
