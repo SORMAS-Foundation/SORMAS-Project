@@ -450,6 +450,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// person
 			PersonDto person = PersonDto.build();
 			fillEntity(person, referenceDateTime);
+			person.setSymptomJournalStatus(null);
 			setPersonName(person);
 
 			CaseDataDto caze = CaseDataDto.build(person.toReference(), disease);
@@ -524,6 +525,7 @@ public class DevModeView extends AbstractConfigurationView {
 			} else {
 				person = PersonDto.build();
 				fillEntity(person, referenceDateTime);
+				person.setSymptomJournalStatus(null);
 				setPersonName(person);
 
 				if (config.isCreateMultipleContactsPerPerson()) {
