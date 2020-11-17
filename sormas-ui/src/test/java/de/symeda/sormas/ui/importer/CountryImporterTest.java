@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.MalformedInputException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,17 @@ public class CountryImporterTest extends AbstractBeanTest {
 		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user.toReference());
 		importer.runImport();
 		getCountryFacade().getByDefaultName("Country with ä", false).get(0);
+	}
+
+
+	@Test(expected = MalformedInputException.class)
+	public void testUmlautsInCountryImportNonUTF8() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+
+		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_non_utf_test.csv").getFile());
+		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user.toReference());
+		importer.runImport();
 	}
 
 	@Test
