@@ -129,7 +129,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		currentSubTabsWrapper = subTabSwitcherLayout;
 		subTabLayout.addComponent(subTabSwitcherLayout);
 		subTabLayout.setExpandRatio(subTabSwitcherLayout, 0);
-		subTabSwitcherLayout.setStyleName("highlighted-statistics-component");
+		subTabSwitcherLayout.addStyleNames("statistics-sublayout", CssStyles.VSPACE_3);
 
 		subTabs.forEach(subTabId -> subTabSwitcher.addView(subTabId, subTabId, (e) -> {
 			subTabLayout.removeComponent(currentDiagramsWrapper);
