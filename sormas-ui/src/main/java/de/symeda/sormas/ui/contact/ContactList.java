@@ -52,7 +52,7 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 		if (!contactList.isEmpty()) {
 			showPage(1);
 		} else {
-			removeAllComponents();
+			listLayout.removeAllComponents();
 			updatePaginationLayout();
 			Label noContactsLabel = new Label(I18nProperties.getCaption(Captions.contactNoContactsForEventParticipant));
 			listLayout.addComponent(noContactsLabel);
