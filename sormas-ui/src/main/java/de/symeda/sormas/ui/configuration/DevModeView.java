@@ -34,6 +34,9 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
@@ -45,6 +48,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -59,6 +63,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -91,6 +96,8 @@ public class DevModeView extends AbstractConfigurationView {
 	private static final long serialVersionUID = -6589135368637794263L;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/devMode";
+
+	private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
 	private VerticalLayout contentLayout;
 
@@ -436,6 +443,8 @@ public class DevModeView extends AbstractConfigurationView {
 		List<FacilityDto> healthFacilities = FacadeProvider.getFacilityFacade()
 			.getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
 
+		long dt = System.nanoTime();
+
 		for (int i = 0; i < config.getCaseCount(); i++) {
 			Disease disease = config.getDisease();
 			if (disease == null) {
@@ -460,6 +469,13 @@ public class DevModeView extends AbstractConfigurationView {
 				caze.setDiseaseDetails("RD " + (random().nextInt(20) + 1));
 			}
 
+			if (!QuarantineType.isQuarantineInEffect(caze.getQuarantine())) {
+				caze.setQuarantineFrom(null);
+				caze.setQuarantineTo(null);
+				caze.setQuarantineExtended(false);
+				caze.setQuarantineReduced(false);
+			}
+
 			// report
 			UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 			caze.setReportingUser(userReference);
@@ -479,6 +495,12 @@ public class DevModeView extends AbstractConfigurationView {
 			FacadeProvider.getPersonFacade().savePerson(person);
 			FacadeProvider.getCaseFacade().saveCase(caze);
 		}
+
+		dt = System.nanoTime() - dt;
+		long perCase = dt / config.getCaseCount();
+		String msg = String.format("Generating %,d cases took %,d  ms (%,d ms per case)", config.getCaseCount(), dt / 1_000_000, perCase / 1_000_000);
+		logger.info(msg);
+		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
 
 	private void generateContacts() {
