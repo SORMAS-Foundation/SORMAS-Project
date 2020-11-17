@@ -2,12 +2,12 @@ package de.symeda.sormas.api.externaljournal;
 
 import java.io.Serializable;
 
-class ExternalPatientContactInformation implements Serializable {
+class PatientDiaryContactInformation implements Serializable {
 
 	private static final long serialVersionUID = -144631462985961640L;
 
 	private String email;
-	private ExternalPatientPhone phone;
+	private PatientDiaryPhone phone;
 
 	public String getEmail() {
 		return email;
@@ -17,11 +17,11 @@ class ExternalPatientContactInformation implements Serializable {
 		this.email = email;
 	}
 
-	public ExternalPatientPhone getPhone() {
+	public PatientDiaryPhone getPhone() {
 		return phone;
 	}
 
-	public void setPhone(ExternalPatientPhone phone) {
+	public void setPhone(PatientDiaryPhone phone) {
 		this.phone = phone;
 	}
 }

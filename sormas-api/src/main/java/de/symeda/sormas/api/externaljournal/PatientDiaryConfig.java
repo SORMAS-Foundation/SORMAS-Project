@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class PatientDiaryConfig implements Serializable, Cloneable {
 
-	private static final long serialVersionUID = -2758495636275275828L;
+	private static final long serialVersionUID = 9020437984638539380L;
 
 	private String url;
-	private String externalDataUrl;
+	private String probandsUrl;
 	private String authUrl;
 	private String email;
 	private String password;
@@ -22,12 +22,12 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 		this.url = url;
 	}
 
-	public String getExternalDataUrl() {
-		return externalDataUrl;
+	public String getProbandsUrl() {
+		return probandsUrl;
 	}
 
-	public void setExternalDataUrl(String externalDataUrl) {
-		this.externalDataUrl = externalDataUrl;
+	public void setProbandsUrl(String probandsUrl) {
+		this.probandsUrl = probandsUrl;
 	}
 
 	public String getAuthUrl() {
@@ -70,7 +70,7 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 			return false;
 		PatientDiaryConfig that = (PatientDiaryConfig) o;
 		return Objects.equals(url, that.url)
-			&& Objects.equals(externalDataUrl, that.externalDataUrl)
+			&& Objects.equals(probandsUrl, that.probandsUrl)
 			&& Objects.equals(authUrl, that.authUrl)
 			&& Objects.equals(email, that.email)
 			&& Objects.equals(password, that.password)
@@ -79,7 +79,7 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(url, externalDataUrl, authUrl, email, password, defaultUser);
+		return Objects.hash(url, probandsUrl, authUrl, email, password, defaultUser);
 	}
 
 	@Override
