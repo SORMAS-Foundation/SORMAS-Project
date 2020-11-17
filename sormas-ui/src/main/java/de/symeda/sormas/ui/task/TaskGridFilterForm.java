@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.task;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -31,7 +33,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			TaskIndexDto.TASK_STATUS,
 			TaskIndexDto.REGION,
 			TaskIndexDto.DISTRICT,
-			TaskCriteria.FREE_TEXT};
+			TaskCriteria.FREE_TEXT };
 	}
 
 	@Override
@@ -40,27 +42,29 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_STATUS, 140));
 
 		final UserDto user = UserProvider.getCurrent().getUser();
-		if (user.getRegion() == null) {
+		if (user.getRegion() == null && user.getDistrict() == null) {
 			final ComboBox regionField = addField(FieldConfiguration.pixelSized(TaskIndexDto.REGION, 200));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 			final ComboBox districtField = addDistrictField();
+			districtField.setEnabled(false);
 
 			regionField.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-				FieldHelper
-					.updateItems(districtField, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+				if (StringUtils.isNotBlank(region.getUuid())) {
+					districtField.setEnabled(true);
+					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+				} else {
+					districtField.setEnabled(false);
+				}
 			});
-		} else {
-			final ComboBox districtField = addDistrictField();
-			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+		} else if (user.getDistrict() == null) {
+			FieldHelper.updateItems(addDistrictField(), FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 		}
 
 		addField(
-			FieldConfiguration.withCaptionAndPixelSized(
-				TaskCriteria.FREE_TEXT,
-				I18nProperties.getString(Strings.promptTaskContextEntitySearchField),
-				200));
+			FieldConfiguration
+				.withCaptionAndPixelSized(TaskCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptTaskContextEntitySearchField), 200));
 	}
 
 	private ComboBox addDistrictField() {
