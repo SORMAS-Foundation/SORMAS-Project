@@ -1,8 +1,18 @@
 package de.symeda.sormas.ui.task;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Date;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.server.Page;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -10,10 +20,15 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.task.TaskDateType;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DateFilterOption;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -21,9 +36,12 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 
 	private static final long serialVersionUID = -8661345403078183133L;
 
+	private static final String WEEK_AND_DATE_FILTER = "weekAndDateFilter";
+
+	private static final String MORE_FILTERS_HTML = loc(WEEK_AND_DATE_FILTER);
+
 	protected TaskGridFilterForm() {
 		super(TaskCriteria.class, TaskIndexDto.I18N_PREFIX);
-		getContent().removeComponent(APPLY_BUTTON_ID);
 	}
 
 	@Override
@@ -34,6 +52,11 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			TaskIndexDto.REGION,
 			TaskIndexDto.DISTRICT,
 			TaskCriteria.FREE_TEXT };
+	}
+
+	@Override
+	protected String createMoreFiltersHtmlLayout() {
+		return MORE_FILTERS_HTML;
 	}
 
 	@Override
@@ -71,5 +94,81 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		final ComboBox districtField = addField(FieldConfiguration.pixelSized(TaskIndexDto.DISTRICT, 200));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 		return districtField;
+	}
+
+	@Override
+	public void addMoreFilters(CustomLayout moreFiltersContainer) {
+		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
+	}
+
+	private HorizontalLayout buildWeekAndDateFilter() {
+
+		EpiWeekAndDateFilterComponent<TaskDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
+			false,
+			false,
+			null,
+			TaskDateType.class,
+			I18nProperties.getString(Strings.promptTaskDateType),
+			TaskDateType.DUE_DATE,
+			this);
+		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptTaskEpiWeekFrom));
+		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptTaskEpiWeekTo));
+		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptTaskDateFrom));
+		weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptTaskDateTo));
+
+		addApplyHandler(e -> onApplyClick(weekAndDateFilter));
+
+		HorizontalLayout dateFilterRowLayout = new HorizontalLayout();
+		dateFilterRowLayout.setSpacing(true);
+		dateFilterRowLayout.setSizeUndefined();
+
+		dateFilterRowLayout.addComponent(weekAndDateFilter);
+
+		return dateFilterRowLayout;
+	}
+
+	private void onApplyClick(EpiWeekAndDateFilterComponent<TaskDateType> weekAndDateFilter) {
+		TaskCriteria criteria = getValue();
+
+		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+		Date fromDate, toDate;
+		if (dateFilterOption == DateFilterOption.DATE) {
+			Date dateFrom = weekAndDateFilter.getDateFromFilter().getValue();
+			fromDate = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
+			Date dateTo = weekAndDateFilter.getDateToFilter().getValue();
+			toDate = dateFrom != null ? DateHelper.getEndOfDay(dateTo) : null;
+		} else {
+			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
+			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
+		}
+		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
+			TaskDateType contactDateType = (TaskDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+			if (contactDateType == TaskDateType.DUE_DATE) {
+				criteria.dueDateBetween(fromDate, toDate);
+				criteria.startDateBetween(null, null);
+			} else {
+				criteria.startDateBetween(fromDate, toDate);
+				criteria.dueDateBetween(null, null);
+			}
+			criteria.dateFilterOption(dateFilterOption);
+		} else {
+			if (dateFilterOption == DateFilterOption.DATE) {
+				Notification notification = new Notification(
+					I18nProperties.getString(Strings.headingMissingDateFilter),
+					I18nProperties.getString(Strings.messageMissingDateFilter),
+					Notification.Type.WARNING_MESSAGE,
+					false);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			} else {
+				Notification notification = new Notification(
+					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
+					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
+					Notification.Type.WARNING_MESSAGE,
+					false);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			}
+		}
 	}
 }
