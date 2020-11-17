@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.symeda.sormas.api.region.CountryIndexDto;
+import de.symeda.sormas.api.utils.EmptyValueException;
 import org.junit.Test;
 
 import de.symeda.sormas.api.region.CountryCriteria;
@@ -68,6 +69,13 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		expected.setUuid(uuid);
 		Country actual = getCountryService().getByIsoCode("ROU", false).orElseThrow(() -> new Exception("Country not found"));
 		assertTrue(entityIsEqualToDto(actual, expected));
+	}
+
+	@Test(expected = EmptyValueException.class)
+	public void testSaveCountryIsoCodeEmpty() {
+		CountryDto country = new CountryDto();
+		country.setDefaultName("Romania");
+		getCountryFacade().saveCountry(country);
 	}
 
 	@Test(expected = ValidationRuntimeException.class)

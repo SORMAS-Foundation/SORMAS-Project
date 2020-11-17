@@ -24,11 +24,13 @@ import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "CountryFacade")
 public class CountryFacadeEjb implements CountryFacade {
@@ -115,6 +117,10 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public String saveCountry(CountryDto dto) throws ValidationRuntimeException {
+		if (StringUtils.isBlank(dto.getIsoCode())) {
+			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
+		}
+
 		Country country = countryService.getByUuid(dto.getUuid());
 
 		if (country == null

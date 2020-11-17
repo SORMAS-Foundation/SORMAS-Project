@@ -1,7 +1,5 @@
 package de.symeda.sormas.api.region;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -20,7 +18,6 @@ public class CountryDto extends EntityDto {
 	private String defaultName;
 	private String externalId;
 	@Size(min = 2, max = 3)
-	@NotBlank
 	private String isoCode;
 	@Size(min = 1, max = 3)
 	private String unoCode;

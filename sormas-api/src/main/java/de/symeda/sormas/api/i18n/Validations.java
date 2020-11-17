@@ -53,6 +53,7 @@ public interface Validations {
 	String importCommunityAlreadyExists = "importCommunityAlreadyExists";
 	String importCommunityNotUnique = "importCommunityNotUnique";
 	String importCountryAlreadyExists = "importCountryAlreadyExists";
+	String importCountryEmptyIso = "importCountryEmptyIso";
 	String importDistrictAlreadyExists = "importDistrictAlreadyExists";
 	String importDistrictNotUnique = "importDistrictNotUnique";
 	String importEntryCommunityNotInUsersJurisdiction = "importEntryCommunityNotInUsersJurisdiction";

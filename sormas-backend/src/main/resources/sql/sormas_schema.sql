@@ -5560,7 +5560,7 @@ CREATE TABLE country (
     archived boolean not null default false,
     defaultname varchar(255),
     externalid varchar(255),
-    isocode varchar(3) unique,
+    isocode varchar(3) unique not null,
     unocode varchar(3) unique,
     primary key(id)
 );

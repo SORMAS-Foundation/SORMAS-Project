@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.utils.EmptyValueException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -67,6 +68,9 @@ public class CountryImporter extends InfrastructureImporter {
 			try {
 				FacadeProvider.getCountryFacade().saveCountry(newEntityDto);
 				return ImportLineResult.SUCCESS;
+			} catch (EmptyValueException e) {
+				writeImportError(values, e.getMessage());
+				return ImportLineResult.ERROR;
 			} catch (ValidationRuntimeException e) {
 				writeImportError(values, e.getMessage());
 				return ImportLineResult.DUPLICATE;
