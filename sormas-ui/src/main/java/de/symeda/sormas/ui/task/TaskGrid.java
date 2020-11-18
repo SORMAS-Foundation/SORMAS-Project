@@ -96,7 +96,6 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		setColumns(
 			EDIT_BTN_ID,
 			TaskIndexDto.CONTEXT_REFERENCE,
-			TaskIndexDto.CONTEXT_ENTITY_NAME,
 			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_TYPE,
 			TaskIndexDto.REGION,
@@ -120,8 +119,6 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		Column<TaskIndexDto, ReferenceDto> contextColumn = (Column<TaskIndexDto, ReferenceDto>) getColumn(TaskIndexDto.CONTEXT_REFERENCE);
 		contextColumn.setRenderer(new ReferenceDtoHtmlProvider(), new HtmlRenderer());
 		contextColumn.setSortable(false);
-
-		getColumn(TaskIndexDto.CONTEXT_ENTITY_NAME).setSortable(false);
 
 		Column<TaskIndexDto, UserReferenceDto> assigneeUserColumn = (Column<TaskIndexDto, UserReferenceDto>) getColumn(TaskIndexDto.ASSIGNEE_USER);
 		assigneeUserColumn.setRenderer(user -> {

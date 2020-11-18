@@ -20,6 +20,8 @@ package de.symeda.sormas.api.task;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
@@ -30,7 +32,6 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
@@ -61,7 +62,6 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String CONTEXT_REFERENCE = "contextReference";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
-	public static final String CONTEXT_ENTITY_NAME = "contextEntityName";
 
 	private String uuid;
 	private TaskContext taskContext;
@@ -73,7 +73,6 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	@EmbeddedSensitiveData
 	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventReferenceDto event;
-	private String eventTitle;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	@Pseudonymizer(EmptyValuePseudonymizer.class)
@@ -128,8 +127,11 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			eventJurisdiction =
 				new EventJurisdictionDto(eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid);
 
-			this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventInvestigationStatus, eventDate);
-			this.eventTitle = eventTitle;
+			if (StringUtils.isNotBlank(eventTitle)) {
+				this.event = new EventReferenceDto(eventUuid, StringUtils.capitalize(eventTitle));
+			} else {
+				this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventInvestigationStatus, eventDate);
+			}
 		}
 
 		ContactJurisdictionDto contactJurisdiction = null;
@@ -313,20 +315,5 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	public void setDistrict(String district) {
 		this.district = district;
-	}
-
-	public String getContextEntityName() {
-		switch (taskContext) {
-		case CASE:
-			return PersonDto.buildCaption(getCaze().getFirstName(), getCaze().getLastName());
-		case CONTACT:
-			return PersonDto.buildCaption(getContact().getContactName().getFirstName(), getContact().getContactName().getLastName());
-		case EVENT:
-			return eventTitle;
-		case GENERAL:
-			return null;
-		default:
-			throw new IndexOutOfBoundsException(taskContext.toString());
-		}
 	}
 }

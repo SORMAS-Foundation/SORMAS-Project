@@ -86,9 +86,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			FieldHelper.updateItems(addDistrictField(), FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 		}
 
-		addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(TaskCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptTaskContextEntitySearchField), 200));
+		addField(FieldConfiguration.withCaptionAndPixelSized(TaskCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptTaskSearchField), 200));
 	}
 
 	private ComboBox addDistrictField() {

@@ -791,7 +791,7 @@ public interface Strings {
 	String promptSamplesSearchField = "promptSamplesSearchField";
 	String promptSearch = "promptSearch";
 	String promptSelectPeriod = "promptSelectPeriod";
-	String promptTaskContextEntitySearchField = "promptTaskContextEntitySearchField";
+	String promptTaskSearchField = "promptTaskSearchField";
 	String promptTaskDateType = "promptTaskDateType";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
