@@ -53,15 +53,6 @@ public class CampaignDashboardDataProvider {
 		campaignDiagramDefinitionsMap.get(campaign).forEach(campaignDashboardDiagramDto -> {
 			final CampaignDashboardElement campaignDashboardElement = campaignDashboardDiagramDto.getCampaignDashboardElement();
 			if (campaignDashboardElement.getTabId().equals(tabId) && (subTabId == null || campaignDashboardElement.getSubTabId().equals(subTabId))) {
-				List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
-						.getDiagramData(
-								campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries(),
-								new CampaignDiagramCriteria(campaign, area, region, district));
-				campaignFormDataMap.put(campaignDashboardDiagramDto, diagramData);
-				FacadeProvider.getCampaignFacade().validate(campaign);
-
-
-				campaignDiagramDefinitionsMap.get(campaign).forEach(campaignDashboardDiagramDto -> {
 					List<CampaignDiagramSeries> campaignSeriesTotal = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal();
 					if (Objects.nonNull(campaignSeriesTotal)) {
 						Optional populationGroup = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getPopulationGroup())).findFirst();
@@ -86,9 +77,8 @@ public class CampaignDashboardDataProvider {
 					} else {
 						buildCampaignFormTotalsMap(campaignDashboardDiagramDto);
 					}
-				});
 			}
-		}
+		});
 	}
 
 	private void buildCampaignFormTotalsMap(CampaignDashboardDiagramDto campaignDashboardDiagramDto) {
