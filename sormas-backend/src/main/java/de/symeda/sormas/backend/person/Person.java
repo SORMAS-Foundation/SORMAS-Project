@@ -53,6 +53,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -144,6 +145,7 @@ public class Person extends AbstractDomainObject {
 	private String phone;
 	private String phoneOwner;
 	private String emailAddress;
+	private List<ManualMessageLog> manualMessageLogs;
 
 	private Sex sex;
 
@@ -651,13 +653,22 @@ public class Person extends AbstractDomainObject {
 		this.personEventParticipants = personEventParticipants;
 	}
 
+	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
+	public Set<Contact> getContacts() {
+		return contacts;
+	}
+
 	public void setContacts(Set<Contact> contacts) {
 		this.contacts = contacts;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
-	public Set<Contact> getContacts() {
-		return contacts;
+	@OneToMany(mappedBy = ManualMessageLog.RECIPIENT_PERSON, fetch = FetchType.LAZY)
+	public List<ManualMessageLog> getManualMessageLogs() {
+		return manualMessageLogs;
+	}
+
+	public void setManualMessageLogs(List<ManualMessageLog> manualMessageLogs) {
+		this.manualMessageLogs = manualMessageLogs;
 	}
 
 	@Override

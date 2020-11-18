@@ -35,6 +35,7 @@ public enum FeatureType {
 	INFRASTRUCTURE_TYPE_AREA(true, false, null),
 	CASE_FOLLOWUP(true, false, null),
 	TASK_NOTIFICATIONS(true, true, null),
+	MANUAL_EXTERNAL_MESSAGES(true, true, null),
 	OTHER_NOTIFICATIONS(true, true, null);
 
 	/**

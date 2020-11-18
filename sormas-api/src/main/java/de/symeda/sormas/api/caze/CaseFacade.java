@@ -27,6 +27,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -173,4 +174,8 @@ public interface CaseFacade {
 		Date to);
 
 	long countCasesConvertedFromContacts(CaseCriteria caseCriteria);
+
+	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
+
+	long countCasesWithMissingMessageType(List<String> caseUuids, MessageType messageType);
 }

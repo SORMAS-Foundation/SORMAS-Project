@@ -69,6 +69,7 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
@@ -174,10 +175,9 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.common.MessageSubject;
-import de.symeda.sormas.backend.common.MessageType;
-import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
+import de.symeda.sormas.backend.common.messaging.MessageSubject;
+import de.symeda.sormas.backend.common.messaging.MessagingService;
+import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -3093,6 +3093,35 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = caseService.getByUuid(caseUuid);
 
 		return caseService.isCaseEditAllowed(caze);
+	}
+
+	@Override
+	public void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes) {
+		caseUuids.forEach(uuid -> {
+			final Case aCase = caseService.getByUuid(uuid);
+			final Person person = aCase.getPerson();
+
+			try {
+				messagingService.sendMessage(person, subject, messageContent, messageTypes);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String.format(
+						"NotificationDeliveryFailedException when trying to notify person about: %s" + "Failed to send " + e.getMessageType()
+							+ " to person with UUID %s.",
+						subject,
+						person.getUuid()));
+			}
+		});
+	}
+
+	@Override
+	public long countCasesWithMissingMessageType(List<String> caseUuids, MessageType messageType) {
+
+		return caseService.count((cb, root) -> {
+			final Join<Object, Object> personJoin = root.join(Case.PERSON, JoinType.LEFT);
+			final String messageTypeColumn = messageType == MessageType.EMAIL ? Person.EMAIL_ADDRESS : Person.PHONE;
+			return cb.and(root.get(Case.ID).in(caseUuids), cb.isNull(personJoin.get(messageTypeColumn)));
+		});
 	}
 
 	@LocalBean
