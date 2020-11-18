@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -12,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
@@ -24,6 +24,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -37,8 +38,10 @@ public class CampaignDashboardView extends AbstractDashboardView {
 	protected CampaignDashboardFilterLayout filterLayout;
 	protected CampaignDashboardDataProvider dataProvider;
 
-	private List<VerticalLayout> campaignDashboardDiagramComponents = new ArrayList<>();
+	private List<VerticalLayout> campaignDashboardTabComponents = new ArrayList<>();
 	private List<String> campaignDashboardDiagramStyles = new ArrayList<>();
+	private Component currentSubTabsWrapper;
+	private Component currentDiagramsWrapper;
 
 	public CampaignDashboardView() {
 		super(VIEW_NAME);
@@ -67,13 +70,13 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		final Page page = Page.getCurrent();
 		cleanupDashboard(page);
-		dataProvider.refreshData();
+		dataProvider.refreshDashboardData();
 
 		final VerticalLayout tabLayout = new VerticalLayout();
 		tabLayout.setSizeFull();
 		tabLayout.setMargin(new MarginInfo(false, false, false, false));
 		tabLayout.setSpacing(false);
-		campaignDashboardDiagramComponents.add(tabLayout);
+		campaignDashboardTabComponents.add(tabLayout);
 		dashboardLayout.addComponent(tabLayout);
 		dashboardLayout.setExpandRatio(tabLayout, 1);
 
@@ -84,9 +87,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		tabLayout.addComponent(tabSwitcherLayout);
 		tabLayout.setExpandRatio(tabSwitcherLayout, 0);
 
-		final Map<String, Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>>> campaignFormDataTabMap =
-			groupCampaignFormDataByTab(dataProvider.getCampaignFormDataMap());
-		final List<String> tabs = new ArrayList<>(campaignFormDataTabMap.keySet());
+		final List<String> tabs = new ArrayList<>(dataProvider.getTabIds());
 		tabs.forEach(tabId -> {
 			tabSwitcher.addItem(tabId);
 			tabSwitcher.setItemCaption(tabId, tabId);
@@ -94,30 +95,72 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		if (!(tabs.size() > 1)) {
 			tabSwitcherLayout.setVisible(false);
 		}
+		tabSwitcher.setValue(tabs.isEmpty() ? StringUtils.EMPTY : tabs.get(0));
+
 		CssStyles.style(tabSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 
-		tabSwitcher.addValueChangeListener(e -> {
-			String tabId = (String) e.getProperty().getValue();
-			tabLayout.iterator().forEachRemaining(component -> {
-				if (tabId.equals(component.getId())) {
-					component.setVisible(true);
-				} else if (component.getId() != null) {
-					component.setVisible(false);
-				}
-			});
-		});
+		final VerticalLayout subTabLayout = new VerticalLayout();
+		subTabLayout.setSizeFull();
+		subTabLayout.setMargin(new MarginInfo(false, false, false, false));
+		subTabLayout.setSpacing(false);
+		campaignDashboardTabComponents.add(subTabLayout);
+		tabLayout.addComponent(subTabLayout);
+		tabLayout.setExpandRatio(subTabLayout, 1);
 
+		tabSwitcher.addValueChangeListener(e -> {
+			final String tabId = (String) e.getProperty().getValue();
+			subTabLayout.removeComponent(currentDiagramsWrapper);
+			subTabLayout.removeComponent(currentSubTabsWrapper);
+			refreshSubTabs(page, tabId, subTabLayout);
+		});
+		refreshSubTabs(page, (String) tabSwitcher.getValue(), subTabLayout);
+	}
+
+	@SuppressWarnings("deprecation")
+	private void refreshSubTabs(Page page, String tabId, VerticalLayout subTabLayout) {
+
+		final List<String> subTabs = new ArrayList<>(dataProvider.getSubTabIds(tabId));
+		final SubMenu subTabSwitcher = new SubMenu();
+
+		final VerticalLayout subTabSwitcherLayout = new VerticalLayout(subTabSwitcher);
+		subTabSwitcherLayout.setMargin(new MarginInfo(false, false, false, true));
+		subTabSwitcherLayout.setSpacing(false);
+		subTabSwitcherLayout.setId("subTabsOf" + tabId);
+		currentSubTabsWrapper = subTabSwitcherLayout;
+		subTabLayout.addComponent(subTabSwitcherLayout);
+		subTabLayout.setExpandRatio(subTabSwitcherLayout, 0);
+		subTabSwitcherLayout.addStyleNames("statistics-sublayout", CssStyles.VSPACE_3);
+
+		subTabs.forEach(subTabId -> subTabSwitcher.addView(subTabId, subTabId, (e) -> {
+			subTabLayout.removeComponent(currentDiagramsWrapper);
+			refreshDiagrams(page, subTabLayout, tabId, subTabId);
+		}));
+		if (!(subTabs.size() > 1)) {
+			subTabSwitcherLayout.setVisible(false);
+		}
+		String firstSubTab = subTabs.isEmpty() ? StringUtils.EMPTY : subTabs.get(0);
+		subTabSwitcher.setActiveView(firstSubTab);
+
+		refreshDiagrams(page, subTabLayout, tabId, firstSubTab);
+	}
+
+	private void refreshDiagrams(Page page, VerticalLayout layout, String tabId, String subTabId) {
 		final Page.Styles styles = page.getStyles();
 
-		campaignFormDataTabMap.forEach((tabId, campaignFormDataMap) -> {
+		dataProvider.refreshDiagramsData(tabId, subTabId);
 
+		Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap = dataProvider.getCampaignFormDataMap();
+
+		if (campaignFormDataMap != null && !campaignFormDataMap.isEmpty()) {
 			final List<CampaignDashboardElement> dashboardElements =
 				campaignFormDataMap.keySet().stream().map(CampaignDashboardDiagramDto::getCampaignDashboardElement).collect(Collectors.toList());
+
 			final GridTemplateAreaCreator gridTemplateAreaCreator = new GridTemplateAreaCreator(dashboardElements);
 
 			final VerticalLayout diagramsWrapper = new VerticalLayout();
 			diagramsWrapper.setMargin(new MarginInfo(false, true, false, true));
-			diagramsWrapper.setId(tabId);
+			diagramsWrapper.setId(tabId + "_" + subTabId);
+			currentDiagramsWrapper = diagramsWrapper;
 
 			diagramsWrapper.setWidth(
 				dashboardElements.size() == 1 && gridTemplateAreaCreator.getGridColumns() == 1 ? gridTemplateAreaCreator.getWidthsSum() : 100,
@@ -126,7 +169,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 			final CssLayout diagramsLayout = new CssLayout();
 			diagramsLayout.setSizeFull();
-			final String gridCssClass = tabId.replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;
+			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;
 
 			styles.add(
 				createDiagramGridStyle(
@@ -161,18 +204,16 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			});
 			diagramsWrapper.addComponent(diagramsLayout);
 
-			diagramsWrapper.setVisible(false);
-			tabLayout.addComponent(diagramsWrapper);
-			tabLayout.setExpandRatio(diagramsWrapper, 1);
-		});
-
-		tabSwitcher.setValue(tabs.isEmpty() ? StringUtils.EMPTY : tabs.get(0));
+			diagramsWrapper.setVisible(true);
+			layout.addComponent(diagramsWrapper);
+			layout.setExpandRatio(diagramsWrapper, 1);
+		}
 	}
 
 	private void cleanupDashboard(Page page) {
-		campaignDashboardDiagramComponents
+		campaignDashboardTabComponents
 			.forEach(campaignDashboardDiagramComponents -> dashboardLayout.removeComponent(campaignDashboardDiagramComponents));
-		campaignDashboardDiagramComponents.clear();
+		campaignDashboardTabComponents.clear();
 		campaignDashboardDiagramStyles.forEach(s -> page.getJavaScript().execute(removeStyles(s)));
 		campaignDashboardDiagramStyles.clear();
 	}
@@ -198,22 +239,5 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		return "var diagramStyles = document.getElementsByTagName('style');  for (var i=0; i < diagramStyles.length; i++) {"
 			+ "if (diagramStyles[i].innerText.startsWith(\"" + styleInnerText
 			+ "\" )) { diagramStyles[i].parentNode.removeChild(diagramStyles[i]);}}";
-	}
-
-	private Map<String, Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>>> groupCampaignFormDataByTab(
-		Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap) {
-		final Map<String, Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>>> campaignFormDataTabMap = new HashMap<>();
-
-		campaignFormDataMap.forEach((campaignDashboardDiagramDto, campaignDiagramDataDtos) -> {
-			final String tabId = campaignDashboardDiagramDto.getCampaignDashboardElement().getTabId();
-			if (campaignFormDataTabMap.containsKey(tabId)) {
-				campaignFormDataTabMap.get(tabId).put(campaignDashboardDiagramDto, campaignDiagramDataDtos);
-			} else {
-				final Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> dashboardDiagramDtoListHashMap = new HashMap<>();
-				dashboardDiagramDtoListHashMap.put(campaignDashboardDiagramDto, campaignDiagramDataDtos);
-				campaignFormDataTabMap.put(tabId, dashboardDiagramDtoListHashMap);
-			}
-		});
-		return campaignFormDataTabMap;
 	}
 }
