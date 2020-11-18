@@ -185,6 +185,8 @@ public class ExternalJournalService {
 	 *            the person already available in the external journal
 	 * @param updatedPerson
 	 *            the updated person in SORMAS
+	 * @return true if the person data change was considered relevant for external journals, false otherwise.
+	 * 
 	 */
 	public boolean notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
 		boolean shouldNotify = shouldNotify(existingPerson, updatedPerson);
@@ -313,8 +315,10 @@ public class ExternalJournalService {
 	}
 
 	/**
-	 * Check whether a person has valid data in orderd to be registered in the patient diary
-	 * @param person the person to validate
+	 * Check whether a person has valid data in order to be registered in the patient diary
+	 * 
+	 * @param person
+	 *            the person to validate
 	 * @return the result of the validation
 	 */
 	public ExternalPersonValidation validatePatientDiaryPerson(PersonDto person) {
