@@ -59,7 +59,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public DocumentDto saveDocument(DocumentDto dto, byte[] content) throws IOException {
-		Document existingDocument = dto.getUuid() == null ? documentService.getByUuid(dto.getUuid()) : null;
+		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
 			// TODO: add exception message
 			throw new EntityExistsException();
