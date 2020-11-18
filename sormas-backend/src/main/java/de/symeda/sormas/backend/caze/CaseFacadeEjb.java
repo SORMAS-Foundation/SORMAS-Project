@@ -427,7 +427,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		List<CaseIndexDto> cases;
 		if (first != null && max != null) {
-			TypedQuery query = em.createQuery(cq);
+			TypedQuery<CaseIndexDto> query = em.createQuery(cq);
 			cases = query.setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
 			cases = em.createQuery(cq).getResultList();
@@ -933,8 +933,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Symptoms> symptoms = joins.getSymptoms();
 		Join<Case, Person> person = joins.getPerson();
 
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(true).excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
@@ -981,8 +980,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		caseCriteria.setDistrict(districtRef);
 		caseCriteria.setDisease(disease);
 
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(false).excludeCasesFromContacts(false));
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
@@ -1018,8 +1016,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(false).excludeCasesFromContacts(false));
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(false));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
@@ -1082,11 +1079,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter = caseService.createUserFilter(
-			cb,
-			cq,
-			caze,
-			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
@@ -1114,11 +1108,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 		Join<Case, Person> person = joins.getPerson();
 
-		Predicate filter = caseService.createUserFilter(
-			cb,
-			cq,
-			caze,
-			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
@@ -1142,11 +1133,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter = caseService.createUserFilter(
-			cb,
-			cq,
-			caze,
-			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins));
 
@@ -1171,8 +1159,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(true).excludeCasesFromContacts(true));
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(criteria, cb, cq, caze, joins));
 		if (filter != null) {
 			cq.where(filter);
@@ -1196,11 +1183,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 		Join<Case, District> districtJoin = joins.getDistrict();
 
-		Predicate filter = caseService.createUserFilter(
-			cb,
-			cq,
-			caze,
-			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins));
 
@@ -1415,11 +1399,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 		Join<Case, District> district = joins.getDistrict();
 
-		Predicate filter = caseService.createUserFilter(
-			cb,
-			cq,
-			caze,
-			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins));
 
@@ -2980,7 +2961,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<CaseFollowUpDto> cq = cb.createQuery(CaseFollowUpDto.class);
 		Root<Case> caze = cq.from(Case.class);
 
-		CaseJoins joins = new CaseJoins(caze);
+		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
 		final Stream<Selection<?>> select = Stream.of(
 			caze.get(Case.UUID),
@@ -3077,15 +3058,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultList;
 	}
 
+	public boolean isCaseEditAllowed(String caseUuid) {
+		Case caze = caseService.getByUuid(caseUuid);
+
+		return caseService.isCaseEditAllowed(caze);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 
-	}
-
-	public Boolean isCaseEditAllowed(String caseUuid) {
-		Case caze = caseService.getByUuid(caseUuid);
-
-		return caseService.isCaseEditAllowed(caze);
 	}
 }

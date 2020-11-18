@@ -188,7 +188,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Outbreaks
-	@HideForCountries()
+	@HideForCountries(countries = {
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private String epidNumber;
 	@Outbreaks
 	@Required

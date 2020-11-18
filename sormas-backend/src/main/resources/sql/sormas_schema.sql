@@ -5543,6 +5543,16 @@ ALTER TABLE events_history ALTER COLUMN eventdesc DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (274, 'Drop not null constraint from event history description #3391');
 
+-- 2020-11-06 Split follow-up duration #3100
+ALTER TABLE diseaseconfiguration ADD COLUMN casefollowupduration integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN eventparticipantfollowupduration integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN casefollowupduration integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN eventparticipantfollowupduration integer;
+UPDATE diseaseconfiguration SET casefollowupduration = followupduration;
+UPDATE diseaseconfiguration SET eventparticipantfollowupduration = followupduration;
+
+INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-up duration #3100');
+
 -- 2020-10-15 New exposure entity and migration #2948
 ALTER TABLE epidata ADD COLUMN exposuredetailsknown varchar(255);
 ALTER TABLE epidata_history ADD COLUMN exposuredetailsknown varchar(255);
@@ -5678,7 +5688,7 @@ DROP TABLE epidataburial_history;
 DROP TABLE epidatagathering_history;
 DROP TABLE epidatatravel_history;
 
-INSERT INTO schema_version (version_number, comment) VALUES (275, 'New exposure entity and migration #2948');
+INSERT INTO schema_version (version_number, comment) VALUES (276, 'New exposure entity and migration #2948');
 
 -- 2020-10-21 Epi data migration #2949
 ALTER TABLE epidata ADD COLUMN contactwithsourcecaseknown varchar(255);
@@ -5824,10 +5834,8 @@ UPDATE epidata SET exposuredetailsknown = 'YES' WHERE (exposuredetailsknown IS N
 
 UPDATE epidata SET changedate = now();
 
-INSERT INTO schema_version (version_number, comment) VALUES (276, 'Epi data migration #2949');
+INSERT INTO schema_version (version_number, comment) VALUES (277, 'Epi data migration #2949');
 
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id > 0);
-
-
 -- *** Insert new sql commands BEFORE this line ***

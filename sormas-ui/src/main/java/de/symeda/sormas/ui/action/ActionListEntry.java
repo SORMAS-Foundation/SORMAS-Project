@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
+import java.util.Optional;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
@@ -84,11 +86,11 @@ public class ActionListEntry extends HorizontalLayout {
 		whitelist.addTags("hr", "font");
 		whitelist.addAttributes("font", "size", "face", "color");
 		whitelist.addAttributes("div", "align");
-		Label description = new Label(Jsoup.clean(action.getDescription(), whitelist), ContentMode.HTML);
+		Label description = new Label(Jsoup.clean(Optional.ofNullable(action.getDescription()).orElse(""), whitelist), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		descReplyLayout.addComponent(description);
 		if (!Strings.isNullOrEmpty(action.getReply())) {
-			Label replyLabel = new Label(Jsoup.clean(action.getReply(), whitelist), ContentMode.HTML);
+			Label replyLabel = new Label(Jsoup.clean(Optional.ofNullable(action.getReply()).orElse(""), whitelist), ContentMode.HTML);
 			replyLabel.setWidth(100, Unit.PERCENTAGE);
 			replyLabel.addStyleName(CssStyles.REPLY);
 			descReplyLayout.addComponent(replyLabel);

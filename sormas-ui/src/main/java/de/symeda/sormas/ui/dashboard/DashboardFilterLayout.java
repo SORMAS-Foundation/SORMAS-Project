@@ -168,7 +168,9 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, applyListener, CssStyles.BUTTON_FILTER_LIGHT);
 		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		applyButton.addClickListener(e -> {
-			getDateFilterChangeCallback().run();
+			if (getDateFilterChangeCallback() != null) {
+				getDateFilterChangeCallback().run();
+			}
 		});
 		addComponent(applyButton);
 	}

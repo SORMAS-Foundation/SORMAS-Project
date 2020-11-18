@@ -60,8 +60,8 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
-import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
-import de.symeda.sormas.api.externaljournal.RegisterResult;
+import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
+import de.symeda.sormas.api.externaljournal.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -71,7 +71,6 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -358,7 +357,7 @@ public class ContactController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
 				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
@@ -601,7 +600,7 @@ public class ContactController {
 	 * Displays the result in a popup
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
-		ExternalPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
+		PatientDiaryPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
 		if (!validationResult.isValid()) {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {
@@ -609,7 +608,7 @@ public class ContactController {
 				|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
 				openPatientDiaryEnrollPage(person.getUuid());
 			} else {
-				RegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
+				PatientDiaryRegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
 				showPatientRegisterResultPopup(registerResult);
 			}
 		}
@@ -641,7 +640,7 @@ public class ContactController {
 		popupWindow.setWidth(400, Unit.PIXELS);
 	}
 
-	private void showPatientRegisterResultPopup(RegisterResult registerResult) {
+	private void showPatientRegisterResultPopup(PatientDiaryRegisterResult registerResult) {
 		VerticalLayout registrationResultLayout = new VerticalLayout();
 		registrationResultLayout.setMargin(true);
 		Image errorIcon = new Image(null, new ThemeResource("img/error-icon.png"));
