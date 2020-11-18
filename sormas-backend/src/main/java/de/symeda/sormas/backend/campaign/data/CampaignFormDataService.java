@@ -63,6 +63,8 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 
 		if (criteria.getCampaign() != null) {
 			filter = and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
+		} else {
+			filter = and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
 		}
 		if (criteria.getCampaignFormMeta() != null) {
 			filter = and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));

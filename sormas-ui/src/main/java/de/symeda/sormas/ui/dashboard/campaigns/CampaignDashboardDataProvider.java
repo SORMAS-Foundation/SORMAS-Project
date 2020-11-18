@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.Notification;
 
@@ -32,57 +33,62 @@ public class CampaignDashboardDataProvider {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 
+	private final Map<CampaignReferenceDto, List<CampaignDashboardDiagramDto>> campaignDiagramDefinitionsMap = new HashMap<>();
+
 	private final Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap = new HashMap<>();
 	private final Map<CampaignDashboardDiagramDto, Map<CampaignDashboardTotalsReference, Double>> campaignFormTotalsMap = new HashMap<>();
 
-	public void refreshData() {
+	public void refreshDashboardData() {
+
+		if (campaign != null) {
+			FacadeProvider.getCampaignFacade().validate(campaign);
+			createCampaignDashboardDiagramDefinitionsMap();
+		}
+	}
+
+	protected void refreshDiagramsData(String tabId, String subTabId) {
 		campaignFormDataMap.clear();
 		campaignFormTotalsMap.clear();
 
-		FacadeProvider.getCampaignFacade().validate(campaign);
-
-		final List<CampaignDashboardElement> campaignDashboardElements =
-			FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign != null ? campaign.getUuid() : null);
-		final List<CampaignDiagramDefinitionDto> campaignDiagramDefinitions = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
-
-		final List<CampaignDashboardDiagramDto> campaignDashboardDiagramDtos = new ArrayList<>();
-
-		campaignDashboardElements.stream().sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder)).forEach(campaignDashboardElement -> {
-			final Optional<CampaignDiagramDefinitionDto> first = campaignDiagramDefinitions.stream()
-				.filter(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getDiagramId().equals(campaignDashboardElement.getDiagramId()))
-				.findFirst();
-			if (first.isPresent()) {
-				CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = first.get();
-				campaignDashboardDiagramDtos.add(new CampaignDashboardDiagramDto(campaignDashboardElement, campaignDiagramDefinitionDto));
-			}
-		});
-
-		campaignDashboardDiagramDtos.forEach(campaignDashboardDiagramDto -> {
-			List<CampaignDiagramSeries> campaignSeriesTotal = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal();
-			if (Objects.nonNull(campaignSeriesTotal)) {
-				Optional populationGroup = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getPopulationGroup())).findFirst();
-				Optional formIdOptional = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getFormId())).findFirst();
-				if (populationGroup.isPresent()) {
-					if (formIdOptional.isPresent()) {
-						Notification.show(String.format(I18nProperties.getString(Strings.errorFormIdPopulationAgeGroup)), ERROR_MESSAGE);
-					} else {
-						List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
-							.getDiagramDataByAgeGroup(
-								(CampaignDiagramSeries) populationGroup.get(),
-								campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries().get(0),
+		campaignDiagramDefinitionsMap.get(campaign).forEach(campaignDashboardDiagramDto -> {
+			final CampaignDashboardElement campaignDashboardElement = campaignDashboardDiagramDto.getCampaignDashboardElement();
+			if (campaignDashboardElement.getTabId().equals(tabId) && (subTabId == null || campaignDashboardElement.getSubTabId().equals(subTabId))) {
+				List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
+						.getDiagramData(
+								campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries(),
 								new CampaignDiagramCriteria(campaign, area, region, district));
-						if (diagramData.isEmpty()) {
-							Notification.show(String.format(I18nProperties.getString(Strings.errorNoPopulationDataFound)), ERROR_MESSAGE);
-							buildCampaignFormTotalsMap(campaignDashboardDiagramDto);
-						} else {
-							campaignFormDataMap.put(campaignDashboardDiagramDto, diagramData);
+				campaignFormDataMap.put(campaignDashboardDiagramDto, diagramData);
+				FacadeProvider.getCampaignFacade().validate(campaign);
+
+
+				campaignDiagramDefinitionsMap.get(campaign).forEach(campaignDashboardDiagramDto -> {
+					List<CampaignDiagramSeries> campaignSeriesTotal = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal();
+					if (Objects.nonNull(campaignSeriesTotal)) {
+						Optional populationGroup = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getPopulationGroup())).findFirst();
+						Optional formIdOptional = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getFormId())).findFirst();
+						if (populationGroup.isPresent()) {
+							if (formIdOptional.isPresent()) {
+								Notification.show(String.format(I18nProperties.getString(Strings.errorFormIdPopulationAgeGroup)), ERROR_MESSAGE);
+							} else {
+								List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
+										.getDiagramDataByAgeGroup(
+												(CampaignDiagramSeries) populationGroup.get(),
+												campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries().get(0),
+												new CampaignDiagramCriteria(campaign, area, region, district));
+								if (diagramData.isEmpty()) {
+									Notification.show(String.format(I18nProperties.getString(Strings.errorNoPopulationDataFound)), ERROR_MESSAGE);
+									buildCampaignFormTotalsMap(campaignDashboardDiagramDto);
+								} else {
+									campaignFormDataMap.put(campaignDashboardDiagramDto, diagramData);
+								}
+							}
 						}
+					} else {
+						buildCampaignFormTotalsMap(campaignDashboardDiagramDto);
 					}
-				}
-			} else {
-				buildCampaignFormTotalsMap(campaignDashboardDiagramDto);
+				});
 			}
-		});
+		}
 	}
 
 	private void buildCampaignFormTotalsMap(CampaignDashboardDiagramDto campaignDashboardDiagramDto) {
@@ -106,6 +112,31 @@ public class CampaignDashboardDataProvider {
 				percentageMap.put(totals, value);
 			}
 			campaignFormTotalsMap.put(campaignDashboardDiagramDto, percentageMap);
+		}
+	}
+
+	private void createCampaignDashboardDiagramDefinitionsMap() {
+		if (!campaignDiagramDefinitionsMap.containsKey(campaign)) {
+			final List<CampaignDashboardDiagramDto> campaignDashboardDiagramDtos = new ArrayList<>();
+			final List<CampaignDashboardElement> campaignDashboardElements =
+				FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign.getUuid());
+			final List<CampaignDiagramDefinitionDto> campaignDiagramDefinitions = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
+
+			campaignDashboardElements.stream()
+				.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
+				.forEach(campaignDashboardElement -> {
+					final Optional<CampaignDiagramDefinitionDto> first = campaignDiagramDefinitions.stream()
+						.filter(
+							campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getDiagramId()
+								.equals(campaignDashboardElement.getDiagramId()))
+						.findFirst();
+					if (first.isPresent()) {
+						CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = first.get();
+						campaignDashboardDiagramDtos.add(new CampaignDashboardDiagramDto(campaignDashboardElement, campaignDiagramDefinitionDto));
+					}
+				});
+
+			campaignDiagramDefinitionsMap.put(campaign, campaignDashboardDiagramDtos);
 		}
 	}
 
@@ -151,5 +182,22 @@ public class CampaignDashboardDataProvider {
 
 	public Map<CampaignDashboardDiagramDto, Map<CampaignDashboardTotalsReference, Double>> getCampaignFormTotalsMap() {
 		return campaignFormTotalsMap;
+	}
+
+	public List<String> getTabIds() {
+		return campaignDiagramDefinitionsMap.get(campaign)
+			.stream()
+			.map(cdd -> cdd.getCampaignDashboardElement().getTabId())
+			.distinct()
+			.collect(Collectors.toList());
+	}
+
+	public List<String> getSubTabIds(String tabId) {
+		return campaignDiagramDefinitionsMap.get(campaign)
+			.stream()
+			.filter(cdd -> cdd.getCampaignDashboardElement().getTabId().equals(tabId))
+			.map(cdd -> cdd.getCampaignDashboardElement().getSubTabId())
+			.distinct()
+			.collect(Collectors.toList());
 	}
 }
