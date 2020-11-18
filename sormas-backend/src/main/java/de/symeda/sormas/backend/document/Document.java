@@ -45,6 +45,7 @@ public class Document extends AbstractDomainObject {
 	private String name;
 	private String contentType;
 	private long size;
+	private String storageReference;
 	private String relatedEntityUuid;
 	private DocumentRelatedEntityType relatedEntityType;
 
@@ -89,6 +90,15 @@ public class Document extends AbstractDomainObject {
 
 	public void setSize(long size) {
 		this.size = size;
+	}
+
+	@Column(name = "storage_reference")
+	public String getStorageReference() {
+		return storageReference;
+	}
+
+	public void setStorageReference(String storageReference) {
+		this.storageReference = storageReference;
 	}
 
 	@Column(name = "relatedentity_uuid")

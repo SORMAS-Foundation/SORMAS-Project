@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.backend.document;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.enterprise.inject.Specializes;
@@ -23,16 +22,17 @@ import javax.enterprise.inject.Specializes;
 public class MockDocumentStorageService extends DocumentStorageService {
 
 	@Override
-	public byte[] read(Document document) throws IOException {
-		return document.getUuid().getBytes(StandardCharsets.UTF_8);
+	public byte[] read(String storageReference) {
+		return storageReference.getBytes(StandardCharsets.UTF_8);
 	}
 
 	@Override
-	public void save(Document document, byte[] content) throws IOException {
+	public String save(Document document, byte[] content) {
+		return document.getUuid();
 	}
 
 	@Override
-	public void delete(Document document) {
+	public void delete(String storageReference) {
 	}
 
 	@Override

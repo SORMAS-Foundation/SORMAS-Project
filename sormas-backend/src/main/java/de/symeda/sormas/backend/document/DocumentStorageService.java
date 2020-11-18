@@ -29,8 +29,6 @@ import javax.enterprise.event.TransactionPhase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 
 @Stateless
@@ -42,25 +40,27 @@ public class DocumentStorageService {
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
-	public byte[] read(Document document) throws IOException {
-		return Files.readAllBytes(computeFilePath(document));
+	public byte[] read(String storageReference) throws IOException {
+		return Files.readAllBytes(Paths.get(configFacade.getDocumentFilesPath(), storageReference));
 	}
 
-	public void save(Document document, byte[] content) throws IOException {
-		Path filePath = computeFilePath(document);
+	public String save(Document document, byte[] content) throws IOException {
+		Path relativePath = computeRelativePath(document);
+		Path filePath = Paths.get(configFacade.getDocumentFilesPath()).resolve(relativePath);
 		Files.createDirectories(filePath.getParent());
 		Files.write(filePath, content, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+		return relativePath.toString();
 	}
 
 	/**
 	 * Delete file on disk when a document failed to be saved in database.
 	 */
 	public void cleanupUnsavedDocument(@Observes(during = TransactionPhase.AFTER_FAILURE) DocumentSaved event) {
-		delete(event.getDocument());
+		delete(event.getDocument().getStorageReference());
 	}
 
-	public void delete(Document document) {
-		Path path = computeFilePath(document);
+	public void delete(String storageReference) {
+		Path path = Paths.get(configFacade.getDocumentFilesPath(), storageReference);
 		try {
 			Files.deleteIfExists(path);
 		} catch (IOException e) {
@@ -69,9 +69,8 @@ public class DocumentStorageService {
 	}
 
 	@SuppressWarnings("deprecation")
-	private Path computeFilePath(Document document) {
+	private Path computeRelativePath(Document document) {
 		return Paths.get(
-			configFacade.getDocumentFilesPath(),
 			Integer.toString(1900 + document.getCreationDate().getYear()),
 			Integer.toString(1 + document.getCreationDate().getMonth()),
 			Integer.toString(document.getCreationDate().getDate()),

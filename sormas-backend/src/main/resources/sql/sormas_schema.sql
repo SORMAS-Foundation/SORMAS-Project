@@ -5565,6 +5565,7 @@ CREATE TABLE documents (
     name character varying(255) NOT NULL,
     contenttype character varying(255) NOT NULL,
     size bigint NOT NULL,
+    storage_reference character varying(255) NOT NULL,
     relatedentity_uuid character varying(36) NOT NULL,
     relatedentity_type character varying(255) NOT NULL,
 

@@ -66,10 +66,11 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		}
 
 		Document document = fromDto(dto);
+
+		document.setStorageReference(documentStorageService.save(document, content));
+
 		documentService.persist(document);
 		documentService.doFlush();
-
-		documentStorageService.save(document, content);
 
 		documentSavedEvent.fire(new DocumentSaved(document));
 
@@ -95,14 +96,14 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@Override
 	public byte[] read(String uuid) throws IOException {
 		Document document = documentService.getByUuid(uuid);
-		return documentStorageService.read(document);
+		return documentStorageService.read(document.getStorageReference());
 	}
 
 	@Override
 	public void cleanupDeletedDocuments() {
 		List<Document> deleted = documentService.getDeletedDocuments();
 		for (Document document : deleted) {
-			documentStorageService.delete(document);
+			documentStorageService.delete(document.getStorageReference());
 			documentService.delete(document);
 		}
 	}
