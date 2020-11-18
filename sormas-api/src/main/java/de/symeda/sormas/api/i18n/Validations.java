@@ -17,6 +17,8 @@ public interface Validations {
 	String campaignDashboardChartIdDoesNotExist = "campaignDashboardChartIdDoesNotExist";
 	String campaignDashboardChartPercentage = "campaignDashboardChartPercentage";
 	String campaignDashboardChartValueNull = "campaignDashboardChartValueNull";
+	String campaignDashboardDataFormValueDuplicate = "campaignDashboardDataFormValueDuplicate";
+	String campaignDashboardDataFormValueNull = "campaignDashboardDataFormValueNull";
 	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";

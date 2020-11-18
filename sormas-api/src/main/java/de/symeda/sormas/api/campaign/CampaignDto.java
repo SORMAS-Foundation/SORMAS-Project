@@ -21,6 +21,7 @@ public class CampaignDto extends EntityDto {
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String CREATING_USER = "creatingUser";
+	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 
 	private String name;
 	private String description;
