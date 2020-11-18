@@ -148,7 +148,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   String externalID,
-						   Long id, Date creationDate, Float completness,
+						   Long id, Date creationDate, Float completeness,
 						   int visitCount) {
 	//@formatter:on
 
