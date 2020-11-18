@@ -15,6 +15,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -150,8 +151,8 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 		}
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
-			TaskDateType contactDateType = (TaskDateType) weekAndDateFilter.getDateTypeSelector().getValue();
-			if (contactDateType == TaskDateType.DUE_DATE) {
+			TaskDateType taskDateType = (TaskDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+			if (taskDateType == TaskDateType.DUE_DATE) {
 				criteria.dueDateBetween(fromDate, toDate);
 				criteria.startDateBetween(null, null);
 			} else {
@@ -177,6 +178,35 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 				notification.setDelayMsec(-1);
 				notification.show(Page.getCurrent());
 			}
+		}
+	}
+
+	@Override
+	protected void applyDependenciesOnNewValue(TaskCriteria newValue) {
+		// Date/Epi week filter
+		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
+		@SuppressWarnings("unchecked")
+		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter =
+			(EpiWeekAndDateFilterComponent<NewCaseDateType>) dateFilterLayout.getComponent(0);
+
+		TaskDateType taskDateType = newValue.getStartDateFrom() != null
+			? TaskDateType.SUGGESTED_START_DATE
+			: newValue.getDueDateFrom() != null ? TaskDateType.DUE_DATE : null;
+		weekAndDateFilter.getDateTypeSelector().setValue(taskDateType);
+		weekAndDateFilter.getDateFilterOptionFilter().setValue(newValue.getDateFilterOption());
+		Date dateFrom = taskDateType == TaskDateType.SUGGESTED_START_DATE
+			? newValue.getStartDateFrom()
+			: taskDateType == TaskDateType.DUE_DATE ? newValue.getDueDateFrom() : null;
+		Date dateTo = taskDateType == TaskDateType.SUGGESTED_START_DATE
+			? newValue.getStartDateTo()
+			: taskDateType == TaskDateType.DUE_DATE ? newValue.getDueDateTo() : null;
+
+		if (DateFilterOption.EPI_WEEK.equals(newValue.getDateFilterOption())) {
+			weekAndDateFilter.getWeekFromFilter().setValue(dateFrom == null ? null : DateHelper.getEpiWeek(dateFrom));
+			weekAndDateFilter.getWeekToFilter().setValue(dateTo == null ? null : DateHelper.getEpiWeek(dateTo));
+		} else {
+			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
+			weekAndDateFilter.getDateToFilter().setValue(dateTo);
 		}
 	}
 }
