@@ -1,9 +1,9 @@
 package de.symeda.sormas.ui.task;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Date;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,7 +12,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -38,7 +38,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 
 	private static final String WEEK_AND_DATE_FILTER = "weekAndDateFilter";
 
-	private static final String MORE_FILTERS_HTML = loc(WEEK_AND_DATE_FILTER);
+	private static final String MORE_FILTERS_HTML = filterLocs(TaskCriteria.ASSIGNEE_USER_LIKE) + loc(WEEK_AND_DATE_FILTER);
 
 	protected TaskGridFilterForm() {
 		super(TaskCriteria.class, TaskIndexDto.I18N_PREFIX);
@@ -98,6 +98,11 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
+
+		TextField assigneeUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.ASSIGNEE_USER_LIKE, 200));
+		assigneeUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNEE_USER));
+		assigneeUserLikeField.setNullRepresentation("");
+
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 

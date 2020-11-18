@@ -294,6 +294,19 @@ public class TaskService extends AbstractAdoService<Task> {
 				}
 			}
 		}
+		if (taskCriteria.getAssigneeUserLike() != null) {
+			String[] textFilters = taskCriteria.getAssigneeUserLike().split("\\s+");
+			for (String s : textFilters) {
+				String textFilter = "%" + s.toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(joins.getAssignee().get(User.LAST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getAssignee().get(User.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getAssignee().get(User.USER_NAME)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
 
 		return filter;
 	}
