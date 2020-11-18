@@ -17,21 +17,33 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import java.util.Date;
+
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
@@ -56,6 +68,31 @@ public class TasksView extends AbstractView {
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		taskListComponent = new TaskGridComponent(getViewTitleLabel(), this);
 		addComponent(taskListComponent);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_EXPORT)) {
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true);
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(200, Unit.PIXELS);
+
+			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportButton);
+
+			Button basicExportButton = ButtonHelper.createIconButton(Captions.exportBasic, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
+			basicExportButton.setWidth(100, Unit.PERCENTAGE);
+
+			exportLayout.addComponent(basicExportButton);
+
+			StreamResource streamResource = new GridExportStreamResource(
+				taskListComponent.getGrid(),
+				"sormas_tasks",
+				"sormas_tasks_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+				TaskGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(basicExportButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
