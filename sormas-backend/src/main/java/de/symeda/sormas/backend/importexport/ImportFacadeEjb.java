@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -97,6 +99,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -108,7 +111,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -134,6 +136,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
 	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
 	private static final String AREA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_area_template.csv";
+	private static final String COUNTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_country_template.csv";
+	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_all_countries.csv";
 	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_region_template.csv";
 	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_district_template.csv";
 	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_community_template.csv";
@@ -299,6 +303,11 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public void generateCountryImportTemplateFile() throws IOException {
+		generateImportTemplateFile(CountryDto.class, Paths.get(getCountryImportTemplateFilePath()));
+	}
+
+	@Override
 	public void generateRegionImportTemplateFile() throws IOException {
 		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()));
 	}
@@ -384,6 +393,23 @@ public class ImportFacadeEjb implements ImportFacade {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(AREA_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
+	}
+
+	@Override
+	public String getCountryImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(COUNTRY_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public URI getAllCountriesImportFilePath() {
+		try {
+			return this.getClass().getClassLoader().getResource(ALL_COUNTRIES_IMPORT_FILE_NAME).toURI();
+		} catch (URISyntaxException e) {
+			logger.warn("Cannot get countries import file path: ", e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

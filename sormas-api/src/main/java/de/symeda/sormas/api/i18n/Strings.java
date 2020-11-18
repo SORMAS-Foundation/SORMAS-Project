@@ -50,6 +50,8 @@ public interface Strings {
 	String confirmationArchiveCases = "confirmationArchiveCases";
 	String confirmationArchiveCommunities = "confirmationArchiveCommunities";
 	String confirmationArchiveCommunity = "confirmationArchiveCommunity";
+	String confirmationArchiveCountries = "confirmationArchiveCountries";
+	String confirmationArchiveCountry = "confirmationArchiveCountry";
 	String confirmationArchiveDistrict = "confirmationArchiveDistrict";
 	String confirmationArchiveDistricts = "confirmationArchiveDistricts";
 	String confirmationArchiveEvent = "confirmationArchiveEvent";
@@ -72,6 +74,8 @@ public interface Strings {
 	String confirmationDearchiveCases = "confirmationDearchiveCases";
 	String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
 	String confirmationDearchiveCommunity = "confirmationDearchiveCommunity";
+	String confirmationDearchiveCountries = "confirmationDearchiveCountries";
+	String confirmationDearchiveCountry = "confirmationDearchiveCountry";
 	String confirmationDearchiveDistrict = "confirmationDearchiveDistrict";
 	String confirmationDearchiveDistricts = "confirmationDearchiveDistricts";
 	String confirmationDearchiveEvent = "confirmationDearchiveEvent";
@@ -280,6 +284,7 @@ public interface Strings {
 	String headingEditCases = "headingEditCases";
 	String headingEditClinicalVisit = "headingEditClinicalVisit";
 	String headingEditContacts = "headingEditContacts";
+	String headingEditCountry = "headingEditCountry";
 	String headingEditEventParticipant = "headingEditEventParticipant";
 	String headingEditEvents = "headingEditEvents";
 	String headingEditLineListing = "headingEditLineListing";
@@ -312,12 +317,14 @@ public interface Strings {
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
+	String headingImportAllCountries = "headingImportAllCountries";
 	String headingImportAreas = "headingImportAreas";
 	String headingImportCampaign = "headingImportCampaign";
 	String headingImportCaseContacts = "headingImportCaseContacts";
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
 	String headingImportContacts = "headingImportContacts";
+	String headingImportCountries = "headingImportCountries";
 	String headingImportCsvFile = "headingImportCsvFile";
 	String headingImportDistricts = "headingImportDistricts";
 	String headingImportedCaseInfo = "headingImportedCaseInfo";
@@ -452,6 +459,7 @@ public interface Strings {
 	String infoEditExportConfiguration = "infoEditExportConfiguration";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoHowToMergeCases = "infoHowToMergeCases";
+	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportCsvFile = "infoImportCsvFile";
 	String infoImportProcess = "infoImportProcess";
 	String infoImportSimilarity = "infoImportSimilarity";
@@ -501,6 +509,7 @@ public interface Strings {
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
+	String labelNumberOfCountries = "labelNumberOfCountries";
 	String labelNumberOfDistricts = "labelNumberOfDistricts";
 	String labelNumberOfFacilities = "labelNumberOfFacilities";
 	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
@@ -575,6 +584,10 @@ public interface Strings {
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
+	String messageCountriesArchived = "messageCountriesArchived";
+	String messageCountriesDearchived = "messageCountriesDearchived";
+	String messageCountryArchived = "messageCountryArchived";
+	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageCreateContactCase = "messageCreateContactCase";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";

@@ -696,6 +696,11 @@ public class StartupShutdownService {
 		}
 
 		try {
+			importFacade.generateCountryImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create country import template .csv file.");
+		}
+		try {
 			importFacade.generateRegionImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create region import template .csv file.");
