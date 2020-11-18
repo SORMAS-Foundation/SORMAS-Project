@@ -38,7 +38,8 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 
 	private static final String WEEK_AND_DATE_FILTER = "weekAndDateFilter";
 
-	private static final String MORE_FILTERS_HTML = filterLocs(TaskCriteria.ASSIGNEE_USER_LIKE) + loc(WEEK_AND_DATE_FILTER);
+	private static final String MORE_FILTERS_HTML =
+		filterLocs(TaskCriteria.ASSIGNEE_USER_LIKE, TaskCriteria.CREATOR_USER_LIKE) + loc(WEEK_AND_DATE_FILTER);
 
 	protected TaskGridFilterForm() {
 		super(TaskCriteria.class, TaskIndexDto.I18N_PREFIX);
@@ -102,6 +103,10 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		TextField assigneeUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.ASSIGNEE_USER_LIKE, 200));
 		assigneeUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNEE_USER));
 		assigneeUserLikeField.setNullRepresentation("");
+
+		TextField creatorUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.CREATOR_USER_LIKE, 200));
+		creatorUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.CREATOR_USER));
+		creatorUserLikeField.setNullRepresentation("");
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}

@@ -38,6 +38,7 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	public static final String FREE_TEXT = "freeText";
 	public static final String ASSIGNEE_USER_LIKE = "assigneeUserLike";
+	public static final String CREATOR_USER_LIKE = "creatorUserLike";
 
 	private TaskStatus taskStatus;
 	private TaskContext taskContext;
@@ -61,6 +62,7 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private String assigneeUserLike;
+	private String creatorUserLike;
 
 	public TaskStatus getTaskStatus() {
 		return taskStatus;
@@ -295,6 +297,19 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	public TaskCriteria assigneeUserLike(String assigneeUserLike) {
 		this.assigneeUserLike = assigneeUserLike;
+		return this;
+	}
+
+	public String getCreatorUserLike() {
+		return creatorUserLike;
+	}
+
+	public void setCreatorUserLike(String creatorUserLike) {
+		this.creatorUserLike = creatorUserLike;
+	}
+
+	public TaskCriteria creatorUserLike(String creatorUserLike) {
+		this.creatorUserLike = creatorUserLike;
 		return this;
 	}
 }
