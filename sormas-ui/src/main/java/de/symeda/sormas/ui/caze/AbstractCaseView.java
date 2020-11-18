@@ -65,6 +65,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
 
 	private Boolean hasOutbreak;
+	private boolean caseFollowupEnabled;
 
 	private final ViewConfiguration viewConfiguration;
 	private final boolean redirectSimpleModeToCaseDataView;
@@ -72,8 +73,8 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	private final Property.ValueChangeListener viewModeToggleListener;
 
 	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
-
 		super(viewName);
+		caseFollowupEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
 			// init default view mode
@@ -102,34 +103,35 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
 
-		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
+		if (caseFollowupEnabled) {
+			if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl() != null
 				&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
-			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
-			btnCreatePIAAccount.addClickListener(e -> {
-				CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
-				PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
-				ExternalJournalUtil.openSymptomJournalWindow(casePerson);
-			});
-			getButtonsLayout().addComponent(btnCreatePIAAccount);
-		}
+				Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
+				CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
+				btnCreatePIAAccount.addClickListener(e -> {
+					CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
+					PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+					ExternalJournalUtil.openSymptomJournalWindow(casePerson);
+				});
+				getButtonsLayout().addComponent(btnCreatePIAAccount);
+			}
 
-		if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
+			if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl() != null
 				&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
-			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
-			btnClimedoAccount.addClickListener(e -> {
-				CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
-				PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
-				ExternalJournalUtil.registerPatientDiaryPerson(casePerson);
-			});
-			getButtonsLayout().addComponent(btnClimedoAccount);
+				Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
+				CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
+				btnClimedoAccount.addClickListener(e -> {
+					CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
+					PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+					ExternalJournalUtil.registerPatientDiaryPerson(casePerson);
+				});
+				getButtonsLayout().addComponent(btnClimedoAccount);
+			}
 		}
 	}
 
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
-
 		if (!findReferenceByParams(params)) {
 			return;
 		}
@@ -197,8 +199,8 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)
-			&& caze.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+		
+		if (caseFollowupEnabled && caze.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 			menu.addView(CaseVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VISITS), params);
 		}
 
