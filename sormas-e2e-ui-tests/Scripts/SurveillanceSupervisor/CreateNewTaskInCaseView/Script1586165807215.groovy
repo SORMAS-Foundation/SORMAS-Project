@@ -1,6 +1,5 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
 import com.hzi.Helper as Helper
 import com.hzi.TestDataConnector as TestDataConnector
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
@@ -31,7 +30,7 @@ WebUI.click(findTestObject('Surveillance/CaseView/Task/span_Surveillance SUPERVI
 
 WebUI.setText(findTestObject('Surveillance/CaseView/Task/textarea_Comment_TArea'), Helper.generateString('comment', 5))
 
-WebUI.click(findTestObject('ReusableORs/div_Save'))
+WebUI.click(findTestObject('ReusableORs/div_Save_modalWindow'))
 
 WebUI.delay(1)
 
