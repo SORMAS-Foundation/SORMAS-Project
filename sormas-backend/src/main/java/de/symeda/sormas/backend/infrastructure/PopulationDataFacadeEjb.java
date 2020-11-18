@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.infrastructure;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -13,14 +14,17 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -31,6 +35,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -257,6 +262,32 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		}
 
 		return query.getResultList();
+	}
+
+	public Integer getAreaPopulation(String areaUuid, AgeGroup ageGroup) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<PopulationData> root = cq.from(PopulationData.class);
+		Join<PopulationData, Region> regionJoin = root.join(PopulationData.REGION);
+		Join<Region, Area> areaJoin = regionJoin.join(Region.AREA);
+
+		Predicate areaFilter = cb.equal(areaJoin.get(Area.UUID), areaUuid);
+		Predicate ageFilter = cb.and(cb.equal(root.get(PopulationData.AGE_GROUP), ageGroup));
+
+		cq.where(areaFilter, ageFilter);
+		cq.select(root.get(PopulationData.POPULATION));
+		TypedQuery query = em.createQuery(cq);
+		try {
+			Integer totalPopulation = 0;
+			for (Object i : query.getResultList()) {
+				if (Objects.nonNull(i)) {
+					totalPopulation = totalPopulation + (Integer) i;
+				}
+			}
+			return totalPopulation;
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	private void validate(PopulationDataDto populationData) throws ValidationRuntimeException {

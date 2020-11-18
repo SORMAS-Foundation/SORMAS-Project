@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
 	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
+	private String populationGroupDiagramTitle;
 
 	private final HighChart campaignColumnChart;
 
@@ -44,8 +47,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		CampaignDiagramDefinitionDto diagramDefinition,
 		List<CampaignDiagramDataDto> diagramDataList,
 		Map<CampaignDashboardTotalsReference, Double> totalValuesMap,
-		boolean showPercentages) {
-
+		boolean showPercentages,
+		String populationGroupDiagramTitle) {
+		this.populationGroupDiagramTitle = populationGroupDiagramTitle;
 		this.diagramDefinition = diagramDefinition;
 		this.showPercentages = showPercentages;
 		this.totalValuesMap = totalValuesMap;
@@ -177,7 +181,23 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
 			Collection<CampaignDiagramDataDto> values = seriesData.values();
 			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
-			final String fieldName = iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey;
+			List<String> noPopulationLocations = new LinkedList<>();
+			for (CampaignDiagramDataDto dData : values) {
+				if (!dData.isHasAgeGroupData()) {
+					noPopulationLocations.add(dData.getFieldCaption());
+				}
+			}
+			if (!noPopulationLocations.isEmpty()) {
+				Notification.show(
+					String.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(",", noPopulationLocations)),
+					ERROR_MESSAGE);
+			}
+			String fieldName;
+			if (Objects.nonNull(populationGroupDiagramTitle)) {
+				fieldName = populationGroupDiagramTitle;
+			} else {
+				fieldName = iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey;
+			}
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {

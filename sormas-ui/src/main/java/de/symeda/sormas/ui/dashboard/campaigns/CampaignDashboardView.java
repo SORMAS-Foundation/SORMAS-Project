@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.ViewChangeListener;
@@ -22,6 +24,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -140,11 +143,27 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto();
 				final String diagramId = campaignDiagramDefinitionDto.getDiagramId();
 				final String diagramCssClass = diagramId + generateRandomString();
+				String diagramTitle = null;
+				List<CampaignDiagramSeries> campaignSeriesTotal = campaignDiagramDefinitionDto.getCampaignSeriesTotal();
+				if (!CollectionUtils.isEmpty(campaignSeriesTotal)) {
+					if (campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getPopulationGroup())).findAny().isPresent()) {
+						if (Objects.isNull(dataProvider.getArea())) {
+							diagramTitle = I18nProperties.getString(Strings.populationDataByArea);
+						} else if (Objects.isNull(dataProvider.getRegion())) {
+							diagramTitle = I18nProperties.getString(Strings.populationDataByRegion);
+						} else if (Objects.isNull(dataProvider.getDistrict())) {
+							diagramTitle = I18nProperties.getString(Strings.populationDataByDistrict);
+						} else {
+							diagramTitle = I18nProperties.getString(Strings.populationDataByCommunity);
+						}
+					}
+				}
 				final CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(
 					campaignDiagramDefinitionDto,
 					diagramData,
 					dataProvider.getCampaignFormTotalsMap().get(campaignDashboardDiagramDto),
-					campaignDiagramDefinitionDto.isPercentageDefault());
+					campaignDiagramDefinitionDto.isPercentageDefault(),
+					diagramTitle);
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
 
