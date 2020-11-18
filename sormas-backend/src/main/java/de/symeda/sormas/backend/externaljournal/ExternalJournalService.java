@@ -315,7 +315,8 @@ public class ExternalJournalService {
 
 	/**
 	 * Check whether a person has valid data in order to be registered in the patient diary
-	 * 
+	 * NOTE: since CLIMEDO is only used in Germany, only German numbers are considered valid at the moment
+	 *
 	 * @param person
 	 *            the person to validate
 	 * @return the result of the validation
