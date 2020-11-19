@@ -5568,5 +5568,10 @@ ALTER TABLE country OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (276, 'Create country table #2993');
 
-
+-- 2020-11-06 Extend event participant jurisdiction calculation #2902
+ALTER TABLE eventparticipant ADD COLUMN region_id bigint;
+ALTER TABLE eventparticipant ADD COLUMN district_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+INSERT INTO schema_version (version_number, comment) VALUES (277, 'Extend event participant jurisdiction calculation #2902');
 -- *** Insert new sql commands BEFORE this line ***

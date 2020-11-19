@@ -52,11 +52,14 @@ import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -69,7 +72,11 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -95,6 +102,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private UserService userService;
 	@EJB
 	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private DistrictService districtService;
+	@EJB
+	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -167,6 +180,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
 		EventParticipantDto existingDto = toDto(existingParticipant);
+
+		User user = userService.getCurrentUser();
+
+		EventReferenceDto eventReferenceDto = dto.getEvent();
+		Event event = eventService.getByUuid(eventReferenceDto.getUuid());
+
+		if (!eventJurisdictionChecker.isInJurisdiction(event) && (dto.getRegion() == null || dto.getDistrict() == null)) {
+			dto.setRegion(new RegionReferenceDto(user.getRegion().getUuid()));
+			dto.setDistrict(new DistrictReferenceDto(user.getDistrict().getUuid()));
+		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingParticipant, pseudonymizer);
@@ -284,7 +307,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			EventParticipantIndexDto.class,
 			indexList,
-			p -> eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(p.getJurisdiction()),
+			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
 			null);
 
 		return indexList;
@@ -393,7 +416,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			for (EventParticipantExportDto exportDto : eventParticipantResultList) {
-				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
+//				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
+				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isPseudonymized(exportDto.getEventParticipantUuid());
 
 				if (personAddresses != null) {
 					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
@@ -464,7 +488,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public boolean isEventParticipantEditAllowed(String uuid) {
 		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
 
-		return eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(eventParticipant);
+		return eventParticipantJurisdictionChecker.isInJurisdiction(eventParticipant);
 	}
 
 	@Override
@@ -499,6 +523,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
+		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 
 		return target;
 	}
@@ -513,7 +539,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
 
 		if (source != null) {
-			boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(source);
+			boolean inJurisdiction = eventParticipantJurisdictionChecker.isPseudonymized(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
@@ -531,7 +557,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				EventParticipantDto.class,
 				dto,
 				originalDto,
-				eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(originalEventParticipant));
+				eventParticipantJurisdictionChecker.isPseudonymized(originalEventParticipant));
 		}
 	}
 
@@ -562,6 +588,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 
 		return target;
 	}

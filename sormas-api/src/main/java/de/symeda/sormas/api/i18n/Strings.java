@@ -299,6 +299,7 @@ public interface Strings {
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingEventData = "headingEventData";
 	String headingEventNotDeleted = "headingEventNotDeleted";
+	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
 	String headingEventsArchived = "headingEventsArchived";
 	String headingEventsDearchived = "headingEventsDearchived";
@@ -610,6 +611,7 @@ public interface Strings {
 	String messageEventCreated = "messageEventCreated";
 	String messageEventDearchived = "messageEventDearchived";
 	String messageEventParticipantCreated = "messageEventParticipantCreated";
+	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
 	String messageEventParticipantsDeleted = "messageEventParticipantsDeleted";
 	String messageEventsArchived = "messageEventsArchived";
