@@ -66,6 +66,7 @@ import javax.inject.Provider;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -521,19 +522,9 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 
 			String currentCountry = configFacade.getCountryCode();
-			HideForCountriesExcept hideForCountriesExcept = field.getAnnotation(HideForCountriesExcept.class);
-			if (hideForCountriesExcept != null) {
-				boolean shouldHide = !Arrays.asList(hideForCountriesExcept.countries()).contains(currentCountry);
-				if (shouldHide) {
-					continue;
-				}
-			}
-			HideForCountries hideForCountries = field.getAnnotation(HideForCountries.class);
-			if (hideForCountries != null) {
-				boolean shouldHide = Arrays.asList(hideForCountries.countries()).contains(currentCountry);
-				if (shouldHide) {
-					continue;
-				}
+			CountryFieldVisibilityChecker visibilityChecker = new CountryFieldVisibilityChecker(currentCountry);
+			if (!visibilityChecker.isVisible(field)) {
+				continue;
 			}
 
 			Method readMethod;
