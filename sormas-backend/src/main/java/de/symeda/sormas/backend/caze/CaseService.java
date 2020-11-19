@@ -307,8 +307,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Date from,
 		Date to) {
 		Predicate filter = createActiveCasesFilter(cb, root);
-		filter = AbstractAdoService
-			.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeSharedCases(true).excludeCasesFromContacts(true)));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
 		filter = AbstractAdoService.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
 
 		if (region != null) {
@@ -538,28 +537,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getReportDateTo() != null) {
 			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
-		}
-		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
-			User currentUser = getCurrentUser();
-			if (currentUser != null) {
-				if (currentUser.getDistrict() != null) {
-					filter = and(
-						cb,
-						filter,
-						cb.not(
-							cb.and(
-								cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
-								cb.notEqual(region.get(District.UUID), currentUser.getDistrict().getUuid()))));
-				} else if (currentUser.getRegion() != null) {
-					filter = and(
-						cb,
-						filter,
-						cb.not(
-							cb.and(
-								cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
-								cb.notEqual(region.get(Region.UUID), currentUser.getRegion().getUuid()))));
-				}
-			}
 		}
 		if (caseCriteria.getCaseOrigin() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
@@ -948,7 +925,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 
 			// all users (without specific restrictions) get access to cases that have been made available to the whole country
-			if ((userFilterCriteria == null || !userFilterCriteria.isExcludeSharedCases())
+			if ((userFilterCriteria == null || userFilterCriteria.getIncludeCasesFromOtherJurisdictions())
 				&& !featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 				filter = or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
 			}
@@ -1111,7 +1088,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				caze.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 			}
 		} else {
-			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
+			int followUpDuration = diseaseConfigurationFacade.getCaseFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
 			LocalDate untilDate = caze.isOverwriteFollowUpUntil()
 				|| (caze.getFollowUpUntil() != null && DateHelper8.toLocalDate(caze.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration)))

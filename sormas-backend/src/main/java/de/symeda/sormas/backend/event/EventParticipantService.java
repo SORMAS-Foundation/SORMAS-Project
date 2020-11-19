@@ -19,10 +19,12 @@ package de.symeda.sormas.backend.event;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -145,6 +147,9 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		if (criteria.getEvent() != null) {
 			filter = and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
 		}
+		if (criteria.getPerson() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
+		}
 
 		if (criteria.getFreeText() != null) {
 			String[] textFilters = criteria.getFreeText().split("\\s+");
@@ -225,6 +230,20 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return resultList;
 	}
 
+	public EventParticipant getByEventAndPerson(String eventUuid, String personUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
+		Root<EventParticipant> from = cq.from(getElementClass());
+
+		cq.where(
+			createDefaultFilter(cb, from),
+			cb.equal(from.join(EventParticipant.PERSON).get(Person.UUID), personUuid),
+			cb.equal(from.join(EventParticipant.EVENT).get(Event.UUID), eventUuid));
+
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
 	@Override
 	public void delete(EventParticipant eventParticipant) {
 
@@ -274,4 +293,22 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<EventParticipant> root) {
 		return cb.isFalse(root.get(EventParticipant.DELETED));
 	}
+
+	public Optional<EventParticipant> getFirst(EventParticipantCriteria criteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
+		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+
+		Predicate filter = buildCriteriaFilter(criteria, cb, eventParticipant);
+		cq.where(filter);
+		cq.orderBy(cb.asc(eventParticipant.get(EventParticipant.UUID)));
+
+		try {
+			return Optional.of(em.createQuery(cq).setFirstResult(0).setMaxResults(1).getSingleResult());
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
+	}
+
 }

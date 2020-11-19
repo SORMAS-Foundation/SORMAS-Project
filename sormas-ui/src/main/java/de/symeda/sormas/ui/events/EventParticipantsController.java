@@ -156,6 +156,21 @@ public class EventParticipantsController {
 		}
 	}
 
+	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {
+		VaadinUiUtil.showDeleteConfirmationWindow(
+			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityEventParticipant)),
+			() -> {
+				EventParticipantReferenceDto eventParticipantRef =
+					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
+				if (eventParticipantRef != null) {
+					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantRef);
+					callback.run();
+				} else {
+					Notification.show(I18nProperties.getString(Strings.errorOccurred), Type.ERROR_MESSAGE);
+				}
+			});
+	}
+
 	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());

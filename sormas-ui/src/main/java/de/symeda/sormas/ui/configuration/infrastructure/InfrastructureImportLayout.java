@@ -1,13 +1,10 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.function.Consumer;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
-import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -17,6 +14,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
+import de.symeda.sormas.ui.caze.importer.CountryImporter;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportReceiver;
@@ -36,14 +34,12 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			addComponent(lblCollectionDateInfo);
 			addComponent(dfCollectionDate);
 			dfCollectionDate.setRequired(true);
-			dfCollectionDate.addValueChangeListener(e -> {
-				upload.setEnabled(e.getProperty().getValue() != null);
-			});
+			dfCollectionDate.addValueChangeListener(e -> upload.setEnabled(e.getProperty().getValue() != null));
 		}
 
-		String templateFilePath = null;
-		String templateFileName = null;
-		String fileNameAddition = null;
+		String templateFilePath;
+		String templateFileName;
+		String fileNameAddition;
 		switch (infrastructureType) {
 		case COMMUNITY:
 			templateFilePath = FacadeProvider.getImportFacade().getCommunityImportTemplateFilePath();
@@ -70,6 +66,11 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			templateFileName = "sormas_import_population_data_template.csv";
 			fileNameAddition = "_population_data_import_";
 			break;
+		case COUNTRY:
+			templateFilePath = FacadeProvider.getImportFacade().getCountryImportTemplateFilePath();
+			templateFileName = "sormas_import_country_template.csv";
+			fileNameAddition = "_country_import_";
+			break;
 		case REGION:
 			templateFilePath = FacadeProvider.getImportFacade().getRegionImportTemplateFilePath();
 			templateFileName = "sormas_import_region_template.csv";
@@ -89,55 +90,48 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"),
 			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
-		addImportCsvComponent(3, new ImportReceiver(fileNameAddition, new Consumer<File>() {
+		addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
+			resetDownloadErrorReportButton();
 
-			@Override
-			public void accept(File file) {
-				resetDownloadErrorReportButton();
-
-				try {
-					DataImporter importer;
-					switch (infrastructureType) {
-					case COMMUNITY:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COMMUNITY);
-						break;
-					case DISTRICT:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.DISTRICT);
-						break;
-					case FACILITY:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.FACILITY);
-						break;
-					case POINT_OF_ENTRY:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.POINT_OF_ENTRY);
-						break;
-					case POPULATION_DATA:
-						importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue());
-						break;
-					case REGION:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION);
-						break;
-					case AREA:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.AREA);
-						break;
-					default:
-						throw new UnsupportedOperationException(
-							"Import is currently not implemented for infrastructure type " + infrastructureType.name());
-					}
-
-					importer.startImport(new Consumer<StreamResource>() {
-
-						@Override
-						public void accept(StreamResource resource) {
-							extendDownloadErrorReportButton(resource);
-						}
-					}, currentUI, true);
-				} catch (IOException | CsvValidationException e) {
-					new Notification(
-						I18nProperties.getString(Strings.headingImportFailed),
-						I18nProperties.getString(Strings.messageImportFailed),
-						Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
+			try {
+				DataImporter importer;
+				switch (infrastructureType) {
+				case COMMUNITY:
+					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COMMUNITY);
+					break;
+				case DISTRICT:
+					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.DISTRICT);
+					break;
+				case FACILITY:
+					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.FACILITY);
+					break;
+				case POINT_OF_ENTRY:
+					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.POINT_OF_ENTRY);
+					break;
+				case POPULATION_DATA:
+					importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue());
+					break;
+				case COUNTRY:
+					importer = new CountryImporter(file, currentUser);
+					break;
+				case REGION:
+					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION);
+					break;
+				case AREA:
+					importer = new InfrastructureImporter(file, currentUser, InfrastructureType.AREA);
+					break;
+				default:
+					throw new UnsupportedOperationException(
+						"Import is currently not implemented for infrastructure type " + infrastructureType.name());
 				}
+
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+			} catch (IOException | CsvValidationException e) {
+				new Notification(
+					I18nProperties.getString(Strings.headingImportFailed),
+					I18nProperties.getString(Strings.messageImportFailed),
+					Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
 			}
 		}));
 

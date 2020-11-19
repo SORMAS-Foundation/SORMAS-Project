@@ -49,9 +49,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 
 		setInEagerMode(true);
 		setCriteria(criteria);
-		ListDataProvider<EventParticipantIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
+		setEagerDataProvider();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
@@ -118,6 +116,12 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				e -> ControllerProvider.getEventParticipantController().navigateToData(e.getUuid())));
 	}
 
+	public void setEagerDataProvider() {
+		ListDataProvider<EventParticipantIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+	}
+
 	public void reload() {
 
 		if (getSelectionModel().isUserSelectionAllowed()) {
@@ -125,5 +129,6 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		}
 
 		getDataProvider().refreshAll();
+		setEagerDataProvider();
 	}
 }

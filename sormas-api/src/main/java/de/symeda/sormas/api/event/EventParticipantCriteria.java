@@ -3,6 +3,7 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class EventParticipantCriteria extends BaseCriteria implements Serializable {
@@ -16,6 +17,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	public static final String ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT = "onlyCountContactsWithSourceCaseInEvent";
 
 	private EventReferenceDto event;
+	private PersonReferenceDto person;
 	private String freeText;
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
@@ -29,6 +31,16 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 
 	public EventParticipantCriteria event(EventReferenceDto event) {
 		this.event = event;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
+
+	public EventParticipantCriteria person(PersonReferenceDto person) {
+		this.person = person;
 		return this;
 	}
 

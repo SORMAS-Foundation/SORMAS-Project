@@ -55,6 +55,12 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	@Column
 	private Integer followUpDuration;
 
+	@Column
+	private Integer caseFollowUpDuration;
+
+	@Column
+	private Integer eventParticipantFollowUpDuration;
+
 	public Disease getDisease() {
 		return disease;
 	}
@@ -101,6 +107,22 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setFollowUpDuration(Integer followUpDuration) {
 		this.followUpDuration = followUpDuration;
+	}
+
+	public Integer getCaseFollowUpDuration() {
+		return caseFollowUpDuration;
+	}
+
+	public void setCaseFollowUpDuration(Integer caseFollowUpDuration) {
+		this.caseFollowUpDuration = caseFollowUpDuration;
+	}
+
+	public Integer getEventParticipantFollowUpDuration() {
+		return eventParticipantFollowUpDuration;
+	}
+
+	public void setEventParticipantFollowUpDuration(Integer eventParticipantFollowUpDuration) {
+		this.eventParticipantFollowUpDuration = eventParticipantFollowUpDuration;
 	}
 
 	@Override

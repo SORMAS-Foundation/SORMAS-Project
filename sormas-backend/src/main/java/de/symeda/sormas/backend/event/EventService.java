@@ -542,6 +542,16 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 			filter = and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 		}
+		if (eventCriteria.getPerson() != null) {
+			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
+			Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.LEFT);
+
+			filter = and(
+				cb,
+				filter,
+				cb.in(personJoin.get(Person.UUID)).value(eventCriteria.getPerson().getUuid()),
+				cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
+		}
 
 		return filter;
 	}
