@@ -5552,6 +5552,8 @@ UPDATE diseaseconfiguration SET casefollowupduration = followupduration;
 UPDATE diseaseconfiguration SET eventparticipantfollowupduration = followupduration;
 
 INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-up duration #3100');
+
+-- 2020-??-?? Create country table #2993
 CREATE TABLE country (
     id bigint NOT NULL,
     uuid varchar(36) not null unique,

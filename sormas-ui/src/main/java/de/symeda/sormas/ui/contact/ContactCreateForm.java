@@ -34,12 +34,12 @@ import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -398,29 +398,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		birthDateDay.addItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
 		if (birthDateDay.containsId(currentlySelected)) {
 			birthDateDay.setValue(currentlySelected);
-		}
-	}
-
-	public void setPerson(PersonDto person) {
-
-		if (person != null) {
-			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
-			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
-			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
-			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
-			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
-		} else {
-			getField(PersonDto.FIRST_NAME).clear();
-			getField(PersonDto.LAST_NAME).clear();
-			getField(PersonDto.BIRTH_DATE_DD).clear();
-			getField(PersonDto.BIRTH_DATE_MM).clear();
-			getField(PersonDto.BIRTH_DATE_YYYY).clear();
-			getField(PersonDto.SEX).clear();
-			getField(PersonDto.PHONE).clear();
-			getField(PersonDto.EMAIL_ADDRESS).clear();
 		}
 	}
 

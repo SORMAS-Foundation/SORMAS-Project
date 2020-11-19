@@ -274,17 +274,18 @@ public class ContactController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 
-							// set the contact person's address to the one of the case when it is currently empty and
-							// the relationship with the case has been set to living in the same household
-							if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-								PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-								if (personDto.getAddress().checkIsEmptyLocation()) {
-									CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-									personDto.getAddress().setRegion(caseDto.getRegion());
-									personDto.getAddress().setDistrict(caseDto.getDistrict());
-									personDto.getAddress().setCommunity(caseDto.getCommunity());
+								// set the contact person's address to the one of the case when it is currently empty and
+								// the relationship with the case has been set to living in the same household
+								if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
+									PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
+									if (personDto.getAddress().checkIsEmptyLocation()) {
+										CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
+										personDto.getAddress().setRegion(caseDto.getRegion());
+										personDto.getAddress().setDistrict(caseDto.getDistrict());
+										personDto.getAddress().setCommunity(caseDto.getCommunity());
+									}
+									FacadeProvider.getPersonFacade().savePerson(personDto);
 								}
-								FacadeProvider.getPersonFacade().savePerson(personDto);
 
 								selectOrCreateContact(
 									dto,
@@ -309,10 +310,10 @@ public class ContactController {
 		final Disease disease;
 		if (eventParticipant.getResultingCase() != null) {
 			disease = FacadeProvider.getCaseFacade().getCaseDataByUuid(eventParticipant.getResultingCase().getUuid()).getDisease();
-			createForm = new ContactCreateForm(disease, true);
+			createForm = new ContactCreateForm(disease, true, false);
 		} else {
 			disease = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()).getDisease();
-			createForm = new ContactCreateForm(disease, false);
+			createForm = new ContactCreateForm(disease, false, false);
 		}
 
 		createForm.setValue(createNewContact(eventParticipant, disease));
