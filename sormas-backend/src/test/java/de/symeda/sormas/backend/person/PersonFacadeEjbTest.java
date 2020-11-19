@@ -142,38 +142,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetLatestQuarantineEndDates() {
-		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
-
-		creator.createPerson(); // Person without contact
-		final PersonDto person1 = creator.createPerson();
-		final PersonDto person2 = creator.createPerson();
-		final ContactDto contact11 = creator.createContact(user.toReference(), person1.toReference());
-		final ContactDto contact12 = creator.createContact(user.toReference(), person1.toReference());
-		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
-
-		Date now = new Date();
-		contact11.setQuarantineTo(DateHelper.subtractDays(now, 20));
-		contact12.setQuarantineTo(DateHelper.subtractDays(now, 8));
-		contact2.setQuarantineTo(now);
-
-		getContactFacade().saveContact(contact11);
-		getContactFacade().saveContact(contact12);
-		getContactFacade().saveContact(contact2);
-
-		List<PersonQuarantineEndDto> quarantineEndDtos = getPersonFacade().getLatestQuarantineEndDates(null);
-
-		assertThat(quarantineEndDtos, hasSize(2));
-		Optional<PersonQuarantineEndDto> result1 = quarantineEndDtos.stream().filter(p -> p.getPersonUuid().equals(person1.getUuid())).findFirst();
-		assertTrue(result1.isPresent());
-		assertTrue(DateHelper.isSameDay(result1.get().getLatestQuarantineEndDate(), DateHelper.subtractDays(now, 8)));
-		Optional<PersonQuarantineEndDto> result2 = quarantineEndDtos.stream().filter(p -> p.getPersonUuid().equals(person2.getUuid())).findFirst();
-		assertTrue(result2.isPresent());
-		assertTrue(DateHelper.isSameDay(result2.get().getLatestQuarantineEndDate(), now));
-	}
-
-	@Test
 	public void testGetFollowUpEndDates() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);

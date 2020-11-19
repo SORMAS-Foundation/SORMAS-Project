@@ -413,7 +413,7 @@ public class CaseController {
 
 				if (convertedContact != null) {
 
-					int incubationPeriod = FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(dto.getDisease());
+					int incubationPeriod = FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(dto.getDisease());
 					List<VisitDto> visits = FacadeProvider.getVisitFacade()
 						.getVisitsByContactAndPeriod(
 							convertedContact.toReference(),
@@ -822,7 +822,7 @@ public class CaseController {
 
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);

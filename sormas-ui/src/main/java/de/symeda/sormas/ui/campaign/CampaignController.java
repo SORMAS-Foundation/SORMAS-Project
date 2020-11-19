@@ -156,7 +156,7 @@ public class CampaignController {
 		}
 		campaignEditForm.setValue(campaignDto);
 
-		final CommitDiscardWrapperComponent<CampaignEditForm> view =
+		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent =
 			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
 
 				@Override
@@ -168,13 +168,26 @@ public class CampaignController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 			CampaignDto finalCampaignDto = campaignDto;
-			view.addDeleteListener(() -> {
+			campaignComponent.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFacade().deleteCampaign(finalCampaignDto.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}
 
-		view.addCommitListener(() -> {
+		// Initialize 'Archive' button
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE)) {
+			final String campaignUuid = campaignDto.getUuid();
+			boolean archived = FacadeProvider.getCampaignFacade().isArchived(campaignUuid);
+			Button archiveCampaignButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
+				campaignComponent.commit();
+				archiveOrDearchiveCampaign(campaignUuid, !archived);
+			}, ValoTheme.BUTTON_LINK);
+
+			campaignComponent.getButtonsPanel().addComponentAsFirst(archiveCampaignButton);
+			campaignComponent.getButtonsPanel().setComponentAlignment(archiveCampaignButton, Alignment.BOTTOM_LEFT);
+		}
+
+		campaignComponent.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
 				CampaignDto dto = campaignEditForm.getValue();
 				FacadeProvider.getCampaignFacade().saveCampaign(dto);
@@ -183,7 +196,7 @@ public class CampaignController {
 			}
 		});
 
-		return view;
+		return campaignComponent;
 	}
 
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(

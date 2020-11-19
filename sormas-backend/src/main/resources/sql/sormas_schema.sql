@@ -5543,4 +5543,30 @@ ALTER TABLE events_history ALTER COLUMN eventdesc DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (274, 'Drop not null constraint from event history description #3391');
 
+-- 2020-11-06 Split follow-up duration #3100
+ALTER TABLE diseaseconfiguration ADD COLUMN casefollowupduration integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN eventparticipantfollowupduration integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN casefollowupduration integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN eventparticipantfollowupduration integer;
+UPDATE diseaseconfiguration SET casefollowupduration = followupduration;
+UPDATE diseaseconfiguration SET eventparticipantfollowupduration = followupduration;
+
+INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-up duration #3100');
+CREATE TABLE country (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    archived boolean not null default false,
+    defaultname varchar(255),
+    externalid varchar(255),
+    isocode varchar(3) unique not null,
+    unocode varchar(3) unique,
+    primary key(id)
+);
+ALTER TABLE country OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (276, 'Create country table #2993');
+
+
 -- *** Insert new sql commands BEFORE this line ***

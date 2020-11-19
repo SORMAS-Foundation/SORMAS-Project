@@ -91,6 +91,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.TASKS, new DatabaseExportConfiguration(Task.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.PERSONS, new DatabaseExportConfiguration(Person.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.LOCATIONS, new DatabaseExportConfiguration(Location.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.COUNTRIES, new DatabaseExportConfiguration(Location.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.REGIONS, new DatabaseExportConfiguration(Region.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.DISTRICTS, new DatabaseExportConfiguration(District.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.COMMUNITIES, new DatabaseExportConfiguration(Community.TABLE_NAME));

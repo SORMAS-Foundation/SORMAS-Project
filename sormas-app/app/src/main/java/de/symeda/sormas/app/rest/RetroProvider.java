@@ -51,7 +51,6 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -87,6 +86,7 @@ public final class RetroProvider {
 	private PersonFacadeRetro personFacadeRetro;
 	private CommunityFacadeRetro communityFacadeRetro;
 	private DistrictFacadeRetro districtFacadeRetro;
+	private CountryFacadeRetro countryFacadeRetro;
 	private RegionFacadeRetro regionFacadeRetro;
 	private FacilityFacadeRetro facilityFacadeRetro;
 	private PointOfEntryFacadeRetro pointOfEntryFacadeRetro;
@@ -482,6 +482,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.districtFacadeRetro;
+	}
+
+	public static CountryFacadeRetro getCountryFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.countryFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.countryFacadeRetro == null) {
+					instance.countryFacadeRetro = instance.retrofit.create(CountryFacadeRetro.class);
+				}
+			}
+		}
+		return instance.countryFacadeRetro;
 	}
 
 	public static RegionFacadeRetro getRegionFacade() throws NoConnectionException {
