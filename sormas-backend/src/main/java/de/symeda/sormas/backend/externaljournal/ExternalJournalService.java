@@ -319,13 +319,9 @@ public class ExternalJournalService {
 	 * 
 	 * @param person
 	 *            the person to validate
-	 * @param calledForTest
-	 *            defines if method makes a call to a patient diary to check for availability of phone and mail addresses.
-	 *            In tests, this call is not made.
-	 *            This boolean should be false unless it's called from tests.
 	 * @return the result of the validation
 	 */
-	public PatientDiaryPersonValidation validatePatientDiaryPerson(PersonDto person, boolean calledForTest) {
+	public PatientDiaryPersonValidation validatePatientDiaryPerson(PersonDto person) {
 		String email = person.getEmailAddress();
 		String phone = person.getPhone();
 		boolean validEmail = true;
@@ -336,9 +332,7 @@ public class ExternalJournalService {
 		if (StringUtils.isNotEmpty(email)) {
 			EmailValidator validator = EmailValidator.getInstance();
 			validEmail = validator.isValid(email);
-			if (!calledForTest) {
-				emailAvailable = isEmailAvailable(person.getEmailAddress());
-			}
+			emailAvailable = isEmailAvailable(person.getEmailAddress());
 		}
 		if (StringUtils.isNotEmpty(phone)) {
 			validPhone = false;
@@ -347,9 +341,7 @@ public class ExternalJournalService {
 				Phonenumber.PhoneNumber germanNumberProto = phoneUtil.parse(phone, "DE");
 				validPhone = phoneUtil.isValidNumber(germanNumberProto);
 				String internationalPhone = phoneUtil.format(germanNumberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-				if (!calledForTest) {
-					phoneAvailable = isPhoneAvailable(internationalPhone);
-				}
+				phoneAvailable = isPhoneAvailable(internationalPhone);
 			} catch (NumberParseException e) {
 				logger.warn("NumberParseException was thrown: " + e.toString());
 			}

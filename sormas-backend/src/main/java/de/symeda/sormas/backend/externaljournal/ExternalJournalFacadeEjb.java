@@ -37,7 +37,7 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 
 	@Override
 	public PatientDiaryPersonValidation validatePatientDiaryPerson(PersonDto person) {
-		return externalJournalService.validatePatientDiaryPerson(person, false);
+		return externalJournalService.validatePatientDiaryPerson(person);
 	}
 
 }

@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.externaljournal;
 
+import de.symeda.sormas.api.externaljournal.PatientDiaryPersonQueryResponse;
 import de.symeda.sormas.api.person.PersonDto;
 
 import de.symeda.sormas.api.person.Sex;
@@ -7,17 +8,40 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
+
+	@Spy
+	private ExternalJournalService externalJournalService;
+
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
+		PatientDiaryPersonQueryResponse patientDiaryPersonQueryResponse = new PatientDiaryPersonQueryResponse();
+		patientDiaryPersonQueryResponse.setCount(0);
+		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test.de");
+		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test");
+		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "heinz@test.de");
+		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService)
+			.queryPatientDiary("Mobile phone", "+49 621 1218490");
+		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService)
+			.queryPatientDiary("Mobile phone", "+49 621 1218491");
+		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "0");;
+	}
 
 	@Test
 	/*
@@ -27,10 +51,11 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void givenValidEmailIsExportable() {
-
+		PatientDiaryPersonQueryResponse response = new PatientDiaryPersonQueryResponse();
+		response.setCount(0);
 		PersonDto person = new PersonDto();
 		person.setEmailAddress("test@test.de");
-		assertTrue(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertTrue(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
 	@Test
@@ -43,9 +68,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	public void givenInvalidEmailIsNotExportable() {
 		PersonDto person = new PersonDto();
 		person.setEmailAddress("test@test");
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 		person.setPhone("+496211218490");
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
 	@Test
@@ -59,7 +84,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		PersonDto person = new PersonDto();
 		person.setPhone("+496211218490");
-		assertTrue(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertTrue(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
 	@Test
@@ -73,9 +98,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		PersonDto person = new PersonDto();
 		person.setPhone("0");
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
 		person.setEmailAddress("test@test.de");
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
 	@Test
@@ -91,7 +116,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		person.setBirthdateYYYY(2000);
 		person.setBirthdateMM(6);
 		person.setBirthdateDD(1);
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
 	@Test
@@ -106,12 +131,12 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		person.setEmailAddress("test@test.de");
 		person.setPhone("+496211218490");
 		person.setBirthdateYYYY(2000);
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 		person.setBirthdateMM(6);
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 		person.setBirthdateYYYY(null);
 		person.setBirthdateDD(1);
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
+		assertFalse(externalJournalService.validatePatientDiaryPerson(person).isValid());
 	}
 
 	@Test
