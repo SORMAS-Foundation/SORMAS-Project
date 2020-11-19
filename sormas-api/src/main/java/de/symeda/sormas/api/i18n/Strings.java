@@ -330,6 +330,7 @@ public interface Strings {
 	String headingImportedCaseInfo = "headingImportedCaseInfo";
 	String headingImportedPersonInfo = "headingImportedPersonInfo";
 	String headingImportError = "headingImportError";
+	String headingImportEventParticipant = "headingImportEventParticipant";
 	String headingImportFacilities = "headingImportFacilities";
 	String headingImportFailed = "headingImportFailed";
 	String headingImportPointsOfEntry = "headingImportPointsOfEntry";
@@ -496,6 +497,7 @@ public interface Strings {
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
+	String infoSelectOrCreatePersonForEventParticipantImport = "infoSelectOrCreatePersonForEventParticipantImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	String infoSpecificEventSearch = "infoSpecificEventSearch";
 	String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
