@@ -877,8 +877,8 @@ public interface Captions {
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
-	String EventParticipant_district = "EventParticipant.district";
 	String EventParticipant_contactCount = "EventParticipant.contactCount";
+	String EventParticipant_district = "EventParticipant.district";
 	String EventParticipant_event = "EventParticipant.event";
 	String EventParticipant_involvementDescription = "EventParticipant.involvementDescription";
 	String EventParticipant_name = "EventParticipant.name";
