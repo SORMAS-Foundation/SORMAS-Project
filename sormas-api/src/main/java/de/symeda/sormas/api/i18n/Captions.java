@@ -51,6 +51,7 @@ public interface Captions {
 	String actionGenerate = "actionGenerate";
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
+	String actionImportAllCountries = "actionImportAllCountries";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
@@ -157,6 +158,7 @@ public interface Captions {
 	String campaignDashboardChartHeight = "campaignDashboardChartHeight";
 	String campaignDashboardChartWidth = "campaignDashboardChartWidth";
 	String campaignDashboardOrder = "campaignDashboardOrder";
+	String campaignDashboardSubTabName = "campaignDashboardSubTabName";
 	String campaignDashboardTabName = "campaignDashboardTabName";
 	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
@@ -531,11 +533,13 @@ public interface Captions {
 	String contactLostToFollowUp = "contactLostToFollowUp";
 	String contactMinusDays = "contactMinusDays";
 	String contactNewContact = "contactNewContact";
+	String contactNoContactsForEventParticipant = "contactNoContactsForEventParticipant";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
 	String contactOnlyWithSharedEventWithSourceCase = "contactOnlyWithSharedEventWithSourceCase";
+	String contactOnlyWithSourceCaseInGivenEvent = "contactOnlyWithSourceCaseInGivenEvent";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
@@ -547,6 +551,12 @@ public interface Captions {
 	String contactSelect = "contactSelect";
 	String convertContactToCase = "convertContactToCase";
 	String convertEventParticipantToCase = "convertEventParticipantToCase";
+	String Country_archived = "Country.archived";
+	String Country_defaultName = "Country.defaultName";
+	String Country_displayName = "Country.displayName";
+	String Country_externalId = "Country.externalId";
+	String Country_isoCode = "Country.isoCode";
+	String Country_unoCode = "Country.unoCode";
 	String creationDate = "creationDate";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
@@ -862,9 +872,12 @@ public interface Captions {
 	String eventLinkToContacts = "eventLinkToContacts";
 	String eventNewEvent = "eventNewEvent";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
+	String eventNoEventLinkedToContact = "eventNoEventLinkedToContact";
+	String eventOnlyWithContactSourceCaseInvolved = "eventOnlyWithContactSourceCaseInvolved";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
+	String EventParticipant_contactCount = "EventParticipant.contactCount";
 	String EventParticipant_event = "EventParticipant.event";
 	String EventParticipant_involvementDescription = "EventParticipant.involvementDescription";
 	String EventParticipant_name = "EventParticipant.name";
@@ -873,6 +886,7 @@ public interface Captions {
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
+	String eventParticipantContactCountOnlyWithSourceCaseInEvent = "eventParticipantContactCountOnlyWithSourceCaseInEvent";
 	String EventParticipantExport_addressCommunity = "EventParticipantExport.addressCommunity";
 	String EventParticipantExport_addressDistrict = "EventParticipantExport.addressDistrict";
 	String EventParticipantExport_addressGpsCoordinates = "EventParticipantExport.addressGpsCoordinates";
@@ -996,7 +1010,7 @@ public interface Captions {
 	String lineListingNewCasesList = "lineListingNewCasesList";
 	String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	String lineListingSharedInformation = "lineListingSharedInformation";
-	String linkEventToCase = "linkEventToCase";
+	String linkEvent = "linkEvent";
 	String Location = "Location";
 	String Location_additionalInformation = "Location.additionalInformation";
 	String Location_addressType = "Location.addressType";
@@ -1683,6 +1697,8 @@ public interface Captions {
 	String View_configuration_areas_short = "View.configuration.areas.short";
 	String View_configuration_communities = "View.configuration.communities";
 	String View_configuration_communities_short = "View.configuration.communities.short";
+	String View_configuration_countries = "View.configuration.countries";
+	String View_configuration_countries_short = "View.configuration.countries.short";
 	String View_configuration_devMode = "View.configuration.devMode";
 	String View_configuration_devMode_short = "View.configuration.devMode.short";
 	String View_configuration_districts = "View.configuration.districts";

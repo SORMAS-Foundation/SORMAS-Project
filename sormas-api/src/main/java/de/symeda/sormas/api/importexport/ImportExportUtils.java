@@ -26,10 +26,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.CharUtils;
+
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.Order;
-import org.apache.commons.lang3.CharUtils;
 
 public final class ImportExportUtils {
 

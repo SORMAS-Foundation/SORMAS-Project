@@ -77,6 +77,24 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardTabName));
 		tabIdColumn.setEditorBinding(tabIdBind);
 
+		final List<String> existingSubTabIds = allElements.stream()
+			.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getSubTabId())
+			.filter(s -> StringUtils.isNotEmpty(s))
+			.distinct()
+			.collect(Collectors.toList());
+		final ComboBox<String> subTabIdCombo = new ComboBox<>(Captions.campaignDashboardSubTabName, existingSubTabIds);
+
+		subTabIdCombo.setEmptySelectionAllowed(true);
+		subTabIdCombo.setTextInputAllowed(true);
+		subTabIdCombo.setNewItemProvider((ComboBox.NewItemProvider<String>) s -> Optional.of(s));
+
+		final Binder.Binding<CampaignDashboardElement, String> subTabIdBind =
+			binder.bind(subTabIdCombo, CampaignDashboardElement::getSubTabId, CampaignDashboardElement::setSubTabId);
+		final Grid.Column<CampaignDashboardElement, String> subTabIdColumn =
+			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getSubTabId())
+				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardSubTabName));
+		subTabIdColumn.setEditorBinding(subTabIdBind);
+
 		TextField width = new TextField(Captions.campaignDashboardChartWidth);
 		Binder.Binding<CampaignDashboardElement, String> widthBind = binder.forField(width)
 			.withValidator(percentValidator(), I18nProperties.getValidationError(Validations.campaignDashboardChartPercentage))

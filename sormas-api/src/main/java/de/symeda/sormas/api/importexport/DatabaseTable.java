@@ -47,6 +47,7 @@ public enum DatabaseTable {
 	PERSONS(DatabaseTableType.SORMAS, null, "persons"),
 	LOCATIONS(DatabaseTableType.SORMAS, null, "locations"),
 	OUTBREAKS(DatabaseTableType.SORMAS, null, "outbreaks"),
+	COUNTRIES(DatabaseTableType.INFRASTRUCTURE, null, "countries"),
 	REGIONS(DatabaseTableType.INFRASTRUCTURE, null, "regions"),
 	DISTRICTS(DatabaseTableType.INFRASTRUCTURE, null, "districts"),
 	COMMUNITIES(DatabaseTableType.INFRASTRUCTURE, null, "communities"),

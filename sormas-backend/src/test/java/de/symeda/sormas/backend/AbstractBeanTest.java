@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.region.CountryFacade;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -295,6 +298,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(FacilityFacadeEjbLocal.class);
 	}
 
+	public CountryFacade getCountryFacade() {
+		return getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
+	}
+
 	public RegionFacade getRegionFacade() {
 		return getBean(RegionFacadeEjbLocal.class);
 	}
@@ -350,6 +357,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public PointOfEntryService getPointOfEntryService() {
 		return getBean(PointOfEntryService.class);
 	}
+
+	public CountryService getCountryService() { return getBean(CountryService.class); }
 
 	public RegionService getRegionService() {
 		return getBean(RegionService.class);

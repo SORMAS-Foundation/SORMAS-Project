@@ -5,8 +5,9 @@ import java.util.Date;
 
 public class InfrastructureChangeDatesDto implements Serializable {
 
-	private static final long serialVersionUID = 3661789242295903774L;
+	private static final long serialVersionUID = 6269655187128160377L;
 
+	private Date countryChangeDate;
 	private Date regionChangeDate;
 	private Date districtChangeDate;
 	private Date communityChangeDate;
@@ -19,6 +20,14 @@ public class InfrastructureChangeDatesDto implements Serializable {
 	private Date featureConfigurationChangeDate;
 	private Date campaignChangeDate;
 	private Date campaignFormMetaChangeDate;
+
+	public Date getCountryChangeDate() {
+		return countryChangeDate;
+	}
+
+	public void setCountryChangeDate(Date countryChangeDate) {
+		this.countryChangeDate = countryChangeDate;
+	}
 
 	public Date getRegionChangeDate() {
 		return regionChangeDate;

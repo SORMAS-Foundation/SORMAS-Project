@@ -48,7 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
+import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -214,11 +214,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		CaseJoins<Case> joins = new CaseJoins<>(root);
 		Join<Case, Person> person = joins.getPerson();
 
-		Predicate filter = caseService.createUserFilter(
-			cb,
-			cq,
-			root,
-			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root, joins));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
@@ -323,7 +320,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
 		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
 		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
-			ExternalPersonValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
+			PatientDiaryPersonValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());
 			}
