@@ -69,6 +69,14 @@ public class EventParticipantDto extends PseudonymizableDto {
 		return eventParticipantDto;
 	}
 
+	public static EventParticipantDto buildFromPerson(PersonDto person, EventReferenceDto event, UserReferenceDto reportingUser) {
+		EventParticipantDto eventParticipantDto = build(event, reportingUser);
+
+		eventParticipantDto.setPerson(person);
+
+		return eventParticipantDto;
+	}
+
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}

@@ -870,6 +870,8 @@ public interface Captions {
 	String eventLinkToContacts = "eventLinkToContacts";
 	String eventNewEvent = "eventNewEvent";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
+	String eventNoEventLinkedToContact = "eventNoEventLinkedToContact";
+	String eventOnlyWithContactSourceCaseInvolved = "eventOnlyWithContactSourceCaseInvolved";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
@@ -1004,7 +1006,7 @@ public interface Captions {
 	String lineListingNewCasesList = "lineListingNewCasesList";
 	String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	String lineListingSharedInformation = "lineListingSharedInformation";
-	String linkEventToCase = "linkEventToCase";
+	String linkEvent = "linkEvent";
 	String Location = "Location";
 	String Location_additionalInformation = "Location.additionalInformation";
 	String Location_addressType = "Location.addressType";

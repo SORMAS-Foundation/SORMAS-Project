@@ -60,6 +60,8 @@ public interface EventParticipantFacade {
 
 	EventParticipantReferenceDto getReferenceByUuid(String uuid);
 
+	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
+
 	List<String> getDeletedUuidsSince(Date date);
 
 	boolean isEventParticipantEditAllowed(String uuid);

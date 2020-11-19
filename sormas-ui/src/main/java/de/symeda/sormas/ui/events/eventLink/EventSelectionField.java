@@ -18,12 +18,11 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.ui.caze.eventLink;
+package de.symeda.sormas.ui.events.eventLink;
 
 import java.util.Date;
 import java.util.function.Consumer;
 
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -36,6 +35,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -58,6 +58,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	private CaseDataDto caseReference;
 	private VerticalLayout mainLayout;
 	private EventSelectionGrid eventGrid;
+	private final String infoPickOrCreateEvent;
 
 	private RadioButtonGroup<String> rbSelectEvent;
 	private RadioButtonGroup<String> rbCreateEvent;
@@ -68,6 +69,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	public EventSelectionField(CaseDataDto caseReference) {
 		this.caseReference = caseReference;
 		this.searchField = new TextField();
+		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventForCase);
 
 		this.criteria = new EventCriteria();
 		criteria.setDisease(caseReference.getDisease());
@@ -76,8 +78,19 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		initializeGrid();
 	}
 
+	public EventSelectionField(ContactDto contact) {
+		this.searchField = new TextField();
+		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventForContact);
+
+		this.criteria = new EventCriteria();
+		criteria.setDisease(contact.getDisease());
+		criteria.setUserFilterIncluded(false);
+
+		initializeGrid();
+	}
+
 	private void addInfoComponent() {
-		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoPickOrCreateEventForCase)));
+		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(infoPickOrCreateEvent));
 	}
 
 	private void addSelectEventRadioGroup() {
@@ -216,8 +229,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter =
-			new EpiWeekAndDateFilterComponent<>(false, false, null, null);
+		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, null);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekTo));
