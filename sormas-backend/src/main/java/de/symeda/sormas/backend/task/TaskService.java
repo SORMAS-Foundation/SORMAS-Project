@@ -27,6 +27,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -40,6 +41,7 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -48,6 +50,9 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -194,13 +199,12 @@ public class TaskService extends AbstractAdoService<Task> {
 	}
 
 	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
+		return buildCriteriaFilter(taskCriteria, cb, from, new TaskJoins(from));
+	}
+
+	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from, TaskJoins joins) {
 
 		Predicate filter = null;
-		Join<Task, Case> caze = from.join(Task.CAZE, JoinType.LEFT);
-		Join<Task, Contact> contact = from.join(Task.CONTACT, JoinType.LEFT);
-		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
-		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
-		Join<Task, User> assigneeUser = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
 		if (taskCriteria.getTaskStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.TASK_STATUS), taskCriteria.getTaskStatus()));
@@ -209,27 +213,22 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), taskCriteria.getTaskType()));
 		}
 		if (taskCriteria.getAssigneeUser() != null) {
-			filter = and(cb, filter, cb.equal(assigneeUser.get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
+			filter = and(cb, filter, cb.equal(joins.getAssignee().get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getExcludeAssigneeUser() != null) {
-			filter = and(cb, filter, cb.notEqual(assigneeUser.get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
+			filter = and(cb, filter, cb.notEqual(joins.getAssignee().get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Task.CAZE, JoinType.LEFT).get(Case.UUID), taskCriteria.getCaze().getUuid()));
+			filter = and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), taskCriteria.getCaze().getUuid()));
 		}
 		if (taskCriteria.getContact() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Task.CONTACT, JoinType.LEFT).get(User.UUID), taskCriteria.getContact().getUuid()));
+			filter = and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), taskCriteria.getContact().getUuid()));
 		}
 		if (taskCriteria.getContactPerson() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.equal(
-					from.join(Task.CONTACT, JoinType.LEFT).join(Contact.PERSON, JoinType.LEFT).get(User.UUID),
-					taskCriteria.getContactPerson().getUuid()));
+			filter = and(cb, filter, cb.equal(joins.getContactPerson().get(User.UUID), taskCriteria.getContactPerson().getUuid()));
 		}
 		if (taskCriteria.getEvent() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Task.EVENT, JoinType.LEFT).get(User.UUID), taskCriteria.getEvent().getUuid()));
+			filter = and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), taskCriteria.getEvent().getUuid()));
 		}
 		if (taskCriteria.getDueDateFrom() != null && taskCriteria.getDueDateTo() != null) {
 			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));
@@ -251,9 +250,74 @@ public class TaskService extends AbstractAdoService<Task> {
 					cb,
 					filter,
 					cb.or(
-						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE), cb.equal(caze.get(Case.ARCHIVED), true)),
-						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(contactCaze.get(Case.ARCHIVED), true)),
-						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(event.get(Event.ARCHIVED), true))));
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE), cb.equal(joins.getCaze().get(Case.ARCHIVED), true)),
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(joins.getContactCase().get(Case.ARCHIVED), true)),
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(joins.getEvent().get(Event.ARCHIVED), true))));
+			}
+		}
+		if (taskCriteria.getTaskContext() != null) {
+			filter = cb.and(filter, cb.equal(from.get(Task.TASK_CONTEXT), taskCriteria.getTaskContext()));
+		}
+		if (taskCriteria.getRegion() != null) {
+			Expression<Object> region = cb.selectCase()
+				.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.UUID))
+				.otherwise(
+					cb.selectCase()
+						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
+						.otherwise(joins.getEventRegion().get(Region.UUID)));
+			filter = and(cb, filter, cb.equal(region, taskCriteria.getRegion().getUuid()));
+		}
+		if (taskCriteria.getDistrict() != null) {
+			Expression<Object> district = cb.selectCase()
+				.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.UUID))
+				.otherwise(
+					cb.selectCase()
+						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
+						.otherwise(joins.getEventDistrict().get(District.UUID)));
+			filter = and(cb, filter, cb.equal(district, taskCriteria.getDistrict().getUuid()));
+		}
+		if (taskCriteria.getFreeText() != null) {
+			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
+			for (String s : textFilters) {
+				String textFilter = "%" + s.toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(joins.getCaze().get(Case.UUID)), textFilter),
+						cb.like(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getContact().get(Contact.UUID)), textFilter),
+						cb.like(cb.lower(joins.getContactPerson().get(Person.LAST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getContactPerson().get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getEvent().get(Event.UUID)), textFilter),
+						cb.like(cb.lower(joins.getEvent().get(Event.EVENT_TITLE)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		if (taskCriteria.getAssigneeUserLike() != null) {
+			String[] textFilters = taskCriteria.getAssigneeUserLike().split("\\s+");
+			for (String s : textFilters) {
+				String textFilter = "%" + s.toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(joins.getAssignee().get(User.LAST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getAssignee().get(User.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getAssignee().get(User.USER_NAME)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		if (taskCriteria.getCreatorUserLike() != null) {
+			String[] textFilters = taskCriteria.getCreatorUserLike().split("\\s+");
+			for (String s : textFilters) {
+				String textFilter = "%" + s.toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(joins.getCreator().get(User.LAST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getCreator().get(User.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(joins.getCreator().get(User.USER_NAME)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
 			}
 		}
 

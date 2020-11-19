@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,6 +64,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -74,6 +77,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -95,6 +99,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private UserService userService;
 	@EJB
 	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
+	@EJB
+	private ContactService contactService;
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -150,7 +156,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		List<String> deletedEventParticipants = eventParticipantService.getDeletedUuidsSince(since, user);
 		return deletedEventParticipants;
-	};
+	}
 
 	@Override
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
@@ -280,6 +286,17 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			indexList = em.createQuery(cq).getResultList();
 		}
 
+		if (!indexList.isEmpty()) {
+			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
+				indexList.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList()),
+				eventParticipantCriteria);
+
+			for (EventParticipantIndexDto eventParticipantIndexDto : indexList) {
+				Optional.ofNullable(eventParticipantContactCount.get(eventParticipantIndexDto.getUuid()))
+					.ifPresent(eventParticipantIndexDto::setContactCount);
+			}
+		}
+
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			EventParticipantIndexDto.class,
@@ -359,6 +376,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			address.get(Location.ADDITIONAL_INFORMATION),
 			address.get(Location.POSTAL_CODE),
 			person.get(Person.PHONE),
+			person.get(Person.EMAIL_ADDRESS),
 
 			resultingCase.get(Case.UUID));
 
@@ -368,6 +386,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		List<EventParticipantExportDto> eventParticipantResultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		if (!eventParticipantResultList.isEmpty()) {
+			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
+				eventParticipantResultList.stream().map(EventParticipantExportDto::getEventParticipantUuid).collect(Collectors.toList()),
+				eventParticipantCriteria);
 
 			Map<Long, Location> personAddresses = null;
 			List<Location> personAddressesList = null;
@@ -416,6 +437,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 					});
 				}
 
+				Optional.ofNullable(eventParticipantContactCount.get(exportDto.getEventParticipantUuid())).ifPresent(exportDto::setContactCount);
+
 				pseudonymizer.pseudonymizeDto(EventParticipantExportDto.class, exportDto, inJurisdiction, (c) -> {
 					pseudonymizer.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
 					pseudonymizer.pseudonymizeDtoCollection(EmbeddedSampleExportDto.class, c.getEventParticipantSamples(), s -> inJurisdiction, null);
@@ -440,6 +463,45 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		cq.where(filter);
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public Map<String, Long> getContactCountPerEventParticipant(
+		List<String> eventParticipantUuids,
+		EventParticipantCriteria eventParticipantCriteria) {
+
+		Map<String, Long> contactCountMap = new HashMap<>();
+
+		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, e -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object[]> contactCount = cb.createQuery(Object[].class);
+			Root<Contact> contact = contactCount.from(Contact.class);
+			Join<Contact, Person> person = contact.join(Contact.PERSON);
+			Join<Person, EventParticipant> eventParticipant = person.join(Person.EVENT_PARTICIPANTS);
+
+			contactCount.where(
+				eventParticipant.get(EventParticipant.UUID).in(eventParticipantUuids),
+				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)),
+				cb.isFalse(contact.get(Contact.DELETED)));
+			if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
+				contactCount.where(
+					contactCount.getRestriction(),
+					contact.join(Contact.CAZE)
+						.get(Case.UUID)
+						.in(
+							eventParticipant.join(EventParticipant.EVENT)
+								.join(Event.EVENT_PERSONS)
+								.join(EventParticipant.RESULTING_CASE)
+								.get(Case.UUID)));
+			}
+			contactCount.multiselect(eventParticipant.get(EventParticipant.UUID), cb.countDistinct(contact.get(Contact.UUID)));
+			contactCount.groupBy(eventParticipant.get(EventParticipant.UUID));
+
+			List<Object[]> resultList = em.createQuery(contactCount).getResultList();
+			resultList.forEach(r -> contactCountMap.put((String) r[0], (Long) r[1]));
+		});
+
+		return contactCountMap;
 	}
 
 	@Override

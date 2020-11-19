@@ -14,6 +14,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
+	public static final String ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT = "onlyCountContactsWithSourceCaseInEvent";
 
 	private EventReferenceDto event;
 	private PersonReferenceDto person;
@@ -21,6 +22,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
+	private Boolean onlyCountContactsWithSourceCaseInEvent;
 
 	@IgnoreForUrl
 	public EventReferenceDto getEvent() {
@@ -78,5 +80,13 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 
 	public void setBirthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
+	}
+
+	public Boolean getOnlyCountContactsWithSourceCaseInEvent() {
+		return onlyCountContactsWithSourceCaseInEvent;
+	}
+
+	public void setOnlyCountContactsWithSourceCaseInEvent(Boolean onlyCountContactsWithSourceCaseInEvent) {
+		this.onlyCountContactsWithSourceCaseInEvent = onlyCountContactsWithSourceCaseInEvent;
 	}
 }

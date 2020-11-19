@@ -567,7 +567,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonAddressFacility().get(Facility.UUID),
 				joins.getPersonAddress().get(Location.FACILITY_DETAILS),
 				// phone
-				joins.getPerson().get(Person.PHONE), joins.getPerson().get(Person.PHONE_OWNER), joins.getPerson().get(Person.EDUCATION_TYPE),
+				joins.getPerson().get(Person.PHONE), joins.getPerson().get(Person.PHONE_OWNER),
+				joins.getPerson().get(Person.EMAIL_ADDRESS),
+				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.TRAVELED), joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
 				joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE), joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),

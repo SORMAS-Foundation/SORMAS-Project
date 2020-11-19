@@ -48,6 +48,15 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 
+/**
+ * This service provides methods for communicating with external symptom journals.
+ * <br>
+ * Currently, 2 symptom journals are supported: PIA and CLIMEDO.
+ * <br>
+ * Methods containing <code>symptomJournal</code> refer to PIA.
+ * <br>
+ * Methods containing <code>patientDiary</code> refer to CLIMEDO.
+ */
 @Stateless
 @LocalBean
 public class ExternalJournalService {
@@ -191,7 +200,7 @@ public class ExternalJournalService {
 	 * @param updatedPerson
 	 *            the updated person in SORMAS
 	 * @return true if the person data change was considered relevant for external journals, false otherwise.
-	 * 
+	 *
 	 */
 	public boolean notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
 		boolean shouldNotify = shouldNotify(existingPerson, updatedPerson);
@@ -316,7 +325,9 @@ public class ExternalJournalService {
 	}
 
 	/**
-	 * 
+	 * Check whether a person has valid data in order to be registered in the patient diary.
+	 * NOTE: since CLIMEDO is only used in Germany, only German numbers are considered valid at the moment
+	 *
 	 * @param person
 	 *            the person to validate
 	 * @return the result of the validation
