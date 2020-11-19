@@ -14,6 +14,13 @@
  */
 package de.symeda.sormas.api.document;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public enum DocumentRelatedEntityType {
-	EVENT
+
+	EVENT;
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

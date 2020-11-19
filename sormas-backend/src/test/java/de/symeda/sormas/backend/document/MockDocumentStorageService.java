@@ -35,8 +35,4 @@ public class MockDocumentStorageService extends DocumentStorageService {
 	public void delete(String storageReference) {
 	}
 
-	@Override
-	public void cleanupUnsavedDocument(DocumentSaved event) {
-
-	}
 }

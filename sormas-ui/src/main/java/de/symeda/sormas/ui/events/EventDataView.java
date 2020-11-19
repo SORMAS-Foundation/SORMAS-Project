@@ -21,7 +21,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.document.DocumentContext;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -98,7 +98,7 @@ public class EventDataView extends AbstractEventView {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			// TODO: user rights?
-			DocumentListComponent documentList = new DocumentListComponent(DocumentContext.EVENT, getEventRef(), UserRight.EVENT_EDIT);
+			DocumentListComponent documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT);
 			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}

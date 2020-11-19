@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,11 +29,28 @@ import javax.persistence.PersistenceContext;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventJurisdictionChecker;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
+/**
+ * Manages documents and their storage.
+ *
+ * <p>
+ * Storage of the document content itself is delegated to {@link DocumentStorageService},
+ * which generates a <i>storage reference</i> that is stored alongside document metadata in the
+ * database ({@link Document} entity).
+ * <p>
+ * Deletion is a two-phase process (see {@link Document#isDeleted()} for details).
+ *
+ * @see DocumentStorageService
+ * @see Document#isDeleted()
+ */
 @Stateless(name = "DocumentFacade")
 public class DocumentFacadeEjb implements DocumentFacade {
 
@@ -49,32 +64,41 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private DocumentStorageService documentStorageService;
 
-	@Inject
-	private Event<DocumentSaved> documentSavedEvent;
+	@EJB
+	private EventService eventService;
+	@EJB
+	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
-		return toDto(documentService.getByUuid(uuid));
+		return convertToDto(documentService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
 	public DocumentDto saveDocument(DocumentDto dto, byte[] content) throws IOException {
 		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
-			// TODO: add exception message
-			throw new EntityExistsException();
+			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
 		}
 
 		Document document = fromDto(dto);
 
-		document.setStorageReference(documentStorageService.save(document, content));
+		String storageReference = documentStorageService.save(document, content);
+		try {
+			document.setStorageReference(storageReference);
 
-		documentService.persist(document);
-		documentService.doFlush();
+			documentService.persist(document);
+			documentService.doFlush();
 
-		documentSavedEvent.fire(new DocumentSaved(document));
-
-		return toDto(document);
+			return convertToDto(document, Pseudonymizer.getDefault(userService::hasRight));
+		} catch (Throwable t) {
+			try {
+				documentStorageService.delete(storageReference);
+			} catch (Throwable t2) {
+				t.addSuppressed(t2);
+			}
+			throw t;
+		}
 	}
 
 	@Override
@@ -85,7 +109,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid) {
-		return documentService.getRelatedToEntity(type, uuid).stream().map(DocumentFacadeEjb::toDto).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return documentService.getRelatedToEntity(type, uuid).stream().map(d -> convertToDto(d, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -101,7 +126,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public void cleanupDeletedDocuments() {
-		List<Document> deleted = documentService.getDeletedDocuments();
+		List<Document> deleted = documentService.getDocumentsMarkedForDeletion();
 		for (Document document : deleted) {
 			documentStorageService.delete(document.getStorageReference());
 			documentService.delete(document);
@@ -121,7 +146,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 		target.setUploadingUser(userService.getByReferenceDto(source.getUploadingUser()));
 		target.setName(source.getName());
-		target.setContentType(source.getContentType());
+		target.setMimeType(source.getMimeType());
 		target.setSize(source.getSize());
 		target.setRelatedEntityUuid(source.getRelatedEntityUuid());
 		target.setRelatedEntityType(source.getRelatedEntityType());
@@ -129,7 +154,35 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		return target;
 	}
 
-	// XXX: pseudonimize uploadingUser? Under which conditions?
+	public DocumentDto convertToDto(Document source, Pseudonymizer pseudonymizer) {
+		DocumentDto documentDto = toDto(source);
+
+		pseudonymizeDto(source, documentDto, pseudonymizer);
+
+		return documentDto;
+	}
+
+	private void pseudonymizeDto(Document document, DocumentDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			switch (dto.getRelatedEntityType()) {
+			case EVENT:
+				pseudonimizeEventRelatedDto(document, dto, pseudonymizer);
+				break;
+			}
+		}
+	}
+
+	private void pseudonimizeEventRelatedDto(Document document, DocumentDto dto, Pseudonymizer pseudonymizer) {
+		assert dto.getRelatedEntityType() == DocumentRelatedEntityType.EVENT;
+
+		Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
+		boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+
+		pseudonymizer.pseudonymizeDto(DocumentDto.class, dto, inJurisdiction, (e) -> {
+			pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser);
+		});
+	}
+
 	public static DocumentDto toDto(Document source) {
 		if (source == null) {
 			return null;
@@ -139,7 +192,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 		target.setUploadingUser(UserFacadeEjb.toReferenceDto(source.getUploadingUser()));
 		target.setName(source.getName());
-		target.setContentType(source.getContentType());
+		target.setMimeType(source.getMimeType());
 		target.setSize(source.getSize());
 		target.setRelatedEntityUuid(source.getRelatedEntityUuid());
 		target.setRelatedEntityType(source.getRelatedEntityType());

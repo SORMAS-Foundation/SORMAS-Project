@@ -1215,7 +1215,7 @@ public class TestDataCreator {
 		DocumentDto document = DocumentDto.build();
 		document.setUploadingUser(uploadingUser);
 		document.setName(name);
-		document.setContentType(contentType);
+		document.setMimeType(contentType);
 		document.setSize(size);
 		document.setRelatedEntityType(relatedEntityType);
 		document.setRelatedEntityUuid(relatedEntityUuid);

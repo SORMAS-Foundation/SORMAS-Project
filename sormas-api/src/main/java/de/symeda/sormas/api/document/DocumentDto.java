@@ -14,12 +14,12 @@
  */
 package de.symeda.sormas.api.document;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class DocumentDto extends EntityDto {
+public class DocumentDto extends PseudonymizableDto {
 
 	public static final String UPLOADING_USER = "uploadingUser";
 	public static final String NAME = "name";
@@ -33,7 +33,7 @@ public class DocumentDto extends EntityDto {
 	@Required
 	private String name;
 	@Required
-	private String contentType;
+	private String mimeType;
 	@Required
 	private long size;
 	@Required
@@ -64,12 +64,12 @@ public class DocumentDto extends EntityDto {
 		this.name = name;
 	}
 
-	public String getContentType() {
-		return contentType;
+	public String getMimeType() {
+		return mimeType;
 	}
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
 	}
 
 	public long getSize() {

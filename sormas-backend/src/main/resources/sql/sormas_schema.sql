@@ -5563,7 +5563,7 @@ CREATE TABLE documents (
     deleted boolean DEFAULT false,
     uploadinguser_id bigint NOT NULL,
     name character varying(255) NOT NULL,
-    contenttype character varying(255) NOT NULL,
+    mimetype character varying(255) NOT NULL,
     size bigint NOT NULL,
     storage_reference character varying(255) NOT NULL,
     relatedentity_uuid character varying(36) NOT NULL,

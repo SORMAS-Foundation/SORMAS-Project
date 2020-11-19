@@ -34,9 +34,9 @@ import com.vaadin.v7.ui.Upload;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.document.DocumentContext;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -50,18 +50,18 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DocumentListComponent extends VerticalLayout {
 
-	private final DocumentContext context;
+	private final DocumentRelatedEntityType relatedEntityType;
 	private final ReferenceDto entityRef;
 	private final UserRight editRight;
 
 	private final VerticalLayout listLayout;
 
-	public DocumentListComponent(DocumentContext context, ReferenceDto entityRef, UserRight editRight) {
+	public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
 
-		this.context = context;
+		this.relatedEntityType = relatedEntityType;
 		this.entityRef = entityRef;
 		this.editRight = editRight;
 
@@ -95,7 +95,7 @@ public class DocumentListComponent extends VerticalLayout {
 		uploadLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 		uploadLayout.setWidth(250, Unit.PIXELS);
 
-		DocumentReceiver receiver = new DocumentReceiver(context.getRelatedEntityType(), entityRef.getUuid(), this::reload);
+		DocumentReceiver receiver = new DocumentReceiver(relatedEntityType, entityRef.getUuid(), this::reload);
 		@SuppressWarnings("deprecation")
 		Upload upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
@@ -108,10 +108,10 @@ public class DocumentListComponent extends VerticalLayout {
 	}
 
 	private void reload() {
-		List<DocumentDto> docs = FacadeProvider.getDocumentFacade().getDocumentsRelatedToEntity(context.getRelatedEntityType(), entityRef.getUuid());
+		List<DocumentDto> docs = FacadeProvider.getDocumentFacade().getDocumentsRelatedToEntity(relatedEntityType, entityRef.getUuid());
 		listLayout.removeAllComponents();
 		if (docs.isEmpty()) {
-			Label noActionsLabel = new Label(String.format(I18nProperties.getCaption(Captions.documentNoDocuments), context.toString()));
+			Label noActionsLabel = new Label(String.format(I18nProperties.getCaption(Captions.documentNoDocuments), relatedEntityType.toString()));
 			setSpacing(false);
 			listLayout.addComponent(noActionsLabel);
 		} else {
@@ -160,7 +160,7 @@ public class DocumentListComponent extends VerticalLayout {
 				return null;
 			}
 		}, document.getName());
-		streamResource.setMIMEType(document.getContentType());
+		streamResource.setMIMEType(document.getMimeType());
 
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(viewButton);

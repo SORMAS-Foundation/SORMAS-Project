@@ -38,7 +38,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -121,7 +120,7 @@ public class DocumentReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 			DocumentDto document = DocumentDto.build();
 			document.setUploadingUser(UserProvider.getCurrent().getUserReference());
 			document.setName(succeededEvent.getFilename());
-			document.setContentType(succeededEvent.getMIMEType());
+			document.setMimeType(succeededEvent.getMIMEType());
 			document.setSize(succeededEvent.getLength());
 			document.setRelatedEntityType(relatedEntityType);
 			document.setRelatedEntityUuid(relatedEntityUuid);

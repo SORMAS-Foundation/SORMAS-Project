@@ -23,14 +23,21 @@ import java.nio.file.StandardOpenOption;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.TransactionPhase;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 
+/**
+ * Handles storage of document content itself.
+ *
+ * <p>
+ * The current implementation stores files on the filesystem, in {@link ConfigFacade#getDocumentFilesPath() documents.path}.
+ * <p>
+ * The computed <i>storage reference</i> is the path of the file, relative to {@code documents.path}.
+ */
 @Stateless
 @LocalBean
 public class DocumentStorageService {
@@ -50,13 +57,6 @@ public class DocumentStorageService {
 		Files.createDirectories(filePath.getParent());
 		Files.write(filePath, content, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
 		return relativePath.toString();
-	}
-
-	/**
-	 * Delete file on disk when a document failed to be saved in database.
-	 */
-	public void cleanupUnsavedDocument(@Observes(during = TransactionPhase.AFTER_FAILURE) DocumentSaved event) {
-		delete(event.getDocument().getStorageReference());
 	}
 
 	public void delete(String storageReference) {

@@ -25,6 +25,7 @@ import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = TABLE_NAME)
@@ -43,12 +44,32 @@ public class Document extends AbstractDomainObject {
 	private boolean deleted;
 	private User uploadingUser;
 	private String name;
-	private String contentType;
+	private String mimeType;
 	private long size;
 	private String storageReference;
 	private String relatedEntityUuid;
 	private DocumentRelatedEntityType relatedEntityType;
 
+	/**
+	 * Indicates whether the document is marked for deletion.
+	 *
+	 * <p>
+	 * Documents aren't directly deleted. They're instead marked for deletion,
+	 * and a nightly process actually deletes both the files and the document
+	 * metadata (this entity).
+	 * <p>
+	 * This allows for non-atomic backups:
+	 * <ol>
+	 * <li>First backup the database, this will include "marked as deleted" documents;
+	 * <li>Then backup the file storage, it might include files for documents added
+	 * since the database backup, and files for documents marked as deleted might
+	 * be <i>missing</i> as they could have already been cleaned up.
+	 * </ol>
+	 * <p>
+	 * Once a document is marked for deletion, it will never be restored.
+	 *
+	 * @see CronService#cleanupDeletedDocuments()
+	 */
 	public boolean isDeleted() {
 		return deleted;
 	}
@@ -75,13 +96,13 @@ public class Document extends AbstractDomainObject {
 		this.name = name;
 	}
 
-	@Column(name = "contenttype")
-	public String getContentType() {
-		return contentType;
+	@Column(name = "mimetype")
+	public String getMimeType() {
+		return mimeType;
 	}
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
 	}
 
 	public long getSize() {

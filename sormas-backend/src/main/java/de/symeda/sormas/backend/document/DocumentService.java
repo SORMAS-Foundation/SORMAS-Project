@@ -88,7 +88,7 @@ public class DocumentService extends AbstractAdoService<Document> {
 		}
 	}
 
-	public List<Document> getDeletedDocuments() {
+	public List<Document> getDocumentsMarkedForDeletion() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
 		Root<Document> from = cq.from(getElementClass());
