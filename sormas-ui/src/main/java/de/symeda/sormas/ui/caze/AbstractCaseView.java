@@ -264,13 +264,12 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 	public void setCaseEditPermission(Component component) {
 
-		Boolean isCaseEditAllowed = isCaseEditAllowed();
-		if (!isCaseEditAllowed) {
+		if (!isCaseEditAllowed()) {
 			component.setEnabled(false);
 		}
 	}
 
-	protected Boolean isCaseEditAllowed() {
+	protected boolean isCaseEditAllowed() {
 		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
 	}
 }

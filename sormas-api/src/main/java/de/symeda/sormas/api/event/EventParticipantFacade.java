@@ -50,6 +50,8 @@ public interface EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
+	EventParticipantDto getByUuid(String uuid);
+
 	void validate(EventParticipantDto eventParticipant);
 
 	long count(EventParticipantCriteria eventParticipantCriteria);
@@ -58,9 +60,13 @@ public interface EventParticipantFacade {
 
 	EventParticipantReferenceDto getReferenceByUuid(String uuid);
 
+	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
+
 	List<String> getDeletedUuidsSince(Date date);
 
 	boolean isEventParticipantEditAllowed(String uuid);
+
+	EventParticipantDto getFirst(EventParticipantCriteria eventParticipantCriteria);
 
 	List<EventParticipantExportDto> getExportList(EventParticipantCriteria eventParticipantCriteria, int first, int max, Language userLanguage);
 
