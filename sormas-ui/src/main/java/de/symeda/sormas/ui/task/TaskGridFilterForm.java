@@ -4,6 +4,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,6 +13,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -208,5 +210,16 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
 			weekAndDateFilter.getDateToFilter().setValue(dateTo);
 		}
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {
+		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
+		@SuppressWarnings("unchecked")
+		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter =
+			(EpiWeekAndDateFilterComponent<NewCaseDateType>) dateFilterLayout.getComponent(0);
+
+		return super.streamFieldsForEmptyCheck(layout).filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
 	}
 }
