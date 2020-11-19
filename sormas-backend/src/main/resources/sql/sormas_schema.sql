@@ -5552,6 +5552,21 @@ UPDATE diseaseconfiguration SET casefollowupduration = followupduration;
 UPDATE diseaseconfiguration SET eventparticipantfollowupduration = followupduration;
 
 INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-up duration #3100');
+CREATE TABLE country (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    archived boolean not null default false,
+    defaultname varchar(255),
+    externalid varchar(255),
+    isocode varchar(3) unique not null,
+    unocode varchar(3) unique,
+    primary key(id)
+);
+ALTER TABLE country OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (276, 'Create country table #2993');
 
 -- 2020-10-15 New exposure entity and migration #2948
 ALTER TABLE epidata ADD COLUMN exposuredetailsknown varchar(255);
@@ -5688,7 +5703,7 @@ DROP TABLE epidataburial_history;
 DROP TABLE epidatagathering_history;
 DROP TABLE epidatatravel_history;
 
-INSERT INTO schema_version (version_number, comment) VALUES (276, 'New exposure entity and migration #2948');
+INSERT INTO schema_version (version_number, comment) VALUES (277, 'New exposure entity and migration #2948');
 
 -- 2020-10-21 Epi data migration #2949
 ALTER TABLE epidata ADD COLUMN contactwithsourcecaseknown varchar(255);
@@ -5834,8 +5849,10 @@ UPDATE epidata SET exposuredetailsknown = 'YES' WHERE (exposuredetailsknown IS N
 
 UPDATE epidata SET changedate = now();
 
-INSERT INTO schema_version (version_number, comment) VALUES (277, 'Epi data migration #2949');
+INSERT INTO schema_version (version_number, comment) VALUES (278, 'Epi data migration #2949');
 
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id > 0);
+
+INSERT INTO schema_version (version_number, comment) VALUES (279, 'Set contact with source case known for all existing cases #2946');
 -- *** Insert new sql commands BEFORE this line ***

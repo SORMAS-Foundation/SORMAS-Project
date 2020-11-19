@@ -107,6 +107,17 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	}
 
 	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
+	protected <F extends Field> F addField(FieldConfiguration configuration, Class<F> fieldType) {
+		Field field = addField(getContent(), configuration.getPropertyId(), fieldType);
+
+		applyFieldConfiguration(configuration, field);
+
+		return (F) field;
+	}
+
+	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
 	protected <F extends Field> F addField(CustomLayout layout, FieldConfiguration configuration) {

@@ -100,6 +100,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDao;
+import de.symeda.sormas.app.backend.region.Country;
+import de.symeda.sormas.app.backend.region.CountryDao;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
@@ -150,7 +152,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 246;
+	public static final int DATABASE_VERSION = 247;
 
 	private static DatabaseHelper instance = null;
 
@@ -226,6 +228,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, Facility.class);
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
+				TableUtils.clearTable(connectionSource, Country.class);
 				TableUtils.clearTable(connectionSource, Region.class);
 				TableUtils.clearTable(connectionSource, Campaign.class);
 				TableUtils.clearTable(connectionSource, CampaignFormMeta.class);
@@ -253,6 +256,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			Log.i(DatabaseHelper.class.getName(), "onCreate");
 			TableUtils.createTableIfNotExists(connectionSource, Config.class);
 			TableUtils.createTable(connectionSource, Location.class);
+			TableUtils.createTable(connectionSource, Country.class);
 			TableUtils.createTable(connectionSource, Region.class);
 			TableUtils.createTable(connectionSource, District.class);
 			TableUtils.createTable(connectionSource, Community.class);
@@ -1726,6 +1730,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 242:
 				currentVersion = 242;
+				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN archived SMALLINT DEFAULT 0;");
+			case 243:
+				currentVersion = 243;
 				TableUtils.createTable(connectionSource, Exposure.class);
 
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN exposureDetailsKnown varchar(255);");
@@ -1741,18 +1748,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EpiData.class).executeRaw("DROP TABLE epidatatravel;");
 				getDao(EpiData.class).executeRaw("DROP TABLE epidataburial;");
 
-			case 243:
-				currentVersion = 243;
+			case 244:
+				currentVersion = 244;
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN contactWithSourceCaseKnown varchar(255);");
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN highTransmissionRiskArea varchar(255);");
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN largeOutbreaksArea varchar(255);");
 
-			case 244:
-				currentVersion = 244;
-				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN exposureDetailsKnown varchar(255);");
-
 			case 245:
 				currentVersion = 245;
+				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN exposureDetailsKnown varchar(255);");
+
+			case 246:
+				currentVersion = 246;
 
 				migrateEpiData();
 
@@ -2067,6 +2074,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, PortHealthInfo.class, true);
 			TableUtils.dropTable(connectionSource, Person.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
+			TableUtils.dropTable(connectionSource, Country.class, true);
 			TableUtils.dropTable(connectionSource, Region.class, true);
 			TableUtils.dropTable(connectionSource, District.class, true);
 			TableUtils.dropTable(connectionSource, Community.class, true);
@@ -2136,6 +2144,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new PointOfEntryDao((Dao<PointOfEntry, Long>) innerDao);
 				} else if (type.equals(Facility.class)) {
 					dao = (AbstractAdoDao<ADO>) new FacilityDao((Dao<Facility, Long>) innerDao);
+				} else if (type.equals(Country.class)) {
+					dao = (AbstractAdoDao<ADO>) new CountryDao((Dao<Country, Long>) innerDao);
 				} else if (type.equals(Region.class)) {
 					dao = (AbstractAdoDao<ADO>) new RegionDao((Dao<Region, Long>) innerDao);
 				} else if (type.equals(District.class)) {
@@ -2311,6 +2321,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static FacilityDao getFacilityDao() {
 		return (FacilityDao) getAdoDao(Facility.class);
+	}
+
+	public static CountryDao getCountryDao() {
+		return (CountryDao) getAdoDao(Country.class);
 	}
 
 	public static RegionDao getRegionDao() {

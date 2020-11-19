@@ -276,7 +276,7 @@ public class LocationDto extends PseudonymizableDto {
 			additionalInformation);
 	}
 
-	public boolean isEmptyLocation() {
+	public boolean checkIsEmptyLocation() {
 		return details == null
 			&& city == null
 			&& areaType == null

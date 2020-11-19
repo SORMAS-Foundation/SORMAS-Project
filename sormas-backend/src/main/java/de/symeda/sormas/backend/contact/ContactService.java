@@ -1184,6 +1184,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getEventUuid() != null) {
 			filter = and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), contactCriteria.getEventUuid()));
 		}
+		if (contactCriteria.getEventParticipant() != null) {
+			filter =
+				and(cb, filter, cb.equal(joins.getEventParticipants().get(EventParticipant.UUID), contactCriteria.getEventParticipant().getUuid()));
+		}
+		if (contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent() != null) {
+			filter =
+				and(cb, filter, cb.equal(joins.getCaseEvent().get(Event.UUID), contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent().getUuid()));
+		}
 
 		return filter;
 	}

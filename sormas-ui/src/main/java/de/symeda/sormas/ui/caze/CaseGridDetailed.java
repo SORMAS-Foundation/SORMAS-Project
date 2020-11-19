@@ -48,8 +48,8 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 		return Stream.concat(
 			super.getPersonColumns(),
 			Stream.of(
-				CaseIndexDetailedDto.AGE_AND_BIRTH_DATE,
 				CaseIndexDetailedDto.SEX,
+				CaseIndexDetailedDto.AGE_AND_BIRTH_DATE,
 				CaseIndexDetailedDto.CITY,
 				CaseIndexDetailedDto.STREET,
 				CaseIndexDetailedDto.HOUSE_NUMBER,

@@ -17,6 +17,8 @@ public interface Validations {
 	String campaignDashboardChartIdDoesNotExist = "campaignDashboardChartIdDoesNotExist";
 	String campaignDashboardChartPercentage = "campaignDashboardChartPercentage";
 	String campaignDashboardChartValueNull = "campaignDashboardChartValueNull";
+	String campaignDashboardDataFormValueDuplicate = "campaignDashboardDataFormValueDuplicate";
+	String campaignDashboardDataFormValueNull = "campaignDashboardDataFormValueNull";
 	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
@@ -52,6 +54,8 @@ public interface Validations {
 	String importCasesUnexpectedError = "importCasesUnexpectedError";
 	String importCommunityAlreadyExists = "importCommunityAlreadyExists";
 	String importCommunityNotUnique = "importCommunityNotUnique";
+	String importCountryAlreadyExists = "importCountryAlreadyExists";
+	String importCountryEmptyIso = "importCountryEmptyIso";
 	String importDistrictAlreadyExists = "importDistrictAlreadyExists";
 	String importDistrictNotUnique = "importDistrictNotUnique";
 	String importEntryCommunityNotInUsersJurisdiction = "importEntryCommunityNotInUsersJurisdiction";

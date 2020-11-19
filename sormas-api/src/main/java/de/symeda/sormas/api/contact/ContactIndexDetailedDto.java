@@ -22,7 +22,9 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String DISTRICT_NAME = "districtName";
 	public static final String CITY = "city";
-	public static final String ADDRESS = "address";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
+	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String POSTAL_CODE = "postalCode";
 	public static final String PHONE = "phone";
 	public static final String REPORTING_USER = "reportingUser";
@@ -36,7 +38,13 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private String city;
 	@PersonalData
 	@SensitiveData
-	private String address;
+	private String street;
+	@PersonalData
+	@SensitiveData
+	private String houseNumber;
+	@PersonalData
+	@SensitiveData
+	private String additionalInformation;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
@@ -58,7 +66,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, String caseDistrictName, String caseCommunityUuid,
 								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate, String externalID,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
-								   String city, String street, String houseNumber, String postalCode, String phone,
+								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName, int visitCount, long eventCount
 	) {
 	//@formatter:on
@@ -73,7 +81,9 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.city = city;
-		this.address = LocationDto.buildStreetAndHouseNumberCaption(street, houseNumber);
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
@@ -92,8 +102,16 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		return city;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getStreet() {
+		return street;
+	}
+
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public String getAdditionalInformation() {
+		return additionalInformation;
 	}
 
 	public String getPostalCode() {

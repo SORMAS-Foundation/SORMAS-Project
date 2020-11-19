@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.campaign.diagram;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 import java.util.List;
 
@@ -12,6 +14,12 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
 	private List<CampaignDiagramSeries> campaignSeriesTotal;
 	private boolean percentageDefault;
+
+	public static CampaignDiagramDefinitionDto build() {
+		CampaignDiagramDefinitionDto campaignDiagramDefinition = new CampaignDiagramDefinitionDto();
+		campaignDiagramDefinition.setUuid(DataHelper.createUuid());
+		return campaignDiagramDefinition;
+	}
 
 	public String getDiagramId() {
 		return diagramId;

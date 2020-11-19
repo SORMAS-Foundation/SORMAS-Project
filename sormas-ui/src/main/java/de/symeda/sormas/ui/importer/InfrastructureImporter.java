@@ -45,7 +45,7 @@ public class InfrastructureImporter extends DataImporter {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean firstLine)
-		throws IOException, InvalidColumnException, InterruptedException {
+		throws IOException, InvalidColumnException {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {

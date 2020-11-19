@@ -37,6 +37,8 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
+import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -98,6 +100,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseCon
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
@@ -985,6 +988,15 @@ public class TestDataCreator {
 		return campaign;
 	}
 
+	public CampaignDiagramDefinitionDto createCampaignDiagramDefinition(String diagramId, String diagramCaption){
+		CampaignDiagramDefinitionDto campaignDiagramDefinition = CampaignDiagramDefinitionDto.build();
+		campaignDiagramDefinition.setDiagramType(DiagramType.COLUMN);
+		campaignDiagramDefinition.setDiagramId(diagramId);
+		campaignDiagramDefinition.setDiagramCaption(diagramCaption);
+
+		return campaignDiagramDefinition;
+	}
+
 	public CampaignFormMetaDto createCampaignForm(CampaignDto campaign) throws IOException {
 
 		CampaignFormMetaDto campaignForm;
@@ -1090,6 +1102,17 @@ public class TestDataCreator {
 		Facility facility = createFacility(facilityName, region, district, community);
 
 		return new RDCFEntities(region, district, community, facility);
+	}
+
+	public Country createCountry(String countryName, String isoCode, String unoCode) {
+		Country country = new Country();
+		country.setUuid(DataHelper.createUuid());
+		country.setDefaultName(countryName);
+		country.setIsoCode(isoCode);
+		country.setUnoCode(unoCode);
+		beanTest.getCountryService().persist(country);
+
+		return country;
 	}
 
 	public Region createRegion(String regionName) {

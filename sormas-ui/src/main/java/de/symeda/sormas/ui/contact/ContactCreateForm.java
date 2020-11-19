@@ -34,15 +34,16 @@ import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -466,5 +467,50 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	public void setPerson(PersonDto person) {
+		if (person != null) {
+			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
+			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
+			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
+			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
+			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
+			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
+		} else {
+			getField(PersonDto.FIRST_NAME).clear();
+			getField(PersonDto.LAST_NAME).clear();
+			getField(PersonDto.BIRTH_DATE_DD).clear();
+			getField(PersonDto.BIRTH_DATE_MM).clear();
+			getField(PersonDto.BIRTH_DATE_YYYY).clear();
+			getField(PersonDto.SEX).clear();
+			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
+			getField(PersonDto.PASSPORT_NUMBER).clear();
+			getField(PersonDto.PHONE).clear();
+			getField(PersonDto.EMAIL_ADDRESS).clear();
+		}
+	}
+
+	public void setPersonDetailsReadOnly() {
+		setEnabled(
+			false,
+			PersonDto.FIRST_NAME,
+			PersonDto.LAST_NAME,
+			PersonDto.SEX,
+			PersonDto.BIRTH_DATE_YYYY,
+			PersonDto.BIRTH_DATE_MM,
+			PersonDto.BIRTH_DATE_DD,
+			PersonDto.NATIONAL_HEALTH_ID,
+			PersonDto.PASSPORT_NUMBER,
+			PersonDto.PHONE,
+			PersonDto.EMAIL_ADDRESS);
+	}
+
+	public void setDiseaseReadOnly() {
+		getField(CaseDataDto.DISEASE).setEnabled(false);
 	}
 }
