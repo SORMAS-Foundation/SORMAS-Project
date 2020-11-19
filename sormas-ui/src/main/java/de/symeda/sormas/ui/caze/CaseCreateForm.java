@@ -163,7 +163,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox presentCondition = addCustomField(PersonDto.PRESENT_CONDITION, PresentCondition.class, ComboBox.class);
 		presentCondition.setCaption(I18nProperties.getCaption(Captions.Person_presentCondition));
 
-		addCustomField(SymptomsDto.ONSET_DATE, Date.class, DateField.class, I18nProperties.getCaption(Captions.Symptoms_onsetDate));
+		addCustomField(
+			SymptomsDto.ONSET_DATE,
+			Date.class,
+			DateField.class,
+			I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 
 		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
