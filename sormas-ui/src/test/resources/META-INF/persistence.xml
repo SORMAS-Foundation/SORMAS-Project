@@ -26,6 +26,7 @@
 		<class>de.symeda.sormas.backend.region.Community</class>
 		<class>de.symeda.sormas.backend.region.District</class>
 		<class>de.symeda.sormas.backend.region.Region</class>
+		<class>de.symeda.sormas.backend.region.Country</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
 		<class>de.symeda.sormas.backend.sample.Sample</class>

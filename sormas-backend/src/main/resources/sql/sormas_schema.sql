@@ -5553,8 +5553,23 @@ UPDATE diseaseconfiguration SET eventparticipantfollowupduration = followupdurat
 
 INSERT INTO schema_version (version_number, comment) VALUES (275, 'Split follow-up duration #3100');
 
--- 2020-11-17 Manually send SMS #3253
+CREATE TABLE country (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    archived boolean not null default false,
+    defaultname varchar(255),
+    externalid varchar(255),
+    isocode varchar(3) unique not null,
+    unocode varchar(3) unique,
+    primary key(id)
+);
+ALTER TABLE country OWNER TO sormas_user;
 
+INSERT INTO schema_version (version_number, comment) VALUES (276, 'Create country table #2993');
+
+-- 2020-11-17 Manually send SMS #3253
 CREATE TABLE manualmessagelog
 (
     id             bigint                      NOT NULL,
@@ -5571,5 +5586,5 @@ ALTER TABLE manualmessagelog OWNER TO sormas_user;
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id FOREIGN KEY (sendinguser_id) REFERENCES users(id);
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (276, 'Manually send SMS #3253');
+INSERT INTO schema_version (version_number, comment) VALUES (277, 'Manually send SMS #3253');
 -- *** Insert new sql commands BEFORE this line ***
