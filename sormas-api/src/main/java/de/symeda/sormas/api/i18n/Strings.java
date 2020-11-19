@@ -809,6 +809,12 @@ public interface Strings {
 	String promptSamplesSearchField = "promptSamplesSearchField";
 	String promptSearch = "promptSearch";
 	String promptSelectPeriod = "promptSelectPeriod";
+	String promptTaskDateFrom = "promptTaskDateFrom";
+	String promptTaskDateTo = "promptTaskDateTo";
+	String promptTaskDateType = "promptTaskDateType";
+	String promptTaskEpiWeekFrom = "promptTaskEpiWeekFrom";
+	String promptTaskEpiWeekTo = "promptTaskEpiWeekTo";
+	String promptTaskSearchField = "promptTaskSearchField";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";

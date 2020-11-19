@@ -101,6 +101,8 @@ public class ContactExportDto implements Serializable {
 	private String facility;
 	@SensitiveData
 	private String phone;
+	@SensitiveData
+	private String emailAddress;
 	private String occupationType;
 	private int numberOfVisits;
 	private YesNoUnknown lastCooperativeVisitSymptomatic;
@@ -154,7 +156,7 @@ public class ContactExportDto implements Serializable {
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 							String facility, String facilityUuid, String facilityDetails,
-							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
+							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
 							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler, long eventCount, String externalID,
@@ -211,6 +213,7 @@ public class ContactExportDto implements Serializable {
 		this.postalCode = postalCode;
 		this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility, facilityDetails);
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
+		this.emailAddress = emailAddress;
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
 		this.region = region;
 		this.district = district;
@@ -520,6 +523,11 @@ public class ContactExportDto implements Serializable {
 		return phone;
 	}
 
+	@Order(53)
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
 	@Order(60)
 	public String getOccupationType() {
 		return occupationType;
@@ -729,6 +737,10 @@ public class ContactExportDto implements Serializable {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public void setOccupationType(String occupationType) {
