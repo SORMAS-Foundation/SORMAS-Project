@@ -359,6 +359,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			address.get(Location.ADDITIONAL_INFORMATION),
 			address.get(Location.POSTAL_CODE),
 			person.get(Person.PHONE),
+			person.get(Person.EMAIL_ADDRESS),
 
 			resultingCase.get(Case.UUID));
 

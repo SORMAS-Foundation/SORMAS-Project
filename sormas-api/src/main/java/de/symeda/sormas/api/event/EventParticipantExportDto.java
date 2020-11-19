@@ -132,6 +132,8 @@ public class EventParticipantExportDto implements Serializable {
 	private String addressGpsCoordinates;
 	@SensitiveData
 	private String phone;
+	@SensitiveData
+	private String emailAddress;
 
 	private String caseUuid;
 
@@ -140,14 +142,14 @@ public class EventParticipantExportDto implements Serializable {
 	private EventParticipantJurisdictionDto jurisdiction;
 
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid, 
-									 
+    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid,
+
 									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
-									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
-									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
+									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType,
+									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate,
 									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
-									 String additionalInformation, String postalCode, String phone, String caseUuid) {
+									 String additionalInformation, String postalCode, String phone, String emailAddress, String caseUuid) {
     	//@formatter:on
 
 		this.id = id;
@@ -192,6 +194,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = phone;
+		this.emailAddress = emailAddress;
 		this.caseUuid = caseUuid;
 
 		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
@@ -321,6 +324,11 @@ public class EventParticipantExportDto implements Serializable {
 	@Order(40)
 	public String getPhone() {
 		return phone;
+	}
+
+	@Order(41)
+	public String getEmailAddress() {
+    	return emailAddress;
 	}
 
 	@Order(42)
@@ -534,6 +542,10 @@ public class EventParticipantExportDto implements Serializable {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public void setCaseUuid(String caseUuid) {
