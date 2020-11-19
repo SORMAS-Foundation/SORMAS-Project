@@ -19,6 +19,7 @@ package de.symeda.sormas.api.event;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -55,6 +56,8 @@ public interface EventParticipantFacade {
 	void validate(EventParticipantDto eventParticipant);
 
 	long count(EventParticipantCriteria eventParticipantCriteria);
+
+	Map<String, Long> getContactCountPerEventParticipant(List<String> eventParticipantUuids, EventParticipantCriteria eventParticipantCriteria);
 
 	boolean exists(String uuid);
 

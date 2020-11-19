@@ -65,6 +65,7 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String PERSON_NATIONAL_HEALTH_ID = "personNationalHealthId";
 	public static final String EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION = "eventParticipantInvolvmentDescription";
 	public static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
+	public static final String CONTACT_COUNT = "contactCount";
 
 	private long id;
 	private long personId;
@@ -140,6 +141,8 @@ public class EventParticipantExportDto implements Serializable {
 	private List<EmbeddedSampleExportDto> eventParticipantSamples = new ArrayList<>();
 
 	private EventParticipantJurisdictionDto jurisdiction;
+
+	private long contactCount;
 
 	//@formatter:off
     public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid,
@@ -438,6 +441,16 @@ public class EventParticipantExportDto implements Serializable {
 	@ExportProperty(EventParticipantExportDto.EVENT_HOUSE_NUMBER)
 	public String getEventHouseNumber() {
 		return eventHouseNumber;
+	}
+
+	@Order(65)
+	@ExportProperty(EventParticipantExportDto.CONTACT_COUNT)
+	public Long getContactCount() {
+		return contactCount;
+	}
+
+	public void setContactCount(Long contactCount) {
+		this.contactCount = contactCount;
 	}
 
 	public List<EmbeddedSampleExportDto> getEventParticipantSamples() {
