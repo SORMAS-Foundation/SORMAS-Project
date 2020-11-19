@@ -64,8 +64,8 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -208,6 +208,20 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
 		return results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+	}
+
+	public Event getEventReferenceByEventParticipant(String eventParticipantUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(Event.class);
+		Root<Event> event = cq.from(Event.class);
+
+		Predicate filter = createDefaultFilter(cb, event);
+		filter = and(cb, filter, cb.equal(event.join(Event.EVENT_PERSONS).get(EventParticipant.UUID), eventParticipantUuid));
+		filter = and(cb, filter, createUserFilter(cb, cq, event));
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
 	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
@@ -527,6 +541,16 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			filter = and(cb, filter, cb.equal(caseJoin.get(Case.UUID), eventCriteria.getCaze().getUuid()));
 
 			filter = and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
+		}
+		if (eventCriteria.getPerson() != null) {
+			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
+			Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.LEFT);
+
+			filter = and(
+				cb,
+				filter,
+				cb.in(personJoin.get(Person.UUID)).value(eventCriteria.getPerson().getUuid()),
+				cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 		}
 
 		return filter;

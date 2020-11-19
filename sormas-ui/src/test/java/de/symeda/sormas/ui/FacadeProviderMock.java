@@ -32,6 +32,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
@@ -60,6 +61,7 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntr
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
@@ -100,6 +102,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) bm.getBean(SymptomsFacadeEjbLocal.class);
 		} else if (FacilityFacade.class == clazz) {
 			return (P) bm.getBean(FacilityFacadeEjbLocal.class);
+		} else if (CountryFacade.class == clazz) {
+			return (P) bm.getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
 		} else if (RegionFacade.class == clazz) {
 			return (P) bm.getBean(RegionFacadeEjbLocal.class);
 		} else if (DistrictFacade.class == clazz) {

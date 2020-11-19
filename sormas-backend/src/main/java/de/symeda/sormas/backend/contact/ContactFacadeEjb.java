@@ -483,6 +483,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getAddress().get(Location.FACILITY_DETAILS),
 					joins.getPerson().get(Person.PHONE),
 					joins.getPerson().get(Person.PHONE_OWNER),
+					joins.getPerson().get(Person.EMAIL_ADDRESS),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
 					joins.getRegion().get(Region.NAME),

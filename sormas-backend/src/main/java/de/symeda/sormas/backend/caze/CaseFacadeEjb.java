@@ -428,7 +428,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		List<CaseIndexDto> cases;
 		if (first != null && max != null) {
-			TypedQuery query = em.createQuery(cq);
+			TypedQuery<CaseIndexDto> query = em.createQuery(cq);
 			cases = query.setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
 			cases = em.createQuery(cq).getResultList();
@@ -567,7 +567,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonAddressFacility().get(Facility.UUID),
 				joins.getPersonAddress().get(Location.FACILITY_DETAILS),
 				// phone
-				joins.getPerson().get(Person.PHONE), joins.getPerson().get(Person.PHONE_OWNER), joins.getPerson().get(Person.EDUCATION_TYPE),
+				joins.getPerson().get(Person.PHONE), joins.getPerson().get(Person.PHONE_OWNER),
+				joins.getPerson().get(Person.EMAIL_ADDRESS),
+				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.TRAVELED), joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
 				joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE), joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
@@ -2992,7 +2994,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<CaseFollowUpDto> cq = cb.createQuery(CaseFollowUpDto.class);
 		Root<Case> caze = cq.from(Case.class);
 
-		CaseJoins joins = new CaseJoins(caze);
+		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
 		final Stream<Selection<?>> select = Stream.of(
 			caze.get(Case.UUID),
@@ -3089,15 +3091,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultList;
 	}
 
+	public boolean isCaseEditAllowed(String caseUuid) {
+		Case caze = caseService.getByUuid(caseUuid);
+
+		return caseService.isCaseEditAllowed(caze);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 
-	}
-
-	public Boolean isCaseEditAllowed(String caseUuid) {
-		Case caze = caseService.getByUuid(caseUuid);
-
-		return caseService.isCaseEditAllowed(caze);
 	}
 }

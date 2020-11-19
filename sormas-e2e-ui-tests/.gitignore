@@ -8,13 +8,11 @@
 .project
 .idea
 
+.classpath
+
 .gradle
-gradle*
-.project
 
-# Exclude folder content (except .gitkeep)
-Reports/*
-!Reports/.gitkeep
+Reports
 
-Checkpoints/*
-!Checkpoints/.gitkeep
+Checkpoints
+
