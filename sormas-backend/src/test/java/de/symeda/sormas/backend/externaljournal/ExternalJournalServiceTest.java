@@ -30,7 +30,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		PersonDto person = new PersonDto();
 		person.setEmailAddress("test@test.de");
-		assertTrue(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertTrue(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 	}
 
 	@Test
@@ -43,9 +43,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	public void givenInvalidEmailIsNotExportable() {
 		PersonDto person = new PersonDto();
 		person.setEmailAddress("test@test");
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 		person.setPhone("+496211218490");
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		PersonDto person = new PersonDto();
 		person.setPhone("+496211218490");
-		assertTrue(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertTrue(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 	}
 
 	@Test
@@ -73,9 +73,9 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		PersonDto person = new PersonDto();
 		person.setPhone("0");
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 		person.setEmailAddress("test@test.de");
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 	}
 
 	@Test
@@ -91,7 +91,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		person.setBirthdateYYYY(2000);
 		person.setBirthdateMM(6);
 		person.setBirthdateDD(1);
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 	}
 
 	@Test
@@ -106,12 +106,12 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		person.setEmailAddress("test@test.de");
 		person.setPhone("+496211218490");
 		person.setBirthdateYYYY(2000);
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 		person.setBirthdateMM(6);
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 		person.setBirthdateYYYY(null);
 		person.setBirthdateDD(1);
-		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person).isValid());
+		assertFalse(getExternalJournalService().validatePatientDiaryPerson(person, true).isValid());
 	}
 
 	@Test

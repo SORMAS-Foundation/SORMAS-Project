@@ -312,19 +312,20 @@ public class ExternalJournalService {
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
 		String externalDataUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/external-data/" + personUuid;
 		Client client = ClientBuilder.newClient();
-		return client.target(externalDataUrl)
-				.request(MediaType.APPLICATION_JSON)
-				.header("x-access-token", getPatientDiaryAuthToken());
+		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken());
 	}
 
 	/**
-	 * Check whether a person has valid data in order to be registered in the patient diary
 	 * 
 	 * @param person
 	 *            the person to validate
+	 * @param calledForTest
+	 *            defines if method makes a call to a patient diary to check for availability of phone and mail addresses.
+	 *            In tests, this call is not made.
+	 *            This boolean should be false unless it's called from tests.
 	 * @return the result of the validation
 	 */
-	public PatientDiaryPersonValidation validatePatientDiaryPerson(PersonDto person) {
+	public PatientDiaryPersonValidation validatePatientDiaryPerson(PersonDto person, boolean calledForTest) {
 		String email = person.getEmailAddress();
 		String phone = person.getPhone();
 		boolean validEmail = true;
@@ -335,7 +336,9 @@ public class ExternalJournalService {
 		if (StringUtils.isNotEmpty(email)) {
 			EmailValidator validator = EmailValidator.getInstance();
 			validEmail = validator.isValid(email);
-			emailAvailable = isEmailAvailable(person.getEmailAddress());
+			if (!calledForTest) {
+				emailAvailable = isEmailAvailable(person.getEmailAddress());
+			}
 		}
 		if (StringUtils.isNotEmpty(phone)) {
 			validPhone = false;
@@ -344,7 +347,9 @@ public class ExternalJournalService {
 				Phonenumber.PhoneNumber germanNumberProto = phoneUtil.parse(phone, "DE");
 				validPhone = phoneUtil.isValidNumber(germanNumberProto);
 				String internationalPhone = phoneUtil.format(germanNumberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-				phoneAvailable = isPhoneAvailable(internationalPhone);
+				if (!calledForTest) {
+					phoneAvailable = isPhoneAvailable(internationalPhone);
+				}
 			} catch (NumberParseException e) {
 				logger.warn("NumberParseException was thrown: " + e.toString());
 			}
@@ -361,14 +366,14 @@ public class ExternalJournalService {
 
 	private boolean isEmailAvailable(String emailAddress) {
 		return queryPatientDiary(EMAIL_QUERY_PARAM, emailAddress)
-				.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"))
-				.getCount() == 0;
+			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"))
+			.getCount() == 0;
 	}
 
 	private boolean isPhoneAvailable(String phone) {
 		return queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, phone)
-				.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"))
-				.getCount() == 0;
+			.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"))
+			.getCount() == 0;
 	}
 
 	/**
@@ -387,10 +392,7 @@ public class ExternalJournalService {
 			String encodedParams = URLEncoder.encode(queryParam, StandardCharsets.UTF_8.toString());
 			String fullUrl = probandsUrl + "?q=" + encodedParams;
 			Client client = ClientBuilder.newClient();
-			Response response = client.target(fullUrl)
-					.request(MediaType.APPLICATION_JSON)
-					.header("x-access-token", getPatientDiaryAuthToken())
-					.get();
+			Response response = client.target(fullUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken()).get();
 			if (response.getStatus() == NOT_FOUND_STATUS) {
 				return Optional.empty();
 			}
