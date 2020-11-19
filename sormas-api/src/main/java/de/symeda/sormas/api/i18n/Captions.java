@@ -852,12 +852,13 @@ public interface Captions {
 	String Exposure_deceasedPersonRelation = "Exposure.deceasedPersonRelation";
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
+	String Exposure_exposureDate = "Exposure.exposureDate";
 	String Exposure_exposureType = "Exposure.exposureType";
 	String Exposure_exposureTypeDetails = "Exposure.exposureTypeDetails";
 	String Exposure_gatheringDetails = "Exposure.gatheringDetails";
 	String Exposure_gatheringType = "Exposure.gatheringType";
+	String Exposure_habitationDetails = "Exposure.habitationDetails";
 	String Exposure_habitationType = "Exposure.habitationType";
-	String Exposure_habitationTypeDetails = "Exposure.habitationTypeDetails";
 	String Exposure_handlingAnimals = "Exposure.handlingAnimals";
 	String Exposure_handlingSamples = "Exposure.handlingSamples";
 	String Exposure_indoors = "Exposure.indoors";
@@ -874,7 +875,6 @@ public interface Captions {
 	String Exposure_prophylaxisDate = "Exposure.prophylaxisDate";
 	String Exposure_protectiveMeasuresDetails = "Exposure.protectiveMeasuresDetails";
 	String Exposure_riskArea = "Exposure.riskArea";
-	String Exposure_riskAreaShort = "Exposure.riskAreaShort";
 	String Exposure_seatNumber = "Exposure.seatNumber";
 	String Exposure_shortDistance = "Exposure.shortDistance";
 	String Exposure_startDate = "Exposure.startDate";

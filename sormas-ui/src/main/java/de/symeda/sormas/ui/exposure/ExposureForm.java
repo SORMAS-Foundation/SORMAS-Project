@@ -113,16 +113,16 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			loc(ExposureDto.PHYSICAL_CONTACT_WITH_BODY) +
 			fluidRowLocs(ExposureDto.DECEASED_PERSON_NAME, ExposureDto.DECEASED_PERSON_RELATION) +
 			loc(LOC_LOCATION_HEADING) +
-			loc(ExposureDto.LOCATION) +
 			fluidRow(
-					fluidColumnLoc(6, 0, ExposureDto.TYPE_OF_PLACE), 
+					fluidColumnLoc(6, 0, ExposureDto.TYPE_OF_PLACE),
 					fluidColumn(6, 0, locs(
 							ExposureDto.TYPE_OF_PLACE_DETAILS,
 							ExposureDto.MEANS_OF_TRANSPORT
 					))
 			) +
 			loc(ExposureDto.MEANS_OF_TRANSPORT_DETAILS) +
-			fluidRowLocs(ExposureDto.CONNECTION_NUMBER, ExposureDto.SEAT_NUMBER);
+			fluidRowLocs(ExposureDto.CONNECTION_NUMBER, ExposureDto.SEAT_NUMBER) +
+			loc(ExposureDto.LOCATION);
 	//@formatter:on
 
 	private final Class<? extends EntityDto> epiDataParentClass;

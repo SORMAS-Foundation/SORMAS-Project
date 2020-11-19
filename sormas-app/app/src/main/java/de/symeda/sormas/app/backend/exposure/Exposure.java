@@ -66,6 +66,8 @@ public class Exposure extends PseudonymizableAdo {
 	private String description;
 	@Enumerated(EnumType.STRING)
 	private ExposureType exposureType;
+	@Column(columnDefinition = "text")
+	private String exposureTypeDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Location location;
 
@@ -76,6 +78,8 @@ public class Exposure extends PseudonymizableAdo {
 	private String typeOfPlaceDetails;
 	@Enumerated(EnumType.STRING)
 	private MeansOfTransport meansOfTransport;
+	@Column(columnDefinition = "text")
+	private String meansOfTransportDetails;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String connectionNumber;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -210,6 +214,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setExposureType(ExposureType exposureType) {
 		this.exposureType = exposureType;
+	}
+
+	public String getExposureTypeDetails() {
+		return exposureTypeDetails;
+	}
+
+	public void setExposureTypeDetails(String exposureTypeDetails) {
+		this.exposureTypeDetails = exposureTypeDetails;
 	}
 
 	public Location getLocation() {
@@ -506,6 +518,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setMeansOfTransport(MeansOfTransport meansOfTransport) {
 		this.meansOfTransport = meansOfTransport;
+	}
+
+	public String getMeansOfTransportDetails() {
+		return meansOfTransportDetails;
+	}
+
+	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
+		this.meansOfTransportDetails = meansOfTransportDetails;
 	}
 
 	public String getConnectionNumber() {

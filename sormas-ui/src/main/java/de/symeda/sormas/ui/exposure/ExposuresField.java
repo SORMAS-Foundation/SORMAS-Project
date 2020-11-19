@@ -234,6 +234,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		exposure.getLocation().setRegion(user.getRegion());
 		exposure.getLocation().setDistrict(user.getDistrict());
 		exposure.getLocation().setCommunity(user.getCommunity());
+		exposure.setReportingUser(user.toReference());
 		return exposure;
 	}
 

@@ -6,8 +6,10 @@ import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
 
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.location.Location;
 
@@ -20,6 +22,21 @@ public class ExposureDao extends AbstractAdoDao<Exposure> {
 	@Override
 	protected Class<Exposure> getAdoClass() {
 		return Exposure.class;
+	}
+
+	@Override
+	public Exposure build() {
+		Exposure exposure = super.build();
+		exposure.setLocation(DatabaseHelper.getLocationDao().build());
+		exposure.setReportingUser(ConfigProvider.getUser());
+		return exposure;
+	}
+
+	public Exposure build(ExposureType exposureType) {
+		Exposure exposure = super.build();
+		exposure.setExposureType(exposureType);
+		exposure.setLocation(DatabaseHelper.getLocationDao().build());
+		return exposure;
 	}
 
 	@Override

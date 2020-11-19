@@ -69,6 +69,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setEatingRawAnimalProducts(source.getEatingRawAnimalProducts());
 		target.setEndDate(source.getEndDate());
 		target.setExposureType(source.getExposureType());
+		target.setExposureTypeDetails(source.getExposureTypeDetails());
 		target.setGatheringDetails(source.getGatheringDetails());
 		target.setGatheringType(source.getGatheringType());
 		target.setHabitationDetails(source.getHabitationDetails());
@@ -92,6 +93,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setTypeOfPlaceDetails(source.getTypeOfPlaceDetails());
 		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
 		target.setBodyOfWater(source.getBodyOfWater());
@@ -141,6 +143,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setEatingRawAnimalProducts(source.getEatingRawAnimalProducts());
 		target.setEndDate(source.getEndDate());
 		target.setExposureType(source.getExposureType());
+		target.setExposureTypeDetails(source.getExposureTypeDetails());
 		target.setGatheringDetails(source.getGatheringDetails());
 		target.setGatheringType(source.getGatheringType());
 		target.setHabitationDetails(source.getHabitationDetails());
@@ -162,6 +165,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setTypeOfPlaceDetails(source.getTypeOfPlaceDetails());
 		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
 		target.setBodyOfWater(source.getBodyOfWater());

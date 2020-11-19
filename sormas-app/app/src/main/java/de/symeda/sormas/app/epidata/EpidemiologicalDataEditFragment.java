@@ -15,30 +15,31 @@
 
 package de.symeda.sormas.app.epidata;
 
+import static android.view.View.GONE;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
-
-import java.util.List;
 
 import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.epidata.AnimalCondition;
+import androidx.databinding.ObservableArrayList;
+
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.backend.exposure.Exposure;
+import de.symeda.sormas.app.caze.edit.CaseEditActivity;
+import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentEditEpidLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEditEpidLayoutBinding, EpiData, PseudonymizableAdo> {
@@ -46,10 +47,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 	public static final String TAG = EpidemiologicalDataEditFragment.class.getSimpleName();
 
 	private EpiData record;
-	private Disease disease;
-
-	private List<Item> drinkingWaterSourceList;
-	private List<Item> animalConditionList;
+	private IEntryItemOnClickListener onExposureItemClickListener;
 
 	// Static methods
 
@@ -62,13 +60,69 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
-	// Instance methods
-
 	private void setUpControlListeners(final FragmentEditEpidLayoutBinding contentBinding) {
+		onExposureItemClickListener = (v, item) -> {
+			final Exposure exposure = (Exposure) item;
+			final Exposure exposureClone = (Exposure) exposure.clone();
+			final ExposureDialog dialog = new ExposureDialog(CaseEditActivity.getActiveActivity(), exposureClone, getActivityRootData(), false);
 
+			dialog.setPositiveCallback(() -> {
+				record.getExposures().set(record.getExposures().indexOf(exposure), exposureClone);
+				updateExposures();
+			});
+
+			dialog.setDeleteCallback(() -> {
+				removeExposure(exposure);
+				dialog.dismiss();
+			});
+
+			dialog.show();
+		};
+
+		contentBinding.btnAddExposure.setOnClickListener(v -> {
+			final Exposure exposure = DatabaseHelper.getExposureDao().build();
+			final ExposureDialog dialog = new ExposureDialog(CaseEditActivity.getActiveActivity(), exposure, getActivityRootData(), true);
+
+			dialog.setPositiveCallback(() -> addExposure(exposure));
+			dialog.show();
+		});
+
+		contentBinding.epiDataExposureDetailsKnown.addValueChangedListener(field -> {
+			YesNoUnknown value = (YesNoUnknown) field.getValue();
+			contentBinding.exposuresLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : GONE);
+			if (value != YesNoUnknown.YES) {
+				clearExposures();
+			}
+
+			getContentBinding().epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
+		});
 	}
 
-	// Overrides
+	private ObservableArrayList<Exposure> getExposureList() {
+		ObservableArrayList<Exposure> exposures = new ObservableArrayList<>();
+		exposures.addAll(record.getExposures());
+		return exposures;
+	}
+
+	private void clearExposures() {
+		record.getExposures().clear();
+		updateExposures();
+	}
+
+	private void removeExposure(Exposure exposure) {
+		record.getExposures().remove(exposure);
+		updateExposures();
+	}
+
+	private void updateExposures() {
+		getContentBinding().setExposureList(getExposureList());
+		getContentBinding().epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
+	}
+
+	private void addExposure(Exposure exposure) {
+		record.getExposures().add(0, exposure);
+		updateExposures();
+	}
 
 	@Override
 	protected String getSubHeadingTitle() {
@@ -83,11 +137,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 
 	@Override
 	protected void prepareFragmentData() {
-		final AbstractDomainObject abstractDomainObject = getActivityRootData();
-		disease = getDiseaseOfCaseOrContact(abstractDomainObject);
-		record = getEpiDataOfCaseOrContact(abstractDomainObject);
-		drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, true);
-		animalConditionList = DataUtils.getEnumItems(AnimalCondition.class, true);
+		record = getEpiDataOfCaseOrContact(getActivityRootData());
 	}
 
 	@Override
@@ -95,13 +145,22 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
-		contentBinding.setWaterSourceClass(WaterSource.class);
-		contentBinding.setVaccinationClass(Vaccination.class);
+		contentBinding.setExposureList(getExposureList());
+		contentBinding.setExposureItemClickCallback(onExposureItemClickListener);
+		contentBinding.setExposureListBindCallback(
+			v -> FieldVisibilityAndAccessHelper
+				.setFieldVisibilitiesAndAccesses(ExposureDto.class, (ViewGroup) v, new FieldVisibilityCheckers(), getFieldAccessCheckers()));
 	}
 
 	@Override
 	public void onAfterLayoutBinding(FragmentEditEpidLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
+		contentBinding.epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
+
+		if (!(getActivityRootData() instanceof Case)) {
+			contentBinding.epiDataContactWithSourceCaseKnown.setVisibility(GONE);
+			contentBinding.sourceContactsHeading.setVisibility(GONE);
+		}
 	}
 
 	@Override
@@ -119,9 +178,4 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		return false;
 	}
 
-	private void setFieldAccesses(Class<?> dtoClass, View view) {
-		FieldVisibilityAndAccessHelper
-			.setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) view, new FieldVisibilityCheckers(), getFieldAccessCheckers());
-
-	}
 }

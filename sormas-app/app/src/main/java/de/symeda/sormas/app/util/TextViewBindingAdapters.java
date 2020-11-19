@@ -142,6 +142,12 @@ public class TextViewBindingAdapters {
 	}
 
 	@BindingAdapter(value = {
+		"htmlValue" })
+	public static void setHtmlValue(TextView view, String value) {
+		view.setText(!StringUtils.isBlank(value) ? Html.fromHtml(value) : "");
+	}
+
+	@BindingAdapter(value = {
 		"dateValue",
 		"valueCaption",
 		"defaultValue" })
