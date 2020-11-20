@@ -291,6 +291,24 @@ public class EventFacadeEjb implements EventFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = community.get(Community.NAME);
 					break;
+				case EventIndexDto.REGION:
+					expression = region.get(Region.NAME);
+					break;
+				case EventIndexDto.DISTRICT:
+					expression = district.get(District.NAME);
+					break;
+				case EventIndexDto.COMMUNITY:
+					expression = community.get(Community.NAME);
+					break;
+				case EventIndexDto.ADDRESS:
+					expression = location.get(Location.CITY);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.STREET);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.HOUSE_NUMBER);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.ADDITIONAL_INFORMATION);
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
