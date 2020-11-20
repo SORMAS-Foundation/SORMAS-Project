@@ -5568,5 +5568,25 @@ ALTER TABLE country OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (276, 'Create country table #2993');
 
+-- 2020-11-10 Add documents
+
+CREATE TABLE documents (
+    id bigint PRIMARY KEY NOT NULL,
+    uuid character varying(36) NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    deleted boolean DEFAULT false,
+    uploadinguser_id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    mimetype character varying(255) NOT NULL,
+    size bigint NOT NULL,
+    storage_reference character varying(255) NOT NULL,
+    relatedentity_uuid character varying(36) NOT NULL,
+    relatedentity_type character varying(255) NOT NULL,
+
+    CONSTRAINT fk_documents_uploadinguser_id FOREIGN KEY (uploadinguser_id) REFERENCES users(id)
+);
+
+INSERT INTO schema_version (version_number, comment) VALUES (277, 'Add documents #2328');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.when;
@@ -49,6 +46,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -101,6 +99,8 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.TemplateEngineService;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -494,5 +494,13 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public ExternalJournalService getExternalJournalService() {
 		return getBean(ExternalJournalService.class);
+	}
+
+	public DocumentFacade getDocumentFacade() {
+		return getBean(DocumentFacadeEjb.DocumentFacadeEjbLocal.class);
+	}
+
+	public DocumentService getDocumentService() {
+		return getBean(DocumentService.class);
 	}
 }
