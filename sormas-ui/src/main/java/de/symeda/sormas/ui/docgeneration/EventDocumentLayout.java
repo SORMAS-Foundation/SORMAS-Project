@@ -50,4 +50,10 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 			}
 		}, filename);
 	}
+
+	@Override
+	protected String getWindowCaption() {
+		// TODO: I18N
+		return "Ereignis-Formular erstellen";
+	}
 }

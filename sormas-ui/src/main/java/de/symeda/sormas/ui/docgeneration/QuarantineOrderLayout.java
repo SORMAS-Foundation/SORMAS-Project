@@ -53,4 +53,9 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 			}
 		}, filename);
 	}
+
+	@Override
+	protected String getWindowCaption() {
+		return Captions.DocumentTemplate_QuarantineOrder_create;
+	}
 }

@@ -146,4 +146,6 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	protected abstract List<String> getAdditionalVariables(String templateFile) throws IOException;
 
 	protected abstract StreamResource createStreamResource(String templateFile, String filename);
+
+	protected abstract String getWindowCaption();
 }
