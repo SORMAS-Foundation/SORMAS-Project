@@ -237,7 +237,7 @@ public class EventParticipantImporter extends DataImporter {
 
 		currentUI.accessSynchronously(() -> {
 			PersonSelectionField personSelect =
-				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipantImport));
+				new PersonSelectionField(newPerson, false, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipantImport));
 			personSelect.setWidth(1024, Unit.PIXELS);
 
 			if (personSelect.hasMatches()) {
