@@ -105,7 +105,6 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -649,68 +648,58 @@ public class CaseController {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditCases));
 
-		editView.addCommitListener(new CommitListener() {
+		editView.addCommitListener(() -> {
+			CaseBulkEditData updatedBulkEditData = form.getValue();
 
-			@Override
-			public void onCommit() {
-				CaseBulkEditData updatedBulkEditData = form.getValue();
+			boolean diseaseChange = form.getDiseaseCheckBox().getValue();
+			boolean classificationChange = form.getClassificationCheckBox().getValue();
+			boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
+			boolean outcomeChange = form.getOutcomeCheckBox().getValue();
+			boolean surveillanceOfficerChange = district != null && form.getSurveillanceOfficerCheckBox().getValue();
+			boolean facilityChange = form.getHealthFacilityCheckbox().getValue();
 
-				boolean diseaseChange = form.getDiseaseCheckBox().getValue();
-				boolean classificationChange = form.getClassificationCheckBox().getValue();
-				boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
-				boolean outcomeChange = form.getOutcomeCheckBox().getValue();
-				boolean surveillanceOfficerChange = district != null && form.getSurveillanceOfficerCheckBox().getValue();
-				boolean facilityChange = form.getHealthFacilityCheckbox().getValue();
+			if (facilityChange) {
+				VaadinUiUtil.showChooseOptionPopup(
+					I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
+					new Label(I18nProperties.getString(Strings.messageFacilityMulitChanged)),
+					I18nProperties.getCaption(Captions.caseTransferCases),
+					I18nProperties.getCaption(Captions.caseEditData),
+					500,
+					e -> {
+						bulkEditWithFacilities(
+							selectedCases,
+							updatedBulkEditData,
+							diseaseChange,
+							classificationChange,
+							investigationStatusChange,
+							outcomeChange,
+							surveillanceOfficerChange,
+							e.booleanValue());
 
-				if (facilityChange) {
-					VaadinUiUtil.showChooseOptionPopup(
-						I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
-						new Label(I18nProperties.getString(Strings.messageFacilityMulitChanged)),
-						I18nProperties.getCaption(Captions.caseTransferCases),
-						I18nProperties.getCaption(Captions.caseEditData),
-						500,
-						e -> {
-							bulkEditWithFacilities(
-								selectedCases,
-								updatedBulkEditData,
-								diseaseChange,
-								classificationChange,
-								investigationStatusChange,
-								outcomeChange,
-								surveillanceOfficerChange,
-								e.booleanValue());
+						popupWindow.close();
+						navigateToIndex();
+						Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
+					});
 
-							popupWindow.close();
-							navigateToIndex();
-							Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
-						});
+			} else {
+				CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+				bulkEdit(
+					selectedCases,
+					updatedBulkEditData,
+					diseaseChange,
+					classificationChange,
+					investigationStatusChange,
+					outcomeChange,
+					surveillanceOfficerChange,
+					caseFacade);
 
-				} else {
-					CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-					bulkEdit(
-						selectedCases,
-						updatedBulkEditData,
-						diseaseChange,
-						classificationChange,
-						investigationStatusChange,
-						outcomeChange,
-						surveillanceOfficerChange,
-						caseFacade);
-
-					popupWindow.close();
-					navigateToIndex();
-					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
-				}
-			}
-		});
-
-		editView.addDiscardListener(new DiscardListener() {
-
-			@Override
-			public void onDiscard() {
 				popupWindow.close();
+				navigateToIndex();
+				Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 			}
 		});
+
+		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
 	private void bulkEdit(

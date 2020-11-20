@@ -256,6 +256,14 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
+	protected <F extends Field> void addCustomField(F field, String fieldId, String customCaption) {
+		field.setId(fieldId);
+		formatField(field, fieldId, customCaption);
+		addDefaultAdditionalValidators(field, field.getType());
+		getContent().addComponent(field, fieldId);
+		customFields.add(field);
+	}
+
 	protected <F extends Field> F addCustomField(String fieldId, Class<?> dataType, Class<F> fieldType, String customCaption) {
 		F field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
 		field.setId(fieldId);
