@@ -165,6 +165,14 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				cbCommunity.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
 			}
 		}
+
+		cbCampaignForm.removeAllItems();
+		if (criteria.getCampaign() != null) {
+			cbCampaignForm
+				.addItems(FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(criteria.getCampaign().getUuid()));
+		} else {
+			cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+		}
 	}
 
 	public void setFormMetaChangedCallback(Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback) {
