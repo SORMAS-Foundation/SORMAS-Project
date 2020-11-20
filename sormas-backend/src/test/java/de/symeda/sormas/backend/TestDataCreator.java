@@ -1231,6 +1231,17 @@ public class TestDataCreator {
 		String name,
 		String contentType,
 		long size,
+		EventReferenceDto event,
+		byte[] content)
+		throws IOException {
+		return createDocument(uploadingUser, name, contentType, size, DocumentRelatedEntityType.EVENT, event.getUuid(), content);
+	}
+
+	public DocumentDto createDocument(
+		UserReferenceDto uploadingUser,
+		String name,
+		String contentType,
+		long size,
 		DocumentRelatedEntityType relatedEntityType,
 		String relatedEntityUuid,
 		byte[] content)

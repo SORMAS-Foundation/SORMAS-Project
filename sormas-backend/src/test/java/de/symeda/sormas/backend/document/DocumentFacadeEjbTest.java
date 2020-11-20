@@ -34,8 +34,8 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -45,55 +45,39 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 	public void testDocumentCreation() throws IOException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf);
-		String eventUuid = DataHelper.createUuid();
+		EventDto event = creator.createEvent(user.toReference());
 
-		DocumentDto document = creator.createDocument(
-			user.toReference(),
-			"Name.pdf",
-			"application/pdf",
-			42L,
-			DocumentRelatedEntityType.EVENT,
-			eventUuid,
-			"content".getBytes(StandardCharsets.UTF_8));
+		DocumentDto document = creator
+			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
 
 		assertNotNull(getDocumentFacade().getDocumentByUuid(document.getUuid()));
 
-		assertThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, eventUuid), hasSize(1));
+		assertThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()), hasSize(1));
 	}
 
 	@Test
 	public void testExistingDocument() throws IOException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf);
-		String eventUuid = DataHelper.createUuid();
+		EventDto event = creator.createEvent(user.toReference());
 
-		DocumentDto document = creator.createDocument(
-			user.toReference(),
-			"Name.pdf",
-			"application/pdf",
-			42L,
-			DocumentRelatedEntityType.EVENT,
-			eventUuid,
-			"content".getBytes(StandardCharsets.UTF_8));
+		DocumentDto document = creator
+			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
 
-		assertEquals(document.getUuid(), getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, eventUuid, document.getName()));
-		assertNull(getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, eventUuid, "Some other name.docx"));
+		assertEquals(
+			document.getUuid(),
+			getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), document.getName()));
+		assertNull(getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), "Some other name.docx"));
 	}
 
 	@Test(expected = EntityExistsException.class)
 	public void testDuplicate() throws IOException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf);
-		String eventUuid = DataHelper.createUuid();
+		EventDto event = creator.createEvent(user.toReference());
 
-		DocumentDto document = creator.createDocument(
-			user.toReference(),
-			"Name.pdf",
-			"application/pdf",
-			42L,
-			DocumentRelatedEntityType.EVENT,
-			eventUuid,
-			"content".getBytes(StandardCharsets.UTF_8));
+		DocumentDto document = creator
+			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
 
 		getDocumentFacade().saveDocument(document, "duplicate".getBytes(StandardCharsets.UTF_8));
 	}
@@ -102,21 +86,15 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 	public void testDocumentDeletion() throws IOException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf);
-		String eventUuid = DataHelper.createUuid();
+		EventDto event = creator.createEvent(user.toReference());
 
-		DocumentDto document = creator.createDocument(
-			user.toReference(),
-			"Name.pdf",
-			"application/pdf",
-			42L,
-			DocumentRelatedEntityType.EVENT,
-			eventUuid,
-			"content".getBytes(StandardCharsets.UTF_8));
+		DocumentDto document = creator
+			.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
 
 		assumeNotNull(getDocumentFacade().getDocumentByUuid(document.getUuid()));
-		assumeThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, eventUuid), hasSize(1));
+		assumeThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()), hasSize(1));
 		assumeThat(
-			getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, eventUuid, document.getName()),
+			getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), document.getName()),
 			equalTo(document.getUuid()));
 
 		getDocumentFacade().deleteDocument(document.getUuid());
@@ -125,7 +103,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(deleted);
 		assertTrue(deleted.isDeleted());
 
-		assertThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, eventUuid), empty());
-		assertNull(getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, eventUuid, document.getName()));
+		assertThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()), empty());
+		assertNull(getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), document.getName()));
 	}
 }
