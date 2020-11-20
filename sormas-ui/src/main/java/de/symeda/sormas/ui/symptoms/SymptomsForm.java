@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -108,7 +109,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRowCss(VSPACE_3,
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
-					fluidRow(fluidColumn(6,6, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
+					fluidRow(fluidColumn(8,4, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
 					fluidRow(
 							fluidColumn(6, -1,
 									locsCss(VSPACE_3,
@@ -785,7 +786,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		buttonsLayout.addComponent(setEmptyToNoButton);
 		buttonsLayout.addComponent(setEmptyToUnknownButton);
 		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		buttonsLayout.setMargin(true);
+		buttonsLayout.setMargin(new MarginInfo(true, false, true, true));
 
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
 	}

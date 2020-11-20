@@ -143,6 +143,7 @@ public interface Strings {
 	String entityContacts = "entityContacts";
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
+	String entityDocuments = "entityDocuments";
 	String entityEvent = "entityEvent";
 	String entityEventParticipant = "entityEventParticipant";
 	String entityEvents = "entityEvents";
@@ -165,6 +166,7 @@ public interface Strings {
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorEntityOutdated = "errorEntityOutdated";
@@ -179,6 +181,7 @@ public interface Strings {
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorProcessingTemplate = "errorProcessingTemplate";
 	String errorQuarantineOnlyCaseAndContacts = "errorQuarantineOnlyCaseAndContacts";
+	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
@@ -425,6 +428,8 @@ public interface Strings {
 	String infoAddTestsToSample = "infoAddTestsToSample";
 	String infoArchivedCases = "infoArchivedCases";
 	String infoArchivedEvents = "infoArchivedEvents";
+	String infoAssigneeMissingEmail = "infoAssigneeMissingEmail";
+	String infoAssigneeMissingEmailOrPhoneNumber = "infoAssigneeMissingEmailOrPhoneNumber";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
@@ -663,6 +668,7 @@ public interface Strings {
 	String messageNoContactsSelected = "messageNoContactsSelected";
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
+	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";

@@ -199,9 +199,12 @@ public class ExternalJournalService {
 	 *            the person already available in the external journal
 	 * @param updatedPerson
 	 *            the updated person in SORMAS
+	 * @return true if the person data change was considered relevant for external journals, false otherwise.
+	 *
 	 */
-	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-		if (shouldNotify(existingPerson, updatedPerson)) {
+	public boolean notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
+		boolean shouldNotify = shouldNotify(existingPerson, updatedPerson);
+		if (shouldNotify) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 				notifySymptomJournal(existingPerson.getUuid());
 			}
@@ -209,6 +212,7 @@ public class ExternalJournalService {
 				notifyPatientDiary(existingPerson.getUuid());
 			}
 		}
+		return shouldNotify;
 	}
 
 	/**
@@ -317,9 +321,7 @@ public class ExternalJournalService {
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
 		String externalDataUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/external-data/" + personUuid;
 		Client client = ClientBuilder.newClient();
-		return client.target(externalDataUrl)
-				.request(MediaType.APPLICATION_JSON)
-				.header("x-access-token", getPatientDiaryAuthToken());
+		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken());
 	}
 
 	/**
@@ -367,14 +369,14 @@ public class ExternalJournalService {
 
 	private boolean isEmailAvailable(String emailAddress) {
 		return queryPatientDiary(EMAIL_QUERY_PARAM, emailAddress)
-				.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"))
-				.getCount() == 0;
+			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"))
+			.getCount() == 0;
 	}
 
 	private boolean isPhoneAvailable(String phone) {
 		return queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, phone)
-				.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"))
-				.getCount() == 0;
+			.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"))
+			.getCount() == 0;
 	}
 
 	/**
@@ -393,10 +395,7 @@ public class ExternalJournalService {
 			String encodedParams = URLEncoder.encode(queryParam, StandardCharsets.UTF_8.toString());
 			String fullUrl = probandsUrl + "?q=" + encodedParams;
 			Client client = ClientBuilder.newClient();
-			Response response = client.target(fullUrl)
-					.request(MediaType.APPLICATION_JSON)
-					.header("x-access-token", getPatientDiaryAuthToken())
-					.get();
+			Response response = client.target(fullUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken()).get();
 			if (response.getStatus() == NOT_FOUND_STATUS) {
 				return Optional.empty();
 			}

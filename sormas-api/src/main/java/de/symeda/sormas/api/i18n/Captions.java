@@ -716,6 +716,7 @@ public interface Captions {
 	String districtAllDistricts = "districtAllDistricts";
 	String districtArchivedDistricts = "districtArchivedDistricts";
 	String districtName = "districtName";
+	String documentNoDocuments = "documentNoDocuments";
 	String DocumentTemplate = "DocumentTemplate";
 	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
 	String DocumentTemplate_exampleTemplateLibreOffice = "DocumentTemplate.exampleTemplateLibreOffice";
@@ -725,6 +726,7 @@ public interface Captions {
 	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";
 	String DocumentTemplate_QuarantineOrder_templates = "DocumentTemplate.QuarantineOrder.templates";
 	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
+	String documentUploadDocument = "documentUploadDocument";
 	String EpiData = "EpiData";
 	String EpiData_animalCondition = "EpiData.animalCondition";
 	String EpiData_animalVaccinationStatus = "EpiData.animalVaccinationStatus";
