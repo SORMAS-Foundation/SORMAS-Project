@@ -40,5 +40,4 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 		return externalJournalService.validatePatientDiaryPerson(person);
 	}
 
-
 }
