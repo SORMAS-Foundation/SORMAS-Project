@@ -1072,6 +1072,8 @@ public interface Captions {
 	String moreActions = "moreActions";
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
+	String noPhoneNumberForCasePerson = "noPhoneNumberForCasePerson";
+	String noSmsSentForCase = "noSmsSentForCase";
 	String notAvailableShort = "notAvailableShort";
 	String notSpecified = "notSpecified";
 	String numberOfCharacters = "numberOfCharacters";
@@ -1369,6 +1371,8 @@ public interface Captions {
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
+	String sendSMS = "sendSMS";
+	String sentBy = "sentBy";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";

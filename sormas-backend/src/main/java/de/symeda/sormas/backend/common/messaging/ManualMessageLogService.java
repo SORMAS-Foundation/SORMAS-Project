@@ -9,9 +9,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.messaging.ManualMessageLogDto;
+import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
 
@@ -30,21 +32,23 @@ public class ManualMessageLogService extends AbstractAdoService<ManualMessageLog
 		return null;
 	}
 
-	public List<ManualMessageLogDto> getByPersonUuid(@NotNull String personUuid) {
+	public List<ManualMessageLog> getByCaseUuid(@NotNull String caseUuid, MessageType messageType) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ManualMessageLogDto> cq = cb.createQuery(ManualMessageLogDto.class);
-		Root<ManualMessageLog> manualMessageLogRoot = cq.from(ManualMessageLog.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<ManualMessageLog> cq = cb.createQuery(ManualMessageLog.class);
+		final Root<ManualMessageLog> manualMessageLogRoot = cq.from(ManualMessageLog.class);
 
-		cq.multiselect(
-			manualMessageLogRoot.get(ManualMessageLog.MESSAGE_TYPE),
-			manualMessageLogRoot.get(ManualMessageLog.SENT_DATE),
-			manualMessageLogRoot.get(ManualMessageLog.SENDING_USER),
-			manualMessageLogRoot.get(ManualMessageLog.RECIPIENT_PERSON));
+		final Subquery<Person> casePersonSubQuery = cq.subquery(Person.class);
+		final Root<Case> caseRoot = casePersonSubQuery.from(Case.class);
+		casePersonSubQuery.where(cb.equal(caseRoot.get(Case.UUID), caseUuid));
+		casePersonSubQuery.select(caseRoot.get(Case.PERSON));
 
 		Predicate filter = createUserFilter(cb, cq, manualMessageLogRoot);
-		filter =
-			AbstractAdoService.and(cb, filter, cb.equal(manualMessageLogRoot.get(ManualMessageLog.RECIPIENT_PERSON).get(Person.UUID), personUuid));
+		filter = AbstractAdoService.and(
+			cb,
+			filter,
+			cb.equal(manualMessageLogRoot.get(ManualMessageLog.RECIPIENT_PERSON), casePersonSubQuery),
+			cb.equal(manualMessageLogRoot.get(ManualMessageLog.MESSAGE_TYPE), messageType));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(manualMessageLogRoot.get(ManualMessageLog.SENT_DATE)));

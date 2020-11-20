@@ -19,6 +19,7 @@ public interface Strings {
 	String between = "between";
 	String bpm = "bpm";
 	String by = "by";
+	String cancel = "cancel";
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
 	String classificationConfirmed = "classificationConfirmed";
@@ -127,6 +128,7 @@ public interface Strings {
 	String DiseaseNetworkDiagram_subheading = "DiseaseNetworkDiagram.subheading";
 	String done = "done";
 	String edit = "edit";
+	String email = "email";
 	String entityAction = "entityAction";
 	String entityActions = "entityActions";
 	String entityAdditionalTest = "entityAdditionalTest";
@@ -813,6 +815,9 @@ public interface Strings {
 	String quarterShort = "quarterShort";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
+	String send = "send";
+	String sendingSms = "sendingSms";
+	String sms = "sms";
 	String step = "step";
 	String SurvnetGateway_notificationEntryNotSent = "SurvnetGateway.notificationEntryNotSent";
 	String SurvnetGateway_notificationEntrySent = "SurvnetGateway.notificationEntrySent";

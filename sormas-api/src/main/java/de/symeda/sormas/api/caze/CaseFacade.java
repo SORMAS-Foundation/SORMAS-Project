@@ -27,6 +27,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
@@ -178,4 +179,6 @@ public interface CaseFacade {
 	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
 
 	long countCasesWithMissingMessageType(List<String> caseUuids, MessageType messageType);
+
+	List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType);
 }

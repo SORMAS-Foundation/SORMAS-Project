@@ -48,9 +48,11 @@ import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
@@ -669,6 +671,10 @@ public class Person extends AbstractDomainObject {
 
 	public void setManualMessageLogs(List<ManualMessageLog> manualMessageLogs) {
 		this.manualMessageLogs = manualMessageLogs;
+	}
+
+	public PersonReferenceDto toReference() {
+		return new PersonReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
 	@Override

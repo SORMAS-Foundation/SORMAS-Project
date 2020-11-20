@@ -69,7 +69,6 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
@@ -122,6 +121,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.messaging.ManualMessageLogDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
@@ -175,6 +176,7 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -364,6 +366,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private ManualMessageLogService manualMessageLogService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -3120,8 +3124,21 @@ public class CaseFacadeEjb implements CaseFacade {
 		return caseService.count((cb, root) -> {
 			final Join<Object, Object> personJoin = root.join(Case.PERSON, JoinType.LEFT);
 			final String messageTypeColumn = messageType == MessageType.EMAIL ? Person.EMAIL_ADDRESS : Person.PHONE;
-			return cb.and(root.get(Case.ID).in(caseUuids), cb.isNull(personJoin.get(messageTypeColumn)));
+			return cb.and(root.get(Case.UUID).in(caseUuids), cb.isNull(personJoin.get(messageTypeColumn)));
 		});
+	}
+
+	@Override
+	public List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType) {
+		return manualMessageLogService.getByCaseUuid(caseUuid, messageType)
+			.stream()
+			.map(
+				mml -> new ManualMessageLogDto(
+					mml.getMessageType(),
+					mml.getSentDate(),
+					mml.getSendingUser().toReference(),
+					mml.getRecipientPerson().toReference()))
+			.collect(Collectors.toList());
 	}
 
 	@LocalBean
