@@ -188,7 +188,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				final String diagramCssClass = diagramId + generateRandomString();
 				String diagramTitle = null;
 				List<CampaignDiagramSeries> campaignSeriesTotal = campaignDiagramDefinitionDto.getCampaignSeriesTotal();
-				if (!CollectionUtils.isEmpty(campaignSeriesTotal)) {
+				if (!CollectionUtils.isEmpty(campaignSeriesTotal) && campaignDiagramDefinitionDto.isPercentageDefault()) {
 					if (campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getPopulationGroup())).findAny().isPresent()) {
 						if (Objects.isNull(dataProvider.getArea())) {
 							diagramTitle = I18nProperties.getString(Strings.populationDataByArea);
@@ -206,7 +206,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					diagramData,
 					dataProvider.getCampaignFormTotalsMap().get(campaignDashboardDiagramDto),
 					campaignDiagramDefinitionDto.isPercentageDefault(),
-					diagramTitle);
+					diagramTitle,
+					Objects.nonNull(dataProvider.getDistrict()));
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
 
@@ -215,7 +216,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 						int index = diagramsLayout.getComponentIndex(diagramComponent);
 						diagramsLayout.removeComponent(diagramComponent);
 						diagramComponent.setShowPercentages(!diagramComponent.isShowPercentages());
-						diagramComponent.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption());
+						diagramComponent
+							.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption(), Objects.nonNull(dataProvider.getDistrict()));
 						diagramsLayout.addComponent(diagramComponent, index);
 					});
 

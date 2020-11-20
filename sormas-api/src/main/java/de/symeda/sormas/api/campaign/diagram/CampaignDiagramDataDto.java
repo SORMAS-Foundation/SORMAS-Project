@@ -32,6 +32,25 @@ public class CampaignDiagramDataDto implements Serializable {
 		String groupingCaption,
 		String fieldId,
 		String formId,
+		boolean hasAgeGroupData,
+		String stack) {
+		this.fieldCaption = fieldCaption;
+		this.valueSum = valueSum;
+		this.groupingKey = groupingKey;
+		this.groupingCaption = groupingCaption;
+		this.fieldId = fieldId;
+		this.formId = formId;
+		this.hasAgeGroupData = hasAgeGroupData;
+		this.stack = stack;
+	}
+
+	public CampaignDiagramDataDto(
+		String fieldCaption,
+		Number valueSum,
+		Object groupingKey,
+		String groupingCaption,
+		String fieldId,
+		String formId,
 		boolean hasAgeGroupData) {
 		this.fieldCaption = fieldCaption;
 		this.valueSum = valueSum;
@@ -40,6 +59,7 @@ public class CampaignDiagramDataDto implements Serializable {
 		this.fieldId = fieldId;
 		this.formId = formId;
 		this.hasAgeGroupData = hasAgeGroupData;
+
 	}
 
 	public CampaignDiagramDataDto(
@@ -125,7 +145,7 @@ public class CampaignDiagramDataDto implements Serializable {
 		this.stack = stack;
 	}
 
-	public boolean isHasAgeGroupData() {
+	public boolean getHasAgeGroupData() {
 		return hasAgeGroupData;
 	}
 

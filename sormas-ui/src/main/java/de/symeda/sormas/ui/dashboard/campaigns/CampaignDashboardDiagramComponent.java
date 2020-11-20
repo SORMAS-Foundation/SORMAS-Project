@@ -48,7 +48,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		List<CampaignDiagramDataDto> diagramDataList,
 		Map<CampaignDashboardTotalsReference, Double> totalValuesMap,
 		boolean showPercentages,
-		String populationGroupDiagramTitle) {
+		String populationGroupDiagramTitle,
+		boolean isCampaignGrouping) {
 		this.populationGroupDiagramTitle = populationGroupDiagramTitle;
 		this.diagramDefinition = diagramDefinition;
 		this.showPercentages = showPercentages;
@@ -83,10 +84,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			objectCampaignDiagramDataDtoMap.put(diagramData.getGroupingKey(), diagramData);
 		}
 
-		buildDiagramChart(diagramDefinition.getDiagramCaption());
+		buildDiagramChart(diagramDefinition.getDiagramCaption(), isCampaignGrouping);
 	}
 
-	public void buildDiagramChart(String title) {
+	public void buildDiagramChart(String title, boolean isCampaignGrouping) {
 		final StringBuilder hcjs = new StringBuilder();
 
 		//@formatter:off
@@ -173,6 +174,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 
 		hcjs.append("series: [");
+		List<String> noPopulationLocations = new LinkedList<>();
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
 			String seriesKey = series.getFormId() + series.getFieldId();
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
@@ -181,17 +183,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
 			Collection<CampaignDiagramDataDto> values = seriesData.values();
 			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
-			List<String> noPopulationLocations = new LinkedList<>();
-			for (CampaignDiagramDataDto dData : values) {
-				if (!dData.isHasAgeGroupData()) {
-					noPopulationLocations.add(dData.getFieldCaption());
-				}
-			}
-			if (!noPopulationLocations.isEmpty()) {
-				Notification.show(
-					String.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(",", noPopulationLocations)),
-					ERROR_MESSAGE);
-			}
 			String fieldName;
 			if (Objects.nonNull(populationGroupDiagramTitle)) {
 				fieldName = populationGroupDiagramTitle;
@@ -207,11 +198,15 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 								seriesData.get(axisKey).getGroupingKey(),
 								totalValuesWithoutStacks ? null : series.getStack()));
 						if (totalValue == null) {
-							Notification.show(
-								String.format(
-									I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError),
-									diagramDefinition.getDiagramCaption()),
-								ERROR_MESSAGE);
+							if (isCampaignGrouping) {
+								Notification.show(String.format(I18nProperties.getString(Strings.populationDataByCommunity)), ERROR_MESSAGE);
+							} else {
+								Notification.show(
+									String.format(
+										I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError),
+										diagramDefinition.getDiagramCaption()),
+									ERROR_MESSAGE);
+							}
 						} else if (totalValue > 0) {
 							hcjs.append(
 								BigDecimal.valueOf(seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100)
@@ -220,6 +215,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 								.append(",");
 						} else {
 							hcjs.append("0,");
+						}
+						if ((Double.valueOf(0)).equals(totalValue)) {
+							noPopulationLocations.add(seriesData.get(axisKey).getGroupingCaption());
 						}
 					} else {
 						hcjs.append(seriesData.get(axisKey).getValueSum().toString()).append(",");
@@ -236,7 +234,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		hcjs.append("]");
 		hcjs.append("}");
+		if (!noPopulationLocations.isEmpty() && showPercentages)
 
+		{
+			Notification.show(
+				String.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(",", noPopulationLocations)),
+				ERROR_MESSAGE);
+		}
 		campaignColumnChart.setHcjs(hcjs.toString());
 	}
 

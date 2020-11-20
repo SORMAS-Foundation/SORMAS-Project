@@ -335,7 +335,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						new CampaignDiagramDataDto(
 							areaItem.getName(),
 							0,
-							areaItem.getName(),
+							areaItem.getUuid(),
 							areaItem.getName(),
 							diagramSeries.getFieldId(),
 							diagramSeries.getFormId(),
@@ -345,7 +345,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						new CampaignDiagramDataDto(
 							areaItem.getName(),
 							population,
-							areaItem.getName(),
+							areaItem.getUuid(),
 							areaItem.getName(),
 							diagramSeries.getFieldId(),
 							diagramSeries.getFormId(),
@@ -359,7 +359,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					new CampaignDiagramDataDto(
 						area.getCaption(),
 						0,
-						area.getCaption(),
+						area.getUuid(),
 						area.getCaption(),
 						diagramSeries.getFieldId(),
 						diagramSeries.getFormId(),
@@ -378,7 +378,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							new CampaignDiagramDataDto(
 								regionReferenceDto.getCaption(),
 								populationSum,
-								regionReferenceDto.getCaption(),
+								regionReferenceDto.getUuid(),
 								regionReferenceDto.getCaption(),
 								diagramSeries.getFieldId(),
 								diagramSeries.getFormId(),
@@ -388,7 +388,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							new CampaignDiagramDataDto(
 								regionReferenceDto.getCaption(),
 								0,
-								regionReferenceDto.getCaption(),
+								regionReferenceDto.getUuid(),
 								regionReferenceDto.getCaption(),
 								diagramSeries.getFieldId(),
 								diagramSeries.getFormId(),
@@ -407,7 +407,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					new CampaignDiagramDataDto(
 						region.getCaption(),
 						0,
-						region.getCaption(),
+						region.getUuid(),
 						region.getCaption(),
 						diagramSeries.getFieldId(),
 						diagramSeries.getFormId(),
@@ -427,7 +427,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							new CampaignDiagramDataDto(
 								districtReferenceDto.getCaption(),
 								populationSum,
-								districtReferenceDto.getCaption(),
+								districtReferenceDto.getUuid(),
 								districtReferenceDto.getCaption(),
 								diagramSeries.getFieldId(),
 								diagramSeries.getFormId(),
@@ -437,7 +437,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							new CampaignDiagramDataDto(
 								districtReferenceDto.getCaption(),
 								populationSum,
-								districtReferenceDto.getCaption(),
+								districtReferenceDto.getUuid(),
 								districtReferenceDto.getCaption(),
 								diagramSeries.getFieldId(),
 								diagramSeries.getFormId(),
@@ -450,7 +450,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				new CampaignDiagramDataDto(
 					district.getCaption(),
 					0,
-					district.getCaption(),
+					district.getUuid(),
 					district.getCaption(),
 					diagramSeries.getFieldId(),
 					diagramSeries.getFormId(),
