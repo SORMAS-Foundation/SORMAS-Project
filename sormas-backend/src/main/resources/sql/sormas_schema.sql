@@ -5899,8 +5899,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of f
 ALTER TABLE contact ADD completeness real;
 ALTER TABLE contact_history ADD completeness real;
 
-ALTER TABLE contact ADD duplicateof_id BIGINT;
-ALTER TABLE contact_history ADD duplicateof_id BIGINT;
+ALTER TABLE contact ADD COLUMN duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD COLUMN duplicateof_id BIGINT;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_duplicateof_id FOREIGN KEY (duplicateof_id) REFERENCES contact(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add two columns completeness and duplicateOf for contact');
 

@@ -1,5 +1,10 @@
 package de.symeda.sormas.ui.contact;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
@@ -10,10 +15,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -25,15 +32,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.contact.ContactDataView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
 
@@ -146,18 +147,16 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
 				640,
 				confirmed -> {
 					if (confirmed.booleanValue()) {
-						ContactIndexDto caseToMergeAndDelete =
+						ContactIndexDto contactToMergeAndDelete =
 							data.getParent(contact) != null ? data.getParent(contact) : data.getChildren(contact).get(0);
-						FacadeProvider.getContactFacade().mergeContact(contact.getUuid(), caseToMergeAndDelete.getUuid());
-						FacadeProvider.getContactFacade().deleteContactAsDuplicate(caseToMergeAndDelete.getUuid(), contact.getUuid());
+						FacadeProvider.getContactFacade().mergeContact(contact.getUuid(), contactToMergeAndDelete.getUuid());
+						FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToMergeAndDelete.getUuid(), contact.getUuid());
 
-						if (FacadeProvider.getContactFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
+						if (FacadeProvider.getContactFacade().isDeleted(contactToMergeAndDelete.getUuid())) {
 							reload();
-							new Notification(I18nProperties.getString(Strings.messageCasesMerged), Notification.Type.TRAY_NOTIFICATION)
-								.show(Page.getCurrent());
+							new Notification(I18nProperties.getString(Strings.messageContactsMerged), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
 						} else {
-							new Notification(I18nProperties.getString(Strings.errorCaseMerging), Notification.Type.ERROR_MESSAGE)
-								.show(Page.getCurrent());
+							new Notification(I18nProperties.getString(Strings.errorContactMerging), Type.ERROR_MESSAGE).show(Page.getCurrent());
 						}
 					}
 				});
@@ -178,10 +177,10 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
 						if (FacadeProvider.getContactFacade().isDeleted(contactToDelete.getUuid())) {
 							data.removeItem(data.getParent(contact) == null ? contact : data.getParent(contact));
 							dataProvider.refreshAll();
-							new Notification(I18nProperties.getString(Strings.messageCaseDuplicateDeleted), Notification.Type.TRAY_NOTIFICATION)
+							new Notification(I18nProperties.getString(Strings.messageContactDuplicateDeleted), Type.TRAY_NOTIFICATION)
 								.show(Page.getCurrent());
 						} else {
-							new Notification(I18nProperties.getString(Strings.errorCaseDuplicateDeletion), Notification.Type.ERROR_MESSAGE)
+							new Notification(I18nProperties.getString(Strings.errorContactDuplicateDeletion), Type.ERROR_MESSAGE)
 								.show(Page.getCurrent());
 						}
 					}
@@ -232,11 +231,11 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
 			hiddenUuidPairs = new ArrayList<>();
 		}
 
-		List<ContactIndexDto[]> casePairs = FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, ignoreRegion);
-		for (ContactIndexDto[] casePair : casePairs) {
+		List<ContactIndexDto[]> contactPairs = FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, ignoreRegion);
+		for (ContactIndexDto[] contactPair : contactPairs) {
 			boolean uuidPairExists = false;
 			for (String[] hiddenUuidPair : hiddenUuidPairs) {
-				if (hiddenUuidPair[0].equals(casePair[0].getUuid()) && hiddenUuidPair[1].equals(casePair[1].getUuid())) {
+				if (hiddenUuidPair[0].equals(contactPair[0].getUuid()) && hiddenUuidPair[1].equals(contactPair[1].getUuid())) {
 					uuidPairExists = true;
 				}
 			}
@@ -245,8 +244,8 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
 				continue;
 			}
 
-			data.addItem(null, casePair[0]);
-			data.addItem(casePair[0], casePair[1]);
+			data.addItem(null, contactPair[0]);
+			data.addItem(contactPair[0], contactPair[1]);
 		}
 
 		expandRecursively(data.getRootItems(), 0);

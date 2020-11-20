@@ -122,6 +122,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
@@ -184,6 +185,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -246,6 +248,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private UserService userService;
 	@EJB
 	private VisitService visitService;
+	@EJB
+	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private TaskService taskService;
 	@EJB
@@ -331,6 +335,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public ContactDto getContactByUuid(String uuid) {
 		return convertToDto(contactService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+	}
+
+	private ContactDto getContactWithoutPseudonyimization(String uuid) {
+		return toDto(contactService.getByUuid(uuid));
 	}
 
 	@Override
@@ -1596,6 +1604,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		Join<Contact, Region> region = root.join(Contact.REGION, JoinType.LEFT);
 		Join<Contact, Region> region2 = root2.join(Contact.REGION, JoinType.LEFT);
 
+		cq.distinct(true);
+
 		Predicate userFilter = contactService.createUserFilter(cb, cq, root2);
 		Predicate criteriaFilter = criteria != null ? contactService.buildCriteriaFilter(criteria, cb, root2, joins) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
@@ -1666,7 +1676,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		filter = cb.and(filter, creationDateFilter);
 
 		cq.where(filter);
-		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID));
+		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID), root.get(Contact.CREATION_DATE));
 		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
 
 		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
@@ -1676,7 +1686,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			CriteriaQuery<ContactIndexDto> indexContactsCq = cb.createQuery(ContactIndexDto.class);
 			Root<Contact> indexRoot = indexContactsCq.from(Contact.class);
 			selectIndexDtoFields(indexContactsCq, indexRoot);
-			indexContactsCq.where(indexRoot.get(Contact.ID).in(foundIds.stream().flatMap(Arrays::stream).collect(Collectors.toSet())));
+			indexContactsCq.where(
+				indexRoot.get(Contact.ID).in(foundIds.stream().map(a -> Arrays.copyOf(a, 2)).flatMap(Arrays::stream).collect(Collectors.toSet())));
 			Map<Long, ContactIndexDto> indexContacts =
 				em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
@@ -1709,8 +1720,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<ContactIndexDto> cq, Root<Contact> root) {
-		List<Selection<?>> selections = listCriteriaBuilder.getContactIndexSelectionsAll(root, new ContactJoins(root));
-		cq.multiselect(selections);
+		cq.multiselect(listCriteriaBuilder.getContactIndexSelectionsAll(root, new ContactJoins(root)));
 	}
 
 	public void updateCompleteness(String contactUuid) {
@@ -1724,7 +1734,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		float completeness = 0f;
 
-		if (contact.getLastContactDate() != null) { // annuler le suivi abandon
+		if (contact.getLastContactDate() != null) {
 			completeness += 0.2f;
 		}
 		if (contact.getRelationToCase() != null) {
@@ -1756,7 +1766,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public void mergeContact(String leadUuid, String otherUuid) {
-		mergeContact(getContactByUuid(leadUuid), getContactByUuid(otherUuid), false);
+		mergeContact(getContactWithoutPseudonyimization(leadUuid), getContactWithoutPseudonyimization(otherUuid), false);
 	}
 
 	private void mergeContact(ContactDto leadContact, ContactDto otherContact, boolean cloning) {
@@ -1801,7 +1811,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-		// 2.4 Tasks
+		// 2.3 Tasks
 		if (!cloning) {
 			// simply move existing entities to the merge target
 
@@ -1810,6 +1820,14 @@ public class ContactFacadeEjb implements ContactFacade {
 				task.setContact(leadCont);
 				taskService.ensurePersisted(task);
 			}
+		}
+
+		// 5 Attach otherContact visits to leadContact
+		// (set the person and the disease of the visit, saveVisit does the rest)
+		for (VisitDto otherVisit : otherCont.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
+			otherVisit.setPerson(leadContact.getPerson());
+			otherVisit.setDisease(leadContact.getDisease());
+			visitFacade.saveVisit(otherVisit);
 		}
 	}
 
