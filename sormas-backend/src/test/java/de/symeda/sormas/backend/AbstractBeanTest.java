@@ -360,7 +360,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PointOfEntryService.class);
 	}
 
-	public CountryService getCountryService() { return getBean(CountryService.class); }
+	public CountryService getCountryService() {
+		return getBean(CountryService.class);
+	}
 
 	public RegionService getRegionService() {
 		return getBean(RegionService.class);

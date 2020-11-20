@@ -27,7 +27,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.event.Event;
 
 @Stateless
 @LocalBean

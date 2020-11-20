@@ -36,6 +36,8 @@
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
+		<!-- to be overridden in submodules where it doesn't apply -->
+		<sormas-base.basedir>${basedir}/../sormas-base</sormas-base.basedir>
 	</properties>
 
 	<distributionManagement>
@@ -827,6 +829,38 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<ratchetFrom>origin/development</ratchetFrom>
+					<java>
+						<licenseHeader>
+							<file>${sormas-base.basedir}/license-header</file>
+						</licenseHeader>
+						<eclipse>
+							<file>${sormas-base.basedir}/java-formatter-profile.xml</file>
+						</eclipse>
+						<removeUnusedImports/>
+						<importOrder>
+							<file>${sormas-base.basedir}/java-importorder-profile.importorder</file>
+						</importOrder>
+						<toggleOffOn>
+							<off>@formatter:off</off>
+							<on>@formatter:on</on>
+						</toggleOffOn>
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>

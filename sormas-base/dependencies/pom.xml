@@ -12,6 +12,10 @@
         <relativePath>../</relativePath>
     </parent>
 
+	<properties>
+		<sormas-base.basedir>${basedir}/..</sormas-base.basedir>
+	</properties>
+
 	<dependencies>
 
 		<!-- To collect these dependencies, they have to be on scope "provided" (usually defined in parent POM) -->
