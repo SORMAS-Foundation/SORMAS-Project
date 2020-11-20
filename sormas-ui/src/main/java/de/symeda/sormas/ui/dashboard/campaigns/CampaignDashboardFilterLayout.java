@@ -51,6 +51,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private void createCampaignFilter() {
 		campaignFilter.setRequired(true);
+		campaignFilter.setNullSelectionAllowed(false);
 		campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
 		campaignFilter.setWidth(200, Unit.PIXELS);
 		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));

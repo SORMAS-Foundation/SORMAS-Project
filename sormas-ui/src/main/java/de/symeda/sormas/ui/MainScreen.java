@@ -56,6 +56,7 @@ import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.CountriesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
 import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
@@ -105,7 +106,8 @@ public class MainScreen extends HorizontalLayout {
 				DistrictsView.VIEW_NAME,
 				CommunitiesView.VIEW_NAME,
 				FacilitiesView.VIEW_NAME,
-				PointsOfEntryView.VIEW_NAME));
+				PointsOfEntryView.VIEW_NAME,
+				CountriesView.VIEW_NAME));
 
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			views.add(SurveillanceDashboardView.VIEW_NAME);
