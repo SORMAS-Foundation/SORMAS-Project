@@ -199,7 +199,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				users = FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region);
 			} else {
 				// fallback - just show all users
-				users = FacadeProvider.getUserFacade().getAllUserRefs();
+				users = FacadeProvider.getUserFacade().getAllUserRefs(false);
 			}
 
 			// Validation
