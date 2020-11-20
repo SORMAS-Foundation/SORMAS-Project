@@ -826,7 +826,7 @@ public class CaseController {
 			editView.getButtonsPanel().setComponentAlignment(archiveCaseButton, Alignment.BOTTOM_LEFT);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.isUnreferredPortHealthCase()) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.checkIsUnreferredPortHealthCase()) {
 			Button btnReferToFacility = ButtonHelper.createButton(Captions.caseReferToFacility, e -> {
 				editView.commit();
 				CaseDataDto caseDto = findCase(caze.getUuid());

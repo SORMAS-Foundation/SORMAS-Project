@@ -26,6 +26,7 @@ import javax.persistence.Query;
 import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -489,6 +490,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public BAGExportFacade getBAGExportFacade() {
 		return getBean(BAGExportFacadeEjb.BAGExportFacadeEjbLocal.class);
+	}
+
+	public ExternalJournalService getExternalJournalService() {
+		return getBean(ExternalJournalService.class);
 	}
 
 	public DocumentFacade getDocumentFacade() {

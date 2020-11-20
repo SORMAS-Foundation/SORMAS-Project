@@ -533,4 +533,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
 
 	}
+
+	@Override
+	public boolean isSmsServiceSetUp() {
+		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
+	}
+
 }
