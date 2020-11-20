@@ -1,47 +1,59 @@
 package de.symeda.sormas.backend.externaljournal;
 
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonQueryResponse;
-import de.symeda.sormas.api.person.JournalPersonDto;
-import de.symeda.sormas.api.person.PersonDto;
-
-import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.AbstractBeanTest;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+
+import de.symeda.sormas.api.externaljournal.PatientDiaryPersonQueryResponse;
+import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonService;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 	@Spy
 	private ExternalJournalService externalJournalService;
 
+	private UserDto natUser;
+	private TestDataCreator.RDCF rdcf;
+
 	@Before
-	public void setUp() {
+	public void init() {
+		super.init();
+		natUser = creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
+		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
+		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
+
 		MockitoAnnotations.initMocks(this);
 		PatientDiaryPersonQueryResponse patientDiaryPersonQueryResponse = new PatientDiaryPersonQueryResponse();
 		patientDiaryPersonQueryResponse.setCount(0);
-		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test.de");
-		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test");
-		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "heinz@test.de");
-		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "+49 621 1218490");
-		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "+49 621 1218491");
-		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "0");;
+		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary(Mockito.any(String.class), Mockito.any(String.class));
 	}
 
 	@Test
@@ -148,33 +160,25 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void givenRelevantChangeShouldNotify() {
-		PersonFacade personFacade = getPersonFacade();
+		EntityManager entityManager = getEntityManager();
+		PersonFacadeEjbLocal personFacade = (PersonFacadeEjbLocal) getPersonFacade();
+		personFacade.setExternalJournalService(externalJournalService);
+		PersonService personService = getPersonService();
 
-		// Define relevant properties
-		HashMap<String, Object> relevantProperties = new HashMap<String, Object>() {
+		Person person = personService.createPerson();
+		setPersonRelevantFields(person);
 
-			{
-				put("FirstName", "Klaus");
-				put("LastName", "Draufle");
-				put("Sex", Sex.MALE);
-				put("EmailAddress", "test@test.de");
-				put("Phone", "+496211218490");
-				put("BirthdateYYYY", 2000);
-				put("BirthdateMM", 6);
-				put("BirthdateDD", 1);
-				put("SymptomJournalStatus", SymptomJournalStatus.REGISTERED);
-			}
-		};
+		// cannot use PersonFacade save since it also calls the method being tested
+		EntityTransaction transaction = entityManager.getTransaction();
+		transaction.begin();
+		entityManager.persist(person);
+		entityManager.flush();
+		transaction.commit();
 
-		// Create two person with those properties
-		PersonDto person = new PersonDto();
-		person.setUuid(DataHelper.createUuid());
-		personFacade.savePerson(person);
+		// need to create a case with the person to avoid pseudonymization related errors
+		creator.createCase(natUser.toReference(), new PersonReferenceDto(person.getUuid()), rdcf);
 		JournalPersonDto journalPerson = personFacade.getPersonForJournal(person.getUuid());
-		for (Map.Entry<String, Object> property : relevantProperties.entrySet()) {
-			setPersonProperty(person, property.getKey(), property.getValue());
-		}
-		personFacade.savePerson(person);
+
 		assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 
 		// Define relevant changes
@@ -190,41 +194,60 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 				put("BirthdateDD", 2);
 			}
 		};
+
 		// Apply each change and make sure it makes notification considered necessary
 		for (String propertyName : relevantChanges.keySet()) {
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			setPersonProperty(person, propertyName, relevantChanges.get(propertyName));
-			personFacade.savePerson(person);
+			person = entityManager.merge(person);
 			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 
 			// Modify the SymptomJournalStatus of the original person
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
-			personFacade.savePerson(person);
+			person = entityManager.merge(person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.REJECTED);
-			personFacade.savePerson(person);
+			person = entityManager.merge(person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
-			personFacade.savePerson(person);
+			person = entityManager.merge(person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.ACCEPTED);
-			personFacade.savePerson(person);
-			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
-			person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
-			personFacade.savePerson(person);
+			person = entityManager.merge(person);
+			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
 
 			// Apply any other relevant change and make sure notification is still considered necessary
 			for (String secondPropertyName : relevantChanges.keySet()) {
-				journalPerson = personFacade.getPersonForJournal(person.getUuid());
-				setPersonProperty(person, secondPropertyName, relevantChanges.get(secondPropertyName));
-				personFacade.savePerson(person);
-				assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+				if (!secondPropertyName.equals(propertyName)) {
+					journalPerson = personFacade.getPersonForJournal(person.getUuid());
+					setPersonProperty(person, secondPropertyName, relevantChanges.get(secondPropertyName));
+					person = entityManager.merge(person);
+					assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+				}
 			}
+
+			setPersonRelevantFields(person);
+			person = entityManager.merge(person);
 		}
+	}
+
+	protected void setPersonRelevantFields(Person person) {
+		person.setFirstName("Klaus");
+		person.setLastName("Draufle");
+		person.setSex(Sex.MALE);
+		person.setEmailAddress("test@test.de");
+		person.setPhone("+496211218490");
+		person.setBirthdateYYYY(2000);
+		person.setBirthdateMM(6);
+		person.setBirthdateDD(1);
+		person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
 	}
 
 	/*
@@ -233,11 +256,10 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
 	 * https://gitter.im/SORMAS-Project!
 	 */
-	private static void setPersonProperty(PersonDto person, String propertyName, Object propertyValue) {
+	private void setPersonProperty(Person person, String propertyName, Object propertyValue) {
 		try {
 			Method method = person.getClass().getMethod("set" + propertyName, propertyValue.getClass());
 			method.invoke(person, propertyValue);
-
 		} catch (NoSuchMethodException e) {
 			// This probably means that the set method is gone, which may impose changes to the External Journal Interface
 			fail();

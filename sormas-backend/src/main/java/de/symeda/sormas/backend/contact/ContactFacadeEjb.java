@@ -324,8 +324,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
 		 * Changes of related data is assumed to be not yet persisted in the database.
 		 */
-		JournalPersonDto existingContact = personFacade.getPersonForJournal(updatedContact.getPerson().getUuid());
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingContact);
+		JournalPersonDto existingPerson = personFacade.getPersonForJournal(updatedContact.getPerson().getUuid());
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
 		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 

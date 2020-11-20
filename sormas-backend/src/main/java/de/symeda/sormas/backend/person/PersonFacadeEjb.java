@@ -345,7 +345,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
 		 * Changes of related data is assumed to be not yet persisted in the database.
 		 */
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(getPersonForJournal(existingPerson.getUuid()));
+		JournalPersonDto existingJournalPerson = getPersonForJournal(existingPerson.getUuid());
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingJournalPerson);
 		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
@@ -902,6 +903,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setExternalId(source.getExternalId());
 
 		return target;
+	}
+
+	// needed for tests
+	public void setExternalJournalService(ExternalJournalService externalJournalService) {
+		this.externalJournalService = externalJournalService;
 	}
 
 	@LocalBean
