@@ -162,18 +162,33 @@ public class CaseController {
 	}
 
 	public void createFromContact(ContactDto contact) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
-		caseCreateComponent.addCommitListener(new CommitListener() {
+		PersonDto selectedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		CaseDataDto dto = CaseDataDto.build(PersonDto.build().toReference(), contact.getDisease());
 
-			@Override
-			public void onCommit() {
-				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-				updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-				FacadeProvider.getContactFacade().saveContact(updatedContact);
+		dto.setDiseaseDetails(contact.getDiseaseDetails());
+		dto.setRegion(contact.getRegion());
+		dto.setDistrict(contact.getDistrict());
+		dto.setReportDate(contact.getReportDateTime());
+		dto.setCommunity(contact.getCommunity());
+		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
+
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+			if (uuid == null) {
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
+				caseCreateComponent.addCommitListener(new CommitListener() {
+
+					@Override
+					public void onCommit() {
+						ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+						updatedContact.setContactClassification(ContactClassification.CONFIRMED);
+						FacadeProvider.getContactFacade().saveContact(updatedContact);
+					}
+				});
+				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+			} else {
+				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}
 		});
-
-		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
