@@ -219,11 +219,16 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected <T extends Field> void formatField(T field, String propertyId) {
+		formatField(field, propertyId, I18nProperties.getPrefixCaption(propertyI18nPrefix, propertyId, field.getCaption()));
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected <T extends Field> void formatField(T field, String propertyId, String customCaption) {
 
 		super.formatField(field, propertyId);
 
-		String caption = I18nProperties.getPrefixCaption(propertyI18nPrefix, propertyId, field.getCaption());
-		field.setCaption(caption);
+		field.setCaption(customCaption);
 
 		if (field instanceof AbstractField) {
 			AbstractField<?> abstractField = (AbstractField) field;
@@ -234,7 +239,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 			}
 		}
 
-		String validationError = I18nProperties.getPrefixValidationError(propertyI18nPrefix, propertyId, caption);
+		String validationError = I18nProperties.getPrefixValidationError(propertyI18nPrefix, propertyId, customCaption);
 		field.setRequiredError(validationError);
 
 		field.setWidth(100, Unit.PERCENTAGE);
