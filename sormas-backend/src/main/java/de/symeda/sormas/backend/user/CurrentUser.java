@@ -1,9 +1,13 @@
 package de.symeda.sormas.backend.user;
 
-import javax.enterprise.context.RequestScoped;
+import java.io.Serializable;
 
-@RequestScoped
-public class CurrentUser {
+import javax.transaction.TransactionScoped;
+
+@TransactionScoped
+public class CurrentUser implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private User user;
 

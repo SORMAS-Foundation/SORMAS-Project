@@ -4,7 +4,6 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
+import javax.transaction.TransactionScoped;
 import javax.transaction.Transactional;
 
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -37,7 +37,7 @@ public class CurrentUserService {
 	 */
 	@Produces
 	@CurrentUserQualifier
-	@RequestScoped
+	@TransactionScoped
 	@Transactional
 	public CurrentUser getCurrentUser() {
 
