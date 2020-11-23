@@ -11,6 +11,13 @@ public class EventJurisdictionHelper {
 		UserJurisdiction userJurisdiction,
 		EventJurisdictionDto eventJurisdiction) {
 
+		if (isOwned(userJurisdiction, eventJurisdiction))
+			return true;
+
+		return isInJurisdiction(jurisdictionLevel, userJurisdiction, eventJurisdiction);
+	}
+
+	public static boolean isOwned(UserJurisdiction userJurisdiction, EventJurisdictionDto eventJurisdiction) {
 		if (eventJurisdiction.getReportingUserUuid() != null
 			&& DataHelper.equal(userJurisdiction.getUuid(), eventJurisdiction.getReportingUserUuid())) {
 			return true;
@@ -20,7 +27,13 @@ public class EventJurisdictionHelper {
 			&& DataHelper.equal(userJurisdiction.getUuid(), eventJurisdiction.getSurveillanceOfficerUuid())) {
 			return true;
 		}
+		return false;
+	}
 
+	public static boolean isInJurisdiction(
+		JurisdictionLevel jurisdictionLevel,
+		UserJurisdiction userJurisdiction,
+		EventJurisdictionDto eventJurisdiction) {
 		switch (jurisdictionLevel) {
 		case NONE:
 			return false;

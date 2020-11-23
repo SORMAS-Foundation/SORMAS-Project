@@ -5570,6 +5570,34 @@ ALTER TABLE country OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (276, 'Create country table #2993');
 
+-- 2020-11-10 Add documents
+
+CREATE TABLE documents (
+    id bigint PRIMARY KEY NOT NULL,
+    uuid character varying(36) NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    deleted boolean DEFAULT false,
+    uploadinguser_id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    mimetype character varying(255) NOT NULL,
+    size bigint NOT NULL,
+    storage_reference character varying(255) NOT NULL,
+    relatedentity_uuid character varying(36) NOT NULL,
+    relatedentity_type character varying(255) NOT NULL,
+
+    CONSTRAINT fk_documents_uploadinguser_id FOREIGN KEY (uploadinguser_id) REFERENCES users(id)
+);
+
+INSERT INTO schema_version (version_number, comment) VALUES (277, 'Add documents #2328');
+
+-- 2020-11-06 Extend event participant jurisdiction calculation #2902
+ALTER TABLE eventparticipant ADD COLUMN region_id bigint;
+ALTER TABLE eventparticipant ADD COLUMN district_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+INSERT INTO schema_version (version_number, comment) VALUES (278, 'Extend event participant jurisdiction calculation #2902');
+
 -- 2020-10-15 New exposure entity and migration #2948
 ALTER TABLE epidata ADD COLUMN exposuredetailsknown varchar(255);
 ALTER TABLE epidata_history ADD COLUMN exposuredetailsknown varchar(255);
@@ -5705,7 +5733,7 @@ DROP TABLE epidataburial_history;
 DROP TABLE epidatagathering_history;
 DROP TABLE epidatatravel_history;
 
-INSERT INTO schema_version (version_number, comment) VALUES (277, 'New exposure entity and migration #2948');
+INSERT INTO schema_version (version_number, comment) VALUES (279, 'New exposure entity and migration #2948');
 
 -- 2020-10-21 Epi data migration #2949
 ALTER TABLE epidata ADD COLUMN contactwithsourcecaseknown varchar(255);
@@ -5851,10 +5879,9 @@ UPDATE epidata SET exposuredetailsknown = 'YES' WHERE (exposuredetailsknown IS N
 
 UPDATE epidata SET changedate = now();
 
-INSERT INTO schema_version (version_number, comment) VALUES (278, 'Epi data migration #2949');
+INSERT INTO schema_version (version_number, comment) VALUES (280, 'Epi data migration #2949');
 
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id) > 0;
 
-INSERT INTO schema_version (version_number, comment) VALUES (279, 'Set contact with source case known for all existing cases #2946');
--- *** Insert new sql commands BEFORE this line ***
+INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');-- *** Insert new sql commands BEFORE this line ***
