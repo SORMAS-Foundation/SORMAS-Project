@@ -53,6 +53,7 @@ import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.report.AggregateReportDtoHelper;
@@ -640,6 +641,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// regions
 		List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
 		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
+		// countries
+		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
+		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			// campaigns
@@ -652,6 +656,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// order is important, due to dependencies
 
+		new CountryDtoHelper().pullMissing(countryUuids);
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);
 		new CommunityDtoHelper().pullMissing(communityUuids);

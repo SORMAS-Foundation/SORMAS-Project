@@ -69,6 +69,10 @@ public class ImportProgressLayout extends VerticalLayout {
 	private UI currentUI;
 
 	public ImportProgressLayout(int totalCount, UI currentUI, Runnable cancelCallback, boolean duplicatesPossible) {
+		this(totalCount, currentUI, cancelCallback, duplicatesPossible, true);
+	}
+
+	public ImportProgressLayout(int totalCount, UI currentUI, Runnable cancelCallback, boolean duplicatesPossible, boolean skipPossible) {
 		this.totalCount = totalCount;
 		this.currentUI = currentUI;
 
@@ -114,14 +118,14 @@ public class ImportProgressLayout extends VerticalLayout {
 		}
 		importSkipsLabel = new Label(String.format(I18nProperties.getCaption(Captions.importSkips), 0));
 		CssStyles.style(importSkipsLabel, CssStyles.LABEL_MINOR);
-		progressInfoLayout.addComponent(importSkipsLabel);
+		if (skipPossible) {
+			progressInfoLayout.addComponent(importSkipsLabel);
+		}
 		addComponent(progressInfoLayout);
 		setComponentAlignment(progressInfoLayout, Alignment.TOP_RIGHT);
 
 		// Cancel button
-		cancelListener = e -> {
-			cancelCallback.run();
-		};
+		cancelListener = e -> cancelCallback.run();
 
 		closeCancelButton = ButtonHelper.createButton(Captions.actionCancel, cancelListener, CssStyles.VSPACE_TOP_2);
 
@@ -146,36 +150,30 @@ public class ImportProgressLayout extends VerticalLayout {
 	}
 
 	public void updateProgress(ImportLineResult result) {
-		currentUI.access(new Runnable() {
-
-			@Override
-			public void run() {
-				processedImportsCount++;
-				if (result == ImportLineResult.SUCCESS) {
-					successfulImportsCount++;
-					successfulImportsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importImports), successfulImportsCount));
-				} else if (result == ImportLineResult.ERROR) {
-					importErrorsCount++;
-					importErrorsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importErrors), importErrorsCount));
-				} else if (result == ImportLineResult.SKIPPED) {
-					importSkipsCount++;
-					importSkipsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importSkips), importSkipsCount));
-				} else if (result == ImportLineResult.DUPLICATE) {
-					importDuplicatesCount++;
-					importDuplicatesLabel.setValue(String.format(I18nProperties.getCaption(Captions.importDuplicates), importDuplicatesCount));
-				}
-				processedImportsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importProcessed), processedImportsCount, totalCount));
-				progressBar.setValue((float) processedImportsCount / (float) totalCount);
+		currentUI.access(() -> {
+			processedImportsCount++;
+			if (result == ImportLineResult.SUCCESS) {
+				successfulImportsCount++;
+				successfulImportsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importImports), successfulImportsCount));
+			} else if (result == ImportLineResult.ERROR) {
+				importErrorsCount++;
+				importErrorsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importErrors), importErrorsCount));
+			} else if (result == ImportLineResult.SKIPPED) {
+				importSkipsCount++;
+				importSkipsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importSkips), importSkipsCount));
+			} else if (result == ImportLineResult.DUPLICATE) {
+				importDuplicatesCount++;
+				importDuplicatesLabel.setValue(String.format(I18nProperties.getCaption(Captions.importDuplicates), importDuplicatesCount));
 			}
+			processedImportsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importProcessed), processedImportsCount, totalCount));
+			progressBar.setValue((float) processedImportsCount / (float) totalCount);
 		});
 	}
 
 	public void makeClosable(Runnable closeCallback) {
 		closeCancelButton.setCaption(I18nProperties.getCaption(Captions.actionClose));
 		closeCancelButton.removeClickListener(cancelListener);
-		closeCancelButton.addClickListener(e -> {
-			closeCallback.run();
-		});
+		closeCancelButton.addClickListener(e -> closeCallback.run());
 	}
 
 	public void setInfoLabelText(String text) {

@@ -96,24 +96,20 @@ public class ContactImporter extends DataImporter {
 		newContactTemp.setReportingUser(currentUser);
 
 		boolean contactHasImportError =
-			insertRowIntoData(values, entityClasses, entityPropertyPaths, true, new Function<ImportCellData, Exception>() {
-
-				@Override
-				public Exception apply(ImportCellData importColumnInformation) {
-					// If the cell entry is not empty, try to insert it into the current contact or person object
-					if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
-						try {
-							insertColumnEntryIntoData(
-								newContactTemp,
-								newPersonTemp,
-								importColumnInformation.getValue(),
-								importColumnInformation.getEntityPropertyPath());
-						} catch (ImportErrorException | InvalidColumnException e) {
-							return e;
-						}
+			insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
+				// If the cell entry is not empty, try to insert it into the current contact or person object
+				if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
+					try {
+						insertColumnEntryIntoData(
+							newContactTemp,
+							newPersonTemp,
+							importColumnInformation.getValue(),
+							importColumnInformation.getEntityPropertyPath());
+					} catch (ImportErrorException | InvalidColumnException e) {
+						return e;
 					}
-					return null;
 				}
+				return null;
 			});
 
 		// try to assign the contact to an existing case

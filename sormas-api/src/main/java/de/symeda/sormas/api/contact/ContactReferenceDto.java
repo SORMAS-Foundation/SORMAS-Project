@@ -69,6 +69,16 @@ public class ContactReferenceDto extends ReferenceDto {
 			getUuid());
 	}
 
+	public String getCaptionAlwaysWithUuid() {
+		return buildCaption(
+			contactName.firstName,
+			contactName.lastName,
+			caseName != null ? caseName.firstName : null,
+			caseName != null ? caseName.lastName : null,
+			getUuid(),
+			true);
+	}
+
 	public PersonName getContactName() {
 		return contactName;
 	}
@@ -83,6 +93,16 @@ public class ContactReferenceDto extends ReferenceDto {
 		String caseFirstName,
 		String caseLastName,
 		String contactUuid) {
+		return buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName, contactUuid, false);
+	}
+
+	public static String buildCaption(
+		String contactFirstName,
+		String contactLastName,
+		String caseFirstName,
+		String caseLastName,
+		String contactUuid,
+		boolean alwaysShowUuid) {
 
 		StringBuilder builder = new StringBuilder();
 		if (!DataHelper.isNullOrEmpty(contactFirstName) || !DataHelper.isNullOrEmpty(contactLastName)) {
@@ -98,8 +118,8 @@ public class ContactReferenceDto extends ReferenceDto {
 				.append(DataHelper.toStringNullable(caseLastName));
 		}
 
-		if (builder.length() == 0) {
-			builder.append(DataHelper.getShortUuid(contactUuid));
+		if (alwaysShowUuid || builder.length() == 0) {
+			builder.append(builder.length() > 0 ? " (" + DataHelper.getShortUuid(contactUuid) + ")" : DataHelper.getShortUuid(contactUuid));
 		}
 
 		return builder.toString();

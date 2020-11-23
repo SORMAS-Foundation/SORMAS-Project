@@ -912,7 +912,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 
 			// get all cases based on the user's contact association
-			if (userFilterCriteria == null || !userFilterCriteria.isExcludeCasesFromContacts()) {
+			if (userFilterCriteria == null
+				|| (!userFilterCriteria.isExcludeCasesFromContacts()
+					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
 				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
 				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
 				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot));

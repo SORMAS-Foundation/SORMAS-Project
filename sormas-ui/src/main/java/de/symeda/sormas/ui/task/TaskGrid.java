@@ -17,12 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
@@ -49,9 +53,6 @@ import de.symeda.sormas.ui.utils.ReferenceDtoHtmlProvider;
 import de.symeda.sormas.ui.utils.ShortStringRenderer;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.util.Date;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
@@ -95,7 +96,10 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		setColumns(
 			EDIT_BTN_ID,
 			TaskIndexDto.CONTEXT_REFERENCE,
+			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_TYPE,
+			TaskIndexDto.REGION,
+			TaskIndexDto.DISTRICT,
 			TaskIndexDto.PRIORITY,
 			TaskIndexDto.SUGGESTED_START,
 			TaskIndexDto.DUE_DATE,

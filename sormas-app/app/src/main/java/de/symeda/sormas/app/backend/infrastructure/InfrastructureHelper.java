@@ -12,6 +12,7 @@ import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
@@ -22,6 +23,7 @@ public class InfrastructureHelper {
 	public static InfrastructureChangeDatesDto getInfrastructureChangeDates() {
 		InfrastructureChangeDatesDto changeDates = new InfrastructureChangeDatesDto();
 
+		changeDates.setCountryChangeDate(DatabaseHelper.getCountryDao().getLatestChangeDate());
 		changeDates.setRegionChangeDate(DatabaseHelper.getRegionDao().getLatestChangeDate());
 		changeDates.setDistrictChangeDate(DatabaseHelper.getDistrictDao().getLatestChangeDate());
 		changeDates.setCommunityChangeDate(DatabaseHelper.getCommunityDao().getLatestChangeDate());
@@ -39,6 +41,7 @@ public class InfrastructureHelper {
 	}
 
 	public static void handlePulledInfrastructureData(InfrastructureSyncDto infrastructureData) throws DaoException {
+		new CountryDtoHelper().handlePulledList(DatabaseHelper.getCountryDao(), infrastructureData.getCountries());
 		new RegionDtoHelper().handlePulledList(DatabaseHelper.getRegionDao(), infrastructureData.getRegions());
 		new DistrictDtoHelper().handlePulledList(DatabaseHelper.getDistrictDao(), infrastructureData.getDistricts());
 		new CommunityDtoHelper().handlePulledList(DatabaseHelper.getCommunityDao(), infrastructureData.getCommunities());
