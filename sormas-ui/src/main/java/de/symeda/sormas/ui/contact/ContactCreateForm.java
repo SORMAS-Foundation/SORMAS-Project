@@ -34,12 +34,12 @@ import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -72,12 +72,14 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String PERSON_NAME_LOC = "personNameLoc";
 	private static final String CASE_INFO_LOC = "caseInfoLoc";
 	private static final String CHOOSE_CASE_LOC = "chooseCaseLoc";
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
+			LayoutUtil.loc(PERSON_NAME_LOC) +
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
 					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 							fluidRowLocs(PersonDto.SEX)) +
@@ -101,7 +103,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private NullableOptionGroup contactProximity;
 	private Disease disease;
-	private Boolean hasCaseRelation;
+	private final Boolean hasCaseRelation;
+	private final boolean asSourceContact;
 	private CaseReferenceDto selectedCase;
 	private NullableOptionGroup contactCategory;
 	private TextField contactProximityDetails;
@@ -110,11 +113,12 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	/**
 	 * TODO use disease and case relation information given in ContactDto
 	 */
-	public ContactCreateForm(Disease disease, boolean hasCaseRelation) {
+	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX);
 
 		this.disease = disease;
-		this.hasCaseRelation = new Boolean(hasCaseRelation);
+		this.hasCaseRelation = hasCaseRelation;
+		this.asSourceContact = asSourceContact;
 
 		addFields();
 
@@ -265,6 +269,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			getContent().addComponent(removeCaseButton, REMOVE_CASE_LOC);
 			removeCaseButton.setVisible(false);
 		}
+		if (asSourceContact) {
+			setEnabled(false, ContactDto.DISEASE, ContactDto.DISEASE_DETAILS);
+		}
 
 		addValueChangeListener(e -> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);
@@ -277,6 +284,26 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			}
 
 			updateContactProximity();
+
+			if (asSourceContact) {
+				setVisible(
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
+
+				TextField personNameField = addCustomField(PERSON_NAME_LOC, String.class, TextField.class);
+				personNameField.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
+				personNameField.setValue(getValue().getPerson().getCaption());
+				personNameField.setReadOnly(true);
+			}
 		});
 	}
 

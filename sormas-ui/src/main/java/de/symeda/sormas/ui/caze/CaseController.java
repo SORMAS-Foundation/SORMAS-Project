@@ -163,18 +163,33 @@ public class CaseController {
 	}
 
 	public void createFromContact(ContactDto contact) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
-		caseCreateComponent.addCommitListener(new CommitListener() {
+		PersonDto selectedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		CaseDataDto dto = CaseDataDto.build(PersonDto.build().toReference(), contact.getDisease());
 
-			@Override
-			public void onCommit() {
-				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-				updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-				FacadeProvider.getContactFacade().saveContact(updatedContact);
+		dto.setDiseaseDetails(contact.getDiseaseDetails());
+		dto.setRegion(contact.getRegion());
+		dto.setDistrict(contact.getDistrict());
+		dto.setReportDate(contact.getReportDateTime());
+		dto.setCommunity(contact.getCommunity());
+		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
+
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+			if (uuid == null) {
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
+				caseCreateComponent.addCommitListener(new CommitListener() {
+
+					@Override
+					public void onCommit() {
+						ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+						updatedContact.setContactClassification(ContactClassification.CONFIRMED);
+						FacadeProvider.getContactFacade().saveContact(updatedContact);
+					}
+				});
+				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+			} else {
+				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}
 		});
-
-		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
@@ -417,14 +432,9 @@ public class CaseController {
 					dto.getSymptoms().setUuid(DataHelper.createUuid());
 					dto.getClinicalCourse().getHealthConditions().setUuid(DataHelper.createUuid());
 					dto.getEpiData().setUuid(DataHelper.createUuid());
-					dto.getEpiData().getBurials().forEach(epiDataBurialDto -> {
-						epiDataBurialDto.setUuid(DataHelper.createUuid());
-						epiDataBurialDto.getBurialAddress().setUuid(DataHelper.createUuid());
-					});
-					dto.getEpiData().getTravels().forEach(travelDto -> travelDto.setUuid(DataHelper.createUuid()));
-					dto.getEpiData().getGatherings().forEach(gatheringDto -> {
-						gatheringDto.setUuid(DataHelper.createUuid());
-						gatheringDto.getGatheringAddress().setUuid(DataHelper.createUuid());
+					dto.getEpiData().getExposures().forEach(exposure -> {
+						exposure.setUuid(DataHelper.createUuid());
+						exposure.getLocation().setUuid(DataHelper.createUuid());
 					});
 
 					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
@@ -751,6 +761,7 @@ public class CaseController {
 			updatedCase.setRegion(updatedCaseBulkEditData.getRegion());
 			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
 			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
+			updatedCase.setFacilityType(updatedCaseBulkEditData.getFacilityType());
 			updatedCase.setHealthFacility(updatedCaseBulkEditData.getHealthFacility());
 			updatedCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 			CaseLogic.handleHospitalization(updatedCase, caseFacade.getCaseDataByUuid(indexDto.getUuid()), doTransfer);
@@ -934,10 +945,10 @@ public class CaseController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, Consumer<Boolean> sourceContactsToggleCallback) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), caze.getEpiData().isPseudonymized());
+		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), CaseDataDto.class, caze.isPseudonymized(), sourceContactsToggleCallback);
 		epiDataForm.setValue(caze.getEpiData());
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(

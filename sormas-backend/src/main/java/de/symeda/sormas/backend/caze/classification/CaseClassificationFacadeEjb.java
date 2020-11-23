@@ -39,6 +39,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto.C
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
@@ -52,6 +53,9 @@ import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.Cla
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -72,10 +76,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	private PersonFacadeEjbLocal personFacade;
 
 	/** local cache */
-	private Map<Disease, DiseaseClassificationCriteriaDto> criteriaMap = new HashMap<>();
+	private final Map<Disease, DiseaseClassificationCriteriaDto> criteriaMap = new HashMap<>();
 
 	@Override
-	public CaseClassification getClassification(CaseDataDto caze, List<PathogenTestDto> sampleTests) {
+	public CaseClassification getClassification(CaseDataDto caze, List<PathogenTestDto> pathogenTests) {
 
 		if (criteriaMap.isEmpty()) {
 			buildCriteria();
@@ -84,13 +88,13 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		PersonDto person = personFacade.getPersonByUuid(caze.getPerson().getUuid());
 		DiseaseClassificationCriteriaDto criteria = criteriaMap.get(caze.getDisease());
 
-		if (criteria != null && criteria.getConfirmedCriteria() != null && criteria.getConfirmedCriteria().eval(caze, person, sampleTests)) {
+		if (criteria != null && criteria.getConfirmedCriteria() != null && criteria.getConfirmedCriteria().eval(caze, person, pathogenTests)) {
 			return CaseClassification.CONFIRMED;
-		} else if (criteria != null && criteria.getNotACaseCriteria() != null && criteria.getNotACaseCriteria().eval(caze, person, sampleTests)) {
+		} else if (criteria != null && criteria.getNotACaseCriteria() != null && criteria.getNotACaseCriteria().eval(caze, person, pathogenTests)) {
 			return CaseClassification.NO_CASE;
-		} else if (criteria != null && criteria.getProbableCriteria() != null && criteria.getProbableCriteria().eval(caze, person, sampleTests)) {
+		} else if (criteria != null && criteria.getProbableCriteria() != null && criteria.getProbableCriteria().eval(caze, person, pathogenTests)) {
 			return CaseClassification.PROBABLE;
-		} else if (criteria != null && criteria.getSuspectCriteria() != null && criteria.getSuspectCriteria().eval(caze, person, sampleTests)) {
+		} else if (criteria != null && criteria.getSuspectCriteria() != null && criteria.getSuspectCriteria().eval(caze, person, pathogenTests)) {
 			return CaseClassification.SUSPECT;
 		} else {
 			return CaseClassification.NOT_CLASSIFIED;
@@ -121,11 +125,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			buildCriteria();
 		}
 
-		if (criteriaMap.containsKey(disease)) {
-			return criteriaMap.get(disease);
-		} else {
-			return null;
-		}
+		return criteriaMap.getOrDefault(disease, null);
 	}
 
 	private void buildCriteria() {
@@ -148,15 +148,17 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			suspect,
 			xOf(
 				1,
-				epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE),
-				epiData(EpiDataDto.PROCESSING_CONFIRMED_CASE_FLUID_UNSAFE),
-				epiData(EpiDataDto.PERCUTANEOUS_CASE_BLOOD),
-				allOfCompact(epiData(EpiDataDto.AREA_CONFIRMED_CASES), epiData(EpiDataDto.DIRECT_CONTACT_DEAD_UNSAFE))));
+				epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN),
+				exposure(ExposureDto.HANDLING_SAMPLES, ExposureType.WORK),
+				exposure(ExposureDto.PERCUTANEOUS, ExposureType.WORK),
+				allOfCompact(
+					exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL),
+					exposure(ExposureDto.PHYSICAL_CONTACT_WITH_BODY, ExposureType.BURIAL))));
 		confirmed = allOf(
 			suspect,
 			positiveTestResult(Disease.EVD, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
 
-		addCriteria(Disease.EVD, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.EVD));
+		addCriteria(Disease.EVD, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.EVD));
 
 		// CSM
 		suspect = allOf(
@@ -167,9 +169,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.ALTERED_CONSCIOUSNESS),
 				symptom(SymptomsDto.MENINGEAL_SIGNS),
 				symptom(SymptomsDto.BULGING_FONTANELLE)));
-		probable = allOf(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), suspect, epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE));
+		probable = allOf(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), suspect, epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN));
 		confirmed = allOf(suspect, positiveTestResult(Disease.CSM, PathogenTestType.ISOLATION));
-		addCriteria(Disease.CSM, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.CSM));
+		addCriteria(Disease.CSM, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.CSM));
 
 		// Lassa Fever
 		suspect = allOf(
@@ -186,13 +188,13 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.MUSCLE_PAIN),
 				symptom(SymptomsDto.CHEST_PAIN),
 				symptom(SymptomsDto.HEARINGLOSS)),
-			epiData(EpiDataDto.RODENTS),
-			xOf(1, epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE), epiData(EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE)));
+			exposure(ExposureDto.TYPE_OF_ANIMAL, ExposureType.ANIMAL_CONTACT, TypeOfAnimal.RODENT),
+			epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN));
 		probable = allOf(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), suspect);
 		confirmed = allOf(
 			suspect,
 			positiveTestResult(Disease.LASSA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
-		addCriteria(Disease.LASSA, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.LASSA));
+		addCriteria(Disease.LASSA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.LASSA));
 
 		// Yellow fever
 		suspect = allOf(symptom(SymptomsDto.FEVER), symptom(SymptomsDto.JAUNDICE));
@@ -200,7 +202,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			suspect,
 			xOf(
 				1,
-				epiData(EpiDataDto.AREA_CONFIRMED_CASES),
+				exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL),
 				allOfCompact(
 					caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED),
 					positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.HISTOPATHOLOGY))));
@@ -227,7 +229,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 							PathogenTestType.IGM_SERUM_ANTIBODY,
 							PathogenTestType.IGG_SERUM_ANTIBODY }),
 					true)));
-		addCriteria(Disease.YELLOW_FEVER, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.YELLOW_FEVER));
+		addCriteria(Disease.YELLOW_FEVER, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.YELLOW_FEVER));
 
 		// Dengue fever
 		suspect = allOf(
@@ -241,7 +243,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.SWOLLEN_GLANDS),
 				allOfCompact(symptom(SymptomsDto.MUSCLE_PAIN), symptom(SymptomsDto.JOINT_PAIN)),
 				symptom(SymptomsDto.SKIN_RASH)));
-		probable = allOf(suspect, epiData(EpiDataDto.AREA_CONFIRMED_CASES));
+		probable = allOf(suspect, exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL));
 		confirmed = allOf(
 			suspect,
 			xOf(
@@ -259,7 +261,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						new PathogenTestType[] {
 							PathogenTestType.IGG_SERUM_ANTIBODY }),
 					true)));
-		addCriteria(Disease.DENGUE, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.DENGUE));
+		addCriteria(Disease.DENGUE, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.DENGUE));
 
 		// Influenza (new subtype)
 		suspect = allOf(
@@ -267,11 +269,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.DIFFICULTY_BREATHING)),
 			xOf(
 				1,
-				oneOfCompact(epiData(EpiDataDto.CLOSE_CONTACT_PROBABLE_CASE), epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE)),
+				epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN),
 				epiData(EpiDataDto.AREA_INFECTED_ANIMALS),
-				epiData(EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA),
-				epiData(EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE)));
-		probable = allOf(suspect, caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE));
+				exposure(ExposureDto.HANDLING_SAMPLES, ExposureType.WORK)));
+		probable = allOf(suspect, caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED));
 		confirmed = allOf(
 			suspect,
 			xOf(
@@ -287,16 +288,16 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						new PathogenTestType[] {
 							PathogenTestType.IGG_SERUM_ANTIBODY }),
 					true)));
-		addCriteria(Disease.NEW_INFLUENZA, DateHelper.getDateZero(2018, 12, 13), suspect, probable, confirmed, extracted(Disease.NEW_INFLUENZA));
+		addCriteria(Disease.NEW_INFLUENZA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.NEW_INFLUENZA));
 
 		// Measles
 		suspect = allOf(
 			symptom(SymptomsDto.FEVER),
 			symptom(SymptomsDto.SKIN_RASH),
 			xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.RUNNY_NOSE), symptom(SymptomsDto.CONJUNCTIVITIS)));
-		probable = epiData(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE);
+		probable = epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
 		confirmed = allOf(suspect, positiveTestResult(Disease.MEASLES, PathogenTestType.IGM_SERUM_ANTIBODY));
-		addCriteria(Disease.MEASLES, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.MEASLES));
+		addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.MEASLES));
 
 		// Cholera
 		suspect = allOf(
@@ -306,10 +307,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.DEHYDRATION),
 				allOfCompact(
 					symptom(SymptomsDto.DIARRHEA),
-					oneOfCompact(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), epiData(EpiDataDto.AREA_CONFIRMED_CASES)))));
+					oneOfCompact(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL)))));
 		probable = null;
 		confirmed = allOf(suspect, positiveTestResult(Disease.CHOLERA, PathogenTestType.ISOLATION));
-		addCriteria(Disease.CHOLERA, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.CHOLERA));
+		addCriteria(Disease.CHOLERA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.CHOLERA));
 
 		// Monkey pox
 		suspect = allOf(symptom(SymptomsDto.FEVER), symptom(SymptomsDto.SKIN_RASH));
@@ -317,7 +318,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 			suspect,
 			positiveTestResult(Disease.MONKEYPOX, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
-		addCriteria(Disease.MONKEYPOX, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.MONKEYPOX));
+		addCriteria(Disease.MONKEYPOX, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.MONKEYPOX));
 
 		// Plague
 		suspect = allOf(
@@ -334,10 +335,11 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					caseData(CaseDataDto.PLAGUE_TYPE, PlagueType.SEPTICAEMIC),
 					symptom(SymptomsDto.FEVER),
 					symptom(SymptomsDto.CHILLS_SWEATS))));
-		probable =
-			allOf(suspect, xOf(1, epiData(EpiDataDto.AREA_CONFIRMED_CASES), positiveTestResult(Disease.PLAGUE, PathogenTestType.ANTIGEN_DETECTION)));
+		probable = allOf(
+			suspect,
+			xOf(1, exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL), positiveTestResult(Disease.PLAGUE, PathogenTestType.ANTIGEN_DETECTION)));
 		confirmed = allOf(suspect, positiveTestResult(Disease.PLAGUE, PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR));
-		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2018, 9, 17), suspect, probable, confirmed, extracted(Disease.PLAGUE));
+		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.PLAGUE));
 
 		// Congenital rubella
 		suspect = allOf(
@@ -396,7 +398,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.PCR_RT_PCR));
 		addCriteria(
 			Disease.CONGENITAL_RUBELLA,
-			DateHelper.getDateZero(2019, 6, 3),
+			DateHelper.getDateZero(2020, 11, 6),
 			suspect,
 			probable,
 			confirmed,
@@ -419,69 +421,71 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		criteriaMap.put(disease, criteria);
 	}
 
-	private static ClassificationAllOfCriteriaDto allOf(ClassificationCriteriaDto... criteria) {
+	private ClassificationAllOfCriteriaDto allOf(ClassificationCriteriaDto... criteria) {
 		return new ClassificationAllOfCriteriaDto(criteria);
 	}
 
-	private static ClassificationAllOfCriteriaDto allOfTogether(ClassificationCriteriaDto... criteria) {
+	private ClassificationAllOfCriteriaDto allOfTogether(ClassificationCriteriaDto... criteria) {
 		return new ClassificationAllOfCriteriaDto(true, criteria);
 	}
 
-	private static ClassificationAllOfCompactCriteriaDto allOfCompact(ClassificationCriteriaDto... criteria) {
+	private ClassificationAllOfCompactCriteriaDto allOfCompact(ClassificationCriteriaDto... criteria) {
 		return new ClassificationAllOfCompactCriteriaDto(criteria);
 	}
 
-	private static ClassificationXOfCriteriaDto xOf(int requiredAmount, ClassificationCriteriaDto... criteria) {
+	private ClassificationXOfCriteriaDto xOf(int requiredAmount, ClassificationCriteriaDto... criteria) {
 		return new ClassificationXOfCriteriaDto(requiredAmount, criteria);
 	}
 
-	private static ClassificationXOfSubCriteriaDto xOfSub(int requiredAmount, boolean isAddition, ClassificationCriteriaDto... criteria) {
+	private ClassificationXOfSubCriteriaDto xOfSub(int requiredAmount, boolean isAddition, ClassificationCriteriaDto... criteria) {
 		return new ClassificationXOfSubCriteriaDto(requiredAmount, isAddition, criteria);
 	}
 
-	private static ClassificationOneOfCompactCriteriaDto oneOfCompact(ClassificationCriteriaDto... criteria) {
+	private ClassificationOneOfCompactCriteriaDto oneOfCompact(ClassificationCriteriaDto... criteria) {
 		return new ClassificationOneOfCompactCriteriaDto(criteria);
 	}
 
-	private static ClassificationNoneOfCriteriaDto noneOf(ClassificationCriteriaDto... criteria) {
+	private ClassificationNoneOfCriteriaDto noneOf(ClassificationCriteriaDto... criteria) {
 		return new ClassificationNoneOfCriteriaDto(criteria);
 	}
 
-	private static ClassificationCaseCriteriaDto caseData(String propertyId, Object... propertyValues) {
+	private ClassificationCaseCriteriaDto caseData(String propertyId, Object... propertyValues) {
 		return new ClassificationCaseCriteriaDto(propertyId, propertyValues);
 	}
 
-	private static ClassificationSymptomsCriteriaDto symptom(String propertyId) {
+	private ClassificationSymptomsCriteriaDto symptom(String propertyId) {
 		return new ClassificationSymptomsCriteriaDto(propertyId);
 	}
 
-	private static ClassificationEpiDataCriteriaDto epiData(String propertyId) {
+	private ClassificationEpiDataCriteriaDto epiData(String propertyId) {
 		return new ClassificationEpiDataCriteriaDto(propertyId);
 	}
 
-	private static ClassificationPathogenTestCriteriaDto sampleTest(String propertyId, List<PathogenTestType> testTypes, Object... propertyValues) {
+	private ClassificationExposureCriteriaDto exposure(String propertyId, ExposureType exposureType, Object... propertyValues) {
+		return new ClassificationExposureCriteriaDto(propertyId, exposureType, propertyValues);
+	}
+
+	private ClassificationPathogenTestCriteriaDto sampleTest(String propertyId, List<PathogenTestType> testTypes, Object... propertyValues) {
 		return new ClassificationPathogenTestCriteriaDto(propertyId, testTypes, propertyValues);
 	}
 
-	private static ClassificationPathogenTestNegativeResultCriteriaDto negativeTestResult(Disease testedDisease) {
+	private ClassificationPathogenTestNegativeResultCriteriaDto negativeTestResult(Disease testedDisease) {
 		return new ClassificationPathogenTestNegativeResultCriteriaDto(testedDisease);
 	}
 
-	private static ClassificationPathogenTestPositiveResultCriteriaDto positiveTestResult(
-		Disease testedDisease,
-		PathogenTestType... pathogenTestTypes) {
+	private ClassificationPathogenTestPositiveResultCriteriaDto positiveTestResult(Disease testedDisease, PathogenTestType... pathogenTestTypes) {
 		return new ClassificationPathogenTestPositiveResultCriteriaDto(testedDisease, pathogenTestTypes);
 	}
 
-	private static ClassificationPathogenTestOtherPositiveResultCriteriaDto otherPositiveTestResult(Disease testedDisease) {
+	private ClassificationPathogenTestOtherPositiveResultCriteriaDto otherPositiveTestResult(Disease testedDisease) {
 		return new ClassificationPathogenTestOtherPositiveResultCriteriaDto(testedDisease);
 	}
 
-	private static ClassificationNotInStartDateRangeCriteriaDto notInStartDateRange(String propertyId, int daysBeforeStartDate) {
+	private ClassificationNotInStartDateRangeCriteriaDto notInStartDateRange(String propertyId, int daysBeforeStartDate) {
 		return new ClassificationNotInStartDateRangeCriteriaDto(propertyId, daysBeforeStartDate);
 	}
 
-	private static ClassificationPersonAgeBetweenYearsCriteriaDto personAgeBetweenYears(Integer lowerYearsThreshold, Integer upperYearsThreshold) {
+	private ClassificationPersonAgeBetweenYearsCriteriaDto personAgeBetweenYears(Integer lowerYearsThreshold, Integer upperYearsThreshold) {
 		return new ClassificationPersonAgeBetweenYearsCriteriaDto(lowerYearsThreshold, upperYearsThreshold);
 	}
 

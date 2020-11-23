@@ -223,7 +223,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 				ControlPropertyField childField = findFieldByPropertyId(childSymptomPropertyId, contentBinding.mainContent);
 				if (symptomField != null && childField != null && childField.getVisibility() == VISIBLE) {
 					// only do this for fields that are visible (based on visibility by disease)
-					ControlPropertyField.setDependencyParentField(childField, symptomField, SymptomState.YES, null, null, null);
+					ControlPropertyField.setDependencyParentField(childField, symptomField, SymptomState.YES, null, null, null, null, null);
 				}
 			}
 		}

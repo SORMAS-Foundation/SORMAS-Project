@@ -12,7 +12,8 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -113,60 +114,60 @@ public class DtoHelperTest extends AbstractBeanTest {
 			CaseDataDto targetDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
 			CaseDataDto sourceDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
-			EpiDataBurialDto subDto1 = EpiDataBurialDto.build();
-			EpiDataBurialDto subDto2 = EpiDataBurialDto.build();
+			ExposureDto subDto1 = ExposureDto.build(ExposureType.TRAVEL);
+			ExposureDto subDto2 = ExposureDto.build(ExposureType.TRAVEL);
 
 			// lead and other have different values
-			ArrayList<EpiDataBurialDto> targetList1 = new ArrayList<EpiDataBurialDto>();
+			ArrayList<ExposureDto> targetList1 = new ArrayList<>();
 			targetList1.add(subDto1);
 
-			ArrayList<EpiDataBurialDto> sourceList1 = new ArrayList<EpiDataBurialDto>();
+			ArrayList<ExposureDto> sourceList1 = new ArrayList<>();
 			sourceList1.add(subDto2);
 
 			// lead has values, other has not
-			ArrayList<EpiDataBurialDto> targetList2 = new ArrayList<EpiDataBurialDto>();
+			ArrayList<ExposureDto> targetList2 = new ArrayList<>();
 			targetList2.add(subDto1);
 			targetList2.add(subDto2);
 
 			// lead has no values, other has
-			ArrayList<EpiDataBurialDto> sourceList2 = new ArrayList<EpiDataBurialDto>();
+			ArrayList<ExposureDto> sourceList2 = new ArrayList<>();
 			sourceList2.add(subDto1);
 			sourceList2.add(subDto2);
 
 			// Check no values
 			DtoHelper.fillDto(targetDto, sourceDto, false);
-			assertTrue(targetDto.getEpiData().getBurials().isEmpty());
+			assertTrue(targetDto.getEpiData().getExposures().isEmpty());
 
 			// Check 'lead has still same entries'
-			targetDto.getEpiData().setBurials(targetList1);
-			sourceDto.getEpiData().setBurials(sourceList1);
+			targetDto.getEpiData().setExposures(targetList1);
+			sourceDto.getEpiData().setExposures(sourceList1);
 			String existingUuid = targetList1.get(0).getUuid();
 			DtoHelper.fillDto(targetDto, sourceDto, false);
 
-			assertEquals(targetList1.size(), targetDto.getEpiData().getBurials().size());
-			assertNotNull(targetDto.getEpiData().getBurials().get(0).getUuid());
-			assertEquals(existingUuid, targetDto.getEpiData().getBurials().get(0).getUuid());
-			assertNotEquals(existingUuid, sourceDto.getEpiData().getBurials().get(0).getUuid());
+			assertEquals(targetList1.size(), targetDto.getEpiData().getExposures().size());
+			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
+			assertEquals(existingUuid, targetDto.getEpiData().getExposures().get(0).getUuid());
+			assertNotEquals(existingUuid, sourceDto.getEpiData().getExposures().get(0).getUuid());
 
 			// Check 'lead has value, other has not'
-			targetDto.getEpiData().setBurials(targetList2);
-			sourceDto.getEpiData().setBurials(null);
+			targetDto.getEpiData().setExposures(targetList2);
+			sourceDto.getEpiData().setExposures(null);
 			DtoHelper.fillDto(targetDto, sourceDto, false);
 
-			assertNotNull(targetDto.getEpiData().getBurials().get(0).getUuid());
-			assertEquals(targetList2.size(), targetDto.getEpiData().getBurials().size());
-			assertEquals(targetList2.get(0).getUuid(), targetDto.getEpiData().getBurials().get(0).getUuid());
-			assertEquals(targetList2.get(1).getUuid(), targetDto.getEpiData().getBurials().get(1).getUuid());
+			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
+			assertEquals(targetList2.size(), targetDto.getEpiData().getExposures().size());
+			assertEquals(targetList2.get(0).getUuid(), targetDto.getEpiData().getExposures().get(0).getUuid());
+			assertEquals(targetList2.get(1).getUuid(), targetDto.getEpiData().getExposures().get(1).getUuid());
 
 			// Check 'lead has no value, other has'
-			targetDto.getEpiData().setBurials(null);
-			sourceDto.getEpiData().setBurials(sourceList2);
+			targetDto.getEpiData().setExposures(null);
+			sourceDto.getEpiData().setExposures(sourceList2);
 			DtoHelper.fillDto(targetDto, sourceDto, false);
 
-			assertNotNull(targetDto.getEpiData().getBurials().get(0).getUuid());
-			assertEquals(sourceList2.size(), targetDto.getEpiData().getBurials().size());
-			assertNotEquals(sourceList2.get(0).getUuid(), targetDto.getEpiData().getBurials().get(0).getUuid());
-			assertNotEquals(sourceList2.get(1).getUuid(), targetDto.getEpiData().getBurials().get(1).getUuid());
+			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
+			assertEquals(sourceList2.size(), targetDto.getEpiData().getExposures().size());
+			assertNotEquals(sourceList2.get(0).getUuid(), targetDto.getEpiData().getExposures().get(0).getUuid());
+			assertNotEquals(sourceList2.get(1).getUuid(), targetDto.getEpiData().getExposures().get(1).getUuid());
 		}
 
 		// test non-entity list

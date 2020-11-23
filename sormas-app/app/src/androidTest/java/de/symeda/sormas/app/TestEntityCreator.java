@@ -37,11 +37,9 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
-import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.person.Person;
@@ -206,46 +204,18 @@ public class TestEntityCreator {
 		return prevHosp;
 	}
 
-	public static EpiDataBurial createEpiDataBurial(Case caze) {
-		EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
-		burial.setEpiData(caze.getEpiData());
+	public static Exposure createExposure(Case caze) {
+		Exposure exposure = DatabaseHelper.getExposureDao().build();
+		exposure.setEpiData(caze.getEpiData());
 
 		try {
-			DatabaseHelper.getEpiDataBurialDao().saveAndSnapshot(burial);
-			DatabaseHelper.getEpiDataBurialDao().accept(burial);
+			DatabaseHelper.getExposureDao().saveAndSnapshot(exposure);
+			DatabaseHelper.getExposureDao().accept(exposure);
 		} catch (DaoException e) {
 			throw new RuntimeException(e);
 		}
 
-		return DatabaseHelper.getEpiDataBurialDao().queryForIdWithEmbedded(burial.getId());
-	}
-
-	public static EpiDataGathering createEpiDataGathering(Case caze) {
-		EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
-		gathering.setEpiData(caze.getEpiData());
-
-		try {
-			DatabaseHelper.getEpiDataGatheringDao().saveAndSnapshot(gathering);
-			DatabaseHelper.getEpiDataGatheringDao().accept(gathering);
-		} catch (DaoException e) {
-			throw new RuntimeException(e);
-		}
-
-		return DatabaseHelper.getEpiDataGatheringDao().queryForIdWithEmbedded(gathering.getId());
-	}
-
-	public static EpiDataTravel createEpiDataTravel(Case caze) {
-		EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
-		travel.setEpiData(caze.getEpiData());
-
-		try {
-			DatabaseHelper.getEpiDataTravelDao().saveAndSnapshot(travel);
-			DatabaseHelper.getEpiDataTravelDao().accept(travel);
-		} catch (DaoException e) {
-			throw new RuntimeException(e);
-		}
-
-		return DatabaseHelper.getEpiDataTravelDao().queryForIdWithEmbedded(travel.getId());
+		return DatabaseHelper.getExposureDao().queryForIdWithEmbedded(exposure.getId());
 	}
 
 	public static Visit createVisit(Contact contact) throws DaoException {

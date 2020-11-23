@@ -107,16 +107,26 @@ public class ContactController {
 	}
 
 	public void create() {
-		create((CaseReferenceDto) null);
+		create(null, false, null);
 	}
 
 	public void create(CaseReferenceDto caseRef) {
+		create(caseRef, false, null);
+	}
+
+	/**
+	 * @param asResultingCase
+	 *            Determines whether the case should be set as resulting case instead of source case
+	 * @param alternativeCallback
+	 *            Callback that is executed instead of opening the created contact
+	 */
+	public void create(CaseReferenceDto caseRef, boolean asResultingCase, Runnable alternativeCallback) {
 
 		CaseDataDto caze = null;
 		if (caseRef != null) {
 			caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
-		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
+		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze, asResultingCase, alternativeCallback);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 
@@ -175,8 +185,14 @@ public class ContactController {
 		page.setUriFragment("!" + ContactsView.VIEW_NAME + "/" + fragmentParameter, false);
 	}
 
-	private ContactDto createNewContact(CaseDataDto caze) {
+	private ContactDto createNewContact(CaseDataDto caze, boolean asSourceContact) {
 		ContactDto contact = caze != null ? ContactDto.build(caze) : ContactDto.build();
+
+		if (caze != null && asSourceContact) {
+			contact.setCaze(null);
+			contact.setResultingCase(caze.toReference());
+			contact.setPerson(caze.getPerson());
+		}
 
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		contact.setReportingUser(userReference);
@@ -201,9 +217,27 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
+		return getContactCreateComponent(caze, false, null);
+	}
 
-		ContactCreateForm createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null);
-		createForm.setValue(createNewContact(caze));
+	/**
+	 * @param asSourceContact
+	 *            Determines whether the case should be set as resulting case instead of source case
+	 * @param alternativeCallback
+	 *            Callback that is executed instead of opening the created contact
+	 */
+	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(
+		final CaseDataDto caze,
+		boolean asSourceContact,
+		Runnable alternativeCallback) {
+
+		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()) : null;
+		ContactCreateForm createForm =
+			new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact);
+		createForm.setValue(createNewContact(caze, asSourceContact));
+		if (casePerson != null && asSourceContact) {
+			createForm.setPerson(casePerson);
+		}
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
@@ -212,43 +246,59 @@ public class ContactController {
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
-				final PersonDto person = PersonDto.build();
-				person.setFirstName(createForm.getPersonFirstName());
-				person.setLastName(createForm.getPersonLastName());
-				person.setNationalHealthId(createForm.getNationalHealthId());
-				person.setPassportNumber(createForm.getPassportNumber());
-				person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-				person.setBirthdateMM(createForm.getBirthdateMM());
-				person.setBirthdateDD(createForm.getBirthdateDD());
-				person.setSex(createForm.getSex());
-				person.setPhone(createForm.getPhone());
-				person.setEmailAddress(createForm.getEmailAddress());
-
-				ControllerProvider.getPersonController()
-					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
-						if (selectedPerson != null) {
-							dto.setPerson(selectedPerson);
-
-							// set the contact person's address to the one of the case when it is currently empty and
-							// the relationship with the case has been set to living in the same household
-							if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-								PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-								if (personDto.getAddress().checkIsEmptyLocation()) {
-									CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-									personDto.getAddress().setRegion(caseDto.getRegion());
-									personDto.getAddress().setDistrict(caseDto.getDistrict());
-									personDto.getAddress().setCommunity(caseDto.getCommunity());
-								}
-								FacadeProvider.getPersonFacade().savePerson(personDto);
+				if (asSourceContact && alternativeCallback != null && casePerson != null) {
+					selectOrCreateContact(dto, casePerson, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
+						if (selectedContactUuid != null) {
+							if (!selectedContactUuid.equals(dto.getUuid())) {
+								dto.setResultingCase(caze.toReference());
+								FacadeProvider.getContactFacade().saveContact(dto);
 							}
-
-							selectOrCreateContact(dto, person, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
-								if (selectedContactUuid != null) {
-									editData(selectedContactUuid);
-								}
-							});
+							alternativeCallback.run();
 						}
 					});
+				} else {
+					final PersonDto person = PersonDto.build();
+					person.setFirstName(createForm.getPersonFirstName());
+					person.setLastName(createForm.getPersonLastName());
+					person.setNationalHealthId(createForm.getNationalHealthId());
+					person.setPassportNumber(createForm.getPassportNumber());
+					person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+					person.setBirthdateMM(createForm.getBirthdateMM());
+					person.setBirthdateDD(createForm.getBirthdateDD());
+					person.setSex(createForm.getSex());
+					person.setPhone(createForm.getPhone());
+					person.setEmailAddress(createForm.getEmailAddress());
+
+					ControllerProvider.getPersonController()
+						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
+							if (selectedPerson != null) {
+								dto.setPerson(selectedPerson);
+
+								// set the contact person's address to the one of the case when it is currently empty and
+								// the relationship with the case has been set to living in the same household
+								if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
+									PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
+									if (personDto.getAddress().checkIsEmptyLocation()) {
+										CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
+										personDto.getAddress().setRegion(caseDto.getRegion());
+										personDto.getAddress().setDistrict(caseDto.getDistrict());
+										personDto.getAddress().setCommunity(caseDto.getCommunity());
+									}
+									FacadeProvider.getPersonFacade().savePerson(personDto);
+								}
+
+								selectOrCreateContact(
+									dto,
+									person,
+									I18nProperties.getString(Strings.infoSelectOrCreateContact),
+									selectedContactUuid -> {
+										if (selectedContactUuid != null) {
+											editData(selectedContactUuid);
+										}
+									});
+							}
+						});
+				}
 			}
 		});
 
@@ -260,10 +310,10 @@ public class ContactController {
 		final Disease disease;
 		if (eventParticipant.getResultingCase() != null) {
 			disease = FacadeProvider.getCaseFacade().getCaseDataByUuid(eventParticipant.getResultingCase().getUuid()).getDisease();
-			createForm = new ContactCreateForm(disease, true);
+			createForm = new ContactCreateForm(disease, true, false);
 		} else {
 			disease = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()).getDisease();
-			createForm = new ContactCreateForm(disease, false);
+			createForm = new ContactCreateForm(disease, false, false);
 		}
 
 		createForm.setValue(createNewContact(eventParticipant, disease));
@@ -697,7 +747,7 @@ public class ContactController {
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), contact.getEpiData().isPseudonymized());
+		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), ContactDto.class, contact.getEpiData().isPseudonymized(), null);
 		epiDataForm.setValue(contact.getEpiData());
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
