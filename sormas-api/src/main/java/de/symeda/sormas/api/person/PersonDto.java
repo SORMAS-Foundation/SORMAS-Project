@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -262,15 +263,15 @@ public class PersonDto extends PseudonymizableDto {
 	private List<LocationDto> addresses = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	private boolean hasCovidApp;
 	@Diseases(Disease.CORONAVIRUS)
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
 	@SensitiveData
-	@HideForCountriesExcept(countries = "de")
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String externalId;
 
 	public Integer getBirthdateDD() {
