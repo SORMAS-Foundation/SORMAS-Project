@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.messaging;
 
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -11,10 +11,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SmsListEntry extends HorizontalLayout {
 
-	private final ManualMessageLogDto manualMessageLogDto;
-
 	public SmsListEntry(ManualMessageLogDto manualMessageLogDto) {
-		this.manualMessageLogDto = manualMessageLogDto;
 
 		setMargin(false);
 		setSpacing(true);

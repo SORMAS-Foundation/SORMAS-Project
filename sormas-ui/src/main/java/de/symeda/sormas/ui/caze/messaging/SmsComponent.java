@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.messaging;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
@@ -8,9 +8,18 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.CustomField;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 public class SmsComponent extends CustomField<String> {
 
+	private long missingPhoneNumbers;
+
 	private TextArea smsTextArea;
+
+	public SmsComponent(long missingPhoneNumbers) {
+		this.missingPhoneNumbers = missingPhoneNumbers;
+	}
 
 	@Override
 	protected Component initContent() {
@@ -19,6 +28,12 @@ public class SmsComponent extends CustomField<String> {
 		mainLayout.setSizeUndefined();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
+		if (missingPhoneNumbers > 0) {
+			mainLayout.addComponent(new Label(String.format(I18nProperties.getString(Strings.numberOfMissingPhoneNumbers), missingPhoneNumbers)));
+		}
+
+		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.enterSMS)));
+
 		smsTextArea = new TextArea();
 		smsTextArea.setWidth(100, Unit.PERCENTAGE);
 		smsTextArea.setRows(4);
@@ -26,10 +41,10 @@ public class SmsComponent extends CustomField<String> {
 
 		final HorizontalLayout charactersLayout = new HorizontalLayout();
 		charactersLayout.setSpacing(false);
-		charactersLayout.addComponent(new Label("Characters: "));
+		charactersLayout.addComponent(new Label(I18nProperties.getString(Strings.characters)));
 		final Label characterLeftLabel = new Label("0");
 		charactersLayout.addComponent(characterLeftLabel);
-		charactersLayout.addComponent(new Label(" / 160 => Nr. of messages: "));
+		charactersLayout.addComponent(new Label(I18nProperties.getString(Strings.nrOfCharactersLeft)));
 		final Label nrOfMessagesLabel = new Label("1");
 		charactersLayout.addComponent(nrOfMessagesLabel);
 

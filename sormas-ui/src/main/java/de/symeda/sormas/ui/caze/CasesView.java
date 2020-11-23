@@ -695,6 +695,12 @@ public class CasesView extends AbstractView {
 								.deleteAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
 							hasBulkOperationsRight),
 						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.sendSMS),
+							VaadinIcons.MOBILE_RETRO,
+							selectedItem -> ControllerProvider.getCaseController()
+								.sendSmsToAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							hasBulkOperationsRight),
+						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionArchive),
 							VaadinIcons.ARCHIVE,
 							mi -> ControllerProvider.getCaseController()

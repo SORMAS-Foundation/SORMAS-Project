@@ -67,6 +67,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -91,6 +92,7 @@ import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationEditLayout;
 import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsGrid;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
+import de.symeda.sormas.ui.caze.messaging.SmsComponent;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoForm;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseForm;
@@ -1146,6 +1148,32 @@ public class CaseController {
 						I18nProperties.getString(Strings.messageCasesDeleted),
 						Type.HUMANIZED_MESSAGE,
 						false).show(Page.getCurrent());
+				});
+		}
+	}
+
+	public void sendSmsToAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoCasesSelected),
+				I18nProperties.getString(Strings.messageNoCasesSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			final List<String> caseUuids = selectedRows.stream().map(caseIndexDto -> caseIndexDto.getUuid()).collect(Collectors.toList());
+			final SmsComponent smsComponent =
+				new SmsComponent(FacadeProvider.getCaseFacade().countCasesWithMissingMessageType(caseUuids, MessageType.SMS));
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.sendingSms),
+				smsComponent,
+				I18nProperties.getString(Strings.send),
+				I18nProperties.getString(Strings.cancel),
+				640,
+				confirmationEvent -> {
+					if (confirmationEvent.booleanValue()) {
+						FacadeProvider.getCaseFacade().sendMessage(caseUuids, "", smsComponent.getValue(), MessageType.SMS);
+					}
 				});
 		}
 	}

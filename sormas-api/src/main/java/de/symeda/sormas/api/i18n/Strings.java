@@ -20,6 +20,7 @@ public interface Strings {
 	String bpm = "bpm";
 	String by = "by";
 	String cancel = "cancel";
+	String characters = "characters";
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
 	String classificationConfirmed = "classificationConfirmed";
@@ -129,6 +130,7 @@ public interface Strings {
 	String done = "done";
 	String edit = "edit";
 	String email = "email";
+	String enterSMS = "enterSMS";
 	String entityAction = "entityAction";
 	String entityActions = "entityActions";
 	String entityAdditionalTest = "entityAdditionalTest";
@@ -745,12 +747,14 @@ public interface Strings {
 	String notificationTaskStartSpecific = "notificationTaskStartSpecific";
 	String notificationVisitCompleted = "notificationVisitCompleted";
 	String notSpecified = "notSpecified";
+	String nrOfCharactersLeft = "nrOfCharactersLeft";
 	String number = "number";
 	String numberEight = "numberEight";
 	String numberEleven = "numberEleven";
 	String numberFive = "numberFive";
 	String numberFour = "numberFour";
 	String numberNine = "numberNine";
+	String numberOfMissingPhoneNumbers = "numberOfMissingPhoneNumbers";
 	String numberOne = "numberOne";
 	String numberSeven = "numberSeven";
 	String numberSix = "numberSix";

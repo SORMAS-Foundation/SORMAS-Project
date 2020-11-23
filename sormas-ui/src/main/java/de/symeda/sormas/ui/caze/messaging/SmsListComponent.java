@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.messaging;
 
 import java.util.Arrays;
 
@@ -25,9 +25,10 @@ public class SmsListComponent extends VerticalLayout {
 	private boolean hasPhoneNumber;
 
 	public SmsListComponent(CaseReferenceDto caseRef) {
-		hasPhoneNumber = FacadeProvider.getCaseFacade().countCasesWithMissingMessageType(Arrays.asList(caseRef.getUuid()), MessageType.SMS) == 0;
+		long missingPhoneNumbers = FacadeProvider.getCaseFacade().countCasesWithMissingMessageType(Arrays.asList(caseRef.getUuid()), MessageType.SMS);
+		hasPhoneNumber = missingPhoneNumbers == 0;
 		createSmsListComponent(new SmsList(caseRef, hasPhoneNumber), e -> {
-			final SmsComponent smsComponent = new SmsComponent();
+			final SmsComponent smsComponent = new SmsComponent(missingPhoneNumbers);
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.sendingSms),
 				smsComponent,
