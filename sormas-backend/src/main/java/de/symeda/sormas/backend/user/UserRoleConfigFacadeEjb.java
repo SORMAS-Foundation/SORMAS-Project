@@ -18,11 +18,14 @@
 package de.symeda.sormas.backend.user;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +46,9 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	private UserRoleConfigService userRoleConfigService;
 	@EJB
 	private UserService userService;
+
+	//Assumption: UserRoleConfigs are not changed during runtime 
+	private Map<UserRole, Set<UserRight>> userRoleRightsCache;
 
 	@Override
 	public List<UserRoleConfigDto> getAllAfter(Date since) {
@@ -92,18 +98,39 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	@Override
 	public Set<UserRight> getEffectiveUserRights(UserRole... userRoles) {
 
-		Set<UserRight> userRights = EnumSet.noneOf(UserRight.class);
+		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRights();
 
+		Set<UserRight> userRights = EnumSet.noneOf(UserRight.class);
 		for (UserRole userRole : userRoles) {
-			UserRoleConfig userRoleConfig = userRoleConfigService.getByUserRole(userRole);
-			if (userRoleConfig != null) {
-				userRights.addAll(userRoleConfig.getUserRights());
-			} else {
-				userRights.addAll(userRole.getDefaultUserRights());
-			}
+			userRights.addAll(userRoleRights.get(userRole));
 		}
 
 		return userRights;
+	}
+
+	private Map<UserRole, Set<UserRight>> getUserRoleRights() {
+
+		if (userRoleRightsCache == null) {
+			Map<UserRole, Set<UserRight>> cache = new EnumMap<>(UserRole.class);
+
+			userRoleConfigService.getAll().forEach(c -> cache.put(c.getUserRole(), c.getUserRights()));
+
+			//default values
+			Arrays.stream(UserRole.values()).forEach(r -> cache.computeIfAbsent(r, UserRole::getDefaultUserRights));
+
+			//enum sets
+			cache.replaceAll((k, v) -> {
+				if (v.isEmpty()) {
+					return EnumSet.noneOf(UserRight.class);
+				} else {
+					return EnumSet.copyOf(v);
+				}
+			});
+
+			userRoleRightsCache = cache;
+		}
+
+		return userRoleRightsCache;
 	}
 
 	public UserRoleConfig fromDto(UserRoleConfigDto source) {
