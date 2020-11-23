@@ -5854,7 +5854,7 @@ UPDATE epidata SET changedate = now();
 INSERT INTO schema_version (version_number, comment) VALUES (278, 'Epi data migration #2949');
 
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
-UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id > 0);
+UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id) > 0;
 
 INSERT INTO schema_version (version_number, comment) VALUES (279, 'Set contact with source case known for all existing cases #2946');
 -- *** Insert new sql commands BEFORE this line ***
