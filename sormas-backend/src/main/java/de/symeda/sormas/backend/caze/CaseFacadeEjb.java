@@ -2095,7 +2095,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo()));
+			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo()));
 		}
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
@@ -2390,7 +2390,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
 
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.fromDto(source.getSormasToSormasOriginInfo()));
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;

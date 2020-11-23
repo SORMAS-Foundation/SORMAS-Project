@@ -789,7 +789,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo()));
+			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo()));
 		}
 
 		return target;
@@ -918,7 +918,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.fromDto(source.getSormasToSormasOriginInfo()));
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;

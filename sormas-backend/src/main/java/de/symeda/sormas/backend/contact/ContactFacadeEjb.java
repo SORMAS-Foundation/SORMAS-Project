@@ -1095,7 +1095,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo()));
+			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo()));
 		}
 
 		return target;
@@ -1334,7 +1334,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.fromDto(source.getSormasToSormasOriginInfo()));
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;

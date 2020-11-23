@@ -33,17 +33,17 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 
 	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
 
-		SormasToSormasOriginInfo originInfo = fromDto(originInfoDto);
+		SormasToSormasOriginInfo originInfo = toDto(originInfoDto);
 
 		originInfoService.ensurePersisted(originInfo);
 
-		return fromDto(originInfo);
+		return toDto(originInfo);
 	}
 
 	@EJB
 	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 
-	public SormasToSormasOriginInfo fromDto(SormasToSormasOriginInfoDto source) {
+	public SormasToSormasOriginInfo toDto(SormasToSormasOriginInfoDto source) {
 		if (source == null) {
 			return null;
 		}
@@ -69,7 +69,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		return target;
 	}
 
-	public static SormasToSormasOriginInfoDto fromDto(SormasToSormasOriginInfo source) {
+	public static SormasToSormasOriginInfoDto toDto(SormasToSormasOriginInfo source) {
 		if (source == null) {
 			return null;
 		}
