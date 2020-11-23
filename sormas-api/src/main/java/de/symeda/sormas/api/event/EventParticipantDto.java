@@ -19,6 +19,8 @@ package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -36,6 +38,9 @@ public class EventParticipantDto extends PseudonymizableDto {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
 
 	private UserReferenceDto reportingUser;
 	@Required
@@ -46,6 +51,8 @@ public class EventParticipantDto extends PseudonymizableDto {
 	@SensitiveData
 	private String involvementDescription;
 	private CaseReferenceDto resultingCase; // read-only
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
 
 	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
@@ -65,6 +72,14 @@ public class EventParticipantDto extends PseudonymizableDto {
 
 		eventParticipantDto.setPerson(person);
 		eventParticipantDto.setResultingCase(caseReferenceDto);
+
+		return eventParticipantDto;
+	}
+
+	public static EventParticipantDto buildFromPerson(PersonDto person, EventReferenceDto event, UserReferenceDto reportingUser) {
+		EventParticipantDto eventParticipantDto = build(event, reportingUser);
+
+		eventParticipantDto.setPerson(person);
 
 		return eventParticipantDto;
 	}
@@ -114,5 +129,21 @@ public class EventParticipantDto extends PseudonymizableDto {
 	 */
 	public void setResultingCase(CaseReferenceDto resultingCase) {
 		this.resultingCase = resultingCase;
+	}
+
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
+	}
+
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
 	}
 }

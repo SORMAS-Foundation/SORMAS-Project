@@ -80,6 +80,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	public CampaignEditForm(CampaignDto campaignDto) {
 
 		super(CampaignDto.class, CampaignDto.I18N_PREFIX);
+		setWidth(1280, Unit.PIXELS);
 
 		this.campaignDto = campaignDto;
 		isCreateForm = campaignDto == null;

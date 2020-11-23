@@ -248,7 +248,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 	public void hideField(boolean eraseValue) {
 		setVisibility(GONE);
 		if (eraseValue) {
-			setFieldValue(null);
+			setValue(null);
 		}
 	}
 
@@ -380,6 +380,8 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 		"dependencyParentField",
 		"dependencyParentValue",
 		"dependencyParentValue2",
+		"dependencyParentValue3",
+		"dependencyParentValue4",
 		"dependencyParentVisibility",
 		"dependencyParentClearOnHide" }, requireAll = false)
 	public static void setDependencyParentField(
@@ -387,6 +389,8 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 		ControlPropertyField dependencyParentField,
 		Object dependencyParentValue,
 		Object dependencyParentValue2,
+		Object dependencyParentValue3,
+		Object dependencyParentValue4,
 		Boolean dependencyParentVisibility,
 		Boolean dependencyParentClearOnHide) {
 
@@ -397,6 +401,12 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 			dependencyValues.add(dependencyParentValue);
 			if (dependencyParentValue2 != null) {
 				dependencyValues.add(dependencyParentValue2);
+			}
+			if (dependencyParentValue3 != null) {
+				dependencyValues.add(dependencyParentValue3);
+			}
+			if (dependencyParentValue4 != null) {
+				dependencyValues.add(dependencyParentValue4);
 			}
 
 			visibilityDependencies = new HashMap<ControlPropertyField, List<Object>>() {

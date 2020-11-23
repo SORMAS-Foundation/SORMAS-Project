@@ -45,6 +45,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private List<Disease> aggregateDiseases = new ArrayList<>();
 	private List<Disease> followUpEnabledDiseases = new ArrayList<>();
 	private Map<Disease, Integer> followUpDurations = new HashMap<>();
+	private Map<Disease, Integer> caseFollowUpDurations = new HashMap<>();
+	private Map<Disease, Integer> eventParticipantFollowUpDurations = new HashMap<>();
 
 	@Override
 	public List<DiseaseConfigurationDto> getAllAfter(Date date) {
@@ -165,6 +167,16 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
+	public int getCaseFollowUpDuration(Disease disease) {
+		return caseFollowUpDurations.get(disease);
+	}
+
+	@Override
+	public int getEventParticipantFollowUpDuration(Disease disease) {
+		return eventParticipantFollowUpDurations.get(disease);
+	}
+
+	@Override
 	public void saveDiseaseConfiguration(DiseaseConfigurationDto configuration) {
 		service.ensurePersisted(fromDto(configuration));
 	}
@@ -197,6 +209,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setCaseBased(source.getCaseBased());
 		target.setFollowUpEnabled(source.getFollowUpEnabled());
 		target.setFollowUpDuration(source.getFollowUpDuration());
+		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
+		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
 
 		return target;
 	}
@@ -219,6 +233,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setCaseBased(source.getCaseBased());
 		target.setFollowUpEnabled(source.getFollowUpEnabled());
 		target.setFollowUpDuration(source.getFollowUpDuration());
+		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
+		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
 
 		return target;
 	}
@@ -238,6 +254,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		aggregateDiseases.clear();
 		followUpEnabledDiseases.clear();
 		followUpDurations.clear();
+		caseFollowUpDurations.clear();
+		eventParticipantFollowUpDurations.clear();
 
 		for (Disease disease : Disease.values()) {
 			DiseaseConfigurationDto configuration = getDiseaseConfiguration(disease);
@@ -265,6 +283,16 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 				followUpDurations.put(disease, configuration.getFollowUpDuration());
 			} else {
 				followUpDurations.put(disease, disease.getDefaultFollowUpDuration());
+			}
+			if (configuration.getCaseFollowUpDuration() != null) {
+				caseFollowUpDurations.put(disease, configuration.getCaseFollowUpDuration());
+			} else {
+				caseFollowUpDurations.put(disease, followUpDurations.get(disease));
+			}
+			if (configuration.getFollowUpDuration() != null) {
+				eventParticipantFollowUpDurations.put(disease, configuration.getFollowUpDuration());
+			} else {
+				eventParticipantFollowUpDurations.put(disease, followUpDurations.get(disease));
 			}
 		}
 	}

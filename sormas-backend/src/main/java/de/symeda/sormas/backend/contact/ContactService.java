@@ -78,6 +78,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseCon
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -112,11 +113,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private EpiDataService epiDataService;
 	@EJB
 	private HealthConditionsService healthConditionsService;
-
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
+	@EJB
+	private ExposureService exposureService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -239,7 +241,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.multiselect(resultingCaseJoin.get(Case.ID), rootCaseJoin.get(Case.CASE_CLASSIFICATION));
 
 		Expression<String> caseIdsExpression = resultingCaseJoin.get(Case.ID);
-		cq.where(cb.and(caseIdsExpression.in(caseIds), cb.isNotNull(contactRoot.get(Contact.CAZE))));
+		cq.where(cb.and(createDefaultFilter(cb, contactRoot), caseIdsExpression.in(caseIds), cb.isNotNull(contactRoot.get(Contact.CAZE))));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -963,6 +965,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = null;
 		Join<Contact, Case> caze = joins.getCaze();
+		Join<Contact, Case> resultingCase = joins.getResultingCase();
 
 		if (contactCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(contactCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
@@ -972,6 +975,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), contactCriteria.getCaze().getUuid()));
+		}
+		if (contactCriteria.getResultingCase() != null) {
+			filter = and(cb, filter, cb.equal(resultingCase.get(Case.UUID), contactCriteria.getResultingCase().getUuid()));
 		}
 		if (contactCriteria.getRegion() != null) {
 			filter = and(
@@ -1178,6 +1184,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getEventUuid() != null) {
 			filter = and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), contactCriteria.getEventUuid()));
 		}
+		if (contactCriteria.getEventParticipant() != null) {
+			filter =
+				and(cb, filter, cb.equal(joins.getEventParticipants().get(EventParticipant.UUID), contactCriteria.getEventParticipant().getUuid()));
+		}
+		if (contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent() != null) {
+			filter =
+				and(cb, filter, cb.equal(joins.getCaseEvent().get(Event.UUID), contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent().getUuid()));
+		}
 
 		return filter;
 	}
@@ -1191,10 +1205,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			taskService.delete(task);
 		}
 
+		// Delete all samples only associated with this contact
 		contact.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.delete(sample));
+
+		// Remove this contact from all exposures that its referenced in
+		exposureService.removeContactFromExposures(contact.getId());
 
 		super.delete(contact);
 	}

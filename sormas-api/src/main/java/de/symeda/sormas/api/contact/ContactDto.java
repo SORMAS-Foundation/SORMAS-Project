@@ -27,6 +27,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -111,7 +112,7 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
 	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
-  public static final String RETURNING_TRAVELER = "returningTraveler";
+	public static final String RETURNING_TRAVELER = "returningTraveler";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -164,6 +165,9 @@ public class ContactDto extends PseudonymizableDto {
 	private ContactRelation relationToCase;
 	@SensitiveData
 	private String relationDescription;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
 
 	private boolean highPriority;
@@ -244,7 +248,23 @@ public class ContactDto extends PseudonymizableDto {
 	private String endOfQuarantineReasonDetails;
 
 	public static ContactDto build() {
-		return build(null, null, null);
+		final ContactDto contact = new ContactDto();
+		contact.setUuid(DataHelper.createUuid());
+		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
+		contact.setReportDateTime(new Date());
+		contact.setContactClassification(ContactClassification.UNCONFIRMED);
+		contact.setContactStatus(ContactStatus.ACTIVE);
+		contact.setEpiData(EpiDataDto.build());
+		contact.setHealthConditions(HealthConditionsDto.build());
+
+		return contact;
+	}
+
+	public static ContactDto build(EventParticipantDto eventParticipant) {
+		final ContactDto contact = build();
+		contact.setPerson(eventParticipant.getPerson().toReference());
+
+		return contact;
 	}
 
 	public static ContactDto build(CaseDataDto caze) {
@@ -252,19 +272,8 @@ public class ContactDto extends PseudonymizableDto {
 	}
 
 	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
-		ContactDto contact = new ContactDto();
-		contact.setUuid(DataHelper.createUuid());
-
+		final ContactDto contact = build();
 		contact.assignCase(caze, disease, diseaseDetails);
-		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
-
-		contact.setReportDateTime(new Date());
-		contact.setContactClassification(ContactClassification.UNCONFIRMED);
-		contact.setContactStatus(ContactStatus.ACTIVE);
-
-		contact.setEpiData(EpiDataDto.build());
-
-		contact.setHealthConditions(HealthConditionsDto.build());
 
 		return contact;
 	}
@@ -754,7 +763,7 @@ public class ContactDto extends PseudonymizableDto {
 	public void setHealthConditions(HealthConditionsDto healthConditions) {
 		this.healthConditions = healthConditions;
 	}
-  
+
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -787,11 +796,11 @@ public class ContactDto extends PseudonymizableDto {
 		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
 	}
 
-  public YesNoUnknown getReturningTraveler() {
+	public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
 	}
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
-  }
+	}
 }
