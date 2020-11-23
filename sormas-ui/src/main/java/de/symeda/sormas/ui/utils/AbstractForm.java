@@ -165,6 +165,13 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 	}
 
+	protected <F extends Field> void addFieldsWithCss(Class<F> fieldType, List<String> properties, String... cssClasses) {
+		for (String property : properties) {
+			F field = addField(property, fieldType);
+			CssStyles.style(field, cssClasses);
+		}
+	}
+
 	@SuppressWarnings("rawtypes")
 	protected <F extends Field> void addFields(CustomLayout layout, Class<F> fieldType, String... properties) {
 		for (String property : properties) {

@@ -85,6 +85,7 @@ public class CaseExportDto implements Serializable {
 	public static final String ADDRESS_REGION = "addressRegion";
 	public static final String ADDRESS_COMMUNITY = "addressCommunity";
 	public static final String ADDRESS_GPS_COORDINATES = "addressGpsCoordinates";
+	public static final String BURIAL_ATTENDED = "burialAttended";
 	public static final String TRAVELED = "traveled";
 	public static final String TRAVEL_HISTORY = "travelHistory";
 	public static final String NUMBER_OF_PRESCRIPTIONS = "numberOfPrescriptions";
@@ -186,11 +187,9 @@ public class CaseExportDto implements Serializable {
 	private String occupationType;
 	private String educationType;
 	private String travelHistory;
-	private YesNoUnknown traveled;
-	private YesNoUnknown burialAttended;
-	private YesNoUnknown directContactConfirmedCase;
-	private YesNoUnknown directContactProbableCase;
-	private YesNoUnknown contactWithRodent;
+	private boolean traveled;
+	private boolean burialAttended;
+	private YesNoUnknown contactWithSourceCaseKnown;
 	private SymptomsDto symptoms;
 	//	private Date onsetDate;
 //	private String symptoms;
@@ -261,8 +260,7 @@ public class CaseExportDto implements Serializable {
 						 String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 						 String facility, String facilityUuid, String facilityDetails,
 						 String phone, String phoneOwner, String emailAddress, EducationType educationType, String educationDetails,
-						 OccupationType occupationType, String occupationDetails, YesNoUnknown traveled,
-						 YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
+						 OccupationType occupationType, String occupationDetails, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
 						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
@@ -329,11 +327,7 @@ public class CaseExportDto implements Serializable {
 		this.emailAddress = emailAddress;
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
-		this.traveled = traveled;
-		this.burialAttended = burialAttended;
-		this.directContactConfirmedCase = directContactConfirmedCase;
-		this.directContactProbableCase = directContactProbableCase;
-		this.contactWithRodent = contactWithRodent;
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 //		this.onsetDate = onsetDate;
 		this.vaccination = vaccination;
 		this.vaccinationDoses = vaccinationDoses;
@@ -1014,11 +1008,11 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVELED)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
-	public YesNoUnknown getTraveled() {
+	public boolean isTraveled() {
 		return traveled;
 	}
 
-	public void setTraveled(YesNoUnknown traveled) {
+	public void setTraveled(boolean traveled) {
 		this.traveled = traveled;
 	}
 
@@ -1034,49 +1028,27 @@ public class CaseExportDto implements Serializable {
 	@Order(80)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
-	@ExportProperty(EpiDataDto.BURIAL_ATTENDED)
+	@ExportProperty(BURIAL_ATTENDED)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
-	public YesNoUnknown getBurialAttended() {
+	public boolean isBurialAttended() {
 		return burialAttended;
 	}
 
-	public void setBurialAttended(YesNoUnknown burialAttended) {
+	public void setBurialAttended(boolean burialAttended) {
 		this.burialAttended = burialAttended;
 	}
 
 	@Order(81)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
-	@ExportProperty(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE)
+	@ExportProperty(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
-	public YesNoUnknown getDirectContactConfirmedCase() {
-		return directContactConfirmedCase;
+	public YesNoUnknown getContactWithSourceCaseKnown() {
+		return contactWithSourceCaseKnown;
 	}
 
-	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
-		this.directContactConfirmedCase = directContactConfirmedCase;
-	}
-
-	@Order(90)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE })
-	@ExportProperty(EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE)
-	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
-	public YesNoUnknown getDirectContactProbableCase() {
-		return directContactProbableCase;
-	}
-
-	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
-		this.directContactProbableCase = directContactProbableCase;
-	}
-
-	@Order(91)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE })
-	@ExportProperty(EpiDataDto.RODENTS)
-	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
-	public YesNoUnknown getContactWithRodent() {
-		return contactWithRodent;
+	public void setContactWithSourceCaseKnown(YesNoUnknown contactWithSourceCaseKnown) {
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 	}
 
 	@Order(92)
@@ -1522,10 +1494,6 @@ public class CaseExportDto implements Serializable {
 		this.travelHistory = travelHistory;
 	}
 
-	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
-		this.contactWithRodent = contactWithRodent;
-	}
-
 	public void setInitialDetectionPlace(String initialDetectionPlace) {
 		this.initialDetectionPlace = initialDetectionPlace;
 	}
@@ -1545,10 +1513,6 @@ public class CaseExportDto implements Serializable {
 	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
-
-//	public void setOnsetDate(Date onsetDate) {
-//		this.onsetDate = onsetDate;
-//	}
 
 	public void setSymptoms(SymptomsDto symptoms) {
 		this.symptoms = symptoms;

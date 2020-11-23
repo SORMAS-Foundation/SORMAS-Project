@@ -59,9 +59,9 @@ import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
-import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -134,7 +134,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
 		caze.getHospitalization().setAdmittedToHealthFacility(YesNoUnknown.YES);
 		caze.getSymptoms().setAgitation(SymptomState.YES);
-		caze.getEpiData().setKindOfExposureTouch(YesNoUnknown.YES);
+		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+		exposure.setAnimalContactType(AnimalContactType.TOUCH);
+		caze.getEpiData().getExposures().add(exposure);
 		caze.getClinicalCourse().getHealthConditions().setAsplenia(YesNoUnknown.YES);
 		caze.getMaternalHistory().setChildrenNumber(2);
 
@@ -151,7 +153,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedCase.getHealthFacility(), is(rdcf.localRdcf.facility));
 		assertThat(savedCase.getHospitalization().getAdmittedToHealthFacility(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getSymptoms().getAgitation(), is(SymptomState.YES));
-		assertThat(savedCase.getEpiData().getKindOfExposureTouch(), is(YesNoUnknown.YES));
+		assertThat(savedCase.getEpiData().getExposures().get(0).getAnimalContactType(), is(AnimalContactType.TOUCH));
 		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
 
@@ -181,9 +183,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
 
 		caze.getHospitalization().getPreviousHospitalizations().add(PreviousHospitalizationDto.build(caze));
-		caze.getEpiData().getBurials().add(EpiDataBurialDto.build());
-		caze.getEpiData().getTravels().add(EpiDataTravelDto.build());
-		caze.getEpiData().getGatherings().add(EpiDataGatheringDto.build());
+		caze.getEpiData().getExposures().add(ExposureDto.build(ExposureType.TRAVEL));
 
 		byte[] encryptedData = encryptShareData(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo()));
 		getSormasToSormasFacade().saveSharedCases(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
@@ -298,7 +298,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedContact.getRegion(), is(rdcf.localRdcf.region));
 		assertThat(savedContact.getDistrict(), is(rdcf.localRdcf.district));
 		assertThat(savedContact.getCommunity(), is(rdcf.localRdcf.community));
-		assertThat(savedContact.getEpiData().getAnimalCondition(), is(AnimalCondition.PROCESSED));
+		assertThat(savedContact.getEpiData().getExposures().get(0).getAnimalCondition(), is(AnimalCondition.PROCESSED));
 
 		assertThat(savedContact.getSormasToSormasOriginInfo().getOrganizationId(), is("testHealthDep"));
 		assertThat(savedContact.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
@@ -804,7 +804,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		contact.setRegion(remoteRdcf.region);
 		contact.setDistrict(remoteRdcf.district);
 		contact.setCommunity(remoteRdcf.community);
-		contact.getEpiData().setAnimalCondition(AnimalCondition.PROCESSED);
+		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+		exposure.setAnimalCondition(AnimalCondition.PROCESSED);
+		contact.getEpiData().getExposures().add(exposure);
 		return contact;
 	}
 

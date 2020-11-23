@@ -415,14 +415,9 @@ public class CaseController {
 					dto.getSymptoms().setUuid(DataHelper.createUuid());
 					dto.getClinicalCourse().getHealthConditions().setUuid(DataHelper.createUuid());
 					dto.getEpiData().setUuid(DataHelper.createUuid());
-					dto.getEpiData().getBurials().forEach(epiDataBurialDto -> {
-						epiDataBurialDto.setUuid(DataHelper.createUuid());
-						epiDataBurialDto.getBurialAddress().setUuid(DataHelper.createUuid());
-					});
-					dto.getEpiData().getTravels().forEach(travelDto -> travelDto.setUuid(DataHelper.createUuid()));
-					dto.getEpiData().getGatherings().forEach(gatheringDto -> {
-						gatheringDto.setUuid(DataHelper.createUuid());
-						gatheringDto.getGatheringAddress().setUuid(DataHelper.createUuid());
+					dto.getEpiData().getExposures().forEach(exposure -> {
+						exposure.setUuid(DataHelper.createUuid());
+						exposure.getLocation().setUuid(DataHelper.createUuid());
 					});
 
 					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
@@ -932,10 +927,10 @@ public class CaseController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, Consumer<Boolean> sourceContactsToggleCallback) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), caze.getEpiData().isPseudonymized());
+		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), CaseDataDto.class, caze.isPseudonymized(), sourceContactsToggleCallback);
 		epiDataForm.setValue(caze.getEpiData());
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(

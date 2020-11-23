@@ -26,9 +26,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
-import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
-import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
-import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
+import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
@@ -121,12 +119,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) field;
 		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers);
-		} else if (EpiDataBurialsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataBurialsField(fieldVisibilityCheckers, fieldAccessCheckers);
-		} else if (EpiDataGatheringsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataGatheringsField(fieldVisibilityCheckers, fieldAccessCheckers);
-		} else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataTravelsField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (ExposuresField.class.isAssignableFrom(fieldType)) {
+			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {
@@ -204,7 +198,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		}
 		select.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
 		select.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
-		 EnumSet<?> enumSet = EnumSet.allOf(enumClass);
+		EnumSet<?> enumSet = EnumSet.allOf(enumClass);
 		for (Object r : enumSet) {
 			boolean visible = true;
 			if (fieldVisibilityCheckers != null) {

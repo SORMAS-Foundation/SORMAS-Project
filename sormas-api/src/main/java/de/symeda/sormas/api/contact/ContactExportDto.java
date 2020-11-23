@@ -119,12 +119,10 @@ public class ContactExportDto implements Serializable {
 	@SensitiveData
 	private String quarantineHelpNeeded;
 	private long epiDataId;
-	private YesNoUnknown traveled;
+	private boolean traveled;
 	private String travelHistory;
-	private YesNoUnknown burialAttended;
-	private YesNoUnknown directContactConfirmedCase;
-	private YesNoUnknown directContactProbableCase;
-	private YesNoUnknown contactWithRodent;
+	private boolean burialAttended;
+	private YesNoUnknown contactWithSourceCaseKnown;
 
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -158,10 +156,9 @@ public class ContactExportDto implements Serializable {
 							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
-							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler, long eventCount, String externalID,
+							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, long eventCount, String externalID,							
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
+							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//@formatter:on
 
@@ -219,11 +216,7 @@ public class ContactExportDto implements Serializable {
 		this.district = district;
 		this.community = community;
 		this.epiDataId = epiDataId;
-		this.traveled = traveled;
-		this.burialAttended = burialAttended;
-		this.directContactConfirmedCase = directContactConfirmedCase;
-		this.directContactProbableCase = directContactProbableCase;
-		this.contactWithRodent = contactWithRodent;
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
 		this.eventCount = eventCount;
 		this.externalID = externalID;
@@ -232,8 +225,8 @@ public class ContactExportDto implements Serializable {
 			? null
 			: new CaseJurisdictionDto(
 				caseReportingUserUuid,
-				caseRegionUui,
-				caseDistrictUud,
+				caseRegionUuid,
+				caseDistrictUuid,
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
@@ -554,11 +547,11 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(65)
-	public YesNoUnknown getTraveled() {
+	public boolean isTraveled() {
 		return traveled;
 	}
 
-	public void setTraveled(YesNoUnknown traveled) {
+	public void setTraveled(boolean traveled) {
 		this.traveled = traveled;
 	}
 
@@ -572,42 +565,24 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(67)
-	public YesNoUnknown getBurialAttended() {
+	public boolean isBurialAttended() {
 		return burialAttended;
 	}
 
-	public void setBurialAttended(YesNoUnknown burialAttended) {
+	public void setBurialAttended(boolean burialAttended) {
 		this.burialAttended = burialAttended;
 	}
 
 	@Order(68)
-	public YesNoUnknown getDirectContactConfirmedCase() {
-		return directContactConfirmedCase;
+	public YesNoUnknown getContactWithSourceCaseKnown() {
+		return contactWithSourceCaseKnown;
 	}
 
-	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
-		this.directContactConfirmedCase = directContactConfirmedCase;
-	}
-
-	@Order(69)
-	public YesNoUnknown getDirectContactProbableCase() {
-		return directContactProbableCase;
-	}
-
-	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
-		this.directContactProbableCase = directContactProbableCase;
+	public void setContactWithSourceCaseKnown(YesNoUnknown directContactConfirmedCase) {
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 	}
 
 	@Order(70)
-	public YesNoUnknown getContactWithRodent() {
-		return contactWithRodent;
-	}
-
-	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
-		this.contactWithRodent = contactWithRodent;
-	}
-
-	@Order(62)
 	public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
 	}

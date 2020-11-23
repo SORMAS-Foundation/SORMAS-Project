@@ -24,13 +24,23 @@ public enum CaseClassification
 	implements
 	StatisticsGroupingKey {
 
-	NOT_CLASSIFIED,
-	SUSPECT,
-	PROBABLE,
-	CONFIRMED,
-	CONFIRMED_NO_SYMPTOMS,
-	CONFIRMED_UNKNOWN_SYMPTOMS,
-	NO_CASE;
+	NOT_CLASSIFIED(1),
+	SUSPECT(2),
+	PROBABLE(3),
+	CONFIRMED(6),
+	CONFIRMED_NO_SYMPTOMS(4),
+	CONFIRMED_UNKNOWN_SYMPTOMS(5),
+	NO_CASE(0);
+
+	/**
+	 * Severity of the case classification; confirmed has the highest severity in terms of the classification process
+	 * while no_case has the lowest.
+	 */
+	private final int severity;
+
+	CaseClassification(int severity) {
+		this.severity = severity;
+	}
 
 	public String getName() {
 		return this.name();
@@ -56,5 +66,9 @@ public enum CaseClassification
 		}
 
 		return this.toString().compareTo(o.toString());
+	}
+
+	public int getSeverity() {
+		return severity;
 	}
 }
