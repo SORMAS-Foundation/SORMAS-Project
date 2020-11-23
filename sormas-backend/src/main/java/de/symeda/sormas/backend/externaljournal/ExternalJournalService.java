@@ -320,7 +320,7 @@ public class ExternalJournalService {
 
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
 		String externalDataUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/external-data/" + personUuid;
-		Client client = ClientHelper.newClient();
+		Client client = ClientHelper.newBuilder().build();
 		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken());
 	}
 
@@ -394,7 +394,7 @@ public class ExternalJournalService {
 			String queryParam = "\"" + key + "\" = \"" + value + "\"";
 			String encodedParams = URLEncoder.encode(queryParam, StandardCharsets.UTF_8.toString());
 			String fullUrl = probandsUrl + "?q=" + encodedParams;
-			Client client = ClientHelper.newClient();
+			Client client = ClientHelper.newBuilder().build();
 			Response response = client.target(fullUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken()).get();
 			if (response.getStatus() == NOT_FOUND_STATUS) {
 				return Optional.empty();
