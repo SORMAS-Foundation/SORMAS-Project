@@ -139,8 +139,8 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getAllUserRefs() {
-		return userService.getAllInJurisdiction().stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+	public List<UserReferenceDto> getAllUserRefs(boolean includeInactive) {
+		return userService.getAllInJurisdiction(includeInactive).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 
 	@Override

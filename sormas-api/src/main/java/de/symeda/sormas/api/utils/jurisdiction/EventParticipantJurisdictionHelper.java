@@ -17,24 +17,58 @@ package de.symeda.sormas.api.utils.jurisdiction;
 
 import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class EventParticipantJurisdictionHelper {
 
 	public static boolean isInJurisdictionOrOwned(
-		// jurisdictionLevel will be needed in the future
 		JurisdictionLevel jurisdictionLevel,
 		UserJurisdiction userJurisdiction,
 		EventParticipantJurisdictionDto eventParticipantJurisdiction) {
 
-		/*
-		 * if (eventParticipantJurisdiction.getReportingUserUuid() != null
-		 * && DataHelper.equal(eventParticipantJurisdiction.getReportingUserUuid(), userJurisdiction.getUuid())) {
-		 * return true;
-		 * }
-		 * return false;
-		 */
+		if (isOwned(userJurisdiction, eventParticipantJurisdiction))
+			return true;
 
-		return true;
+		return isInJurisdiction(jurisdictionLevel, userJurisdiction, eventParticipantJurisdiction);
+	}
 
+	public static boolean isOwned(UserJurisdiction userJurisdiction, EventParticipantJurisdictionDto eventParticipantJurisdiction) {
+
+		if (eventParticipantJurisdiction.getReportingUserUuid() != null
+			&& DataHelper.equal(userJurisdiction.getUuid(), eventParticipantJurisdiction.getReportingUserUuid())) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isInJurisdiction(
+		JurisdictionLevel jurisdictionLevel,
+		UserJurisdiction userJurisdiction,
+		EventParticipantJurisdictionDto eventParticipantJurisdiction) {
+
+		switch (jurisdictionLevel) {
+		case NONE:
+			return false;
+		case NATION:
+			return true;
+		case REGION:
+			return eventParticipantJurisdiction.getRegionUuid() != null
+				&& DataHelper.equal(eventParticipantJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+		case DISTRICT:
+			return eventParticipantJurisdiction.getDistrictUuid() != null
+				&& DataHelper.equal(eventParticipantJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+		case COMMUNITY:
+			return false;
+		case HEALTH_FACILITY:
+			return false;
+		case LABORATORY:
+			return false;
+		case EXTERNAL_LABORATORY:
+			return false;
+		case POINT_OF_ENTRY:
+			return false;
+		default:
+			return false;
+		}
 	}
 }

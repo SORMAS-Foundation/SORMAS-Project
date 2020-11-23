@@ -62,9 +62,9 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
-import de.symeda.sormas.api.epidata.TravelType;
+import de.symeda.sormas.api.epidata.EpiDataHelper;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -608,15 +608,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		EpiDataDto epiData = contact.getEpiData();
-		epiData.setTraveled(YesNoUnknown.YES);
-		List<EpiDataTravelDto> travels = new ArrayList<>();
-		EpiDataTravelDto travel = EpiDataTravelDto.build();
-		travel.setTravelDateFrom(DateHelper.subtractDays(new Date(), 15));
-		travel.setTravelDateTo(DateHelper.subtractDays(new Date(), 7));
-		travel.setTravelDestination("Mallorca");
-		travel.setTravelType(TravelType.ABROAD);
-		travels.add(travel);
-		epiData.setTravels(travels);
+		epiData.setExposureDetailsKnown(YesNoUnknown.YES);
+		List<ExposureDto> travels = new ArrayList<>();
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.getLocation().setDetails("Mallorca");
+		exposure.setStartDate(DateHelper.subtractDays(new Date(), 15));
+		exposure.setEndDate(DateHelper.subtractDays(new Date(), 7));
+		caze.getEpiData().getExposures().add(exposure);
+		travels.add(exposure);
+		epiData.setExposures(travels);
 		contact.setEpiData(epiData);
 		getContactFacade().saveContact(contact);
 
@@ -653,13 +653,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(YesNoUnknown.YES, exportDto.getLastCooperativeVisitSymptomatic());
 
 		assertNotNull(exportDto.getEpiDataId());
-		assertEquals(YesNoUnknown.YES, exportDto.getTraveled());
+		assertTrue(exportDto.isTraveled());
 		assertEquals(
-			EpiDataTravelHelper.buildTravelString(
-				travel.getTravelType(),
-				travel.getTravelDestination(),
-				travel.getTravelDateFrom(),
-				travel.getTravelDateTo(),
+			EpiDataHelper.buildDetailedTravelString(
+				exposure.getLocation().toString(),
+				exposure.getDescription(),
+				exposure.getStartDate(),
+				exposure.getEndDate(),
 				Language.EN),
 			exportDto.getTravelHistory());
 	}

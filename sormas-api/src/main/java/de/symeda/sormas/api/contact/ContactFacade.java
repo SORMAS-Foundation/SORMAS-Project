@@ -128,4 +128,5 @@ public interface ContactFacade {
 		Disease disease,
 		Date from,
 		Date to);
+
 }

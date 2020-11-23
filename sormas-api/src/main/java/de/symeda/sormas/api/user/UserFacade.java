@@ -59,7 +59,7 @@ public interface UserFacade {
 	 */
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
 
-	List<UserReferenceDto> getAllUserRefs();
+	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
 	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRole... userRoles);
 

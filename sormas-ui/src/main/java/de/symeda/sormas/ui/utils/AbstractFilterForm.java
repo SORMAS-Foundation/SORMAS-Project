@@ -200,8 +200,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected void applyRegionFilterDependency(RegionReferenceDto region, String districtFieldId) {
-		UserDto user = UserProvider.getCurrent().getUser();
-		ComboBox districtField = getField(districtFieldId);
+		final UserDto user = UserProvider.getCurrent().getUser();
+		final ComboBox districtField = getField(districtFieldId);
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtField.setEnabled(true);
@@ -225,8 +225,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected void applyDistrictDependency(DistrictReferenceDto district, String communityFieldId) {
-		UserDto user = UserProvider.getCurrent().getUser();
-		ComboBox communityField = getField(communityFieldId);
+		final UserDto user = UserProvider.getCurrent().getUser();
+		final ComboBox communityField = getField(communityFieldId);
 		if (user.getDistrict() != null && user.getCommunity() == null) {
 			FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
 			communityField.setEnabled(true);
@@ -283,9 +283,12 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		return hasFilter;
 	}
 
-	protected void clearFields(String... propertyIds) {
-		for (String propertyId : propertyIds) {
-			getField(propertyId).setValue(null);
+	protected void clearAndDisableFields(Field... fields) {
+		for (Field field : fields) {
+			if (field != null) {
+				field.setValue(null);
+				field.setEnabled(false);
+			}
 		}
 	}
 
@@ -299,8 +302,32 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected void enableFields(String... propertyIds) {
+		updateFieldsEnabling(propertyIds, true);
+	}
+
+	protected void disableFields(String... propertyIds) {
+		updateFieldsEnabling(propertyIds, false);
+	}
+
+	private void updateFieldsEnabling(String[] propertyIds, boolean enabled) {
 		for (String propertyId : propertyIds) {
-			getField(propertyId).setEnabled(true);
+			getField(propertyId).setEnabled(enabled);
+		}
+	}
+
+	protected void enableFields(Field... fields) {
+		updateFieldsEnabling(fields, true);
+	}
+
+	protected void disableFields(Field... fields) {
+		updateFieldsEnabling(fields, false);
+	}
+
+	private void updateFieldsEnabling(Field[] fields, boolean enabled) {
+		for (Field field : fields) {
+			if (field != null) {
+				field.setEnabled(enabled);
+			}
 		}
 	}
 

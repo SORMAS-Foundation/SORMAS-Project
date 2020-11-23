@@ -46,4 +46,19 @@ public class EventJurisdictionChecker {
 		return EventJurisdictionHelper
 			.isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), eventJurisdiction);
 	}
+
+	public boolean isOwned(Event event) {
+		User user = userService.getCurrentUser();
+		EventJurisdictionDto eventJurisdictionDto = JurisdictionHelper.createEventJurisdictionDto(event);
+
+		return EventJurisdictionHelper.isOwned(JurisdictionHelper.createUserJurisdiction(user), eventJurisdictionDto);
+	}
+
+	public boolean isInJurisdiction(Event event) {
+		User user = userService.getCurrentUser();
+		EventJurisdictionDto eventJurisdictionDto = JurisdictionHelper.createEventJurisdictionDto(event);
+
+		return EventJurisdictionHelper
+			.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), eventJurisdictionDto);
+	}
 }

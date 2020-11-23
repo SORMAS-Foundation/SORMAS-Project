@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -156,6 +158,21 @@ public class EventParticipantsController {
 		}
 	}
 
+	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {
+		VaadinUiUtil.showDeleteConfirmationWindow(
+			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityEventParticipant)),
+			() -> {
+				EventParticipantReferenceDto eventParticipantRef =
+					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
+				if (eventParticipantRef != null) {
+					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantRef);
+					callback.run();
+				} else {
+					Notification.show(I18nProperties.getString(Strings.errorOccurred), Type.ERROR_MESSAGE);
+				}
+			});
+	}
+
 	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
@@ -187,13 +204,28 @@ public class EventParticipantsController {
 		editComponent.addCommitListener(() -> {
 
 			if (!editForm.getFieldGroup().isModified()) {
+
 				EventParticipantDto dto = editForm.getValue();
-				personFacade.savePerson(dto.getPerson());
-				eventParticipantFacade.saveEventParticipant(dto);
-				Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
-				if (doneConsumer != null)
-					doneConsumer.accept(null);
-				SormasUI.refreshView();
+				UserDto user = UserProvider.getCurrent().getUser();
+				if ((user.getRegion() != null && !user.getRegion().equals(dto.getRegion()))
+					|| (user.getDistrict() != null && !user.getDistrict().equals(dto.getDistrict()))) {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingEventParticipantResponsibleJurisdictionUpdated),
+						new Label(I18nProperties.getString(Strings.messageEventParticipantResponsibleJurisdictionUpdated)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						500,
+						confirmed -> {
+							if (confirmed) {
+								personFacade.savePerson(dto.getPerson());
+								eventParticipantFacade.saveEventParticipant(dto);
+								Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
+								if (doneConsumer != null)
+									doneConsumer.accept(null);
+								SormasUI.refreshView();
+							}
+						});
+				}
 			}
 		});
 		return editComponent;

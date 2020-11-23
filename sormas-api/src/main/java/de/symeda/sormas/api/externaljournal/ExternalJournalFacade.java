@@ -11,9 +11,9 @@ public interface ExternalJournalFacade {
 
 	String getPatientDiaryAuthToken();
 
-	ExternalPatientDto getPatientDiaryPerson(String personUuid);
+	PatientDiaryPersonDto getPatientDiaryPerson(String personUuid);
 
-	RegisterResult registerPatientDiaryPerson(PersonDto person);
+	PatientDiaryRegisterResult registerPatientDiaryPerson(PersonDto person);
 
-	ExternalPersonValidation validatePatientDiaryPerson(PersonDto person);
+	PatientDiaryPersonValidation validatePatientDiaryPerson(PersonDto person);
 }

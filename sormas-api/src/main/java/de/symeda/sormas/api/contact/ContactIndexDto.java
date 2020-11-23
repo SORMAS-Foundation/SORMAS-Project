@@ -50,6 +50,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String EXTERNAL_ID = "externalID";
 
 	private String uuid;
 	@PersonalData
@@ -71,19 +72,25 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	private int visitCount;
+	private String externalID;
+	private String regionName;
+	private String districtName;
+	private String caseRegionName;
+	private String caseDistrictName;
 
 	private ContactJurisdictionDto jurisdiction;
 	private CaseJurisdictionDto caseJurisdiction;
 
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
-						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
-						   String districtUuid, String communityUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
-						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
+						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
+						   String districtUuid, String districtName, String communityUuid, Date lastContactDate, ContactCategory contactCategory, 
+						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-						   CaseClassification caseClassification,
-						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   CaseClassification caseClassification, String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, 
+						   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
+						   String externalID,
 						   int visitCount) {
 	//@formatter:on
 
@@ -96,7 +103,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 			this.caseJurisdiction = new CaseJurisdictionDto(
 				caseReportingUserUid,
 				caseRegionUuid,
-				caseDistrictUud,
+				caseDistrictUuid,
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
@@ -116,6 +123,11 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.reportDateTime = reportDateTime;
 		this.caseClassification = caseClassification;
 		this.visitCount = visitCount;
+		this.externalID = externalID;
+		this.regionName = regionName;
+		this.districtName = districtName;
+		this.caseRegionName = caseRegionName;
+		this.caseDistrictName = caseDistrictName;
 
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
@@ -266,6 +278,46 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public void setVisitCount(int visitCount) {
 		this.visitCount = visitCount;
+	}
+
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
+	}
+
+	public String getRegionName() {
+		return regionName;
+	}
+
+	public void setRegionName(String regionName) {
+		this.regionName = regionName;
+	}
+
+	public String getDistrictName() {
+		return districtName;
+	}
+
+	public void setDistrictName(String districtName) {
+		this.districtName = districtName;
+	}
+
+	public String getCaseRegionName() {
+		return caseRegionName;
+	}
+
+	public void setCaseRegionName(String caseRegionName) {
+		this.caseRegionName = caseRegionName;
+	}
+
+	public String getCaseDistrictName() {
+		return caseDistrictName;
+	}
+
+	public void setCaseDistrictName(String caseDistrictName) {
+		this.caseDistrictName = caseDistrictName;
 	}
 
 	public ContactReferenceDto toReference() {
