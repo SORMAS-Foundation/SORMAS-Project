@@ -5615,7 +5615,7 @@ ALTER TABLE manualmessagelog OWNER TO sormas_user;
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id FOREIGN KEY (sendinguser_id) REFERENCES users(id);
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (277, 'Manually send SMS #3253');
+INSERT INTO schema_version (version_number, comment) VALUES (279, 'Manually send SMS #3253');
 -- *** Insert new sql commands BEFORE this line ***
 
 
