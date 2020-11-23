@@ -759,6 +759,7 @@ public class CaseController {
 			updatedCase.setRegion(updatedCaseBulkEditData.getRegion());
 			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
 			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
+			updatedCase.setFacilityType(updatedCaseBulkEditData.getFacilityType());
 			updatedCase.setHealthFacility(updatedCaseBulkEditData.getHealthFacility());
 			updatedCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 			CaseLogic.handleHospitalization(updatedCase, caseFacade.getCaseDataByUuid(indexDto.getUuid()), doTransfer);

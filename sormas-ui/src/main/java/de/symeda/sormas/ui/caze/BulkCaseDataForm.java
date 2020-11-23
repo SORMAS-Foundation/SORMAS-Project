@@ -71,7 +71,6 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private static final String SURVEILLANCE_OFFICER_CHECKBOX = "surveillanceOfficerCheckbox";
 	private static final String HEALTH_FACILITY_CHECKBOX = "healthFacilityCheckbox";
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
-	private static final String TYPE_LOC = "typeLoc";
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String WARNING_LAYOUT = "warningLayout";
 
@@ -97,7 +96,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                     fluidRowLocs(CaseBulkEditData.REGION,
                             CaseBulkEditData.DISTRICT,
                             CaseBulkEditData.COMMUNITY) +
-                    fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, TYPE_LOC) +
+                    fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseBulkEditData.FACILITY_TYPE) +
                     fluidRowLocs(WARNING_LAYOUT) +
                     fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS);
     //@formatter:on
@@ -225,9 +224,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		addCustomField(facilityTypeGroup, TYPE_GROUP_LOC, I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		facilityTypeGroup.setEnabled(false);
-		facilityType = new ComboBox();
-		facilityType.setId(CaseDataDto.FACILITY_TYPE);
-		addCustomField(facilityType, TYPE_LOC, I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+		facilityType = addField(CaseDataDto.FACILITY_TYPE, ComboBox.class);
 		facilityType.setEnabled(false);
 		ComboBox facility = addInfrastructureField(CaseBulkEditData.HEALTH_FACILITY);
 		facility.setImmediate(true);
