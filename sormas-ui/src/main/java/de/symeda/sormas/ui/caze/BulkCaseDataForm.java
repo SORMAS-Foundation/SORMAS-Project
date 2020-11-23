@@ -34,6 +34,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -56,8 +57,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
@@ -115,7 +116,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private ComboBox facilityType;
 	private TextField healthFacilityDetails;
 	private Collection<? extends CaseIndexDto> selectedCases;
-	private NullableOptionGroup facilityOrHome;
+	private OptionGroup facilityOrHome;
 	private HorizontalLayout warningLayout;
 
 	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict, Collection<? extends CaseIndexDto> selectedCases) {
@@ -210,29 +211,24 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		ComboBox community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.setEnabled(false);
-		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		addCustomField(facilityOrHome, FACILITY_OR_HOME_LOC, I18nProperties.getCaption(Captions.casePlaceOfStay));
 		facilityOrHome.setId("facilityOrHome");
-		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		facilityOrHome.setEnabled(false);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
-		getContent().addComponent(facilityOrHome, FACILITY_OR_HOME_LOC);
 
 		healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
 
 		facilityTypeGroup = new ComboBox();
 		facilityTypeGroup.setId("typeGroup");
-		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
-		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
+		addCustomField(facilityTypeGroup, TYPE_GROUP_LOC, I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		facilityTypeGroup.setEnabled(false);
-		getContent().addComponent(facilityTypeGroup, TYPE_GROUP_LOC);
 		facilityType = new ComboBox();
 		facilityType.setId(CaseDataDto.FACILITY_TYPE);
-		facilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
-		facilityType.setWidth(100, Unit.PERCENTAGE);
+		addCustomField(facilityType, TYPE_LOC, I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
 		facilityType.setEnabled(false);
-		getContent().addComponent(facilityType, TYPE_LOC);
 		ComboBox facility = addInfrastructureField(CaseBulkEditData.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		facility.setEnabled(false);
@@ -310,7 +306,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		warningLayout = VaadinUiUtil.createWarningComponent(I18nProperties.getString(Strings.pseudonymizedCasesSelectedWarning));
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue())) {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
 				if (facilityTypeGroup.getValue() == null) {
 					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				}

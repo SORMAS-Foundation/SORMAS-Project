@@ -3,8 +3,8 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -24,6 +24,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	public static final String SEX = "sex";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
+	public static final String CONTACT_COUNT = "contactCount";
 
 	private String uuid;
 	private String personUuid;
@@ -38,6 +39,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	private String approximateAge;
 	@SensitiveData
 	private String involvementDescription;
+	private long contactCount;
 
 	private EventParticipantJurisdictionDto eventJurisdiction;
 
@@ -137,6 +139,14 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 
 	public void setInvolvementDescription(String involvementDescription) {
 		this.involvementDescription = involvementDescription;
+	}
+
+	public long getContactCount() {
+		return contactCount;
+	}
+
+	public void setContactCount(long contactCount) {
+		this.contactCount = contactCount;
 	}
 
 	public EventParticipantJurisdictionDto getJurisdiction() {

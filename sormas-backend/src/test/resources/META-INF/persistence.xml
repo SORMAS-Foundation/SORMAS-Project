@@ -26,6 +26,7 @@
 		<class>de.symeda.sormas.backend.region.Community</class>
 		<class>de.symeda.sormas.backend.region.District</class>
 		<class>de.symeda.sormas.backend.region.Region</class>
+		<class>de.symeda.sormas.backend.region.Country</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
 		<class>de.symeda.sormas.backend.sample.Sample</class>
@@ -57,6 +58,7 @@
 		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
 		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo</class>
 		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo</class>
+		<class>de.symeda.sormas.backend.document.Document</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

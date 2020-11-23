@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
@@ -41,6 +43,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -66,6 +69,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String SAVE_INFO = "saveInfo";
+	private static final String ASSIGNEE_MISSING_INFO = "assigneeMissingInfo";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
@@ -75,11 +79,12 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			fluidRowLocs(TaskDto.TASK_TYPE) +
 			fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE) +
 			fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY) +
+			fluidRowLocs(ASSIGNEE_MISSING_INFO) +
 			fluidRowLocs(TaskDto.CREATOR_COMMENT) +
 			fluidRowLocs(TaskDto.ASSIGNEE_REPLY) +
 			fluidRowLocs(TaskDto.TASK_STATUS) +
 			fluidRowLocs(SAVE_INFO);
-	//@formatter:off
+	//@formatter:on
 
 	private UserRight editOrCreateUserRight;
 	private boolean editedFromTaskGrid;
@@ -88,7 +93,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 		super(TaskDto.class, TaskDto.I18N_PREFIX);
 
-		this.editedFromTaskGrid = editedFromTaskGrid;	
+		this.editedFromTaskGrid = editedFromTaskGrid;
 		this.editOrCreateUserRight = editOrCreateUserRight;
 
 		addValueChangeListener(e -> {
@@ -129,7 +134,10 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
-		assigneeUser.addValueChangeListener(e -> updateByCreatingAndAssignee());
+		assigneeUser.addValueChangeListener(e -> {
+			updateByCreatingAndAssignee();
+			checkIfAssigneeEmailOrPhoneIsProvided((UserReferenceDto) e.getProperty().getValue());
+		});
 		assigneeUser.setImmediate(true);
 
 		TextArea creatorComment = addField(TaskDto.CREATOR_COMMENT, TextArea.class);
@@ -151,9 +159,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 				if (!editedFromTaskGrid) {
 					final HorizontalLayout saveInfoLayout = new HorizontalLayout(
-							new Label(
-									VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoSaveOfTask),
-									ContentMode.HTML));
+						new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoSaveOfTask), ContentMode.HTML));
 					saveInfoLayout.setSpacing(true);
 					saveInfoLayout.setMargin(new MarginInfo(true, false, true, false));
 					getContent().addComponent(saveInfoLayout, SAVE_INFO);
@@ -193,7 +199,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				users = FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region);
 			} else {
 				// fallback - just show all users
-				users = FacadeProvider.getUserFacade().getAllUserRefs();
+				users = FacadeProvider.getUserFacade().getAllUserRefs(false);
 			}
 
 			// Validation
@@ -212,13 +218,49 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					false,
 					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
 
-			Map<String, Long> userTaskCounts = FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(users.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+			Map<String, Long> userTaskCounts =
+				FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(users.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 			for (UserReferenceDto user : users) {
 				assigneeUser.addItem(user);
 				Long userTaskCount = userTaskCounts.get(user.getUuid());
 				assigneeUser.setItemCaption(user, user.getCaption() + " (" + (userTaskCount != null ? userTaskCount.toString() : "0") + ")");
 			}
 		});
+	}
+
+	private void checkIfAssigneeEmailOrPhoneIsProvided(UserReferenceDto assigneeRef) {
+
+		if (assigneeRef == null || FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TASK_NOTIFICATIONS)) {
+			return;
+		}
+
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(assigneeRef.getUuid());
+		boolean hasEmail = !StringUtils.isEmpty(user.getUserEmail());
+		boolean hasPhoneNumber = !StringUtils.isEmpty(user.getPhone());
+
+		boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
+
+		if (isSmsServiceSetUp && !hasEmail && !hasPhoneNumber) {
+			getContent().addComponent(
+				getMissingInfoComponent(I18nProperties.getString(Strings.infoAssigneeMissingEmailOrPhoneNumber)),
+				ASSIGNEE_MISSING_INFO);
+		} else if (!isSmsServiceSetUp && !hasEmail) {
+			getContent().addComponent(getMissingInfoComponent(I18nProperties.getString(Strings.infoAssigneeMissingEmail)), ASSIGNEE_MISSING_INFO);
+		} else {
+			getContent().removeComponent(ASSIGNEE_MISSING_INFO);
+		}
+	}
+
+	private HorizontalLayout getMissingInfoComponent(String caption) {
+		Label assigneeMissingInfoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + caption, ContentMode.HTML);
+		assigneeMissingInfoLabel.setWidthFull();
+
+		final HorizontalLayout assigneeMissingInfo = new HorizontalLayout(assigneeMissingInfoLabel);
+		assigneeMissingInfo.setSpacing(true);
+		assigneeMissingInfo.setMargin(new MarginInfo(false, false, true, false));
+		assigneeMissingInfo.setWidthFull();
+
+		return assigneeMissingInfo;
 	}
 
 	private void updateByCreatingAndAssignee() {

@@ -65,6 +65,7 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String PERSON_NATIONAL_HEALTH_ID = "personNationalHealthId";
 	public static final String EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION = "eventParticipantInvolvmentDescription";
 	public static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
+	public static final String CONTACT_COUNT = "contactCount";
 
 	private long id;
 	private long personId;
@@ -132,6 +133,8 @@ public class EventParticipantExportDto implements Serializable {
 	private String addressGpsCoordinates;
 	@SensitiveData
 	private String phone;
+	@SensitiveData
+	private String emailAddress;
 
 	private String caseUuid;
 
@@ -139,15 +142,17 @@ public class EventParticipantExportDto implements Serializable {
 
 	private EventParticipantJurisdictionDto jurisdiction;
 
+	private long contactCount;
+
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid, 
-									 
+    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid,
+
 									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
-									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
-									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
+									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType,
+									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate,
 									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
-									 String additionalInformation, String postalCode, String phone, String caseUuid) {
+									 String additionalInformation, String postalCode, String phone, String emailAddress, String caseUuid) {
     	//@formatter:on
 
 		this.id = id;
@@ -192,6 +197,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = phone;
+		this.emailAddress = emailAddress;
 		this.caseUuid = caseUuid;
 
 		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
@@ -323,6 +329,11 @@ public class EventParticipantExportDto implements Serializable {
 		return phone;
 	}
 
+	@Order(41)
+	public String getEmailAddress() {
+    	return emailAddress;
+	}
+
 	@Order(42)
 	@ExportProperty(EventParticipantExportDto.SAMPLE_INFORMATION)
 	public String getOtherSamplesString() {
@@ -432,6 +443,16 @@ public class EventParticipantExportDto implements Serializable {
 		return eventHouseNumber;
 	}
 
+	@Order(65)
+	@ExportProperty(EventParticipantExportDto.CONTACT_COUNT)
+	public Long getContactCount() {
+		return contactCount;
+	}
+
+	public void setContactCount(Long contactCount) {
+		this.contactCount = contactCount;
+	}
+
 	public List<EmbeddedSampleExportDto> getEventParticipantSamples() {
 		return eventParticipantSamples;
 	}
@@ -534,6 +555,10 @@ public class EventParticipantExportDto implements Serializable {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public void setCaseUuid(String caseUuid) {

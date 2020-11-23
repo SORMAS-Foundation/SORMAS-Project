@@ -46,7 +46,9 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 				ContactIndexDetailedDto.APPROXIMATE_AGE,
 				ContactIndexDetailedDto.DISTRICT_NAME,
 				ContactIndexDetailedDto.CITY,
-				ContactIndexDetailedDto.ADDRESS,
+				ContactIndexDetailedDto.STREET,
+				ContactIndexDetailedDto.HOUSE_NUMBER,
+				ContactIndexDetailedDto.ADDITIONAL_INFORMATION,
 				ContactIndexDetailedDto.POSTAL_CODE,
 				ContactIndexDetailedDto.PHONE));
 	}
@@ -66,7 +68,9 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 		getColumn(ContactIndexDetailedDto.APPROXIMATE_AGE).setWidth(50);
 		getColumn(ContactIndexDetailedDto.DISTRICT_NAME).setWidth(150);
 		getColumn(ContactIndexDetailedDto.CITY).setWidth(150);
-		getColumn(ContactIndexDetailedDto.ADDRESS).setWidth(200);
+		getColumn(ContactIndexDetailedDto.STREET).setWidth(150);
+		getColumn(ContactIndexDetailedDto.HOUSE_NUMBER).setWidth(50);
+		getColumn(ContactIndexDetailedDto.ADDITIONAL_INFORMATION).setWidth(200);
 		getColumn(ContactIndexDetailedDto.POSTAL_CODE).setWidth(100);
 		getColumn(ContactIndexDetailedDto.PHONE).setWidth(100);
 		((Column<ContactIndexDetailedDto, CaseReferenceDto>) getColumn(ContactIndexDetailedDto.CAZE)).setWidth(150)
