@@ -42,6 +42,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -682,7 +683,7 @@ public class InfrastructureController {
 						}
 						break;
 					case COUNTRY:
-						for (CountryDto selectedRow : (Collection<CountryDto>) selectedRows) {
+						for (CountryIndexDto selectedRow : (Collection<CountryIndexDto>) selectedRows) {
 							if (archive) {
 								FacadeProvider.getCountryFacade().archive(selectedRow.getUuid());
 							} else {
