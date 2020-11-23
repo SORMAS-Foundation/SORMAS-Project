@@ -36,6 +36,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
+import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.docgeneration.DocGenerationComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -123,7 +124,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(smsList, SMS_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.isUnreferredPortHealthCase()) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.checkIsUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);

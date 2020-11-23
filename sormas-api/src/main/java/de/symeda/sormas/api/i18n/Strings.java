@@ -147,6 +147,7 @@ public interface Strings {
 	String entityContacts = "entityContacts";
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
+	String entityDocuments = "entityDocuments";
 	String entityEvent = "entityEvent";
 	String entityEventParticipant = "entityEventParticipant";
 	String entityEvents = "entityEvents";
@@ -169,6 +170,7 @@ public interface Strings {
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorEntityOutdated = "errorEntityOutdated";
@@ -183,6 +185,7 @@ public interface Strings {
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorProcessingTemplate = "errorProcessingTemplate";
 	String errorQuarantineOnlyCaseAndContacts = "errorQuarantineOnlyCaseAndContacts";
+	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
@@ -303,6 +306,7 @@ public interface Strings {
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingEventData = "headingEventData";
 	String headingEventNotDeleted = "headingEventNotDeleted";
+	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
 	String headingEventsArchived = "headingEventsArchived";
 	String headingEventsDearchived = "headingEventsDearchived";
@@ -334,6 +338,7 @@ public interface Strings {
 	String headingImportedCaseInfo = "headingImportedCaseInfo";
 	String headingImportedPersonInfo = "headingImportedPersonInfo";
 	String headingImportError = "headingImportError";
+	String headingImportEventParticipant = "headingImportEventParticipant";
 	String headingImportFacilities = "headingImportFacilities";
 	String headingImportFailed = "headingImportFailed";
 	String headingImportPointsOfEntry = "headingImportPointsOfEntry";
@@ -427,6 +432,8 @@ public interface Strings {
 	String infoAddTestsToSample = "infoAddTestsToSample";
 	String infoArchivedCases = "infoArchivedCases";
 	String infoArchivedEvents = "infoArchivedEvents";
+	String infoAssigneeMissingEmail = "infoAssigneeMissingEmail";
+	String infoAssigneeMissingEmailOrPhoneNumber = "infoAssigneeMissingEmailOrPhoneNumber";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
@@ -485,6 +492,7 @@ public interface Strings {
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
+	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
@@ -500,6 +508,7 @@ public interface Strings {
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
+	String infoSelectOrCreatePersonForEventParticipantImport = "infoSelectOrCreatePersonForEventParticipantImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	String infoSpecificEventSearch = "infoSpecificEventSearch";
 	String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
@@ -611,6 +620,7 @@ public interface Strings {
 	String messageEventCreated = "messageEventCreated";
 	String messageEventDearchived = "messageEventDearchived";
 	String messageEventParticipantCreated = "messageEventParticipantCreated";
+	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
 	String messageEventParticipantsDeleted = "messageEventParticipantsDeleted";
 	String messageEventsArchived = "messageEventsArchived";
@@ -662,6 +672,7 @@ public interface Strings {
 	String messageNoContactsSelected = "messageNoContactsSelected";
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
+	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
@@ -810,6 +821,12 @@ public interface Strings {
 	String promptSamplesSearchField = "promptSamplesSearchField";
 	String promptSearch = "promptSearch";
 	String promptSelectPeriod = "promptSelectPeriod";
+	String promptTaskDateFrom = "promptTaskDateFrom";
+	String promptTaskDateTo = "promptTaskDateTo";
+	String promptTaskDateType = "promptTaskDateType";
+	String promptTaskEpiWeekFrom = "promptTaskEpiWeekFrom";
+	String promptTaskEpiWeekTo = "promptTaskEpiWeekTo";
+	String promptTaskSearchField = "promptTaskSearchField";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";

@@ -36,7 +36,8 @@ public enum FeatureType {
 	CASE_FOLLOWUP(true, false, null),
 	TASK_NOTIFICATIONS(true, true, null),
 	MANUAL_EXTERNAL_MESSAGES(true, true, null),
-	OTHER_NOTIFICATIONS(true, true, null);
+	OTHER_NOTIFICATIONS(true, true, null),
+	DOCUMENTS(true, false, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

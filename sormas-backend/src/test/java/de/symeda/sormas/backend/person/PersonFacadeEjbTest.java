@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.person;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -10,8 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,7 +21,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
@@ -136,6 +137,12 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	/*
+	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
+	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
+	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
+	 * https://gitter.im/SORMAS-Project!
+	 */
 	public void testIsValidPersonUuid() {
 		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
 		assertTrue(getPersonFacade().isValidPersonUuid(person.getUuid()));
@@ -143,6 +150,12 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	/*
+	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
+	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
+	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
+	 * https://gitter.im/SORMAS-Project!
+	 */
 	public void testGetFollowUpEndDates() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
@@ -178,5 +191,51 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(DateHelper.isSameDay(result2.get().getLatestFollowUpEndDate(), now));
 		Date result3 = getPersonFacade().getLatestFollowUpEndDateByUuid(person1.getUuid());
 		assertTrue(DateHelper.isSameDay(result3, DateHelper.subtractDays(now, 8)));
+	}
+
+	@Test
+	/*
+	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
+	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
+	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
+	 * https://gitter.im/SORMAS-Project!
+	 */
+	public void testGetPersonForJournal() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER, UserRole.CONTACT_SUPERVISOR);
+
+		final PersonDto person = creator.createPerson();
+		person.setFirstName("Klaus");
+		person.setLastName("Draufle");
+		person.setSex(Sex.MALE);
+		person.setEmailAddress("test@test.de");
+		person.setPhone("+496211218490");
+		person.setBirthdateYYYY(2000);
+		person.setBirthdateMM(6);
+		person.setBirthdateDD(1);
+		person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
+		final ContactDto contact1 = creator.createContact(user.toReference(), person.toReference());
+		final ContactDto contact2 = creator.createContact(user.toReference(), person.toReference());
+		contact1.setOverwriteFollowUpUntil(true);
+		contact2.setOverwriteFollowUpUntil(true);
+
+		Date now = new Date();
+		contact1.setFollowUpUntil(DateHelper.subtractDays(now, 20));
+		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 8));
+
+		getPersonFacade().savePerson(person);
+		getContactFacade().saveContact(contact1);
+		getContactFacade().saveContact(contact2);
+
+		JournalPersonDto exportPerson = getPersonFacade().getPersonForJournal(person.getUuid());
+		assertEquals(person.getFirstName(), exportPerson.getFirstName());
+		assertEquals(person.getLastName(), exportPerson.getLastName());
+		assertEquals(person.getSex(), exportPerson.getSex());
+		assertEquals(person.getEmailAddress(), exportPerson.getEmailAddress());
+		assertEquals(person.getPhone(), exportPerson.getPhone());
+		assertEquals(person.getBirthdateYYYY(), exportPerson.getBirthdateYYYY());
+		assertEquals(person.getBirthdateMM(), exportPerson.getBirthdateMM());
+		assertEquals(person.getBirthdateDD(), exportPerson.getBirthdateDD());
+		assertEquals(contact2.getFollowUpUntil(), exportPerson.getLatestFollowUpEndDate());
 	}
 }

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -216,7 +217,7 @@ public class CasesView extends AbstractView {
 		res.setProperties(
 			ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS))
 				.stream()
-				.map(p -> p.getElement0())
+				.map(DataHelper.Pair::getElement0)
 				.collect(Collectors.toSet()));
 		return res;
 	}

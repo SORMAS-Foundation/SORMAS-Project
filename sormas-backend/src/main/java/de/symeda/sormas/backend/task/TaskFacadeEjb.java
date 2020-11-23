@@ -354,7 +354,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		if (taskCriteria != null) {
-			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task);
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
@@ -375,12 +375,26 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		TaskJoins joins = new TaskJoins(task);
 
+		Expression<Object> region = cb.selectCase()
+			.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.NAME))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
+					.otherwise(joins.getEventRegion().get(District.NAME)));
+
+		Expression<Object> district = cb.selectCase()
+			.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
+					.otherwise(joins.getEventDistrict().get(District.NAME)));
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
 				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS), 
-				joins.getEvent().get(Event.START_DATE), joins.getContact().get(Contact.UUID), joins.getContactPerson().get(Person.FIRST_NAME), 
-				joins.getContactPerson().get(Person.LAST_NAME), joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
+				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.EVENT_TITLE), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), 
+				joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS), joins.getEvent().get(Event.START_DATE), 
+				joins.getContact().get(Contact.UUID), joins.getContactPerson().get(Person.FIRST_NAME), joins.getContactPerson().get(Person.LAST_NAME), 
+				joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
 				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY), task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
 				joins.getCreator().get(User.UUID), joins.getCreator().get(User.FIRST_NAME), joins.getCreator().get(User.LAST_NAME), task.get(Task.CREATOR_COMMENT),
 				joins.getAssignee().get(User.UUID), joins.getAssignee().get(User.FIRST_NAME), joins.getAssignee().get(User.LAST_NAME), task.get(Task.ASSIGNEE_REPLY),
@@ -390,7 +404,8 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getContactCommunity().get(Community.UUID), joins.getContactCaseReportingUser().get(User.UUID), joins.getContactCaseRegion().get(User.UUID), 
 				joins.getContactCaseDistrict().get(User.UUID), joins.getContactCaseCommunity().get(User.UUID), joins.getContactCaseHealthFacility().get(User.UUID), 
 				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventSurveillanceOfficer().get(User.UUID), 
-				joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID)
+				joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID),
+				region, district
 		);
 		//@formatter:on
 
@@ -402,7 +417,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		if (taskCriteria != null) {
-			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task);
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
@@ -451,6 +466,12 @@ public class TaskFacadeEjb implements TaskFacade {
 					break;
 				case TaskIndexDto.EVENT:
 					expression = joins.getEvent().get(Event.START_DATE);
+					break;
+				case TaskIndexDto.DISTRICT:
+					expression = district;
+					break;
+				case TaskIndexDto.REGION:
+					expression = region;
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
