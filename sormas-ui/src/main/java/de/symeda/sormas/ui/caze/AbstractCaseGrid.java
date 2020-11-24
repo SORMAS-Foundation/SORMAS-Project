@@ -187,6 +187,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.INVESTIGATION_STATUS),
 			getPersonColumns(),
 			getEventColumns(),
+			getSymptomsColumns(),
 			getSampleColumns(),
 			Stream.of(
 				CaseIndexDto.DISTRICT_NAME,
@@ -204,6 +205,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	protected Stream<String> getEventColumns() {
+		return Stream.empty();
+	}
+
+	protected Stream<String> getSymptomsColumns() {
 		return Stream.empty();
 	}
 

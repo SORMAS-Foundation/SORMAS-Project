@@ -42,6 +42,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
@@ -259,7 +260,8 @@ public class CaseListCriteriaBuilder {
 				joins.getAddress().get(Location.POSTAL_CODE),
 				joins.getPerson().get(Person.PHONE),
 				joins.getReportingUser().get(User.FIRST_NAME),
-				joins.getReportingUser().get(User.LAST_NAME)));
+				joins.getReportingUser().get(User.LAST_NAME),
+				joins.getSymptoms().get(Symptoms.ONSET_DATE)));
 
 		return selections;
 	}
@@ -277,6 +279,8 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
+		case CaseIndexDetailedDto.SYMPTOMS_ONSET_DATE:
+			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		default:
 			return getIndexOrders(sortProperty, caze, joins);
 		}

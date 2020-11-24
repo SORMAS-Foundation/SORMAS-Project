@@ -1,8 +1,10 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -63,6 +65,11 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	}
 
 	@Override
+	protected Stream<String> getSymptomsColumns() {
+		return Stream.concat(super.getSampleColumns(), Stream.of(CaseIndexDetailedDto.SYMPTOMS_ONSET_DATE));
+	}
+
+	@Override
 	protected Stream<String> getSampleColumns() {
 		return Stream.concat(super.getSampleColumns(), Stream.of(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT));
 	}
@@ -108,5 +115,9 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 					value.getBirthdateYYYY(),
 					I18nProperties.getUserLanguage()),
 			new TextRenderer());
+
+		((Column<CaseIndexDetailedDto, Date>) getColumn(CaseIndexDetailedDto.SYMPTOMS_ONSET_DATE))
+			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()))
+			.setWidth(80);
 	}
 }

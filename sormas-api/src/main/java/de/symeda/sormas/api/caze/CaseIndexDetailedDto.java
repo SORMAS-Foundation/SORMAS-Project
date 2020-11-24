@@ -32,6 +32,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
 	public static final String LATEST_SAMPLE_DATE_TIME = "latestSampleDateTime";
 	public static final String SAMPLE_COUNT = "sampleCount";
+	public static final String SYMPTOMS_ONSET_DATE = "symptomsOnsetDate";
 
 	@PersonalData
 	@SensitiveData
@@ -57,6 +58,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private EventStatus latestEventStatus;
 	private Date latestSampleDateTime;
 	private Long sampleCount;
+	private Date symptomsOnsetDate;
 
 	private UserReferenceDto reportingUser;
 
@@ -70,7 +72,8 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId,
 								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								String reportingUserFirstName, String reportingUserLastName, int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
+								String reportingUserFirstName, String reportingUserLastName, Date symptomsOnsetDate, 
+								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
 
 		super(id, uuid, epidNumber, externalID, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
@@ -89,6 +92,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.eventCount = eventCount;
 		this.latestSampleDateTime = latestSampleDateTime;
 		this.sampleCount = sampleCount;
+		this.symptomsOnsetDate = symptomsOnsetDate;
 	}
 
 	public String getCity() {
@@ -157,5 +161,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public Long getSampleCount() {
 		return sampleCount;
+	}
+
+	public Date getSymptomsOnsetDate() {
+		return symptomsOnsetDate;
 	}
 }
