@@ -5764,8 +5764,8 @@ EXECUTE
            overlay(overlay(overlay(
                substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), ''-'', '''')), 0, 30)
                placing ''-'' from 7) placing ''-'' from 14) placing ''-'' from 21) as exposure_uuid,
-           ' || epidata_startdate_field_name || '::timestamp as startdate,
-           ' || epidata_enddate_field_name || '::timestamp as enddate,
+           CAST (' || epidata_startdate_field_name || ' AS timestamp) as startdate,
+           CAST (' || epidata_enddate_field_name || ' AS timestamp) as enddate,
            ' || epidata_description_field_name || ' as description,
            ' || epidata_locationinfo_field_name || ' as locationinfo
     FROM epidata WHERE ' || epidata_field_name || ' = ''YES'';
@@ -5784,36 +5784,38 @@ ALTER FUNCTION migrate_epidata(text, text, text, text, text, text, text, text) O
 
 UPDATE epidata SET areainfectedanimals = 'YES', eatingrawanimals = 'YES' WHERE eatingrawanimalsininfectedarea = 'YES';
 
-SELECT migrate_epidata('processingconfirmedcasefluidunsafe', 'handlingsamples', 'YES', 'WORK');
-SELECT migrate_epidata('percutaneouscaseblood', 'percutaneous', 'YES', 'WORK');
-SELECT migrate_epidata('directcontactdeadunsafe', 'physicalcontactwithbody', 'YES', 'BURIAL');
-SELECT migrate_epidata('processingsuspectedcasesampleunsafe', 'handlingsamples', 'YES', 'WORK');
-SELECT migrate_epidata('sickdeadanimals', 'animalcondition', 'DEAD', 'ANIMAL_CONTACT', 'sickdeadanimalsdate', 'sickdeadanimalsdate', 'sickdeadanimalsdetails', 'sickdeadanimalslocation');
-SELECT migrate_epidata('eatingrawanimals', 'eatingrawanimalproducts', 'YES', 'ANIMAL_CONTACT', 'null', 'null', 'eatingrawanimalsdetails', 'null');
-SELECT migrate_epidata('rodents', 'typeofanimal', 'RODENT', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('bats', 'typeofanimal', 'BAT', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('primates', 'typeofanimal', 'PRIMATE', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('swine', 'typeofanimal', 'SWINE', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('birds', 'typeofanimal', 'POULTRY', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('rabbits', 'typeofanimal', 'RABBIT', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('cattle', 'typeofanimal', 'CATTLE', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('dogs', 'typeofanimal', 'DOG', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('cats', 'typeofanimal', 'CAT', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('canidae', 'typeofanimal', 'CANIDAE', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('camels', 'typeofanimal', 'CAMEL', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('snakes', 'typeofanimal', 'SNAKE', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('tickbite', 'typeofanimal', 'TICK', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('fleabite', 'typeofanimal', 'FLEA', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('otheranimals', 'typeofanimal', 'OTHER', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('waterbody', 'bodyofwater', 'YES', 'OTHER', 'null', 'null', 'waterbodydetails', 'null');
-SELECT migrate_epidata('visitedhealthfacility', 'habitationtype', 'MEDICAL', 'HABITATION');
-SELECT migrate_epidata('visitedanimalmarket', 'animalmarket', 'YES', 'OTHER');
-SELECT migrate_epidata('areaconfirmedcases', 'riskarea', 'YES', 'TRAVEL');
-SELECT migrate_epidata('kindofexposurebite', 'animalcontacttype', 'BITE', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('kindofexposuretouch', 'animalcontacttype', 'TOUCH', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('kindofexposurescratch', 'animalcontacttype', 'SCRATCH', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('kindofexposurelick', 'animalcontacttype', 'LICK', 'ANIMAL_CONTACT');
-SELECT migrate_epidata('kindofexposureother', 'animalcontacttype', 'OTHER', 'ANIMAL_CONTACT');
+DO $$ BEGIN
+PERFORM migrate_epidata('processingconfirmedcasefluidunsafe', 'handlingsamples', 'YES', 'WORK');
+PERFORM migrate_epidata('percutaneouscaseblood', 'percutaneous', 'YES', 'WORK');
+PERFORM migrate_epidata('directcontactdeadunsafe', 'physicalcontactwithbody', 'YES', 'BURIAL');
+PERFORM migrate_epidata('processingsuspectedcasesampleunsafe', 'handlingsamples', 'YES', 'WORK');
+PERFORM migrate_epidata('sickdeadanimals', 'animalcondition', 'DEAD', 'ANIMAL_CONTACT', 'sickdeadanimalsdate', 'sickdeadanimalsdate', 'sickdeadanimalsdetails', 'sickdeadanimalslocation');
+PERFORM migrate_epidata('eatingrawanimals', 'eatingrawanimalproducts', 'YES', 'ANIMAL_CONTACT', 'null', 'null', 'eatingrawanimalsdetails', 'null');
+PERFORM migrate_epidata('rodents', 'typeofanimal', 'RODENT', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('bats', 'typeofanimal', 'BAT', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('primates', 'typeofanimal', 'PRIMATE', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('swine', 'typeofanimal', 'SWINE', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('birds', 'typeofanimal', 'POULTRY', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('rabbits', 'typeofanimal', 'RABBIT', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('cattle', 'typeofanimal', 'CATTLE', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('dogs', 'typeofanimal', 'DOG', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('cats', 'typeofanimal', 'CAT', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('canidae', 'typeofanimal', 'CANIDAE', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('camels', 'typeofanimal', 'CAMEL', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('snakes', 'typeofanimal', 'SNAKE', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('tickbite', 'typeofanimal', 'TICK', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('fleabite', 'typeofanimal', 'FLEA', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('otheranimals', 'typeofanimal', 'OTHER', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('waterbody', 'bodyofwater', 'YES', 'OTHER', 'null', 'null', 'waterbodydetails', 'null');
+PERFORM migrate_epidata('visitedhealthfacility', 'habitationtype', 'MEDICAL', 'HABITATION');
+PERFORM migrate_epidata('visitedanimalmarket', 'animalmarket', 'YES', 'OTHER');
+PERFORM migrate_epidata('areaconfirmedcases', 'riskarea', 'YES', 'TRAVEL');
+PERFORM migrate_epidata('kindofexposurebite', 'animalcontacttype', 'BITE', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('kindofexposuretouch', 'animalcontacttype', 'TOUCH', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('kindofexposurescratch', 'animalcontacttype', 'SCRATCH', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('kindofexposurelick', 'animalcontacttype', 'LICK', 'ANIMAL_CONTACT');
+PERFORM migrate_epidata('kindofexposureother', 'animalcontacttype', 'OTHER', 'ANIMAL_CONTACT');
+END $$;
 
 DROP TABLE IF EXISTS id_map;
 
