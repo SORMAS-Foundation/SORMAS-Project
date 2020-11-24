@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend;
 
 import java.io.IOException;
@@ -49,6 +46,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -57,6 +56,9 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -97,6 +99,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseCon
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
@@ -965,6 +968,13 @@ public class TestDataCreator {
 		return test;
 	}
 
+	public ExposureDto buildAnimalContactExposure(TypeOfAnimal typeOfAnimal) {
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
+		exposure.setTypeOfAnimal(typeOfAnimal);
+		return exposure;
+	}
+
 	public CampaignDto createCampaign(UserDto user) {
 
 		CampaignDto campaign = CampaignDto.build();
@@ -1093,6 +1103,17 @@ public class TestDataCreator {
 		return new RDCFEntities(region, district, community, facility);
 	}
 
+	public Country createCountry(String countryName, String isoCode, String unoCode) {
+		Country country = new Country();
+		country.setUuid(DataHelper.createUuid());
+		country.setDefaultName(countryName);
+		country.setIsoCode(isoCode);
+		country.setUnoCode(unoCode);
+		beanTest.getCountryService().persist(country);
+
+		return country;
+	}
+
 	public Region createRegion(String regionName) {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
@@ -1213,6 +1234,37 @@ public class TestDataCreator {
 		config.setPrimaryDisease(primary);
 		config.setCaseBased(caseBased);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
+	}
+
+	public DocumentDto createDocument(
+		UserReferenceDto uploadingUser,
+		String name,
+		String contentType,
+		long size,
+		EventReferenceDto event,
+		byte[] content)
+		throws IOException {
+		return createDocument(uploadingUser, name, contentType, size, DocumentRelatedEntityType.EVENT, event.getUuid(), content);
+	}
+
+	public DocumentDto createDocument(
+		UserReferenceDto uploadingUser,
+		String name,
+		String contentType,
+		long size,
+		DocumentRelatedEntityType relatedEntityType,
+		String relatedEntityUuid,
+		byte[] content)
+		throws IOException {
+		DocumentDto document = DocumentDto.build();
+		document.setUploadingUser(uploadingUser);
+		document.setName(name);
+		document.setMimeType(contentType);
+		document.setSize(size);
+		document.setRelatedEntityType(relatedEntityType);
+		document.setRelatedEntityUuid(relatedEntityUuid);
+
+		return beanTest.getDocumentFacade().saveDocument(document, content);
 	}
 
 	/**

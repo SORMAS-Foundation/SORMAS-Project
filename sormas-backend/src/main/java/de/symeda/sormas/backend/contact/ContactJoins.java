@@ -41,6 +41,7 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Contact, Person> person;
 //	private CaseJoins<Contact> caseJoins;
 	private Join<Contact, Case> caze;
+	private Join<Contact, Case> resultingCase;
 	private Join<Case, Person> casePerson;
 	private Join<Case, User> caseReportingUser;
 	private Join<Case, Region> caseRegion;
@@ -90,6 +91,14 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private void setCaze(Join<Contact, Case> caze) {
 		this.caze = caze;
+	}
+
+	public Join<Contact, Case> getResultingCase() {
+		return getOrCreate(resultingCase, Contact.RESULTING_CASE, JoinType.LEFT, this::setResultingCase);
+	}
+
+	private void setResultingCase(Join<Contact, Case> resultingCase) {
+		this.resultingCase = resultingCase;
 	}
 
 	public Join<Case, Person> getCasePerson() {

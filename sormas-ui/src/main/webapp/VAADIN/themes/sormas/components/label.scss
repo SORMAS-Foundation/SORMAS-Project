@@ -161,5 +161,9 @@
 	&.v-label-white-space-normal, .white-space-normal {
 		white-space: normal !important;
 	}
+
+	&.v-label-text-align-right {
+		text-align: right;
+	}
   }
 }

@@ -37,6 +37,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
@@ -46,6 +47,10 @@ import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 
 public final class InfrastructureHelper {
+
+	public static List<Item> loadCountries() {
+		return toItems(DatabaseHelper.getCountryDao().queryActiveForAll(Country.NAME, true));
+	}
 
 	public static List<Item> loadRegions() {
 		return toItems(DatabaseHelper.getRegionDao().queryActiveForAll(Region.NAME, true));
