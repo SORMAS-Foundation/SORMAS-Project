@@ -28,9 +28,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.Upload;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -96,11 +96,10 @@ public class DocumentListComponent extends VerticalLayout {
 		uploadLayout.setWidth(250, Unit.PIXELS);
 
 		DocumentReceiver receiver = new DocumentReceiver(relatedEntityType, entityRef.getUuid(), this::reload);
-		@SuppressWarnings("deprecation")
 		Upload upload = new Upload("", receiver);
+		receiver.setUpload(upload);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
-		upload.addSucceededListener(receiver);
 
 		uploadLayout.addComponentsAndExpand(upload);
 
