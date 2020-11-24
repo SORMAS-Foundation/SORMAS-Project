@@ -217,17 +217,23 @@ public class EventParticipantsController {
 						500,
 						confirmed -> {
 							if (confirmed) {
-								personFacade.savePerson(dto.getPerson());
-								eventParticipantFacade.saveEventParticipant(dto);
-								Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
-								if (doneConsumer != null)
-									doneConsumer.accept(null);
-								SormasUI.refreshView();
+								savePersonAndEventParticipant(doneConsumer, dto);
 							}
 						});
+				} else {
+					savePersonAndEventParticipant(doneConsumer, dto);
 				}
 			}
 		});
 		return editComponent;
+	}
+
+	private void savePersonAndEventParticipant(Consumer<EventParticipantReferenceDto> doneConsumer, EventParticipantDto dto) {
+		personFacade.savePerson(dto.getPerson());
+		eventParticipantFacade.saveEventParticipant(dto);
+		Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
+		if (doneConsumer != null)
+			doneConsumer.accept(null);
+		SormasUI.refreshView();
 	}
 }
