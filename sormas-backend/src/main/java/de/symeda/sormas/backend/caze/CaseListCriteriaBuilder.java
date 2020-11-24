@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.caze;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -39,6 +41,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
@@ -73,7 +76,7 @@ public class CaseListCriteriaBuilder {
 		CaseCriteria caseCriteria,
 		OrderExpressionProvider orderExpressionProvider,
 		List<SortProperty> sortProperties,
-		boolean withEventInfo) {
+		boolean detailed) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(type);
@@ -88,7 +91,7 @@ public class CaseListCriteriaBuilder {
 		visitCountSq.select(cb.size(visitCountRoot.get(Case.VISITS)));
 		selectionList.add(visitCountSq);
 
-		if (withEventInfo) {
+		if (detailed) {
 			// Events count subquery
 			Subquery<Long> eventCountSq = cq.subquery(Long.class);
 			Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
@@ -102,6 +105,22 @@ public class CaseListCriteriaBuilder {
 					cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
 			eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 			selectionList.add(eventCountSq);
+
+			// Latest sampleDateTime subquery
+			Subquery<Timestamp> latestSampleDateTimeSq = cq.subquery(Timestamp.class);
+			Root<Sample> sample = latestSampleDateTimeSq.from(Sample.class);
+			Path<Timestamp> sampleDateTime = sample.get(Sample.SAMPLE_DATE_TIME);
+			latestSampleDateTimeSq
+				.where(cb.equal(sample.get(Sample.UUID), joins.getSamples().get(Sample.UUID)), cb.isFalse(sample.get(Sample.DELETED)));
+			latestSampleDateTimeSq.select(cb.greatest(sampleDateTime));
+			selectionList.add(latestSampleDateTimeSq);
+
+			// Samples count subquery
+			Subquery<Long> sampleCountSq = cq.subquery(Long.class);
+			Root<Sample> sampleRoot = sampleCountSq.from(Sample.class);
+			sampleCountSq.where(cb.equal(sampleRoot.get(Sample.ID), joins.getSamples().get(Sample.ID)), cb.isFalse(sampleRoot.get(Sample.DELETED)));
+			sampleCountSq.select(cb.countDistinct(sampleRoot.get(Sample.ID)));
+			selectionList.add(sampleCountSq);
 		}
 		cq.multiselect(selectionList);
 		cq.distinct(true);

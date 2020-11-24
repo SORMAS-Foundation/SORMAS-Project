@@ -9,16 +9,20 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	private static final long serialVersionUID = 3734206041728541742L;
+
+	private static final String LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT = Captions.CaseData_latestSampleDateTime;
 
 	public CaseGridDetailed(CaseCriteria criteria) {
 		super(CaseIndexDetailedDto.class, criteria);
@@ -58,9 +62,19 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 				CaseIndexDetailedDto.PHONE));
 	}
 
+	@Override
+	protected Stream<String> getSampleColumns() {
+		return Stream.concat(super.getSampleColumns(), Stream.of(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void initColumns() {
+
+		addColumn(caze -> DateFormatHelper.formatLocalDateTime(caze.getLatestSampleDateTime()) + " [" + caze.getSampleCount() + "]")
+			.setId(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT)
+			.setSortable(false)
+			.setWidth(150);
 
 		super.initColumns();
 
