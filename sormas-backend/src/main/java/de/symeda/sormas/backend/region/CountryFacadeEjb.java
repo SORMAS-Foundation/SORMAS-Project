@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +19,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CountryCriteria;
@@ -27,10 +31,9 @@ import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "CountryFacade")
 public class CountryFacadeEjb implements CountryFacade {
@@ -40,6 +43,9 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@EJB
 	private CountryService countryService;
+
+	@EJB
+	private UserService userService;
 
 	@Override
 	public CountryDto getCountryByUuid(String uuid) {
@@ -124,8 +130,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		Country country = countryService.getByUuid(dto.getUuid());
 
 		if (country == null
-			&& (countryService.getByIsoCode(dto.getIsoCode(), true).isPresent()
-			|| countryService.getByUnoCode(dto.getUnoCode(), true).isPresent())) {
+			&& (countryService.getByIsoCode(dto.getIsoCode(), true).isPresent() || countryService.getByUnoCode(dto.getUnoCode(), true).isPresent())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
 		}
 
@@ -219,5 +224,49 @@ public class CountryFacadeEjb implements CountryFacade {
 	@Stateless
 	public static class CountryFacadeEjbLocal extends CountryFacadeEjb {
 
+	}
+
+	@Override
+	public List<CountryDto> getAllAfter(Date date) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CountryDto> cq = cb.createQuery(CountryDto.class);
+		Root<Country> region = cq.from(Country.class);
+
+		selectDtoFields(cq, region);
+
+		Predicate filter = countryService.createChangeDateFilter(cb, region, date);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	@Override
+	public List<CountryDto> getByUuids(List<String> uuids) {
+		return countryService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllUuids() {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+		return countryService.getAllUuids();
+	}
+
+	// Need to be in the same order as in the constructor
+	private void selectDtoFields(CriteriaQuery<CountryDto> cq, Root<Country> root) {
+
+		cq.multiselect(
+			root.get(Country.CREATION_DATE),
+			root.get(Country.CHANGE_DATE),
+			root.get(Country.UUID),
+			root.get(Country.ARCHIVED),
+			root.get(Country.DEFAULT_NAME),
+			root.get(Country.EXTERNAL_ID),
+			root.get(Country.ISO_CODE),
+			root.get(Country.UNO_CODE));
 	}
 }
