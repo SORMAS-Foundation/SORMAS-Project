@@ -78,10 +78,13 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	@Override
 	protected void initColumns() {
 
-		addColumn(caze -> DateFormatHelper.formatLocalDateTime(caze.getLatestSampleDateTime()) + " [" + caze.getSampleCount() + "]")
-			.setId(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT)
-			.setSortable(false)
-			.setWidth(150);
+		addColumn(caze -> {
+			if (caze.getLatestSampleDateTime() != null) {
+				return DateFormatHelper.formatLocalDateTime(caze.getLatestSampleDateTime()) + " [" + caze.getSampleCount() + "]";
+			} else {
+				return null;
+			}
+		}).setId(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT).setSortable(false).setWidth(150);
 
 		super.initColumns();
 
