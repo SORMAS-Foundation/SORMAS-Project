@@ -1730,7 +1730,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 242:
 				currentVersion = 242;
-				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN archived SMALLINT DEFAULT 0;");
+				TableUtils.createTable(connectionSource, Country.class);
+
 			case 243:
 				currentVersion = 243;
 				TableUtils.createTable(connectionSource, Exposure.class);

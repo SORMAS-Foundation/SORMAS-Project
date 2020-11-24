@@ -21,7 +21,9 @@ import java.util.Date;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
+import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -30,7 +32,6 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class BAGExportCaseDto implements Serializable {
-
 	private Integer caseIdIsm;
 	private Long caseId;
 	private Long personId;
@@ -55,7 +56,7 @@ public class BAGExportCaseDto implements Serializable {
 	private String workPlaceName;
 	private String workPlaceStreet;
 	private String workPlaceStreetNumber;
-	private String workPlaceLocation;
+	private String workPlaceCity;
 	private String workPlacePostalCode;
 	private String workPlaceCountry;
 
@@ -71,26 +72,39 @@ public class BAGExportCaseDto implements Serializable {
 	private PathogenTestType testType;
 	private PathogenTestResultType testResult;
 
-	private String contactConfirmedCaseYn;
-	private String contactConfirmedCaseDate;
-	private String contactConfirmedCaseFallIdIsm;
+	// can't calculate as there can ba more than one converted contacts for a case
+	private YesNoUnknown contactCaseLinkCaseYn;
+	private Date contactCaseLinkContactDate;
+	private Integer contactCaseLinkCaseIdIsm;
+	private Long contactCaseLinkCaseId;
 
-	private YesNoUnknown infectionLocationYn;
+	private YesNoUnknown exposureLocationYn;
 	private String activityMappingYn;
-	private String infectionCountry;
-	private String infectionLocation;
-	private String otherInfectionLocation;
-	private String infectionLocationName;
-	private String infectionLocationStreet;
-	private String infectionLocationStreetNumber;
-	private String infectionLocationCity;
-	private String infectionLocationPostalCode;
-	private String infectionLocationCountry;
+	private String exposureCountry;
+
+	private FacilityType exposureLocationType;
+	private String exposureLocationTypeDetails;
+
+	private String exposureLocationName;
+	private String exposureLocationStreet;
+	private String exposureLocationStreetNumber;
+	private String exposureLocationCity;
+	private String exposureLocationPostalCode;
+	private String exposureLocationCountry;
+
+	// missing
+	private String exposureLocationFlightDetail;
 
 	private Date contactTracingContactDate;
 
-	private QuarantineType quarantineType;
-	private String quarantineDetails;
+	private YesNoUnknown wasInQuarantineBeforeIsolation;
+	// can't calculate as there are more contacts
+	private Date startDateOfQuarantineBeforeIsolation;
+	private QuarantineReason quarantineReasonBeforeIsolation;
+	private String quarantineReasonBeforeIsolationDetails;
+
+	private QuarantineType isolationType;
+	private String isolationTypeDetails;
 
 	private String isolationLocationStreet;
 	private String isolationLocationStreetNumber;
@@ -98,25 +112,25 @@ public class BAGExportCaseDto implements Serializable {
 	private String isolationLocationPostalCode;
 	private String isolationLocationCountry;
 
-	private Date followUpUntilDate;
+	// quarantine start date
+	private Date followUpStartDate;
 	private Date endOfIsolationDate;
 	private EndOfIsolationReason endOfIsolationReason;
 	private String endOfIsolationReasonDetails;
 
 	//@formatter:off
-	public BAGExportCaseDto(Integer caseIdIsm, Long caseId, Long personId, String lastName, String firstName,
-							String homeAddressStreet, String homeAddressHouseNumber, String homeAddressCity, String homeAddressPostalCode,
-							String phoneNumber, String mobileNumber, String emailAddress, Sex sex,
-							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
-							OccupationType occupationType, Boolean symptomatic,
-							CovidTestReason covidTestReason, String covidTestReasonDetails,
-							Date symptomOnsetDate,
+	public BAGExportCaseDto(Integer caseIdIsm, Long caseId, Long personId,
+							String lastName, String firstName,
+							String homeAddressStreet, String homeAddressHouseNumber, String homeAddressCity, String homeAddressPostalCode, String homeAddressCountry,
+							String phoneNumber, String mobileNumber, String emailAddress,
+							Sex sex, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
+							OccupationType occupationType,
+							boolean symptomatic, CovidTestReason pcrReason, String otherPcrReason, Date symptomOnsetDate,
+							String activityMappingYn,
 							Date contactTracingContactDate,
-							QuarantineType quarantineType, String quarantineDetails,
-							Date followUpUntilDate, Date endOfIsolationDate, EndOfIsolationReason endOfIsolationReason, String endOfIsolationReasonDetails
-
-
-	) {
+							YesNoUnknown wasInQuarantineBeforeIsolation, QuarantineReason quarantineReasonBeforeIsolation, String quarantineReasonBeforeIsolationDetails,
+							QuarantineType isolationType, String isolationTypeDetails,
+							Date followUpStartDate, Date endOfIsolationDate, EndOfIsolationReason endOfIsolationReason, String endOfIsolationReasonDetails) {
 		//@formatter:on
 
 		this.caseIdIsm = caseIdIsm;
@@ -128,23 +142,25 @@ public class BAGExportCaseDto implements Serializable {
 		this.homeAddressHouseNumber = homeAddressHouseNumber;
 		this.homeAddressCity = homeAddressCity;
 		this.homeAddressPostalCode = homeAddressPostalCode;
+		this.homeAddressCountry = homeAddressCountry;
 		this.phoneNumber = phoneNumber;
 		this.mobileNumber = mobileNumber;
 		this.emailAddress = emailAddress;
 		this.sex = sex;
 		this.birthDate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.occupationType = occupationType;
-		this.symptomatic = symptomatic == null ? YesNoUnknown.UNKNOWN : symptomatic ? YesNoUnknown.YES : YesNoUnknown.NO;
-		this.pcrReason = covidTestReason;
-		this.otherPcrReason = covidTestReasonDetails;
+		this.symptomatic = symptomatic ? YesNoUnknown.YES : YesNoUnknown.NO;
+		this.pcrReason = pcrReason;
+		this.otherPcrReason = otherPcrReason;
 		this.symptomOnsetDate = symptomOnsetDate;
-
+		this.activityMappingYn = activityMappingYn;
 		this.contactTracingContactDate = contactTracingContactDate;
-
-		this.quarantineType = quarantineType;
-		this.quarantineDetails = quarantineDetails;
-
-		this.followUpUntilDate = followUpUntilDate;
+		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
+		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
+		this.quarantineReasonBeforeIsolationDetails = quarantineReasonBeforeIsolationDetails;
+		this.isolationType = isolationType;
+		this.isolationTypeDetails = isolationTypeDetails;
+		this.followUpStartDate = followUpStartDate;
 		this.endOfIsolationDate = endOfIsolationDate;
 		this.endOfIsolationReason = endOfIsolationReason;
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
@@ -159,6 +175,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.caseIdIsm = caseIdIsm;
 	}
 
+	@Order(2)
 	public Long getCaseId() {
 		return caseId;
 	}
@@ -193,17 +210,16 @@ public class BAGExportCaseDto implements Serializable {
 		this.firstName = firstName;
 	}
 
-	@Order(5)
+	@Order(10)
 	public String getHomeAddressStreet() {
 		return homeAddressStreet;
 	}
 
-	@Order(6)
 	public void setHomeAddressStreet(String homeAddressStreet) {
 		this.homeAddressStreet = homeAddressStreet;
 	}
 
-	@Order(7)
+	@Order(11)
 	public String getHomeAddressHouseNumber() {
 		return homeAddressHouseNumber;
 	}
@@ -212,7 +228,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.homeAddressHouseNumber = homeAddressHouseNumber;
 	}
 
-	@Order(8)
+	@Order(12)
 	public String getHomeAddressCity() {
 		return homeAddressCity;
 	}
@@ -221,7 +237,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.homeAddressCity = homeAddressCity;
 	}
 
-	@Order(9)
+	@Order(13)
 	public String getHomeAddressPostalCode() {
 		return homeAddressPostalCode;
 	}
@@ -230,7 +246,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.homeAddressPostalCode = homeAddressPostalCode;
 	}
 
-	@Order(10)
+	@Order(14)
 	public String getHomeAddressCountry() {
 		return homeAddressCountry;
 	}
@@ -239,7 +255,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.homeAddressCountry = homeAddressCountry;
 	}
 
-	@Order(11)
+	@Order(20)
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -248,7 +264,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.phoneNumber = phoneNumber;
 	}
 
-	@Order(12)
+	@Order(21)
 	public String getMobileNumber() {
 		return mobileNumber;
 	}
@@ -257,7 +273,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.mobileNumber = mobileNumber;
 	}
 
-	@Order(13)
+	@Order(22)
 	public String getEmailAddress() {
 		return emailAddress;
 	}
@@ -266,7 +282,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.emailAddress = emailAddress;
 	}
 
-	@Order(14)
+	@Order(30)
 	public Sex getSex() {
 		return sex;
 	}
@@ -275,7 +291,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.sex = sex;
 	}
 
-	@Order(15)
+	@Order(31)
 	public BirthDateDto getBirthDate() {
 		return birthDate;
 	}
@@ -284,7 +300,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.birthDate = birthDate;
 	}
 
-	@Order(16)
+	@Order(32)
 	public OccupationType getOccupationType() {
 		return occupationType;
 	}
@@ -293,16 +309,17 @@ public class BAGExportCaseDto implements Serializable {
 		this.occupationType = occupationType;
 	}
 
-	@Order(20)
+	@Order(33)
 	public String getWorkPlaceName() {
 		return workPlaceName;
 	}
 
+	@Order(34)
 	public void setWorkPlaceName(String workPlaceName) {
 		this.workPlaceName = workPlaceName;
 	}
 
-	@Order(21)
+	@Order(35)
 	public String getWorkPlaceStreet() {
 		return workPlaceStreet;
 	}
@@ -311,7 +328,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.workPlaceStreet = workPlaceStreet;
 	}
 
-	@Order(22)
+	@Order(36)
 	public String getWorkPlaceStreetNumber() {
 		return workPlaceStreetNumber;
 	}
@@ -320,16 +337,16 @@ public class BAGExportCaseDto implements Serializable {
 		this.workPlaceStreetNumber = workPlaceStreetNumber;
 	}
 
-	@Order(23)
-	public String getWorkPlaceLocation() {
-		return workPlaceLocation;
+	@Order(37)
+	public String getWorkPlaceCity() {
+		return workPlaceCity;
 	}
 
-	public void setWorkPlaceLocation(String workPlaceLocation) {
-		this.workPlaceLocation = workPlaceLocation;
+	public void setWorkPlaceCity(String workPlaceCity) {
+		this.workPlaceCity = workPlaceCity;
 	}
 
-	@Order(24)
+	@Order(38)
 	public String getWorkPlacePostalCode() {
 		return workPlacePostalCode;
 	}
@@ -338,7 +355,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.workPlacePostalCode = workPlacePostalCode;
 	}
 
-	@Order(25)
+	@Order(39)
 	public String getWorkPlaceCountry() {
 		return workPlaceCountry;
 	}
@@ -347,7 +364,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.workPlaceCountry = workPlaceCountry;
 	}
 
-	@Order(30)
+	@Order(50)
 	public YesNoUnknown getSymptomatic() {
 		return symptomatic;
 	}
@@ -356,7 +373,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.symptomatic = symptomatic;
 	}
 
-	@Order(31)
+	@Order(51)
 	public CovidTestReason getPcrReason() {
 		return pcrReason;
 	}
@@ -365,7 +382,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.pcrReason = pcrReason;
 	}
 
-	@Order(32)
+	@Order(52)
 	public String getOtherPcrReason() {
 		return otherPcrReason;
 	}
@@ -374,7 +391,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.otherPcrReason = otherPcrReason;
 	}
 
-	@Order(40)
+	@Order(53)
 	public Date getSymptomOnsetDate() {
 		return symptomOnsetDate;
 	}
@@ -383,7 +400,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.symptomOnsetDate = symptomOnsetDate;
 	}
 
-	@Order(41)
+	@Order(60)
 	public Date getSampleDate() {
 		return sampleDate;
 	}
@@ -392,7 +409,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.sampleDate = sampleDate;
 	}
 
-	@Order(50)
+	@Order(61)
 	public Date getLabReportDate() {
 		return labReportDate;
 	}
@@ -401,7 +418,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.labReportDate = labReportDate;
 	}
 
-	@Order(51)
+	@Order(62)
 	public PathogenTestType getTestType() {
 		return testType;
 	}
@@ -410,7 +427,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.testType = testType;
 	}
 
-	@Order(52)
+	@Order(63)
 	public PathogenTestResultType getTestResult() {
 		return testResult;
 	}
@@ -419,43 +436,52 @@ public class BAGExportCaseDto implements Serializable {
 		this.testResult = testResult;
 	}
 
-	@Order(53)
-	public String getContactConfirmedCaseYn() {
-		return contactConfirmedCaseYn;
+	@Order(70)
+	public YesNoUnknown getContactCaseLinkCaseYn() {
+		return contactCaseLinkCaseYn;
 	}
 
-	public void setContactConfirmedCaseYn(String contactConfirmedCaseYn) {
-		this.contactConfirmedCaseYn = contactConfirmedCaseYn;
+	public void setContactCaseLinkCaseYn(YesNoUnknown contactCaseLinkCaseYn) {
+		this.contactCaseLinkCaseYn = contactCaseLinkCaseYn;
 	}
 
-	@Order(54)
-	public String getContactConfirmedCaseDate() {
-		return contactConfirmedCaseDate;
+	@Order(71)
+	public Date getContactCaseLinkContactDate() {
+		return contactCaseLinkContactDate;
 	}
 
-	public void setContactConfirmedCaseDate(String contactConfirmedCaseDate) {
-		this.contactConfirmedCaseDate = contactConfirmedCaseDate;
+	public void setContactCaseLinkContactDate(Date contactCaseLinkContactDate) {
+		this.contactCaseLinkContactDate = contactCaseLinkContactDate;
 	}
 
-	@Order(55)
-	public String getContactConfirmedCaseFallIdIsm() {
-		return contactConfirmedCaseFallIdIsm;
+	@Order(72)
+	public Integer getContactCaseLinkCaseIdIsm() {
+		return contactCaseLinkCaseIdIsm;
 	}
 
-	public void setContactConfirmedCaseFallIdIsm(String contactConfirmedCaseFallIdIsm) {
-		this.contactConfirmedCaseFallIdIsm = contactConfirmedCaseFallIdIsm;
+	public void setContactCaseLinkCaseIdIsm(Integer contactCaseLinkCaseIdIsm) {
+		this.contactCaseLinkCaseIdIsm = contactCaseLinkCaseIdIsm;
 	}
 
-	@Order(56)
-	public YesNoUnknown getInfectionLocationYn() {
-		return infectionLocationYn;
+	@Order(73)
+	public Long getContactCaseLinkCaseId() {
+		return contactCaseLinkCaseId;
 	}
 
-	public void setInfectionLocationYn(YesNoUnknown infectionLocationYn) {
-		this.infectionLocationYn = infectionLocationYn;
+	public void setContactCaseLinkCaseId(Long contactCaseLinkCaseId) {
+		this.contactCaseLinkCaseId = contactCaseLinkCaseId;
 	}
 
-	@Order(57)
+	@Order(80)
+	public YesNoUnknown getExposureLocationYn() {
+		return exposureLocationYn;
+	}
+
+	public void setExposureLocationYn(YesNoUnknown exposureLocationYn) {
+		this.exposureLocationYn = exposureLocationYn;
+	}
+
+	@Order(81)
 	public String getActivityMappingYn() {
 		return activityMappingYn;
 	}
@@ -464,88 +490,97 @@ public class BAGExportCaseDto implements Serializable {
 		this.activityMappingYn = activityMappingYn;
 	}
 
-	@Order(58)
-	public String getInfectionCountry() {
-		return infectionCountry;
+	@Order(82)
+	public String getExposureCountry() {
+		return exposureCountry;
 	}
 
-	public void setInfectionCountry(String infectionCountry) {
-		this.infectionCountry = infectionCountry;
+	public void setExposureCountry(String exposureCountry) {
+		this.exposureCountry = exposureCountry;
 	}
 
-	@Order(59)
-	public String getInfectionLocation() {
-		return infectionLocation;
+	@Order(83)
+	public FacilityType getExposureLocationType() {
+		return exposureLocationType;
 	}
 
-	public void setInfectionLocation(String infectionLocation) {
-		this.infectionLocation = infectionLocation;
+	public void setExposureLocationType(FacilityType exposureLocationType) {
+		this.exposureLocationType = exposureLocationType;
 	}
 
-	@Order(60)
-	public String getOtherInfectionLocation() {
-		return otherInfectionLocation;
+	@Order(84)
+	public String getExposureLocationTypeDetails() {
+		return exposureLocationTypeDetails;
 	}
 
-	public void setOtherInfectionLocation(String otherInfectionLocation) {
-		this.otherInfectionLocation = otherInfectionLocation;
+	public void setExposureLocationTypeDetails(String exposureLocationTypeDetails) {
+		this.exposureLocationTypeDetails = exposureLocationTypeDetails;
 	}
 
-	@Order(61)
-	public String getInfectionLocationName() {
-		return infectionLocationName;
+	@Order(85)
+	public String getExposureLocationName() {
+		return exposureLocationName;
 	}
 
-	public void setInfectionLocationName(String infectionLocationName) {
-		this.infectionLocationName = infectionLocationName;
+	public void setExposureLocationName(String exposureLocationName) {
+		this.exposureLocationName = exposureLocationName;
 	}
 
-	@Order(62)
-	public String getInfectionLocationStreet() {
-		return infectionLocationStreet;
+	@Order(86)
+	public String getExposureLocationStreet() {
+		return exposureLocationStreet;
 	}
 
-	public void setInfectionLocationStreet(String infectionLocationStreet) {
-		this.infectionLocationStreet = infectionLocationStreet;
+	public void setExposureLocationStreet(String exposureLocationStreet) {
+		this.exposureLocationStreet = exposureLocationStreet;
 	}
 
-	@Order(63)
-	public String getInfectionLocationStreetNumber() {
-		return infectionLocationStreetNumber;
+	@Order(87)
+	public String getExposureLocationStreetNumber() {
+		return exposureLocationStreetNumber;
 	}
 
-	public void setInfectionLocationStreetNumber(String infectionLocationStreetNumber) {
-		this.infectionLocationStreetNumber = infectionLocationStreetNumber;
+	public void setExposureLocationStreetNumber(String exposureLocationStreetNumber) {
+		this.exposureLocationStreetNumber = exposureLocationStreetNumber;
 	}
 
-	@Order(64)
-	public String getInfectionLocationCity() {
-		return infectionLocationCity;
+	@Order(88)
+	public String getExposureLocationCity() {
+		return exposureLocationCity;
 	}
 
-	public void setInfectionLocationCity(String infectionLocationCity) {
-		this.infectionLocationCity = infectionLocationCity;
+	public void setExposureLocationCity(String exposureLocationCity) {
+		this.exposureLocationCity = exposureLocationCity;
 	}
 
-	@Order(65)
-	public String getInfectionLocationPostalCode() {
-		return infectionLocationPostalCode;
+	@Order(89)
+	public String getExposureLocationPostalCode() {
+		return exposureLocationPostalCode;
 	}
 
-	public void setInfectionLocationPostalCode(String infectionLocationPostalCode) {
-		this.infectionLocationPostalCode = infectionLocationPostalCode;
+	public void setExposureLocationPostalCode(String exposureLocationPostalCode) {
+		this.exposureLocationPostalCode = exposureLocationPostalCode;
 	}
 
-	@Order(66)
-	public String getInfectionLocationCountry() {
-		return infectionLocationCountry;
+	@Order(90)
+	public String getExposureLocationCountry() {
+		return exposureLocationCountry;
 	}
 
-	public void setInfectionLocationCountry(String infectionLocationCountry) {
-		this.infectionLocationCountry = infectionLocationCountry;
+	public void setExposureLocationCountry(String exposureLocationCountry) {
+		this.exposureLocationCountry = exposureLocationCountry;
 	}
 
-	@Order(80)
+	@Order(91)
+	public String getExposureLocationFlightDetail() {
+		return exposureLocationFlightDetail;
+	}
+
+	public void setExposureLocationFlightDetail(String exposureLocationFlightDetail) {
+		this.exposureLocationFlightDetail = exposureLocationFlightDetail;
+	}
+
+	@Order(100)
 	public Date getContactTracingContactDate() {
 		return contactTracingContactDate;
 	}
@@ -554,25 +589,61 @@ public class BAGExportCaseDto implements Serializable {
 		this.contactTracingContactDate = contactTracingContactDate;
 	}
 
-	@Order(81)
-	public QuarantineType getQuarantineType() {
-		return quarantineType;
+	@Order(101)
+	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
+		return wasInQuarantineBeforeIsolation;
 	}
 
-	public void setQuarantineType(QuarantineType quarantineType) {
-		this.quarantineType = quarantineType;
+	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
+		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
 	}
 
-	@Order(82)
-	public String getQuarantineDetails() {
-		return quarantineDetails;
+	@Order(102)
+	public Date getStartDateOfQuarantineBeforeIsolation() {
+		return startDateOfQuarantineBeforeIsolation;
 	}
 
-	public void setQuarantineDetails(String quarantineDetails) {
-		this.quarantineDetails = quarantineDetails;
+	public void setStartDateOfQuarantineBeforeIsolation(Date startDateOfQuarantineBeforeIsolation) {
+		this.startDateOfQuarantineBeforeIsolation = startDateOfQuarantineBeforeIsolation;
 	}
 
-	@Order(83)
+	@Order(103)
+	public QuarantineReason getQuarantineReasonBeforeIsolation() {
+		return quarantineReasonBeforeIsolation;
+	}
+
+	public void setQuarantineReasonBeforeIsolation(QuarantineReason quarantineReasonBeforeIsolation) {
+		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
+	}
+
+	@Order(104)
+	public String getQuarantineReasonBeforeIsolationDetails() {
+		return quarantineReasonBeforeIsolationDetails;
+	}
+
+	public void setQuarantineReasonBeforeIsolationDetails(String quarantineReasonBeforeIsolationDetails) {
+		this.quarantineReasonBeforeIsolationDetails = quarantineReasonBeforeIsolationDetails;
+	}
+
+	@Order(105)
+	public QuarantineType getIsolationType() {
+		return isolationType;
+	}
+
+	public void setIsolationType(QuarantineType isolationType) {
+		this.isolationType = isolationType;
+	}
+
+	@Order(106)
+	public String getIsolationTypeDetails() {
+		return isolationTypeDetails;
+	}
+
+	public void setIsolationTypeDetails(String isolationTypeDetails) {
+		this.isolationTypeDetails = isolationTypeDetails;
+	}
+
+	@Order(107)
 	public String getIsolationLocationStreet() {
 		return isolationLocationStreet;
 	}
@@ -581,7 +652,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.isolationLocationStreet = isolationLocationStreet;
 	}
 
-	@Order(84)
+	@Order(108)
 	public String getIsolationLocationStreetNumber() {
 		return isolationLocationStreetNumber;
 	}
@@ -590,7 +661,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.isolationLocationStreetNumber = isolationLocationStreetNumber;
 	}
 
-	@Order(85)
+	@Order(109)
 	public String getIsolationLocationCity() {
 		return isolationLocationCity;
 	}
@@ -599,7 +670,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.isolationLocationCity = isolationLocationCity;
 	}
 
-	@Order(86)
+	@Order(110)
 	public String getIsolationLocationPostalCode() {
 		return isolationLocationPostalCode;
 	}
@@ -608,7 +679,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.isolationLocationPostalCode = isolationLocationPostalCode;
 	}
 
-	@Order(87)
+	@Order(111)
 	public String getIsolationLocationCountry() {
 		return isolationLocationCountry;
 	}
@@ -617,16 +688,16 @@ public class BAGExportCaseDto implements Serializable {
 		this.isolationLocationCountry = isolationLocationCountry;
 	}
 
-	@Order(95)
-	public Date getFollowUpUntilDate() {
-		return followUpUntilDate;
+	@Order(120)
+	public Date getFollowUpStartDate() {
+		return followUpStartDate;
 	}
 
-	public void setFollowUpUntilDate(Date followUpUntilDate) {
-		this.followUpUntilDate = followUpUntilDate;
+	public void setFollowUpStartDate(Date followUpStartDate) {
+		this.followUpStartDate = followUpStartDate;
 	}
 
-	@Order(96)
+	@Order(121)
 	public Date getEndOfIsolationDate() {
 		return endOfIsolationDate;
 	}
@@ -635,7 +706,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.endOfIsolationDate = endOfIsolationDate;
 	}
 
-	@Order(97)
+	@Order(122)
 	public EndOfIsolationReason getEndOfIsolationReason() {
 		return endOfIsolationReason;
 	}
@@ -644,7 +715,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.endOfIsolationReason = endOfIsolationReason;
 	}
 
-	@Order(98)
+	@Order(123)
 	public String getEndOfIsolationReasonDetails() {
 		return endOfIsolationReasonDetails;
 	}

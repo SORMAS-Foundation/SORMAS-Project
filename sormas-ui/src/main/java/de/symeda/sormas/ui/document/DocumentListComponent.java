@@ -122,7 +122,7 @@ public class DocumentListComponent extends VerticalLayout {
 
 	private Component toComponent(DocumentDto document) {
 		HorizontalLayout res = new HorizontalLayout();
-		res.setSpacing(false);
+		res.setSpacing(true);
 		res.setMargin(false);
 		res.setWidth(100, Unit.PERCENTAGE);
 

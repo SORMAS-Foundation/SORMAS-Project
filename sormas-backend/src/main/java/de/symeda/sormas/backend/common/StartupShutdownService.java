@@ -586,6 +586,8 @@ public class StartupShutdownService {
 					continue;
 				}
 
+				// escape for hibernate
+				// note: This will also escape ':' in pure strings, where a replacement may cause problems
 				nextLine = nextLine.replaceAll(":", "\\\\:");
 
 				// Add the line to the StringBuilder
