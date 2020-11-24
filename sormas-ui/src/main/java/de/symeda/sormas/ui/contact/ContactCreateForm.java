@@ -269,6 +269,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			getContent().addComponent(removeCaseButton, REMOVE_CASE_LOC);
 			removeCaseButton.setVisible(false);
 		}
+		if (asSourceContact) {
+			setEnabled(false, ContactDto.DISEASE, ContactDto.DISEASE_DETAILS);
+		}
 
 		addValueChangeListener(e -> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);

@@ -158,9 +158,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		creator.createContact(user2.toReference(), createPerson().toReference(), caze1);
 		CaseDataDto caze2 = createCase(rdcf2, user2);
 
-		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
-		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(caseCriteria, null, null, Collections.emptyList());
+		CaseCriteria criteria = new CaseCriteria();
+		criteria.setIncludeCasesFromOtherJurisdictions(true);
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(criteria, null, null, Collections.emptyList());
 
 		CaseIndexDto caseIndex1 = indexList.stream().filter(c -> c.getUuid().equals(caze1.getUuid())).findFirst().get();
 
