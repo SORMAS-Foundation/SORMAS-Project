@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.importer;
 
-import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,6 +15,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -30,6 +29,11 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 
 	private File file;
 	private String fName;
+	private final DocumentWorkflow documentWorkflow;
+
+	public DocumentTemplateReceiver(DocumentWorkflow documentWorkflow) {
+		this.documentWorkflow = documentWorkflow;
+	}
 
 	@Override
 	public OutputStream receiveUpload(String fileName, String mimeType) {
@@ -73,7 +77,7 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 		}
 
 		// Check for duplicate files
-		if (FacadeProvider.getDocumentTemplateFacade().isExistingTemplate(QUARANTINE_ORDER, fName)) {
+		if (FacadeProvider.getDocumentTemplateFacade().isExistingTemplate(documentWorkflow, fName)) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingFileExists),
 				new Label(String.format(I18nProperties.getString(Strings.infoDocumentAlreadyExists), fName)),
@@ -93,8 +97,7 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 	private void writeTemplateFile() {
 		try {
 			byte[] filecontent = Files.readAllBytes(file.toPath());
-			// This should be more general for reusability
-			FacadeProvider.getDocumentTemplateFacade().writeDocumentTemplate(QUARANTINE_ORDER, fName, filecontent);
+			FacadeProvider.getDocumentTemplateFacade().writeDocumentTemplate(documentWorkflow, fName, filecontent);
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingUploadSuccess),
 				I18nProperties.getString(Strings.messageUploadSuccessful));

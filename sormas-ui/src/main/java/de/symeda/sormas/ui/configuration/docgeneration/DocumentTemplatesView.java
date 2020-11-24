@@ -17,10 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.docgeneration;
 
+import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.EVENT_HANDOUT;
+import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -29,11 +33,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class DocumentTemplatesView extends AbstractConfigurationView {
 
@@ -41,34 +43,23 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/documentTemplates";
 
-	private ViewConfiguration viewConfiguration;
 	private VerticalLayout gridLayout;
-	private DocumentTemplatesGrid documentTemplatesGrid;
 
 	public DocumentTemplatesView() {
 		super(VIEW_NAME);
 		try {
-
-			viewConfiguration = ViewModelProviders.of(DocumentTemplatesView.class).get(ViewConfiguration.class);
-
 			gridLayout = new VerticalLayout();
 
-			// Add Quarantine Template Section
-			documentTemplatesGrid = new DocumentTemplatesGrid(DocumentWorkflow.QUARANTINE_ORDER);
-			documentTemplatesGrid.setWidth("500px"); // Remove this line to fit whole page
-			Label quarantineTemplatesLabel = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder_templates));
-			quarantineTemplatesLabel.addStyleName(H3);
-			gridLayout.addComponent(quarantineTemplatesLabel);
-			gridLayout.addComponent(documentTemplatesGrid);
+			addTemplateSection(QUARANTINE_ORDER, Captions.DocumentTemplate_QuarantineOrder_templates);
+
+			// TODO: I18N
+			addTemplateSection(EVENT_HANDOUT, "Event Handout Templates");
 
 			gridLayout.setWidth(100, Unit.PERCENTAGE);
 			gridLayout.setMargin(true);
-			gridLayout.setSpacing(false);
-			gridLayout.setExpandRatio(documentTemplatesGrid, 1); // Ensure that everything stays at the top
-			gridLayout.setSizeFull();
+			gridLayout.setSpacing(true);
+			// gridLayout.setSizeFull();
 			gridLayout.setStyleName("crud-main-layout");
-
-			addHeaderComponent(buildUploadButton());
 
 			addComponent(gridLayout);
 		} catch (Exception e) {
@@ -76,9 +67,29 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 		}
 	}
 
-	Button buildUploadButton() {
+	protected void addTemplateSection(DocumentWorkflow documentWorkflow, String caption) {
+		VerticalLayout sectionComponent = new VerticalLayout();
+		HorizontalLayout sectionHeader = new HorizontalLayout();
+
+		DocumentTemplatesGrid documentTemplatesGrid = new DocumentTemplatesGrid(documentWorkflow);
+		documentTemplatesGrid.setWidth(700, Unit.PIXELS);
+
+		Label quarantineTemplatesLabel = new Label(I18nProperties.getCaption(caption));
+		quarantineTemplatesLabel.addStyleName(H3);
+		Button uploadButton = buildUploadButton(documentWorkflow, documentTemplatesGrid);
+		sectionHeader.addComponents(quarantineTemplatesLabel, uploadButton);
+		sectionHeader.setComponentAlignment(uploadButton, Alignment.MIDDLE_RIGHT);
+		sectionHeader.setWidth(700, Unit.PIXELS);
+
+		sectionComponent.addComponent(sectionHeader);
+		sectionComponent.addComponent(documentTemplatesGrid);
+		sectionComponent.setExpandRatio(documentTemplatesGrid, 1F);
+		gridLayout.addComponent(sectionComponent);
+	}
+
+	private Button buildUploadButton(DocumentWorkflow documentWorkflow, DocumentTemplatesGrid documentTemplatesGrid) {
 		return ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate), VaadinIcons.UPLOAD, e -> {
-			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout());
+			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout(documentWorkflow));
 			window.setCaption(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate));
 			window.addCloseListener(c -> documentTemplatesGrid.reload());
 		}, ValoTheme.BUTTON_PRIMARY);

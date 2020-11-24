@@ -246,7 +246,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
-		templateEngine.validateTemplateDocx(new ByteArrayInputStream(document));
+		ByteArrayInputStream templateInputStream = new ByteArrayInputStream(document);
+		if (documentWorkflow.isDocx()) {
+			templateEngine.validateTemplateDocx(templateInputStream);
+		} else {
+			templateEngine.validateTemplateTxt(templateInputStream);
+		}
 
 		Files.createDirectories(Paths.get(workflowTemplateDirPath));
 		try (FileOutputStream fileOutputStream =

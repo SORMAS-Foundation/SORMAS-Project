@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.configuration.docgeneration;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -9,6 +10,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -33,8 +35,8 @@ public class DocumentTemplatesGrid extends Grid<String> {
 		this.documentWorkflow = documentWorkflow;
 		setSizeFull();
 
-		ListDataProvider<String> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow).stream());
+		List<String> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow);
+		ListDataProvider<String> dataProvider = DataProvider.fromStream(availableTemplates.stream());
 		setDataProvider(dataProvider);
 
 		removeAllColumns();
@@ -44,12 +46,16 @@ public class DocumentTemplatesGrid extends Grid<String> {
 			.setStyleGenerator(item -> "v-align-center");
 
 		setSelectionMode(SelectionMode.NONE);
+		setHeightMode(HeightMode.ROW);
+		setHeightByRows(availableTemplates.size());
 	}
 
 	public void reload() {
 		// This is bad practice but it works (unlike refreshAll), and in this case its sufficient
-		setItems(FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow));
+		List<String> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow);
+		setItems(availableTemplates);
 		getDataProvider().refreshAll();
+		setHeightByRows(availableTemplates.size());
 	}
 
 	private Button buildDeleteButton(String templateFileName) {
