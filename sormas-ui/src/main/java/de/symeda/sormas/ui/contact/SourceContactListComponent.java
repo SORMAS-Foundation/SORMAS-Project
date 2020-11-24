@@ -64,7 +64,7 @@ public class SourceContactListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label sourceContactsHeader = new Label(I18nProperties.getString(Strings.headingSourceContacts));
+		Label sourceContactsHeader = new Label(I18nProperties.getString(Strings.headingEpiDataSourceCaseContacts));
 		sourceContactsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(sourceContactsHeader);
 
