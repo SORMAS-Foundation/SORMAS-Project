@@ -50,11 +50,11 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 			Stream.of(
 				CaseIndexDetailedDto.SEX,
 				CaseIndexDetailedDto.AGE_AND_BIRTH_DATE,
+				CaseIndexDetailedDto.POSTAL_CODE,
 				CaseIndexDetailedDto.CITY,
 				CaseIndexDetailedDto.STREET,
 				CaseIndexDetailedDto.HOUSE_NUMBER,
 				CaseIndexDetailedDto.ADDITIONAL_INFORMATION,
-				CaseIndexDetailedDto.POSTAL_CODE,
 				CaseIndexDetailedDto.PHONE));
 	}
 
@@ -66,11 +66,11 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 		getColumn(CaseIndexDetailedDto.SEX).setWidth(80);
 		getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE).setWidth(100);
+		getColumn(CaseIndexDetailedDto.POSTAL_CODE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.CITY).setWidth(150);
 		getColumn(CaseIndexDetailedDto.STREET).setWidth(150);
 		getColumn(CaseIndexDetailedDto.HOUSE_NUMBER).setWidth(50);
 		getColumn(CaseIndexDetailedDto.ADDITIONAL_INFORMATION).setWidth(200);
-		getColumn(CaseIndexDetailedDto.POSTAL_CODE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.PHONE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.EVENT_COUNT).setWidth(80).setSortable(false);
 		getColumn(CaseIndexDetailedDto.LATEST_EVENT_ID).setWidth(80).setSortable(false);
