@@ -55,8 +55,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	public static final String INFORMATION_SOURCE = Captions.Event_informationSource;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
-	public static final String CASE_COUNT = Captions.Event_caseCount;
-	public static final String CONTACT_COUNT = Captions.Event_contactCount;
+	//public static final String CONTACT_COUNT = Captions.Event_contactCount;
 
 	private boolean countContactsWithSourceCaseInEvent = true;
 
@@ -97,36 +96,48 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
 		pendingTasksColumn.setSortable(false);
 
-		Column<EventIndexDto, String> numberOfCasesColumn =
-			addColumn(event -> String.valueOf((FacadeProvider.getEventParticipantFacade().getParticipantCasesCountByEvent(event.getUuid()))));
-		numberOfCasesColumn.setId(CASE_COUNT);
-		numberOfCasesColumn.setCaption(I18nProperties.getCaption(CASE_COUNT));
-		numberOfCasesColumn.setSortable(false);
+		/*
+		 * Column<EventIndexDto, String> numberOfCasesColumn =
+		 * addColumn(event ->
+		 * String.valueOf((FacadeProvider.getEventParticipantFacade().getParticipantCasesCountByEvent(event.getUuid()))));
+		 * numberOfCasesColumn.setId(CASE_COUNT);
+		 * numberOfCasesColumn.setCaption(I18nProperties.getCaption(CASE_COUNT));
+		 * numberOfCasesColumn.setSortable(false);
+		 */
+		/*
+		 * Column<EventIndexDto, String> numberOfInvolvedContacts = addColumn(
+		 * event -> String.valueOf(
+		 * (FacadeProvider.getEventParticipantFacade().getParticipantCasesContactsCount(event.getUuid(),
+		 * countContactsWithSourceCaseInEvent))));
+		 * numberOfInvolvedContacts.setId(CONTACT_COUNT);
+		 * numberOfInvolvedContacts.setCaption(I18nProperties.getCaption(CONTACT_COUNT));
+		 * numberOfInvolvedContacts.setSortable(false);
+		 */
 
-		Column<EventIndexDto, String> numberOfInvolvedContacts = addColumn(
-			event -> String.valueOf(
-				(FacadeProvider.getEventParticipantFacade().getParticipantCasesContactsCount(event.getUuid(), countContactsWithSourceCaseInEvent))));
-		numberOfInvolvedContacts.setId(CONTACT_COUNT);
-		numberOfInvolvedContacts.setCaption(I18nProperties.getCaption(CONTACT_COUNT));
-		numberOfInvolvedContacts.setSortable(false);
-
-		setColumns(
-			EventIndexDto.UUID,
-			EventIndexDto.EVENT_STATUS,
-			EventIndexDto.EVENT_INVESTIGATION_STATUS,
-			createEventDateColumn(this, userLanguage),
-			DISEASE_SHORT,
-			EventIndexDto.EVENT_TITLE,
-			EventIndexDto.EVENT_LOCATION,
-			EventIndexDto.SRC_TYPE,
-			INFORMATION_SOURCE,
-			EventIndexDto.REPORT_DATE_TIME,
-			NUMBER_OF_PENDING_TASKS,
-			EventIndexDto.PARTICIPANT_COUNT,
-			CASE_COUNT,
-			CONTACT_COUNT);
+		try {
+			setColumns(
+				EventIndexDto.UUID,
+				EventIndexDto.EVENT_STATUS,
+				EventIndexDto.EVENT_INVESTIGATION_STATUS,
+				createEventDateColumn(this, userLanguage),
+				DISEASE_SHORT,
+				EventIndexDto.EVENT_TITLE,
+				EventIndexDto.EVENT_LOCATION,
+				EventIndexDto.SRC_TYPE,
+				INFORMATION_SOURCE,
+				EventIndexDto.REPORT_DATE_TIME,
+				NUMBER_OF_PENDING_TASKS,
+				EventIndexDto.PARTICIPANT_COUNT,
+				EventIndexDto.CASE_COUNT,
+				EventIndexDto.DEATH_COUNT,
+				EventIndexDto.CONTACT_COUNT);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CASE_COUNT).setSortable(false);
+		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))

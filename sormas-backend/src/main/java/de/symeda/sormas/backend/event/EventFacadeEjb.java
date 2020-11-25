@@ -46,6 +46,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
@@ -56,12 +57,14 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -222,11 +225,61 @@ public class EventFacadeEjb implements EventFacade {
 		participantCount.select(cb.count(eventParticipantRoot));
 		participantCount.where(assignedToEvent, notDeleted);
 
+		Subquery<Long> caseCount = cq.subquery(Long.class);
+		eventParticipantRoot = caseCount.from(EventParticipant.class);
+		assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		Predicate isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
+		caseCount.select(cb.count(eventParticipantRoot));
+		caseCount.where(assignedToEvent, notDeleted, isCase);
+
+		// there must be a way to prevent all these duplicate lines!
+		// dont forget getExportList!
+		Subquery<Long> deathsCount = cq.subquery(Long.class);
+		eventParticipantRoot = deathsCount.from(EventParticipant.class);
+		Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+		assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
+		Predicate isDead = cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED);
+		deathsCount.select(cb.count(eventParticipantRoot));
+		deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
+
+		// for each contact ( if person is participant in this event (counter + 1))
+		// I need to join a table of contacts and Eventparticipants on Person, then filter by event ID and count
+		Subquery<Long> contactCount = cq.subquery(Long.class);
+		eventParticipantRoot = contactCount.from(EventParticipant.class);
+		Join<EventParticipant, Person> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.INNER);
+		Join<Person, Contact> contactsJoin = personJoin.join(Person.CONTACTS, JoinType.INNER);
+		assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		Predicate contactNotDeleted = cb.isFalse(contactsJoin.get(Contact.DELETED));
+		contactCount.select(cb.count(eventParticipantRoot));
+		contactCount.where(assignedToEvent, notDeleted, contactNotDeleted);
+
+		// for each participant (if participant is case ( for all contacts of participant ( if contact is also participant (count + 1))))
+		// right now this equals contactCount, WIP!!!
+		Subquery<Long> contactCount2 = cq.subquery(Long.class);
+		Root<Contact> contactRoot = contactCount2.from(Contact.class);
+		Join<Contact, Person> personJoin2 = contactRoot.join(Contact.PERSON, JoinType.INNER);
+		Join<Person, EventParticipant> participantJoin = personJoin2.join(Person.EVENT_PARTICIPANTS, JoinType.INNER);
+		//Join<Contact, Case> sourceCaseJoin = contactRoot.join(Contact.RELATION_TO_CASE, JoinType.INNER); // CONTACT.RELATION_TO_CASE does NOT deliver source case
+		//Join<Case, EventParticipant> sourceCaseParticipantJoin = sourceCaseJoin.join(Case.EVENT_PARTICIPANTS, JoinType.INNER);
+		//Predicate sourceCaseInEvent = cb.equal(contactsJoin2.get(Contact.RELATION_TO_CASE), );
+		notDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
+		Predicate participantNotDeleted = cb.isFalse(participantJoin.get(EventParticipant.DELETED));
+		assignedToEvent = cb.equal(participantJoin.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		contactCount2.select(cb.count(contactRoot));
+		contactCount2.where(notDeleted, participantNotDeleted, assignedToEvent);
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			participantCount,
+			caseCount,
+			deathsCount,
+			contactCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -328,12 +381,47 @@ public class EventFacadeEjb implements EventFacade {
 		participantCount.select(cb.count(eventParticipantRoot));
 		participantCount.where(assignedToEvent, notDeleted);
 
+		Subquery<Long> caseCount = cq.subquery(Long.class);
+		eventParticipantRoot = caseCount.from(EventParticipant.class);
+		assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		Predicate isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
+		caseCount.select(cb.count(eventParticipantRoot));
+		caseCount.where(assignedToEvent, notDeleted, isCase);
+
+		// there must be a way to prevent all these duplicate lines!
+		// dont forget getExportList!
+		Subquery<Long> deathsCount = cq.subquery(Long.class);
+		eventParticipantRoot = deathsCount.from(EventParticipant.class);
+		Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+		assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
+		Predicate isDead = cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED);
+		deathsCount.select(cb.count(eventParticipantRoot));
+		deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
+
+		// for each contact ( if person is participant in this event (counter + 1))
+		// I need to join a table of contacts and Eventparticipants on Person, then filter by event ID and count
+		Subquery<Long> contactCount = cq.subquery(Long.class);
+		eventParticipantRoot = contactCount.from(EventParticipant.class);
+		Join<EventParticipant, Person> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.INNER);
+		Join<Person, Contact> contactsJoin = personJoin.join(Person.CONTACTS, JoinType.INNER);
+		assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
+		notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+		Predicate contactNotDeleted = cb.isFalse(contactsJoin.get(Contact.DELETED));
+		contactCount.select(cb.count(eventParticipantRoot));
+		contactCount.where(assignedToEvent, notDeleted, contactNotDeleted);
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			participantCount,
+			caseCount,
+			deathsCount,
+			contactCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
