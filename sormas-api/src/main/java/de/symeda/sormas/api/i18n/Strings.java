@@ -413,7 +413,6 @@ public interface Strings {
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
-	String headingSourceContacts = "headingSourceContacts";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingTasksDeleted = "headingTasksDeleted";
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";

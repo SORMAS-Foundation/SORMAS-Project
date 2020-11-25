@@ -14,20 +14,24 @@
  */
 package de.symeda.sormas.ui.importer;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Page;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.v7.ui.Upload;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.document.DocumentDto;
@@ -41,13 +45,18 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-@SuppressWarnings("deprecation")
-public class DocumentReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.vaadin.v7.ui.Upload.SucceededListener {
+public class DocumentReceiver
+	implements Upload.Receiver, Upload.StartedListener, Upload.ProgressListener, Upload.SucceededListener, Upload.FailedListener {
 
+	private static final long serialVersionUID = 1L;
+	private static final long MAX_CONTENT_LENGTH = 52_428_800L;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final DocumentRelatedEntityType relatedEntityType;
 	private final String relatedEntityUuid;
 	private final Runnable callback;
 	private File file;
+	private Upload upload;
 
 	public DocumentReceiver(DocumentRelatedEntityType relatedEntityType, String relatedEntityUuid, Runnable callback) {
 		this.relatedEntityType = relatedEntityType;
@@ -57,7 +66,6 @@ public class DocumentReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 
 	@Override
 	public OutputStream receiveUpload(String fileName, String mimeType) {
-		final FileOutputStream fos;
 		// Reject empty files
 		if (fileName == null || fileName.isEmpty()) {
 			file = null;
@@ -73,10 +81,12 @@ public class DocumentReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 		try {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_document_upload" + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid());
-			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
-			fos = new FileOutputStream(file);
-		} catch (FileNotFoundException e) {
-			file = null;
+			file = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toFile();
+			return new BufferedOutputStream(Files.newOutputStream(file.toPath()));
+
+		} catch (IOException e) {
+			deleteFile();
+			logger.error(e.getMessage(), e);
 			new Notification(
 				I18nProperties.getString(Strings.headingImportError),
 				I18nProperties.getString(Strings.messageImportError),
@@ -85,12 +95,28 @@ public class DocumentReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 			// Workaround because returning null here throws an uncatchable UploadException
 			return new ByteArrayOutputStream();
 		}
-
-		return fos;
 	}
 
 	@Override
-	public void uploadSucceeded(com.vaadin.v7.ui.Upload.SucceededEvent succeededEvent) {
+	public void uploadStarted(StartedEvent event) {
+		if (event.getContentLength() > MAX_CONTENT_LENGTH) {
+			event.getUpload().interruptUpload();
+			new Notification(I18nProperties.getString(Strings.headingImportFailed), "", Notification.Type.ERROR_MESSAGE, false)
+				.show(Page.getCurrent());
+		}
+	}
+
+	@Override
+	public void updateProgress(long readBytes, long contentLength) {
+		if (contentLength < 0 && Math.max(readBytes, contentLength) > MAX_CONTENT_LENGTH) {
+			upload.interruptUpload();
+			new Notification(I18nProperties.getString(Strings.headingImportFailed), "", Notification.Type.ERROR_MESSAGE, false)
+				.show(Page.getCurrent());
+		}
+	}
+
+	@Override
+	public void uploadSucceeded(Upload.SucceededEvent succeededEvent) {
 		if (file == null) {
 			return;
 		}
@@ -108,11 +134,18 @@ public class DocumentReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 					if (ok) {
 						FacadeProvider.getDocumentFacade().deleteDocument(existing);
 						saveDocument(succeededEvent);
+					} else {
+						deleteFile();
 					}
 				});
 		} else {
 			saveDocument(succeededEvent);
 		}
+	}
+
+	@Override
+	public void uploadFailed(FailedEvent event) {
+		deleteFile();
 	}
 
 	private void saveDocument(Upload.SucceededEvent succeededEvent) {
@@ -133,8 +166,26 @@ public class DocumentReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.v
 				I18nProperties.getString(Strings.headingUploadSuccess),
 				I18nProperties.getString(Strings.messageUploadSuccessful));
 		} catch (IOException | IllegalArgumentException e) {
-			new Notification(I18nProperties.getString(Strings.headingImportFailed), e.getMessage(), Notification.Type.ERROR_MESSAGE, false)
+			logger.error(e.getMessage(), e);
+			new Notification(I18nProperties.getString(Strings.headingImportFailed), "", Notification.Type.ERROR_MESSAGE, false)
 				.show(Page.getCurrent());
+		} finally {
+			deleteFile();
 		}
+	}
+
+	private void deleteFile() {
+		if (file != null) {
+			file.delete();
+			file = null;
+		}
+	}
+
+	public void setUpload(Upload upload) {
+		this.upload = upload;
+		upload.addStartedListener(this);
+		upload.addProgressListener(this);
+		upload.addSucceededListener(this);
+		upload.addFailedListener(this);
 	}
 }
