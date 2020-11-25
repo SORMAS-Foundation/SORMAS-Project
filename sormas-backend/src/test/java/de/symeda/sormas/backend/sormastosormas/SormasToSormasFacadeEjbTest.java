@@ -846,7 +846,11 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		byte[] encryptedData = encryptShareData(shareData);
 
-		getSormasToSormasFacade().saveReturnedCase(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		try {
+			getSormasToSormasFacade().saveReturnedCase(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		} catch (SormasToSormasException e) {
+			e.printStackTrace();
+		}
 
 		CaseDataDto returnedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertThat(returnedCase.getQuarantine(), is(QuarantineType.HOTEL));
