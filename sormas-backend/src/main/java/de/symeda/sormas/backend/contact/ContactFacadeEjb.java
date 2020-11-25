@@ -85,11 +85,10 @@ import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.epidata.EpiDataHelper;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -127,7 +126,7 @@ import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
-import de.symeda.sormas.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -147,8 +146,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
@@ -206,7 +205,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
 	@EJB
-	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -490,17 +489,14 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getAddress().get(Location.FACILITY_DETAILS),
 					joins.getPerson().get(Person.PHONE),
 					joins.getPerson().get(Person.PHONE_OWNER),
+					joins.getPerson().get(Person.EMAIL_ADDRESS),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
 					joins.getRegion().get(Region.NAME),
 					joins.getDistrict().get(District.NAME),
 					joins.getCommunity().get(Community.NAME),
 					joins.getEpiData().get(EpiData.ID),
-					joins.getEpiData().get(EpiData.TRAVELED),
-					joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
-					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
-					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
-					joins.getEpiData().get(EpiData.RODENTS),
+					joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 					contact.get(Contact.RETURNING_TRAVELER),
 					eventCountSq,
 					contact.get(Contact.EXTERNAL_ID)),
@@ -541,16 +537,19 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
 
-			Map<Long, List<EpiDataTravel>> travels = null;
-			List<EpiDataTravel> travelsList = null;
-			CriteriaQuery<EpiDataTravel> travelsCq = cb.createQuery(EpiDataTravel.class);
-			Root<EpiDataTravel> travelsRoot = travelsCq.from(EpiDataTravel.class);
-			Join<EpiDataTravel, EpiData> travelsEpiDataJoin = travelsRoot.join(EpiDataTravel.EPI_DATA, JoinType.LEFT);
-			Expression<String> epiDataIdsExpr = travelsEpiDataJoin.get(EpiData.ID);
-			travelsCq.where(epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())));
-			travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
-			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-			travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
+			CriteriaQuery<Exposure> exposuresCq = cb.createQuery(Exposure.class);
+			Root<Exposure> exposuresRoot = exposuresCq.from(Exposure.class);
+			Join<Exposure, EpiData> exposuresEpiDataJoin = exposuresRoot.join(Exposure.EPI_DATA, JoinType.LEFT);
+			Expression<String> epiDataIdsExpr = exposuresEpiDataJoin.get(EpiData.ID);
+			Predicate exposuresPredicate = cb.and(
+				epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())),
+				cb.or(
+					cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.TRAVEL),
+					cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
+			exposuresCq.where(exposuresPredicate);
+			exposuresCq.orderBy(cb.asc(exposuresEpiDataJoin.get(EpiData.ID)));
+			List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			Map<Long, List<Exposure>> exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
 
 			// Load latest events info
 			// Adding a second query here is not perfect, but selecting the last event with a criteria query
@@ -581,24 +580,25 @@ public class ContactFacadeEjb implements ContactFacade {
 					exportContact.setLastCooperativeVisitSymptomatic(symptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				}
 
-				if (travels != null) {
-					Optional.ofNullable(travels.get(exportContact.getEpiDataId())).ifPresent(caseTravels -> {
+				if (exposures != null) {
+					Optional.ofNullable(exposures.get(exportContact.getEpiDataId())).ifPresent(contactExposures -> {
 						StringBuilder travelHistoryBuilder = new StringBuilder();
-						caseTravels.forEach(travel -> {
+						if (contactExposures.stream().anyMatch(e -> ExposureType.BURIAL.equals(e.getExposureType()))) {
+							exportContact.setBurialAttended(true);
+						}
+						contactExposures.stream().filter(e -> ExposureType.TRAVEL.equals(e.getExposureType())).forEach(exposure -> {
 							travelHistoryBuilder.append(
-								EpiDataTravelHelper.buildTravelString(
-									travel.getTravelType(),
-									travel.getTravelDestination(),
-									travel.getTravelDateFrom(),
-									travel.getTravelDateTo(),
+								EpiDataHelper.buildDetailedTravelString(
+									exposure.getLocation().toString(),
+									exposure.getDescription(),
+									exposure.getStartDate(),
+									exposure.getEndDate(),
 									userLanguage))
 								.append(", ");
 						});
 						if (travelHistoryBuilder.length() > 0) {
+							exportContact.setTraveled(true);
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length());
-						}
-						if (travelHistoryBuilder.length() == 0 && exportContact.getTraveled() != null) {
-							travelHistoryBuilder.append(exportContact.getTraveled());
 						}
 						exportContact.setTravelHistory(travelHistoryBuilder.toString());
 					});
@@ -619,6 +619,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return exportContacts;
+
 	}
 
 	@Override
@@ -1102,7 +1103,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasFacade.fromSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo()));
 		}
 
 		return target;
@@ -1203,18 +1204,14 @@ public class ContactFacadeEjb implements ContactFacade {
 					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
 				}
 
-				pseudonymizer.pseudonymizeDto(EpiDataDto.class, dto.getEpiData(), isInJurisdiction, e -> {
-					pseudonymizer.pseudonymizeDtoCollection(EpiDataBurialDto.class, e.getBurials(), b -> isInJurisdiction, (b, bInJurisdiction) -> {
-						pseudonymizer.pseudonymizeDto(LocationDto.class, b.getBurialAddress(), bInJurisdiction, null);
-					});
-
-					pseudonymizer.pseudonymizeDtoCollection(EpiDataTravelDto.class, e.getTravels(), t -> isInJurisdiction, null);
-
-					pseudonymizer
-						.pseudonymizeDtoCollection(EpiDataGatheringDto.class, e.getGatherings(), g -> isInJurisdiction, (g, bInJurisdiction) -> {
-							pseudonymizer.pseudonymizeDto(LocationDto.class, g.getGatheringAddress(), bInJurisdiction, null);
-						});
-				});
+				pseudonymizer.pseudonymizeDto(
+					EpiDataDto.class,
+					dto.getEpiData(),
+					isInJurisdiction,
+					e -> pseudonymizer
+						.pseudonymizeDtoCollection(ExposureDto.class, e.getExposures(), exp -> isInJurisdiction, (exp, expInJurisdiction) -> {
+							pseudonymizer.pseudonymizeDto(LocationDto.class, exp.getLocation(), expInJurisdiction, null);
+						}));
 			});
 		}
 	}
@@ -1341,7 +1338,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
 
-		target.setSormasToSormasOriginInfo(SormasToSormasFacadeEjb.toSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;

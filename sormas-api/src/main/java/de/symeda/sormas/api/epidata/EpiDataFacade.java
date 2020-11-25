@@ -17,9 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.epidata;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.ejb.Remote;
 
 @Remote
 public interface EpiDataFacade {
 
+	Map<String, String> getExposureSourceCaseNames(List<String> exposureUuids);
 }

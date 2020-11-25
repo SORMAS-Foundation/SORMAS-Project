@@ -64,8 +64,6 @@ public interface PersonFacade {
 
 	Boolean isValidPersonUuid(String personUuid);
 
-	List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since);
-
 	List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomsJournal);
 
 	Date getLatestFollowUpEndDateByUuid(String uuid);

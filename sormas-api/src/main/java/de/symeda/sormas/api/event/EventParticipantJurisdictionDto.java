@@ -20,6 +20,8 @@ import java.io.Serializable;
 public class EventParticipantJurisdictionDto implements Serializable {
 
 	private String reportingUserUuid;
+	private String regionUuid;
+	private String districtUuid;
 
 	public EventParticipantJurisdictionDto() {
 	}
@@ -34,5 +36,21 @@ public class EventParticipantJurisdictionDto implements Serializable {
 
 	public void setReportingUserUuid(String reportingUserUuid) {
 		this.reportingUserUuid = reportingUserUuid;
+	}
+
+	public String getRegionUuid() {
+		return regionUuid;
+	}
+
+	public void setRegionUuid(String regionUuid) {
+		this.regionUuid = regionUuid;
+	}
+
+	public String getDistrictUuid() {
+		return districtUuid;
+	}
+
+	public void setDistrictUuid(String districtUuid) {
+		this.districtUuid = districtUuid;
 	}
 }
