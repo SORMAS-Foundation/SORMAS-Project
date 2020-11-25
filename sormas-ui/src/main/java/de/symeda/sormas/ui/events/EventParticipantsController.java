@@ -42,6 +42,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -206,9 +208,40 @@ public class EventParticipantsController {
 			if (!editForm.getFieldGroup().isModified()) {
 
 				EventParticipantDto dto = editForm.getValue();
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid());
 				UserDto user = UserProvider.getCurrent().getUser();
-				if ((user.getRegion() != null && !user.getRegion().equals(dto.getRegion()))
-					|| (user.getDistrict() != null && !user.getDistrict().equals(dto.getDistrict()))) {
+
+				RegionReferenceDto userRegion = user.getRegion();
+				DistrictReferenceDto userDistrict = user.getDistrict();
+
+				RegionReferenceDto epResponsibleRegion = dto.getRegion();
+				DistrictReferenceDto epResponsibleDistrict = dto.getDistrict();
+
+				RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
+				DistrictReferenceDto epEventDistrict = eventDto.getEventLocation().getDistrict();
+
+				//Responsible region of the event participant is filled and differs from user Region - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleRegionDiffersFromUserRegion =
+					(userRegion != null && epResponsibleRegion != null && !userRegion.equals(epResponsibleRegion));
+
+				//Responsible district of the event participant is filled and differs from user District - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleDistrictDiffersFromUserDistrict =
+					(userDistrict != null && epResponsibleDistrict != null && !userDistrict.equals(epResponsibleDistrict));
+
+				//both responsible region and district of the event participant are empty and the fall back towards event location: 
+				// event region or event district is different from user's region or district - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleFieldsEmptyAndEventOutsideJurisdiction = (epResponsibleRegion == null
+					&& epResponsibleDistrict == null
+					&& (userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict)));
+
+				//if only district is not filled and either responsible region or district are different from user region or district - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleDistrictIsEmpty = ((epResponsibleRegion != null && epResponsibleDistrict == null)
+					&& (userRegion != null && !userRegion.equals(epResponsibleRegion) || userDistrict != null));
+
+				if (responsibleRegionDiffersFromUserRegion
+					|| responsibleDistrictDiffersFromUserDistrict
+					|| responsibleFieldsEmptyAndEventOutsideJurisdiction
+					|| responsibleDistrictIsEmpty) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingEventParticipantResponsibleJurisdictionUpdated),
 						new Label(I18nProperties.getString(Strings.messageEventParticipantResponsibleJurisdictionUpdated)),
@@ -217,17 +250,23 @@ public class EventParticipantsController {
 						500,
 						confirmed -> {
 							if (confirmed) {
-								personFacade.savePerson(dto.getPerson());
-								eventParticipantFacade.saveEventParticipant(dto);
-								Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
-								if (doneConsumer != null)
-									doneConsumer.accept(null);
-								SormasUI.refreshView();
+								savePersonAndEventParticipant(doneConsumer, dto);
 							}
 						});
+				} else {
+					savePersonAndEventParticipant(doneConsumer, dto);
 				}
 			}
 		});
 		return editComponent;
+	}
+
+	private void savePersonAndEventParticipant(Consumer<EventParticipantReferenceDto> doneConsumer, EventParticipantDto dto) {
+		personFacade.savePerson(dto.getPerson());
+		eventParticipantFacade.saveEventParticipant(dto);
+		Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
+		if (doneConsumer != null)
+			doneConsumer.accept(null);
+		SormasUI.refreshView();
 	}
 }
