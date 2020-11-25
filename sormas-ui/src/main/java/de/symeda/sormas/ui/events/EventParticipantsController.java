@@ -206,9 +206,17 @@ public class EventParticipantsController {
 			if (!editForm.getFieldGroup().isModified()) {
 
 				EventParticipantDto dto = editForm.getValue();
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid());
 				UserDto user = UserProvider.getCurrent().getUser();
-				if ((user.getRegion() != null && !user.getRegion().equals(dto.getRegion()))
-					|| (user.getDistrict() != null && !user.getDistrict().equals(dto.getDistrict()))) {
+				if ((user.getRegion() != null && dto.getRegion() != null && !user.getRegion().equals(dto.getRegion()))
+					|| (user.getDistrict() != null && dto.getDistrict() != null && !user.getDistrict().equals(dto.getDistrict()))
+					|| (dto.getRegion() == null
+						&& dto.getDistrict() == null
+						&& (user.getRegion() != null && !user.getRegion().equals(eventDto.getEventLocation().getRegion())
+							|| user.getDistrict() != null && !user.getDistrict().equals(eventDto.getEventLocation().getDistrict())))
+					|| ((dto.getRegion() == null || dto.getDistrict() == null)
+						&& (user.getRegion() != null && !user.getRegion().equals(dto.getRegion())
+							|| user.getDistrict() != null && !user.getDistrict().equals(dto.getDistrict())))) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingEventParticipantResponsibleJurisdictionUpdated),
 						new Label(I18nProperties.getString(Strings.messageEventParticipantResponsibleJurisdictionUpdated)),
