@@ -116,6 +116,12 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.createCase.setVisibility(GONE);
 		}
 
+		if (record.isMultiDayContact()) {
+			contentBinding.contactFirstContactDate.setVisibility(VISIBLE);
+		} else {
+			contentBinding.contactFirstContactDate.setVisibility(GONE);
+		}
+
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
@@ -396,6 +402,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactEndOfQuarantineReason.initializeSpinner(endOfQuarantineReasons);
 
 		// Initialize ControlDateFields
+		contentBinding.contactFirstContactDate.initializeDateField(getFragmentManager());
 		contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
 		contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
 		contentBinding.contactQuarantineFrom.initializeDateField(getFragmentManager());

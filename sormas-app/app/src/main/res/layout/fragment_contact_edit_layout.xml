@@ -105,6 +105,17 @@
                     app:enumClass="@{yesNoUnknownClass}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/contact_multiDayContact"
+                    app:value="@={data.multiDayContact}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/contact_firstContactDate"
+                    app:value="@={data.firstContactDate}"
+                    app:softRequired="true"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/contact_lastContactDate"
                     app:value="@={data.lastContactDate}"
