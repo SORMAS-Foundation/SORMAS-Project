@@ -42,6 +42,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -208,15 +210,34 @@ public class EventParticipantsController {
 				EventParticipantDto dto = editForm.getValue();
 				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid());
 				UserDto user = UserProvider.getCurrent().getUser();
-				if ((user.getRegion() != null && dto.getRegion() != null && !user.getRegion().equals(dto.getRegion()))
-					|| (user.getDistrict() != null && dto.getDistrict() != null && !user.getDistrict().equals(dto.getDistrict()))
-					|| (dto.getRegion() == null
-						&& dto.getDistrict() == null
-						&& (user.getRegion() != null && !user.getRegion().equals(eventDto.getEventLocation().getRegion())
-							|| user.getDistrict() != null && !user.getDistrict().equals(eventDto.getEventLocation().getDistrict())))
-					|| ((dto.getRegion() == null || dto.getDistrict() == null)
-						&& (user.getRegion() != null && !user.getRegion().equals(dto.getRegion())
-							|| user.getDistrict() != null && !user.getDistrict().equals(dto.getDistrict())))) {
+
+				RegionReferenceDto userRegion = user.getRegion();
+				DistrictReferenceDto userDistrict = user.getDistrict();
+
+				RegionReferenceDto epResponsibleRegion = dto.getRegion();
+				DistrictReferenceDto epResponsibleDistrict = dto.getDistrict();
+
+				RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
+				DistrictReferenceDto epEventDistrict = eventDto.getEventLocation().getDistrict();
+
+				Boolean responsibleRegionDiffersFromUserRegion =
+					(userRegion != null && epResponsibleRegion != null && !userRegion.equals(epResponsibleRegion));
+
+				Boolean responsibleDistrictDiffersFromUserDistrict =
+					(userDistrict != null && epResponsibleDistrict != null && !userDistrict.equals(epResponsibleDistrict));
+
+				Boolean responsibleEmptyFallBackToEvent = (epResponsibleRegion == null
+					&& epResponsibleDistrict == null
+					&& (userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict)));
+
+				Boolean onResponsibleDistrictNullCheckBothRegionAndDistrictAgainstUser =
+					((epResponsibleRegion != null && epResponsibleDistrict == null)
+						&& (userRegion != null && !userRegion.equals(epResponsibleRegion) || userDistrict != null));
+
+				if (responsibleRegionDiffersFromUserRegion
+					|| responsibleDistrictDiffersFromUserDistrict
+					|| responsibleEmptyFallBackToEvent
+					|| onResponsibleDistrictNullCheckBothRegionAndDistrictAgainstUser) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingEventParticipantResponsibleJurisdictionUpdated),
 						new Label(I18nProperties.getString(Strings.messageEventParticipantResponsibleJurisdictionUpdated)),
