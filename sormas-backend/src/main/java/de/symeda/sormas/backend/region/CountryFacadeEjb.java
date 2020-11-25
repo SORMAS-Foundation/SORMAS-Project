@@ -54,7 +54,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
-		return countryService.getByDefaultName(name, includeArchivedEntities).stream().map(r -> toReferenceDto(r)).collect(Collectors.toList());
+		return countryService.getByDefaultName(name, includeArchivedEntities).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -98,10 +98,10 @@ public class CountryFacadeEjb implements CountryFacade {
 				.setMaxResults(max)
 				.getResultList()
 				.stream()
-				.map(f -> toIndexDto(f))
+				.map(this::toIndexDto)
 				.collect(Collectors.toList());
 		} else {
-			return em.createQuery(cq).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
+			return em.createQuery(cq).getResultList().stream().map(this::toIndexDto).collect(Collectors.toList());
 		}
 	}
 
@@ -161,8 +161,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (entity == null) {
 			return null;
 		}
-		CountryReferenceDto dto = new CountryReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		return new CountryReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	public CountryDto toDto(Country entity) {
@@ -230,11 +229,11 @@ public class CountryFacadeEjb implements CountryFacade {
 	public List<CountryDto> getAllAfter(Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CountryDto> cq = cb.createQuery(CountryDto.class);
-		Root<Country> region = cq.from(Country.class);
+		Root<Country> country = cq.from(Country.class);
 
-		selectDtoFields(cq, region);
+		selectDtoFields(cq, country);
 
-		Predicate filter = countryService.createChangeDateFilter(cb, region, date);
+		Predicate filter = countryService.createChangeDateFilter(cb, country, date);
 
 		if (filter != null) {
 			cq.where(filter);
