@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -77,7 +79,9 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		}
 
 		if (!DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
-			Label resultTextLabel = new Label(pathogenTest.getTestResultText());
+			Label resultTextLabel = new Label(StringUtils.abbreviate(pathogenTest.getTestResultText(), 125));
+			resultTextLabel.setDescription(pathogenTest.getTestResultText());
+			resultTextLabel.setWidthFull();
 			labelLayout.addComponent(resultTextLabel);
 		}
 
