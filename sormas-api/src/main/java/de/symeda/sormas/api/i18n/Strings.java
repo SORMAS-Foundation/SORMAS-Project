@@ -771,13 +771,13 @@ public interface Strings {
 	String notificationTaskStartSpecific = "notificationTaskStartSpecific";
 	String notificationVisitCompleted = "notificationVisitCompleted";
 	String notSpecified = "notSpecified";
-	String nrOfCharactersLeft = "nrOfCharactersLeft";
 	String number = "number";
 	String numberEight = "numberEight";
 	String numberEleven = "numberEleven";
 	String numberFive = "numberFive";
 	String numberFour = "numberFour";
 	String numberNine = "numberNine";
+	String numberOfMessages = "numberOfMessages";
 	String numberOfMissingPhoneNumbers = "numberOfMissingPhoneNumbers";
 	String numberOne = "numberOne";
 	String numberSeven = "numberSeven";

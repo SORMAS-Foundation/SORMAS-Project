@@ -7,7 +7,9 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class SmsListEntry extends HorizontalLayout {
 
@@ -35,9 +37,10 @@ public class SmsListEntry extends HorizontalLayout {
 		{
 			topLeftLayout.setMargin(false);
 			topLeftLayout.setSpacing(false);
-			Label sendingInfo = new Label(
-				I18nProperties.getCaption(Captions.sentBy) + ": " + manualMessageLogDto.getSendingUser().getCaption() + " "
-					+ manualMessageLogDto.getSentDate());
+			final UserReferenceDto sendingUser = manualMessageLogDto.getSendingUser();
+			final Label sendingInfo = new Label(
+				I18nProperties.getCaption(Captions.sentBy) + ": " + sendingUser.getFirstName() + " " + sendingUser.getLastName() + " "
+					+ DateFormatHelper.formatLocalDateTime(manualMessageLogDto.getSentDate()));
 			topLeftLayout.addComponent(sendingInfo);
 		}
 		topLayout.addComponent(topLeftLayout);

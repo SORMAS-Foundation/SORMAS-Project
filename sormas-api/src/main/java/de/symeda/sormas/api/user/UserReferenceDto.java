@@ -26,22 +26,21 @@ public class UserReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
-	public UserReferenceDto() {
+	private String firstName;
+	private String lastName;
 
+	public UserReferenceDto() {
 	}
 
 	public UserReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
 
-	public UserReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
-
 	public UserReferenceDto(String uuid, String firstName, String lastName, Set<UserRole> userRoles) {
 		setUuid(uuid);
 		setCaption(buildCaption(firstName, lastName, userRoles));
+		this.firstName = firstName;
+		this.lastName = lastName;
 	}
 
 	public static String buildCaption(String firstName, String lastName, Set<UserRole> userRoles) {
@@ -61,5 +60,13 @@ public class UserReferenceDto extends ReferenceDto {
 			}
 		}
 		return result.toString();
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
 	}
 }

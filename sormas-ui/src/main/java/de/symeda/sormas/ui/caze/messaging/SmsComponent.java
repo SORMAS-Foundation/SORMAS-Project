@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.caze.messaging;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -29,7 +31,12 @@ public class SmsComponent extends CustomField<String> {
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
 		if (missingPhoneNumbers > 0) {
-			mainLayout.addComponent(new Label(String.format(I18nProperties.getString(Strings.numberOfMissingPhoneNumbers), missingPhoneNumbers)));
+			mainLayout.addComponent(
+				new Label(
+					VaadinIcons.INFO_CIRCLE.getHtml() + " "
+						+ String.format(I18nProperties.getString(Strings.numberOfMissingPhoneNumbers), missingPhoneNumbers),
+					ContentMode.HTML));
+			mainLayout.addComponent(new Label());
 		}
 
 		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.enterSMS)));
@@ -42,14 +49,23 @@ public class SmsComponent extends CustomField<String> {
 		final HorizontalLayout charactersLayout = new HorizontalLayout();
 		charactersLayout.setSpacing(false);
 		charactersLayout.addComponent(new Label(I18nProperties.getString(Strings.characters)));
+		charactersLayout.addComponent(new Label(" "));
 		final Label characterLeftLabel = new Label("0");
 		charactersLayout.addComponent(characterLeftLabel);
-		charactersLayout.addComponent(new Label(I18nProperties.getString(Strings.nrOfCharactersLeft)));
-		final Label nrOfMessagesLabel = new Label("1");
-		charactersLayout.addComponent(nrOfMessagesLabel);
-
+		charactersLayout.addComponent(new Label("/160"));
 		mainLayout.addComponent(charactersLayout);
 		mainLayout.setComponentAlignment(charactersLayout, Alignment.BOTTOM_RIGHT);
+
+		final HorizontalLayout nrOfMessagesLayout = new HorizontalLayout();
+		nrOfMessagesLayout.setSpacing(false);
+		nrOfMessagesLayout.setMargin(false);
+		nrOfMessagesLayout.addComponent(new Label(I18nProperties.getString(Strings.numberOfMessages)));
+		nrOfMessagesLayout.addComponent(new Label(" "));
+		final Label nrOfMessagesLabel = new Label("1");
+		nrOfMessagesLayout.addComponent(nrOfMessagesLabel);
+
+		mainLayout.addComponent(nrOfMessagesLayout);
+		mainLayout.setComponentAlignment(nrOfMessagesLayout, Alignment.BOTTOM_RIGHT);
 
 		smsTextArea.addValueChangeListener(e -> {
 			final int nrOfCharacters = e.getValue().length();
