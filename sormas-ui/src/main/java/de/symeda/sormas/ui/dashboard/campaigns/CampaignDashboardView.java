@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -181,32 +183,19 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					gridTemplateAreaCreator.getGridRows(),
 					gridTemplateAreaCreator.getGridColumns()));
 			diagramsLayout.setStyleName(gridCssClass);
+			Label noPopulationLocationsLabel = new Label();
+			VerticalLayout locationLayout = new VerticalLayout();
 
 			campaignFormDataMap.forEach((campaignDashboardDiagramDto, diagramData) -> {
 				final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto();
 				final String diagramId = campaignDiagramDefinitionDto.getDiagramId();
 				final String diagramCssClass = diagramId + generateRandomString();
-				String diagramTitle = null;
-				List<CampaignDiagramSeries> campaignSeriesTotal = campaignDiagramDefinitionDto.getCampaignSeriesTotal();
-				if (!CollectionUtils.isEmpty(campaignSeriesTotal) && campaignDiagramDefinitionDto.isPercentageDefault()) {
-					if (campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getPopulationGroup())).findAny().isPresent()) {
-						if (Objects.isNull(dataProvider.getArea())) {
-							diagramTitle = I18nProperties.getString(Strings.populationDataByArea);
-						} else if (Objects.isNull(dataProvider.getRegion())) {
-							diagramTitle = I18nProperties.getString(Strings.populationDataByRegion);
-						} else if (Objects.isNull(dataProvider.getDistrict())) {
-							diagramTitle = I18nProperties.getString(Strings.populationDataByDistrict);
-						} else {
-							diagramTitle = I18nProperties.getString(Strings.populationDataByCommunity);
-						}
-					}
-				}
+
 				final CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(
 					campaignDiagramDefinitionDto,
 					diagramData,
 					dataProvider.getCampaignFormTotalsMap().get(campaignDashboardDiagramDto),
 					campaignDiagramDefinitionDto.isPercentageDefault(),
-					diagramTitle,
 					Objects.nonNull(dataProvider.getDistrict()));
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
@@ -219,6 +208,20 @@ public class CampaignDashboardView extends AbstractDashboardView {
 						diagramComponent
 							.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption(), Objects.nonNull(dataProvider.getDistrict()));
 						diagramsLayout.addComponent(diagramComponent, index);
+						if (diagramComponent.isShowPercentages()) {
+							if (!diagramComponent.getNoPopulationDataLocations().isEmpty()) {
+
+								noPopulationLocationsLabel.setValue(
+									String.format(
+										I18nProperties.getString(Strings.errorNoPopulationDataLocations),
+										String.join(",", diagramComponent.getNoPopulationDataLocations())));
+								locationLayout.addComponent(noPopulationLocationsLabel);
+								locationLayout.setComponentAlignment(noPopulationLocationsLabel, Alignment.MIDDLE_CENTER);
+								diagramsLayout.addComponent(locationLayout);
+							}
+						} else {
+							locationLayout.removeComponent(noPopulationLocationsLabel);
+						}
 					});
 
 				diagramsLayout.addComponent(diagramComponent);

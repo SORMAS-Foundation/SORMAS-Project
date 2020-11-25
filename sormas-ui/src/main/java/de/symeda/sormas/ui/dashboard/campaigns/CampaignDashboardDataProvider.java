@@ -25,6 +25,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CampaignDashboardDataProvider {
 
@@ -37,6 +40,8 @@ public class CampaignDashboardDataProvider {
 
 	private final Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap = new HashMap<>();
 	private final Map<CampaignDashboardDiagramDto, Map<CampaignDashboardTotalsReference, Double>> campaignFormTotalsMap = new HashMap<>();
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void refreshDashboardData() {
 
@@ -65,15 +70,16 @@ public class CampaignDashboardDataProvider {
 				if (campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal() != null) {
 					Optional populationGroup = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getPopulationGroup())).findFirst();
 					Optional formIdOptional = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getFormId())).findFirst();
-					if (populationGroup.isPresent() && formIdOptional.isPresent()) {
-						Notification.show(String.format(I18nProperties.getString(Strings.errorFormIdPopulationAgeGroup)), ERROR_MESSAGE);
-					} else {
+					{
 						if (populationGroup.isPresent()) {
 							percentageDiagramData = FacadeProvider.getCampaignFormDataFacade()
 								.getDiagramDataByAgeGroup(
 									(CampaignDiagramSeries) populationGroup.get(),
 									campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries().get(0),
 									new CampaignDiagramCriteria(campaign, area, region, district));
+							if (formIdOptional.isPresent()) {
+								logger.warn(String.format(I18nProperties.getString(Strings.errorFormIdPopulationAgeGroup)));
+							}
 						} else {
 							percentageDiagramData = FacadeProvider.getCampaignFormDataFacade()
 								.getDiagramData(
@@ -92,46 +98,6 @@ public class CampaignDashboardDataProvider {
 				}
 			}
 		});
-	}
-
-	private void buildCampaignFormTotalsMap(CampaignDashboardDiagramDto campaignDashboardDiagramDto) {
-		List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
-			.getDiagramData(
-				campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries(),
-				new CampaignDiagramCriteria(campaign, area, region, district));
-		campaignFormDataMap.put(campaignDashboardDiagramDto, diagramData);
-		List<CampaignDiagramSeries> campaignSeriesTotal = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal();
-		List<CampaignDiagramDataDto> percentageDiagramData = null;
-		if (campaignSeriesTotal != null) {
-			if (Objects.nonNull(campaignSeriesTotal)) {
-				Optional populationGroup = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getPopulationGroup())).findFirst();
-				Optional formIdOptional = campaignSeriesTotal.stream().filter(e -> Objects.nonNull(e.getFormId())).findFirst();
-				if (populationGroup.isPresent()) {
-					if (formIdOptional.isPresent()) {
-						Notification.show(String.format(I18nProperties.getString(Strings.errorFormIdPopulationAgeGroup)), ERROR_MESSAGE);
-					} else {
-						percentageDiagramData = FacadeProvider.getCampaignFormDataFacade()
-							.getDiagramDataByAgeGroup(
-								(CampaignDiagramSeries) populationGroup.get(),
-								campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries().get(0),
-								new CampaignDiagramCriteria(campaign, area, region, district));
-					}
-				} else {
-					percentageDiagramData = FacadeProvider.getCampaignFormDataFacade()
-						.getDiagramData(
-							campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignSeriesTotal(),
-							new CampaignDiagramCriteria(campaign, area, region, district));
-				}
-				Map<CampaignDashboardTotalsReference, Double> percentageMap = new HashMap<>();
-				for (CampaignDiagramDataDto data : percentageDiagramData) {
-					CampaignDashboardTotalsReference totals = new CampaignDashboardTotalsReference(data.getGroupingKey(), data.getStack());
-					Double value = percentageMap.getOrDefault(totals, 0D);
-					value += data.getValueSum().doubleValue();
-					percentageMap.put(totals, value);
-				}
-				campaignFormTotalsMap.put(campaignDashboardDiagramDto, percentageMap);
-			}
-		}
 	}
 
 	private void createCampaignDashboardDiagramDefinitionsMap() {
