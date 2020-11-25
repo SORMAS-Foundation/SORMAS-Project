@@ -560,6 +560,9 @@ public interface Captions {
 	String Country_externalId = "Country.externalId";
 	String Country_isoCode = "Country.isoCode";
 	String Country_unoCode = "Country.unoCode";
+	String countryActiveCountries = "countryActiveCountries";
+	String countryAllCountries = "countryAllCountries";
+	String countryArchivedCountries = "countryArchivedCountries";
 	String creationDate = "creationDate";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
@@ -1376,6 +1379,7 @@ public interface Captions {
 	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
+	String sormasToSormasReturn = "sormasToSormasReturn";
 	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
 	String sormasToSormasShare = "sormasToSormasShare";
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";

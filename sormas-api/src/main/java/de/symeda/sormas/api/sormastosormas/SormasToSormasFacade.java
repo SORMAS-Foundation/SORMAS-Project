@@ -30,6 +30,14 @@ public interface SormasToSormasFacade {
 
 	void shareContacts(List<String> contactUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
+	void returnCase(String caseUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+
+	void returnContact(String contactUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+
+	void saveReturnedCase(SormasToSormasEncryptedDataDto sharedCase) throws SormasToSormasException, SormasToSormasValidationException;
+
+	void saveReturnedContact(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException, SormasToSormasValidationException;
+
 	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
 
 	ServerAccessDataReferenceDto getOrganizationRef(String id);

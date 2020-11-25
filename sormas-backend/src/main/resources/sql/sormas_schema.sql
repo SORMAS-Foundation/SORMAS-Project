@@ -5877,7 +5877,7 @@ UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirm
     DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
     DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;*/
 
-UPDATE epidata SET exposuredetailsknown = 'YES' WHERE (exposuredetailsknown IS NULL OR exposuredetailsknown != 'YES') AND (SELECT COUNT(id) FROM exposures WHERE exposures.epidata_id = epidata.id LIMIT 1) > 0;
+UPDATE epidata SET exposuredetailsknown = 'YES' FROM exposures WHERE (exposuredetailsknown IS NULL OR exposuredetailsknown != 'YES') AND exposures.epidata_id = epidata.id;
 
 UPDATE epidata SET changedate = now();
 
