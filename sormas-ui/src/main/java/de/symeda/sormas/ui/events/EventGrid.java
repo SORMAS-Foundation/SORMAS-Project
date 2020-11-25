@@ -55,9 +55,6 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	public static final String INFORMATION_SOURCE = Captions.Event_informationSource;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
-	//public static final String CONTACT_COUNT = Captions.Event_contactCount;
-
-	private boolean countContactsWithSourceCaseInEvent = true;
 
 	@SuppressWarnings("unchecked")
 	public <V extends View> EventGrid(EventCriteria criteria, Class<V> viewClass) {
@@ -96,24 +93,6 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
 		pendingTasksColumn.setSortable(false);
 
-		/*
-		 * Column<EventIndexDto, String> numberOfCasesColumn =
-		 * addColumn(event ->
-		 * String.valueOf((FacadeProvider.getEventParticipantFacade().getParticipantCasesCountByEvent(event.getUuid()))));
-		 * numberOfCasesColumn.setId(CASE_COUNT);
-		 * numberOfCasesColumn.setCaption(I18nProperties.getCaption(CASE_COUNT));
-		 * numberOfCasesColumn.setSortable(false);
-		 */
-		/*
-		 * Column<EventIndexDto, String> numberOfInvolvedContacts = addColumn(
-		 * event -> String.valueOf(
-		 * (FacadeProvider.getEventParticipantFacade().getParticipantCasesContactsCount(event.getUuid(),
-		 * countContactsWithSourceCaseInEvent))));
-		 * numberOfInvolvedContacts.setId(CONTACT_COUNT);
-		 * numberOfInvolvedContacts.setCaption(I18nProperties.getCaption(CONTACT_COUNT));
-		 * numberOfInvolvedContacts.setSortable(false);
-		 */
-
 		try {
 			setColumns(
 				EventIndexDto.UUID,
@@ -130,7 +109,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.PARTICIPANT_COUNT,
 				EventIndexDto.CASE_COUNT,
 				EventIndexDto.DEATH_COUNT,
-				EventIndexDto.CONTACT_COUNT);
+				EventIndexDto.CONTACT_COUNT,
+				EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -138,6 +118,12 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CASE_COUNT).setSortable(false);
 		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
+			.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
+
+		setCountContactsWithSourceCaseInEvent(true);
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
@@ -200,7 +186,13 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	}
 
 	public void setCountContactsWithSourceCaseInEvent(boolean value) {
-		countContactsWithSourceCaseInEvent = value;
+		if (value) {
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(false);
+			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(true);
+		} else {
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(true);
+			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(false);
+		}
 	}
 
 	public void reload() {

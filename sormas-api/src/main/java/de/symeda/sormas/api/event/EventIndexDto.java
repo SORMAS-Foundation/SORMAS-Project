@@ -37,6 +37,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String CASE_COUNT = "caseCount";
 	public static final String DEATH_COUNT = "deathCount";
 	public static final String CONTACT_COUNT = "contactCount"; // number of contacts who are also event participants
+	public static final String CONTACT_COUNT_SOURCE_IN_EVENT = "contactCountSourceInEvent"; // number of contacts who are also event participants, and whose source case is also part of the event
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
@@ -56,6 +57,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private long caseCount;
 	private long deathCount;
 	private long contactCount;
+	private long contactCountSourceInEvent;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -79,6 +81,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		Long caseCount,
 		Long deathCount,
 		Long contactCount,
+		Long contactCountSourceInEvent,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -125,6 +128,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.caseCount = caseCount;
 		this.deathCount = deathCount;
 		this.contactCount = contactCount;
+		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
 	public String getUuid() {
@@ -281,6 +285,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setContactCount(long contactCount) {
 		this.contactCount = contactCount;
+	}
+
+	public long getContactCountSourceInEvent() {
+		return contactCountSourceInEvent;
+	}
+
+	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
+		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
 	public EventReferenceDto toReference() {

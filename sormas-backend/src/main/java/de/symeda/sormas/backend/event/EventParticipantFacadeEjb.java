@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -46,9 +45,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
-import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
@@ -66,7 +63,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -569,58 +565,4 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return eventParticipantService.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
 	}
 
-	// returns the number of cases among the participants of event with uuid eventUuid
-	public long getParticipantCasesCountByEvent(String eventUuid) {
-		ListIterator<EventParticipantDto> iterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
-		long numberOfCases = 0;
-		while (iterator.hasNext()) {
-			if (iterator.next().getResultingCase() != null)
-				numberOfCases++;
-		}
-		return numberOfCases;
-	}
-
-	public long getParticipantCasesContactsCount(String eventUuid, boolean sourceCaseMustBeParticipant) {
-		long numberOfContacts = 0;
-		if (sourceCaseMustBeParticipant) {
-			// For each case among the participants, count all contacts who are also part of the same event
-			// for each participant (if participant is case ( for all contacts of participant ( if contact is also participant (count + 1))))
-			ListIterator<EventParticipantDto> caseIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
-
-			// iterate over all cases among participants
-			while (caseIterator.hasNext()) {
-				CaseReferenceDto caseref = caseIterator.next().getResultingCase();
-				if (caseref != null) {
-					ContactCriteria crit = new ContactCriteria();
-					crit.caze(caseref);
-					ListIterator<Contact> contactIterator = contactService.findBy(crit, null).listIterator();
-					// iterate over all contacts among cases
-					while (contactIterator.hasNext()) {
-						String contactPersonUuid = contactIterator.next().getPerson().getUuid();
-						ListIterator<EventParticipantDto> participantIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
-						// iterate over all participants, and compare to current contact person
-						while (participantIterator.hasNext()) {
-							if (participantIterator.next().getPerson().getUuid().equals(contactPersonUuid)) {
-								numberOfContacts++;
-							}
-						}
-					}
-				}
-			}
-		} else {
-			// for each contact ( if person is participant in this event (counter + 1))
-			ListIterator<Contact> contactIterator = contactService.getAll().listIterator(); // I wonder if this is performant enough
-			while (contactIterator.hasNext()) {
-				String contactPersonUuid = contactIterator.next().getPerson().getUuid();
-				ListIterator<EventParticipantDto> participantIterator = getAllActiveEventParticipantsByEvent(eventUuid).listIterator();
-				// iterate over all participants, and compare to current contact person
-				while (participantIterator.hasNext()) {
-					if (participantIterator.next().getPerson().getUuid().equals(contactPersonUuid)) {
-						numberOfContacts++;
-					}
-				}
-			}
-		}
-		return numberOfContacts;
-	}
 }
