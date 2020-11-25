@@ -220,24 +220,28 @@ public class EventParticipantsController {
 				RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
 				DistrictReferenceDto epEventDistrict = eventDto.getEventLocation().getDistrict();
 
+				//Responsible region of the event participant is filled and differs from user Region - warning about loosing full access rights to the event participant should be triggered
 				Boolean responsibleRegionDiffersFromUserRegion =
 					(userRegion != null && epResponsibleRegion != null && !userRegion.equals(epResponsibleRegion));
 
+				//Responsible district of the event participant is filled and differs from user District - warning about loosing full access rights to the event participant should be triggered
 				Boolean responsibleDistrictDiffersFromUserDistrict =
 					(userDistrict != null && epResponsibleDistrict != null && !userDistrict.equals(epResponsibleDistrict));
 
-				Boolean responsibleEmptyFallBackToEvent = (epResponsibleRegion == null
+				//both responsible region and district of the event participant are empty and the fall back towards event location: 
+				// event region or event district is different from user's region or district - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleFieldsEmptyAndEventOutsideJurisdiction = (epResponsibleRegion == null
 					&& epResponsibleDistrict == null
 					&& (userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict)));
 
-				Boolean onResponsibleDistrictNullCheckBothRegionAndDistrictAgainstUser =
-					((epResponsibleRegion != null && epResponsibleDistrict == null)
-						&& (userRegion != null && !userRegion.equals(epResponsibleRegion) || userDistrict != null));
+				//if only district is not filled and either responsible region or district are different from user region or district - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleDistrictIsEmpty = ((epResponsibleRegion != null && epResponsibleDistrict == null)
+					&& (userRegion != null && !userRegion.equals(epResponsibleRegion) || userDistrict != null));
 
 				if (responsibleRegionDiffersFromUserRegion
 					|| responsibleDistrictDiffersFromUserDistrict
-					|| responsibleEmptyFallBackToEvent
-					|| onResponsibleDistrictNullCheckBothRegionAndDistrictAgainstUser) {
+					|| responsibleFieldsEmptyAndEventOutsideJurisdiction
+					|| responsibleDistrictIsEmpty) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingEventParticipantResponsibleJurisdictionUpdated),
 						new Label(I18nProperties.getString(Strings.messageEventParticipantResponsibleJurisdictionUpdated)),
