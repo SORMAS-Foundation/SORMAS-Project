@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.bagexport;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -195,7 +196,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstCase.getWorkPlaceName(), isEmptyOrNullString());
 		assertThat(firstCase.getWorkPlaceStreet(), is("Work street"));
 		assertThat(firstCase.getWorkPlaceStreetNumber(), is("12W"));
-		assertThat(firstCase.getWorkPlaceLocation(), is("Work city"));
+		assertThat(firstCase.getWorkPlaceCity(), is("Work city"));
 		assertThat(firstCase.getWorkPlacePostalCode(), is("54321"));
 		assertThat(firstCase.getWorkPlaceCountry(), isEmptyOrNullString());
 
@@ -211,26 +212,28 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(dateFormat.format(firstCase.getLabReportDate()), is(dateFormat.format(testDate)));
 		assertThat(firstCase.getTestType(), is(PathogenTestType.RAPID_TEST));
 		assertThat(firstCase.getTestResult(), is(PathogenTestResultType.POSITIVE));
-		assertThat(firstCase.getContactConfirmedCaseYn(), isEmptyOrNullString());
-		assertThat(firstCase.getContactConfirmedCaseDate(), isEmptyOrNullString());
-		assertThat(firstCase.getContactConfirmedCaseFallIdIsm(), isEmptyOrNullString());
 
-		assertThat(firstCase.getInfectionLocationYn(), is(YesNoUnknown.YES));
+		assertThat(firstCase.getContactCaseLinkCaseYn(), is(nullValue()));
+		assertThat(firstCase.getContactCaseLinkCaseId(), is(nullValue()));
+		assertThat(firstCase.getContactCaseLinkCaseIdIsm(), is(nullValue()));
+		assertThat(firstCase.getContactCaseLinkContactDate(), is(nullValue()));
+
+		assertThat(firstCase.getExposureLocationYn(), is(YesNoUnknown.YES));
 		assertThat(firstCase.getActivityMappingYn(), isEmptyOrNullString());
-		assertThat(firstCase.getInfectionCountry(), isEmptyOrNullString());
-		assertThat(firstCase.getInfectionLocation(), isEmptyOrNullString());
-		assertThat(firstCase.getOtherInfectionLocation(), isEmptyOrNullString());
-		assertThat(firstCase.getInfectionLocationName(), isEmptyOrNullString());
-		assertThat(firstCase.getInfectionLocationStreet(), is("Exposure street"));
-		assertThat(firstCase.getInfectionLocationStreetNumber(), is("13E"));
-		assertThat(firstCase.getInfectionLocationCity(), is("Exposure city"));
-		assertThat(firstCase.getInfectionLocationPostalCode(), is("098765"));
-		assertThat(firstCase.getInfectionLocationCountry(), isEmptyOrNullString());
+		assertThat(firstCase.getExposureCountry(), isEmptyOrNullString());
+		assertThat(firstCase.getExposureLocationCity(), is("Exposure city"));
+		assertThat(firstCase.getExposureLocationTypeDetails(), isEmptyOrNullString());
+		assertThat(firstCase.getExposureLocationName(), isEmptyOrNullString());
+		assertThat(firstCase.getExposureLocationStreet(), is("Exposure street"));
+		assertThat(firstCase.getExposureLocationStreetNumber(), is("13E"));
+		assertThat(firstCase.getExposureLocationCity(), is("Exposure city"));
+		assertThat(firstCase.getExposureLocationPostalCode(), is("098765"));
+		assertThat(firstCase.getExposureLocationCountry(), isEmptyOrNullString());
 
 		assertThat(dateFormat.format(firstCase.getContactTracingContactDate()), is(dateFormat.format(contactTracingDate)));
 
-		assertThat(firstCase.getQuarantineType(), is(QuarantineType.OTHER));
-		assertThat(firstCase.getQuarantineDetails(), is("Test quarantine"));
+		assertThat(firstCase.getIsolationType(), is(QuarantineType.OTHER));
+		assertThat(firstCase.getIsolationTypeDetails(), is("Test quarantine"));
 
 		assertThat(firstCase.getIsolationLocationStreet(), is("Isolation street"));
 		assertThat(firstCase.getIsolationLocationStreetNumber(), is("14I"));
@@ -238,7 +241,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstCase.getIsolationLocationPostalCode(), is("76543"));
 		assertThat(firstCase.getIsolationLocationCountry(), isEmptyOrNullString());
 
-		assertThat(dateFormat.format(firstCase.getFollowUpUntilDate()), is(dateFormat.format(followupDate)));
+		assertThat(dateFormat.format(firstCase.getFollowUpStartDate()), is(dateFormat.format(quarantineFromDate)));
 		assertThat(dateFormat.format(firstCase.getEndOfIsolationDate()), is(dateFormat.format(quarantineToDate)));
 		assertThat(firstCase.getEndOfIsolationReason(), is(EndOfIsolationReason.OTHER));
 		assertThat(firstCase.getEndOfIsolationReasonDetails(), is("Test end of iso"));
@@ -297,7 +300,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 		Date quarantineFromDate = DateHelper.subtractDays(new Date(), 11);
 		Date quarantineToDate = DateHelper.subtractDays(new Date(), 1);
-		Date followupDate = DateHelper.addDays(new Date(), 10);
 
 		ContactDto contactDto = creator.createContact(
 			user.toReference(),
@@ -316,7 +318,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 				c.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 				c.setOverwriteFollowUpUntil(true);
-				c.setFollowUpUntil(followupDate);
+				c.setFollowUpUntil(quarantineFromDate);
 				c.setQuarantineTo(quarantineToDate);
 				c.setEndOfQuarantineReason(EndOfQuarantineReason.OTHER);
 				c.setEndOfQuarantineReasonDetails("Test end of iso");
@@ -357,7 +359,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstContact.getHomeAddressCountry(), isEmptyOrNullString());
 		assertThat(firstContact.getPhoneNumber(), is("12345678"));
 		assertThat(firstContact.getMobileNumber(), isEmptyOrNullString());
-		assertThat(firstContact.getEmailAddress(), is("test@email.com"));
 		assertThat(firstContact.getSex(), is(Sex.MALE));
 
 		assertThat(firstContact.getBirthDate().getBirthdateYYYY(), is(1978));
@@ -367,18 +368,14 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstContact.getOccupationType(), is(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES));
 
 		assertThat(firstContact.getWorkPlaceName(), isEmptyOrNullString());
-		assertThat(firstContact.getWorkPlaceStreet(), is("Work street"));
-		assertThat(firstContact.getWorkPlaceStreetNumber(), is("12W"));
-		assertThat(firstContact.getWorkPlaceLocation(), is("Work city"));
 		assertThat(firstContact.getWorkPlacePostalCode(), is("54321"));
 		assertThat(firstContact.getWorkPlaceCountry(), isEmptyOrNullString());
+		assertThat(firstContact.getWorkPlaceName(), isEmptyOrNullString());
 
 		assertThat(dateFormat.format(firstContact.getSampleDate()), is(dateFormat.format(sampleDate)));
-		assertThat(dateFormat.format(firstContact.getLabReportDate()), is(dateFormat.format(testDate)));
 		assertThat(firstContact.getTestType(), is(PathogenTestType.RAPID_TEST));
 		assertThat(firstContact.getTestResult(), is(PathogenTestResultType.POSITIVE));
 
-		assertThat(firstContact.getExposureLocationYn(), is(YesNoUnknown.YES));
 		assertThat(firstContact.getOtherExposureLocation(), isEmptyOrNullString());
 		assertThat(firstContact.getExposureLocationName(), isEmptyOrNullString());
 		assertThat(firstContact.getExposureLocationStreet(), is("Exposure street"));
@@ -387,16 +384,8 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstContact.getExposureLocationPostalCode(), is("098765"));
 		assertThat(firstContact.getExposureLocationCountry(), isEmptyOrNullString());
 
-		assertThat(firstContact.getQuarantineType(), is(QuarantineType.OTHER));
-		assertThat(firstContact.getQuarantineDetails(), is("Test quarantine"));
 
-		assertThat(firstContact.getQuarantineLocationStreet(), is("Isolation street"));
-		assertThat(firstContact.getQuarantineLocationStreetNumber(), is("14I"));
-		assertThat(firstContact.getQuarantineLocationCity(), is("Isolation city"));
-		assertThat(firstContact.getQuarantineLocationPostalCode(), is("76543"));
-		assertThat(firstContact.getQuarantineLocationCountry(), isEmptyOrNullString());
-
-		assertThat(dateFormat.format(firstContact.getFollowUpUntilDate()), is(dateFormat.format(followupDate)));
+		assertThat(dateFormat.format(firstContact.getStartOfQuarantineDate()), is(dateFormat.format(quarantineFromDate)));
 		assertThat(dateFormat.format(firstContact.getEndOfQuarantineDate()), is(dateFormat.format(quarantineToDate)));
 		assertThat(firstContact.getEndOfQuarantineReason(), is(EndOfQuarantineReason.OTHER));
 		assertThat(firstContact.getEndOfQuarantineReasonDetails(), is("Test end of iso"));

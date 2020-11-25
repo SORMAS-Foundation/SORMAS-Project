@@ -133,6 +133,7 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -435,6 +436,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasFacadeEjbLocal getSormasToSormasFacade() {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasShareInfoService getSormasToSormasShareInfoService() {
+		return getBean(SormasToSormasShareInfoService.class);
 	}
 
 	public SormasToSormasEncryptionService getSormasToSormasEncryptionService() {

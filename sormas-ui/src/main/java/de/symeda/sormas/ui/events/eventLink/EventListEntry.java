@@ -71,15 +71,16 @@ public class EventListEntry extends HorizontalLayout {
 
 			Label eventTitleLabel = new Label(DataHelper.toStringNullable(event.getEventTitle()));
 			CssStyles.style(eventTitleLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			eventTitleLabel.setWidth(100, Unit.PERCENTAGE);
 
 			topLeftLayout.addComponent(eventTitleLabel);
 
-			Label materialLabel = new Label(DataHelper.toStringNullable(event.getEventLocation()));
-			CssStyles.style(materialLabel);
-			topLeftLayout.addComponent(materialLabel);
+			Label locationLabel = new Label(DataHelper.toStringNullable(event.getEventLocation()));
+			locationLabel.setWidth(100, Unit.PERCENTAGE);
+			topLeftLayout.addComponent(locationLabel);
 
 			Language userLanguage = I18nProperties.getUserLanguage();
-			String eventDate = null;
+			String eventDate;
 			if (event.getEndDate() == null) {
 				eventDate = DateHelper.formatLocalDate(event.getStartDate(), userLanguage);
 			} else {

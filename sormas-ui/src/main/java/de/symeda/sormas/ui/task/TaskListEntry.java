@@ -65,8 +65,21 @@ public class TaskListEntry extends HorizontalLayout {
 
 		Label taskTypeLabel = new Label(DataHelper.toStringNullable(task.getTaskType()));
 		CssStyles.style(taskTypeLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		taskTypeLabel.setWidth(50, Unit.PERCENTAGE);
+		taskTypeLabel.setWidth(100, Unit.PERCENTAGE);
 		topLeftLayout.addComponent(taskTypeLabel);
+
+		Label statusLabel = new Label(DataHelper.toStringNullable(task.getTaskStatus()));
+		CssStyles.style(statusLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+		topLeftLayout.addComponent(statusLabel);
+
+		Label priorityLabel = new Label(
+			DataHelper.toStringNullable(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.PRIORITY) + ": " + task.getPriority()));
+		if (TaskPriority.HIGH == task.getPriority()) {
+			priorityLabel.addStyleName(CssStyles.LABEL_IMPORTANT);
+		} else if (TaskPriority.NORMAL == task.getPriority()) {
+			priorityLabel.addStyleName(CssStyles.LABEL_NEUTRAL);
+		}
+		topLeftLayout.addComponent(priorityLabel);
 
 		Label suggestedStartLabel = new Label(
 			I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START) + ": "
@@ -83,25 +96,14 @@ public class TaskListEntry extends HorizontalLayout {
 		VerticalLayout topRightLayout = new VerticalLayout();
 
 		topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
-		topRightLayout.setMargin(false);
-		topRightLayout.setSpacing(false);
-
-		Label statusLabel = new Label(DataHelper.toStringNullable(task.getTaskStatus()));
-		CssStyles.style(statusLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		topRightLayout.addComponent(statusLabel);
-
-		Label priorityLabel = new Label(
-			DataHelper.toStringNullable(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.PRIORITY) + ": " + task.getPriority()));
-		if (TaskPriority.HIGH == task.getPriority()) {
-			priorityLabel.addStyleName(CssStyles.LABEL_IMPORTANT);
-		} else if (TaskPriority.NORMAL == task.getPriority()) {
-			priorityLabel.addStyleName(CssStyles.LABEL_NEUTRAL);
-		}
-		topRightLayout.addComponent(priorityLabel);
+		/*
+		 * topRightLayout.setMargin(false);
+		 * topRightLayout.setSpacing(false);
+		 */
 
 		Label userLabel =
 			new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.ASSIGNEE_USER) + ": " + task.getAssigneeUser().getCaption());
-		topRightLayout.addComponent(userLabel);
+		topLeftLayout.addComponent(userLabel);
 
 		topLayout.addComponent(topRightLayout);
 		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
@@ -143,7 +145,7 @@ public class TaskListEntry extends HorizontalLayout {
 				CssStyles.BUTTON_COMPACT);
 
 			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
+			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
 			setExpandRatio(editButton, 0);
 		}
 

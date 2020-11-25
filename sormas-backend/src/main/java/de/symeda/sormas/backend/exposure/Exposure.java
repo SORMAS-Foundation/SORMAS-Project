@@ -568,6 +568,7 @@ public class Exposure extends AbstractDomainObject {
 		this.prophylaxisDate = prophylaxisDate;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getRiskArea() {
 		return riskArea;
 	}

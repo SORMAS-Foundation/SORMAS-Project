@@ -17,7 +17,9 @@ package de.symeda.sormas.ui.sormastosormas;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -41,10 +43,13 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private final boolean forCase;
 
-	public SormasToSormasOptionsForm(boolean isForCase) {
+	private List<String> excludedOrganizationIds;
+
+	public SormasToSormasOptionsForm(boolean isForCase, List<String> excludedOrganizationIds) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
 		this.forCase = isForCase;
+		this.excludedOrganizationIds = excludedOrganizationIds == null ? Collections.emptyList() : excludedOrganizationIds;
 
 		addFields();
 
@@ -62,7 +67,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		ComboBox organizationField = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
 		organizationField.setRequired(true);
 		List<ServerAccessDataReferenceDto> organizations = FacadeProvider.getSormasToSormasFacade().getAvailableOrganizations();
-		organizationField.addItems(organizations);
+		organizationField.addItems(organizations.stream().filter(o -> !excludedOrganizationIds.contains(o.getUuid())).collect(Collectors.toList()));
 
 		if (forCase) {
 			addField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS);
@@ -79,5 +84,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
 		comment.setRows(3);
+	}
+
+	public void disableOrganizationAndOwnership() {
+		getField(SormasToSormasOptionsDto.ORGANIZATION).setEnabled(false);
+		getField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP).setEnabled(false);
 	}
 }

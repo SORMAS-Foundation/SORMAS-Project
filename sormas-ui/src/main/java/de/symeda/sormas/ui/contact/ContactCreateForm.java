@@ -488,6 +488,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.PHONE,
 			PersonDto.EMAIL_ADDRESS);
+
+		setRequired(false, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 	}
 
 	public void setDiseaseReadOnly() {
