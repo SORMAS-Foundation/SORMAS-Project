@@ -37,7 +37,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -294,17 +293,17 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				null,
 				CHECKBOX_STYLE));
 
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
-		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
-			addField(
-				moreFiltersContainer,
-				CheckBox.class,
-				FieldConfiguration.withCaptionAndStyle(
-					ContactCriteria.INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS,
-					I18nProperties.getCaption(Captions.contactInludeContactsFromOtherJurisdictions),
-					I18nProperties.getDescription(Descriptions.descContactIncludeContactsFromOtherJurisdictions),
-					CHECKBOX_STYLE));
-		}
+//		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+//		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
+//			addField(
+//				moreFiltersContainer,
+//				CheckBox.class,
+//				FieldConfiguration.withCaptionAndStyle(
+//					ContactCriteria.INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS,
+//					I18nProperties.getCaption(Captions.contactInludeContactsFromOtherJurisdictions),
+//					I18nProperties.getDescription(Descriptions.descContactIncludeContactsFromOtherJurisdictions),
+//					CHECKBOX_STYLE));
+//		}
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
