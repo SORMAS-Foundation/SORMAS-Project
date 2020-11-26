@@ -225,6 +225,7 @@ public class EventFacadeEjb implements EventFacade {
 		participantCount.select(cb.count(eventParticipantRoot));
 		participantCount.where(assignedToEvent, notDeleted);
 
+		// number of cases among event participants
 		Subquery<Long> caseCount = cq.subquery(Long.class);
 		eventParticipantRoot = caseCount.from(EventParticipant.class);
 		assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
@@ -233,7 +234,7 @@ public class EventFacadeEjb implements EventFacade {
 		caseCount.select(cb.count(eventParticipantRoot));
 		caseCount.where(assignedToEvent, notDeleted, isCase);
 
-		// there must be a way to prevent all these duplicate lines!
+		// number of fatalities among event participant cases
 		Subquery<Long> deathsCount = cq.subquery(Long.class);
 		eventParticipantRoot = deathsCount.from(EventParticipant.class);
 		Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
@@ -244,6 +245,7 @@ public class EventFacadeEjb implements EventFacade {
 		deathsCount.select(cb.count(eventParticipantRoot));
 		deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
 
+		// number of contactst who are also event participants
 		// for each contact ( if person is participant in this event (counter + 1))
 		Subquery<Long> contactCount = cq.subquery(Long.class);
 		eventParticipantRoot = contactCount.from(EventParticipant.class);
@@ -255,9 +257,10 @@ public class EventFacadeEjb implements EventFacade {
 		contactCount.select(cb.count(eventParticipantRoot));
 		contactCount.where(assignedToEvent, notDeleted, contactNotDeleted);
 
+		// number of contacts, who are also participants, and whose source case is also a participant
 		// for each participant (if participant is case ( for all contacts of participant ( if contact is also participant (count + 1))))
-		Subquery<Long> contactCount2 = cq.subquery(Long.class);
-		Root<Contact> contactRoot = contactCount2.from(Contact.class);
+		Subquery<Long> contactsWithSourceInEvent = cq.subquery(Long.class);
+		Root<Contact> contactRoot = contactsWithSourceInEvent.from(Contact.class);
 		Join<Contact, Person> personJoin2 = contactRoot.join(Contact.PERSON, JoinType.INNER);
 		Join<Person, EventParticipant> participantJoin = personJoin2.join(Person.EVENT_PARTICIPANTS, JoinType.INNER);
 		Join<Contact, Case> sourceCaseJoin = contactRoot.join(Contact.CAZE, JoinType.INNER);
@@ -266,8 +269,8 @@ public class EventFacadeEjb implements EventFacade {
 		Predicate participantNotDeleted = cb.isFalse(participantJoin.get(EventParticipant.DELETED));
 		assignedToEvent = cb.equal(participantJoin.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
 		Predicate sourceInEvent = cb.equal(sourceCaseParticipantJoin.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
-		contactCount2.select(cb.count(contactRoot));
-		contactCount2.where(notDeleted, participantNotDeleted, assignedToEvent, sourceInEvent);
+		contactsWithSourceInEvent.select(cb.count(contactRoot));
+		contactsWithSourceInEvent.where(notDeleted, participantNotDeleted, assignedToEvent, sourceInEvent);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -277,7 +280,7 @@ public class EventFacadeEjb implements EventFacade {
 			caseCount,
 			deathsCount,
 			contactCount,
-			contactCount2,
+			contactsWithSourceInEvent,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -379,6 +382,7 @@ public class EventFacadeEjb implements EventFacade {
 		participantCount.select(cb.count(eventParticipantRoot));
 		participantCount.where(assignedToEvent, notDeleted);
 
+		// number of cases among event participants
 		Subquery<Long> caseCount = cq.subquery(Long.class);
 		eventParticipantRoot = caseCount.from(EventParticipant.class);
 		assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
@@ -387,7 +391,7 @@ public class EventFacadeEjb implements EventFacade {
 		caseCount.select(cb.count(eventParticipantRoot));
 		caseCount.where(assignedToEvent, notDeleted, isCase);
 
-		// there must be a way to prevent all these duplicate lines!
+		// number of fatalities among event participant cases
 		Subquery<Long> deathsCount = cq.subquery(Long.class);
 		eventParticipantRoot = deathsCount.from(EventParticipant.class);
 		Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
@@ -398,6 +402,7 @@ public class EventFacadeEjb implements EventFacade {
 		deathsCount.select(cb.count(eventParticipantRoot));
 		deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
 
+		// number of contactst who are also event participants
 		// for each contact ( if person is participant in this event (counter + 1))
 		Subquery<Long> contactCount = cq.subquery(Long.class);
 		eventParticipantRoot = contactCount.from(EventParticipant.class);
@@ -409,9 +414,10 @@ public class EventFacadeEjb implements EventFacade {
 		contactCount.select(cb.count(eventParticipantRoot));
 		contactCount.where(assignedToEvent, notDeleted, contactNotDeleted);
 
+		// number of contacts, who are also participants, and whose source case is also a participant
 		// for each participant (if participant is case ( for all contacts of participant ( if contact is also participant (count + 1))))
-		Subquery<Long> contactCount2 = cq.subquery(Long.class);
-		Root<Contact> contactRoot = contactCount2.from(Contact.class);
+		Subquery<Long> contactsWithSourceInEvent = cq.subquery(Long.class);
+		Root<Contact> contactRoot = contactsWithSourceInEvent.from(Contact.class);
 		Join<Contact, Person> personJoin2 = contactRoot.join(Contact.PERSON, JoinType.INNER);
 		Join<Person, EventParticipant> participantJoin = personJoin2.join(Person.EVENT_PARTICIPANTS, JoinType.INNER);
 		Join<Contact, Case> sourceCaseJoin = contactRoot.join(Contact.CAZE, JoinType.INNER);
@@ -420,8 +426,8 @@ public class EventFacadeEjb implements EventFacade {
 		Predicate participantNotDeleted = cb.isFalse(participantJoin.get(EventParticipant.DELETED));
 		assignedToEvent = cb.equal(participantJoin.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
 		Predicate sourceInEvent = cb.equal(sourceCaseParticipantJoin.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
-		contactCount2.select(cb.count(contactRoot));
-		contactCount2.where(notDeleted, participantNotDeleted, assignedToEvent, sourceInEvent);
+		contactsWithSourceInEvent.select(cb.count(contactRoot));
+		contactsWithSourceInEvent.where(notDeleted, participantNotDeleted, assignedToEvent, sourceInEvent);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -432,7 +438,7 @@ public class EventFacadeEjb implements EventFacade {
 			caseCount,
 			deathsCount,
 			contactCount,
-			contactCount2,
+			contactsWithSourceInEvent,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),

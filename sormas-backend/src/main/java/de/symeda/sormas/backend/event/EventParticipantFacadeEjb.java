@@ -63,7 +63,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -94,8 +93,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private CaseService caseService;
 	@EJB
 	private UserService userService;
-	@EJB
-	private ContactService contactService;
 	@EJB
 	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 
@@ -153,7 +150,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		List<String> deletedEventParticipants = eventParticipantService.getDeletedUuidsSince(since, user);
 		return deletedEventParticipants;
-	}
+	};
 
 	@Override
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
@@ -398,6 +395,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 				if (samples != null) {
 					Optional.ofNullable(samples.get(exportDto.getId())).ifPresent(eventParticipantSamples -> {
+						int count = 0;
 						for (Sample sample : eventParticipantSamples) {
 							EmbeddedSampleExportDto sampleDto = new EmbeddedSampleExportDto(
 								sample.getSampleDateTime(),
@@ -511,7 +509,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 	}
 
-	static public EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
+	public static EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
 
 		if (entity == null) {
 			return null;
@@ -522,7 +520,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return new EventParticipantReferenceDto(entity.getUuid(), person.getFirstName(), person.getFirstName());
 	}
 
-	static public EventParticipantDto toDto(EventParticipant source) {
+	public static EventParticipantDto toDto(EventParticipant source) {
 
 		if (source == null) {
 			return null;
