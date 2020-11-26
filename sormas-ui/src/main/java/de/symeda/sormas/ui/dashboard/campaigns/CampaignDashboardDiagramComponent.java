@@ -15,9 +15,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.Label;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.ui.Notification;
@@ -195,13 +192,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			if (showPercentages) {
 				if (isCommunityGrouping) {
 					fieldName = I18nProperties.getString(Strings.populationDataByCommunity);
-				} /*
-					 * else if (!noPopulationLocations.isEmpty()) {
-					 * fieldName = fieldName
-					 * + ("<br/>" + String
-					 * .format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(",", noPopulationLocations)));
-					 * }
-					 */
+				}
 			}
 
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
