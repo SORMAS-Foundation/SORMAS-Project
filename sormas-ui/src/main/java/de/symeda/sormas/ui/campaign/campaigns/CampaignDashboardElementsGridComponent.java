@@ -1,7 +1,9 @@
 package de.symeda.sormas.ui.campaign.campaigns;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,7 +16,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -31,19 +35,29 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 	protected Binder<CampaignDashboardElement> addColumnsBinder(List<CampaignDashboardElement> allElements) {
 		Binder<CampaignDashboardElement> binder = new Binder<>();
 
-		final List<String> existingDiagramIds = allElements.stream()
-			.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getDiagramId())
-			.filter(s -> StringUtils.isNotEmpty(s))
-			.distinct()
-			.collect(Collectors.toList());
-		final ComboBox<String> diagramIdCombo = new ComboBox<>(Captions.campaignDashboardChart, existingDiagramIds);
-		diagramIdCombo.setEmptySelectionAllowed(false);
-		final Binder.Binding<CampaignDashboardElement, String> diagramIdBind =
-			binder.bind(diagramIdCombo, CampaignDashboardElement::getDiagramId, CampaignDashboardElement::setDiagramId);
+		final List<CampaignDiagramDefinitionDto> campaignDiagramDefinitionDtos = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
+
+		ComboBox<DiagramIdCaption> diagramIdCaptionCombo = new ComboBox<>(
+			Captions.campaignDashboardChart,
+			campaignDiagramDefinitionDtos.stream()
+				.map(cdd -> new DiagramIdCaption(cdd.getDiagramId(), cdd.getDiagramCaption()))
+				.collect(Collectors.toList()));
+		diagramIdCaptionCombo.setEmptySelectionAllowed(false);
+
+		final Map<String, String> diagramIdCaptionMap = campaignDiagramDefinitionDtos.stream()
+			.collect(Collectors.toMap(CampaignDiagramDefinitionDto::getDiagramId, CampaignDiagramDefinitionDto::getDiagramCaption));
+
+		Binder.Binding<CampaignDashboardElement, DiagramIdCaption> diagramIdCaptionBind = binder.bind(
+			diagramIdCaptionCombo,
+			cde -> new DiagramIdCaption(cde.getDiagramId(), diagramIdCaptionMap.get(cde.getDiagramId())),
+			(campaignDashboardElement, diagramIdCaption) -> {
+				campaignDashboardElement.setDiagramId(diagramIdCaption.getDiagramId());
+			});
+
 		final Grid.Column<CampaignDashboardElement, String> diagramIdColumn =
-			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getDiagramId())
+			grid.addColumn(campaignDashboardElement -> diagramIdCaptionMap.get(campaignDashboardElement.getDiagramId()))
 				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardChart));
-		diagramIdColumn.setEditorBinding(diagramIdBind);
+		diagramIdColumn.setEditorBinding(diagramIdCaptionBind);
 
 		final List<String> existingTabIds = allElements.stream()
 			.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getTabId())
@@ -62,6 +76,24 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getTabId())
 				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardTabName));
 		tabIdColumn.setEditorBinding(tabIdBind);
+
+		final List<String> existingSubTabIds = allElements.stream()
+			.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getSubTabId())
+			.filter(s -> StringUtils.isNotEmpty(s))
+			.distinct()
+			.collect(Collectors.toList());
+		final ComboBox<String> subTabIdCombo = new ComboBox<>(Captions.campaignDashboardSubTabName, existingSubTabIds);
+
+		subTabIdCombo.setEmptySelectionAllowed(true);
+		subTabIdCombo.setTextInputAllowed(true);
+		subTabIdCombo.setNewItemProvider((ComboBox.NewItemProvider<String>) s -> Optional.of(s));
+
+		final Binder.Binding<CampaignDashboardElement, String> subTabIdBind =
+			binder.bind(subTabIdCombo, CampaignDashboardElement::getSubTabId, CampaignDashboardElement::setSubTabId);
+		final Grid.Column<CampaignDashboardElement, String> subTabIdColumn =
+			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getSubTabId())
+				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardSubTabName));
+		subTabIdColumn.setEditorBinding(subTabIdBind);
 
 		TextField width = new TextField(Captions.campaignDashboardChartWidth);
 		Binder.Binding<CampaignDashboardElement, String> widthBind = binder.forField(width)
@@ -122,4 +154,37 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 		final ArrayList<CampaignDashboardElement> gridItems = getItems();
 		gridItems.forEach(campaignDashboardElement -> campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement)));
 	}
+
+	public static class DiagramIdCaption implements Serializable {
+
+		private String diagramId;
+		private String diagramCaption;
+
+		public DiagramIdCaption(String diagramId, String diagramCaption) {
+			this.diagramId = diagramId;
+			this.diagramCaption = diagramCaption;
+		}
+
+		public String getDiagramId() {
+			return diagramId;
+		}
+
+		public void setDiagramId(String diagramId) {
+			this.diagramId = diagramId;
+		}
+
+		public String getDiagramCaption() {
+			return diagramCaption;
+		}
+
+		public void setDiagramCaption(String diagramCaption) {
+			this.diagramCaption = diagramCaption;
+		}
+
+		@Override
+		public String toString() {
+			return this.diagramCaption;
+		}
+	}
+
 }

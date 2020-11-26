@@ -25,6 +25,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -67,6 +69,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private UserRole reportingUserRole;
 	private Disease disease;
 	private CaseReferenceDto caze;
+	private CaseReferenceDto resultingCase;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -112,6 +115,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String eventUuid;
 	private Boolean includeContactsFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsSharingEventWithSourceCase;
+	private EventParticipantReferenceDto eventParticipant;
+	private EventReferenceDto onlyContactsWithSourceCaseInGivenEvent;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -141,6 +146,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria caze(CaseReferenceDto caze) {
 		this.caze = caze;
+		return this;
+	}
+
+	public CaseReferenceDto getResultingCase() {
+		return resultingCase;
+	}
+
+	public ContactCriteria resultingCase(CaseReferenceDto resultingCase) {
+		this.resultingCase = resultingCase;
 		return this;
 	}
 
@@ -530,5 +544,33 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setIncludeContactsFromOtherJurisdictions(Boolean includeContactsFromOtherJurisdictions) {
 		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
+	}
+
+	public void setEventParticipant(EventParticipantReferenceDto eventParticipant) {
+		this.eventParticipant = eventParticipant;
+	}
+
+	@IgnoreForUrl
+	public EventParticipantReferenceDto getEventParticipant() {
+		return eventParticipant;
+	}
+
+	public ContactCriteria eventParticipant(EventParticipantReferenceDto eventParticipant) {
+		this.eventParticipant = eventParticipant;
+		return this;
+	}
+
+	public void setOnlyContactsWithSourceCaseInGivenEvent(EventReferenceDto onlyContactsWithSourceCaseInGivenEvent) {
+		this.onlyContactsWithSourceCaseInGivenEvent = onlyContactsWithSourceCaseInGivenEvent;
+	}
+
+	@IgnoreForUrl
+	public EventReferenceDto getOnlyContactsWithSourceCaseInGivenEvent() {
+		return onlyContactsWithSourceCaseInGivenEvent;
+	}
+
+	public ContactCriteria onlyContactsWithSourceCaseInGivenEvent(EventReferenceDto onlyContactsWithSourceCaseInGivenEvent) {
+		this.onlyContactsWithSourceCaseInGivenEvent = onlyContactsWithSourceCaseInGivenEvent;
+		return this;
 	}
 }

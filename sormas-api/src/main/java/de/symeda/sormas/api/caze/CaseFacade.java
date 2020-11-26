@@ -87,6 +87,8 @@ public interface CaseFacade {
 
 	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
+	Long countCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
+
 	Map<CaseClassification, Long> getCaseCountPerClassification(
 		CaseCriteria caseCriteria,
 		boolean excludeSharedCases,
@@ -149,7 +151,7 @@ public interface CaseFacade {
 
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
 
-	Boolean isCaseEditAllowed(String caseUuid);
+	boolean isCaseEditAllowed(String caseUuid);
 
 	boolean exists(String uuid);
 

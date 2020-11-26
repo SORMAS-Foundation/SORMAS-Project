@@ -29,6 +29,10 @@
   	background-color: $v-focus-light-color;
   	padding-top: 16px;
   }
+
+  .statistics-sublayout {
+  	background-color: $v-focus-light-color;
+  }
  
   .cfr-info-button {
     margin-top: -3px;	
@@ -49,4 +53,30 @@
   .background-critical {
   	background-color: #DE5555;
   }
+
+	.map-container {
+		position: relative;
+	}
+
+	.map-component {
+		z-index: 1;
+	}
+
+	.map-overlay, .map-overlay-background {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.map-overlay-background {
+		background-color: #222;
+		opacity: 0.6;
+		z-index: 2;
+	}
+
+	.map-overlay {
+		z-index: 3;
+	}
 }

@@ -21,7 +21,6 @@ import java.util.List;
 import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.person.Person;
 
 /**

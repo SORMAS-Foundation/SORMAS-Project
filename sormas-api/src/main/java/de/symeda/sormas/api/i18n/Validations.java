@@ -14,8 +14,11 @@ public interface Validations {
 	String afterDateSoft = "afterDateSoft";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
+	String campaignDashboardChartIdDoesNotExist = "campaignDashboardChartIdDoesNotExist";
 	String campaignDashboardChartPercentage = "campaignDashboardChartPercentage";
 	String campaignDashboardChartValueNull = "campaignDashboardChartValueNull";
+	String campaignDashboardDataFormValueDuplicate = "campaignDashboardDataFormValueDuplicate";
+	String campaignDashboardDataFormValueNull = "campaignDashboardDataFormValueNull";
 	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
@@ -38,9 +41,11 @@ public interface Validations {
 	String exportNoNameSpecified = "exportNoNameSpecified";
 	String externalJournalPersonValidationBirthdate = "externalJournalPersonValidationBirthdate";
 	String externalJournalPersonValidationEmail = "externalJournalPersonValidationEmail";
+	String externalJournalPersonValidationEmailTaken = "externalJournalPersonValidationEmailTaken";
 	String externalJournalPersonValidationError = "externalJournalPersonValidationError";
 	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
 	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
+	String externalJournalPersonValidationPhoneTaken = "externalJournalPersonValidationPhoneTaken";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";
@@ -49,6 +54,8 @@ public interface Validations {
 	String importCasesUnexpectedError = "importCasesUnexpectedError";
 	String importCommunityAlreadyExists = "importCommunityAlreadyExists";
 	String importCommunityNotUnique = "importCommunityNotUnique";
+	String importCountryAlreadyExists = "importCountryAlreadyExists";
+	String importCountryEmptyIso = "importCountryEmptyIso";
 	String importDistrictAlreadyExists = "importDistrictAlreadyExists";
 	String importDistrictNotUnique = "importDistrictNotUnique";
 	String importEntryCommunityNotInUsersJurisdiction = "importEntryCommunityNotInUsersJurisdiction";
@@ -92,6 +99,8 @@ public interface Validations {
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
+	String sormasToSormasReturnCaseNotExists = "sormasToSormasReturnCaseNotExists";
+	String sormasToSormasReturnContactNotExists = "sormasToSormasReturnContactNotExists";
 	String sormasToSormasSampleExists = "sormasToSormasSampleExists";
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";

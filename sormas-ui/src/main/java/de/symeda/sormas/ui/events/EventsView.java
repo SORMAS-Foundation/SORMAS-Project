@@ -43,6 +43,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionStatus;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
@@ -116,6 +117,7 @@ public class EventsView extends AbstractView {
 		} else {
 			grid = new EventActionsGrid(criteria, getClass());
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_actions));
 		}
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -229,7 +231,7 @@ public class EventsView extends AbstractView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.eventNewEvent,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getEventController().create(null),
+				e -> ControllerProvider.getEventController().create((CaseReferenceDto) null),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

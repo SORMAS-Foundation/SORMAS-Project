@@ -46,7 +46,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String MUST_HAVE_NO_GEO_COORDINATES = "mustHaveNoGeoCoordinates";
 	public static final String MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY = "mustBePortHealthCaseWithoutFacility";
 	public static final String MUST_HAVE_CASE_MANAGEMENT_DATA = "mustHaveCaseManagementData";
-	public static final String EXCLUDE_SHARED_CASES = "excludeSharedCases";
 	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
 	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
@@ -102,7 +101,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private EntityRelevanceStatus relevanceStatus;
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
-	public Boolean excludeSharedCases;
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
@@ -470,14 +468,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
-	}
-
-	public Boolean getExcludeSharedCases() {
-		return excludeSharedCases;
-	}
-
-	public void setExcludeSharedCases(Boolean excludeSharedCases) {
-		this.excludeSharedCases = excludeSharedCases;
 	}
 
 	public Integer getBirthdateYYYY() {

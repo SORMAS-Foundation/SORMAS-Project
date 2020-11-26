@@ -4,18 +4,26 @@
 /.settings/
 /.classpath
 .svn/
-.DS_Store*
+
 .project
 .idea
-/settings/
+
+.classpath
 
 .gradle
-gradle*
-.project
 
-# Exclude folder content (except .gitkeep)
-Reports/*
-!Reports/.gitkeep
+bin
 
-Checkpoints/*
-!Checkpoints/.gitkeep
+Reports
+
+Libs
+
+output
+
+!output/.gitkeep
+build
+
+Checkpoints
+
+/settings/internal/com.kms.katalon.composer.testcase.properties
+

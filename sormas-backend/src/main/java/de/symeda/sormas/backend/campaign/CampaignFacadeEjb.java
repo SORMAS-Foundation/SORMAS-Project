@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -39,7 +42,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
+import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -65,9 +68,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
-	private CampaignFacadeEjbLocal campaignFacade;
-	@EJB
-	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
+	private CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal campaignDiagramDefinitionFacade;
 
 	@Override
 	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -194,22 +195,86 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					.collect(Collectors.toSet()));
 		}
 		target.setDashboardElements(source.getCampaignDashboardElements());
-
 		return target;
 	}
 
-	private void validate(CampaignDto campaignDto) {
+	public void validate(CampaignReferenceDto campaignReferenceDto) {
+		validate(getByUuid(campaignReferenceDto.getUuid()));
+	}
+
+	protected void validate(CampaignDto campaignDto) {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
+
+			final Map<String, Boolean> oneSubTabIsNotNullOrEmptyMap = new HashMap<>();
+
 			for (CampaignDashboardElement cde : campaignDashboardElements) {
-				if (cde.getDiagramId() == null
-					|| cde.getTabId() == null
-					|| cde.getWidth() == null
-					|| cde.getHeight() == null
-					|| cde.getOrder() == null) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignDashboardChartValueNull));
+				final String diagramId = cde.getDiagramId();
+				if (diagramId == null) {
+					throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(
+							Validations.campaignDashboardChartValueNull,
+							CampaignDashboardElement.DIAGRAM_ID,
+							campaignDto.getName()));
+				} else if (!campaignDiagramDefinitionFacade.exists(diagramId)) {
+					throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(Validations.campaignDashboardChartIdDoesNotExist, diagramId, campaignDto.getName()));
+				}
+
+				if (cde.getTabId() == null) {
+					throw new ValidationRuntimeException(
+						I18nProperties
+							.getValidationError(Validations.campaignDashboardChartValueNull, CampaignDashboardElement.TAB_ID, campaignDto.getName()));
+				}
+
+				if (cde.getSubTabId() == null || cde.getSubTabId().isEmpty()) {
+					if (oneSubTabIsNotNullOrEmptyMap.containsKey(cde.getTabId()) && oneSubTabIsNotNullOrEmptyMap.get(cde.getTabId())) {
+						throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(
+								Validations.campaignDashboardChartValueNull,
+								CampaignDashboardElement.SUB_TAB_ID,
+								campaignDto.getName()));
+					}
+					oneSubTabIsNotNullOrEmptyMap.put(cde.getTabId(), false);
+				} else {
+					if (oneSubTabIsNotNullOrEmptyMap.containsKey(cde.getTabId()) && !oneSubTabIsNotNullOrEmptyMap.get(cde.getTabId())) {
+						throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(
+								Validations.campaignDashboardChartValueNull,
+								CampaignDashboardElement.SUB_TAB_ID,
+								campaignDto.getName()));
+					}
+					oneSubTabIsNotNullOrEmptyMap.put(cde.getTabId(), true);
+				}
+
+				if (cde.getOrder() == null) {
+					throw new ValidationRuntimeException(
+						I18nProperties
+							.getValidationError(Validations.campaignDashboardChartValueNull, CampaignDashboardElement.ORDER, campaignDto.getName()));
+				}
+
+				if (cde.getHeight() == null) {
+					throw new ValidationRuntimeException(
+						I18nProperties
+							.getValidationError(Validations.campaignDashboardChartValueNull, CampaignDashboardElement.HEIGHT, campaignDto.getName()));
+				}
+
+				if (cde.getWidth() == null) {
+					throw new ValidationRuntimeException(
+						I18nProperties
+							.getValidationError(Validations.campaignDashboardChartValueNull, CampaignDashboardElement.WIDTH, campaignDto.getName()));
 				}
 			}
+
+			campaignDto.getCampaignFormMetas().forEach(campaignFormMetaReferenceDto -> {
+				if (campaignFormMetaReferenceDto == null || campaignFormMetaReferenceDto.getUuid() == null) {
+					throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(
+							Validations.campaignDashboardDataFormValueNull,
+							CampaignDto.CAMPAIGN_FORM_METAS,
+							campaignDto.getName()));
+				}
+			});
 		}
 	}
 
@@ -229,6 +294,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setStartDate(source.getStartDate());
 		target.setCampaignFormMetas(
 			source.getCampaignFormMetas().stream().map(campaignFormMeta -> campaignFormMeta.toReference()).collect(Collectors.toSet()));
+
 		target.setCampaignDashboardElements(source.getDashboardElements());
 
 		return target;
@@ -244,19 +310,35 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		final List<CampaignDashboardElement> result = new ArrayList<>();
 		if (campaignUuid != null) {
 			final Campaign campaign = campaignService.getByUuid(campaignUuid);
-			validate(toDto(campaign));
-			List<CampaignDashboardElement> dashboardElements = campaign.getDashboardElements();
+			final List<CampaignDashboardElement> dashboardElements = campaign.getDashboardElements();
 			if (dashboardElements != null) {
 				result.addAll(dashboardElements);
 			}
 		} else {
 			campaignService.getAllActive().forEach(campaign -> {
-				validate(toDto(campaign));
-				if (campaign.getDashboardElements() != null) {
-					result.addAll(campaign.getDashboardElements());
+				final List<CampaignDashboardElement> dashboardElements = campaign.getDashboardElements();
+				if (dashboardElements != null) {
+					result.addAll(dashboardElements);
 				}
 			});
 		}
+		result.forEach(cde -> {
+			if (cde.getTabId() == null) {
+				cde.setTabId(StringUtils.EMPTY);
+			}
+			if (cde.getSubTabId() == null) {
+				cde.setSubTabId(StringUtils.EMPTY);
+			}
+			if (cde.getOrder() == null) {
+				cde.setOrder(0);
+			}
+			if (cde.getHeight() == null) {
+				cde.setHeight(50);
+			}
+			if (cde.getWidth() == null) {
+				cde.setWidth(50);
+			}
+		});
 		return result.stream().sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder)).collect(Collectors.toList());
 	}
 

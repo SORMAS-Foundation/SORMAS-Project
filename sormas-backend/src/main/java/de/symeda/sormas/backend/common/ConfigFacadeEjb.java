@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.common;
 
 import java.util.List;
@@ -26,7 +23,6 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.externaljournal.UserConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
@@ -39,6 +35,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
+import de.symeda.sormas.api.externaljournal.UserConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -77,6 +74,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String FEATURE_AUTOMATIC_CASE_CLASSIFICATION = "feature.automaticcaseclassification";
 
+	public static final String DOCUMENT_FILES_PATH = "documents.path";
 	public static final String TEMP_FILES_PATH = "temp.path";
 	public static final String GENERATED_FILES_PATH = "generated.path";
 	public static final String CUSTOM_FILES_PATH = "custom.path";
@@ -100,7 +98,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_PASSWORD = "interface.symptomjournal.defaultuser.password";
 
 	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
-	public static final String INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL = "interface.patientdiary.externaldataurl";
+	public static final String INTERFACE_PATIENT_DIARY_PROBANDS_URL = "interface.patientdiary.probandsurl";
 	public static final String INTERFACE_PATIENT_DIARY_AUTH_URL = "interface.patientdiary.authurl";
 	public static final String INTERFACE_PATIENT_DIARY_EMAIL = "interface.patientdiary.email";
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
@@ -124,6 +122,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
 	private static final String SURVNET_GATEWAY_URL = "survnet.url";
+
+	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -289,6 +289,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String getDocumentFilesPath() {
+		return getProperty(DOCUMENT_FILES_PATH, "/opt/sormas/documents/");
+	}
+
+	@Override
 	public String getTempFilesPath() {
 		return getProperty(TEMP_FILES_PATH, "/opt/sormas/temp/");
 	}
@@ -395,7 +400,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		userConfig.setUsername(getProperty(INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_USERNAME, null));
 		userConfig.setPassword(getProperty(INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_PASSWORD, null));
 
-		if(StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
+		if (StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
 			config.setDefaultUser(userConfig);
 		}
 
@@ -406,7 +411,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public PatientDiaryConfig getPatientDiaryConfig() {
 		PatientDiaryConfig config = new PatientDiaryConfig();
 		config.setUrl(getProperty(INTERFACE_PATIENT_DIARY_URL, null));
-		config.setExternalDataUrl(getProperty(INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL, null));
+		config.setProbandsUrl(getProperty(INTERFACE_PATIENT_DIARY_PROBANDS_URL, null));
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
@@ -415,7 +420,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		userConfig.setUsername(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME, null));
 		userConfig.setPassword(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD, null));
 
-		if(StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
+		if (StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
 			config.setDefaultUser(userConfig);
 		}
 
@@ -448,12 +453,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public void validateExternalUrls() {
 
 		List<String> urls = Lists.newArrayList(
-				getSymptomJournalConfig().getUrl(),
-				getSymptomJournalConfig().getAuthUrl(),
-				getPatientDiaryConfig().getUrl(),
-				getPatientDiaryConfig().getExternalDataUrl(),
-				getPatientDiaryConfig().getAuthUrl()
-		);
+			getSymptomJournalConfig().getUrl(),
+			getSymptomJournalConfig().getAuthUrl(),
+			getPatientDiaryConfig().getUrl(),
+			getPatientDiaryConfig().getProbandsUrl(),
+			getPatientDiaryConfig().getAuthUrl());
 
 		urls.forEach(url -> {
 			if (StringUtils.isBlank(url)) {
@@ -461,9 +465,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			}
 			// Must be a valid URL
 			if (!new UrlValidator(
-					new String[]{
-							"http",
-							"https"}).isValid(url)) {
+				new String[] {
+					"http",
+					"https" }).isValid(url)) {
 				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
 			}
 		});
@@ -476,9 +480,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public boolean isExternalJournalActive() {
-		return !StringUtils.isAllBlank(
-				getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null),
-				getProperty(INTERFACE_PATIENT_DIARY_URL, null));
+		return !StringUtils.isAllBlank(getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null), getProperty(INTERFACE_PATIENT_DIARY_URL, null));
 	}
 
 	@Override
@@ -522,9 +524,19 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	}
 
+	public int getDashboardMapMarkerLimit() {
+		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
 
 	}
+
+	@Override
+	public boolean isSmsServiceSetUp() {
+		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
+	}
+
 }

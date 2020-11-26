@@ -68,12 +68,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
-import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventCriteria;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
@@ -140,19 +138,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			date = epiDataDate;
 		}
 
-		Date epiDataBurialDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, EpiDataBurial.TABLE_NAME);
-		if (epiDataBurialDate != null && epiDataBurialDate.after(date)) {
-			date = epiDataBurialDate;
-		}
-
-		Date epiDataGatheringDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, EpiDataGathering.TABLE_NAME);
-		if (epiDataGatheringDate != null && epiDataGatheringDate.after(date)) {
-			date = epiDataGatheringDate;
-		}
-
-		Date epiDataTravelDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, EpiDataTravel.TABLE_NAME);
-		if (epiDataTravelDate != null && epiDataTravelDate.after(date)) {
-			date = epiDataTravelDate;
+		Date exposureDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, Exposure.TABLE_NAME);
+		if (exposureDate != null && exposureDate.after(date)) {
+			date = exposureDate;
 		}
 
 		Date therapyDate = DatabaseHelper.getTherapyDao().getLatestChangeDate();

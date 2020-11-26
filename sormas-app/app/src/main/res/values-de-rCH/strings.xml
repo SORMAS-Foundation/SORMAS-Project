@@ -100,7 +100,7 @@
     <string name="action_save_visit">Follow-up/Nachverfolgungs-Anruf speichern</string>
     <string name="action_select">Auswählen</string>
     <string name="action_send">Senden</string>
-    <string name="action_set_cleared_to_no">Auf Nein setzen</string>
+    <string name="action_set_cleared_to_no">Leer auf Nein setzen</string>
     <string name="action_show_classification_rules">Definitionskategorien ansehen</string>
     <string name="action_submit_report">Wöchentlichen Bericht absenden</string>
     <string name="action_sync">Synchronisiere</string>
@@ -365,6 +365,7 @@
     <string name="heading_reduce_quarantine">Isolation/Quarantäne verkürzen</string>
     <string name="heading_extend_followup">Nachverfolgungszeitraum verlängern</string>
     <string name="heading_contact_tracing_first_contact">Erstkontakt mit kantonaler Contact-Tracing-Stelle</string>
+    <string name="heading_exposure">Exposition</string>
     <string name="hint_add_to_empty_list">Fügen Sie einen neuen Eintrag hinzu, indem Sie das \"+\" Symbol oben rechts drücken.</string>
     <string name="hint_clear">Löschen</string>
     <string name="hint_create_pin">Bitte wählen Sie eine vierstellige PIN aus, mit der Sie sich bei jedem Öffnen der SORMAS-App authentifizieren werden.</string>

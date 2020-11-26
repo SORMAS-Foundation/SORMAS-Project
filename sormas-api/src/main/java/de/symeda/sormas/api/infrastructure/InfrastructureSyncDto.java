@@ -10,6 +10,7 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -20,6 +21,7 @@ public class InfrastructureSyncDto implements Serializable {
 	private static final long serialVersionUID = -3874808120492307171L;
 
 	private boolean initialSyncRequired;
+	private List<CountryDto> countries;
 	private List<RegionDto> regions;
 	private List<DistrictDto> districts;
 	private List<CommunityDto> communities;
@@ -41,6 +43,14 @@ public class InfrastructureSyncDto implements Serializable {
 
 	public void setInitialSyncRequired(boolean initialSyncRequired) {
 		this.initialSyncRequired = initialSyncRequired;
+	}
+
+	public List<CountryDto> getCountries() {
+		return countries;
+	}
+
+	public void setCountries(List<CountryDto> countries) {
+		this.countries = countries;
 	}
 
 	public List<RegionDto> getRegions() {

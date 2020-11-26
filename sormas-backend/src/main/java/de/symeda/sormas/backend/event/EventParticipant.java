@@ -29,8 +29,9 @@ import javax.persistence.OneToMany;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
@@ -54,6 +55,8 @@ public class EventParticipant extends CoreAdo {
 	private String involvementDescription;
 	private Case resultingCase;
 	private Set<Sample> samples;
+	private Region region;
+	private District district;
 
 	@ManyToOne(cascade = {})
 	public User getReportingUser() {
@@ -83,7 +86,7 @@ public class EventParticipant extends CoreAdo {
 		this.person = person;
 	}
 
-	@Column(length = 512, nullable = false)
+	@Column(length = 512)
 	public String getInvolvementDescription() {
 		return involvementDescription;
 	}
@@ -116,4 +119,21 @@ public class EventParticipant extends CoreAdo {
 		this.samples = samples;
 	}
 
+	@ManyToOne(cascade = {})
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	@ManyToOne(cascade = {})
+	public District getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(District district) {
+		this.district = district;
+	}
 }

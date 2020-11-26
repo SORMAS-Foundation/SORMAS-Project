@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.hamcrest.Matchers;
+import org.jboss.weld.bean.builtin.FacadeInjectionPoint;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -125,6 +127,39 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertTrue(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
 		assertNull(getActionFacade().getByUuid(action.getUuid()));
+	}
+
+	@Test
+	public void testEventUpdate() {
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			null,
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			null,
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
+
+		final String testDescription = "testDescription";
+		final Date startDate = DateHelper.subtractDays(new Date(), 1);
+		event.setEventDesc(testDescription);
+		event.setStartDate(startDate);
+
+		final EventDto updatedEvent = getEventFacade().saveEvent(event);
+		Assert.assertEquals(testDescription, updatedEvent.getEventDesc());
+		Assert.assertEquals(startDate, updatedEvent.getStartDate());
 	}
 
 	@Test

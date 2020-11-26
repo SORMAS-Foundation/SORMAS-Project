@@ -17,13 +17,11 @@ package de.symeda.sormas.backend.sormastosormas;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.SORMAS_REST_PATH;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-
 import javax.enterprise.inject.Alternative;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -45,14 +43,21 @@ public class SormasToSormasRestClient {
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 	}
 
-	public Response post(String host, String endpoint, String authToken, Object entity)
-		throws JsonProcessingException, ProcessingException, KeyManagementException, NoSuchAlgorithmException {
+	public Response post(String host, String endpoint, String authToken, Object entity) throws JsonProcessingException, ProcessingException {
 
+		return buildRestClient(host, endpoint, authToken).post(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
+	}
+
+	public Response put(String host, String endpoint, String authToken, Object entity) throws JsonProcessingException, ProcessingException {
+
+		return buildRestClient(host, endpoint, authToken).put(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
+	}
+
+	private Invocation.Builder buildRestClient(String host, String endpoint, String authToken) {
 		return ClientBuilder.newBuilder()
 			.build()
 			.target(String.format(SORMAS_REST_URL_TEMPLATE, host, endpoint))
 			.request()
-			.header("Authorization", authToken)
-			.post(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
+			.header("Authorization", authToken);
 	}
 }

@@ -62,12 +62,13 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -467,11 +468,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
-		EpiDataTravelDto travel = EpiDataTravelDto.build();
-		travel.setTravelDestination("Ghana");
-		travel.setTravelDateFrom(new Date());
-		travel.setTravelDateTo(new Date());
-		caze.getEpiData().getTravels().add(travel);
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.getLocation().setDetails("Ghana");
+		exposure.setStartDate(new Date());
+		exposure.setEndDate(new Date());
+		caze.getEpiData().getExposures().add(exposure);
 		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
 
@@ -519,21 +520,21 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		caze.getEpiData().setTraveled(YesNoUnknown.YES);
+		caze.getEpiData().setExposureDetailsKnown(YesNoUnknown.YES);
 
 		{
-			EpiDataTravelDto travel = EpiDataTravelDto.build();
-			travel.setTravelDestination("Ghana");
-			travel.setTravelDateFrom(new Date());
-			travel.setTravelDateTo(new Date());
-			caze.getEpiData().getTravels().add(travel);
+			ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+			exposure.getLocation().setDetails("Ghana");
+			exposure.setStartDate(new Date());
+			exposure.setEndDate(new Date());
+			caze.getEpiData().getExposures().add(exposure);
 		}
 		{
-			EpiDataTravelDto travel = EpiDataTravelDto.build();
-			travel.setTravelDestination("Nigeria");
-			travel.setTravelDateFrom(new Date());
-			travel.setTravelDateTo(new Date());
-			caze.getEpiData().getTravels().add(travel);
+			ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+			exposure.getLocation().setDetails("Nigeria");
+			exposure.setStartDate(new Date());
+			exposure.setEndDate(new Date());
+			caze.getEpiData().getExposures().add(exposure);
 		}
 
 		caze = cut.saveCase(caze);
@@ -543,7 +544,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
 		assertThat(exportDto.getUuid(), equalTo(caze.getUuid()));
-		assertThat(exportDto.getTraveled(), equalTo(YesNoUnknown.YES));
+		assertTrue(exportDto.isTraveled());
 	}
 
 	@Test
