@@ -403,6 +403,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
 		contentBinding.contactQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
 		contentBinding.contactQuarantineOfficialOrderSentDate.initializeDateField(getChildFragmentManager());
+		contentBinding.contactProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
+		contentBinding.contactProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
 	}
 
 	@Override

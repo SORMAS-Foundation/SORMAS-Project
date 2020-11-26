@@ -494,7 +494,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReasonBeforeIsolation.initializeSpinner(quarantineReasonList);
 		contentBinding.caseDataEndOfIsolationReason.initializeSpinner(endOfIsolationReasonList);
 
-		if(isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)){
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)) {
 			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
 			contentBinding.caseDataCovidTestReason.initializeSpinner(covidTestReasonList);
 		}
@@ -506,6 +506,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataContactTracingFirstContactType.initializeSpinner(contactTracingContactTypeList);
 			contentBinding.caseDataContactTracingFirstContactDate.initializeDateField(getChildFragmentManager());
 		}
+
+		// end swiss fields
+
+		contentBinding.caseDataProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
+		contentBinding.caseDataProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
 	}
 
 	@Override

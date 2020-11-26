@@ -244,6 +244,9 @@ public interface Captions {
 	String CaseData_portHealthInfo = "CaseData.portHealthInfo";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
+	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";
+	String CaseData_prohibitionToWorkFrom = "CaseData.prohibitionToWorkFrom";
+	String CaseData_prohibitionToWorkUntil = "CaseData.prohibitionToWorkUntil";
 	String CaseData_quarantine = "CaseData.quarantine";
 	String CaseData_quarantineExtended = "CaseData.quarantineExtended";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
@@ -465,6 +468,9 @@ public interface Captions {
 	String Contact_numberOfVisits = "Contact.numberOfVisits";
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
+	String Contact_prohibitionToWork = "Contact.prohibitionToWork";
+	String Contact_prohibitionToWorkFrom = "Contact.prohibitionToWorkFrom";
+	String Contact_prohibitionToWorkUntil = "Contact.prohibitionToWorkUntil";
 	String Contact_quarantine = "Contact.quarantine";
 	String Contact_quarantineExtended = "Contact.quarantineExtended";
 	String Contact_quarantineFrom = "Contact.quarantineFrom";
