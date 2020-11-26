@@ -848,7 +848,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		try {
 			getSormasToSormasFacade().saveReturnedCase(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
-		} catch (SormasToSormasException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
