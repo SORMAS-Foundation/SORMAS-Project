@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
@@ -833,6 +834,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 			.persist(createShareInfo(officerUser, i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
 
 		caze.setQuarantine(QuarantineType.HOTEL);
+		caze.setChangeDate(new Date(LocalDateTime.now().plusDays(1).toLocalDate().toEpochDay()));
 
 		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo());
 		shareData.setAssociatedContacts(
@@ -892,6 +894,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 			.persist(createShareInfo(officerUser, i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
 
 		contact.setQuarantine(QuarantineType.HOTEL);
+		contact.setChangeDate(new Date(LocalDateTime.now().plusDays(1).toLocalDate().toEpochDay()));
 
 		SormasToSormasContactDto shareData = new SormasToSormasContactDto(contactPerson, contact, createSormasToSormasOriginInfo());
 		shareData.setSamples(
