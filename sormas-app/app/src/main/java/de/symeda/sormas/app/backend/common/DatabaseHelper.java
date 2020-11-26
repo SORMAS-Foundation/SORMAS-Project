@@ -1730,7 +1730,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 242:
 				currentVersion = 242;
-				TableUtils.createTable(connectionSource, Country.class);
+				TableUtils.createTableIfNotExists(connectionSource, Country.class);
 
 			case 243:
 				currentVersion = 243;

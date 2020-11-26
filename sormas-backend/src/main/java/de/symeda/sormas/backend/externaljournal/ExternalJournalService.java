@@ -61,7 +61,6 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 @LocalBean
 public class ExternalJournalService {
 
-	private static final String SYMPTOM_JOURNAL_KEY = "symptomJournal";
 	private static final String PATIENT_DIARY_KEY = "patientDiary";
 	private static final Cache<String, String> authTokenCache = CacheBuilder.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).build();
 	private static final int NOT_FOUND_STATUS = 404;
@@ -76,17 +75,13 @@ public class ExternalJournalService {
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 
 	/**
-	 * Retrieves a token used for authenticating in the symptom journal. The token will be cached.
-	 * 
+	 * Retrieves a token used for authenticating in the symptom journal.
+	 * The token will not be cached since it's only used once when opening the symptom journal
+	 *
 	 * @return the authentication token
 	 */
 	public String getSymptomJournalAuthToken() {
-		try {
-			return authTokenCache.get(SYMPTOM_JOURNAL_KEY, this::getSymptomJournalAuthTokenInternal);
-		} catch (ExecutionException e) {
-			logger.error(e.getMessage());
-			return null;
-		}
+		return getSymptomJournalAuthTokenInternal();
 	}
 
 	private String getSymptomJournalAuthTokenInternal() {
