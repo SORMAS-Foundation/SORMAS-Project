@@ -120,8 +120,6 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
-		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
-			.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
 
 		setCountContactsWithSourceCaseInEvent(true);
 
@@ -136,6 +134,10 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				FieldAccessColumnStyleGenerator
 					.getDefault(getBeanType(), INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId));
 		}
+
+		// Thourough description is too long and redundant
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
+			.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
 
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
 	}

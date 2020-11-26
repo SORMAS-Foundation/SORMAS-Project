@@ -30,7 +30,7 @@ public class EventExportDto implements Serializable {
 	private String externalId;
 	private EventStatus eventStatus;
 	private EventInvestigationStatus eventInvestigationStatus;
-	private long participantsCount;
+	private long participantCount;
 	private long caseCount;
 	private long deathCount;
 	private long contactCount; // number of contacts who are also event participants
@@ -66,7 +66,7 @@ public class EventExportDto implements Serializable {
 		String externalId,
 		EventStatus eventStatus,
 		EventInvestigationStatus eventInvestigationStatus,
-		long participantsCount,
+		long participantCount,
 		long caseCount,
 		long deathCount,
 		long contactCount,
@@ -103,7 +103,7 @@ public class EventExportDto implements Serializable {
 		this.externalId = externalId;
 		this.eventStatus = eventStatus;
 		this.eventInvestigationStatus = eventInvestigationStatus;
-		this.participantsCount = participantsCount;
+		this.participantCount = participantCount;
 		this.caseCount = caseCount;
 		this.deathCount = deathCount;
 		this.contactCount = contactCount;
@@ -346,14 +346,15 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(27)
-	public long getParticipantsCount() {
-		return participantsCount;
+	public long getParticipantCount() {
+		return participantCount;
 	}
 
-	public void setParticipantsCount(long participantsCount) {
-		this.participantsCount = participantsCount;
+	public void setParticipantCount(long participantCount) {
+		this.participantCount = participantCount;
 	}
 
+	@Order(28)
 	public long getCaseCount() {
 		return caseCount;
 	}
@@ -362,6 +363,7 @@ public class EventExportDto implements Serializable {
 		this.caseCount = caseCount;
 	}
 
+	@Order(29)
 	public long getDeathCount() {
 		return deathCount;
 	}
@@ -370,6 +372,7 @@ public class EventExportDto implements Serializable {
 		this.deathCount = deathCount;
 	}
 
+	@Order(30)
 	public long getContactCount() {
 		return contactCount;
 	}
@@ -378,6 +381,7 @@ public class EventExportDto implements Serializable {
 		this.contactCount = contactCount;
 	}
 
+	@Order(31)
 	public long getContactCountSourceInEvent() {
 		return contactCountSourceInEvent;
 	}
