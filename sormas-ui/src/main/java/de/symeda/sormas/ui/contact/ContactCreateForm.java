@@ -167,7 +167,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
-		initEventDateValidation(firstContactDate, lastContactDate, multiDayContact);
+		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
 
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -511,7 +511,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		getField(CaseDataDto.DISEASE).setEnabled(false);
 	}
 
-	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+	private void initContactDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
 		DateComparisonValidator startDateValidator = new DateComparisonValidator(
 			startDate,
 			endDate,

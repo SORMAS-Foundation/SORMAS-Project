@@ -200,7 +200,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
-		initEventDateValidation(firstContactDate, lastContactDate, multiDayContact);
+		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
 
 		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
@@ -859,7 +859,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
-	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+	private void initContactDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
 		DateComparisonValidator startDateValidator = new DateComparisonValidator(
 			startDate,
 			endDate,
