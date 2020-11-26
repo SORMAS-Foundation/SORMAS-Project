@@ -126,11 +126,11 @@ import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
-import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -302,6 +302,13 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);
+
+			final boolean convertedToCase =
+				(existingContactDto == null || existingContactDto.getResultingCase() == null) && entity.getResultingCase() != null;
+			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED;
+			if (dropped || convertedToCase) {
+				entity.setFollowUpStatus(FollowUpStatus.CANCELED);
+			}
 
 			contactService.updateFollowUpUntilAndStatus(entity);
 			contactService.udpateContactStatus(entity);

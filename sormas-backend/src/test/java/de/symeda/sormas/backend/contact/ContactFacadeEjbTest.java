@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -197,6 +198,77 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contact.setResultingCase(getCaseFacade().getReferenceByUuid(resultingCaze.getUuid()));
 		contact = getContactFacade().saveContact(contact);
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
+	}
+
+	@Test
+	public void testContactFollowUpStatusCanceledWhenContactDropped(){
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+				.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+				user.toReference(),
+				cazePerson.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		Date contactDate = new Date();
+		ContactDto contact =
+				creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, contactDate, contactDate, null);
+
+		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
+		assertNull(contact.getResultingCase());
+
+		contact.setContactClassification(ContactClassification.CONFIRMED);
+		contact.setContactStatus(ContactStatus.DROPPED);
+		contact = getContactFacade().saveContact(contact);
+		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
+		assertEquals(ContactStatus.DROPPED, contact.getContactStatus());
+		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
+	}
+
+	@Test
+	public void testContactFollowUpStatusCanceledWhenContactConvertedToCase(){
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+				.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+				user.toReference(),
+				cazePerson.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		Date contactDate = new Date();
+		ContactDto contact =
+				creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, contactDate, contactDate, null);
+
+		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
+		assertNull(contact.getResultingCase());
+
+		contact.setContactClassification(ContactClassification.CONFIRMED);
+		contact = getContactFacade().saveContact(contact);
+
+		final CaseDataDto resultingCase = creator.createCase(
+				user.toReference(),
+				contactPerson.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+		contact.setResultingCase(resultingCase.toReference());
+		contact = getContactFacade().saveContact(contact);
+		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
+		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
+		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
 	}
 
 	@Test
