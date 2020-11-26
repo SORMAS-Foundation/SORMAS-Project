@@ -39,6 +39,8 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
@@ -107,8 +109,10 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 		contentBinding.contactMultiDayContact.addValueChangedListener(e -> {
 			int visibility = (Boolean) e.getValue() == Boolean.TRUE ? VISIBLE : GONE;
 			contentBinding.contactFirstContactDate.setVisibility(visibility);
+			contentBinding.contactFirstContactDate.setValue(null);
 		});
 		contentBinding.contactFirstContactDate.setVisibility(GONE);
+		contentBinding.contactFirstContactDate.addValueChangedListener(e -> contentBinding.contactLastContactDate.setRequired(e.getValue() != null));
 
 		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.contactDisease.addValueChangedListener(e -> {
@@ -188,6 +192,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 		contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
 		contentBinding.contactContactCategory.initializeSpinner(categoryList);
 
+		contentBinding.contactFirstContactDate.initializeDateField(getFragmentManager());
 		contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
 		contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
 

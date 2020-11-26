@@ -120,6 +120,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactFirstContactDate.setVisibility(VISIBLE);
 		} else {
 			contentBinding.contactFirstContactDate.setVisibility(GONE);
+			contentBinding.contactFirstContactDate.setValue(null);
 		}
 
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
@@ -205,6 +206,14 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactContactProximity
 				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
 		});
+
+		contentBinding.contactMultiDayContact.addValueChangedListener(e -> {
+			int visibility = (Boolean) e.getValue() == Boolean.TRUE ? VISIBLE : GONE;
+			contentBinding.contactFirstContactDate.setVisibility(visibility);
+			contentBinding.contactFirstContactDate.setValue(null);
+		});
+		contentBinding.contactFirstContactDate.setVisibility(GONE);
+		contentBinding.contactFirstContactDate.addValueChangedListener(e -> contentBinding.contactLastContactDate.setRequired(e.getValue() != null));
 
 		contentBinding.contactContactProximity
 			.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale()))));
