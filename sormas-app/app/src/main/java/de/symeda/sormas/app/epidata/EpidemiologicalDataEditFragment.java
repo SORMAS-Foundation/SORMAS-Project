@@ -15,11 +15,9 @@
 
 package de.symeda.sormas.app.epidata;
 
+import static android.view.View.GONE;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
-
-import java.util.Arrays;
-import java.util.List;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -27,38 +25,21 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.epidata.AnimalCondition;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
-import de.symeda.sormas.api.epidata.WaterSource;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
-import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
-import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentEditEpidLayoutBinding;
-import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEditEpidLayoutBinding, EpiData, PseudonymizableAdo> {
@@ -66,14 +47,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 	public static final String TAG = EpidemiologicalDataEditFragment.class.getSimpleName();
 
 	private EpiData record;
-	private Disease disease;
-
-	private IEntryItemOnClickListener onGatheringItemClickListener;
-	private IEntryItemOnClickListener onTravelItemClickListener;
-	private IEntryItemOnClickListener onBurialItemClickListener;
-
-	private List<Item> drinkingWaterSourceList;
-	private List<Item> animalConditionList;
+	private IEntryItemOnClickListener onExposureItemClickListener;
 
 	// Static methods
 
@@ -86,200 +60,69 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
-	// Instance methods
-
 	private void setUpControlListeners(final FragmentEditEpidLayoutBinding contentBinding) {
-		onGatheringItemClickListener = (v, item) -> {
-			final EpiDataGathering gathering = (EpiDataGathering) item;
-			final EpiDataGathering gatheringClone = (EpiDataGathering) gathering.clone();
-			final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(getActivity(), gatheringClone, false);
+		onExposureItemClickListener = (v, item) -> {
+			final Exposure exposure = (Exposure) item;
+			final Exposure exposureClone = (Exposure) exposure.clone();
+			final ExposureDialog dialog = new ExposureDialog(CaseEditActivity.getActiveActivity(), exposureClone, getActivityRootData(), false);
 
 			dialog.setPositiveCallback(() -> {
-				record.getGatherings().set(record.getGatherings().indexOf(gathering), gatheringClone);
-				updateGatherings();
+				record.getExposures().set(record.getExposures().indexOf(exposure), exposureClone);
+				updateExposures();
 			});
 
-			dialog.setDeleteCallback(() -> removeGathering(gathering));
+			dialog.setDeleteCallback(() -> {
+				removeExposure(exposure);
+				dialog.dismiss();
+			});
 
 			dialog.show();
 		};
 
-		onTravelItemClickListener = (v, item) -> {
-			final EpiDataTravel travel = (EpiDataTravel) item;
-			final EpiDataTravel travelClone = (EpiDataTravel) travel.clone();
-			final EpiDataTravelDialog dialog = new EpiDataTravelDialog(getActivity(), travelClone, false);
+		contentBinding.btnAddExposure.setOnClickListener(v -> {
+			final Exposure exposure = DatabaseHelper.getExposureDao().build();
+			final ExposureDialog dialog = new ExposureDialog(CaseEditActivity.getActiveActivity(), exposure, getActivityRootData(), true);
 
-			dialog.setPositiveCallback(() -> {
-				record.getTravels().set(record.getTravels().indexOf(travel), travelClone);
-				updateTravels();
-			});
-
-			dialog.setDeleteCallback(() -> removeTravel(travel));
-
-			dialog.show();
-		};
-
-		onBurialItemClickListener = (v, item) -> {
-			final EpiDataBurial burial = (EpiDataBurial) item;
-			final EpiDataBurial burialClone = (EpiDataBurial) burial.clone();
-			final EpiDataBurialDialog dialog = new EpiDataBurialDialog(getActivity(), burialClone, false);
-
-			dialog.setPositiveCallback(() -> {
-				record.getBurials().set(record.getBurials().indexOf(burial), burialClone);
-				updateBurials();
-			});
-
-			dialog.setDeleteCallback(() -> removeBurial(burial));
-
-			dialog.show();
-		};
-
-		contentBinding.btnAddGathering.setOnClickListener(v -> {
-			final EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
-			final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering, true);
-
-			dialog.setPositiveCallback(() -> addGathering(gathering));
-
-			dialog.setDeleteCallback(() -> removeGathering(gathering));
-
+			dialog.setPositiveCallback(() -> addExposure(exposure));
 			dialog.show();
 		});
 
-		contentBinding.btnAddTravel.setOnClickListener(v -> {
-			final EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
-			final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel, true);
+		contentBinding.epiDataExposureDetailsKnown.addValueChangedListener(field -> {
+			YesNoUnknown value = (YesNoUnknown) field.getValue();
+			contentBinding.exposuresLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : GONE);
+			if (value != YesNoUnknown.YES) {
+				clearExposures();
+			}
 
-			dialog.setPositiveCallback(() -> addTravel(travel));
-
-			dialog.setDeleteCallback(() -> removeTravel(travel));
-
-			dialog.show();
-		});
-
-		contentBinding.btnAddBurial.setOnClickListener(v -> {
-			final EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
-			final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial, true);
-
-			dialog.setPositiveCallback(() -> addBurial(burial));
-
-			dialog.setDeleteCallback(() -> removeBurial(burial));
-
-			dialog.show();
+			getContentBinding().epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
 		});
 	}
 
-	private ObservableArrayList<EpiDataGathering> getGatherings() {
-		ObservableArrayList<EpiDataGathering> newGatherings = new ObservableArrayList<>();
-		newGatherings.addAll(record.getGatherings());
-		return newGatherings;
+	private ObservableArrayList<Exposure> getExposureList() {
+		ObservableArrayList<Exposure> exposures = new ObservableArrayList<>();
+		exposures.addAll(record.getExposures());
+		return exposures;
 	}
 
-	private void clearGatherings() {
-		record.getGatherings().clear();
-		updateGatherings();
+	private void clearExposures() {
+		record.getExposures().clear();
+		updateExposures();
 	}
 
-	private void removeGathering(EpiDataGathering item) {
-		record.getGatherings().remove(item);
-		updateGatherings();
+	private void removeExposure(Exposure exposure) {
+		record.getExposures().remove(exposure);
+		updateExposures();
 	}
 
-	private void updateGatherings() {
-		getContentBinding().setGatheringList(getGatherings());
-		verifyGatheringStatus();
+	private void updateExposures() {
+		getContentBinding().setExposureList(getExposureList());
+		getContentBinding().epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
 	}
 
-	private void addGathering(EpiDataGathering item) {
-		record.getGatherings().add(0, item);
-		updateGatherings();
+	private void addExposure(Exposure exposure) {
+		record.getExposures().add(0, exposure);
+		updateExposures();
 	}
-
-	private void verifyGatheringStatus() {
-		YesNoUnknown gatheringAttended = record.getGatheringAttended();
-		if (gatheringAttended == YesNoUnknown.YES && getGatherings().size() <= 0) {
-			getContentBinding().epiDataGatheringAttended.enableWarningState(R.string.validation_soft_add_list_entry);
-		} else {
-			getContentBinding().epiDataGatheringAttended.disableWarningState();
-		}
-
-		getContentBinding().epiDataGatheringAttended.setEnabled(getGatherings().size() == 0);
-	}
-
-	private ObservableArrayList<EpiDataBurial> getBurials() {
-		ObservableArrayList<EpiDataBurial> newBurials = new ObservableArrayList<>();
-		newBurials.addAll(record.getBurials());
-		return newBurials;
-	}
-
-	private void clearBurials() {
-		record.getBurials().clear();
-		updateBurials();
-	}
-
-	private void removeBurial(EpiDataBurial item) {
-		record.getBurials().remove(item);
-		updateBurials();
-	}
-
-	private void updateBurials() {
-		getContentBinding().setBurialList(getBurials());
-		verifyBurialStatus();
-	}
-
-	private void addBurial(EpiDataBurial item) {
-		record.getBurials().add(0, item);
-		updateBurials();
-	}
-
-	private void verifyBurialStatus() {
-		YesNoUnknown burialAttended = record.getBurialAttended();
-		if (burialAttended == YesNoUnknown.YES && getBurials().size() <= 0) {
-			getContentBinding().epiDataBurialAttended.enableWarningState(R.string.validation_soft_add_list_entry);
-		} else {
-			getContentBinding().epiDataBurialAttended.disableWarningState();
-		}
-
-		getContentBinding().epiDataBurialAttended.setEnabled(getBurials().size() == 0);
-	}
-
-	private ObservableArrayList<EpiDataTravel> getTravels() {
-		ObservableArrayList<EpiDataTravel> newTravels = new ObservableArrayList<>();
-		newTravels.addAll(record.getTravels());
-		return newTravels;
-	}
-
-	private void clearTravels() {
-		record.getTravels().clear();
-		updateTravels();
-	}
-
-	private void removeTravel(EpiDataTravel item) {
-		record.getTravels().remove(item);
-		updateTravels();
-	}
-
-	private void updateTravels() {
-		getContentBinding().setTravelList(getTravels());
-		verifyTravelStatus();
-	}
-
-	private void addTravel(EpiDataTravel item) {
-		record.getTravels().add(0, item);
-		updateTravels();
-	}
-
-	private void verifyTravelStatus() {
-		YesNoUnknown traveled = record.getTraveled();
-		if (traveled == YesNoUnknown.YES && getTravels().size() <= 0) {
-			getContentBinding().epiDataTraveled.enableWarningState(R.string.validation_soft_add_list_entry);
-		} else {
-			getContentBinding().epiDataTraveled.disableWarningState();
-		}
-
-		getContentBinding().epiDataTraveled.setEnabled(getTravels().size() == 0);
-	}
-
-	// Overrides
 
 	@Override
 	protected String getSubHeadingTitle() {
@@ -294,11 +137,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 
 	@Override
 	protected void prepareFragmentData() {
-		final AbstractDomainObject abstractDomainObject = getActivityRootData();
-		disease = getDiseaseOfCaseOrContact(abstractDomainObject);
-		record = getEpiDataOfCaseOrContact(abstractDomainObject);
-		drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, true);
-		animalConditionList = DataUtils.getEnumItems(AnimalCondition.class, true);
+		record = getEpiDataOfCaseOrContact(getActivityRootData());
 	}
 
 	@Override
@@ -306,125 +145,21 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
-		contentBinding.setWaterSourceClass(WaterSource.class);
-		contentBinding.setVaccinationClass(Vaccination.class);
-
-		contentBinding.setGatheringList(getGatherings());
-		contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
-		contentBinding.setBurialListBindCallback(v -> {
-			setFieldAccesses(EpiDataBurialDto.class, v);
-		});
-
-		contentBinding.setTravelList(getTravels());
-		contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
-		contentBinding.setGatheringListBindCallback(v -> {
-			setFieldAccesses(EpiDataGatheringDto.class, v);
-		});
-
-		contentBinding.setBurialList(getBurials());
-		contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
-		contentBinding.setTravelListBindCallback(v -> {
-			setFieldAccesses(EpiDataTravelDto.class, v);
-		});
-
-		contentBinding.epiDataBurialAttended.addValueChangedListener(new ValueChangeListener() {
-
-			@Override
-			public void onChange(ControlPropertyField field) {
-				YesNoUnknown value = (YesNoUnknown) field.getValue();
-				contentBinding.burialsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-				if (value != YesNoUnknown.YES) {
-					clearBurials();
-				}
-
-				verifyBurialStatus();
-			}
-		});
-
-		contentBinding.epiDataGatheringAttended.addValueChangedListener(new ValueChangeListener() {
-
-			@Override
-			public void onChange(ControlPropertyField field) {
-				YesNoUnknown value = (YesNoUnknown) field.getValue();
-				contentBinding.gatheringsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-				if (value != YesNoUnknown.YES) {
-					clearGatherings();
-				}
-
-				verifyGatheringStatus();
-			}
-		});
-
-		contentBinding.epiDataTraveled.addValueChangedListener(field -> {
-			YesNoUnknown value = (YesNoUnknown) field.getValue();
-			contentBinding.travelsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-			if (value != YesNoUnknown.YES) {
-				clearTravels();
-			}
-
-			verifyTravelStatus();
-		});
-
-		// iterate through all epi data animal fields and add listener
-		ValueChangeListener updateHadAnimalExposureListener = field -> updateHadAnimalExposure();
-		List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
-		FieldHelper.iteratePropertyFields((ViewGroup) contentBinding.getRoot(), field -> {
-			if (animalExposureProperties.contains(field.getSubPropertyId())) {
-				field.addValueChangedListener(updateHadAnimalExposureListener);
-			}
-			return true;
-		});
-
-		List<String> environmentalExposureProperties = Arrays.asList(EpiData.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
-		int environmentalExposureHeadingVisibiliy = View.GONE;
-		for (String property : environmentalExposureProperties) {
-			if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, property, disease)) {
-				environmentalExposureHeadingVisibiliy = View.VISIBLE;
-				break;
-			}
-		}
-		contentBinding.headingEnvironmentalExposure.setVisibility(environmentalExposureHeadingVisibiliy);
-	}
-
-	private void updateHadAnimalExposure() {
-		// iterate through all epi data animal fields to get value
-		List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
-		boolean iterationCancelled = !FieldHelper.iteratePropertyFields((ViewGroup) getContentBinding().getRoot(), field -> {
-			if (animalExposureProperties.contains(field.getSubPropertyId())) {
-				YesNoUnknown value = (YesNoUnknown) field.getValue();
-				if (YesNoUnknown.YES.equals(value)) {
-					return false;
-				}
-			}
-			return true;
-		});
-		boolean hadAnimalExposure = iterationCancelled;
-		getContentBinding().setAnimalExposureDependentVisibility(hadAnimalExposure ? View.VISIBLE : View.GONE);
+		contentBinding.setExposureList(getExposureList());
+		contentBinding.setExposureItemClickCallback(onExposureItemClickListener);
+		contentBinding.setExposureListBindCallback(
+			v -> FieldVisibilityAndAccessHelper
+				.setFieldVisibilitiesAndAccesses(ExposureDto.class, (ViewGroup) v, new FieldVisibilityCheckers(), getFieldAccessCheckers()));
 	}
 
 	@Override
 	public void onAfterLayoutBinding(FragmentEditEpidLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
+		contentBinding.epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
 
-		// Initialize ControlSpinnerFields
-		contentBinding.epiDataWaterSource.initializeSpinner(drinkingWaterSourceList);
-		contentBinding.epiDataAnimalCondition.initializeSpinner(animalConditionList);
-
-		// Initialize ControlDateFields
-		contentBinding.epiDataDateOfLastExposure.initializeDateField(getFragmentManager());
-		contentBinding.epiDataSickDeadAnimalsDate.initializeDateField(getFragmentManager());
-		contentBinding.epiDataDateOfProphylaxis.initializeDateField(getFragmentManager());
-
-		verifyBurialStatus();
-		verifyGatheringStatus();
-		verifyTravelStatus();
-
-		Disease diseaseOfCaseOrContact = getDiseaseOfCaseOrContact(getActivityRootData());
-		if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(diseaseOfCaseOrContact) > 0) {
-			contentBinding.epiDataTraveled.setCaption(
-				String.format(
-					I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod),
-					DiseaseConfigurationCache.getInstance().getFollowUpDuration(diseaseOfCaseOrContact)));
+		if (!(getActivityRootData() instanceof Case)) {
+			contentBinding.epiDataContactWithSourceCaseKnown.setVisibility(GONE);
+			contentBinding.sourceContactsHeading.setVisibility(GONE);
 		}
 	}
 
@@ -443,9 +178,4 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		return false;
 	}
 
-	private void setFieldAccesses(Class<?> dtoClass, View view) {
-		FieldVisibilityAndAccessHelper
-			.setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) view, new FieldVisibilityCheckers(), getFieldAccessCheckers());
-
-	}
 }

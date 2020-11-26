@@ -912,7 +912,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			}
 
 			// get all cases based on the user's contact association
-			if (userFilterCriteria == null || !userFilterCriteria.isExcludeCasesFromContacts()) {
+			if (userFilterCriteria == null
+				|| (!userFilterCriteria.isExcludeCasesFromContacts()
+					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
 				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
 				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
 				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot));
@@ -1088,7 +1090,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				caze.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 			}
 		} else {
-			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
+			int followUpDuration = diseaseConfigurationFacade.getCaseFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
 			LocalDate untilDate = caze.isOverwriteFollowUpUntil()
 				|| (caze.getFollowUpUntil() != null && DateHelper8.toLocalDate(caze.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration)))

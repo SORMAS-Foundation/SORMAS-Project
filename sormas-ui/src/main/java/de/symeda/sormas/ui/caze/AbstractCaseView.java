@@ -151,7 +151,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.MATERNAL_HISTORY),
 					params);
 			}
-			if (!caze.isUnreferredPortHealthCase() && !UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			if (!caze.checkIsUnreferredPortHealthCase() && !UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				menu.addView(
 					HospitalizationView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION),
@@ -170,7 +170,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 				menu.addView(CaseEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
 			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
-				&& !caze.isUnreferredPortHealthCase()
+				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
@@ -182,7 +182,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		if (showExtraMenuEntries) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
-				&& !caze.isUnreferredPortHealthCase()
+				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
@@ -192,7 +192,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		}
 		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())
 			&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)
-			&& !caze.isUnreferredPortHealthCase()) {
+			&& !caze.checkIsUnreferredPortHealthCase()) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 
@@ -264,13 +264,12 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 	public void setCaseEditPermission(Component component) {
 
-		Boolean isCaseEditAllowed = isCaseEditAllowed();
-		if (!isCaseEditAllowed) {
+		if (!isCaseEditAllowed()) {
 			component.setEnabled(false);
 		}
 	}
 
-	protected Boolean isCaseEditAllowed() {
+	protected boolean isCaseEditAllowed() {
 		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
 	}
 }

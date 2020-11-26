@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -94,6 +95,24 @@ public class TestDataCreator {
 		cazePerson = FacadeProvider.getPersonFacade().savePerson(cazePerson);
 
 		return cazePerson;
+	}
+
+	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, UserReferenceDto reportingUser) {
+		return createEventParticipant(event, eventPerson, "Description", reportingUser);
+	}
+
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto event,
+		PersonDto eventPerson,
+		String involvementDescription,
+		UserReferenceDto reportingUser) {
+
+		EventParticipantDto eventParticipant = EventParticipantDto.build(event, reportingUser);
+		eventParticipant.setPerson(eventPerson);
+		eventParticipant.setInvolvementDescription(involvementDescription);
+
+		eventParticipant = FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		return eventParticipant;
 	}
 
 	public ContactDto createContact(
@@ -247,6 +266,7 @@ public class TestDataCreator {
 
 	public EventDto createEvent(
 		EventStatus eventStatus,
+		String eventTitle,
 		String eventDesc,
 		String srcFirstName,
 		String srcLastName,
@@ -260,6 +280,7 @@ public class TestDataCreator {
 
 		EventDto event = EventDto.build();
 		event.setEventStatus(eventStatus);
+		event.setEventTitle(eventTitle);
 		event.setEventDesc(eventDesc);
 		event.setSrcFirstName(srcFirstName);
 		event.setSrcLastName(srcLastName);

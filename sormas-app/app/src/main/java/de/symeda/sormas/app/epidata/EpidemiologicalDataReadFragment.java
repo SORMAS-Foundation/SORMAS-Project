@@ -15,11 +15,9 @@
 
 package de.symeda.sormas.app.epidata;
 
+import static android.view.View.GONE;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
-
-import java.util.Arrays;
-import java.util.List;
 
 import android.os.Bundle;
 import android.view.View;
@@ -27,14 +25,11 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.event.MeansOfTransport;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -42,17 +37,14 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
-import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.databinding.DialogExposureReadLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentReadEpidLayoutBinding;
-import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentReadEpidLayoutBinding, EpiData, AbstractDomainObject> {
@@ -60,12 +52,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 	public static final String TAG = EpidemiologicalDataReadFragment.class.getSimpleName();
 
 	private EpiData record;
-
-	private IEntryItemOnClickListener onBurialItemClickListener;
-	private IEntryItemOnClickListener onGatheringItemClickListener;
-	private IEntryItemOnClickListener onTravelItemClickListener;
-
-	// Static methods
+	private IEntryItemOnClickListener onExposureItemClickListener;
 
 	public static EpidemiologicalDataReadFragment newInstance(Case activityRootData) {
 		return newInstanceWithFieldCheckers(
@@ -85,38 +72,32 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
-	// Instance methods
-
 	private void setUpControlListeners() {
-		onBurialItemClickListener = (v, item) -> {
+		onExposureItemClickListener = (v, item) -> {
 			InfoDialog infoDialog = new InfoDialog(
 				getContext(),
-				R.layout.dialog_epid_burial_read_layout,
+				R.layout.dialog_exposure_read_layout,
 				item,
-				bindedView -> setFieldAccesses(EpiDataBurialDto.class, bindedView));
-			infoDialog.show();
-		};
+				boundView -> FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(
+					ExposureDto.class,
+					(ViewGroup) boundView,
+					new FieldVisibilityCheckers(),
+					getFieldAccessCheckers()));
 
-		onGatheringItemClickListener = (v, item) -> {
-			InfoDialog infoDialog = new InfoDialog(
-				getContext(),
-				R.layout.dialog_epid_gathering_read_layout,
-				item,
-				bindedView -> setFieldAccesses(EpiDataGatheringDto.class, bindedView));
-			infoDialog.show();
-		};
+			if (((Exposure) item).getMeansOfTransport() == MeansOfTransport.PLANE) {
+				((DialogExposureReadLayoutBinding) infoDialog.getBinding()).exposureConnectionNumber
+					.setCaption(I18nProperties.getCaption(Captions.exposureFlightNumber));
+			}
 
-		onTravelItemClickListener = (v, item) -> {
-			InfoDialog infoDialog = new InfoDialog(
-				getContext(),
-				R.layout.dialog_epid_travel_read_layout,
-				item,
-				bindedView -> setFieldAccesses(EpiDataTravelDto.class, bindedView));
+			FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(
+				ExposureDto.class,
+				(ViewGroup) infoDialog.getBinding().getRoot(),
+				FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(getActivityRootData())),
+				UiFieldAccessCheckers.forSensitiveData(((PseudonymizableAdo) getActivityRootData()).isPseudonymized()));
+
 			infoDialog.show();
 		};
 	}
-
-	// Overrides
 
 	@Override
 	protected void prepareFragmentData(Bundle savedInstanceState) {
@@ -127,81 +108,27 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 	public void onLayoutBinding(FragmentReadEpidLayoutBinding contentBinding) {
 		setUpControlListeners();
 
-		ObservableArrayList<EpiDataBurial> burials = new ObservableArrayList<>();
-		burials.addAll(record.getBurials());
-		ObservableArrayList<EpiDataTravel> travels = new ObservableArrayList<>();
-		travels.addAll(record.getTravels());
-		ObservableArrayList<EpiDataGathering> gatherings = new ObservableArrayList<>();
-		gatherings.addAll(record.getGatherings());
-
 		contentBinding.setData(record);
 
-		contentBinding.setBurialList(burials);
-		contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
-		contentBinding.setBurialListBindCallback(v -> {
-			setFieldAccesses(EpiDataBurialDto.class, v);
-		});
+		ObservableArrayList<Exposure> exposures = new ObservableArrayList<>();
+		exposures.addAll(record.getExposures());
 
-		contentBinding.setGatheringList(gatherings);
-		contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
-		contentBinding.setGatheringListBindCallback(v -> {
-			setFieldAccesses(EpiDataGatheringDto.class, v);
-		});
-
-		contentBinding.setTravelList(travels);
-		contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
-		contentBinding.setTravelListBindCallback(v -> {
-			setFieldAccesses(EpiDataTravelDto.class, v);
-		});
-
-		// iterate through all epi data animal fields and add listener
-		ValueChangeListener updateHadAnimalExposureListener = field -> updateHadAnimalExposure();
-		List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
-		FieldHelper.iteratePropertyFields((ViewGroup) contentBinding.getRoot(), field -> {
-			if (animalExposureProperties.contains(field.getSubPropertyId())) {
-				field.addValueChangedListener(updateHadAnimalExposureListener);
-			}
-			return true;
-		});
-
-		List<String> environmentalExposureProperties = Arrays.asList(EpiData.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
-		int environmentalExposureHeadingVisibiliy = View.GONE;
-		for (String property : environmentalExposureProperties) {
-			if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, property, getDiseaseOfCaseOrContact(getActivityRootData()))) {
-				environmentalExposureHeadingVisibiliy = View.VISIBLE;
-				break;
-			}
-		}
-		contentBinding.environmentalExposureDivider.setVisibility(environmentalExposureHeadingVisibiliy);
-		contentBinding.headingEnvironmentalExposure.setVisibility(environmentalExposureHeadingVisibiliy);
-	}
-
-	private void updateHadAnimalExposure() {
-		// iterate through all epi data animal fields to get value
-		List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
-		boolean iterationCancelled = !FieldHelper.iteratePropertyFields((ViewGroup) getContentBinding().getRoot(), field -> {
-			if (animalExposureProperties.contains(field.getSubPropertyId())) {
-				YesNoUnknown value = (YesNoUnknown) field.getValue();
-				if (YesNoUnknown.YES.equals(value)) {
-					return false;
-				}
-			}
-			return true;
-		});
-		boolean hadAnimalExposure = iterationCancelled;
-		getContentBinding().setAnimalExposureDependentVisibility(hadAnimalExposure ? View.VISIBLE : View.GONE);
+		contentBinding.setExposureList(exposures);
+		contentBinding.setExposureItemClickCallback(onExposureItemClickListener);
+		contentBinding.setExposureListBindCallback(
+			v -> FieldVisibilityAndAccessHelper
+				.setFieldVisibilitiesAndAccesses(ExposureDto.class, (ViewGroup) v, new FieldVisibilityCheckers(), getFieldAccessCheckers()));
 	}
 
 	@Override
 	public void onAfterLayoutBinding(FragmentReadEpidLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
+		if (record.getExposureDetailsKnown() != YesNoUnknown.YES) {
+			contentBinding.exposuresLayout.setVisibility(View.GONE);
+		}
 
-		final Disease disease = getDiseaseOfCaseOrContact(getActivityRootData());
-		if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(disease) > 0) {
-			contentBinding.epiDataTraveled.setCaption(
-				String.format(
-					I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod),
-					DiseaseConfigurationCache.getInstance().getFollowUpDuration(disease)));
+		if (!(getActivityRootData() instanceof Case)) {
+			contentBinding.epiDataContactWithSourceCaseKnown.setVisibility(GONE);
 		}
 	}
 
@@ -220,8 +147,4 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 		return R.layout.fragment_read_epid_layout;
 	}
 
-	private void setFieldAccesses(Class<?> dtoClass, View view) {
-		FieldVisibilityAndAccessHelper
-			.setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) view, new FieldVisibilityCheckers(), getFieldAccessCheckers());
-	}
 }

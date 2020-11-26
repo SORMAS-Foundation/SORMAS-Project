@@ -48,7 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
+import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -320,7 +320,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
 		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
 		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
-			ExternalPersonValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
+			PatientDiaryPersonValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());
 			}
@@ -340,28 +340,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (StringUtils.isEmpty(source.getLastName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
-	}
-
-	@Override
-	public List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PersonQuarantineEndDto> cq = cb.createQuery(PersonQuarantineEndDto.class);
-		Root<Contact> contactRoot = cq.from(Contact.class);
-		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
-
-		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
-		if (since != null) {
-			filter = PersonService.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.QUARANTINE_TO));
-		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.QUARANTINE_TO)));
-
-		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
 	}
 
 	@Override

@@ -15,12 +15,16 @@
 
 package de.symeda.sormas.backend.event;
 
-import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
-import de.symeda.sormas.backend.user.UserService;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+
+import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
+import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
+import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless(name = "EventParticipantJurisdictionChecker")
 @LocalBean
@@ -28,21 +32,8 @@ public class EventParticipantJurisdictionChecker {
 
 	@EJB
 	private UserService userService;
-
-	public boolean isInJurisdictionOrOwned(EventParticipant eventParticipant) {
-
-		return isInJurisdictionOrOwned(createEventParticipantJurisdictionDto(eventParticipant));
-	}
-
-	public boolean isInJurisdictionOrOwned(EventParticipantJurisdictionDto eventParticipantJurisdiction) {
-		/*
-		 * User user = userService.getCurrentUser();
-		 * return EventParticipantJurisdictionHelper
-		 * .isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user),
-		 * eventParticipantJurisdiction);
-		 */
-		return true;
-	}
+	@EJB
+	private EventParticipantService eventParticipantService;
 
 	private EventParticipantJurisdictionDto createEventParticipantJurisdictionDto(EventParticipant eventParticipant) {
 		EventParticipantJurisdictionDto jurisdiction = new EventParticipantJurisdictionDto();
@@ -51,6 +42,62 @@ public class EventParticipantJurisdictionChecker {
 			jurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
 		}
 
+		if (eventParticipant.getRegion() != null) {
+			jurisdiction.setRegionUuid(eventParticipant.getRegion().getUuid());
+		}
+
+		if (eventParticipant.getDistrict() != null) {
+			jurisdiction.setDistrictUuid(eventParticipant.getDistrict().getUuid());
+		}
+
 		return jurisdiction;
+	}
+
+	public boolean isInEventJurisdiction(EventParticipant eventParticipant) {
+		User user = userService.getCurrentUser();
+		Event event = eventParticipant.getEvent();
+
+		return EventJurisdictionHelper.isInJurisdiction(
+			user.getJurisdictionLevel(),
+			JurisdictionHelper.createUserJurisdiction(user),
+			JurisdictionHelper.createEventJurisdictionDto(event));
+	}
+
+	public boolean isOwned(EventParticipant eventParticipant) {
+		User user = userService.getCurrentUser();
+
+		return EventParticipantJurisdictionHelper
+			.isOwned(JurisdictionHelper.createUserJurisdiction(user), createEventParticipantJurisdictionDto(eventParticipant));
+	}
+
+	public boolean isInJurisdiction(EventParticipant eventParticipant) {
+		User user = userService.getCurrentUser();
+
+		EventParticipantJurisdictionDto eventParticipantJurisdiction = createEventParticipantJurisdictionDto(eventParticipant);
+
+		boolean isInEventParticipantJuristiction = EventParticipantJurisdictionHelper
+			.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), eventParticipantJurisdiction);
+
+		boolean isInEventJurisdiction = isInEventJurisdiction(eventParticipant);
+
+		if (eventParticipantJurisdiction.getRegionUuid() == null && eventParticipantJurisdiction.getDistrictUuid() == null) {
+			return isInEventJurisdiction;
+		} else {
+			return isInEventParticipantJuristiction;
+		}
+	}
+
+	public boolean isPseudonymized(EventParticipant eventParticipant) {
+		boolean isOwned = isOwned(eventParticipant);
+		boolean isInEventParticipantJurisdiction = isInJurisdiction(eventParticipant);
+		boolean isInEventJurisdiction = isInEventJurisdiction(eventParticipant);
+
+		return isOwned || isInEventParticipantJurisdiction || isInEventJurisdiction;
+	}
+
+	public boolean isPseudonymized(String eventParticipantUuid) {
+		EventParticipant eventParticipant = eventParticipantService.getByUuid(eventParticipantUuid);
+
+		return isPseudonymized(eventParticipant);
 	}
 }
