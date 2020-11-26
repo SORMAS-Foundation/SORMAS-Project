@@ -19,6 +19,7 @@ public interface Validations {
 	String campaignDashboardChartValueNull = "campaignDashboardChartValueNull";
 	String campaignDashboardDataFormValueDuplicate = "campaignDashboardDataFormValueDuplicate";
 	String campaignDashboardDataFormValueNull = "campaignDashboardDataFormValueNull";
+	String campaignFormDataImportMissingColumnError = "campaignFormDataImportMissingColumnError";
 	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";

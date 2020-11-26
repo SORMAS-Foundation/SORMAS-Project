@@ -58,11 +58,11 @@ public class CampaignFormDataImporter extends DataImporter {
 		File inputFile,
 		boolean hasEntityClassRow,
 		UserReferenceDto currentUser,
-		String campaignUUID,
-		CampaignReferenceDto campaignFormDataDto) {
+		String campaignFormMetaUUID,
+		CampaignReferenceDto campaignReferenceDto) {
 		super(inputFile, hasEntityClassRow, currentUser);
-		this.campaignFormMetaUUID = campaignUUID;
-		this.campaignReferenceDto = campaignFormDataDto;
+		this.campaignFormMetaUUID = campaignFormMetaUUID;
+		this.campaignReferenceDto = campaignReferenceDto;
 
 		this.userFacade = FacadeProvider.getUserFacade();
 	}
@@ -94,10 +94,23 @@ public class CampaignFormDataImporter extends DataImporter {
 			CampaignFormMetaDto campaginMetaDto = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormMetaUUID);
 			campaignFormData.setCampaign(campaignReferenceDto);
 			campaignFormData.setCampaignFormMeta(new CampaignFormMetaReferenceDto(campaignFormMetaUUID, campaginMetaDto.getFormName()));
-			Map<String, String> invalidEntries = validateFormValues(campaginMetaDto, campaignFormData);
-			if (!invalidEntries.isEmpty()) {
-				for (String e : invalidEntries.keySet()) {
-					writeImportError(values, I18nProperties.getValidationError(Validations.importWrongDataTypeError, invalidEntries.get(e), e));
+			final Map<CampaignValidationError, Map<String, String>> campaignValidationErrorMapMap =
+				validateFormValues(campaginMetaDto, campaignFormData);
+			final Map<String, String> invalidDataTypeEntries = campaignValidationErrorMapMap.get(CampaignValidationError.INVALID_DATA_TYPE);
+			final Map<String, String> missingColumnEntries = campaignValidationErrorMapMap.get(CampaignValidationError.MISSING_COLUMN);
+			if (!invalidDataTypeEntries.isEmpty()) {
+				for (String formElementId : invalidDataTypeEntries.keySet()) {
+					writeImportError(
+						values,
+						I18nProperties
+							.getValidationError(Validations.importWrongDataTypeError, invalidDataTypeEntries.get(formElementId), formElementId));
+				}
+				return ImportLineResult.ERROR;
+			} else if (!missingColumnEntries.isEmpty()) {
+				for (String formDataEntryId : missingColumnEntries.keySet()) {
+					writeImportError(
+						values,
+						I18nProperties.getValidationError(Validations.campaignFormDataImportMissingColumnError, formDataEntryId));
 				}
 				return ImportLineResult.ERROR;
 			} else {
@@ -111,17 +124,24 @@ public class CampaignFormDataImporter extends DataImporter {
 		return ImportLineResult.SUCCESS;
 	}
 
-	private Map<String, String> validateFormValues(CampaignFormMetaDto campaginMetaDto, CampaignFormDataDto campaignFormData) {
-		Map<String, String> wrongEntries = new LinkedHashMap<>();
-		List<CampaignFormElement> formElements = campaginMetaDto.getCampaignFormElements();
+	private Map<CampaignValidationError, Map<String, String>> validateFormValues(
+		CampaignFormMetaDto campaginMetaDto,
+		CampaignFormDataDto campaignFormData) {
+		final Map<CampaignValidationError, Map<String, String>> wrongEntries = new LinkedHashMap<>();
+		final Map<String, String> wrongDataTypeEntries = new LinkedHashMap<>();
+		final Map<String, String> missingColumnEntries = new LinkedHashMap<>();
+		wrongEntries.put(CampaignValidationError.INVALID_DATA_TYPE, wrongDataTypeEntries);
+		wrongEntries.put(CampaignValidationError.MISSING_COLUMN, missingColumnEntries);
+		final List<CampaignFormElement> formElements = campaginMetaDto.getCampaignFormElements();
 		Optional<CampaignFormElement> formElementOptional;
 		for (CampaignFormDataEntry formDataEntry : campaignFormData.getFormValues()) {
 			formElementOptional = formElements.stream().filter(formElement -> formElement.getId().equals(formDataEntry.getId())).findFirst();
 			if (formElementOptional.isPresent()) {
 				if (!isEntryValid(formElementOptional.get(), formDataEntry)) {
-					wrongEntries.put(formElementOptional.get().getId(), formDataEntry.getValue().toString());
-
+					wrongDataTypeEntries.put(formElementOptional.get().getId(), formDataEntry.getValue().toString());
 				}
+			} else {
+				missingColumnEntries.put(formDataEntry.getId(), formDataEntry.getValue().toString());
 			}
 		}
 		return wrongEntries;
@@ -251,5 +271,10 @@ public class CampaignFormDataImporter extends DataImporter {
 			}
 		}
 		return returnBoolean;
+	}
+
+	public enum CampaignValidationError {
+		INVALID_DATA_TYPE,
+		MISSING_COLUMN
 	}
 }
