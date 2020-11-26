@@ -439,6 +439,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			.addValueChangedListener(e -> contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE));
 		contentBinding.caseDataQuarantineReduced
 			.addValueChangedListener(e -> contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE));
+
+		CaseValidator.initializeProhibitionToWorkIntervalValidator(contentBinding);
 	}
 
 	@Override

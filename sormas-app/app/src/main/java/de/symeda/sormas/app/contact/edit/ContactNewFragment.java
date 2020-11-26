@@ -142,7 +142,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			contentBinding.contactContactCategory.setVisibility(GONE);
 		}
 
-		ContactValidator.initializeValidation(record, contentBinding);
+		ContactValidator.initializeLastContactDateValidation(record, contentBinding);
 	}
 
 	/*
