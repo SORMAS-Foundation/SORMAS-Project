@@ -6,8 +6,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.Date;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.server.Page;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -69,24 +67,27 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_STATUS, 140));
 
 		final UserDto user = UserProvider.getCurrent().getUser();
-		if (user.getRegion() == null && user.getDistrict() == null) {
-			final ComboBox regionField = addField(FieldConfiguration.pixelSized(TaskIndexDto.REGION, 200));
-			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		if (user.getDistrict() == null) {
+			if (user.getRegion() == null) {
+				final ComboBox regionField = addField(FieldConfiguration.pixelSized(TaskIndexDto.REGION, 200));
+				regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-			final ComboBox districtField = addDistrictField();
-			districtField.setEnabled(false);
+				final ComboBox districtField = addDistrictField();
+				districtField.setEnabled(false);
 
-			regionField.addValueChangeListener(e -> {
-				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-				if (StringUtils.isNotBlank(region.getUuid())) {
-					districtField.setEnabled(true);
-					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-				} else {
-					districtField.setEnabled(false);
-				}
-			});
-		} else if (user.getDistrict() == null) {
-			FieldHelper.updateItems(addDistrictField(), FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+				regionField.addValueChangeListener(e -> {
+					RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+					boolean hasRegion = null != region;
+					districtField.setEnabled(hasRegion);
+					if (hasRegion) {
+						FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+					} else {
+						districtField.setValue(null);
+					}
+				});
+			} else {
+				FieldHelper.updateItems(addDistrictField(), FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+			}
 		}
 
 		addField(FieldConfiguration.withCaptionAndPixelSized(TaskCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptTaskSearchField), 200));

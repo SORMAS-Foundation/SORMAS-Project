@@ -80,27 +80,6 @@ public class SampleListEntry extends HorizontalLayout {
 			materialLabel.setWidth(50, Unit.PERCENTAGE);
 			topLeftLayout.addComponent(materialLabel);
 
-			Label dateTimeLabel = new Label(
-				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME) + ": "
-					+ DateFormatHelper.formatDate(sample.getSampleDateTime()));
-			topLeftLayout.addComponent(dateTimeLabel);
-
-			if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
-				Label purposeLabel = new Label(SamplePurpose.INTERNAL.toString());
-				topLeftLayout.addComponent(purposeLabel);
-			} else {
-				Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
-				topLeftLayout.addComponent(labLabel);
-			}
-		}
-		topLayout.addComponent(topLeftLayout);
-
-		VerticalLayout topRightLayout = new VerticalLayout();
-		{
-			topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
-			topRightLayout.setMargin(false);
-			topRightLayout.setSpacing(false);
-
 			Label resultLabel = new Label();
 			CssStyles.style(resultLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 			if (sample.getPathogenTestResult() != null) {
@@ -114,7 +93,7 @@ public class SampleListEntry extends HorizontalLayout {
 				resultLabel.setValue(DataHelper.toStringNullable(sample.getSpecimenCondition()));
 				resultLabel.addStyleName(CssStyles.LABEL_WARNING);
 			}
-			topRightLayout.addComponent(resultLabel);
+			topLeftLayout.addComponent(resultLabel);
 
 			Label referredLabel = new Label();
 			CssStyles.style(referredLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
@@ -132,7 +111,29 @@ public class SampleListEntry extends HorizontalLayout {
 					referredLabel.setValue(I18nProperties.getCaption(Captions.sampleNotShippedLong));
 				}
 			}
-			topRightLayout.addComponent(referredLabel);
+			topLeftLayout.addComponent(referredLabel);
+
+			Label dateTimeLabel = new Label(
+				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME) + ": "
+					+ DateFormatHelper.formatDate(sample.getSampleDateTime()));
+			topLeftLayout.addComponent(dateTimeLabel);
+
+			if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
+				Label purposeLabel = new Label(SamplePurpose.INTERNAL.toString());
+				topLeftLayout.addComponent(purposeLabel);
+			} else {
+				Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
+				topLeftLayout.addComponent(labLabel);
+			}
+		}
+
+		VerticalLayout topRightLayout = new VerticalLayout();
+		{
+			topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
+			topRightLayout.setMargin(false);
+			topRightLayout.setSpacing(false);
+
+			topLayout.addComponent(topLeftLayout);
 		}
 		topLayout.addComponent(topRightLayout);
 		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
@@ -156,7 +157,7 @@ public class SampleListEntry extends HorizontalLayout {
 				CssStyles.BUTTON_COMPACT);
 
 			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
+			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
 			setExpandRatio(editButton, 0);
 		}
 

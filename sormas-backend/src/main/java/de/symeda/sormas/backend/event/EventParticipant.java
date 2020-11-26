@@ -86,7 +86,7 @@ public class EventParticipant extends CoreAdo {
 		this.person = person;
 	}
 
-	@Column(length = 512, nullable = false)
+	@Column(length = 512)
 	public String getInvolvementDescription() {
 		return involvementDescription;
 	}

@@ -25,6 +25,7 @@ import java.util.Arrays;
 
 import org.joda.time.LocalDate;
 
+import com.google.common.collect.Sets;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -269,6 +270,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			getContent().addComponent(removeCaseButton, REMOVE_CASE_LOC);
 			removeCaseButton.setVisible(false);
 		}
+		if (asSourceContact) {
+			setEnabled(false, ContactDto.DISEASE, ContactDto.DISEASE_DETAILS);
+		}
 
 		addValueChangeListener(e -> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);
@@ -314,22 +318,22 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			case FACE_TO_FACE_LONG:
 			case TOUCHED_FLUID:
 			case AEROSOL:
-				contactCategory.setValue(ContactCategory.HIGH_RISK);
+				contactCategory.setValue(Sets.newHashSet(ContactCategory.HIGH_RISK));
 				break;
 			case MEDICAL_UNSAFE:
-				contactCategory.setValue(ContactCategory.HIGH_RISK_MED);
+				contactCategory.setValue(Sets.newHashSet(ContactCategory.HIGH_RISK_MED));
 				break;
 			case MEDICAL_LIMITED:
-				contactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
+				contactCategory.setValue(Sets.newHashSet(ContactCategory.MEDIUM_RISK_MED));
 				break;
 			case SAME_ROOM:
 			case FACE_TO_FACE_SHORT:
 			case MEDICAL_SAME_ROOM:
-				contactCategory.setValue(ContactCategory.LOW_RISK);
+				contactCategory.setValue(Sets.newHashSet(ContactCategory.LOW_RISK));
 				break;
 			case MEDICAL_DISTANT:
 			case MEDICAL_SAFE:
-				contactCategory.setValue(ContactCategory.NO_RISK);
+				contactCategory.setValue(Sets.newHashSet(ContactCategory.NO_RISK));
 				break;
 			default:
 			}
@@ -485,6 +489,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.PHONE,
 			PersonDto.EMAIL_ADDRESS);
+
+		setRequired(false, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 	}
 
 	public void setDiseaseReadOnly() {

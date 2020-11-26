@@ -20,10 +20,10 @@ package de.symeda.sormas.ui.contact;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.contact.ContactDto;
@@ -65,6 +65,17 @@ public class ContactListEntry extends HorizontalLayout {
 		contactUuid.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		contactUuid.setDescription(contact.getUuid());
 		leftLayout.addComponent(contactUuid);
+
+		Label contactClassification = new Label(contact.getContactClassification().toString());
+		contactClassification.addStyleName(CssStyles.LABEL_BOLD);
+		contactClassification.setDescription(contact.getContactClassification().toString());
+		contactClassification.setWidthFull();
+		leftLayout.addComponent(contactClassification);
+
+		Label contactStatus = new Label(contact.getContactStatus().toString());
+		contactStatus.setDescription(contact.getContactStatus().toString());
+		contactStatus.setWidthFull();
+		leftLayout.addComponent(contactStatus);
 
 		if (contact.getLastContactDate() != null) {
 			Label lastContactDate = new Label(
