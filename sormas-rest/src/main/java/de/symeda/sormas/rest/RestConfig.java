@@ -17,19 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
-import com.google.common.collect.Sets;
-import de.symeda.sormas.rest.external.ExternalVisitsResource;
-import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
-import io.swagger.v3.oas.integration.SwaggerConfiguration;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
+import javax.ws.rs.ApplicationPath;
+
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-
-import javax.ws.rs.ApplicationPath;
 
 import de.symeda.sormas.rest.swagger.SwaggerConfig;
 
