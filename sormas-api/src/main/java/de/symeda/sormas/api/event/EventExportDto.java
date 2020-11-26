@@ -31,6 +31,10 @@ public class EventExportDto implements Serializable {
 	private EventStatus eventStatus;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private long participantsCount;
+	private long caseCount;
+	private long deathCount;
+	private long contactCount; // number of contacts who are also event participants
+	private long contactCountSourceInEvent; // number of contacts who are also event participants, and whose source case is also part of the event
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -63,6 +67,10 @@ public class EventExportDto implements Serializable {
 		EventStatus eventStatus,
 		EventInvestigationStatus eventInvestigationStatus,
 		long participantsCount,
+		long caseCount,
+		long deathCount,
+		long contactCount,
+		long contactCountSourceInEvent,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -96,6 +104,10 @@ public class EventExportDto implements Serializable {
 		this.eventStatus = eventStatus;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.participantsCount = participantsCount;
+		this.caseCount = caseCount;
+		this.deathCount = deathCount;
+		this.contactCount = contactCount;
+		this.contactCountSourceInEvent = contactCountSourceInEvent;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
@@ -340,6 +352,38 @@ public class EventExportDto implements Serializable {
 
 	public void setParticipantsCount(long participantsCount) {
 		this.participantsCount = participantsCount;
+	}
+
+	public long getCaseCount() {
+		return caseCount;
+	}
+
+	public void setCaseCount(long caseCount) {
+		this.caseCount = caseCount;
+	}
+
+	public long getDeathCount() {
+		return deathCount;
+	}
+
+	public void setDeathCount(long deathCount) {
+		this.deathCount = deathCount;
+	}
+
+	public long getContactCount() {
+		return contactCount;
+	}
+
+	public void setContactCount(long contactCount) {
+		this.contactCount = contactCount;
+	}
+
+	public long getContactCountSourceInEvent() {
+		return contactCountSourceInEvent;
+	}
+
+	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
+		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
 	public EventJurisdictionDto getJurisdiction() {
