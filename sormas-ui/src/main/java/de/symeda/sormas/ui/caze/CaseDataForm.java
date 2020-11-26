@@ -109,6 +109,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
@@ -529,13 +530,28 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addField(CaseDataDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		addFields(CaseDataDto.PROHIBITION_TO_WORK_FROM, CaseDataDto.PROHIBITION_TO_WORK_UNTIL);
+		DateField prohibitionToWorkFrom = addField(CaseDataDto.PROHIBITION_TO_WORK_FROM);
+		DateField prohibitionToWorkUntil = addField(CaseDataDto.PROHIBITION_TO_WORK_UNTIL);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(CaseDataDto.PROHIBITION_TO_WORK_FROM, CaseDataDto.PROHIBITION_TO_WORK_UNTIL),
 			CaseDataDto.PROHIBITION_TO_WORK,
 			YesNoUnknown.YES,
 			true);
+		prohibitionToWorkFrom.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkFrom,
+				prohibitionToWorkUntil,
+				true,
+				true,
+				I18nProperties.getValidationError(Validations.beforeDate, prohibitionToWorkFrom.getCaption(), prohibitionToWorkUntil.getCaption())));
+		prohibitionToWorkUntil.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkUntil,
+				prohibitionToWorkFrom,
+				false,
+				true,
+				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
 		tfReportLat.setConverter(new StringToAngularLocationConverter());

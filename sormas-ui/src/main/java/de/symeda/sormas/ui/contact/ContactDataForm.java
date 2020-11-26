@@ -82,6 +82,7 @@ import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -234,14 +235,29 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		cbDisease.setNullSelectionAllowed(false);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 
-		addField(CaseDataDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		addFields(CaseDataDto.PROHIBITION_TO_WORK_FROM, CaseDataDto.PROHIBITION_TO_WORK_UNTIL);
+		addField(ContactDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		DateField prohibitionToWorkFrom = addField(ContactDto.PROHIBITION_TO_WORK_FROM);
+		DateField prohibitionToWorkUntil = addField(ContactDto.PROHIBITION_TO_WORK_UNTIL);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(CaseDataDto.PROHIBITION_TO_WORK_FROM, CaseDataDto.PROHIBITION_TO_WORK_UNTIL),
-			CaseDataDto.PROHIBITION_TO_WORK,
+			Arrays.asList(ContactDto.PROHIBITION_TO_WORK_FROM, ContactDto.PROHIBITION_TO_WORK_UNTIL),
+			ContactDto.PROHIBITION_TO_WORK,
 			YesNoUnknown.YES,
 			true);
+		prohibitionToWorkFrom.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkFrom,
+				prohibitionToWorkUntil,
+				true,
+				true,
+				I18nProperties.getValidationError(Validations.beforeDate, prohibitionToWorkFrom.getCaption(), prohibitionToWorkUntil.getCaption())));
+		prohibitionToWorkUntil.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkUntil,
+				prohibitionToWorkFrom,
+				false,
+				true,
+				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		quarantine = addField(ContactDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> onValueChange());
