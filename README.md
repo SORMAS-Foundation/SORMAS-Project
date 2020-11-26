@@ -27,6 +27,8 @@ SORMAS officially supports and is tested on **Chromium-based browsers** (like Go
 
 #### Is there a ReST API documentation?
 Yes! Please download the [latest release](https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest) and copy the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation (e.g. https://editor.swagger.io/).
+<br/>
+Runtime Swagger documentation of the External Visits Resource (used by external symptom journals such as CLIMEDO or PIA) is also available at ``<<host>>/sormas-rest/openapi.json`` or ``<<host>>/sormas-rest/openapi.yaml``
 
 <p align="center"><img src="https://user-images.githubusercontent.com/23701005/74659600-ebb8fc00-5194-11ea-836b-a7ca9d682301.png"/></p>
 
