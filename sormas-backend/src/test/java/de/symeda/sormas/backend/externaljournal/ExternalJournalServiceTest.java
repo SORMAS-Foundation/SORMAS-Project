@@ -10,11 +10,13 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,14 +35,8 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		MockitoAnnotations.initMocks(this);
 		PatientDiaryQueryResponse queryResponse = new PatientDiaryQueryResponse();
 		queryResponse.setCount(0);
-		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test.de");
-		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test");
-		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService).queryPatientDiary("Email", "heinz@test.de");
-		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService)
-			.queryPatientDiary("Mobile phone", "+49 621 1218490");
-		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService)
-			.queryPatientDiary("Mobile phone", "+49 621 1218491");
-		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "0");;
+		queryResponse.setResults(Collections.emptyList());
+		doReturn(Optional.of(queryResponse)).when(externalJournalService).queryPatientDiary(Mockito.any(String.class), Mockito.any(String.class));
 	}
 
 	@Test

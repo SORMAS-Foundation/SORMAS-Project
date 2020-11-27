@@ -301,7 +301,7 @@ public class ExternalJournalService {
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
 	 */
-	public PatientDiaryRegisterResult registerPatientDiaryPerson(de.symeda.sormas.api.person.PersonDto person) {
+	public PatientDiaryRegisterResult registerPatientDiaryPerson(PersonDto person) {
 		try {
 			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(person.getUuid());
 			Response response = invocationBuilder.post(Entity.json(""));
@@ -338,7 +338,7 @@ public class ExternalJournalService {
 	 *            the person to validate
 	 * @return the result of the validation
 	 */
-	public ExternalJournalValidation validatePatientDiaryPerson(de.symeda.sormas.api.person.PersonDto person) {
+	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
 
 		String email = person.getEmailAddress();
@@ -385,7 +385,7 @@ public class ExternalJournalService {
 		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
 	}
 
-	private boolean isEmailAvailable(de.symeda.sormas.api.person.PersonDto person) {
+	private boolean isEmailAvailable(PersonDto person) {
 		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
 			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
 		boolean notUsed = response.getCount() == 0;
@@ -398,7 +398,7 @@ public class ExternalJournalService {
 		return notUsed || samePerson;
 	}
 
-	private boolean isPhoneAvailable(de.symeda.sormas.api.person.PersonDto person, String phone) {
+	private boolean isPhoneAvailable(PersonDto person, String phone) {
 		PatientDiaryQueryResponse response = queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, phone)
 			.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"));
 		boolean notUsed = response.getCount() == 0;
