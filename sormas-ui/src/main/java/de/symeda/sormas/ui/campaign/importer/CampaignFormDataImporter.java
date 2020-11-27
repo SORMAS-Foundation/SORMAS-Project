@@ -6,14 +6,13 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +31,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -48,20 +48,18 @@ public class CampaignFormDataImporter extends DataImporter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CampaignFormDataImporter.class);
 
-	private UI currentUI;
-	private String campaignFormMetaUUID;
-	private CampaignReferenceDto campaignReferenceDto;
-
-	private UserFacade userFacade;
+	private final String campaignFormMetaUuid;
+	private final CampaignReferenceDto campaignReferenceDto;
+	private final UserFacade userFacade;
 
 	public CampaignFormDataImporter(
 		File inputFile,
 		boolean hasEntityClassRow,
 		UserReferenceDto currentUser,
-		String campaignFormMetaUUID,
+		String campaignFormMetaUuid,
 		CampaignReferenceDto campaignReferenceDto) {
 		super(inputFile, hasEntityClassRow, currentUser);
-		this.campaignFormMetaUUID = campaignFormMetaUUID;
+		this.campaignFormMetaUuid = campaignFormMetaUuid;
 		this.campaignReferenceDto = campaignReferenceDto;
 
 		this.userFacade = FacadeProvider.getUserFacade();
@@ -71,7 +69,6 @@ public class CampaignFormDataImporter extends DataImporter {
 	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible)
 		throws IOException, CsvValidationException {
 
-		this.currentUI = currentUI;
 		super.startImport(addErrorReportToLayoutCallback, currentUI, duplicatesPossible);
 	}
 
@@ -83,6 +80,7 @@ public class CampaignFormDataImporter extends DataImporter {
 		String[][] entityPropertyPaths,
 		boolean firstLine)
 		throws IOException {
+
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
 			return ImportLineResult.ERROR;
@@ -90,33 +88,10 @@ public class CampaignFormDataImporter extends DataImporter {
 		CampaignFormDataDto campaignFormData = CampaignFormDataDto.build();
 
 		try {
-			campaignFormData = insertColumnEntryIntoData(campaignFormData, values, entityProperties);
-			CampaignFormMetaDto campaginMetaDto = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormMetaUUID);
+			insertImportRowIntoData(campaignFormData, values, entityProperties);
 			campaignFormData.setCampaign(campaignReferenceDto);
-			campaignFormData.setCampaignFormMeta(new CampaignFormMetaReferenceDto(campaignFormMetaUUID, campaginMetaDto.getFormName()));
-			final Map<CampaignValidationError, Map<String, String>> campaignValidationErrorMapMap =
-				validateFormValues(campaginMetaDto, campaignFormData);
-			final Map<String, String> invalidDataTypeEntries = campaignValidationErrorMapMap.get(CampaignValidationError.INVALID_DATA_TYPE);
-			final Map<String, String> missingColumnEntries = campaignValidationErrorMapMap.get(CampaignValidationError.MISSING_COLUMN);
-			if (!invalidDataTypeEntries.isEmpty()) {
-				for (String formElementId : invalidDataTypeEntries.keySet()) {
-					writeImportError(
-						values,
-						I18nProperties
-							.getValidationError(Validations.importWrongDataTypeError, invalidDataTypeEntries.get(formElementId), formElementId));
-				}
-				return ImportLineResult.ERROR;
-			} else if (!missingColumnEntries.isEmpty()) {
-				for (String formDataEntryId : missingColumnEntries.keySet()) {
-					writeImportError(
-						values,
-						I18nProperties.getValidationError(Validations.campaignFormDataImportMissingColumnError, formDataEntryId));
-				}
-				return ImportLineResult.ERROR;
-			} else {
-				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(campaignFormData);
-			}
-		} catch (ImportErrorException e) {
+			FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(campaignFormData);
+		} catch (ImportErrorException | InvalidColumnException e) {
 			writeImportError(values, e.getLocalizedMessage());
 			return ImportLineResult.ERROR;
 		}
@@ -124,67 +99,32 @@ public class CampaignFormDataImporter extends DataImporter {
 		return ImportLineResult.SUCCESS;
 	}
 
-	private Map<CampaignValidationError, Map<String, String>> validateFormValues(
-		CampaignFormMetaDto campaginMetaDto,
-		CampaignFormDataDto campaignFormData) {
-		final Map<CampaignValidationError, Map<String, String>> wrongEntries = new LinkedHashMap<>();
-		final Map<String, String> wrongDataTypeEntries = new LinkedHashMap<>();
-		final Map<String, String> missingColumnEntries = new LinkedHashMap<>();
-		wrongEntries.put(CampaignValidationError.INVALID_DATA_TYPE, wrongDataTypeEntries);
-		wrongEntries.put(CampaignValidationError.MISSING_COLUMN, missingColumnEntries);
-		final List<CampaignFormElement> formElements = campaginMetaDto.getCampaignFormElements();
-		Optional<CampaignFormElement> formElementOptional;
-		for (CampaignFormDataEntry formDataEntry : campaignFormData.getFormValues()) {
-			formElementOptional = formElements.stream().filter(formElement -> formElement.getId().equals(formDataEntry.getId())).findFirst();
-			if (formElementOptional.isPresent()) {
-				if (!isEntryValid(formElementOptional.get(), formDataEntry)) {
-					wrongDataTypeEntries.put(formElementOptional.get().getId(), formDataEntry.getValue().toString());
-				}
-			} else {
-				missingColumnEntries.put(formDataEntry.getId(), formDataEntry.getValue().toString());
-			}
-		}
-		return wrongEntries;
-	}
-
 	private boolean isEntryValid(CampaignFormElement definition, CampaignFormDataEntry entry) {
 		if (definition.getType().equalsIgnoreCase(CampaignFormElementType.NUMBER.toString())) {
-			if (!NumberUtils.isParsable(entry.getValue().toString())) {
-				return false;
-			}
+			return NumberUtils.isParsable(entry.getValue().toString());
 		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.TEXT.toString())) {
-			if (entry.getValue().toString().matches("[0-9]+")) {
-				return false;
-			}
+			return !entry.getValue().toString().matches("[0-9]+");
 		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.YES_NO.toString())) {
-			if (!Arrays.asList(CampaignFormElementType.YES_NO.getAllowedValues()).contains(entry.getValue().toString())) {
-				return false;
-			}
+			return Arrays.asList(CampaignFormElementType.YES_NO.getAllowedValues()).contains(entry.getValue().toString());
 		}
 		return true;
 	}
 
-	private CampaignFormDataDto insertColumnEntryIntoData(CampaignFormDataDto campaignFormData, String[] entry, String[] entryHeaderPath)
-		throws ImportErrorException {
-		CampaignFormDataDto currentElement = campaignFormData;
+	private void insertImportRowIntoData(CampaignFormDataDto campaignFormData, String[] entry, String[] entryHeaderPath)
+		throws InvalidColumnException, ImportErrorException {
+
+		CampaignFormMetaDto campaignMetaDto = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormMetaUuid);
+		campaignFormData.setCampaignFormMeta(new CampaignFormMetaReferenceDto(campaignFormMetaUuid, campaignMetaDto.getFormName()));
 		for (int i = 0; i < entry.length; i++) {
-			if (Objects.isNull(currentElement.getCommunity())) {
+			// Every element after community is a form value that's part of the JSON definition
+			if (Objects.isNull(campaignFormData.getCommunity())) {
 				try {
-					PropertyDescriptor propertyDescriptor = null;
-					propertyDescriptor = new PropertyDescriptor(entryHeaderPath[i], currentElement.getClass());
+					PropertyDescriptor propertyDescriptor = new PropertyDescriptor(entryHeaderPath[i], campaignFormData.getClass());
 					Class<?> propertyType = propertyDescriptor.getPropertyType();
-					if (!executeDefaultInvokings(propertyDescriptor, currentElement, entry[i], entryHeaderPath)) {
+					if (!executeDefaultInvokings(propertyDescriptor, campaignFormData, entry[i], entryHeaderPath)) {
 						final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
 						final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUserDto.getUserRoles());
-						/*
-						 * if (propertyType.isAssignableFrom(CampaignReferenceDto.class)) {
-						 * CampaignDto campaign = FacadeProvider.getCampaignFacade().getByUuid(entry[i]);
-						 * if (Objects.nonNull(campaign)) {
-						 * propertyDescriptor.getWriteMethod().invoke(currentElement, new CampaignReferenceDto(campaign.getUuid(),
-						 * campaign.getName()));
-						 * }
-						 * } else
-						 */
+
 						if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 							if (jurisdictionLevel == JurisdictionLevel.DISTRICT && !currentUserDto.getDistrict().getCaption().equals(entry[i])) {
 								throw new ImportErrorException(
@@ -194,7 +134,7 @@ public class CampaignFormDataImporter extends DataImporter {
 										buildEntityProperty(entryHeaderPath)));
 							}
 							List<DistrictReferenceDto> district =
-								FacadeProvider.getDistrictFacade().getByName(entry[i], currentElement.getRegion(), true);
+								FacadeProvider.getDistrictFacade().getByName(entry[i], campaignFormData.getRegion(), true);
 							if (district.isEmpty()) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(
@@ -206,7 +146,7 @@ public class CampaignFormDataImporter extends DataImporter {
 									I18nProperties
 										.getValidationError(Validations.importDistrictNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 							} else {
-								propertyDescriptor.getWriteMethod().invoke(currentElement, district.get(0));
+								propertyDescriptor.getWriteMethod().invoke(campaignFormData, district.get(0));
 							}
 						} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
 							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUserDto.getCommunity().getCaption().equals(entry[i])) {
@@ -217,7 +157,7 @@ public class CampaignFormDataImporter extends DataImporter {
 										buildEntityProperty(entryHeaderPath)));
 							}
 							List<CommunityReferenceDto> community =
-								FacadeProvider.getCommunityFacade().getByName(entry[i], currentElement.getDistrict(), true);
+								FacadeProvider.getCommunityFacade().getByName(entry[i], campaignFormData.getDistrict(), true);
 							if (community.isEmpty()) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(
@@ -229,37 +169,56 @@ public class CampaignFormDataImporter extends DataImporter {
 									I18nProperties
 										.getValidationError(Validations.importCommunityNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 							} else {
-								propertyDescriptor.getWriteMethod().invoke(currentElement, community.get(0));
+								propertyDescriptor.getWriteMethod().invoke(campaignFormData, community.get(0));
 							}
 						}
 					}
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
+				} catch (InvocationTargetException | IllegalAccessException e) {
+					throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
 				} catch (IntrospectionException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+					throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
+				} catch (Exception e) {
+					LOGGER.error("Unexpected error when trying to import campaign form data: " + e.getMessage(), e);
+					throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
 				}
 			} else {
 				CampaignFormDataEntry formEntry = new CampaignFormDataEntry(entryHeaderPath[i], entry[i]);
-				if (Objects.nonNull(currentElement.getFormValues())) {
-					List<CampaignFormDataEntry> currentElementFormValues = currentElement.getFormValues();
+
+				Optional<CampaignFormElement> formElementOptional =
+					campaignMetaDto.getCampaignFormElements().stream().filter(e -> e.getId().equals(formEntry.getId())).findFirst();
+				if (!formElementOptional.isPresent()) {
+					throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.campaignFormDataImportMissingColumnError, entryHeaderPath[i]));
+				} else if (Objects.nonNull(formEntry.getValue())
+					&& StringUtils.isNotBlank(formEntry.getValue().toString())
+					&& !isEntryValid(formElementOptional.get(), formEntry)) {
+					throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.importWrongDataTypeError, entry[i], entryHeaderPath[i]));
+				}
+
+				if (formEntry.getValue() == null || StringUtils.isBlank(formEntry.getValue().toString())) {
+					continue;
+				}
+
+				if (Objects.nonNull(campaignFormData.getFormValues())) {
+					List<CampaignFormDataEntry> currentElementFormValues = campaignFormData.getFormValues();
 					currentElementFormValues.add(formEntry);
-					currentElement.setFormValues(currentElementFormValues);
+					campaignFormData.setFormValues(currentElementFormValues);
 				} else {
-					List formValues = new LinkedList();
+					List<CampaignFormDataEntry> formValues = new LinkedList<>();
 					formValues.add(formEntry);
-					currentElement.setFormValues(formValues);
+					campaignFormData.setFormValues(formValues);
 				}
 			}
 		}
-		return currentElement;
 	}
 
 	@Override
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
 		throws InvocationTargetException, IllegalAccessException, ImportErrorException {
-		final boolean returnBoolean = super.executeDefaultInvokings(pd, element, entry, entryHeaderPath);
+
+		final boolean invokingSuccessful = super.executeDefaultInvokings(pd, element, entry, entryHeaderPath);
 		final Class<?> propertyType = pd.getPropertyType();
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
 			final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
@@ -270,11 +229,11 @@ public class CampaignFormDataImporter extends DataImporter {
 						.getValidationError(Validations.importEntryRegionNotInUsersJurisdiction, entry, buildEntityProperty(entryHeaderPath)));
 			}
 		}
-		return returnBoolean;
+		return invokingSuccessful;
 	}
 
-	public enum CampaignValidationError {
-		INVALID_DATA_TYPE,
-		MISSING_COLUMN
+	@Override
+	protected String getErrorReportFileName() {
+		return "campaign_data_import_error_report.csv";
 	}
 }
