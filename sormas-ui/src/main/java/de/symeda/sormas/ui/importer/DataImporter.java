@@ -82,6 +82,7 @@ public abstract class DataImporter {
 	 * The file path to the generated error report file that lists all problems that occurred during the import.
 	 */
 	protected String errorReportFilePath;
+	protected String errorReportFileName = "sormas_import_error_report.csv";
 	/**
 	 * Called whenever one line of the import file has been processed. Used e.g. to update the progress bar.
 	 */
@@ -206,10 +207,8 @@ public abstract class DataImporter {
 
 		long t0 = System.currentTimeMillis();
 
-		try (CSVReader csvReader = CSVUtils.createCSVReader(
-				Files.newBufferedReader(inputFile.toPath(), UTF_8),
-				this.csvSeparator,
-				new CSVCommentLineValidator())) {
+		try (CSVReader csvReader =
+			CSVUtils.createCSVReader(Files.newBufferedReader(inputFile.toPath(), UTF_8), this.csvSeparator, new CSVCommentLineValidator())) {
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), this.csvSeparator);
 
 			// Build dictionary of entity headers
@@ -292,7 +291,7 @@ public abstract class DataImporter {
 	protected StreamResource createErrorReportStreamResource() {
 		return DownloadUtil.createFileStreamResource(
 			errorReportFilePath,
-			"sormas_import_error_report.csv",
+			getErrorReportFileName(),
 			"text/csv",
 			I18nProperties.getString(Strings.headingErrorReportNotAvailable),
 			I18nProperties.getString(Strings.messageErrorReportNotAvailable));
@@ -304,8 +303,7 @@ public abstract class DataImporter {
 	 */
 	protected int readImportFileLength(File inputFile) throws IOException, CsvValidationException {
 		int importFileLength = 0;
-		try (CSVReader caseCountReader =
-			CSVUtils.createCSVReader(new FileReader(inputFile), this.csvSeparator, new CSVCommentLineValidator())) {
+		try (CSVReader caseCountReader = CSVUtils.createCSVReader(new FileReader(inputFile), this.csvSeparator, new CSVCommentLineValidator())) {
 
 			while (readNextValidLine(caseCountReader) != null) {
 				importFileLength++;
@@ -525,5 +523,9 @@ public abstract class DataImporter {
 
 	public void setCsvSeparator(char csvSeparator) {
 		this.csvSeparator = csvSeparator;
+	}
+
+	protected String getErrorReportFileName() {
+		return errorReportFileName;
 	}
 }
