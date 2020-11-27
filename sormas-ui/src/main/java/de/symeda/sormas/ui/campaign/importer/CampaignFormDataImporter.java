@@ -121,63 +121,57 @@ public class CampaignFormDataImporter extends DataImporter {
 				try {
 					PropertyDescriptor propertyDescriptor = new PropertyDescriptor(entryHeaderPath[i], campaignFormData.getClass());
 					Class<?> propertyType = propertyDescriptor.getPropertyType();
-					if (!executeDefaultInvokings(propertyDescriptor, campaignFormData, entry[i], entryHeaderPath)) {
+					if (!executeDefaultInvokings(
+						propertyDescriptor,
+						campaignFormData,
+						entry[i],
+						new String[] {
+							entryHeaderPath[i] })) {
 						final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
 						final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUserDto.getUserRoles());
 
 						if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 							if (jurisdictionLevel == JurisdictionLevel.DISTRICT && !currentUserDto.getDistrict().getCaption().equals(entry[i])) {
 								throw new ImportErrorException(
-									I18nProperties.getValidationError(
-										Validations.importEntryDistrictNotInUsersJurisdiction,
-										entry,
-										buildEntityProperty(entryHeaderPath)));
+									I18nProperties
+										.getValidationError(Validations.importEntryDistrictNotInUsersJurisdiction, entry[i], entryHeaderPath[i]));
 							}
 							List<DistrictReferenceDto> district =
 								FacadeProvider.getDistrictFacade().getByName(entry[i], campaignFormData.getRegion(), true);
 							if (district.isEmpty()) {
 								throw new ImportErrorException(
-									I18nProperties.getValidationError(
-										Validations.importEntryDoesNotExistDbOrRegion,
-										entry,
-										buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry[i], entryHeaderPath[i]));
 							} else if (district.size() > 1) {
 								throw new ImportErrorException(
-									I18nProperties
-										.getValidationError(Validations.importDistrictNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry[i], entryHeaderPath[i]));
 							} else {
 								propertyDescriptor.getWriteMethod().invoke(campaignFormData, district.get(0));
 							}
 						} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
 							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUserDto.getCommunity().getCaption().equals(entry[i])) {
 								throw new ImportErrorException(
-									I18nProperties.getValidationError(
-										Validations.importEntryCommunityNotInUsersJurisdiction,
-										entry,
-										buildEntityProperty(entryHeaderPath)));
+									I18nProperties
+										.getValidationError(Validations.importEntryCommunityNotInUsersJurisdiction, entry[i], entryHeaderPath[i]));
 							}
 							List<CommunityReferenceDto> community =
 								FacadeProvider.getCommunityFacade().getByName(entry[i], campaignFormData.getDistrict(), true);
 							if (community.isEmpty()) {
 								throw new ImportErrorException(
-									I18nProperties.getValidationError(
-										Validations.importEntryDoesNotExistDbOrDistrict,
-										entry,
-										buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry[i], entryHeaderPath[i]));
 							} else if (community.size() > 1) {
 								throw new ImportErrorException(
-									I18nProperties
-										.getValidationError(Validations.importCommunityNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry[i], entryHeaderPath[i]));
 							} else {
 								propertyDescriptor.getWriteMethod().invoke(campaignFormData, community.get(0));
 							}
 						}
 					}
 				} catch (InvocationTargetException | IllegalAccessException e) {
-					throw new ImportErrorException(
-						I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
+					throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, entryHeaderPath[i]));
 				} catch (IntrospectionException e) {
-					throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
+					throw new InvalidColumnException(entryHeaderPath[i]);
+				} catch (ImportErrorException e) {
+					throw e;
 				} catch (Exception e) {
 					LOGGER.error("Unexpected error when trying to import campaign form data: " + e.getMessage(), e);
 					throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
@@ -185,14 +179,13 @@ public class CampaignFormDataImporter extends DataImporter {
 			} else {
 				CampaignFormDataEntry formEntry = new CampaignFormDataEntry(entryHeaderPath[i], entry[i]);
 
-				Optional<CampaignFormElement> formElementOptional =
+				Optional<CampaignFormElement> existingFormElement =
 					campaignMetaDto.getCampaignFormElements().stream().filter(e -> e.getId().equals(formEntry.getId())).findFirst();
-				if (!formElementOptional.isPresent()) {
-					throw new ImportErrorException(
-						I18nProperties.getValidationError(Validations.campaignFormDataImportMissingColumnError, entryHeaderPath[i]));
+				if (!existingFormElement.isPresent()) {
+					throw new ImportErrorException(I18nProperties.getValidationError(Validations.campaignFormElementNotExisting, entryHeaderPath[i]));
 				} else if (Objects.nonNull(formEntry.getValue())
 					&& StringUtils.isNotBlank(formEntry.getValue().toString())
-					&& !isEntryValid(formElementOptional.get(), formEntry)) {
+					&& !isEntryValid(existingFormElement.get(), formEntry)) {
 					throw new ImportErrorException(
 						I18nProperties.getValidationError(Validations.importWrongDataTypeError, entry[i], entryHeaderPath[i]));
 				}

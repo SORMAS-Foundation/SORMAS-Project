@@ -54,7 +54,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
-import de.symeda.sormas.ui.campaign.importer.CampaignImportLayout;
+import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -198,7 +198,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 			Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
 				try {
-					Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignImportLayout(campaignForm, campaignCombo.getValue()));
+					Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignFormDataImportLayout(campaignForm, campaignCombo.getValue()));
 					popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
 					popupWindow.addCloseListener(c -> grid.reload());
 				} catch (IOException ioException) {

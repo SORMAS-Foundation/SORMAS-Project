@@ -12,23 +12,24 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
-public class CampaignImportLayout extends AbstractImportLayout {
+public class CampaignFormDataImportLayout extends AbstractImportLayout {
 
 	private static final long serialVersionUID = 4380218570798586587L;
 
-	public CampaignImportLayout(CampaignFormMetaReferenceDto campaignForm, CampaignReferenceDto campaignReferenceDto) throws IOException {
+	public CampaignFormDataImportLayout(CampaignFormMetaReferenceDto campaignForm, CampaignReferenceDto campaignReferenceDto) throws IOException {
 		super();
 
 		ImportFacade importFacade = FacadeProvider.getImportFacade();
 		importFacade.generateCampaignFormImportTemplateFile(campaignForm.getUuid());
 
-		String templateFileName =
-			campaignReferenceDto.getCaption().replaceAll(" ", "_") + "_" + campaignForm.getCaption().replaceAll(" ", "_") + ".csv";
+		String templateFileName = DataHelper.sanitizeFileName(campaignReferenceDto.getCaption().replaceAll(" ", "_")) + "_"
+			+ DataHelper.sanitizeFileName(campaignForm.getCaption().replaceAll(" ", "_")) + ".csv";
 		addDownloadImportTemplateComponent(1, importFacade.getCampaignFormImportTemplateFilePath(), templateFileName);
-		addImportCsvComponent(2, new ImportReceiver("_campaign_import_", file -> {
+		addImportCsvComponent(2, new ImportReceiver("_campaign_data_import_", file -> {
 			resetDownloadErrorReportButton();
 
 			try {
@@ -48,7 +49,6 @@ public class CampaignImportLayout extends AbstractImportLayout {
 
 	protected void addDownloadImportTemplateComponent(int step, String templateFilePath, String templateFileName) {
 		super.addDownloadImportTemplateComponent(step, templateFilePath, templateFileName);
-
 	}
 
 }
