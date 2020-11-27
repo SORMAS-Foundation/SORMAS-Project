@@ -60,6 +60,7 @@ public interface Captions {
 	String actionNewForm = "actionNewForm";
 	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
+	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
 	String actionReplyingLabel = "actionReplyingLabel";
 	String actionResetFilters = "actionResetFilters";
