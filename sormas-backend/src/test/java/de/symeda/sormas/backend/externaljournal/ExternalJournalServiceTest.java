@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.externaljournal;
 
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonQueryResponse;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
 import de.symeda.sormas.api.person.PersonDto;
 
 import de.symeda.sormas.api.person.Sex;
@@ -31,16 +31,16 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		PatientDiaryPersonQueryResponse patientDiaryPersonQueryResponse = new PatientDiaryPersonQueryResponse();
-		patientDiaryPersonQueryResponse.setCount(0);
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test.de");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "heinz@test.de");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService)
+		PatientDiaryQueryResponse queryResponse = new PatientDiaryQueryResponse();
+		queryResponse.setCount(0);
+		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test.de");
+		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test");
+		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService).queryPatientDiary("Email", "heinz@test.de");
+		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService)
 			.queryPatientDiary("Mobile phone", "+49 621 1218490");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService)
+		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService)
 			.queryPatientDiary("Mobile phone", "+49 621 1218491");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "0");;
+		doReturn(Optional.ofNullable(queryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "0");;
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void givenValidEmailIsExportable() {
-		PatientDiaryPersonQueryResponse response = new PatientDiaryPersonQueryResponse();
+		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
 		PersonDto person = new PersonDto();
 		person.setEmailAddress("test@test.de");

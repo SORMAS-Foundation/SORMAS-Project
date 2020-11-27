@@ -1,9 +1,9 @@
-package de.symeda.sormas.api.externaljournal;
+package de.symeda.sormas.api.externaljournal.patientdiary;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class PatientDiaryPersonQueryResponse implements Serializable {
+public class PatientDiaryQueryResponse implements Serializable {
 
 	private static final long serialVersionUID = -1089320137577059438L;
 

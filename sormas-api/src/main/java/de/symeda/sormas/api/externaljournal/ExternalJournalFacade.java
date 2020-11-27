@@ -2,7 +2,8 @@ package de.symeda.sormas.api.externaljournal;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 
 @Remote
 public interface ExternalJournalFacade {
@@ -13,7 +14,7 @@ public interface ExternalJournalFacade {
 
 	PatientDiaryPersonDto getPatientDiaryPerson(String personUuid);
 
-	PatientDiaryRegisterResult registerPatientDiaryPerson(PersonDto person);
+	PatientDiaryRegisterResult registerPatientDiaryPerson(de.symeda.sormas.api.person.PersonDto person);
 
-	PatientDiaryPersonValidation validatePatientDiaryPerson(PersonDto person);
+	ExternalJournalValidation validatePatientDiaryPerson(de.symeda.sormas.api.person.PersonDto person);
 }
