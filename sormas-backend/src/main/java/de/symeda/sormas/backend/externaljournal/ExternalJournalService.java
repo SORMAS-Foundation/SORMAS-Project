@@ -1,5 +1,12 @@
 package de.symeda.sormas.backend.externaljournal;
 
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.EMAIL_TAKEN;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_BIRTHDATE;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_EMAIL;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_PHONE;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.NO_PHONE_OR_EMAIL;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.PHONE_TAKEN;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -22,9 +29,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -42,21 +46,18 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-
-import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.EMAIL_TAKEN;
-import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_BIRTHDATE;
-import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_EMAIL;
-import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_PHONE;
-import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.NO_PHONE_OR_EMAIL;
-import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.PHONE_TAKEN;
 
 /**
  * This service provides methods for communicating with external symptom journals.
@@ -207,7 +208,7 @@ public class ExternalJournalService {
 	 * @return true if the person data change was considered relevant for external journals, false otherwise.
 	 *
 	 */
-	public boolean notifyExternalJournalPersonUpdate(de.symeda.sormas.api.person.PersonDto existingPerson, de.symeda.sormas.api.person.PersonDto updatedPerson) {
+	public boolean notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
 		boolean shouldNotify = shouldNotify(existingPerson, updatedPerson);
 		if (shouldNotify) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
@@ -224,17 +225,17 @@ public class ExternalJournalService {
 	 * Note: This method just checks for changes in the Person data.
 	 * It can not check for Contact related data such as FollowUpUntil dates.
 	 */
-	private boolean shouldNotify(de.symeda.sormas.api.person.PersonDto existingPerson, de.symeda.sormas.api.person.PersonDto updatedPerson) {
+	private boolean shouldNotify(PersonDto existingPerson, PersonDto updatedPerson) {
 		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(existingPerson.getSymptomJournalStatus())
 			|| SymptomJournalStatus.REGISTERED.equals(existingPerson.getSymptomJournalStatus());
-		boolean relevantFieldsUpdated = Comparator.comparing(de.symeda.sormas.api.person.PersonDto::getFirstName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(de.symeda.sormas.api.person.PersonDto::getLastName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(de.symeda.sormas.api.person.PersonDto::getEmailAddress, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(de.symeda.sormas.api.person.PersonDto::getPhone, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(de.symeda.sormas.api.person.PersonDto::getBirthdateDD, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(de.symeda.sormas.api.person.PersonDto::getBirthdateMM, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(de.symeda.sormas.api.person.PersonDto::getBirthdateYYYY, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(de.symeda.sormas.api.person.PersonDto::getSex, Comparator.nullsLast(Comparator.naturalOrder()))
+		boolean relevantFieldsUpdated = Comparator.comparing(PersonDto::getFirstName, Comparator.nullsLast(Comparator.naturalOrder()))
+			.thenComparing(PersonDto::getLastName, Comparator.nullsLast(Comparator.naturalOrder()))
+			.thenComparing(PersonDto::getEmailAddress, Comparator.nullsLast(Comparator.naturalOrder()))
+			.thenComparing(PersonDto::getPhone, Comparator.nullsLast(Comparator.naturalOrder()))
+			.thenComparing(PersonDto::getBirthdateDD, Comparator.nullsLast(Comparator.naturalOrder()))
+			.thenComparing(PersonDto::getBirthdateMM, Comparator.nullsLast(Comparator.naturalOrder()))
+			.thenComparing(PersonDto::getBirthdateYYYY, Comparator.nullsLast(Comparator.naturalOrder()))
+			.thenComparing(PersonDto::getSex, Comparator.nullsLast(Comparator.naturalOrder()))
 			.compare(existingPerson, updatedPerson)
 			!= 0;
 		return relevantPerson && relevantFieldsUpdated;
@@ -385,24 +386,28 @@ public class ExternalJournalService {
 	}
 
 	private boolean isEmailAvailable(de.symeda.sormas.api.person.PersonDto person) {
-		PatientDiaryQueryResponse response =  queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
+		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
 			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
 		boolean notUsed = response.getCount() == 0;
-		boolean samePerson = response.getResults().stream().map(PatientDiaryPersonData::getIdatId)
-				.map(PatientDiaryIdatId::getIdat)
-				.map(PatientDiaryPersonDto::getPersonUUID)
-				.anyMatch(uuid -> person.getUuid().equals(uuid));
+		boolean samePerson = response.getResults()
+			.stream()
+			.map(PatientDiaryPersonData::getIdatId)
+			.map(PatientDiaryIdatId::getIdat)
+			.map(PatientDiaryPersonDto::getPersonUUID)
+			.anyMatch(uuid -> person.getUuid().equals(uuid));
 		return notUsed || samePerson;
 	}
 
 	private boolean isPhoneAvailable(de.symeda.sormas.api.person.PersonDto person, String phone) {
 		PatientDiaryQueryResponse response = queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, phone)
-				.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"));
+			.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"));
 		boolean notUsed = response.getCount() == 0;
-		boolean samePerson = response.getResults().stream().map(PatientDiaryPersonData::getIdatId)
-				.map(PatientDiaryIdatId::getIdat)
-				.map(PatientDiaryPersonDto::getPersonUUID)
-				.anyMatch(uuid -> person.getUuid().equals(uuid));
+		boolean samePerson = response.getResults()
+			.stream()
+			.map(PatientDiaryPersonData::getIdatId)
+			.map(PatientDiaryIdatId::getIdat)
+			.map(PatientDiaryPersonDto::getPersonUUID)
+			.anyMatch(uuid -> person.getUuid().equals(uuid));
 		return notUsed || samePerson;
 	}
 
@@ -435,8 +440,8 @@ public class ExternalJournalService {
 
 	private String getValidationMessage(EnumSet<PatientDiaryValidationError> validationErrors) {
 		return validationErrors.stream()
-				.map(PatientDiaryValidationError::getErrorLanguageKey)
-				.map(I18nProperties::getValidationError)
-				.collect(Collectors.joining("\n"));
+			.map(PatientDiaryValidationError::getErrorLanguageKey)
+			.map(I18nProperties::getValidationError)
+			.collect(Collectors.joining("\n"));
 	}
 }

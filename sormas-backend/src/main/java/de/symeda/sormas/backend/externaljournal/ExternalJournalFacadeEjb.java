@@ -4,9 +4,10 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
-import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.person.PersonDto;
 
 @Stateless(name = "ExternalJournalFacade")
 public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
@@ -30,12 +31,12 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	}
 
 	@Override
-	public PatientDiaryRegisterResult registerPatientDiaryPerson(de.symeda.sormas.api.person.PersonDto person) {
+	public PatientDiaryRegisterResult registerPatientDiaryPerson(PersonDto person) {
 		return externalJournalService.registerPatientDiaryPerson(person);
 	}
 
 	@Override
-	public ExternalJournalValidation validatePatientDiaryPerson(de.symeda.sormas.api.person.PersonDto person) {
+	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
 		return externalJournalService.validatePatientDiaryPerson(person);
 	}
 
