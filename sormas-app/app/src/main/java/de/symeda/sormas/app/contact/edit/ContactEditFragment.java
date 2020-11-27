@@ -204,11 +204,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
 		});
 
-		contentBinding.contactMultiDayContact.addValueChangedListener(e -> {
-			if (e.getValue() == Boolean.FALSE) {
-				contentBinding.contactFirstContactDate.setValue(null);
-			}
-		});
 		contentBinding.contactFirstContactDate.addValueChangedListener(e -> contentBinding.contactLastContactDate.setRequired(e.getValue() != null));
 
 		contentBinding.contactContactProximity
