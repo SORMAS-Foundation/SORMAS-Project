@@ -38,7 +38,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
@@ -75,7 +74,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			btnClimedoAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
 				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ExternalJournalUtil.registerPatientDiaryPerson(contactPerson);
+				ExternalJournalUtil.onPatientDiaryButtonClick(contactPerson);
 			});
 			getButtonsLayout().addComponent(btnClimedoAccount);
 		}

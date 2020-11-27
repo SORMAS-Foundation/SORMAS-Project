@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -53,6 +54,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		MockitoAnnotations.initMocks(this);
 		PatientDiaryPersonQueryResponse patientDiaryPersonQueryResponse = new PatientDiaryPersonQueryResponse();
 		patientDiaryPersonQueryResponse.setCount(0);
+		patientDiaryPersonQueryResponse.setResults(Collections.emptyList());
 		doReturn(Optional.of(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary(Mockito.any(String.class), Mockito.any(String.class));
 	}
 

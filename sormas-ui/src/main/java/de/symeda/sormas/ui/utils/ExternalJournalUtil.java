@@ -88,29 +88,32 @@ public class ExternalJournalUtil {
     }
 
     /**
-     * Attempts to register the given person as a new patient in CLIMEDO
-     * Displays the result in a popup
+     * If the person is already registered in CLIMEDO, opens the CLIMEDO page corresponding to the person
+     * Else attempts to register the given person as a new patient in CLIMEDO and displays the result in a popup
      */
-    public static void registerPatientDiaryPerson(PersonDto person) {
-        PatientDiaryPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
-        if (!validationResult.isValid()) {
-            showPatientDiaryWarningPopup(validationResult.getMessage());
-        } else {
-            if (SymptomJournalStatus.ACCEPTED.equals(person.getSymptomJournalStatus())
-                    || SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
-                openPatientDiaryEnrollPage(person.getUuid());
+    public static void onPatientDiaryButtonClick(PersonDto person) {
+            if (person.isEnrolledInExternalJournal()) {
+                openPatientDiaryPage(person.getUuid());
             } else {
-                PatientDiaryRegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
-                showPatientRegisterResultPopup(registerResult);
-            }
+                enrollPatientInPatientDiary(person);
         }
     }
 
-    private static void openPatientDiaryEnrollPage(String personUuid) {
+    private static void openPatientDiaryPage(String personUuid) {
         String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
         String authToken = externalJournalFacade.getPatientDiaryAuthToken();
         url += "/data?q=" + personUuid + "&token=" + authToken;
         UI.getCurrent().getPage().open(url, "_blank");
+    }
+
+    private static void enrollPatientInPatientDiary(PersonDto person) {
+        PatientDiaryPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
+        if (!validationResult.isValid()) {
+            showPatientDiaryWarningPopup(validationResult.getMessage());
+        } else {
+            PatientDiaryRegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
+            showPatientRegisterResultPopup(registerResult);
+        }
     }
 
     private static void showPatientDiaryWarningPopup(String message) {

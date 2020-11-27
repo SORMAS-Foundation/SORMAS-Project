@@ -123,7 +123,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 				btnClimedoAccount.addClickListener(e -> {
 					CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
 					PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
-					ExternalJournalUtil.registerPatientDiaryPerson(casePerson);
+					ExternalJournalUtil.onPatientDiaryButtonClick(casePerson);
 				});
 				getButtonsLayout().addComponent(btnClimedoAccount);
 			}

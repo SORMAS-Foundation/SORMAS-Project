@@ -174,8 +174,8 @@ public class ExternalJournalService {
 	 *            the follow-up end date before the update
 	 */
 	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
-		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
-		if (SymptomJournalStatus.REGISTERED.equals(savedStatus) || SymptomJournalStatus.ACCEPTED.equals(savedStatus)) {
+		PersonDto person = personFacade.getPersonByUuid(contact.getPerson().getUuid());
+		if (person.isEnrolledInExternalJournal()) {
 			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
 				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 					notifySymptomJournal(contact.getPerson().getUuid());
@@ -213,12 +213,10 @@ public class ExternalJournalService {
 	 * It can not check for Contact related data such as FollowUpUntil dates.
 	 */
 	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
-		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
-		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus());
 		JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
 		boolean relevantFieldsUpdated = !existingJournalPerson.equals(updatedJournalPerson);
-		return relevantPerson && relevantFieldsUpdated;
+		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
+		return detailedExistingPerson.isEnrolledInExternalJournal() && relevantFieldsUpdated;
 	}
 
 	private void notifySymptomJournal(String personUuid) {

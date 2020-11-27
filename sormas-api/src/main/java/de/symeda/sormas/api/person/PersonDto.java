@@ -627,6 +627,10 @@ public class PersonDto extends PseudonymizableDto {
 		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
+	public boolean isEnrolledInExternalJournal() {
+		return SymptomJournalStatus.ACCEPTED.equals(symptomJournalStatus) || SymptomJournalStatus.REGISTERED.equals(symptomJournalStatus);
+	}
+
 	public boolean isHasCovidApp() {
 		return hasCovidApp;
 	}
