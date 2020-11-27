@@ -90,7 +90,7 @@ public class GeocodingService {
 			throw new IllegalArgumentException(e);
 		}
 
-		Client client = ClientHelper.newBuilder().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build();
+		Client client = ClientHelper.newBuilderWithProxy().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build();
 		WebTarget target = client.target(targetUrl);
 		Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
 		String responseText = readResponseAsText(response);

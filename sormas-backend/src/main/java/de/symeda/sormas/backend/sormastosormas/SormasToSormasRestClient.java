@@ -54,7 +54,7 @@ public class SormasToSormasRestClient {
 	}
 
 	private Invocation.Builder buildRestClient(String host, String endpoint, String authToken) {
-		return ClientHelper.newBuilder()
+		return ClientHelper.newBuilderWithProxy()
 			.build()
 			.target(String.format(SORMAS_REST_URL_TEMPLATE, host, endpoint))
 			.request()

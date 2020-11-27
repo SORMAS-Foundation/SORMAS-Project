@@ -15,21 +15,36 @@
 
 package de.symeda.sormas.backend.util;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+
 import javax.ws.rs.client.ClientBuilder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Helper class for creating REST clients which use their properties from system properties.
+ * Helper class for creating REST clients injects supported properties from system properties.
  *
  * @author Alex Vidrean
  * @since 04-Nov-20
  */
 public class ClientHelper {
 
-	public static ClientBuilder newBuilder() {
+	public static final List<String> SUPPORTED_PROXY_PROPERTIES = Arrays.asList(
+		ResteasyClientBuilder.PROPERTY_PROXY_HOST,
+		ResteasyClientBuilder.PROPERTY_PROXY_PORT,
+		ResteasyClientBuilder.PROPERTY_PROXY_SCHEME);
+
+	public static ClientBuilder newBuilderWithProxy() {
 		ClientBuilder clientBuilder = ClientBuilder.newBuilder();
-		for (Map.Entry<Object, Object> property : System.getProperties().entrySet()) {
-			clientBuilder.property(property.getKey().toString(), property.getValue());
+
+		if (clientBuilder instanceof ResteasyClientBuilder) {
+			System.getProperties()
+				.entrySet()
+				.stream()
+				.filter(property -> SUPPORTED_PROXY_PROPERTIES.contains(property.getKey().toString()))
+				.forEach(property -> clientBuilder.property(property.getKey().toString(), property.getValue()));
+
 		}
 		return clientBuilder;
 	}
