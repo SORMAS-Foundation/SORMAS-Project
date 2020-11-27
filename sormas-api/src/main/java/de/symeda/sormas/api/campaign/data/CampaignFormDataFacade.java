@@ -20,15 +20,15 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.ejb.Remote;
+
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.utils.SortProperty;
-
-import javax.ejb.Remote;
-
-import java.util.Date;
-import java.util.List;
 
 @Remote
 public interface CampaignFormDataFacade {
@@ -52,6 +52,11 @@ public interface CampaignFormDataFacade {
 	long count(CampaignFormDataCriteria criteria);
 
 	List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
+
+	List<CampaignDiagramDataDto> getDiagramDataByAgeGroup(
+		CampaignDiagramSeries diagramSeriesTotal,
+		CampaignDiagramSeries diagramSeries,
+		CampaignDiagramCriteria campaignDiagramCriteria);
 
 	List<String> getAllActiveUuids();
 
