@@ -18,12 +18,12 @@ package de.symeda.sormas.api.campaign.data;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.JsonDataEntry;
 
-public class CampaignFormDataEntry implements Serializable {
+public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 
 	private static final long serialVersionUID = -3096020120349257398L;
 
