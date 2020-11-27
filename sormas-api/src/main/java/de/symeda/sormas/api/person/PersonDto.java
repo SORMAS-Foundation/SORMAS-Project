@@ -51,6 +51,9 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 
+	public static final String SALUTATION = "salutation";
+	public static final String OTHER_SALUTATION = "otherSalutation";
+
 	public static final String PRESENT_CONDITION = "presentCondition";
 	public static final String BIRTH_DATE = "birthdate";
 	public static final String BIRTH_DATE_DD = "birthdateDD";
@@ -119,6 +122,12 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	private String lastName;
+	@PersonalData
+	@SensitiveData
+	private Salutation salutation;
+	@PersonalData
+	@SensitiveData
+	private String otherSalutation;
 	@PersonalData
 	@SensitiveData
 	private String nickname;
@@ -464,6 +473,22 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public Salutation getSalutation() {
+		return salutation;
+	}
+
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	public String getOtherSalutation() {
+		return otherSalutation;
+	}
+
+	public void setOtherSalutation(String otherSalutation) {
+		this.otherSalutation = otherSalutation;
 	}
 
 	public EducationType getEducationType() {

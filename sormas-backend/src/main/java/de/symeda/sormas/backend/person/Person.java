@@ -49,6 +49,7 @@ import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -122,6 +123,8 @@ public class Person extends AbstractDomainObject {
 
 	private String firstName;
 	private String lastName;
+	private Salutation salutation;
+	private String otherSalutation;
 	private String nickname;
 	private String mothersName;
 	private String mothersMaidenName;
@@ -201,6 +204,24 @@ public class Person extends AbstractDomainObject {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Salutation getSalutation() {
+		return salutation;
+	}
+
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getOtherSalutation() {
+		return otherSalutation;
+	}
+
+	public void setOtherSalutation(String otherSalutation) {
+		this.otherSalutation = otherSalutation;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

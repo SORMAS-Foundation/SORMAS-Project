@@ -64,6 +64,13 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/person_salutation"
+                style="@style/ControlSingleColumnStyle"
+                app:appendValue="@{data.otherSalutation}"
+                app:value="@{data.salutation}"
+                app:valueFormat="@string/two_strings_with_hyphen_format" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

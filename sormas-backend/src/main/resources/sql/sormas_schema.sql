@@ -5886,4 +5886,17 @@ INSERT INTO schema_version (version_number, comment) VALUES (280, 'Epi data migr
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id) > 0;
 
-INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');-- *** Insert new sql commands BEFORE this line ***
+INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');
+
+-- SurvNet Adaptations - Create new field “Salutation” for persons #3411
+ALTER TABLE person
+    ADD COLUMN salutation varchar(255),
+    ADD COLUMN othersalutation varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN salutation varchar(255),
+    ADD COLUMN othersalutation varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (282, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
+
+-- *** Insert new sql commands BEFORE this line ***
