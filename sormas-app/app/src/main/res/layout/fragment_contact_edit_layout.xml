@@ -114,6 +114,8 @@
                     android:id="@+id/contact_firstContactDate"
                     app:value="@={data.firstContactDate}"
                     app:softRequired="true"
+                    app:dependencyParentField="@{contactMultiDayContact}"
+                    app:dependencyParentValue="@{true}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField

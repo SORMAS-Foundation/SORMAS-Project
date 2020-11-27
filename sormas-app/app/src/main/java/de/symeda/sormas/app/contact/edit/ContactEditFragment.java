@@ -116,10 +116,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.createCase.setVisibility(GONE);
 		}
 
-		if (record.isMultiDayContact()) {
-			contentBinding.contactFirstContactDate.setVisibility(VISIBLE);
-		} else {
-			contentBinding.contactFirstContactDate.setVisibility(GONE);
+		if (!record.isMultiDayContact()) {
 			contentBinding.contactFirstContactDate.setValue(null);
 		}
 
@@ -208,11 +205,10 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		});
 
 		contentBinding.contactMultiDayContact.addValueChangedListener(e -> {
-			int visibility = (Boolean) e.getValue() == Boolean.TRUE ? VISIBLE : GONE;
-			contentBinding.contactFirstContactDate.setVisibility(visibility);
-			contentBinding.contactFirstContactDate.setValue(null);
+			if (e.getValue() == Boolean.FALSE) {
+				contentBinding.contactFirstContactDate.setValue(null);
+			}
 		});
-		contentBinding.contactFirstContactDate.setVisibility(GONE);
 		contentBinding.contactFirstContactDate.addValueChangedListener(e -> contentBinding.contactLastContactDate.setRequired(e.getValue() != null));
 
 		contentBinding.contactContactProximity

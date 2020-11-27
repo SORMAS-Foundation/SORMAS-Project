@@ -107,11 +107,10 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			record.getCommunity());
 
 		contentBinding.contactMultiDayContact.addValueChangedListener(e -> {
-			int visibility = (Boolean) e.getValue() == Boolean.TRUE ? VISIBLE : GONE;
-			contentBinding.contactFirstContactDate.setVisibility(visibility);
-			contentBinding.contactFirstContactDate.setValue(null);
+			if (e.getValue() == Boolean.FALSE) {
+				contentBinding.contactFirstContactDate.setValue(null);
+			}
 		});
-		contentBinding.contactFirstContactDate.setVisibility(GONE);
 		contentBinding.contactFirstContactDate.addValueChangedListener(e -> contentBinding.contactLastContactDate.setRequired(e.getValue() != null));
 
 		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
