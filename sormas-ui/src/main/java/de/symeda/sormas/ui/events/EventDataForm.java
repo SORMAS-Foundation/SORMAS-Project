@@ -88,7 +88,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
 
 			loc(INFORMATION_SOURCE_HEADING_LOC) +
-			fluidRowLocs(EventDto.SRC_TYPE, "") +
+			fluidRowLocs(EventDto.SRC_TYPE, EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE) +
 			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
 			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
 
@@ -194,6 +194,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextArea srcMediaDetails = addField(EventDto.SRC_MEDIA_DETAILS, TextArea.class);
 		srcMediaDetails.setRows(4);
 
+		ComboBox srcInstitutionalPartnerType = addField(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE);
+
 		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
 			.setCaption(null);
 
@@ -238,6 +240,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
+			Collections.singletonList(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE),
+			EventDto.SRC_TYPE,
+			Collections.singletonList(EventSourceType.INSTITUTIONAL_PARTNER),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
 			Arrays.asList(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL),
 			EventDto.SRC_TYPE,
 			Collections.singletonList(EventSourceType.HOTLINE_PERSON),
@@ -266,6 +274,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			typeOfPlace,
 			surveillanceOfficerField,
 			srcType,
+			srcInstitutionalPartnerType,
 			srcFirstName,
 			srcLastName,
 			srcTelNo,

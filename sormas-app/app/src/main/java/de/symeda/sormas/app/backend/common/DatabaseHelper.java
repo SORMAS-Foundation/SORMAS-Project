@@ -38,7 +38,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -152,7 +151,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 247;
+	public static final int DATABASE_VERSION = 248;
 
 	private static DatabaseHelper instance = null;
 
@@ -1778,6 +1777,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column multidaycontact boolean default false;");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column firstcontactdate timestamp;");
+
+			case 248:
+				currentVersion = 248;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255)");
 
 				// ATTENTION: break should only be done after last version
 				break;
