@@ -49,7 +49,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
 		editComponent = ControllerProvider.getCampaignController()
-			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignFormMeta(), true, true, () -> {
+			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaign(), campaignFormData.getCampaignFormMeta(), true, true, () -> {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
 					TRAY_NOTIFICATION);

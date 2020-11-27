@@ -28,6 +28,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -91,10 +92,10 @@ public class CampaignController {
 		VaadinUiUtil.showModalPopupWindow(campaignComponent, heading);
 	}
 
-	public void createCampaignDataForm(CampaignFormMetaReferenceDto campaignForm) {
+	public void createCampaignDataForm(CampaignReferenceDto campaign, CampaignFormMetaReferenceDto campaignForm) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaignForm, false, false, () -> {
+		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
 			window.close();
 			SormasUI.refreshView();
 			Notification
@@ -201,6 +202,7 @@ public class CampaignController {
 
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 		CampaignFormDataDto campaignFormData,
+		CampaignReferenceDto campaign,
 		CampaignFormMetaReferenceDto campaignForm,
 		boolean revertFormOnDiscard,
 		boolean showDeleteButton,
@@ -212,7 +214,7 @@ public class CampaignController {
 
 			final UserDto currentUser = UserProvider.getCurrent().getUser();
 			campaignFormData =
-				CampaignFormDataDto.build(null, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
+				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		form.setValue(campaignFormData);
