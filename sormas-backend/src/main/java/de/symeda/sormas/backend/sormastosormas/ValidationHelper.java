@@ -61,7 +61,7 @@ public class ValidationHelper {
 			parentError
 				.put(parentValidationGroup, ValidationErrors.create(I18nProperties.getCaption(validationGroupCaption), exception.getMessage()));
 
-			throw new SormasToSormasValidationException(parentError);
+			throw new SormasToSormasValidationException(parentError, exception);
 		}
 	}
 }
