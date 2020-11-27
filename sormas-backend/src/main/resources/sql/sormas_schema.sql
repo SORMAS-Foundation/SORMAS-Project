@@ -5886,4 +5886,11 @@ INSERT INTO schema_version (version_number, comment) VALUES (280, 'Epi data migr
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id) > 0;
 
-INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');-- *** Insert new sql commands BEFORE this line ***
+INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');
+
+ALTER TABLE person ADD COLUMN armedforcesrelationtype varchar(255);
+ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add column armedforcesrelationtype #3418');
+
+-- *** Insert new sql commands BEFORE this line ***
