@@ -8,31 +8,185 @@
 	<version>1.53.0-SNAPSHOT</version>
 
 	<properties>
+
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- *** Payara module versions *** -->
+		<jackson.version>2.10.2</jackson.version>
+		<javaee.version>8.0.1</javaee.version>
+		<jersey.version>2.30</jersey.version>
+		<!-- Payara version used for release. Overwrite them in settings.xml for local development with different versions -->
+		<payara.version>5.2020.2</payara.version>
+
+		<!-- *** Other dependency versions *** -->
 		<slf4j.version>1.7.30</slf4j.version>
 		<logback.version>1.1.7</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.11.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<jersey.version>2.29.1</jersey.version>
-		<jackson.version>2.9.8</jackson.version>
 		<swagger.version>2.1.2</swagger.version>
 		<bouncycastle.version>1.66</bouncycastle.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<!-- Versions used for release. Overwrite them in settings.xml for local development with different versions -->
-		<payara.version>5.2020.2</payara.version>
-		<payara.oidc.version>1.1.0</payara.oidc.version>
-		<microprofile.api.version>1.4</microprofile.api.version>
-
 		<keycloak.version>11.0.0</keycloak.version>
 
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
-
 
 	<dependencyManagement>
 		<dependencies>
+
+			<!-- *** Payara modules *** -->
+			<!-- The versions here listed reflect the precise or minimal version provided as Payara module -->
+
+			<dependency>
+				<groupId>javax</groupId>
+				<artifactId>javaee-api</artifactId>
+				<version>${javaee.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax</groupId>
+				<artifactId>javaee-web-api</artifactId>
+				<version>${javaee.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>javax.activation-api</artifactId>
+				<version>1.2.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>javax.persistence-api</artifactId>
+				<version>2.2</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.security.enterprise</groupId>
+				<artifactId>javax.security.enterprise-api</artifactId>
+				<version>1.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>4.0.1</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>2.0.1.Final</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-jaxb-annotations</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.sun.istack</groupId>
+				<artifactId>istack-commons-runtime</artifactId>
+				<version>3.0.10</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>fish.payara.api</groupId>
+				<artifactId>payara-api</artifactId>
+				<version>${payara.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>fish.payara.security.connectors</groupId>
+				<artifactId>security-connector-oidc-client</artifactId>
+				<version>1.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.microprofile.config</groupId>
+				<artifactId>microprofile-config-api</artifactId>
+				<version>1.4</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.el</artifactId>
+				<version>3.0.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.corba</groupId>
+				<artifactId>glassfish-corba-omgapi</artifactId>
+				<version>4.2.2</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet</artifactId>
+				<version>${jersey.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-client</artifactId>
+				<version>${jersey.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.inject</groupId>
+				<artifactId>jersey-hk2</artifactId>
+				<version>${jersey.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-json-jackson</artifactId>
+				<version>${jersey.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.26.0-GA</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.logging</groupId>
+				<artifactId>jboss-logging</artifactId>
+				<version>3.3.2.Final</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- *** Payara modules END *** -->
 
 			<!-- Baseline for tests, so that in all projects in any case the test
 				libs are available -->
@@ -134,33 +288,6 @@
 				<version>2.3.20</version>
 			</dependency>
 
-			<!-- Java EE -->
-
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>4.0.1</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-web-api</artifactId>
-				<scope>provided</scope>
-				<version>8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<scope>provided</scope>
-				<version>8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.security.enterprise</groupId>
-				<artifactId>javax.security.enterprise-api</artifactId>
-				<version>1.0</version>
-				<scope>provided</scope>
-			</dependency>
-
 			<!-- compile dependencies -->
 
 			<dependency>
@@ -232,103 +359,11 @@
 				<!-- TODO #3449: avoid scope compile -->
 			</dependency>
 
-			<!-- glassfish-modules -->
-
-			<dependency>
-				<groupId>javax.validation</groupId>
-				<artifactId>validation-api</artifactId>
-				<version>2.0.1.Final</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish</groupId>
-				<artifactId>javax.el</artifactId>
-				<version>3.0.0</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish.corba</groupId>
-				<artifactId>glassfish-corba-omgapi</artifactId>
-				<version>4.2.2</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish.jersey.containers</groupId>
-				<artifactId>jersey-container-servlet</artifactId>
-				<version>${jersey.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.core</groupId>
-				<artifactId>jersey-client</artifactId>
-				<version>${jersey.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.inject</groupId>
-				<artifactId>jersey-hk2</artifactId>
-				<version>${jersey.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.media</groupId>
-				<artifactId>jersey-media-json-jackson</artifactId>
-				<version>${jersey.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-module-jaxm-annotations</artifactId>
 				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.module</groupId>
-				<artifactId>jackson-module-jaxb-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>fish.payara.api</groupId>
-				<artifactId>payara-api</artifactId>
-				<version>${payara.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>fish.payara.security.connectors</groupId>
-				<artifactId>security-connector-oidc-client</artifactId>
-				<version>${payara.oidc.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.eclipse.microprofile.config</groupId>
-				<artifactId>microprofile-config-api</artifactId>
-				<version>${microprofile.api.version}</version>
-				<scope>provided</scope>
+				<!-- TODO #3449: avoid scope compile -->
 			</dependency>
 
 			<!-- serverlibs -->
