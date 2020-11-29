@@ -19,6 +19,7 @@
 package de.symeda.sormas.ui.security.config;
 
 import fish.payara.security.annotations.ClaimsDefinition;
+import fish.payara.security.annotations.LogoutDefinition;
 import fish.payara.security.annotations.OpenIdAuthenticationDefinition;
 import fish.payara.security.annotations.OpenIdProviderMetadata;
 import fish.payara.security.openid.api.DisplayType;
@@ -67,6 +68,11 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			}
 
 			@Override
+			public String endSessionEndpoint() {
+				return "";
+			}
+
+			@Override
 			public String jwksURI() {
 				return "";
 			}
@@ -92,6 +98,11 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 				return OpenIdConstant.GROUPS;
 			}
 		};
+	}
+
+	@Override
+	public LogoutDefinition logout() {
+		return null;
 	}
 
 	@Override
