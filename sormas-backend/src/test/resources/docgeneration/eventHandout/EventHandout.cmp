@@ -1,5 +1,6 @@
 <html>
 <header>
+    <title>EventHandout.html</title>
     <style type="text/css">
         * {
           font-family: "Open Sans", sans-serif, "Source Sans Pro";
@@ -69,5 +70,6 @@
     <div> This action hast no reply </div>
     <div> <span style="color:#f00">*</span> </div>
 </div>
+
 </body>
 </html>

@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.Properties;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+
+import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
@@ -21,6 +24,8 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 public class EventDocumentFacadeEjb implements EventDocumentFacade {
 
 	private static final DocumentWorkflow DOCUMENT_WORKFLOW = DocumentWorkflow.EVENT_HANDOUT;
+	private static final String PLACEHOLDER_TITLE = "___title___";
+	private static final String PLACEHOLDER_BODY = "___body___";
 
 	@EJB
 	DocumentTemplateFacadeEjbLocal documentTemplateFacade;
@@ -41,7 +46,8 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 
 		entities.put("eventParticipants", eventParticipantFacade.getAllActiveEventParticipantsByEvent(eventReference.getUuid()));
 
-		return documentTemplateFacade.generateDocumentTxtFromEntities(DOCUMENT_WORKFLOW, templateName, entities, extraProperties);
+		String body = documentTemplateFacade.generateDocumentTxtFromEntities(DOCUMENT_WORKFLOW, templateName, entities, extraProperties);
+		return createStyledHtml(templateName, body);
 	}
 
 	@Override
@@ -52,5 +58,12 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	@Override
 	public List<String> getAdditionalVariables(String templateName) throws IOException {
 		return documentTemplateFacade.getAdditionalVariables(DOCUMENT_WORKFLOW, templateName);
+	}
+
+	private String createStyledHtml(String title, String body) throws IOException {
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/sormasStyle.html"), writer, "UTF-8");
+		String document = writer.toString();
+		return document.replace(PLACEHOLDER_TITLE, title).replace(PLACEHOLDER_BODY, body);
 	}
 }
