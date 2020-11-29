@@ -85,6 +85,12 @@
 			<artifactId>freemarker</artifactId>
 		</dependency>
 
+                <!-- https://mvnrepository.com/artifact/org.glassfish.soteria/javax.security.enterprise -->
+                <dependency>
+                    <groupId>org.glassfish.soteria</groupId>
+                    <artifactId>javax.security.enterprise</artifactId>
+                    <version>1.0</version>
+                </dependency>
 
 		<!-- Testing -->
 
