@@ -42,7 +42,7 @@
 		    <artifactId>jersey-media-json-jackson</artifactId>
 		</dependency>
 
-      	<dependency>
+      	        <dependency>
 			<groupId>javax.security.enterprise</groupId>
 			<artifactId>javax.security.enterprise-api</artifactId>
 		</dependency>
