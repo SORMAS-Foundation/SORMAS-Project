@@ -23,6 +23,7 @@ public interface Validations {
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
 	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
+	String campaignFormElementNotExisting = "campaignFormElementNotExisting";
 	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
 	String campaignFormInvalidIdInListElements = "campaignFormInvalidIdInListElements";
 	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";

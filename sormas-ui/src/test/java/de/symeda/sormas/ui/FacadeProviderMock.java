@@ -16,6 +16,9 @@ package de.symeda.sormas.ui;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignFacade;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
@@ -43,12 +46,14 @@ import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
+import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
+import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -132,6 +137,12 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) bm.getBean(CaseClassificationFacadeEjbLocal.class);
 		} else if (PointOfEntryFacade.class == clazz) {
 			return (P) bm.getBean(PointOfEntryFacadeEjbLocal.class);
+		} else if (CampaignFacade.class == clazz) {
+			return (P) bm.getBean(CampaignFacadeEjb.CampaignFacadeEjbLocal.class);
+		} else if (CampaignFormMetaFacade.class == clazz) {
+			return (P) bm.getBean(CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal.class);
+		}else if (CampaignFormDataFacade.class == clazz) {
+			return (P) bm.getBean(CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal.class);
 		}
 		if (CaseImportFacade.class == clazz) {
 			return (P) bm.getBean(CaseImportFacadeEjbLocal.class);
