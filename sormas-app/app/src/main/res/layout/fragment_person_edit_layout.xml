@@ -27,6 +27,7 @@
     <data>
         <import type="de.symeda.sormas.api.person.PresentCondition" />
         <import type="de.symeda.sormas.api.person.OccupationType" />
+        <import type="de.symeda.sormas.api.person.ArmedForcesRelationType" />
         <import type="de.symeda.sormas.api.person.EducationType" />
         <import type="de.symeda.sormas.api.person.CauseOfDeath" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
@@ -433,6 +434,19 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_armedForcesRelationType"
+                    app:value="@={data.armedForcesRelationType}"
+                    style="@style/ControlSingleColumnStyle" />
+
+        </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
