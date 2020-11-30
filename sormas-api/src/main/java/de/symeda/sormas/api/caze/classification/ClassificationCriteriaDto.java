@@ -55,7 +55,7 @@ public abstract class ClassificationCriteriaDto implements Serializable {
 
 	private static final long serialVersionUID = -3686569295881034008L;
 
-	public abstract boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests);
+	public abstract boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests);
 
 	public abstract String buildDescription();
 

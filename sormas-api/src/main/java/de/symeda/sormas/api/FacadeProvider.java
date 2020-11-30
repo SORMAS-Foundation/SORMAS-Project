@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.api;
 
 import javax.naming.InitialContext;
@@ -39,6 +36,7 @@ import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -56,6 +54,7 @@ import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
@@ -160,6 +159,9 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(FacilityFacade.class);
 	}
 
+	public static CountryFacade getCountryFacade() {
+		return get().lookupEjbRemote(CountryFacade.class);
+	}
 	public static RegionFacade getRegionFacade() {
 		return get().lookupEjbRemote(RegionFacade.class);
 	}
@@ -320,11 +322,11 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(DocumentTemplateFacade.class);
 	}
 
-	public static ExternalJournalFacade getExternalJournalFacade() {
+  public static ExternalJournalFacade getExternalJournalFacade() {
 		return get().lookupEjbRemote(ExternalJournalFacade.class);
 	}
 
-	@SuppressWarnings("unchecked")
+  @SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {
 		try {
 			return (P) get().ic.lookup(buildJndiLookupName(clazz));

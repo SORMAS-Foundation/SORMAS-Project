@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.region.CountryFacade;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import org.junit.Before;
 
 import de.symeda.sormas.api.Disease;
@@ -105,6 +107,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseImportFacade getCaseImportFacade() {
 		return getBean(CaseImportFacadeEjbLocal.class);
+	}
+
+	public CountryFacade getCountryFacade() {
+		return getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
 	}
 
 	public RegionFacade getRegionFacade() {

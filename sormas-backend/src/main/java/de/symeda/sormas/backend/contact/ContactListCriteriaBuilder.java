@@ -102,7 +102,9 @@ public class ContactListCriteriaBuilder {
 			joins.getCasePerson().get(Person.FIRST_NAME),
 			joins.getCasePerson().get(Person.LAST_NAME),
 			joins.getRegion().get(Region.UUID),
+			joins.getRegion().get(Region.NAME),
 			joins.getDistrict().get(District.UUID),
+			joins.getDistrict().get(District.NAME),
 			joins.getCommunity().get(Community.UUID),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
@@ -118,11 +120,14 @@ public class ContactListCriteriaBuilder {
 			joins.getCaze().get(Case.CASE_CLASSIFICATION),
 			joins.getCaseReportingUser().get(User.UUID),
 			joins.getCaseRegion().get(Region.UUID),
+			joins.getCaseRegion().get(Region.NAME),
 			joins.getCaseDistrict().get(District.UUID),
+			joins.getCaseDistrict().get(District.NAME),
 			joins.getCaseCommunity().get(Community.UUID),
 			joins.getCaseHealthFacility().get(Facility.UUID),
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
-			contact.get(Contact.CHANGE_DATE));
+			contact.get(Contact.CHANGE_DATE),
+			contact.get(Contact.EXTERNAL_ID));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
@@ -140,6 +145,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.REPORT_DATE_TIME:
 		case ContactIndexDto.DISEASE:
 		case ContactIndexDto.CASE_CLASSIFICATION:
+		case ContactIndexDto.EXTERNAL_ID:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:
@@ -172,10 +178,10 @@ public class ContactListCriteriaBuilder {
 				joins.getPerson().get(Person.SEX),
 				joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
-				joins.getDistrict().get(District.NAME),
 				joins.getAddress().get(Location.CITY),
 				joins.getAddress().get(Location.STREET),
 				joins.getAddress().get(Location.HOUSE_NUMBER),
+				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
 				joins.getPerson().get(Person.PHONE),
 				joins.getReportingUser().get(User.FIRST_NAME),
@@ -194,10 +200,11 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDetailedDto.DISTRICT_NAME:
 			return Collections.singletonList(joins.getDistrict().get(District.NAME));
 		case ContactIndexDetailedDto.CITY:
+		case ContactIndexDetailedDto.STREET:
+		case ContactIndexDetailedDto.HOUSE_NUMBER:
+		case ContactIndexDetailedDto.ADDITIONAL_INFORMATION:
 		case ContactIndexDetailedDto.POSTAL_CODE:
 			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
-		case ContactIndexDetailedDto.ADDRESS:
-			return Collections.singletonList(joins.getAddress().get(Location.STREET));
 		case ContactIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		default:

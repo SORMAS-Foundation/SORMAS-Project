@@ -52,6 +52,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 
 		ContactDto contact2 = creator.createContact(user.toReference(), contactPerson.toReference());
 		contact2.setReportDateTime(referenceDate);
+		contact2.setFirstContactDate(DateHelper.addDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET));
 		contact2.setLastContactDate(DateHelper.addDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
 		contact2 = getContactFacade().saveContact(contact2);
 
