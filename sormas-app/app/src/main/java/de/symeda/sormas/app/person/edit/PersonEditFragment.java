@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -465,6 +466,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 	@Override
 	public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
 		PersonEditFragment.setUpLayoutBinding(this, record, contentBinding, rootData);
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
+		}
 	}
 
 	@Override
