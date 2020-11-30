@@ -59,17 +59,19 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
 
-		menu.addView(
-			OutbreaksView.VIEW_NAME,
-			I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-			params);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+			menu.addView(
+				OutbreaksView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				params);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			menu.addView(
-					CountriesView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
+				CountriesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				menu.addView(
 					AreasView.VIEW_NAME,
@@ -143,7 +145,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	}
 
 	public static void registerViews(Navigator navigator) {
-		navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+			navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
