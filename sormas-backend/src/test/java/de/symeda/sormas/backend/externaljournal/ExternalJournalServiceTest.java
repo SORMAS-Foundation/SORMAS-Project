@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.externaljournal;
 
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonQueryResponse;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
 import de.symeda.sormas.api.person.PersonDto;
 
 import de.symeda.sormas.api.person.Sex;
@@ -10,11 +10,13 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -31,16 +33,10 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		PatientDiaryPersonQueryResponse patientDiaryPersonQueryResponse = new PatientDiaryPersonQueryResponse();
-		patientDiaryPersonQueryResponse.setCount(0);
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test.de");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "test@test");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Email", "heinz@test.de");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService)
-			.queryPatientDiary("Mobile phone", "+49 621 1218490");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService)
-			.queryPatientDiary("Mobile phone", "+49 621 1218491");
-		doReturn(Optional.ofNullable(patientDiaryPersonQueryResponse)).when(externalJournalService).queryPatientDiary("Mobile phone", "0");;
+		PatientDiaryQueryResponse queryResponse = new PatientDiaryQueryResponse();
+		queryResponse.setCount(0);
+		queryResponse.setResults(Collections.emptyList());
+		doReturn(Optional.of(queryResponse)).when(externalJournalService).queryPatientDiary(Mockito.any(String.class), Mockito.any(String.class));
 	}
 
 	@Test
@@ -51,7 +47,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void givenValidEmailIsExportable() {
-		PatientDiaryPersonQueryResponse response = new PatientDiaryPersonQueryResponse();
+		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
 		PersonDto person = new PersonDto();
 		person.setEmailAddress("test@test.de");
