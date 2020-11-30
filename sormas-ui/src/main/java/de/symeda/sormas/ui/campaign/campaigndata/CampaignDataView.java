@@ -24,6 +24,11 @@ import java.util.function.Consumer;
 
 import javax.naming.NamingException;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -57,7 +62,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
-import de.symeda.sormas.ui.campaign.importer.CampaignImportLayout;
+import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -158,11 +163,8 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = new GridExportStreamResource(
-					grid,
-					"sormas_campaign_data",
-					createFileNameWithCurrentDate("sormas_campaign_data_", ".csv"),
-					EDIT_BTN_ID);
+				StreamResource streamResource =
+					new GridExportStreamResource(grid, "campaign_data", createFileNameWithCurrentDate("campaign_data_", ".csv"), EDIT_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}
@@ -212,18 +214,18 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	private void createImportLayout(VerticalLayout importFormLayout) {
+
 		for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
 			.getCampaignFormMetasAsReferencesByCampaign(campaignCombo.getValue().getUuid())) {
 
 			Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
-				Window popupWindow = null;
 				try {
-					popupWindow = VaadinUiUtil.showPopupWindow(new CampaignImportLayout(campaignForm.getUuid(), filterForm.getValue().getCampaign()));
-				} catch (IOException | NamingException ioException) {
+					Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignFormDataImportLayout(campaignForm, campaignCombo.getValue()));
+					popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
+					popupWindow.addCloseListener(c -> grid.reload());
+				} catch (IOException ioException) {
 					ioException.printStackTrace();
 				}
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
-
 			});
 			campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 			importFormLayout.addComponent(campaignFormButton);
