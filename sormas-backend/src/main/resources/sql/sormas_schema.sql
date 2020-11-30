@@ -5973,4 +5973,10 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
 
+-- 2020-11-30 Add riskLevel to events with cluster status #3271
+ALTER TABLE events ADD column risklevel varchar(255);
+ALTER TABLE events_history ADD column risklevel varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'Add riskLevel to events with cluster status #3271');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -34,6 +34,7 @@
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="eventStatusClass" type="Class" />
         <variable name="eventInvestigationStatusClass" type="Class" />
+        <variable name="riskLevelClass" type="Class" />
         <variable name="isMultiDayEvent" type="Boolean" />
     </data>
 
@@ -90,6 +91,14 @@
                 app:enumClass="@{eventStatusClass}"
                 app:required="true"
                 app:value="@={data.eventStatus}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/event_riskLevel"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventEventStatus}"
+                app:dependencyParentValue="@{EventStatus.CLUSTER}"
+                app:enumClass="@{riskLevelClass}"
+                app:value="@={data.riskLevel}"/>
 
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/event_multiDayEvent"

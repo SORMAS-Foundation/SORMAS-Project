@@ -67,6 +67,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	public void fillInnerFromDto(Event target, EventDto source) {
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -107,6 +108,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	public void fillInnerFromAdo(EventDto target, Event source) {
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());

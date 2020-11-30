@@ -36,6 +36,7 @@ public class EventDto extends PseudonymizableDto {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
 	public static final String EVENT_PERSONS = "eventPersons";
@@ -69,6 +70,7 @@ public class EventDto extends PseudonymizableDto {
 
 	@Required
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
@@ -120,6 +122,14 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {

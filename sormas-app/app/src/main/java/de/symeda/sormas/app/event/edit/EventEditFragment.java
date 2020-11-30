@@ -20,7 +20,6 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import java.util.List;
 
 import android.view.View;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -129,6 +128,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.setData(record);
 		contentBinding.setEventStatusClass(EventStatus.class);
 		contentBinding.setEventInvestigationStatusClass(EventInvestigationStatus.class);
+		contentBinding.setRiskLevelClass(RiskLevel.class);
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
 	}
