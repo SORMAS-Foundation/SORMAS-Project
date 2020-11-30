@@ -67,7 +67,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		savedItems.addAll(savedElements);
 		grid.setItems(new ArrayList<>(savedElements));
 		reorderGrid();
-		grid.setSelectionMode(Grid.SelectionMode.SINGLE);
+		grid.setSelectionMode(Grid.SelectionMode.NONE);
 		setSizeFull();
 
 		final GridRowDragger<T> gridRowDragger = new GridRowDragger<>(grid);
@@ -98,7 +98,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		});
 
 		grid.getEditor().setBinder(binder);
-		grid.getEditor().setBuffered(false);
+		grid.getEditor().setBuffered(true);
 		grid.getEditor().setEnabled(true);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
