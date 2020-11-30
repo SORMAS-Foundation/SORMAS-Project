@@ -178,7 +178,7 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.DASHBOARD);
 		}
 
-		if (permitted(UserRight.TASK_VIEW)) {
+		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
@@ -342,7 +342,7 @@ public class MainScreen extends HorizontalLayout {
 					}
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					defaultView = SamplesView.VIEW_NAME;
-				} else if (permitted(UserRight.TASK_VIEW)) {
+				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;
 				} else {
 					defaultView = AboutView.VIEW_NAME;
