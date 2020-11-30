@@ -112,12 +112,15 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					+ "' } }, ");
 		}
 
-		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }");
+		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }, ")
+			.append(
+				"menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS'");
 
 		if (totalValuesMap != null) {
-			hcjs.append(
-				", menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS', 'viewData', 'separator', 'togglePercentages']");
+			hcjs.append(", 'separator', 'togglePercentages'");
 		}
+
+		hcjs.append("]");
 
 		Map<String, Long> stackMap = diagramDefinition.getCampaignDiagramSeries()
 			.stream()
