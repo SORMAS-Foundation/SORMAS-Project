@@ -24,6 +24,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
@@ -45,6 +47,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -105,6 +108,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -1302,5 +1306,27 @@ public class CaseController {
 
 		lineListingForm.closeWindow();
 		ControllerProvider.getCaseController().navigateToIndex();
+	}
+
+	public VerticalLayout getCaseViewTitleLayout(CaseDataDto caseData) {
+		VerticalLayout titleView = new VerticalLayout();
+		titleView.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		titleView.setSpacing(false);
+
+		Label diseaseLabel = new Label(Disease.valueOf(caseData.getDisease().getName()).toString());
+		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleView.addComponents(diseaseLabel);
+
+		Label classificationLabel = new Label(CaseClassification.valueOf(caseData.getCaseClassification().getName()).toString());
+		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleView.addComponent(classificationLabel);
+
+		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
+		String person = caseData.getPerson().getCaption();
+		Label caseLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
+		caseLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleView.addComponent(caseLabel);
+
+		return titleView;
 	}
 }

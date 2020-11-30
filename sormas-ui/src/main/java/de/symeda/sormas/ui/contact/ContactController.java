@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -73,6 +75,7 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -773,5 +776,27 @@ public class ContactController {
 				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
 				callback.run();
 			});
+	}
+
+	public VerticalLayout getContactViewTitleLayout(ContactDto contact) {
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		titleLayout.setSpacing(false);
+
+		Label diseaseLabel = new Label(Disease.valueOf(contact.getDisease().getName()).toString());
+		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponents(diseaseLabel);
+
+		Label classificationLabel = new Label(ContactClassification.valueOf(contact.getContactClassification().name()).toShortString());
+		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponent(classificationLabel);
+
+		String shortUuid = DataHelper.getShortUuid(contact.getUuid());
+		String person = contact.getPerson().getCaption();
+		Label contactLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
+		contactLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponent(contactLabel);
+
+		return titleLayout;
 	}
 }
