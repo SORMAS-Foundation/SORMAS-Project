@@ -57,6 +57,10 @@ public class CampaignDiagramSeries implements Serializable {
 		this.stack = stack;
 	}
 
+	/**
+	 * Needed. Otherwise hibernate will persist whenever loading,
+	 * because hibernate types creates new instances that aren't equal.
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
