@@ -66,10 +66,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			menu.addView(
-					CountriesView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
+				CountriesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				menu.addView(
 					AreasView.VIEW_NAME,
@@ -92,16 +92,22 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				I18nProperties.getPrefixCaption("View", CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				null,
 				false);
-			menu.addView(
-				FacilitiesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", FacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
-			menu.addView(
-				PointsOfEntryView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING)) {
+				menu.addView(
+					FacilitiesView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", FacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
+			}
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
+				menu.addView(
+					PointsOfEntryView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
+			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
 				menu.addView(
@@ -153,8 +159,14 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
-			navigator.addView(FacilitiesView.VIEW_NAME, FacilitiesView.class);
-			navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING)) {
+				navigator.addView(FacilitiesView.VIEW_NAME, FacilitiesView.class);
+			}
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
+				navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
+			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
 				navigator.addView(PopulationDataView.VIEW_NAME, PopulationDataView.class);
