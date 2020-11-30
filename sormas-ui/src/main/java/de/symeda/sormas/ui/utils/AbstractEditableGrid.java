@@ -77,13 +77,10 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 
 		Grid.Column<T, String> deleteColumn =
 			grid.addColumn(t -> VaadinIcons.TRASH.getHtml(), new HtmlRenderer()).setId(DELETE).setCaption(I18nProperties.getCaption(Captions.remove));
-		deleteColumn.setMaximumWidth(50);
+		deleteColumn.setMaximumWidth(50).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK + " " + CssStyles.ALIGN_CENTER);
 
 		grid.getColumns().stream().forEach(col -> {
 			col.setSortable(false);
-			if (DELETE.equals(col.getId())) {
-				col.setStyleGenerator(item -> CssStyles.ALIGN_CENTER);
-			}
 		});
 
 		grid.addItemClickListener(e -> {
