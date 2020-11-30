@@ -18,11 +18,11 @@ package de.symeda.sormas.api.campaign.data;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.JsonDataEntry;
 
 public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 
@@ -89,11 +89,12 @@ public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		CampaignFormDataEntry that = (CampaignFormDataEntry) o;
-		return Objects.equals(id, that.id) &&
-				Objects.equals(value, that.value);
+		return Objects.equals(id, that.id) && Objects.equals(value, that.value);
 	}
 
 	@Override
