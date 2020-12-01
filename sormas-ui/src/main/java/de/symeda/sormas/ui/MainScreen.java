@@ -216,7 +216,7 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}
-		if (permitted(UserRight.STATISTICS_ACCESS)) {
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.STATISTICS_ACCESS)) {
 			ControllerProvider.getStatisticsController().registerViews(navigator);
 			menu.addView(
 				StatisticsView.class,
@@ -230,7 +230,7 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : CountriesView.class,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : RegionsView.class,
 				AbstractConfigurationView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuConfiguration),
 				VaadinIcons.COGS);
