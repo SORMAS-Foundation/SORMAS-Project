@@ -238,6 +238,15 @@ public class CampaignFormDataImporter extends DataImporter {
 					continue;
 				}
 
+				// Convert yes/no values to true/false
+				if (CampaignFormElementType.YES_NO.toString().equals(existingFormElement.get().getType())) {
+					if ("yes".equals(formEntry.getValue())) {
+						formEntry.setValue(true);
+					} else if ("no".equals(formEntry.getValue())) {
+						formEntry.setValue(false);
+					}
+				}
+
 				if (Objects.nonNull(campaignFormData.getFormValues())) {
 					List<CampaignFormDataEntry> currentElementFormValues = campaignFormData.getFormValues();
 					currentElementFormValues.add(formEntry);

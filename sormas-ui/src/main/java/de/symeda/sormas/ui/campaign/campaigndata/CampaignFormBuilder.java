@@ -272,7 +272,7 @@ public class CampaignFormBuilder {
 	private <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value) {
 		switch (type) {
 		case YES_NO:
-			((NullableOptionGroup) field).setValue(Sets.newHashSet(getYesNoValue(value)));
+			((NullableOptionGroup) field).setValue(Sets.newHashSet(value));
 			break;
 		case TEXT:
 		case NUMBER:
@@ -350,21 +350,6 @@ public class CampaignFormBuilder {
 			Field<?> field = fields.get(key);
 			((Field<Object>) field).setValue(formValuesMap.get(key));
 		});
-	}
-
-	private Boolean getYesNoValue(Object value) {
-		if (value instanceof Boolean) {
-			return (Boolean) value;
-		}
-
-		if ("yes".equals(value)) {
-			return true;
-		}
-		if ("no".equals(value)) {
-			return false;
-		}
-
-		return null;
 	}
 
 }
