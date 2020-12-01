@@ -27,27 +27,19 @@ public class HtmlHelper {
 		Whitelist.relaxed().addTags("hr", "font").addAttributes("font", "size", "face", "color").addAttributes("div", "align");
 
 	public static String cleanHtml(String string) {
-		if (string == null)
-			return "";
-		return Jsoup.clean(string, Whitelist.none());
+		return (string == null) ? "" : Jsoup.clean(string, Whitelist.none());
 	}
 
 	public static String cleanHtml(String string, Whitelist whitelist) {
-		if (string == null)
-			return "";
-		return Jsoup.clean(string, whitelist);
+		return (string == null) ? "" : Jsoup.clean(string, whitelist);
 	}
 
 	// this method should be used for i18n-strings and captions so that custom whitelist rules can be added when needed
 	public static String cleanI18nString(String string) {
-		if (string == null)
-			return "";
-		return Jsoup.clean(string, Whitelist.basic());
+		return (string == null) ? "" : Jsoup.clean(string, Whitelist.basic());
 	}
 
 	public static String cleanHtmlRelaxed(String string) {
-		if (string == null)
-			return "";
-		return Jsoup.clean(string, Whitelist.relaxed());
+		return (string == null) ? "" : Jsoup.clean(string, Whitelist.relaxed());
 	}
 }
