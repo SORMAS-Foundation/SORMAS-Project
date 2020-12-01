@@ -111,8 +111,7 @@ public class CaseListCriteriaBuilder {
 			Subquery<Timestamp> latestSampleDateTimeSq = cq.subquery(Timestamp.class);
 			Root<Sample> sample = latestSampleDateTimeSq.from(Sample.class);
 			Path<Timestamp> sampleDateTime = sample.get(Sample.SAMPLE_DATE_TIME);
-			latestSampleDateTimeSq
-				.where(cb.equal(sample.get(Sample.UUID), joins.getSamples().get(Sample.UUID)), cb.isFalse(sample.get(Sample.DELETED)));
+			latestSampleDateTimeSq.where(cb.equal(sample.get(Sample.ID), joins.getSamples().get(Sample.ID)), cb.isFalse(sample.get(Sample.DELETED)));
 			latestSampleDateTimeSq.select(cb.greatest(sampleDateTime));
 			selectionList.add(latestSampleDateTimeSq);
 
