@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -130,7 +132,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		final CriteriaQuery<Campaign> query = cb.createQuery(Campaign.class);
 		final Root<Campaign> from = query.from(Campaign.class);
 		query.select(from);
-		query.where(cb.lessThanOrEqualTo(from.get(Campaign.START_DATE), new Date()));
+		query.where(cb.and(campaignService.createActiveCampaignsFilter(cb, from), cb.lessThanOrEqualTo(from.get(Campaign.START_DATE), new Date())));
 		query.orderBy(cb.desc(from.get(Campaign.START_DATE)));
 
 		final TypedQuery<Campaign> q = em.createQuery(query);
@@ -200,9 +202,12 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		validate(getByUuid(campaignReferenceDto.getUuid()));
 	}
 
-	private void validate(CampaignDto campaignDto) {
+	protected void validate(CampaignDto campaignDto) {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
+
+			final Map<String, Boolean> oneSubTabIsNotNullOrEmptyMap = new HashMap<>();
+
 			for (CampaignDashboardElement cde : campaignDashboardElements) {
 				final String diagramId = cde.getDiagramId();
 				if (diagramId == null) {
@@ -212,14 +217,34 @@ public class CampaignFacadeEjb implements CampaignFacade {
 							CampaignDashboardElement.DIAGRAM_ID,
 							campaignDto.getName()));
 				} else if (!campaignDiagramDefinitionFacade.exists(diagramId)) {
-						throw new ValidationRuntimeException(
-							I18nProperties.getValidationError(Validations.campaignDashboardChartIdDoesNotExist, diagramId, campaignDto.getName()));
+					throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(Validations.campaignDashboardChartIdDoesNotExist, diagramId, campaignDto.getName()));
 				}
 
 				if (cde.getTabId() == null) {
 					throw new ValidationRuntimeException(
 						I18nProperties
 							.getValidationError(Validations.campaignDashboardChartValueNull, CampaignDashboardElement.TAB_ID, campaignDto.getName()));
+				}
+
+				if (cde.getSubTabId() == null || cde.getSubTabId().isEmpty()) {
+					if (oneSubTabIsNotNullOrEmptyMap.containsKey(cde.getTabId()) && oneSubTabIsNotNullOrEmptyMap.get(cde.getTabId())) {
+						throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(
+								Validations.campaignDashboardChartValueNull,
+								CampaignDashboardElement.SUB_TAB_ID,
+								campaignDto.getName()));
+					}
+					oneSubTabIsNotNullOrEmptyMap.put(cde.getTabId(), false);
+				} else {
+					if (oneSubTabIsNotNullOrEmptyMap.containsKey(cde.getTabId()) && !oneSubTabIsNotNullOrEmptyMap.get(cde.getTabId())) {
+						throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(
+								Validations.campaignDashboardChartValueNull,
+								CampaignDashboardElement.SUB_TAB_ID,
+								campaignDto.getName()));
+					}
+					oneSubTabIsNotNullOrEmptyMap.put(cde.getTabId(), true);
 				}
 
 				if (cde.getOrder() == null) {
@@ -239,8 +264,17 @@ public class CampaignFacadeEjb implements CampaignFacade {
 						I18nProperties
 							.getValidationError(Validations.campaignDashboardChartValueNull, CampaignDashboardElement.WIDTH, campaignDto.getName()));
 				}
-
 			}
+
+			campaignDto.getCampaignFormMetas().forEach(campaignFormMetaReferenceDto -> {
+				if (campaignFormMetaReferenceDto == null || campaignFormMetaReferenceDto.getUuid() == null) {
+					throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(
+							Validations.campaignDashboardDataFormValueNull,
+							CampaignDto.CAMPAIGN_FORM_METAS,
+							campaignDto.getName()));
+				}
+			});
 		}
 	}
 
@@ -291,6 +325,9 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		result.forEach(cde -> {
 			if (cde.getTabId() == null) {
 				cde.setTabId(StringUtils.EMPTY);
+			}
+			if (cde.getSubTabId() == null) {
+				cde.setSubTabId(StringUtils.EMPTY);
 			}
 			if (cde.getOrder() == null) {
 				cde.setOrder(0);

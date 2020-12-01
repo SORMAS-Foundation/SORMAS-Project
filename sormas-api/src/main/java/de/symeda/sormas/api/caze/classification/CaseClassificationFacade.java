@@ -30,7 +30,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 @Remote
 public interface CaseClassificationFacade {
 
-	CaseClassification getClassification(CaseDataDto caze, List<PathogenTestDto> sampleTests);
+	CaseClassification getClassification(CaseDataDto caze, List<PathogenTestDto> pathogenTests);
 
 	DiseaseClassificationCriteriaDto getByDisease(Disease disease);
 

@@ -36,23 +36,20 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 		Binder<CampaignDashboardElement> binder = new Binder<>();
 
 		final List<CampaignDiagramDefinitionDto> campaignDiagramDefinitionDtos = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
+		final Map<String, String> diagramIdCaptionMap = campaignDiagramDefinitionDtos.stream()
+				.collect(Collectors.toMap(CampaignDiagramDefinitionDto::getDiagramId, CampaignDiagramDefinitionDto::getDiagramCaption));
 
-		ComboBox<DiagramIdCaption> diagramIdCaptionCombo = new ComboBox<>(
-			Captions.campaignDashboardChart,
-			campaignDiagramDefinitionDtos.stream()
-				.map(cdd -> new DiagramIdCaption(cdd.getDiagramId(), cdd.getDiagramCaption()))
-				.collect(Collectors.toList()));
+		ComboBox<String> diagramIdCaptionCombo = new ComboBox<>(Captions.campaignDashboardChart, diagramIdCaptionMap.keySet());
+		diagramIdCaptionCombo.setItemCaptionGenerator(diagramId -> diagramIdCaptionMap.get(diagramId));
 		diagramIdCaptionCombo.setEmptySelectionAllowed(false);
 
-		final Map<String, String> diagramIdCaptionMap = campaignDiagramDefinitionDtos.stream()
-			.collect(Collectors.toMap(CampaignDiagramDefinitionDto::getDiagramId, CampaignDiagramDefinitionDto::getDiagramCaption));
-
-		Binder.Binding<CampaignDashboardElement, DiagramIdCaption> diagramIdCaptionBind = binder.bind(
+		Binder.Binding<CampaignDashboardElement, String> diagramIdCaptionBind = binder.bind(
 			diagramIdCaptionCombo,
-			cde -> new DiagramIdCaption(cde.getDiagramId(), diagramIdCaptionMap.get(cde.getDiagramId())),
+			CampaignDashboardElement::getDiagramId, CampaignDashboardElement::setDiagramId);
+			/*cde -> new DiagramIdCaption(cde.getDiagramId(), diagramIdCaptionMap.get(cde.getDiagramId())),
 			(campaignDashboardElement, diagramIdCaption) -> {
 				campaignDashboardElement.setDiagramId(diagramIdCaption.getDiagramId());
-			});
+			});*/
 
 		final Grid.Column<CampaignDashboardElement, String> diagramIdColumn =
 			grid.addColumn(campaignDashboardElement -> diagramIdCaptionMap.get(campaignDashboardElement.getDiagramId()))
@@ -76,6 +73,24 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getTabId())
 				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardTabName));
 		tabIdColumn.setEditorBinding(tabIdBind);
+
+		final List<String> existingSubTabIds = allElements.stream()
+			.map(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getSubTabId())
+			.filter(s -> StringUtils.isNotEmpty(s))
+			.distinct()
+			.collect(Collectors.toList());
+		final ComboBox<String> subTabIdCombo = new ComboBox<>(Captions.campaignDashboardSubTabName, existingSubTabIds);
+
+		subTabIdCombo.setEmptySelectionAllowed(true);
+		subTabIdCombo.setTextInputAllowed(true);
+		subTabIdCombo.setNewItemProvider((ComboBox.NewItemProvider<String>) s -> Optional.of(s));
+
+		final Binder.Binding<CampaignDashboardElement, String> subTabIdBind =
+			binder.bind(subTabIdCombo, CampaignDashboardElement::getSubTabId, CampaignDashboardElement::setSubTabId);
+		final Grid.Column<CampaignDashboardElement, String> subTabIdColumn =
+			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getSubTabId())
+				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardSubTabName));
+		subTabIdColumn.setEditorBinding(subTabIdBind);
 
 		TextField width = new TextField(Captions.campaignDashboardChartWidth);
 		Binder.Binding<CampaignDashboardElement, String> widthBind = binder.forField(width)
@@ -137,7 +152,7 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 		gridItems.forEach(campaignDashboardElement -> campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement)));
 	}
 
-	public static class DiagramIdCaption implements Serializable {
+	/*public static class DiagramIdCaption implements Serializable {
 
 		private String diagramId;
 		private String diagramCaption;
@@ -167,6 +182,6 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 		public String toString() {
 			return this.diagramCaption;
 		}
-	}
+	}*/
 
 }

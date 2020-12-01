@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonAddressType;
@@ -274,7 +276,7 @@ public class LocationDto extends PseudonymizableDto {
 			additionalInformation);
 	}
 
-	public boolean isEmptyLocation() {
+	public boolean checkIsEmptyLocation() {
 		return details == null
 			&& city == null
 			&& areaType == null
@@ -295,5 +297,21 @@ public class LocationDto extends PseudonymizableDto {
 
 	public static String buildStreetAndHouseNumberCaption(String street, String houseNumber) {
 		return DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber);
+	}
+
+	public String buildAddressCaption() {
+		String streetAndNumber = DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber);
+		String postalAndCity = DataHelper.toStringNullable(postalCode) + " " + DataHelper.toStringNullable(city);
+		if (StringUtils.isNotBlank(streetAndNumber)) {
+			if (StringUtils.isNotBlank(postalAndCity)) {
+				return streetAndNumber + ", " + postalAndCity;
+			} else {
+				return streetAndNumber;
+			}
+		} else if (StringUtils.isNotBlank(postalAndCity)) {
+			return postalAndCity;
+		} else {
+			return "";
+		}
 	}
 }

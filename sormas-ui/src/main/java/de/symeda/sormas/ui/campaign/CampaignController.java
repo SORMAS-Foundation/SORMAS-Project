@@ -28,6 +28,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -91,10 +92,10 @@ public class CampaignController {
 		VaadinUiUtil.showModalPopupWindow(campaignComponent, heading);
 	}
 
-	public void createCampaignDataForm(CampaignFormMetaReferenceDto campaignForm) {
+	public void createCampaignDataForm(CampaignReferenceDto campaign, CampaignFormMetaReferenceDto campaignForm) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaignForm, false, false, () -> {
+		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
 			window.close();
 			SormasUI.refreshView();
 			Notification
@@ -156,7 +157,7 @@ public class CampaignController {
 		}
 		campaignEditForm.setValue(campaignDto);
 
-		final CommitDiscardWrapperComponent<CampaignEditForm> view =
+		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent =
 			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
 
 				@Override
@@ -168,13 +169,26 @@ public class CampaignController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 			CampaignDto finalCampaignDto = campaignDto;
-			view.addDeleteListener(() -> {
+			campaignComponent.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFacade().deleteCampaign(finalCampaignDto.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}
 
-		view.addCommitListener(() -> {
+		// Initialize 'Archive' button
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE)) {
+			final String campaignUuid = campaignDto.getUuid();
+			boolean archived = FacadeProvider.getCampaignFacade().isArchived(campaignUuid);
+			Button archiveCampaignButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
+				campaignComponent.commit();
+				archiveOrDearchiveCampaign(campaignUuid, !archived);
+			}, ValoTheme.BUTTON_LINK);
+
+			campaignComponent.getButtonsPanel().addComponentAsFirst(archiveCampaignButton);
+			campaignComponent.getButtonsPanel().setComponentAlignment(archiveCampaignButton, Alignment.BOTTOM_LEFT);
+		}
+
+		campaignComponent.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
 				CampaignDto dto = campaignEditForm.getValue();
 				FacadeProvider.getCampaignFacade().saveCampaign(dto);
@@ -183,11 +197,12 @@ public class CampaignController {
 			}
 		});
 
-		return view;
+		return campaignComponent;
 	}
 
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 		CampaignFormDataDto campaignFormData,
+		CampaignReferenceDto campaign,
 		CampaignFormMetaReferenceDto campaignForm,
 		boolean revertFormOnDiscard,
 		boolean showDeleteButton,
@@ -199,7 +214,7 @@ public class CampaignController {
 
 			final UserDto currentUser = UserProvider.getCurrent().getUser();
 			campaignFormData =
-				CampaignFormDataDto.build(null, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
+				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		form.setValue(campaignFormData);

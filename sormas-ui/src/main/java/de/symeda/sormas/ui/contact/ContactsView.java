@@ -40,13 +40,16 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -237,7 +240,10 @@ public class ContactsView extends AbstractView {
 											I18nProperties.getPrefixCaption(
 												SymptomsDto.I18N_PREFIX,
 												propertyId,
-												I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
+												I18nProperties.getPrefixCaption(
+													HospitalizationDto.I18N_PREFIX,
+													propertyId,
+													I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId))))))));
 						if (Date.class.isAssignableFrom(type)) {
 							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 						}
@@ -268,25 +274,24 @@ public class ContactsView extends AbstractView {
 					Descriptions.descFollowUpExportButton);
 			}
 
-			//TODO - enable after 1.50 release
-//			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
-//				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
-//				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
-//					BAGExportContactDto.class,
-//					null,
-//					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
-//					(propertyId, type) -> {
-//						String caption = I18nProperties.findPrefixCaption(propertyId);
-//						if (Date.class.isAssignableFrom(type)) {
-//							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-//						}
-//						return caption;
-//					},
-//					createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
-//					null);
-//
-//				addExportButton(bagExportResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
-//			}
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
+				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
+					BAGExportContactDto.class,
+					null,
+					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
+					(propertyId, type) -> {
+						String caption = I18nProperties.findPrefixCaption(propertyId);
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+						}
+						return caption;
+					},
+					createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
+					null);
+
+				addExportButton(bagExportResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.BAGExport, Strings.infoBAGExport);
+			}
 
 			// Warning if no filters have been selected
 			{

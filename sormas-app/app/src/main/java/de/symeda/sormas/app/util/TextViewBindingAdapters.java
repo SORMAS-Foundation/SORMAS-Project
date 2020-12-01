@@ -32,7 +32,6 @@ import androidx.databinding.ObservableList;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -51,9 +50,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
-import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
@@ -143,6 +139,12 @@ public class TextViewBindingAdapters {
 		} else {
 			view.setText(Html.fromHtml(valBuilder.append(value).toString()));
 		}
+	}
+
+	@BindingAdapter(value = {
+		"htmlValue" })
+	public static void setHtmlValue(TextView view, String value) {
+		view.setText(!StringUtils.isBlank(value) ? Html.fromHtml(value) : "");
 	}
 
 	@BindingAdapter(value = {
@@ -1044,54 +1046,6 @@ public class TextViewBindingAdapters {
 		} else {
 			textField.setText(ado.toString());
 		}
-	}
-
-	//TODO: Orson - remove
-	@BindingAdapter(value = {
-		"removeBottomMarginForBurialIfEmpty",
-		"bottomMargin" })
-	public static void setRemoveBottomMarginForBurialIfEmpty(LinearLayout viewGroup, ObservableList<EpiDataBurial> list, float bottomMargin) {
-		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
-
-		if (list == null || list.size() <= 0) {
-			params.bottomMargin = 0;
-		} else {
-			params.bottomMargin = (int) bottomMargin;
-		}
-
-		viewGroup.setLayoutParams(params);
-	}
-
-	//TODO: Orson - remove
-	@BindingAdapter(value = {
-		"removeBottomMarginForGatheringIfEmpty",
-		"bottomMargin" })
-	public static void setRemoveBottomMarginForGatheringIfEmpty(LinearLayout viewGroup, ObservableList<EpiDataGathering> list, float bottomMargin) {
-		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
-
-		if (list == null || list.size() <= 0) {
-			params.bottomMargin = 0;
-		} else {
-			params.bottomMargin = (int) bottomMargin;
-		}
-
-		viewGroup.setLayoutParams(params);
-	}
-
-	//TODO: Orson - remove
-	@BindingAdapter(value = {
-		"removeBottomMarginForTravelIfEmpty",
-		"bottomMargin" })
-	public static void setRemoveBottomMarginForTravelIfEmpty(LinearLayout viewGroup, ObservableList<EpiDataTravel> list, float bottomMargin) {
-		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
-
-		if (list == null || list.size() <= 0) {
-			params.bottomMargin = 0;
-		} else {
-			params.bottomMargin = (int) bottomMargin;
-		}
-
-		viewGroup.setLayoutParams(params);
 	}
 
 	@BindingAdapter(value = {

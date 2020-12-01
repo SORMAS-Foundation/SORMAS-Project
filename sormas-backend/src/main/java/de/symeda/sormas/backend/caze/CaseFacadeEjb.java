@@ -103,12 +103,11 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -186,12 +185,12 @@ import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
-import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.event.EventSummaryDetails;
+import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -229,8 +228,8 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
@@ -363,7 +362,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
-	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -428,7 +427,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		List<CaseIndexDto> cases;
 		if (first != null && max != null) {
-			TypedQuery query = em.createQuery(cq);
+			TypedQuery<CaseIndexDto> query = em.createQuery(cq);
 			cases = query.setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
 			cases = em.createQuery(cq).getResultList();
@@ -563,17 +562,15 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonAddressRegion().get(Region.NAME), joins.getPersonAddressDistrict().get(District.NAME), joins.getPersonAddressCommunity().get(Community.NAME),
 				joins.getPersonAddress().get(Location.CITY), joins.getPersonAddress().get(Location.STREET), joins.getPersonAddress().get(Location.HOUSE_NUMBER),
 				joins.getPersonAddress().get(Location.ADDITIONAL_INFORMATION), joins.getPersonAddress().get(Location.POSTAL_CODE),
-				joins.getPersonAddressFacility().get(Facility.NAME),
-				joins.getPersonAddressFacility().get(Facility.UUID),
-				joins.getPersonAddress().get(Location.FACILITY_DETAILS),
+				joins.getPersonAddressFacility().get(Facility.NAME), joins.getPersonAddressFacility().get(Facility.UUID), joins.getPersonAddress().get(Location.FACILITY_DETAILS),
 				// phone
-				joins.getPerson().get(Person.PHONE), joins.getPerson().get(Person.PHONE_OWNER), joins.getPerson().get(Person.EDUCATION_TYPE),
+				joins.getPerson().get(Person.PHONE), joins.getPerson().get(Person.PHONE_OWNER),
+				joins.getPerson().get(Person.EMAIL_ADDRESS),
+				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
-				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.TRAVELED), joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
-				joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE), joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
-				joins.getEpiData().get(EpiData.RODENTS), caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES),
-				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE),
-				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
+				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN), 
+				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
+				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID)
 				);
@@ -682,7 +679,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
 				sourceCaseClassifications = contactService.getSourceCaseClassifications(resultCaseIds)
 					.stream()
-					.collect(Collectors.toMap(e -> (Long) e[0], e -> (CaseClassification) e[1]));
+					.collect(
+						Collectors
+							.toMap(e -> (Long) e[0], e -> (CaseClassification) e[1], (c1, c2) -> c1.getSeverity() >= c2.getSeverity() ? c1 : c2));
 			}
 
 			List<Long> caseIdsWithOutbreak = null;
@@ -690,18 +689,25 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseIdsWithOutbreak = outbreakService.getCaseIdsWithOutbreak(resultCaseIds);
 			}
 
-			Map<Long, List<EpiDataTravel>> travels = null;
+			Map<Long, List<Exposure>> exposures = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
-				&& (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.TRAVEL_HISTORY))) {
-				List<EpiDataTravel> travelsList = null;
-				CriteriaQuery<EpiDataTravel> travelsCq = cb.createQuery(EpiDataTravel.class);
-				Root<EpiDataTravel> travelsRoot = travelsCq.from(EpiDataTravel.class);
-				Join<EpiDataTravel, EpiData> travelsEpiDataJoin = travelsRoot.join(EpiDataTravel.EPI_DATA, JoinType.LEFT);
-				Expression<String> epiDataIdsExpr = travelsEpiDataJoin.get(EpiData.ID);
-				travelsCq.where(epiDataIdsExpr.in(resultList.stream().map(CaseExportDto::getEpiDataId).collect(Collectors.toList())));
-				travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
-				travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				travels = travelsList.stream().collect(Collectors.groupingBy(t -> t.getEpiData().getId()));
+				&& (exportConfiguration == null
+					|| exportConfiguration.getProperties().contains(CaseExportDto.TRAVELED)
+					|| exportConfiguration.getProperties().contains(CaseExportDto.TRAVEL_HISTORY)
+					|| exportConfiguration.getProperties().contains(CaseExportDto.BURIAL_ATTENDED))) {
+				CriteriaQuery<Exposure> exposuresCq = cb.createQuery(Exposure.class);
+				Root<Exposure> exposuresRoot = exposuresCq.from(Exposure.class);
+				Join<Exposure, EpiData> exposuresEpiDataJoin = exposuresRoot.join(Exposure.EPI_DATA, JoinType.LEFT);
+				Expression<String> epiDataIdsExpr = exposuresEpiDataJoin.get(EpiData.ID);
+				Predicate exposuresPredicate = cb.and(
+					epiDataIdsExpr.in(resultList.stream().map(CaseExportDto::getEpiDataId).collect(Collectors.toList())),
+					cb.or(
+						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.TRAVEL),
+						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
+				exposuresCq.where(exposuresPredicate);
+				exposuresCq.orderBy(cb.asc(exposuresEpiDataJoin.get(EpiData.ID)));
+				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
 			}
 
 			Map<Long, List<Sample>> samples = null;
@@ -809,24 +815,25 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (caseIdsWithOutbreak != null) {
 					exportDto.setAssociatedWithOutbreak(caseIdsWithOutbreak.contains(exportDto.getId()));
 				}
-				if (travels != null) {
-					Optional.ofNullable(travels.get(exportDto.getEpiDataId())).ifPresent(caseTravels -> {
+				if (exposures != null) {
+					Optional.ofNullable(exposures.get(exportDto.getEpiDataId())).ifPresent(caseExposures -> {
 						StringBuilder travelHistoryBuilder = new StringBuilder();
-						caseTravels.forEach(travel -> {
+						if (caseExposures.stream().anyMatch(e -> ExposureType.BURIAL.equals(e.getExposureType()))) {
+							exportDto.setBurialAttended(true);
+						}
+						caseExposures.stream().filter(e -> ExposureType.TRAVEL.equals(e.getExposureType())).forEach(exposure -> {
 							travelHistoryBuilder.append(
-								EpiDataTravelHelper.buildTravelString(
-									travel.getTravelType(),
-									travel.getTravelDestination(),
-									travel.getTravelDateFrom(),
-									travel.getTravelDateTo(),
+								EpiDataHelper.buildDetailedTravelString(
+									exposure.getLocation().toString(),
+									exposure.getDescription(),
+									exposure.getStartDate(),
+									exposure.getEndDate(),
 									userLanguage))
 								.append(", ");
 						});
 						if (travelHistoryBuilder.length() > 0) {
+							exportDto.setTraveled(true);
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length() - 1);
-						}
-						if (travelHistoryBuilder.length() == 0 && exportDto.getTraveled() != null) {
-							travelHistoryBuilder.append(exportDto.getTraveled());
 						}
 						exportDto.setTravelHistory(travelHistoryBuilder.toString());
 					});
@@ -1676,9 +1683,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
-				List<PathogenTestDto> sampleTests =
+				List<PathogenTestDto> pathogenTests =
 					pathogenTestService.getAllByCase(newCase).stream().map(s -> PathogenTestFacadeEjbLocal.toDto(s)).collect(Collectors.toList());
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, sampleTests);
+
+				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTests);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != newCase.getSystemCaseClassification()) {
@@ -1700,14 +1708,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& YesNoUnknown.YES != newCase.getHospitalization().getHospitalizedPreviously()) {
 			newCase.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
 		}
-		if (!newCase.getEpiData().getBurials().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getBurialAttended()) {
-			newCase.getEpiData().setBurialAttended(YesNoUnknown.YES);
-		}
-		if (!newCase.getEpiData().getTravels().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getTraveled()) {
-			newCase.getEpiData().setTraveled(YesNoUnknown.YES);
-		}
-		if (!newCase.getEpiData().getGatherings().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getGatheringAttended()) {
-			newCase.getEpiData().setGatheringAttended(YesNoUnknown.YES);
+		if (!newCase.getEpiData().getExposures().isEmpty() && !YesNoUnknown.YES.equals(newCase.getEpiData().getExposureDetailsKnown())) {
+			newCase.getEpiData().setExposureDetailsKnown(YesNoUnknown.YES);
 		}
 
 		// Update completeness value
@@ -2095,7 +2097,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasFacade.fromSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo()));
 		}
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
@@ -2139,17 +2141,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				pseudonymizer.pseudonymizeUser(source.getClassificationUser(), currentUser, dto::setClassificationUser);
 
 				pseudonymizer.pseudonymizeDto(EpiDataDto.class, dto.getEpiData(), inJurisdiction, e -> {
-					pseudonymizer.pseudonymizeDtoCollection(EpiDataBurialDto.class, e.getBurials(), b -> inJurisdiction, (b, bInJurisdiction) -> {
-						pseudonymizer.pseudonymizeDto(LocationDto.class, b.getBurialAddress(), bInJurisdiction, null);
+					pseudonymizer.pseudonymizeDtoCollection(ExposureDto.class, e.getExposures(), exp -> inJurisdiction, (exp, expInJurisdiction) -> {
+						pseudonymizer.pseudonymizeDto(LocationDto.class, exp.getLocation(), expInJurisdiction, null);
 					});
-
-					pseudonymizer.pseudonymizeDtoCollection(EpiDataTravelDto.class, e.getTravels(), t -> inJurisdiction, null);
-
-					pseudonymizer
-						.pseudonymizeDtoCollection(EpiDataGatheringDto.class, e.getGatherings(), g -> inJurisdiction, (g, bInJurisdiction) -> {
-							pseudonymizer.pseudonymizeDto(LocationDto.class, g.getGatheringAddress(), bInJurisdiction, null);
-						});
-
 				});
 
 				pseudonymizer.pseudonymizeDto(HealthConditionsDto.class, c.getClinicalCourse().getHealthConditions(), inJurisdiction, null);
@@ -2182,37 +2176,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			pseudonymizer.restorePseudonymizedValues(EpiDataDto.class, epiData, existingEpiData, inJurisdiction);
 
-			epiData.getBurials().forEach(burial -> {
-				EpiDataBurialDto existingBurial =
-					existingEpiData.getBurials().stream().filter(eb -> DataHelper.isSame(burial, eb)).findFirst().orElse(null);
+			epiData.getExposures().forEach(exposure -> {
+				ExposureDto existingExposure =
+					existingEpiData.getExposures().stream().filter(exp -> DataHelper.isSame(exposure, exp)).findFirst().orElse(null);
 
-				if (existingBurial != null) {
-					pseudonymizer.restorePseudonymizedValues(EpiDataBurialDto.class, burial, existingBurial, inJurisdiction);
+				if (existingExposure != null) {
+					pseudonymizer.restorePseudonymizedValues(ExposureDto.class, exposure, existingExposure, inJurisdiction);
 					pseudonymizer
-						.restorePseudonymizedValues(LocationDto.class, burial.getBurialAddress(), existingBurial.getBurialAddress(), inJurisdiction);
-				}
-			});
-
-			epiData.getTravels().forEach(travel -> {
-				EpiDataTravelDto existingTravel =
-					existingEpiData.getTravels().stream().filter(et -> DataHelper.isSame(travel, et)).findFirst().orElse(null);
-
-				if (existingTravel != null) {
-					pseudonymizer.restorePseudonymizedValues(EpiDataTravelDto.class, travel, existingTravel, inJurisdiction);
-				}
-			});
-
-			epiData.getGatherings().forEach(gathering -> {
-				EpiDataGatheringDto existingGathering =
-					existingEpiData.getGatherings().stream().filter(eg -> DataHelper.isSame(gathering, eg)).findFirst().orElse(null);
-
-				if (existingGathering != null) {
-					pseudonymizer.restorePseudonymizedValues(EpiDataGatheringDto.class, gathering, existingGathering, inJurisdiction);
-					pseudonymizer.restorePseudonymizedValues(
-						LocationDto.class,
-						gathering.getGatheringAddress(),
-						existingGathering.getGatheringAddress(),
-						inJurisdiction);
+						.restorePseudonymizedValues(LocationDto.class, exposure.getLocation(), existingExposure.getLocation(), inJurisdiction);
 				}
 			});
 
@@ -2390,7 +2361,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
 
-		target.setSormasToSormasOriginInfo(SormasToSormasFacadeEjb.toSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;
@@ -2992,7 +2963,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<CaseFollowUpDto> cq = cb.createQuery(CaseFollowUpDto.class);
 		Root<Case> caze = cq.from(Case.class);
 
-		CaseJoins joins = new CaseJoins(caze);
+		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
 		final Stream<Selection<?>> select = Stream.of(
 			caze.get(Case.UUID),
@@ -3089,15 +3060,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultList;
 	}
 
+	public boolean isCaseEditAllowed(String caseUuid) {
+		Case caze = caseService.getByUuid(caseUuid);
+
+		return caseService.isCaseEditAllowed(caze);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 
-	}
-
-	public Boolean isCaseEditAllowed(String caseUuid) {
-		Case caze = caseService.getByUuid(caseUuid);
-
-		return caseService.isCaseEditAllowed(caze);
 	}
 }

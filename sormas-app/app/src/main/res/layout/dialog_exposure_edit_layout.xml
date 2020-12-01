@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
+
+    <data>
+        <import type="de.symeda.sormas.api.exposure.ExposureType" />
+        <import type="de.symeda.sormas.api.exposure.GatheringType" />
+        <import type="de.symeda.sormas.api.exposure.HabitationType" />
+        <import type="de.symeda.sormas.api.exposure.TypeOfAnimal" />
+        <import type="de.symeda.sormas.api.exposure.AnimalContactType" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.event.TypeOfPlace" />
+        <import type="de.symeda.sormas.api.event.MeansOfTransport" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.exposure.Exposure" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/main_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+            android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+            <requestFocus/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/exposure_uuid"
+                    app:shortUuidValue="@{data.uuid}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/exposure_reportingUser"
+                    app:value="@{data.reportingUser}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/exposure_startDate"
+                    app:value="@={data.startDate}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/exposure_endDate"
+                    app:value="@={data.endDate}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_description"
+                app:value="@={data.description}"
+                app:inputType="textMultiLine"
+                app:textAlignment="gravity"
+                app:gravity="top|start"
+                app:singleLine="false"
+                app:maxLines="3"
+                app:textArea="true"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_exposureType"
+                app:required="true"
+                app:value="@={data.exposureType}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_exposureTypeDetails"
+                app:value="@={data.exposureTypeDetails}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_gatheringType"
+                app:value="@={data.gatheringType}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.GATHERING}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_gatheringDetails"
+                app:value="@={data.gatheringDetails}"
+                app:dependencyParentField="@{exposureGatheringType}"
+                app:dependencyParentValue="@{GatheringType.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_habitationType"
+                app:value="@={data.habitationType}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.HABITATION}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_habitationDetails"
+                app:value="@={data.habitationDetails}"
+                app:dependencyParentField="@{exposureHabitationType}"
+                app:dependencyParentValue="@{HabitationType.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_typeOfAnimal"
+                app:value="@={data.typeOfAnimal}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.ANIMAL_CONTACT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_typeOfAnimalDetails"
+                app:value="@={data.typeOfAnimalDetails}"
+                app:dependencyParentField="@{exposureTypeOfAnimal}"
+                app:dependencyParentValue="@{TypeOfAnimal.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{I18nProperties.getString(Strings.headingExposureDetails)}"
+                android:layout_marginBottom="24dp"
+                style="@style/SubHeadingCompactStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_riskArea"
+                app:slim="true"
+                app:value="@={data.riskArea}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_indoors"
+                app:slim="true"
+                app:value="@={data.indoors}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_outdoors"
+                app:slim="true"
+                app:value="@={data.outdoors}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_wearingMask"
+                app:slim="true"
+                app:value="@={data.wearingMask}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_wearingPpe"
+                app:slim="true"
+                app:value="@={data.wearingPpe}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_otherProtectiveMeasures"
+                app:slim="true"
+                app:value="@={data.otherProtectiveMeasures}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_protectiveMeasuresDetails"
+                app:value="@={data.protectiveMeasuresDetails}"
+                app:dependencyParentField="@{exposureOtherProtectiveMeasures}"
+                app:dependencyParentValue="@{YesNoUnknown.YES}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_shortDistance"
+                app:slim="true"
+                app:value="@={data.shortDistance}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_longFaceToFaceContact"
+                app:slim="true"
+                app:value="@={data.longFaceToFaceContact}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_animalMarket"
+                app:slim="true"
+                app:value="@={data.animalMarket}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_percutaneous"
+                app:slim="true"
+                app:value="@={data.percutaneous}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_contactToBodyFluids"
+                app:slim="true"
+                app:value="@={data.contactToBodyFluids}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_handlingSamples"
+                app:slim="true"
+                app:value="@={data.handlingSamples}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_eatingRawAnimalProducts"
+                app:slim="true"
+                app:value="@={data.eatingRawAnimalProducts}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_handlingAnimals"
+                app:slim="true"
+                app:value="@={data.handlingAnimals}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <TextView
+                android:id="@+id/heading_animal_contact_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{I18nProperties.getString(Strings.headingAnimalContactDetails)}"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="12dp"
+                style="@style/SubHeadingCompactStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_animalCondition"
+                app:value="@={data.animalCondition}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.ANIMAL_CONTACT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_animalContactType"
+                app:value="@={data.animalContactType}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.ANIMAL_CONTACT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_animalContactTypeDetails"
+                app:value="@={data.animalContactTypeDetails}"
+                app:dependencyParentField="@{exposureAnimalContactType}"
+                app:dependencyParentValue="@{AnimalContactType.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_animalVaccinated"
+                app:value="@={data.animalVaccinated}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.ANIMAL_CONTACT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <TextView
+                android:id="@+id/heading_burial_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{I18nProperties.getString(Strings.headingBurialDetails)}"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="12dp"
+                style="@style/SubHeadingCompactStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_physicalContactDuringPreparation"
+                app:value="@={data.physicalContactDuringPreparation}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.BURIAL}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/exposure_physicalContactWithBody"
+                app:value="@={data.physicalContactWithBody}"
+                app:dependencyParentField="@{exposureExposureType}"
+                app:dependencyParentValue="@{ExposureType.BURIAL}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/exposure_deceasedPersonName"
+                    app:value="@={data.deceasedPersonName}"
+                    app:dependencyParentField="@{exposureExposureType}"
+                    app:dependencyParentValue="@{ExposureType.BURIAL}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/exposure_deceasedPersonRelation"
+                    app:value="@={data.deceasedPersonRelation}"
+                    app:dependencyParentField="@{exposureExposureType}"
+                    app:dependencyParentValue="@{ExposureType.BURIAL}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{I18nProperties.getString(Strings.headingLocation)}"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="12dp"
+                style="@style/SubHeadingCompactStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_typeOfPlace"
+                app:value="@={data.typeOfPlace}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_typeOfPlaceDetails"
+                app:value="@={data.typeOfPlaceDetails}"
+                app:dependencyParentField="@{exposureTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/exposure_meansOfTransport"
+                app:value="@={data.meansOfTransport}"
+                app:dependencyParentField="@{exposureTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/exposure_meansOfTransportDetails"
+                app:value="@={data.meansOfTransportDetails}"
+                app:dependencyParentField="@{exposureMeansOfTransport}"
+                app:dependencyParentValue="@{MeansOfTransport.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/exposure_connectionNumber"
+                    app:value="@={data.connectionNumber}"
+                    app:dependencyParentField="@{exposureTypeOfPlace}"
+                    app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/exposure_seatNumber"
+                    app:value="@={data.seatNumber}"
+                    app:dependencyParentField="@{exposureMeansOfTransport}"
+                    app:dependencyParentValue="@{MeansOfTransport.PLANE}"
+                    app:dependencyParentValue2="@{MeansOfTransport.TRAIN}"
+                    app:dependencyParentValue3="@{MeansOfTransport.OTHER}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                android:id="@+id/exposure_location"
+                app:hint="@string/hint_enter_location"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:locationValue="@{data.location}"
+                style="@style/ControlSingleColumnStyle" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>

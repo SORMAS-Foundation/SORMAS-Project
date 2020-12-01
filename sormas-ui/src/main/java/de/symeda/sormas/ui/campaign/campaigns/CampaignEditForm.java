@@ -80,6 +80,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	public CampaignEditForm(CampaignDto campaignDto) {
 
 		super(CampaignDto.class, CampaignDto.I18N_PREFIX);
+		setWidth(1280, Unit.PIXELS);
 
 		this.campaignDto = campaignDto;
 		isCreateForm = campaignDto == null;
@@ -138,10 +139,13 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		FieldHelper.addSoftRequiredStyle(description);
 
-		final HorizontalLayout usageLayout = new HorizontalLayout(
-			new Label(
+		final HorizontalLayout usageLayout = new HorizontalLayout();
+		usageLayout.setWidthFull();
+		Label usageLabel = new Label(
 				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableCampaignGrids),
-				ContentMode.HTML));
+				ContentMode.HTML);
+		usageLabel.setWidthFull();
+		usageLayout.addComponent(usageLabel);
 		usageLayout.setSpacing(true);
 		usageLayout.setMargin(new MarginInfo(true, false, true, false));
 		getContent().addComponent(usageLayout, USAGE_INFO);

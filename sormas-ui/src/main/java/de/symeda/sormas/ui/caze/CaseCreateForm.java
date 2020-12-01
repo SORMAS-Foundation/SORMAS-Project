@@ -163,8 +163,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox presentCondition = addCustomField(PersonDto.PRESENT_CONDITION, PresentCondition.class, ComboBox.class);
 		presentCondition.setCaption(I18nProperties.getCaption(Captions.Person_presentCondition));
 
-		DateField onsetDate = addCustomField(SymptomsDto.ONSET_DATE, Date.class, DateField.class);
-		onsetDate.setCaption(I18nProperties.getCaption(Captions.Symptoms_onsetDate));
+		addCustomField(
+			SymptomsDto.ONSET_DATE,
+			Date.class,
+			DateField.class,
+			I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 
 		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
@@ -205,7 +208,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
-			if (!TypeOfPlace.HOME.equals(facilityOrHome.getNullableValue())) {
+			if (!TypeOfPlace.HOME.equals(facilityOrHome.isRequired() ? facilityOrHome.getValue() : facilityOrHome.getNullableValue())) {
 				FieldHelper.removeItems(facility);
 			}
 			FieldHelper.removeItems(community);

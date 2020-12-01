@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.region.CountryDto;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.AreaReference;
@@ -102,6 +103,7 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, EventDto.class, EventDto.I18N_PREFIX);
 		createEntitySheet(workbook, EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
 		createEntitySheet(workbook, FacilityDto.class, FacilityDto.I18N_PREFIX);
+		createEntitySheet(workbook, CountryDto.class, CountryDto.I18N_PREFIX);
 		createEntitySheet(workbook, RegionDto.class, RegionDto.I18N_PREFIX);
 		createEntitySheet(workbook, DistrictDto.class, DistrictDto.I18N_PREFIX);
 		createEntitySheet(workbook, CommunityDto.class, CommunityDto.I18N_PREFIX);

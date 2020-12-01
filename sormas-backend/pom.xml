@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
-		<version>1.52.0-SNAPSHOT</version>
+		<version>1.53.0-SNAPSHOT</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -101,7 +101,6 @@
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
 			<artifactId>hibernate-types-52</artifactId>
-			<version>2.9.13</version>
 		</dependency>
 
 		<dependency>
@@ -122,8 +121,6 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>${jersey.version}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -133,14 +130,11 @@
 		<dependency>
 	    	<groupId>org.glassfish.jersey.inject</groupId>
 	    	<artifactId>jersey-hk2</artifactId>
-			<version>${jersey.version}</version>
-			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>p6spy</groupId>
 			<artifactId>p6spy</artifactId>
-			<version>3.9.0</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -161,14 +155,12 @@
 		<dependency>
 			<groupId>com.googlecode.libphonenumber</groupId>
 			<artifactId>libphonenumber</artifactId>
-			<version>8.12.11</version>
 		</dependency>
 
 		<!-- Keycloak -->
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
-			<version>${keycloak.version}</version>
 		</dependency>
 
 		<dependency>
@@ -187,11 +179,9 @@
 			<artifactId>microprofile-config-api</artifactId>
 		</dependency>
 
-		<!-- JsonPath -->
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
-			<version>2.4.0</version>
 		</dependency>
 
 	</dependencies>

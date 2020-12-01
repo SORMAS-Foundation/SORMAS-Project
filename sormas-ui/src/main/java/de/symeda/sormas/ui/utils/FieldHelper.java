@@ -124,10 +124,30 @@ public final class FieldHelper {
 		FieldGroup fieldGroup,
 		String targetPropertyId,
 		Object sourcePropertyId,
+		Object sourceValue,
+		boolean clearOnHidden) {
+
+		setVisibleWhen(fieldGroup, targetPropertyId, sourcePropertyId, Arrays.asList(sourceValue), clearOnHidden);
+	}
+
+	public static void setVisibleWhen(
+		FieldGroup fieldGroup,
+		String targetPropertyId,
+		Object sourcePropertyId,
 		List<?> sourceValues,
 		boolean clearOnHidden) {
 
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden);
+	}
+
+	public static void setVisibleWhen(
+		FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Object sourcePropertyId,
+		Object sourceValue,
+		boolean clearOnHidden) {
+
+		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, Arrays.asList(sourceValue), clearOnHidden);
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.when;
@@ -26,6 +23,10 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.region.CountryFacade;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -97,6 +99,8 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.TemplateEngineService;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -129,6 +133,7 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -295,6 +300,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(FacilityFacadeEjbLocal.class);
 	}
 
+	public CountryFacade getCountryFacade() {
+		return getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
+	}
+
 	public RegionFacade getRegionFacade() {
 		return getBean(RegionFacadeEjbLocal.class);
 	}
@@ -350,6 +359,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public PointOfEntryService getPointOfEntryService() {
 		return getBean(PointOfEntryService.class);
 	}
+
+	public CountryService getCountryService() { return getBean(CountryService.class); }
 
 	public RegionService getRegionService() {
 		return getBean(RegionService.class);
@@ -427,6 +438,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
 	}
 
+	public SormasToSormasShareInfoService getSormasToSormasShareInfoService() {
+		return getBean(SormasToSormasShareInfoService.class);
+	}
+
 	public SormasToSormasEncryptionService getSormasToSormasEncryptionService() {
 		return getBean(SormasToSormasEncryptionService.class);
 	}
@@ -480,5 +495,17 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public BAGExportFacade getBAGExportFacade() {
 		return getBean(BAGExportFacadeEjb.BAGExportFacadeEjbLocal.class);
+	}
+
+	public ExternalJournalService getExternalJournalService() {
+		return getBean(ExternalJournalService.class);
+	}
+
+	public DocumentFacade getDocumentFacade() {
+		return getBean(DocumentFacadeEjb.DocumentFacadeEjbLocal.class);
+	}
+
+	public DocumentService getDocumentService() {
+		return getBean(DocumentService.class);
 	}
 }
