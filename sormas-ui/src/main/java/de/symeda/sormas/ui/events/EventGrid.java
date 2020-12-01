@@ -29,6 +29,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventSourceType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -44,8 +45,12 @@ import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
@@ -85,14 +90,17 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
-		Column<EventIndexDto, String> pendingTasksColumn = addColumn(
-			entry -> String.format(
-				I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
-				FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(entry.toReference())));
-		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
-		pendingTasksColumn.setSortable(false);
+		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
+		if (tasksFeatureEnabled) {
+			Column<EventIndexDto, String> pendingTasksColumn = addColumn(
+					entry -> String.format(
+							I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
+							FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(entry.toReference())));
+			pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
+			pendingTasksColumn.setSortable(false);
+		}
 
-		setColumns(
+		List<String> columnIds = new ArrayList(Arrays.asList(
 			EventIndexDto.UUID,
 			EventIndexDto.EVENT_STATUS,
 			EventIndexDto.EVENT_INVESTIGATION_STATUS,
@@ -104,7 +112,13 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			INFORMATION_SOURCE,
 			EventIndexDto.REPORT_DATE_TIME,
 			NUMBER_OF_PENDING_TASKS,
-			EventIndexDto.PARTICIPANT_COUNT);
+			EventIndexDto.PARTICIPANT_COUNT));
+
+		if (!tasksFeatureEnabled) {
+			columnIds.remove(NUMBER_OF_PENDING_TASKS);
+		}
+
+		setColumns(columnIds.toArray(new String[columnIds.size()]));
 
 		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
 

@@ -61,6 +61,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventSection.values(), getContext());
+		// Sections must be removed in reverse order
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
 			menuItems.set(EventSection.TASKS.ordinal(), null);
 		}

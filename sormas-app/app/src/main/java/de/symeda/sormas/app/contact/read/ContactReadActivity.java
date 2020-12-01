@@ -55,6 +55,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(ContactSection.values(), getContext());
+		// Sections must be removed in reverse order
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
 			menuItems.set(ContactSection.TASKS.ordinal(), null);
 		}
