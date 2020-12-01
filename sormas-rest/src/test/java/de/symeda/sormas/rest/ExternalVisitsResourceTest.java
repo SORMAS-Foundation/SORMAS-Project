@@ -117,7 +117,7 @@ public class ExternalVisitsResourceTest {
 
 	/**
 	 * 
-	 * @param topLevelMap
+	 * @param level1
 	 *            Nested Map from which to extract the information. It's supposed to be a mapped swagger.json
 	 * @param detailName
 	 *            The name of the detail, e.g. JournalPersonDto.
