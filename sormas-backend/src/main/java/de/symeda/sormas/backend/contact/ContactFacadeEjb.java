@@ -912,21 +912,20 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		// Load event count and latest events info per contact
-		List<ContactEventSummaryDetails> eventSummaries =
-			eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()));
-		Map<String, Long> eventCounts =
-			eventSummaries.stream().collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.counting()));
+		Map<String, List<ContactEventSummaryDetails>> eventSummaries =
+			eventService.getEventSummaryDetailsByContacts(
+				dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
+				.stream()
+				.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
 		for (ContactIndexDetailedDto contact : dtos) {
 
-			contact.setEventCount(eventCounts.getOrDefault(contact.getUuid(), 0L));
+			List<ContactEventSummaryDetails> contactEvents = eventSummaries.getOrDefault(contact.getUuid(), Collections.emptyList());
+			contact.setEventCount((long) contactEvents.size());
 
-			eventSummaries.stream()
-				.filter(v -> v.getContactUuid().equals(contact.getUuid()))
-				.max(Comparator.comparing(ContactEventSummaryDetails::getEventDate))
-				.ifPresent(eventSummary -> {
-					contact.setLatestEventId(eventSummary.getEventUuid());
-					contact.setLatestEventTitle(eventSummary.getEventTitle());
-				});
+			contactEvents.stream().max(Comparator.comparing(ContactEventSummaryDetails::getEventDate)).ifPresent(eventSummary -> {
+				contact.setLatestEventId(eventSummary.getEventUuid());
+				contact.setLatestEventTitle(eventSummary.getEventTitle());
+			});
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
