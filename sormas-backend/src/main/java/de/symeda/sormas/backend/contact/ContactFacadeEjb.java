@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import static de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -133,6 +132,7 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -911,15 +911,14 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		// Load latest events info
-		// Adding a second query here is not perfect, but selecting the last event with a criteria query
-		// doesn't seem to be possible and using a native query is not an option because of user filters
+		// Load event count and latest events info per contact
 		List<ContactEventSummaryDetails> eventSummaries =
 			eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()));
+		Map<String, Long> eventCounts =
+			eventSummaries.stream().collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.counting()));
 		for (ContactIndexDetailedDto contact : dtos) {
-			if (contact.getEventCount() == 0) {
-				continue;
-			}
+
+			contact.setEventCount(eventCounts.getOrDefault(contact.getUuid(), 0L));
 
 			eventSummaries.stream()
 				.filter(v -> v.getContactUuid().equals(contact.getUuid()))
