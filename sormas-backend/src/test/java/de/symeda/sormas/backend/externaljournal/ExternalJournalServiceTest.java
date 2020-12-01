@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonQueryResponse;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
 import de.symeda.sormas.api.person.PersonDto;
 
@@ -36,22 +35,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
 
