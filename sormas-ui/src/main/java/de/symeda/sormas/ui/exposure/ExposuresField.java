@@ -15,10 +15,7 @@
 
 package de.symeda.sormas.ui.exposure;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -28,13 +25,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Window;
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -67,7 +62,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private static final String COLUMN_SOURCE_CASE_NAME = Captions.exposureSourceCaseName;
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
-	private Map<String, String> sourceCaseNames = new HashMap<>();
 	private Supplier<List<ContactReferenceDto>> getSourceContactsCallback;
 	private Class<? extends EntityDto> epiDataParentClass;
 	private boolean isPseudonymized;
@@ -161,7 +155,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		table.addGeneratedColumn(COLUMN_SOURCE_CASE_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			return !isPseudonymized
-				? DataHelper.toStringNullable(sourceCaseNames.get(exposure.getUuid()))
+				? DataHelper.toStringNullable(exposure.getContactToCase().getCaseName())
 				: I18nProperties.getCaption(Captions.inaccessibleValue);
 		});
 	}
@@ -236,19 +230,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		exposure.getLocation().setCommunity(user.getCommunity());
 		exposure.setReportingUser(user.toReference());
 		return exposure;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void setPropertyDataSource(Property newDataSource) {
-		super.setPropertyDataSource(newDataSource);
-		if (newDataSource != null) {
-			sourceCaseNames = FacadeProvider.getEpiDataFacade()
-				.getExposureSourceCaseNames(
-					((Collection<ExposureDto>) newDataSource.getValue()).stream().map(EntityDto::getUuid).collect(Collectors.toList()));
-		} else {
-			sourceCaseNames = new HashMap<>();
-		}
 	}
 
 	public void setGetSourceContactsCallback(Supplier<List<ContactReferenceDto>> callback) {
