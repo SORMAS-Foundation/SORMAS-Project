@@ -51,7 +51,6 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 			CampaignsView.VIEW_NAME,
 			I18nProperties.getPrefixCaption("View", CampaignsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 			params);
-
 	}
 
 	public static void registerViews(Navigator navigator) {
@@ -59,7 +58,6 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 		navigator.addView(CampaignFormDataView.VIEW_NAME, CampaignFormDataView.class);
 		navigator.addView(CampaignsView.VIEW_NAME, CampaignsView.class);
 		navigator.addView(CampaignView.VIEW_NAME, CampaignView.class);
-
 	}
 
 	@Override

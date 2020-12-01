@@ -164,8 +164,10 @@ public interface Captions {
 	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
+	String CampaignFormData_edit = "CampaignFormData.edit";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
 	String campaignNewCampaign = "campaignNewCampaign";
+	String campaignSearch = "campaignSearch";
 	String campaignValidateForms = "campaignValidateForms";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
