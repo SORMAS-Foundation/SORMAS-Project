@@ -67,7 +67,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	@Override
 	protected Stream<String> getSymptomsColumns() {
-		return Stream.concat(super.getSampleColumns(), Stream.of(CaseIndexDetailedDto.SYMPTOMS_ONSET_DATE));
+		return Stream.concat(super.getSampleColumns(), Stream.of(CaseIndexDetailedDto.SYMPTOM_ONSET_DATE));
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 					I18nProperties.getUserLanguage()),
 			new TextRenderer());
 
-		((Column<CaseIndexDetailedDto, Date>) getColumn(CaseIndexDetailedDto.SYMPTOMS_ONSET_DATE))
+		((Column<CaseIndexDetailedDto, Date>) getColumn(CaseIndexDetailedDto.SYMPTOM_ONSET_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()))
 			.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))
 			.setWidth(80);

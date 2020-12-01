@@ -278,7 +278,7 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
-		case CaseIndexDetailedDto.SYMPTOMS_ONSET_DATE:
+		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		default:
 			return getIndexOrders(sortProperty, caze, joins);
