@@ -1730,7 +1730,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 242:
 				currentVersion = 242;
-				TableUtils.createTable(connectionSource, Country.class);
+				TableUtils.createTableIfNotExists(connectionSource, Country.class);
 
 			case 243:
 				currentVersion = 243;
@@ -1773,6 +1773,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "SELECT exposureDetailsKnown, contactWithSourceCaseKnown, wildbirds, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid, pseudonymized "
 						+ "FROM tmp_epidata;");
 				getDao(EpiData.class).executeRaw("DROP TABLE tmp_epidata;");
+			case 247:
+				currentVersion = 247;
+
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column multidaycontact boolean default false;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column firstcontactdate timestamp;");
 
 				// ATTENTION: break should only be done after last version
 				break;

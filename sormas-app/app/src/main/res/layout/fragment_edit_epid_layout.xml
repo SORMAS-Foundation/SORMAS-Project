@@ -155,7 +155,7 @@
                     android:id="@+id/source_contacts_heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{I18nProperties.getString(Strings.headingSourceContacts)}"
+                    android:text="@{I18nProperties.getString(Strings.headingEpiDataSourceCaseContacts)}"
                     android:layout_marginBottom="24dp"
                     style="@style/SubHeadingCompactStyle" />
 

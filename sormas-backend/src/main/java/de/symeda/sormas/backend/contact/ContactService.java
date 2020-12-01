@@ -893,11 +893,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath, ContactCriteria contactCriteria) {
 
-		Predicate userFilter = null;
+//		Predicate userFilter = null;
 
-		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
-		}
+//		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
+		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
+//		}
 		Predicate filter;
 		if (userFilter != null) {
 			filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath, contactCriteria), userFilter);
@@ -930,12 +930,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
-		Predicate filter = null;
+//		Predicate filter = null;
 		// whoever created it or is assigned to it is allowed to access it
-		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
-			filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
-		}
+//		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
+		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
+		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
+//		}
 		switch (jurisdictionLevel) {
 		case REGION:
 			final Region region = currentUser.getRegion();
@@ -1189,8 +1189,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				and(cb, filter, cb.equal(joins.getEventParticipants().get(EventParticipant.UUID), contactCriteria.getEventParticipant().getUuid()));
 		}
 		if (contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent() != null) {
-			filter =
-				and(cb, filter, cb.equal(joins.getCaseEvent().get(Event.UUID), contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.equal(joins.getCaseEvent().get(Event.UUID), contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent().getUuid()));
 		}
 
 		return filter;

@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.contact;
 
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
@@ -28,6 +29,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
@@ -103,7 +106,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
             loc(CONTACT_DATA_HEADING_LOC) +
                     fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
                     locCss(VSPACE_3, TO_CASE_BTN_LOC) +
-                    fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.DISEASE) +
+					fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
+					LayoutUtil.fluidRow(
+						LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE,4,0, ContactDto.FIRST_CONTACT_DATE),
+						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.LAST_CONTACT_DATE),
+						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.DISEASE)) +
                     fluidRowLocs(ContactDto.DISEASE_DETAILS) +
                     fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
                     fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
@@ -188,7 +195,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.UUID, TextField.class);
 		addField(ContactDto.EXTERNAL_ID, TextField.class);
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
+		CheckBox multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
+		DateField firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
+		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
+
 		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
 		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
@@ -522,7 +535,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		});
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
-		FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
+		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximity, relationToCase);
 	}
 
 	/*
@@ -844,5 +857,33 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			quarantineReduced.setValue(false);
 			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
 		}
+	}
+
+	private void initContactDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+		DateComparisonValidator startDateValidator = new DateComparisonValidator(
+			startDate,
+			endDate,
+			true,
+			true,
+			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
+
+		DateComparisonValidator endDateValidator = new DateComparisonValidator(
+			endDate,
+			startDate,
+			false,
+			true,
+			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
+
+		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));
+
+		multiDayCheckbox.addValueChangeListener(e -> {
+			if ((Boolean) e.getProperty().getValue()) {
+				startDate.addValidator(startDateValidator);
+				endDate.addValidator(endDateValidator);
+			} else {
+				startDate.removeValidator(startDateValidator);
+				endDate.removeValidator(endDateValidator);
+			}
+		});
 	}
 }

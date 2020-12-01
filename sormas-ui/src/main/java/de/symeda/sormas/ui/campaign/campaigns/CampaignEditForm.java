@@ -139,10 +139,13 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		FieldHelper.addSoftRequiredStyle(description);
 
-		final HorizontalLayout usageLayout = new HorizontalLayout(
-			new Label(
+		final HorizontalLayout usageLayout = new HorizontalLayout();
+		usageLayout.setWidthFull();
+		Label usageLabel = new Label(
 				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableCampaignGrids),
-				ContentMode.HTML));
+				ContentMode.HTML);
+		usageLabel.setWidthFull();
+		usageLayout.addComponent(usageLabel);
 		usageLayout.setSpacing(true);
 		usageLayout.setMargin(new MarginInfo(true, false, true, false));
 		getContent().addComponent(usageLayout, USAGE_INFO);

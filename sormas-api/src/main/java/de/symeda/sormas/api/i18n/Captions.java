@@ -163,8 +163,10 @@ public interface Captions {
 	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
+	String CampaignFormData_edit = "CampaignFormData.edit";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
 	String campaignNewCampaign = "campaignNewCampaign";
+	String campaignSearch = "campaignSearch";
 	String campaignValidateForms = "campaignValidateForms";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
@@ -451,6 +453,7 @@ public interface Captions {
 	String Contact_endOfQuarantineReasonDetails = "Contact.endOfQuarantineReasonDetails";
 	String Contact_epiData = "Contact.epiData";
 	String Contact_externalID = "Contact.externalID";
+	String Contact_firstContactDate = "Contact.firstContactDate";
 	String Contact_firstName = "Contact.firstName";
 	String Contact_followUpComment = "Contact.followUpComment";
 	String Contact_followUpStatus = "Contact.followUpStatus";
@@ -462,6 +465,7 @@ public interface Captions {
 	String Contact_lastName = "Contact.lastName";
 	String Contact_latestEventId = "Contact.latestEventId";
 	String Contact_latestEventTitle = "Contact.latestEventTitle";
+	String Contact_multiDayContact = "Contact.multiDayContact";
 	String Contact_numberOfVisits = "Contact.numberOfVisits";
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
