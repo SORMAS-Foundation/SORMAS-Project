@@ -59,6 +59,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -323,8 +324,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
 		 * Changes of related data is assumed to be not yet persisted in the database.
 		 */
-		Runnable notify =
-			() -> externalJournalService.notifyExternalJournalPersonUpdate(personFacade.getPersonForJournal(updatedContact.getPerson().getUuid()));
+		JournalPersonDto existingPerson = personFacade.getPersonForJournal(updatedContact.getPerson().getUuid());
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
 		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 

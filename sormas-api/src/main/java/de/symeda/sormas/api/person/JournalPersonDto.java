@@ -6,6 +6,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -131,5 +132,34 @@ public class JournalPersonDto implements Serializable {
 
 	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
 		this.followUpStatus = followUpStatus;
+	}
+
+	@Override
+	public String toString() {
+		return uuid + ' ' + firstName + ' ' + lastName;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		JournalPersonDto that = (JournalPersonDto) o;
+		return pseudonymized == that.pseudonymized &&
+				Objects.equals(uuid, that.uuid) &&
+				Objects.equals(firstName, that.firstName) &&
+				Objects.equals(lastName, that.lastName) &&
+				Objects.equals(emailAddress, that.emailAddress) &&
+				Objects.equals(phone, that.phone) &&
+				Objects.equals(birthdateDD, that.birthdateDD) &&
+				Objects.equals(birthdateMM, that.birthdateMM) &&
+				Objects.equals(birthdateYYYY, that.birthdateYYYY) &&
+				sex == that.sex &&
+				Objects.equals(latestFollowUpEndDate, that.latestFollowUpEndDate) &&
+				followUpStatus == that.followUpStatus;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(uuid, pseudonymized, firstName, lastName, emailAddress, phone, birthdateDD, birthdateMM, birthdateYYYY, sex, latestFollowUpEndDate, followUpStatus);
 	}
 }

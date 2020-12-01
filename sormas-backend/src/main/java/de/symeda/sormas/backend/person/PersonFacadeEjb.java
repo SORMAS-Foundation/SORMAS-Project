@@ -52,8 +52,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
-import de.symeda.sormas.api.externaljournal.ExternalPersonValidation;
-import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -65,7 +63,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonNameDto;
-import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -338,7 +335,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
 		 * Changes of related data is assumed to be not yet persisted in the database.
 		 */
-		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(getPersonForJournal(existingPerson.getUuid()));
+		JournalPersonDto existingJournalPerson = getPersonForJournal(existingPerson.getUuid());
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingJournalPerson);
 		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
@@ -818,6 +816,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setExternalId(source.getExternalId());
 
 		return target;
+	}
+
+	// needed for tests
+	public void setExternalJournalService(ExternalJournalService externalJournalService) {
+		this.externalJournalService = externalJournalService;
 	}
 
 	@LocalBean

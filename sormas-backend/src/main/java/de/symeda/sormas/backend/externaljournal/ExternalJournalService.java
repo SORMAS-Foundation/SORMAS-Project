@@ -201,7 +201,8 @@ public class ExternalJournalService {
 	 * @return true if the person data change was considered relevant for external journals, false otherwise.
 	 *
 	 */
-	public void notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
+	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
+		boolean shouldNotify = shouldNotify(existingJournalPerson);
 		if (shouldNotify(existingJournalPerson)) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 				notifySymptomJournal(existingJournalPerson.getUuid());
