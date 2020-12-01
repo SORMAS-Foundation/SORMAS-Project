@@ -11,7 +11,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -25,7 +24,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	private static final long serialVersionUID = 3734206041728541742L;
 
-	private static final String LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT = Captions.CaseData_latestSampleDateTime;
+	private static final String LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT = "latestSampleDateTimeAndSampleCount";
 
 	public CaseGridDetailed(CaseCriteria criteria) {
 		super(CaseIndexDetailedDto.class, criteria);
@@ -85,7 +84,10 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 			} else {
 				return null;
 			}
-		}).setId(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT).setSortable(false).setWidth(150);
+		}).setCaption(I18nProperties.getPrefixCaption(CaseIndexDetailedDto.I18N_PREFIX, CaseIndexDetailedDto.LATEST_SAMPLE_DATE_TIME))
+			.setId(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT)
+			.setSortable(false)
+			.setWidth(150);
 
 		super.initColumns();
 
