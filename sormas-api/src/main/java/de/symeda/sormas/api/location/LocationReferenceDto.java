@@ -87,7 +87,7 @@ public class LocationReferenceDto extends ReferenceDto {
 			stringBuilder.append(street);
 		}
 		if (!DataHelper.isNullOrEmpty(houseNumber)) {
-			if (stringBuilder.length() > 0) {
+			if (stringBuilder.length() > 0 && DataHelper.isNullOrEmpty(street)) {
 				stringBuilder.append(", ");
 			}
 			stringBuilder.append(houseNumber);
@@ -118,7 +118,7 @@ public class LocationReferenceDto extends ReferenceDto {
 			stringBuilder.append(street);
 		}
 		if (!DataHelper.isNullOrEmpty(houseNumber)) {
-			if (stringBuilder.length() > 0) {
+			if (stringBuilder.length() > 0 && DataHelper.isNullOrEmpty(street)) {
 				stringBuilder.append(", ");
 			}
 			stringBuilder.append(houseNumber);
