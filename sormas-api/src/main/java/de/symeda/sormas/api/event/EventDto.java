@@ -54,6 +54,7 @@ public class EventDto extends PseudonymizableDto {
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
+	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
@@ -88,6 +89,7 @@ public class EventDto extends PseudonymizableDto {
 	private TypeOfPlace typeOfPlace;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
+	private String srcInstitutionalPartnerTypeDetails;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
@@ -242,6 +244,14 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setSrcInstitutionalPartnerType(InstitutionalPartnerType srcInstitutionalPartnerType) {
 		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
+	}
+
+	public String getSrcInstitutionalPartnerTypeDetails() {
+		return srcInstitutionalPartnerTypeDetails;
+	}
+
+	public void setSrcInstitutionalPartnerTypeDetails(String srcInstitutionalPartnerTypeDetails) {
+		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
 	}
 
 	public String getSrcFirstName() {

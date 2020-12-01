@@ -40,6 +40,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -88,7 +89,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
 
 			loc(INFORMATION_SOURCE_HEADING_LOC) +
-			fluidRowLocs(EventDto.SRC_TYPE, EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE) +
+			fluidRowLocs(EventDto.SRC_TYPE, "") +
+			fluidRowLocs(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE, EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS) +
 			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
 			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
 
@@ -195,6 +197,20 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		srcMediaDetails.setRows(4);
 
 		ComboBox srcInstitutionalPartnerType = addField(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE),
+			EventDto.SRC_TYPE,
+			Collections.singletonList(EventSourceType.INSTITUTIONAL_PARTNER),
+			true);
+
+		TextField srcInstitutionalPartnerTypeDetails = addField(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS),
+			EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE,
+			Collections.singletonList(InstitutionalPartnerType.OTHER),
+			true);
 
 		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
 			.setCaption(null);
@@ -240,12 +256,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Collections.singletonList(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE),
-			EventDto.SRC_TYPE,
-			Collections.singletonList(EventSourceType.INSTITUTIONAL_PARTNER),
-			true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
 			Arrays.asList(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME, EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL),
 			EventDto.SRC_TYPE,
 			Collections.singletonList(EventSourceType.HOTLINE_PERSON),
@@ -275,6 +285,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			surveillanceOfficerField,
 			srcType,
 			srcInstitutionalPartnerType,
+			srcInstitutionalPartnerTypeDetails,
 			srcFirstName,
 			srcLastName,
 			srcTelNo,

@@ -47,6 +47,7 @@ public class EventExportDto implements Serializable {
 	private String additionalInformation;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
+	private String srcInstitutionalPartnerTypeDetails;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
@@ -83,6 +84,7 @@ public class EventExportDto implements Serializable {
 		String additionalInformation,
 		EventSourceType srcType,
 		InstitutionalPartnerType srcInstitutionalPartnerType,
+		String srcInstitutionalPartnerTypeDetails,
 		String srcFirstName,
 		String srcLastName,
 		String srcTelNo,
@@ -114,6 +116,7 @@ public class EventExportDto implements Serializable {
 		this.additionalInformation = additionalInformation;
 		this.srcType = srcType;
 		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
+		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
 		this.srcTelNo = srcTelNo;
@@ -286,6 +289,11 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(20)
+	public String getSrcInstitutionalPartnerTypeDetails() {
+		return srcInstitutionalPartnerTypeDetails;
+	}
+
+	@Order(21)
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -294,7 +302,7 @@ public class EventExportDto implements Serializable {
 		this.srcFirstName = srcFirstName;
 	}
 
-	@Order(21)
+	@Order(22)
 	public String getSrcLastName() {
 		return srcLastName;
 	}
@@ -303,7 +311,7 @@ public class EventExportDto implements Serializable {
 		this.srcLastName = srcLastName;
 	}
 
-	@Order(22)
+	@Order(23)
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}
@@ -312,27 +320,27 @@ public class EventExportDto implements Serializable {
 		this.srcTelNo = srcTelNo;
 	}
 
-	@Order(23)
+	@Order(24)
 	public String getSrcEmail() {
 		return srcEmail;
 	}
 
-	@Order(24)
+	@Order(25)
 	public String getSrcMediaWebsite() {
 		return srcMediaWebsite;
 	}
 
-	@Order(25)
+	@Order(26)
 	public String getSrcMediaName() {
 		return srcMediaName;
 	}
 
-	@Order(26)
+	@Order(27)
 	public String getSrcMediaDetails() {
 		return srcMediaDetails;
 	}
 
-	@Order(27)
+	@Order(28)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}

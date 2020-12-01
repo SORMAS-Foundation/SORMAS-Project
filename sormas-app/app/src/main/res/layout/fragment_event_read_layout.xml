@@ -29,6 +29,7 @@
         <import type="de.symeda.sormas.api.event.EventStatus" />
         <import type="de.symeda.sormas.api.event.EventSourceType" />
         <import type="de.symeda.sormas.api.event.EventDto" />
+        <import type="de.symeda.sormas.api.event.InstitutionalPartnerType" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
@@ -209,12 +210,27 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.srcType}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_srcInstitutionalPartnerType"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@={data.srcInstitutionalPartnerType}"
-                app:dependencyParentField="@{eventSrcType}"
-                app:dependencyParentValue="@{EventSourceType.INSTITUTIONAL_PARTNER}"/>
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/event_srcInstitutionalPartnerType"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@={data.srcInstitutionalPartnerType}"
+                        app:dependencyParentField="@{eventSrcType}"
+                        app:dependencyParentValue="@{EventSourceType.INSTITUTIONAL_PARTNER}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/event_srcInstitutionalPartnerTypeDetails"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@={data.srcInstitutionalPartnerTypeDetails}"
+                        app:dependencyParentField="@{eventSrcInstitutionalPartnerType}"
+                        app:dependencyParentValue="@{InstitutionalPartnerType.OTHER}" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

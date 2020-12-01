@@ -62,6 +62,7 @@ public class Event extends PseudonymizableAdo {
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
+	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
@@ -122,6 +123,9 @@ public class Event extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String srcInstitutionalPartnerTypeDetails;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcFirstName;
@@ -289,6 +293,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setSrcInstitutionalPartnerType(InstitutionalPartnerType srcInstitutionalPartnerType) {
 		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
+	}
+
+	public String getSrcInstitutionalPartnerTypeDetails() {
+		return srcInstitutionalPartnerTypeDetails;
+	}
+
+	public void setSrcInstitutionalPartnerTypeDetails(String srcInstitutionalPartnerTypeDetails) {
+		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
 	}
 
 	public String getSrcFirstName() {

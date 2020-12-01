@@ -74,6 +74,7 @@ public class Event extends CoreAdo {
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
+	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
@@ -107,6 +108,7 @@ public class Event extends CoreAdo {
 	private TypeOfPlace typeOfPlace;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
+	private String srcInstitutionalPartnerTypeDetails;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
@@ -283,6 +285,15 @@ public class Event extends CoreAdo {
 
 	public void setSrcInstitutionalPartnerType(InstitutionalPartnerType srcInstitutionalPartnerType) {
 		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSrcInstitutionalPartnerTypeDetails() {
+		return srcInstitutionalPartnerTypeDetails;
+	}
+
+	public void setSrcInstitutionalPartnerTypeDetails(String srcInstitutionalPartnerTypeDetails) {
+		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

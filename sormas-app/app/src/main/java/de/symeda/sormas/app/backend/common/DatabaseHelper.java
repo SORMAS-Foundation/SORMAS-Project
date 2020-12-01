@@ -1781,6 +1781,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 249:
 				currentVersion = 249;
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255)");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512)");
 
 				// ATTENTION: break should only be done after last version
 				break;

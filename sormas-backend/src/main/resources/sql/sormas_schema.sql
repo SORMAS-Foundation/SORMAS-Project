@@ -5894,9 +5894,11 @@ ALTER TABLE contact ADD column firstcontactdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
 
--- 2020-11-27 Add
+-- 2020-11-27 Add institutional partner option to events source type #3207
 ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255);
 ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerType varchar(255);
+ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
+ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add institutional partner option to events source type #3207');
 
