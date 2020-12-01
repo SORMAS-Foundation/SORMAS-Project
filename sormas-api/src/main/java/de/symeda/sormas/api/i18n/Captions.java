@@ -281,7 +281,6 @@ public interface Captions {
 	String CaseData_sormasToSormasOriginInfo = "CaseData.sormasToSormasOriginInfo";
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
 	String CaseData_symptoms = "CaseData.symptoms";
-	String CaseData_symptomsOnsetDate = "CaseData.symptomsOnsetDate";
 	String CaseData_therapy = "CaseData.therapy";
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";

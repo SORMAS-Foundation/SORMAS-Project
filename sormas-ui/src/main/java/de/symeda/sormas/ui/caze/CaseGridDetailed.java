@@ -14,6 +14,7 @@ import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -121,6 +122,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 		((Column<CaseIndexDetailedDto, Date>) getColumn(CaseIndexDetailedDto.SYMPTOMS_ONSET_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()))
+			.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))
 			.setWidth(80);
 	}
 }
