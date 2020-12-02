@@ -15,6 +15,7 @@
 	<dependencies>
 
 		<!-- To collect these dependencies, they have to be on scope "provided" (usually defined in parent POM) -->
+		<!-- Transitive dependencies are automatically included (if not defined as exclusion) -->
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -28,8 +29,23 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-themes</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vladmihalcea</groupId>
+			<artifactId>hibernate-types-52</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
 		</dependency>
 
 		<dependency>

@@ -23,6 +23,7 @@
 		<payara.version>5.2020.2</payara.version>
 
 		<!-- *** Other dependency versions *** -->
+		<glassfish.jaxb.version>2.3.1</glassfish.jaxb.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<logback.version>1.1.7</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
@@ -313,6 +314,39 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-base</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-json-provider</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-themes</artifactId>
+				<version>${vaadin.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.5.4</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>4.4.1</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-jdk15on</artifactId>
 				<version>${bouncycastle.version}</version>
@@ -362,6 +396,47 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.fastinfoset</groupId>
+				<artifactId>FastInfoset</artifactId>
+				<version>1.2.15</version>
+				<scope>provided</scope>
+				<!-- Dependency of hibernate-core -->
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>${glassfish.jaxb.version}</version>
+				<scope>provided</scope>
+				<!-- Dependency of hibernate-core -->
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>txw2</artifactId>
+				<version>${glassfish.jaxb.version}</version>
+				<scope>provided</scope>
+				<!-- Dependency of hibernate-core -->
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.staxex</groupId>
+				<artifactId>stax-ex</artifactId>
+				<version>1.8</version>
+				<scope>provided</scope>
+				<!-- Dependency of hibernate-core -->
+			</dependency>
+			<dependency>
+				<groupId>com.vladmihalcea</groupId>
+				<artifactId>hibernate-types-52</artifactId>
+				<version>2.9.13</version>
+				<scope>provided</scope>
+				<!-- Additional datatypes for hibernate-core -->
+				<exclusions>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.module</groupId>
+						<artifactId>jackson-module-jaxb-annotations</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
 			<dependency>
 				<groupId>org.jsoup</groupId>
@@ -399,13 +474,6 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-themes</artifactId>
-				<version>${vaadin.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -509,7 +577,6 @@
 				<groupId>org.keycloak</groupId>
 				<artifactId>keycloak-admin-client</artifactId>
 				<version>${keycloak.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
 				<exclusions>
 					<!-- Exclude Payara modules here -->
 					<exclusion>
@@ -531,43 +598,39 @@
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-common</artifactId>
+				<version>${keycloak.version}</version>
+				<!-- No Domain lib, because it ran with Ant into problem, see https://stackoverflow.com/questions/64857838/invalid-jdk-version-in-profile-compile-java8-release-flag-unbounded-range-9 -->
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
 				<artifactId>keycloak-core</artifactId>
 				<version>${keycloak.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
+				<!-- No Domain lib, because it ran with Ant into problem, see https://stackoverflow.com/questions/64857838/invalid-jdk-version-in-profile-compile-java8-release-flag-unbounded-range-9 -->
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
 				<artifactId>keycloak-servlet-filter-adapter</artifactId>
 				<version>${keycloak.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
 			</dependency>
 
 			<dependency>
 				<groupId>com.googlecode.libphonenumber</groupId>
 				<artifactId>libphonenumber</artifactId>
 				<version>8.12.11</version>
-				<!-- TODO #3449: avoid scope compile -->
 			</dependency>
 
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
 				<version>2.4.0</version>
-				<!-- TODO #3449: avoid scope compile -->
-			</dependency>
-
-			<dependency>
-				<groupId>com.vladmihalcea</groupId>
-				<artifactId>hibernate-types-52</artifactId>
-				<version>2.9.13</version>
-				<!-- TODO #3449: avoid scope compile -->
 			</dependency>
 
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-module-jaxm-annotations</artifactId>
 				<version>${jackson.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
+				<!-- TODO #3449: Not existing artifactId -->
 			</dependency>
 
 			<dependency>
