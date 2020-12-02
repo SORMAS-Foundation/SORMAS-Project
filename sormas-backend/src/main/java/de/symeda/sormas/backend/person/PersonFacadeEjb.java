@@ -76,6 +76,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -111,6 +112,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CaseService caseService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -319,7 +322,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
 		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
-		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
+		if (configFacade.getPatientDiaryConfig().getUrl() != null
+			&& (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status))) {
 			PatientDiaryPersonValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());
