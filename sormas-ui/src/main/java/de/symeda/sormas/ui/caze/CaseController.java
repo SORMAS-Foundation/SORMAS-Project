@@ -181,6 +181,16 @@ public class CaseController {
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 			} else {
+				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
+				selectedCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+				FacadeProvider.getCaseFacade().saveCase(selectedCase);
+
+				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+				updatedContact.setContactStatus(ContactStatus.CONVERTED);
+				updatedContact.setResultingCase(selectedCase.toReference());
+				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
+				FacadeProvider.getContactFacade().saveContact(updatedContact);
+
 				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}
 		});
