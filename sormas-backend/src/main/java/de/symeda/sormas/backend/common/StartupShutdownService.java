@@ -102,7 +102,13 @@ public class StartupShutdownService {
 
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
 
+	private static final String SORMAS_SCHEMA_LOCALE_FORMAT = "sql/sormas_schema_%s.sql";
+
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
+
+	static final  String SCHEMA_VERSION_TABLE = "schema_version";
+
+	static final  String SCHEMA_VERSION_LOCALE_TABLE = "schema_version_locale";
 
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 
@@ -110,7 +116,7 @@ public class StartupShutdownService {
 
 	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
-			"^\\s*INSERT\\s+INTO\\s+schema_version\\s*" + 
+			"^\\s*INSERT\\s+INTO\\s+schema_version(?:_locale)?\\s*" +
 			"\\(\\s*version_number\\s*,[^)]+\\)\\s*" +
 			"VALUES\\s*\\(\\s*([0-9]+)\\s*,.+");
 	//@formatter:on
@@ -160,11 +166,11 @@ public class StartupShutdownService {
 
 		checkDatabaseConfig(em);
 
-		logger.info("Initiating automatic database update of main database...");
-		updateDatabase(em, SORMAS_SCHEMA);
+		updateMainDatabase();
 
-		logger.info("Initiating automatic database update of audit database...");
-		updateDatabase(emAudit, AUDIT_SCHEMA);
+		updateAuditDatabase();
+
+		updateDBForLocale();
 
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 
@@ -546,16 +552,52 @@ public class StartupShutdownService {
 			throw new RuntimeException(errors.stream().collect(Collectors.joining("\n * ", "Postgres setup is not compatible:\n * ", "")));
 		}
 	}
+	private void updateMainDatabase() {
+		logger.info("Initiating automatic database update of main database...");
+		updateDatabase(em, SORMAS_SCHEMA, SCHEMA_VERSION_TABLE);
+	}
 
-	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
+	private void updateAuditDatabase() {
+		logger.info("Initiating automatic database update of audit database...");
+		updateDatabase(emAudit, AUDIT_SCHEMA, SCHEMA_VERSION_TABLE);
+	}
+
+	private void updateDBForLocale() {
+		String locale = configFacade.getCountryLocale();
+
+		if (locale == null){
+			logger.info("country.locale is not set for this deployment. No country specific DB setup will be performed. Skipping...");
+			return;
+		}
+		String schemaFileName = String.format(SORMAS_SCHEMA_LOCALE_FORMAT, locale);
+
+		if (Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName) == null){
+			logger.info("country.locale is set for this deployment, but no country specific DB migration file is present. Skipping...");
+			return;
+		}
+
+		logger.info(String.format("Initiating main database update for locale %s...", locale));
+
+		updateDatabase(em, schemaFileName, SCHEMA_VERSION_LOCALE_TABLE);
+	}
+
+	private void updateDatabase(EntityManager entityManager, String schemaFileName, String schemaVersionTable) {
 
 		logger.info("Starting automatic database update...");
 
-		boolean hasSchemaVersion =
-			!entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
+		boolean hasSchemaVersion = !entityManager
+				.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = :table_name")
+				.setParameter("table_name", schemaVersionTable)
+				.getResultList()
+				.isEmpty();
+
 		Integer databaseVersion;
 		if (hasSchemaVersion) {
-			databaseVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();
+			// String concatenation is safe here b/c the schemaVersionTable argument just receives final values and is
+			// not user controlled. Also setParameter does not work in the FROM clause
+			databaseVersion = (Integer) entityManager
+					.createNativeQuery("SELECT MAX(version_number) FROM " + schemaVersionTable)
+					.getSingleResult();
 		} else {
 			databaseVersion = null;
 		}

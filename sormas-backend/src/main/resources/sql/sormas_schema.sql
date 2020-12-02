@@ -5894,4 +5894,13 @@ ALTER TABLE contact ADD column firstcontactdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
 
+-- 2020-12-01 Add locale aware DB migration #3408
+CREATE TABLE schema_version_locale
+(
+  version_number integer NOT NULL PRIMARY KEY,
+  changedate timestamp without time zone NOT NULL DEFAULT now(),
+  comment character varying(255)
+);
+
+INSERT INTO schema_version (version_number, comment) VALUES (283, 'Enable locale aware DB migration #3653');
 -- *** Insert new sql commands BEFORE this line ***
