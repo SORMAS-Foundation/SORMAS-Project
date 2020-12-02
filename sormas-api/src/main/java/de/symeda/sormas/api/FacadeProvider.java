@@ -162,6 +162,7 @@ public class FacadeProvider {
 	public static CountryFacade getCountryFacade() {
 		return get().lookupEjbRemote(CountryFacade.class);
 	}
+
 	public static RegionFacade getRegionFacade() {
 		return get().lookupEjbRemote(RegionFacade.class);
 	}
@@ -322,11 +323,15 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(DocumentTemplateFacade.class);
 	}
 
-  public static ExternalJournalFacade getExternalJournalFacade() {
+	public static ExternalJournalFacade getExternalJournalFacade() {
 		return get().lookupEjbRemote(ExternalJournalFacade.class);
 	}
 
-  @SuppressWarnings("unchecked")
+	public static DocumentFacade getDocumentFacade() {
+		return get().lookupEjbRemote(DocumentFacade.class);
+	}
+
+	@SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {
 		try {
 			return (P) get().ic.lookup(buildJndiLookupName(clazz));

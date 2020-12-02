@@ -23,10 +23,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.region.CountryFacade;
-import de.symeda.sormas.backend.region.CountryFacadeEjb;
-import de.symeda.sormas.backend.region.CountryService;
-import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -62,6 +58,7 @@ import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
@@ -102,11 +99,14 @@ import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -121,6 +121,8 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
@@ -361,7 +363,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PointOfEntryService.class);
 	}
 
-	public CountryService getCountryService() { return getBean(CountryService.class); }
+	public CountryService getCountryService() {
+		return getBean(CountryService.class);
+	}
 
 	public RegionService getRegionService() {
 		return getBean(RegionService.class);
@@ -504,5 +508,13 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public ExternalJournalService getExternalJournalService() {
 		return getBean(ExternalJournalService.class);
+	}
+
+	public DocumentFacade getDocumentFacade() {
+		return getBean(DocumentFacadeEjb.DocumentFacadeEjbLocal.class);
+	}
+
+	public DocumentService getDocumentService() {
+		return getBean(DocumentService.class);
 	}
 }
