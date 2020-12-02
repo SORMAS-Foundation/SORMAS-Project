@@ -143,6 +143,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 
 		layout = new VerticalLayout();
 		layout.setSpacing(false);
+		layout.setMargin(false);
 
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		{

@@ -18,6 +18,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -26,6 +27,8 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 @Stateless(name = "InfrastructureFacade")
 public class InfrastructureFacadeEjb implements InfrastructureFacade {
 
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;
 	@EJB
@@ -68,6 +71,7 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 			return sync;
 		}
 
+		sync.setCountries(countryFacade.getAllAfter(changeDates.getCountryChangeDate()));
 		sync.setRegions(regionFacade.getAllAfter(changeDates.getRegionChangeDate()));
 		sync.setDistricts(districtFacade.getAllAfter(changeDates.getDistrictChangeDate()));
 		sync.setCommunities(communityFacade.getAllAfter(changeDates.getCommunityChangeDate()));

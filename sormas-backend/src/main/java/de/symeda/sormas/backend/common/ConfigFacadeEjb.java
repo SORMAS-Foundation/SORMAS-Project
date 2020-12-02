@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.common;
 
 import java.util.List;
@@ -77,6 +74,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String FEATURE_AUTOMATIC_CASE_CLASSIFICATION = "feature.automaticcaseclassification";
 
+	public static final String DOCUMENT_FILES_PATH = "documents.path";
 	public static final String TEMP_FILES_PATH = "temp.path";
 	public static final String GENERATED_FILES_PATH = "generated.path";
 	public static final String CUSTOM_FILES_PATH = "custom.path";
@@ -100,7 +98,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_SYMPTOM_JOURNAL_DEFAULT_USER_PASSWORD = "interface.symptomjournal.defaultuser.password";
 
 	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
-	public static final String INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL = "interface.patientdiary.externaldataurl";
+	public static final String INTERFACE_PATIENT_DIARY_PROBANDS_URL = "interface.patientdiary.probandsurl";
 	public static final String INTERFACE_PATIENT_DIARY_AUTH_URL = "interface.patientdiary.authurl";
 	public static final String INTERFACE_PATIENT_DIARY_EMAIL = "interface.patientdiary.email";
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
@@ -291,6 +289,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String getDocumentFilesPath() {
+		return getProperty(DOCUMENT_FILES_PATH, "/opt/sormas/documents/");
+	}
+
+	@Override
 	public String getTempFilesPath() {
 		return getProperty(TEMP_FILES_PATH, "/opt/sormas/temp/");
 	}
@@ -408,7 +411,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public PatientDiaryConfig getPatientDiaryConfig() {
 		PatientDiaryConfig config = new PatientDiaryConfig();
 		config.setUrl(getProperty(INTERFACE_PATIENT_DIARY_URL, null));
-		config.setExternalDataUrl(getProperty(INTERFACE_PATIENT_DIARY_EXTERNAL_DATA_URL, null));
+		config.setProbandsUrl(getProperty(INTERFACE_PATIENT_DIARY_PROBANDS_URL, null));
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
@@ -453,7 +456,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSymptomJournalConfig().getUrl(),
 			getSymptomJournalConfig().getAuthUrl(),
 			getPatientDiaryConfig().getUrl(),
-			getPatientDiaryConfig().getExternalDataUrl(),
+			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl());
 
 		urls.forEach(url -> {
@@ -530,4 +533,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
 
 	}
+
+	@Override
+	public boolean isSmsServiceSetUp() {
+		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
+	}
+
 }

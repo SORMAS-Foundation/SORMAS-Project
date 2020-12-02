@@ -17,17 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -44,11 +52,6 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> extends FilteredGrid<IndexDto, ContactCriteria> {
@@ -109,16 +112,23 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		visitsColumn.setId(NUMBER_OF_VISITS);
 		visitsColumn.setSortable(false);
 
-		Column<IndexDto, String> pendingTasksColumn = addColumn(
-			entry -> String.format(
-				I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
-				FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
-		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
-		pendingTasksColumn.setSortable(false);
+		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
+		if (tasksFeatureEnabled) {
+			Column<IndexDto, String> pendingTasksColumn = addColumn(
+					entry -> String.format(
+							I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
+							FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
+			pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
+			pendingTasksColumn.setSortable(false);
+		}
 
 		setColumns(getColumnList().toArray(String[]::new));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(ContactIndexDto.CONTACT_CATEGORY).setHidden(true);
+		}
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
@@ -137,15 +147,21 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					PersonDto.I18N_PREFIX,
 					LocationDto.I18N_PREFIX));
 
-			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
 	}
 
 	protected Stream<String> getColumnList() {
 
+		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
+
 		return Stream.of(
-			Stream.of(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS),
+			Stream.of(
+				ContactIndexDto.UUID,
+				ContactIndexDto.EXTERNAL_ID,
+				DISEASE_SHORT,
+				ContactIndexDto.CONTACT_CLASSIFICATION,
+				ContactIndexDto.CONTACT_STATUS),
 			getPersonColumns(),
 			getEventColumns(),
 			Stream.of(
@@ -154,8 +170,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 				ContactIndexDto.FOLLOW_UP_STATUS,
 				ContactIndexDto.FOLLOW_UP_UNTIL,
 				ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
-				NUMBER_OF_VISITS,
-				NUMBER_OF_PENDING_TASKS))
+				NUMBER_OF_VISITS),
+			Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled))
 			.flatMap(s -> s);
 	}
 

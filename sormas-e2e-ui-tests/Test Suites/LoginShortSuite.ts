@@ -59,18 +59,6 @@
       </variableLink>
    </testCaseLink>
    <testCaseLink>
-      <guid>3e141789-7e5d-442d-b1c4-e874bb99f113</guid>
-      <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
-      <testCaseId>Test Cases/Samples/CreateNewSampleInCaseView</testCaseId>
-      <variableLink>
-         <testDataLinkId></testDataLinkId>
-         <type>DEFAULT</type>
-         <value></value>
-         <variableId>f6da25fe-6938-44f2-b3a4-243fe6e92324</variableId>
-      </variableLink>
-   </testCaseLink>
-   <testCaseLink>
       <guid>aa560639-3b9a-4851-b091-fdf57c2b0aba</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>

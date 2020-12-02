@@ -33,8 +33,14 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import org.vaadin.hene.popupbutton.PopupButton;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
@@ -56,7 +62,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
-import de.symeda.sormas.ui.campaign.importer.CampaignImportLayout;
+import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -70,8 +76,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	private final CampaignFormDataCriteria criteria;
 	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
-	private Button importCampaignButton;
-	private ComboBox campaignCombo;
+	private final ComboBox<CampaignReferenceDto> campaignCombo;
 	protected OptionGroup campaignFormElementImportance;
 
 	public static final String ONLY_IMPORTANT_FORM_ELEMENTS = "onlyImportantFormElements";
@@ -82,16 +87,30 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
-		campaignCombo = new ComboBox(" ");
-		List<CampaignReferenceDto> campaigns = FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference();
-		campaignCombo.setItems(campaigns);
-		final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
-		if (lastStartedCampaign != null) {
-			campaignCombo.setValue(lastStartedCampaign);
+		HorizontalLayout campaignLayout = new HorizontalLayout();
+		{
+			campaignLayout.setMargin(false);
+			campaignLayout.setSpacing(false);
+
+			Label campaignLabel = new Label(I18nProperties.getCaption(Captions.Campaign));
+			campaignLabel.addStyleName("v-caption");
+			campaignLabel.addStyleName(CssStyles.HSPACE_RIGHT_4);
+			campaignLayout.addComponent(campaignLabel);
+			campaignLayout.setComponentAlignment(campaignLabel, Alignment.MIDDLE_CENTER);
+
+			campaignCombo = new ComboBox<>(" ");
+			List<CampaignReferenceDto> campaigns = FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference();
+			campaignCombo.setItems(campaigns);
+			campaignCombo.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
+			final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
+			if (lastStartedCampaign != null) {
+				campaignCombo.setValue(lastStartedCampaign);
+			}
+			criteria.setCampaign(campaignCombo.getValue());
+			CssStyles.style(campaignCombo, CssStyles.SOFT_REQUIRED);
+			campaignLayout.addComponent(campaignCombo);
 		}
-		criteria.setCampaign((CampaignReferenceDto) campaignCombo.getValue());
-		CssStyles.style(campaignCombo, CssStyles.SOFT_REQUIRED);
-		addHeaderComponent(campaignCombo);
+		addHeaderComponent(campaignLayout);
 		grid = new CampaignDataGrid(criteria);
 
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -144,23 +163,21 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = new GridExportStreamResource(
-					grid,
-					"sormas_campaign_data",
-					createFileNameWithCurrentDate("sormas_campaign_data_", ".csv"),
-					EDIT_BTN_ID);
+				StreamResource streamResource =
+					new GridExportStreamResource(grid, "campaign_data", createFileNameWithCurrentDate("campaign_data_", ".csv"), EDIT_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}
 
 		VerticalLayout newFormLayout = new VerticalLayout();
+		PopupButton newFormButton;
 		{
 			newFormLayout.setSpacing(true);
 			newFormLayout.setMargin(true);
 			newFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 			newFormLayout.setWidth(350, Unit.PIXELS);
 
-			PopupButton newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
+			newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
 			newFormButton.setId("new-form");
 
 			createNewFormLayout(newFormLayout);
@@ -174,7 +191,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		importFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 		importFormLayout.setWidth(350, Unit.PIXELS);
 
-		importCampaignButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.PLUS_CIRCLE, importFormLayout);
+		Button importCampaignButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.PLUS_CIRCLE, importFormLayout);
 		importCampaignButton.setId("campaign-form-import");
 		createImportLayout(importFormLayout);
 		addHeaderComponent(importCampaignButton);
@@ -184,37 +201,55 @@ public class CampaignDataView extends AbstractCampaignView {
 			if (!Objects.isNull(campaignCombo.getValue())) {
 				createImportLayout(importFormLayout);
 				createNewFormLayout(newFormLayout);
+				importCampaignButton.setEnabled(true);
+				newFormButton.setEnabled(true);
+			} else {
+				importCampaignButton.setEnabled(false);
+				newFormButton.setEnabled(false);
 			}
+			criteria.setCampaignFormMeta(null);
+			filterForm.setValue(criteria);
 		});
+
+		if (campaignCombo.getValue() == null) {
+			importCampaignButton.setEnabled(false);
+			newFormButton.setEnabled(false);
+		}
+
 		addComponent(mainLayout);
 	}
 
 	private void createImportLayout(VerticalLayout importFormLayout) {
-		for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
-			.getCampaignFormMetasAsReferencesByCampaign(((CampaignReferenceDto) campaignCombo.getValue()).getUuid())) {
 
-			Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
-				Window popupWindow = null;
-				try {
-					popupWindow = VaadinUiUtil.showPopupWindow(new CampaignImportLayout(campaignForm.getUuid(), filterForm.getValue().getCampaign()));
-				} catch (IOException | NamingException ioException) {
-					ioException.printStackTrace();
-				}
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
+		if (campaignCombo.getValue() != null) {
+			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
+				.getCampaignFormMetasAsReferencesByCampaign(campaignCombo.getValue().getUuid())) {
 
-			});
-			campaignFormButton.setWidth(100, Unit.PERCENTAGE);
-			importFormLayout.addComponent(campaignFormButton);
+				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+					try {
+						Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignFormDataImportLayout(campaignForm, campaignCombo.getValue()));
+						popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
+						popupWindow.addCloseListener(c -> grid.reload());
+					} catch (IOException ioException) {
+						ioException.printStackTrace();
+					}
+				});
+				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+				importFormLayout.addComponent(campaignFormButton);
+			}
 		}
 	}
 
 	private void createNewFormLayout(VerticalLayout newFormLayout) {
-		for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
-			.getCampaignFormMetasAsReferencesByCampaign(((CampaignReferenceDto) campaignCombo.getValue()).getUuid())) {
-			Button campaignFormButton = ButtonHelper
-				.createButton(campaignForm.toString(), e -> ControllerProvider.getCampaignController().createCampaignDataForm(campaignForm));
-			campaignFormButton.setWidth(100, Unit.PERCENTAGE);
-			newFormLayout.addComponent(campaignFormButton);
+
+		if (campaignCombo.getValue() != null) {
+			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
+				.getCampaignFormMetasAsReferencesByCampaign(campaignCombo.getValue().getUuid())) {
+				Button campaignFormButton = ButtonHelper
+					.createButton(campaignForm.toString(), e -> ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm));
+				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+				newFormLayout.addComponent(campaignFormButton);
+			}
 		}
 	}
 
@@ -246,11 +281,11 @@ public class CampaignDataView extends AbstractCampaignView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			criteria.setCampaign((CampaignReferenceDto) campaignCombo.getValue());
+			criteria.setCampaign(campaignCombo.getValue());
 			grid.reload();
 		});
 		campaignCombo.addValueChangeListener(e -> {
-			criteria.setCampaign((CampaignReferenceDto) campaignCombo.getValue());
+			criteria.setCampaign(campaignCombo.getValue());
 			grid.reload();
 		});
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());

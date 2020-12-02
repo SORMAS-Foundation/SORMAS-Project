@@ -107,6 +107,17 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	}
 
 	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
+	protected <F extends Field> F addField(FieldConfiguration configuration, Class<F> fieldType) {
+		Field field = addField(getContent(), configuration.getPropertyId(), fieldType);
+
+		applyFieldConfiguration(configuration, field);
+
+		return (F) field;
+	}
+
+	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
 	protected <F extends Field> F addField(CustomLayout layout, FieldConfiguration configuration) {
@@ -151,6 +162,13 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	protected <F extends Field> void addFields(Class<F> fieldType, String... properties) {
 		for (String property : properties) {
 			addField(property, fieldType);
+		}
+	}
+
+	protected <F extends Field> void addFieldsWithCss(Class<F> fieldType, List<String> properties, String... cssClasses) {
+		for (String property : properties) {
+			F field = addField(property, fieldType);
+			CssStyles.style(field, cssClasses);
 		}
 	}
 
@@ -245,8 +263,31 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
+	protected <F extends Field> void addCustomField(F field, String fieldId, String customCaption) {
+		field.setId(fieldId);
+		formatField(field, fieldId, customCaption);
+		addDefaultAdditionalValidators(field, field.getType());
+		getContent().addComponent(field, fieldId);
+		customFields.add(field);
+	}
+
+	protected <F extends Field> F addCustomField(String fieldId, Class<?> dataType, Class<F> fieldType, String customCaption) {
+		F field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
+		field.setId(fieldId);
+		formatField(field, fieldId, customCaption);
+
+		addDefaultAdditionalValidators(field, dataType);
+		getContent().addComponent(field, fieldId);
+		customFields.add(field);
+		return field;
+	}
+
 	@SuppressWarnings("rawtypes")
 	protected <F extends Field> void formatField(F field, String propertyId) {
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected <F extends Field> void formatField(F field, String propertyId, String customCaption) {
 	}
 
 	@SuppressWarnings("rawtypes")

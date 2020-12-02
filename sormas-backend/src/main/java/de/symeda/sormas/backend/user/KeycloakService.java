@@ -21,7 +21,6 @@ package de.symeda.sormas.backend.user;
 import static java.util.Collections.singletonList;
 import static org.keycloak.representations.IDToken.LOCALE;
 
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +38,7 @@ import javax.enterprise.event.Observes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -51,8 +51,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nimbusds.jose.util.JSONObjectUtils;
-
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRole;
@@ -61,7 +59,6 @@ import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
-import net.minidev.json.JSONObject;
 
 /**
  * @author Alex Vidrean
@@ -78,8 +75,7 @@ public class KeycloakService {
 
 	private static final String OIDC_REALM = "realm";
 	private static final String OIDC_SERVER_URL = "auth-server-url";
-	private static final String OIDC_CREDENTIALS = "credentials";
-	private static final String OIDC_SECRET = "secret";
+	private static final String OIDC_SECRET = "credentials.secret";
 
 	private static final String REALM_NAME = "SORMAS";
 
@@ -106,20 +102,16 @@ public class KeycloakService {
 			return;
 		}
 
-		try {
-			JSONObject json = JSONObjectUtils.parse(oidcJson.get());
+		String keycloakJsonConfig = oidcJson.get();
 
-			keycloak = KeycloakBuilder.builder()
-				.realm(json.getAsString(OIDC_REALM))
-				.serverUrl(json.getAsString(OIDC_SERVER_URL))
-				.clientId("sormas-backend")
-				.clientSecret(JSONObjectUtils.getJSONObject(json, OIDC_CREDENTIALS).getAsString(OIDC_SECRET))
-				.grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-				.build();
+		keycloak = KeycloakBuilder.builder()
+			.realm(JsonPath.read(keycloakJsonConfig, OIDC_REALM))
+			.serverUrl(JsonPath.read(keycloakJsonConfig, OIDC_SERVER_URL))
+			.clientId("sormas-backend")
+			.clientSecret(JsonPath.read(keycloakJsonConfig, OIDC_SECRET))
+			.grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+			.build();
 
-		} catch (ParseException e) {
-			throw new IllegalArgumentException("Invalid JSON for backend keycloak oidc");
-		}
 	}
 
 	public void handleUserCreateEvent(@Observes UserCreateEvent userCreateEvent) {
