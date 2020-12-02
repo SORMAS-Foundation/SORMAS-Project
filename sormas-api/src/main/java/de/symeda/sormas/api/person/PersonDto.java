@@ -122,6 +122,7 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	private String lastName;
+	@HideForCountriesExcept
 	@PersonalData
 	@SensitiveData
 	private Salutation salutation;
