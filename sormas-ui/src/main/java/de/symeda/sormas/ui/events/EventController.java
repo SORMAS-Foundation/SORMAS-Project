@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.events;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.Navigator;
@@ -46,7 +45,9 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -61,6 +62,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 public class EventController {
 
@@ -156,21 +159,19 @@ public class EventController {
 	}
 
 	public void linkCaseToEvent(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
-		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		// Check whether Person is already enlisted as EventParticipant in this Event
-		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().event(eventReferenceDto);
-		ListDataProvider<EventParticipantIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(eventParticipantCriteria, null, null, null).stream());
-		for (EventParticipantIndexDto eventParticipantIndex : dataProvider.getItems()) {
-			if (eventParticipantIndex.getPersonUuid().equals(personDto.getUuid())) {
-				EventParticipantDto eventParticipant =
-					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantIndex.getUuid());
-				eventParticipant.setResultingCase(caseRef);
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
-				return;
-			}
+		EventParticipantReferenceDto eventParticipantRef =
+			FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventReferenceDto.getUuid(), caseDataDto.getPerson().getUuid());
+		if (eventParticipantRef != null) {
+			EventParticipantDto eventParticipant =
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+			eventParticipant.setResultingCase(caseRef);
+			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+			return;
 		}
+
 		// Create new EventParticipant for this Person
+		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		EventParticipantDto eventParticipantDto;
 		eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
