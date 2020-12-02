@@ -62,8 +62,8 @@ import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
-import de.symeda.sormas.api.externaljournal.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -674,7 +674,7 @@ public class ContactController {
 	 * Displays the result in a popup
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
-		PatientDiaryPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
+		ExternalJournalValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
 		if (!validationResult.isValid()) {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {

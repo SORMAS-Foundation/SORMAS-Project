@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -53,7 +54,12 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
-		return PageMenuItem.fromEnum(ContactSection.values(), getContext());
+		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(ContactSection.values(), getContext());
+		// Sections must be removed in reverse order
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
+			menuItems.set(ContactSection.TASKS.ordinal(), null);
+		}
+		return menuItems;
 	}
 
 	@Override
@@ -81,7 +87,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		case EPIDEMIOLOGICAL_DATA:
 			fragment = EpidemiologicalDataReadFragment.newInstance(activityRootData);
 			break;
-			default:
+		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
 		return fragment;

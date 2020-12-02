@@ -59,17 +59,26 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
 
-		menu.addView(
-			OutbreaksView.VIEW_NAME,
-			I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-			params);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+			menu.addView(
+				OutbreaksView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				params);
+		}
+
+		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		boolean isAnySurveillanceEnabled = isCaseSurveillanceEnabled
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-			menu.addView(
-					CountriesView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
+			if (isAnySurveillanceEnabled) {
+				menu.addView(
+						CountriesView.VIEW_NAME,
+						I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+						null,
+						false);
+			}
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				menu.addView(
 					AreasView.VIEW_NAME,
@@ -92,16 +101,20 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				I18nProperties.getPrefixCaption("View", CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				null,
 				false);
-			menu.addView(
-				FacilitiesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", FacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
-			menu.addView(
-				PointsOfEntryView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
+			if (isAnySurveillanceEnabled) {
+				menu.addView(
+					FacilitiesView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", FacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
+			}
+			if (isCaseSurveillanceEnabled) {
+				menu.addView(
+					PointsOfEntryView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
+			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
 				menu.addView(
@@ -117,8 +130,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		//		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LINE_LISTING)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+		if (isCaseSurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
 			menu.addView(
 				LineListingConfigurationView.VIEW_NAME,
@@ -126,7 +138,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				region != null ? region.getUuid() : null,
 				false);
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
+		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			menu.addView(
 				DocumentTemplatesView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -143,18 +155,32 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	}
 
 	public static void registerViews(Navigator navigator) {
-		navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+			navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
+		}
+
+		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		boolean isAnySurveillanceEnabled = isCaseSurveillanceEnabled
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				navigator.addView(AreasView.VIEW_NAME, AreasView.class);
 			}
-			navigator.addView(CountriesView.VIEW_NAME, CountriesView.class);
+			if (isAnySurveillanceEnabled) {
+				navigator.addView(CountriesView.VIEW_NAME, CountriesView.class);
+			}
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
-			navigator.addView(FacilitiesView.VIEW_NAME, FacilitiesView.class);
-			navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
+			if (isAnySurveillanceEnabled) {
+				navigator.addView(FacilitiesView.VIEW_NAME, FacilitiesView.class);
+			}
+			if (isCaseSurveillanceEnabled) {
+				navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
+			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
 				navigator.addView(PopulationDataView.VIEW_NAME, PopulationDataView.class);
@@ -165,11 +191,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
 		//		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+		if (isCaseSurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
+		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
 		}
 

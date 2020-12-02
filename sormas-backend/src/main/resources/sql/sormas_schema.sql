@@ -5888,6 +5888,12 @@ UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epi
 
 INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');
 
+-- 2020-11-18 Add date of first contact #3408
+ALTER TABLE contact ADD column multidaycontact boolean default false;
+ALTER TABLE contact ADD column firstcontactdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
+
 -- SurvNet Adaptations - Create new field “Salutation” for persons #3411
 ALTER TABLE person
     ADD COLUMN salutation varchar(255),
@@ -5897,6 +5903,6 @@ ALTER TABLE person_history
     ADD COLUMN salutation varchar(255),
     ADD COLUMN othersalutation varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (282, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
+INSERT INTO schema_version (version_number, comment) VALUES (283, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
 
 -- *** Insert new sql commands BEFORE this line ***
