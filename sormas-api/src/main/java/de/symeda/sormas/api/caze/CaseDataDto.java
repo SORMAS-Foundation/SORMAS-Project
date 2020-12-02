@@ -165,6 +165,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
 	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
 
+	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
+	public static final String INFECTION_SETTING = "infectionSetting";
+
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
@@ -443,6 +446,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
 	private String endOfIsolationReasonDetails;
+	@HideForCountriesExcept
+	private boolean nosocomialOutbreak;
+	@HideForCountriesExcept
+	private InfectionSetting infectionSetting;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1286,6 +1293,22 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	public boolean isNosocomialOutbreak() {
+		return nosocomialOutbreak;
+	}
+
+	public void setNosocomialOutbreak(boolean nosocomialOutbreak) {
+		this.nosocomialOutbreak = nosocomialOutbreak;
+	}
+
+	public InfectionSetting getInfectionSetting() {
+		return infectionSetting;
+	}
+
+	public void setInfectionSetting(InfectionSetting infectionSetting) {
+		this.infectionSetting = infectionSetting;
 	}
 
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
