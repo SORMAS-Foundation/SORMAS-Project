@@ -27,7 +27,6 @@
     <data>
         <import type="de.symeda.sormas.api.person.PresentCondition" />
         <import type="de.symeda.sormas.api.person.OccupationType" />
-        <import type="de.symeda.sormas.api.person.ArmedForcesRelationType" />
         <import type="de.symeda.sormas.api.person.EducationType" />
         <import type="de.symeda.sormas.api.person.CauseOfDeath" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />

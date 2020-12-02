@@ -4,7 +4,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ArmedForcesRelationType {
 
-	NOT_COLLECTED,
 	UNKNOWN,
 	NO_RELATION,
 	// working for armed forces, but not as soldier
