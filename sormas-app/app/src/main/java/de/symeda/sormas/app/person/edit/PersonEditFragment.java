@@ -49,6 +49,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -86,7 +87,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			PersonEditFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
