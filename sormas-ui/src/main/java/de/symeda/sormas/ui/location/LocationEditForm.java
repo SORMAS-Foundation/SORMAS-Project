@@ -434,4 +434,18 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		return super.addFieldToLayout(layout, propertyId, field);
 	}
+
+	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+		facility.setVisible(visible);
+		facilityDetails.setVisible(visible);
+		facilityType.setVisible(visible);
+		facilityTypeGroup.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
+			facility.clear();
+			facilityDetails.clear();
+			facilityType.clear();
+			facilityTypeGroup.clear();
+		}
+	}
 }
