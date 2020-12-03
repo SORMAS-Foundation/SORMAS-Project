@@ -887,7 +887,7 @@ public class Contact extends CoreAdo {
 		this.prohibitionToWork = prohibitionToWork;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	public Date getProhibitionToWorkFrom() {
 		return prohibitionToWorkFrom;
 	}
@@ -896,7 +896,7 @@ public class Contact extends CoreAdo {
 		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	public Date getProhibitionToWorkUntil() {
 		return prohibitionToWorkUntil;
 	}

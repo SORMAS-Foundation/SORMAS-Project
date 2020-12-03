@@ -256,8 +256,11 @@ public class ContactDto extends PseudonymizableDto {
 	@SensitiveData
 	private String endOfQuarantineReasonDetails;
 
+	@HideForCountriesExcept
 	private YesNoUnknown prohibitionToWork;
+	@HideForCountriesExcept
 	private Date prohibitionToWorkFrom;
+	@HideForCountriesExcept
 	private Date prohibitionToWorkUntil;
 
 	public static ContactDto build() {

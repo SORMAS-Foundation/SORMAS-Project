@@ -448,8 +448,11 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private String endOfIsolationReasonDetails;
 
+	@HideForCountriesExcept
 	private YesNoUnknown prohibitionToWork;
+	@HideForCountriesExcept
 	private Date prohibitionToWorkFrom;
+	@HideForCountriesExcept
 	private Date prohibitionToWorkUntil;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
