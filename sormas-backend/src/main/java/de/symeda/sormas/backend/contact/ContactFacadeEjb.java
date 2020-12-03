@@ -1069,10 +1069,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// use only date, not time
 		target.setMultiDayContact(source.isMultiDayContact());
-		if(source.isMultiDayContact()) {
-			target.setFirstContactDate(source.getFirstContactDate() != null ?
-				DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) :
-				null);
+		if (source.isMultiDayContact()) {
+			target.setFirstContactDate(
+				source.getFirstContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) : null);
 		} else {
 			target.setFirstContactDate(null);
 		}
