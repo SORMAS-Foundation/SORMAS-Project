@@ -20,7 +20,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
@@ -29,7 +28,6 @@ import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -51,12 +49,7 @@ public class ContactListCriteriaBuilder {
 	private ContactService contactService;
 
 	public CriteriaQuery<ContactIndexDto> buildIndexCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
-		return buildIndexCriteria(
-			ContactIndexDto.class,
-			this::getContactIndexSelections,
-			contactCriteria,
-			this::getIndexOrders,
-			sortProperties);
+		return buildIndexCriteria(ContactIndexDto.class, this::getContactIndexSelections, contactCriteria, this::getIndexOrders, sortProperties);
 	}
 
 	public CriteriaQuery<ContactIndexDetailedDto> buildIndexDetailedCriteria(ContactCriteria contactCriteria, List<SortProperty> sortProperties) {
@@ -216,16 +209,10 @@ public class ContactListCriteriaBuilder {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(type);
 		Root<Contact> contact = cq.from(Contact.class);
-
-		Subquery<Integer> visitCountSq = cq.subquery(Integer.class);
-		Root<Contact> visitCountRoot = visitCountSq.from(Contact.class);
-		visitCountSq.where(cb.equal(visitCountRoot.get(AbstractDomainObject.ID), contact.get(AbstractDomainObject.ID)));
-		visitCountSq.select(cb.size(visitCountRoot.get(Contact.VISITS)));
-
 		ContactJoins joins = new ContactJoins(contact);
 
 		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, joins));
-		selections.add(visitCountSq);
+		selections.add(cb.size(contact.get(Contact.VISITS)));
 
 		Predicate filter = buildContactFilter(contactCriteria, cb, contact, cq, joins);
 
