@@ -89,12 +89,12 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
-						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
-						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
+						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
+						   String districtUuid, String districtName,Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
-						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Long id,Date creationDate, Float completeness) {
 		//@formatter:on
 
@@ -108,7 +108,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 			caseFirstName,
 			caseLastName,
 			regionUuid,
+			regionName,
 			districtUuid,
+			districtName,
 			lastContactDate,
 			contactCategory,
 			contactProximity,
@@ -122,7 +124,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 			caseClassification,
 			caseReportingUserUid,
 			caseRegionUuid,
-			caseDistrictUud,
+			caseRegionName,
+			caseDistrictUuid,
+			caseDistrictName,
 			caseCommunityUuid,
 			caseHealthFacilityUuid,
 			casePointOfEntryUuid,
@@ -145,7 +149,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
-						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Long id, Date creationDate, Float completeness,
 						   String communityUuid, SymptomJournalStatus symptomJournalStatus,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
