@@ -736,7 +736,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
-		List<ContactExportDto> results = getContactFacade().getExportList(null, 0, 100, Language.EN);
+		List<ContactExportDto> results;
+		results = getContactFacade().getExportList(null, 0, 100, Language.EN);
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, results.size());
@@ -766,6 +767,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 				exposure.getEndDate(),
 				Language.EN),
 			exportDto.getTravelHistory());
+		assertThat(exportDto.getEventCount(), equalTo(0L));
+
+		// one Contact with 2 Events
+		UserReferenceDto reportingUser = new UserReferenceDto(user.getUuid());
+		EventDto event1 = creator.createEvent(reportingUser, DateHelper.subtractDays(new Date(), 1));
+		EventDto event2 = creator.createEvent(reportingUser, new Date());
+		creator.createEventParticipant(new EventReferenceDto(event2.getUuid()), contactPerson, reportingUser);
+		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
+
+		results = getContactFacade().getExportList(null, 0, 100, Language.EN);
+		assertThat(results, hasSize(1));
+		{
+			ContactExportDto dto = results.get(0);
+			assertThat(dto.getLatestEventId(), equalTo(event2.getUuid()));
+			assertThat(dto.getLatestEventTitle(), equalTo(event2.getEventTitle()));
+			assertThat(dto.getEventCount(), equalTo(2L));
+		}
 	}
 
 	@Test
