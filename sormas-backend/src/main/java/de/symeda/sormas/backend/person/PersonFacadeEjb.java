@@ -44,6 +44,9 @@ import javax.validation.constraints.NotNull;
 
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -282,7 +285,18 @@ public class PersonFacadeEjb implements PersonFacade {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
 			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
-			exportPerson.setPhone(detailedPerson.getPhone());
+			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+				try {
+					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
+					String internationalPhone = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+					exportPerson.setPhone(internationalPhone);
+				} catch (NumberParseException e) {
+					exportPerson.setPhone(detailedPerson.getPhone());
+				}
+			} else {
+				exportPerson.setPhone(detailedPerson.getPhone());
+			}
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
