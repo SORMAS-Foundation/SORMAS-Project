@@ -5,12 +5,15 @@
 		top: 322px !important;
 		@include valo-notification-closable-style;
 
+		text-align: left;
+
 		&:after {
 			line-height: 16px;
 		}
 	}
 
 	.v-Notification.tray {
+		
 		&.notification-error {
 			background: #cc0000;
 			color: white;
@@ -27,4 +30,5 @@
 		}
 	
 	}
+
 }

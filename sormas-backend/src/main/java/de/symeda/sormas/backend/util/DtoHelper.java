@@ -26,6 +26,7 @@ import java.util.Collection;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.JsonDataEntry;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -113,7 +114,9 @@ public final class DtoHelper {
 									newEntry.setCreationDate(null);
 									fillDto(newEntry, (EntityDto) sourceEntry, true);
 									targetCollection.add(newEntry);
-								} else if (DataHelper.isValueType(sourceEntry.getClass()) || sourceEntry instanceof ReferenceDto) {
+								} else if (DataHelper.isValueType(sourceEntry.getClass())
+									|| sourceEntry instanceof ReferenceDto
+									|| sourceEntry instanceof JsonDataEntry) {
 									targetCollection.add(sourceEntry);
 								} else {
 									throw new UnsupportedOperationException(

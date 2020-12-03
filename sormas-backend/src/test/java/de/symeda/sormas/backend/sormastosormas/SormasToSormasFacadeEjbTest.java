@@ -31,6 +31,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -834,6 +835,11 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		caze.setQuarantine(QuarantineType.HOTEL);
 
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(caze.getChangeDate());
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		caze.setChangeDate(calendar.getTime());
+
 		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo());
 		shareData.setAssociatedContacts(
 			Arrays.asList(
@@ -846,7 +852,11 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		byte[] encryptedData = encryptShareData(shareData);
 
-		getSormasToSormasFacade().saveReturnedCase(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		try {
+			getSormasToSormasFacade().saveReturnedCase(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		CaseDataDto returnedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertThat(returnedCase.getQuarantine(), is(QuarantineType.HOTEL));
@@ -888,6 +898,11 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 			.persist(createShareInfo(officerUser, i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
 
 		contact.setQuarantine(QuarantineType.HOTEL);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(contact.getChangeDate());
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		contact.setChangeDate(calendar.getTime());
 
 		SormasToSormasContactDto shareData = new SormasToSormasContactDto(contactPerson, contact, createSormasToSormasOriginInfo());
 		shareData.setSamples(

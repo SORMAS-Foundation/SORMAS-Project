@@ -14,6 +14,53 @@ public class CampaignDiagramDataDto implements Serializable {
 	private Object groupingKey;
 	private String groupingCaption;
 	private String stack;
+	private boolean hasAgeGroupData;
+
+	public CampaignDiagramDataDto(String fieldCaption, Number valueSum, Object groupingKey, String groupingCaption, String fieldId, String formId) {
+		this.fieldCaption = fieldCaption;
+		this.valueSum = valueSum;
+		this.groupingKey = groupingKey;
+		this.groupingCaption = groupingCaption;
+		this.fieldId = fieldId;
+		this.formId = formId;
+	}
+
+	public CampaignDiagramDataDto(
+		String fieldCaption,
+		Number valueSum,
+		Object groupingKey,
+		String groupingCaption,
+		String fieldId,
+		String formId,
+		boolean hasAgeGroupData,
+		String stack) {
+		this.fieldCaption = fieldCaption;
+		this.valueSum = valueSum;
+		this.groupingKey = groupingKey;
+		this.groupingCaption = groupingCaption;
+		this.fieldId = fieldId;
+		this.formId = formId;
+		this.hasAgeGroupData = hasAgeGroupData;
+		this.stack = stack;
+	}
+
+	public CampaignDiagramDataDto(
+		String fieldCaption,
+		Number valueSum,
+		Object groupingKey,
+		String groupingCaption,
+		String fieldId,
+		String formId,
+		boolean hasAgeGroupData) {
+		this.fieldCaption = fieldCaption;
+		this.valueSum = valueSum;
+		this.groupingKey = groupingKey;
+		this.groupingCaption = groupingCaption;
+		this.fieldId = fieldId;
+		this.formId = formId;
+		this.hasAgeGroupData = hasAgeGroupData;
+
+	}
 
 	public CampaignDiagramDataDto(
 		String formMetaUuid,
@@ -96,5 +143,13 @@ public class CampaignDiagramDataDto implements Serializable {
 
 	public void setStack(String stack) {
 		this.stack = stack;
+	}
+
+	public boolean getHasAgeGroupData() {
+		return hasAgeGroupData;
+	}
+
+	public void setHasAgeGroupData(boolean hasAgeGroupData) {
+		this.hasAgeGroupData = hasAgeGroupData;
 	}
 }

@@ -145,6 +145,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactSimilarityCriteria.setPerson(new PersonReferenceDto(contactPerson.getUuid()));
 		contactSimilarityCriteria.setCaze(new CaseReferenceDto(caze.getUuid()));
 		contactSimilarityCriteria.setLastContactDate(new Date());
+		contactSimilarityCriteria.setLastContactDate(new Date());
 		contactSimilarityCriteria.setReportDate(new Date());
 
 		final List<SimilarContactDto> matchingContacts = getContactFacade().getMatchingContacts(contactSimilarityCriteria);
