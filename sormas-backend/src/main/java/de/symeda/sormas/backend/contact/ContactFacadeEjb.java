@@ -469,17 +469,17 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
 					joins.getPerson().get(Person.PRESENT_CONDITION),
 					joins.getPerson().get(Person.DEATH_DATE),
-					joins.getAddressRegion().get(Region.NAME),
-					joins.getAddressDistrict().get(District.NAME),
-					joins.getAddressCommunity().get(Community.NAME),
-					joins.getAddress().get(Location.CITY),
-					joins.getAddress().get(Location.STREET),
-					joins.getAddress().get(Location.HOUSE_NUMBER),
-					joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
-					joins.getAddress().get(Location.POSTAL_CODE),
-					joins.getAddressFacility().get(Facility.NAME),
-					joins.getAddressFacility().get(Facility.UUID),
-					joins.getAddress().get(Location.FACILITY_DETAILS),
+					joins.getPersonMainAddressRegion().get(Region.NAME),
+					joins.getPersonMainAddressDistrict().get(District.NAME),
+					joins.getPersonMainAddressCommunity().get(Community.NAME),
+					joins.getPersonMainAddress().get(Location.CITY),
+					joins.getPersonMainAddress().get(Location.STREET),
+					joins.getPersonMainAddress().get(Location.HOUSE_NUMBER),
+					joins.getPersonMainAddress().get(Location.ADDITIONAL_INFORMATION),
+					joins.getPersonMainAddress().get(Location.POSTAL_CODE),
+					joins.getPersonMainAddressFacility().get(Facility.NAME),
+					joins.getPersonMainAddressFacility().get(Facility.UUID),
+					joins.getPersonMainAddress().get(Location.FACILITY_DETAILS),
 					joins.getPerson().get(Person.PHONE),
 					joins.getPerson().get(Person.PHONE_OWNER),
 					joins.getPerson().get(Person.EMAIL_ADDRESS),
@@ -1031,10 +1031,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// use only date, not time
 		target.setMultiDayContact(source.isMultiDayContact());
-		if(source.isMultiDayContact()) {
-			target.setFirstContactDate(source.getFirstContactDate() != null ?
-				DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) :
-				null);
+		if (source.isMultiDayContact()) {
+			target.setFirstContactDate(
+				source.getFirstContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) : null);
 		} else {
 			target.setFirstContactDate(null);
 		}

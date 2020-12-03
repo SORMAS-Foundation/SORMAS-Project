@@ -529,11 +529,13 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setPhone(source.getPhone());
 		target.setPhoneOwner(source.getPhoneOwner());
-		target.setAddress(locationFacade.fromDto(source.getAddress()));
+		target.setMainAddress(locationFacade.fromDto(source.getMainAddress()));
 		List<Location> locations = new ArrayList<>();
 		for (LocationDto locationDto : source.getAddresses()) {
-			Location location = locationFacade.fromDto(locationDto);
-			locations.add(location);
+			if (!locationDto.isMainAddress()) {
+				Location location = locationFacade.fromDto(locationDto);
+				locations.add(location);
+			}
 		}
 		if (!DataHelper.equal(target.getAddresses(), locations)) {
 			target.setChangeDateOfEmbeddedLists(new Date());
@@ -588,7 +590,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void pseudonymizeDto(PersonDto dto, Pseudonymizer pseudonymizer, boolean isInJurisdiction) {
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
-				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getMainAddress(), isInJurisdiction, null);
 				p.getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, isInJurisdiction, null));
 			});
 		}
@@ -599,7 +601,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			boolean isInJurisdiction = isPersonInJurisdiction(person);
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
-			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
+			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getMainAddress(), existingPerson.getMainAddress(), isInJurisdiction);
 			source.getAddresses()
 				.forEach(
 					l -> pseudonymizer.restorePseudonymizedValues(
@@ -633,9 +635,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			entity.getApproximateAge(),
 			entity.getSex(),
 			entity.getPresentCondition(),
-			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
-			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
-			entity.getAddress().getCity(),
+			entity.getMainAddress().getDistrict() != null ? entity.getMainAddress().getDistrict().getName() : null,
+			entity.getMainAddress().getCommunity() != null ? entity.getMainAddress().getCommunity().getName() : null,
+			entity.getMainAddress().getCity(),
 			entity.getNationalHealthId(),
 			entity.getPassportNumber());
 		return dto;
@@ -691,7 +693,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setPhone(source.getPhone());
 		target.setPhoneOwner(source.getPhoneOwner());
-		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+		target.setMainAddress(LocationFacadeEjb.toDto(source.getMainAddress()));
 		List<LocationDto> locations = new ArrayList<>();
 		for (Location location : source.getAddresses()) {
 			LocationDto locationDto = LocationFacadeEjb.toDto(location);

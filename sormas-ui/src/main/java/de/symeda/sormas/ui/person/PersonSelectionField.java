@@ -103,18 +103,18 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		personDetailsLayout.addComponent(lblPresentCondition);
 
 		Label lblDistrict =
-			new Label(referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().toString() : "");
+			new Label(referencePerson.getMainAddress().getDistrict() != null ? referencePerson.getMainAddress().getDistrict().toString() : "");
 		lblDistrict.setWidthUndefined();
 		lblDistrict.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
 		personDetailsLayout.addComponent(lblDistrict);
 
 		Label lblCommunity =
-			new Label(referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().toString() : "");
+			new Label(referencePerson.getMainAddress().getCommunity() != null ? referencePerson.getMainAddress().getCommunity().toString() : "");
 		lblCommunity.setWidthUndefined();
 		lblCommunity.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
 		personDetailsLayout.addComponent(lblCommunity);
 
-		Label lblCity = new Label(referencePerson.getAddress().getCity());
+		Label lblCity = new Label(referencePerson.getMainAddress().getCity());
 		lblCity.setWidthUndefined();
 		lblCity.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
 		personDetailsLayout.addComponent(lblCity);

@@ -47,7 +47,7 @@ public class ImportHelper {
 		case PersonDto.PLACE_OF_BIRTH_DISTRICT:
 			return person.getPlaceOfBirthRegion();
 		case LocationDto.DISTRICT:
-			return person.getAddress().getRegion();
+			return person.getMainAddress().getRegion();
 		default:
 			throw new IllegalArgumentException(propertyName);
 		}
@@ -66,7 +66,7 @@ public class ImportHelper {
 		case PersonDto.PLACE_OF_BIRTH_COMMUNITY:
 			return person.getPlaceOfBirthDistrict();
 		case LocationDto.COMMUNITY:
-			return person.getAddress().getDistrict();
+			return person.getMainAddress().getDistrict();
 		default:
 			throw new IllegalArgumentException(propertyName);
 		}

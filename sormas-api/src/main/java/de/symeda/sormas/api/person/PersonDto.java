@@ -77,7 +77,6 @@ public class PersonDto extends PseudonymizableDto {
 
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
-	public static final String ADDRESS = "address";
 
 	public static final String EDUCATION_TYPE = "educationType";
 	public static final String EDUCATION_DETAILS = "educationDetails";
@@ -243,7 +242,7 @@ public class PersonDto extends PseudonymizableDto {
 	private String phoneOwner;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
-	private LocationDto address;
+	private LocationDto mainAddress;
 	@SensitiveData
 	private String emailAddress;
 
@@ -426,12 +425,12 @@ public class PersonDto extends PseudonymizableDto {
 		this.phoneOwner = phoneOwner;
 	}
 
-	public LocationDto getAddress() {
-		return address;
+	public LocationDto getMainAddress() {
+		return mainAddress;
 	}
 
-	public void setAddress(LocationDto address) {
-		this.address = address;
+	public void setMainAddress(LocationDto mainAddress) {
+		this.mainAddress = mainAddress;
 	}
 
 	public String getNickname() {
@@ -668,7 +667,9 @@ public class PersonDto extends PseudonymizableDto {
 
 		PersonDto person = new PersonDto();
 		person.setUuid(DataHelper.createUuid());
-		person.setAddress(LocationDto.build());
+		person.setMainAddress(LocationDto.build());
+		person.getMainAddress().setAddressType(PersonAddressType.HOME);
+		person.getMainAddress().setMainAddress(true);
 		return person;
 	}
 }

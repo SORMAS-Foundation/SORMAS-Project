@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -39,6 +40,7 @@ import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
@@ -50,6 +52,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -63,8 +66,10 @@ import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
@@ -77,6 +82,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		//XXX #1620 are the divs needed?
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
+			fluidRowLocs(LocationDto.MAIN_ADDRESS),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
@@ -96,9 +102,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private ComboBox facilityType;
 	private ComboBox facility;
 	private TextField facilityDetails;
+	private CheckBox mainAddress;
+	private Collection<LocationDto> locations;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
+
+		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
+			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
+		}
+	}
+
+	public LocationEditForm(
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		Collection<LocationDto> locations) {
+		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
+
+		this.locations = locations;
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
 			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
@@ -138,6 +159,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			addressType,
 			Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
 			Arrays.asList(PersonAddressType.OTHER_ADDRESS));
+
+		mainAddress = addField(LocationDto.MAIN_ADDRESS, CheckBox.class);
+		CssStyles.style(CssStyles.VSPACE_3, mainAddress);
+		FieldHelper.setVisibleWhen(getFieldGroup(), LocationDto.MAIN_ADDRESS, addressType, Arrays.asList(PersonAddressType.HOME), true);
 
 		facilityTypeGroup = new ComboBox();
 		facilityTypeGroup.setId("typeGroup");
@@ -423,5 +448,31 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		field.addValueChangeListener(e -> fireValueChange(false));
 
 		return super.addFieldToLayout(layout, propertyId, field);
+	}
+
+	@Override
+	public void setValue(LocationDto location) {
+		super.setValue(location);
+
+		mainAddress.addValueChangeListener(e -> {
+			if (Boolean.TRUE.equals(mainAddress.getValue())
+				&& locations != null
+				&& getMainAddress() != null
+				&& !getMainAddress().getUuid().equals(getValue().getUuid())) {
+				VaadinUiUtil
+					.showSimplePopupWindow(I18nProperties.getCaption(Captions.warning), I18nProperties.getString(Strings.messageMainAddressExisting));
+			}
+		});
+	}
+
+	public LocationDto getMainAddress() {
+		if (locations != null) {
+			for (LocationDto locationDto : locations) {
+				if (locationDto.isMainAddress()) {
+					return locationDto;
+				}
+			}
+		}
+		return null;
 	}
 }

@@ -58,6 +58,7 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
+	public static final String MAIN_ADDRESS = "mainAddress";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -105,6 +106,7 @@ public class LocationDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private String facilityDetails;
+	private boolean mainAddress;
 
 	public String getDetails() {
 		return details;
@@ -250,6 +252,14 @@ public class LocationDto extends PseudonymizableDto {
 		this.facilityDetails = facilityDetails;
 	}
 
+	public boolean isMainAddress() {
+		return mainAddress;
+	}
+
+	public void setMainAddress(boolean mainAddress) {
+		this.mainAddress = mainAddress;
+	}
+
 	@Override
 	public String toString() {
 
@@ -285,7 +295,10 @@ public class LocationDto extends PseudonymizableDto {
 			&& community == null
 			&& street == null
 			&& houseNumber == null
-			&& additionalInformation == null;
+			&& additionalInformation == null
+			&& postalCode == null
+			&& latitude == null
+			&& longitude == null;
 	}
 
 	public static LocationDto build() {

@@ -278,11 +278,11 @@ public class ContactController {
 								// the relationship with the case has been set to living in the same household
 								if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 									PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-									if (personDto.getAddress().checkIsEmptyLocation()) {
+									if (personDto.getMainAddress().checkIsEmptyLocation()) {
 										CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-										personDto.getAddress().setRegion(caseDto.getRegion());
-										personDto.getAddress().setDistrict(caseDto.getDistrict());
-										personDto.getAddress().setCommunity(caseDto.getCommunity());
+										personDto.getMainAddress().setRegion(caseDto.getRegion());
+										personDto.getMainAddress().setDistrict(caseDto.getDistrict());
+										personDto.getMainAddress().setCommunity(caseDto.getCommunity());
 									}
 									FacadeProvider.getPersonFacade().savePerson(personDto);
 								}
@@ -334,11 +334,11 @@ public class ContactController {
 				// set the contact person's address to the one of the case when it is currently empty and
 				// the relationship with the case has been set to living in the same household
 				if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-					if (personDto.getAddress().checkIsEmptyLocation()) {
+					if (personDto.getMainAddress().checkIsEmptyLocation()) {
 						CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-						personDto.getAddress().setRegion(caseDto.getRegion());
-						personDto.getAddress().setDistrict(caseDto.getDistrict());
-						personDto.getAddress().setCommunity(caseDto.getCommunity());
+						personDto.getMainAddress().setRegion(caseDto.getRegion());
+						personDto.getMainAddress().setDistrict(caseDto.getDistrict());
+						personDto.getMainAddress().setCommunity(caseDto.getCommunity());
 					}
 					FacadeProvider.getPersonFacade().savePerson(personDto);
 				}
@@ -415,11 +415,11 @@ public class ContactController {
 					// the relationship with the case has been set to living in the same household
 					if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
-						if (person.getAddress().checkIsEmptyLocation()) {
+						if (person.getMainAddress().checkIsEmptyLocation()) {
 							CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-							person.getAddress().setRegion(caze.getRegion());
-							person.getAddress().setDistrict(caze.getDistrict());
-							person.getAddress().setCommunity(caze.getCommunity());
+							person.getMainAddress().setRegion(caze.getRegion());
+							person.getMainAddress().setDistrict(caze.getDistrict());
+							person.getMainAddress().setCommunity(caze.getCommunity());
 						}
 						FacadeProvider.getPersonFacade().savePerson(person);
 					}

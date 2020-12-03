@@ -210,7 +210,7 @@ public class TestDataCreator {
 		person.setNationalHealthId(nationalHealthId);
 
 		if (address != null) {
-			person.setAddress(address);
+			person.setMainAddress(address);
 		}
 
 		person = beanTest.getPersonFacade().savePerson(person);
@@ -987,7 +987,7 @@ public class TestDataCreator {
 		return campaign;
 	}
 
-	public CampaignDiagramDefinitionDto createCampaignDiagramDefinition(String diagramId, String diagramCaption){
+	public CampaignDiagramDefinitionDto createCampaignDiagramDefinition(String diagramId, String diagramCaption) {
 		CampaignDiagramDefinitionDto campaignDiagramDefinition = CampaignDiagramDefinitionDto.build();
 		campaignDiagramDefinition.setDiagramType(DiagramType.COLUMN);
 		campaignDiagramDefinition.setDiagramId(diagramId);

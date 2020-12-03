@@ -367,8 +367,8 @@ public class TaskService extends AbstractAdoService<Task> {
 			if (contact.getDistrict() != null) {
 				officers = userService.getAllByDistrict(contact.getDistrict(), false, UserRole.CONTACT_OFFICER);
 			}
-			if (officers.isEmpty() && contact.getPerson().getAddress().getDistrict() != null) {
-				officers = userService.getAllByDistrict(contact.getPerson().getAddress().getDistrict(), false, UserRole.CONTACT_OFFICER);
+			if (officers.isEmpty() && contact.getPerson().getMainAddress().getDistrict() != null) {
+				officers = userService.getAllByDistrict(contact.getPerson().getMainAddress().getDistrict(), false, UserRole.CONTACT_OFFICER);
 			}
 			if (officers.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
 				officers = userService.getAllByDistrict(contact.getCaze().getDistrict(), false, UserRole.CONTACT_OFFICER);
@@ -385,8 +385,8 @@ public class TaskService extends AbstractAdoService<Task> {
 			if (contact.getRegion() != null) {
 				supervisors = userService.getAllByRegionAndUserRoles(contact.getRegion(), UserRole.CONTACT_SUPERVISOR);
 			}
-			if (supervisors.isEmpty() && contact.getPerson().getAddress().getRegion() != null) {
-				supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
+			if (supervisors.isEmpty() && contact.getPerson().getMainAddress().getRegion() != null) {
+				supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getMainAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
 			}
 			if (supervisors.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
 				supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);

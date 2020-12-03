@@ -38,13 +38,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.data.validator.EmailValidator;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -56,12 +58,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -73,14 +77,13 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
-import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
@@ -89,12 +92,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
-	private static final String ADDRESS_HEADER = "addressHeader";
 	private static final String ADDRESSES_HEADER = "addressesHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 
 	private Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
-	private Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
 	private Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
 
@@ -103,7 +104,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox causeOfDeathField;
 	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
-	private final ViewMode viewMode;
 	private ComboBox birthDateDay;
 	private ComboBox cbPlaceOfBirthFacility;
 	private PersonContext personContext;
@@ -149,9 +149,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
                     ) +
 
-                    loc(ADDRESS_HEADER) +
-                    divsCss(VSPACE_3, fluidRowLocs(PersonDto.ADDRESS)) +
-
 					loc(ADDRESSES_HEADER) +
 					fluidRowLocs(PersonDto.ADDRESSES) +
 
@@ -178,11 +175,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.personContext = personContext;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.viewMode = viewMode;
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
-		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
 
@@ -248,23 +243,16 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		DateField burialDate = addField(PersonDto.BURIAL_DATE, DateField.class);
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
-		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
-		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
+		LocationsField addresses = addField(PersonDto.ADDRESSES, LocationsField.class);
+		addresses.setCaption(null);
 
-		addFields(
-			PersonDto.OCCUPATION_TYPE,
-			PersonDto.OCCUPATION_DETAILS,
-			PersonDto.EDUCATION_TYPE,
-			PersonDto.EDUCATION_DETAILS);
+		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		TextField phoneNumber = addField(PersonDto.PHONE, TextField.class);
 		addField(PersonDto.PHONE_OWNER, TextField.class);
 		TextField emailAddress = addField(PersonDto.EMAIL_ADDRESS, TextField.class);
 
-		addFields(
-			PersonDto.PASSPORT_NUMBER,
-			PersonDto.NATIONAL_HEALTH_ID,
-			PersonDto.EXTERNAL_ID);
+		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID, PersonDto.EXTERNAL_ID);
 
 		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
@@ -329,8 +317,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible() && !getField(PersonDto.EDUCATION_TYPE).isVisible())
 			occupationHeader.setVisible(false);
-		if (!getField(PersonDto.ADDRESS).isVisible())
-			addressHeader.setVisible(false);
 		if (!getField(PersonDto.ADDRESSES).isVisible())
 			addressesHeader.setVisible(false);
 
@@ -409,13 +395,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
 
-		phoneNumber.addValidator(
-			new PhoneNumberValidator(
-				I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
+		phoneNumber.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
 
-		emailAddress.addValidator(
-			new EmailValidator(
-				I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
+		emailAddress.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
 
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
@@ -758,12 +740,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
 			deathPlaceType.setValue(DeathPlaceType.OTHER);
 			if (deathPlaceDesc.isVisible() && StringUtils.isBlank(deathPlaceDesc.getValue())) {
-				deathPlaceDesc.setValue(getValue().getAddress().toString());
+				deathPlaceDesc.setValue(getValue().getMainAddress().toString());
 			}
 		}
 
 		if (burialPlaceDesc.isVisible() && StringUtils.isBlank(burialPlaceDesc.getValue())) {
-			burialPlaceDesc.setValue(getValue().getAddress().toString());
+			burialPlaceDesc.setValue(getValue().getMainAddress().toString());
 		}
 	}
 
@@ -772,5 +754,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		field.addValueChangeListener(e -> fireValueChange(false));
 
 		return super.addFieldToLayout(layout, propertyId, field);
+	}
+
+	@Override
+	protected void setValue(PersonDto newFieldValue, boolean repaintIsNotNeeded, boolean ignoreReadOnly)
+		throws ReadOnlyException, Converter.ConversionException, Validator.InvalidValueException {
+		if (!newFieldValue.getMainAddress().checkIsEmptyLocation()) {
+			LocationDto mainAddress = newFieldValue.getMainAddress();
+			mainAddress.setMainAddress(true);
+			mainAddress.setAddressType(PersonAddressType.HOME);
+			newFieldValue.getAddresses().add(mainAddress);
+		}
+		super.setValue(newFieldValue, repaintIsNotNeeded, ignoreReadOnly);
 	}
 }

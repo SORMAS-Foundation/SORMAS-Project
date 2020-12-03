@@ -421,7 +421,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		address.setLatLonAccuracy(10F);
 
 		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, p -> {
-			p.setAddress(address);
+			p.setMainAddress(address);
 		});
 	}
 }

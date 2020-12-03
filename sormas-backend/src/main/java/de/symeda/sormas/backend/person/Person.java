@@ -86,7 +86,7 @@ public class Person extends AbstractDomainObject {
 	public static final String BURIAL_DATE = "burialDate";
 	public static final String BURIAL_PLACE_DESCRIPTION = "burialPlaceDescription";
 	public static final String BURIAL_CONDUCTOR = "burialConductor";
-	public static final String ADDRESS = "address";
+	public static final String MAIN_ADDRESS = "mainAddress";
 	public static final String SEX = "sex";
 	public static final String DEATH_DATE = "deathDate";
 	public static final String PRESENT_CONDITION = "presentCondition";
@@ -140,7 +140,7 @@ public class Person extends AbstractDomainObject {
 	private String burialPlaceDescription;
 	private BurialConductor burialConductor;
 
-	private Location address;
+	private Location mainAddress;
 	private String phone;
 	private String phoneOwner;
 	private String emailAddress;
@@ -299,15 +299,15 @@ public class Person extends AbstractDomainObject {
 	}
 
 	@OneToOne(cascade = CascadeType.ALL)
-	public Location getAddress() {
-		if (address == null) {
-			address = new Location();
+	public Location getMainAddress() {
+		if (mainAddress == null) {
+			mainAddress = new Location();
 		}
-		return address;
+		return mainAddress;
 	}
 
-	public void setAddress(Location address) {
-		this.address = address;
+	public void setMainAddress(Location address) {
+		this.mainAddress = address;
 	}
 
 	public String getPhone() {

@@ -2,6 +2,8 @@ package de.symeda.sormas.ui.person;
 
 import java.util.function.Consumer;
 
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
@@ -10,6 +12,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -41,7 +44,7 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 			entry.setUuid(DataHelper.createUuid());
 		}
 
-		LocationEditForm editForm = new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
+		LocationEditForm editForm = new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers, getValue());
 		editForm.showAddressType();
 		editForm.setValue(entry);
 
@@ -53,6 +56,13 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
+				if (entry.isMainAddress()) {
+					for (LocationDto locationDto : getValue()) {
+						if (locationDto.isMainAddress() && !locationDto.getUuid().equals(entry.getUuid())) {
+							locationDto.setMainAddress(false);
+						}
+					}
+				}
 				commitCallback.accept(editForm.getValue());
 			}
 		});
@@ -80,6 +90,20 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 			} else {
 				return I18nProperties.getCaption(Captions.inaccessibleValue);
 			}
+		});
+
+		table.addGeneratedColumn(LocationDto.ADDRESS_TYPE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			LocationDto location = (LocationDto) itemId;
+			String addressTypeString = PersonAddressType.OTHER_ADDRESS != location.getAddressType()
+				? location.getAddressType().toString()
+				: location.getAddressTypeDetails();
+
+			if (location.isMainAddress()) {
+				addressTypeString =
+					"<b>" + addressTypeString + " (" + I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.MAIN_ADDRESS) + ")</b>";
+			}
+
+			return new Label(addressTypeString, ContentMode.HTML);
 		});
 
 		table.setVisibleColumns(
@@ -135,6 +159,8 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		if (isModifiedObject(oldEntry.getLatLonAccuracy(), newEntry.getLatLonAccuracy()))
 			return true;
 		if (isModifiedObject(oldEntry.getLongitude(), newEntry.getLongitude()))
+			return true;
+		if (isModifiedObject(oldEntry.isMainAddress(), newEntry.isMainAddress()))
 			return true;
 		if (isModifiedObject(oldEntry.getPostalCode(), newEntry.getPostalCode()))
 			return true;

@@ -71,7 +71,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		CaseJoins<Case> caseJoins = new CaseJoins<>(caseRoot);
 
 		Join<Case, Person> person = caseJoins.getPerson();
-		Join<Person, Location> homeAddress = caseJoins.getPersonAddress();
+		Join<Person, Location> mainAddress = caseJoins.getPersonMainAddress();
 
 		Expression<String> homeAddressCountry = cb.literal(TODO_VALUE);
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
@@ -83,10 +83,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.ID),
 			person.get(Person.LAST_NAME),
 			person.get(Person.FIRST_NAME),
-			homeAddress.get(Location.STREET),
-			homeAddress.get(Location.HOUSE_NUMBER),
-			homeAddress.get(Location.CITY),
-			homeAddress.get(Location.POSTAL_CODE),
+			mainAddress.get(Location.STREET),
+			mainAddress.get(Location.HOUSE_NUMBER),
+			mainAddress.get(Location.CITY),
+			mainAddress.get(Location.POSTAL_CODE),
 			homeAddressCountry,
 			person.get(Person.PHONE),
 			mobileNumber,
@@ -227,7 +227,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		ContactJoins contactJoins = new ContactJoins(contactRoot);
 
 		Join<Contact, Person> person = contactJoins.getPerson();
-		Join<Person, Location> homeAddress = contactJoins.getPersonAddress();
+		Join<Person, Location> mainAddress = contactJoins.getPersonMainAddress();
 		Join<Contact, Case> caze = contactJoins.getCaze();
 
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
@@ -238,10 +238,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.ID),
 			person.get(Person.LAST_NAME),
 			person.get(Person.FIRST_NAME),
-			homeAddress.get(Location.STREET),
-			homeAddress.get(Location.HOUSE_NUMBER),
-			homeAddress.get(Location.CITY),
-			homeAddress.get(Location.POSTAL_CODE),
+			mainAddress.get(Location.STREET),
+			mainAddress.get(Location.HOUSE_NUMBER),
+			mainAddress.get(Location.CITY),
+			mainAddress.get(Location.POSTAL_CODE),
 			person.get(Person.PHONE),
 			mobileNumber,
 			person.get(Person.SEX),

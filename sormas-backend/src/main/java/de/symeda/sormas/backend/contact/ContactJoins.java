@@ -39,7 +39,6 @@ import de.symeda.sormas.backend.visit.Visit;
 public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private Join<Contact, Person> person;
-//	private CaseJoins<Contact> caseJoins;
 	private Join<Contact, Case> caze;
 	private Join<Contact, Case> resultingCase;
 	private Join<Case, Person> casePerson;
@@ -50,16 +49,15 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Case, Facility> caseHealthFacility;
 	private Join<Case, PointOfEntry> caseasePointOfEntry;
 	private Join<Contact, User> contactOfficer;
-	private Join<Person, Location> address;
+	private Join<Person, Location> personMainAddress;
 	private Join<Contact, Region> region;
 	private Join<Contact, District> district;
 	private Join<Contact, Community> community;
 	private Join<Contact, User> reportingUser;
-	private Join<Location, Region> addressRegion;
-	private Join<Location, District> addressDistrict;
-	private Join<Location, Community> addressCommunity;
-	private Join<Location, Facility> addressFacility;
-	private Join<Person, Facility> occupationFacility;
+	private Join<Location, Region> personMainAddressRegion;
+	private Join<Location, District> personMainAddressDistrict;
+	private Join<Location, Community> personMainAddressCommunity;
+	private Join<Location, Facility> personMainAddressFacility;
 	private Join<Contact, EpiData> epiData;
 	private Join<Person, EventParticipant> eventParticipants;
 	private Join<Case, EventParticipant> caseEventParticipants;
@@ -69,7 +67,6 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Contact, Visit> visits;
 	private Join<Visit, Symptoms> visitSymptoms;
 	private Join<Contact, HealthConditions> healthConditions;
-	private Join<Person, Location> personAddress;
 
 	public ContactJoins(Root<Contact> contact) {
 		super(contact);
@@ -165,12 +162,12 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 		this.contactOfficer = contactOfficer;
 	}
 
-	public Join<Person, Location> getAddress() {
-		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setAddress);
+	public Join<Person, Location> getPersonMainAddress() {
+		return getOrCreate(personMainAddress, Person.MAIN_ADDRESS, JoinType.LEFT, getPerson(), this::setPersonMainAddress);
 	}
 
-	private void setAddress(Join<Person, Location> address) {
-		this.address = address;
+	private void setPersonMainAddress(Join<Person, Location> personMainAddress) {
+		this.personMainAddress = personMainAddress;
 	}
 
 	public Join<Contact, Region> getRegion() {
@@ -205,36 +202,41 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 		this.reportingUser = reportingUser;
 	}
 
-	public Join<Location, Region> getAddressRegion() {
-		return getOrCreate(addressRegion, Location.REGION, JoinType.LEFT, getAddress(), this::setAddressRegion);
+	public Join<Location, Region> getPersonMainAddressRegion() {
+		return getOrCreate(personMainAddressRegion, Location.REGION, JoinType.LEFT, getPersonMainAddress(), this::setPersonMainAddressRegion);
 	}
 
-	private void setAddressRegion(Join<Location, Region> addressRegion) {
-		this.addressRegion = addressRegion;
+	private void setPersonMainAddressRegion(Join<Location, Region> personMainAddressRegion) {
+		this.personMainAddressRegion = personMainAddressRegion;
 	}
 
-	public Join<Location, District> getAddressDistrict() {
-		return getOrCreate(addressDistrict, Location.DISTRICT, JoinType.LEFT, getAddress(), this::setAddressDistrict);
+	public Join<Location, District> getPersonMainAddressDistrict() {
+		return getOrCreate(personMainAddressDistrict, Location.DISTRICT, JoinType.LEFT, getPersonMainAddress(), this::setPersonMainAddressDistrict);
 	}
 
-	private void setAddressDistrict(Join<Location, District> addressDistrict) {
-		this.addressDistrict = addressDistrict;
+	private void setPersonMainAddressDistrict(Join<Location, District> personMainAddressDistrict) {
+		this.personMainAddressDistrict = personMainAddressDistrict;
 	}
 
-	public Join<Location, Community> getAddressCommunity() {
-		return getOrCreate(addressCommunity, Location.COMMUNITY, JoinType.LEFT, getAddress(), this::setAddressCommunity);
+	public Join<Location, Community> getPersonMainAddressCommunity() {
+		return getOrCreate(
+			personMainAddressCommunity,
+			Location.COMMUNITY,
+			JoinType.LEFT,
+			getPersonMainAddress(),
+			this::setPersonMainAddressCommunity);
 	}
 
-	private void setAddressCommunity(Join<Location, Community> addressCommunity) {
-		this.addressCommunity = addressCommunity;
+	private void setPersonMainAddressCommunity(Join<Location, Community> personMainAddressCommunity) {
+		this.personMainAddressCommunity = personMainAddressCommunity;
 	}
 
-	public Join<Location, Facility> getAddressFacility() {
-		return getOrCreate(addressFacility, Location.FACILITY, JoinType.LEFT, getAddress(), this::setAddressFacility);
+	public Join<Location, Facility> getPersonMainAddressFacility() {
+		return getOrCreate(personMainAddressFacility, Location.FACILITY, JoinType.LEFT, getPersonMainAddress(), this::setPersonMainAddressFacility);
 	}
 
-	private void setAddressFacility(Join<Location, Facility> addressFacility) {
-		this.addressFacility = addressFacility;
+	private void setPersonMainAddressFacility(Join<Location, Facility> personMainAddressFacility) {
+		this.personMainAddressFacility = personMainAddressFacility;
 	}
 
 	public Join<Contact, EpiData> getEpiData() {
@@ -267,14 +269,6 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	public void setHealthConditions(Join<Contact, HealthConditions> healthConditions) {
 		this.healthConditions = healthConditions;
-	}
-
-	public Join<Person, Location> getPersonAddress() {
-		return getOrCreate(personAddress, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setPersonAddress);
-	}
-
-	private void setPersonAddress(Join<Person, Location> personAddress) {
-		this.personAddress = personAddress;
 	}
 
 	private void setEventParticipants(Join<Person, EventParticipant> eventParticipants) {

@@ -166,9 +166,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedCase.getPerson().getUuid());
 		assertThat(savedPerson, is(notNullValue()));
-		assertThat(savedPerson.getAddress().getRegion(), is(rdcf.localRdcf.region));
-		assertThat(savedPerson.getAddress().getDistrict(), is(rdcf.localRdcf.district));
-		assertThat(savedPerson.getAddress().getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedPerson.getMainAddress().getRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedPerson.getMainAddress().getDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedPerson.getMainAddress().getCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedPerson.getFirstName(), is("James"));
 		assertThat(savedPerson.getLastName(), is("Smith"));
 	}
@@ -282,9 +282,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedContact.getPerson().getUuid());
 		assertThat(savedPerson, is(notNullValue()));
-		assertThat(savedPerson.getAddress().getRegion(), is(rdcf.localRdcf.region));
-		assertThat(savedPerson.getAddress().getDistrict(), is(rdcf.localRdcf.district));
-		assertThat(savedPerson.getAddress().getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedPerson.getMainAddress().getRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedPerson.getMainAddress().getDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedPerson.getMainAddress().getCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedPerson.getFirstName(), is("James"));
 		assertThat(savedPerson.getLastName(), is("Smith"));
 
@@ -934,9 +934,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		person.setFirstName("John");
 		person.setLastName("Smith");
 
-		person.getAddress().setDistrict(rdcf.remoteRdcf.district);
-		person.getAddress().setRegion(rdcf.remoteRdcf.region);
-		person.getAddress().setCommunity(rdcf.remoteRdcf.community);
+		person.getMainAddress().setDistrict(rdcf.remoteRdcf.district);
+		person.getMainAddress().setRegion(rdcf.remoteRdcf.region);
+		person.getMainAddress().setCommunity(rdcf.remoteRdcf.community);
 
 		return person;
 	}

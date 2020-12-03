@@ -527,7 +527,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 
 		//@formatter:off
-		cq.multiselect(caseRoot.get(Case.ID), joins.getPerson().get(Person.ID), joins.getPersonAddress().get(Location.ID),
+		cq.multiselect(caseRoot.get(Case.ID), joins.getPerson().get(Person.ID), joins.getPersonMainAddress().get(Location.ID),
 				joins.getEpiData().get(EpiData.ID), joins.getSymptoms().get(Symptoms.ID), joins.getHospitalization().get(Hospitalization.ID),
 				joins.getDistrict().get(District.ID), joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_DETAILS),
@@ -559,10 +559,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.PRESENT_CONDITION), joins.getPerson().get(Person.DEATH_DATE), joins.getPerson().get(Person.BURIAL_DATE),
 				joins.getPerson().get(Person.BURIAL_CONDUCTOR), joins.getPerson().get(Person.BURIAL_PLACE_DESCRIPTION),
 				// address
-				joins.getPersonAddressRegion().get(Region.NAME), joins.getPersonAddressDistrict().get(District.NAME), joins.getPersonAddressCommunity().get(Community.NAME),
-				joins.getPersonAddress().get(Location.CITY), joins.getPersonAddress().get(Location.STREET), joins.getPersonAddress().get(Location.HOUSE_NUMBER),
-				joins.getPersonAddress().get(Location.ADDITIONAL_INFORMATION), joins.getPersonAddress().get(Location.POSTAL_CODE),
-				joins.getPersonAddressFacility().get(Facility.NAME), joins.getPersonAddressFacility().get(Facility.UUID), joins.getPersonAddress().get(Location.FACILITY_DETAILS),
+				joins.getPersonMainAddressRegion().get(Region.NAME), joins.getPersonMainAddressDistrict().get(District.NAME), joins.getPersonMainAddressCommunity().get(Community.NAME),
+				joins.getPersonMainAddress().get(Location.CITY), joins.getPersonMainAddress().get(Location.STREET), joins.getPersonMainAddress().get(Location.HOUSE_NUMBER),
+				joins.getPersonMainAddress().get(Location.ADDITIONAL_INFORMATION), joins.getPersonMainAddress().get(Location.POSTAL_CODE),
+				joins.getPersonMainAddressFacility().get(Facility.NAME), joins.getPersonMainAddressFacility().get(Facility.UUID), joins.getPersonMainAddress().get(Location.FACILITY_DETAILS),
 				// phone
 				joins.getPerson().get(Person.PHONE), joins.getPerson().get(Person.PHONE_OWNER),
 				joins.getPerson().get(Person.EMAIL_ADDRESS),
@@ -612,9 +612,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			Map<Long, Location> personAddresses = null;
-			if (exportConfiguration == null
-				|| exportConfiguration.getProperties().contains(PersonDto.ADDRESS)
-				|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
+			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
 				List<Location> personAddressesList = null;
 				CriteriaQuery<Location> personAddressesCq = cb.createQuery(Location.class);
 				Root<Location> personAddressesRoot = personAddressesCq.from(Location.class);

@@ -403,7 +403,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<MapContactDto> cq = cb.createQuery(MapContactDto.class);
 		Root<Contact> contact = cq.from(getElementClass());
 		Join<Contact, Person> person = contact.join(Contact.PERSON, JoinType.LEFT);
-		Join<Person, Location> contactPersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
+		Join<Person, Location> contactPersonAddress = person.join(Person.MAIN_ADDRESS, JoinType.LEFT);
 		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
@@ -1107,7 +1107,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getNameUuidCaseLike() != null) {
 			Join<Contact, Person> person = joins.getPerson();
-			Join<Person, Location> location = joins.getAddress();
+			Join<Person, Location> location = joins.getPersonMainAddress();
 			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 			String[] textFilters = contactCriteria.getNameUuidCaseLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {

@@ -106,7 +106,7 @@ public class SharedDataProcessorHelper {
 	public ValidationErrors processPerson(PersonDto person) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		LocationDto address = person.getAddress();
+		LocationDto address = person.getMainAddress();
 
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
 			loadLocalInfrastructure(address.getRegion(), address.getDistrict(), address.getCommunity(), null, null, null);

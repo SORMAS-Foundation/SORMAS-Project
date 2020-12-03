@@ -71,7 +71,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Contact contact = new Contact();
 		Location location = new Location();
 		Person person = new Person();
-		person.setAddress(location);
+		person.setMainAddress(location);
 		contact.setPerson(person);
 		Region region = new Region();
 		contact.setRegion(region);
@@ -87,7 +87,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Contact contact = new Contact();
 		Location location = new Location();
 		Person person = new Person();
-		person.setAddress(location);
+		person.setMainAddress(location);
 		contact.setPerson(person);
 		Case caze = new Case();
 		contact.setCaze(caze);

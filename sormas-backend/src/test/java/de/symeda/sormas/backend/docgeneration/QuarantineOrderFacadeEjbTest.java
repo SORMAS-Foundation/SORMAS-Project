@@ -64,7 +64,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 		personDto.setBirthdateYYYY(1931);
 		personDto.setBirthdateMM(12);
 		personDto.setBirthdateDD(28);
-		personDto.setAddress(locationDto);
+		personDto.setMainAddress(locationDto);
 		personDto.setPhone("+49 681 1234");
 
 		getPersonFacade().savePerson(personDto);

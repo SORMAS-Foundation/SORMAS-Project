@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.VisitOrigin;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +43,7 @@ import org.junit.rules.ExpectedException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -350,8 +350,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto person1 = creator.createPerson("FirstName1", "LastName1", p -> {
-			p.getAddress().setPostalCode("10115");
-			p.getAddress().setCity("Berlin");
+			p.getMainAddress().setPostalCode("10115");
+			p.getMainAddress().setCity("Berlin");
 			p.setPhone("+4930-90-1820");
 		});
 		creator.createCase(
@@ -364,8 +364,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		PersonDto person2 = creator.createPerson("FirstName2", "LastName2", p -> {
-			p.getAddress().setPostalCode("20095");
-			p.getAddress().setCity("Hamburg");
+			p.getMainAddress().setPostalCode("20095");
+			p.getMainAddress().setCity("Hamburg");
 			p.setPhone("+49-30-901822");
 		});
 		creator.createCase(
@@ -378,8 +378,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		PersonDto person3 = creator.createPerson("FirstName3", "LastName3", p -> {
-			p.getAddress().setPostalCode("80331");
-			p.getAddress().setCity("Munich");
+			p.getMainAddress().setPostalCode("80331");
+			p.getMainAddress().setCity("Munich");
 			p.setPhone("+49 31 9018 20");
 		});
 		creator.createCase(
@@ -465,7 +465,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		cazePerson.getAddress().setCity("City");
+		cazePerson.getMainAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
@@ -508,7 +508,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		cazePerson.getAddress().setCity("City");
+		cazePerson.getMainAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
 		CaseDataDto caze = creator.createCase(
@@ -868,9 +868,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Thread.sleep(10L);
 
 		PersonDto cazePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-		cazePerson.getAddress().setStreet("new Street");
-		cazePerson.getAddress().setHouseNumber("new Number");
-		cazePerson.getAddress().setAdditionalInformation("new Information");
+		cazePerson.getMainAddress().setStreet("new Street");
+		cazePerson.getMainAddress().setHouseNumber("new Number");
+		cazePerson.getMainAddress().setAdditionalInformation("new Information");
 		getPersonFacade().savePerson(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());

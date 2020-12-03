@@ -134,7 +134,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Join<Contact, Visit> visitJoin = contactRoot.join(Contact.VISITS, JoinType.LEFT);
 		visitJoin.fetch(Visit.SYMPTOMS);
 		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
-		personFetch.fetch(Person.ADDRESS);
+		personFetch.fetch(Person.MAIN_ADDRESS);
 
 		Predicate filter =
 			and(cb, contactService.createUserFilter(cb, visitsQuery, contactRoot), contactService.createActiveContactsFilter(cb, contactRoot));
@@ -159,7 +159,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Join<Case, Visit> visitJoin = caseRoot.join(Case.VISITS, JoinType.LEFT);
 		visitJoin.fetch(Visit.SYMPTOMS);
 		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
-		personFetch.fetch(Person.ADDRESS);
+		personFetch.fetch(Person.MAIN_ADDRESS);
 
 		Predicate filter = and(cb, caseService.createUserFilter(cb, visitsQuery, caseRoot), caseService.createActiveCasesFilter(cb, caseRoot));
 

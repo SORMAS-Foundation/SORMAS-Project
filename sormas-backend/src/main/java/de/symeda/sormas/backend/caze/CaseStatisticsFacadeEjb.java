@@ -371,7 +371,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(" ON ")
 				.append(Person.TABLE_NAME)
 				.append(".")
-				.append(Person.ADDRESS)
+				.append(Person.MAIN_ADDRESS)
 				.append("_id")
 				.append(" = ")
 				.append(Location.TABLE_NAME)

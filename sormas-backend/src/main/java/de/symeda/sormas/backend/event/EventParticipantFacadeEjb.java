@@ -342,7 +342,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
-		Join<Person, Location> address = person.join(Person.ADDRESS);
+		Join<Person, Location> address = person.join(Person.MAIN_ADDRESS);
 
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);

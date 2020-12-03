@@ -43,7 +43,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.person.PersonDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -96,7 +95,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		// persons by LGA
 		CriteriaQuery<String> lgaQuery = cb.createQuery(String.class);
 		Root<Person> lgaRoot = lgaQuery.from(Person.class);
-		Join<Person, Location> address = lgaRoot.join(Person.ADDRESS);
+		Join<Person, Location> address = lgaRoot.join(Person.MAIN_ADDRESS);
 		lgaQuery.select(lgaRoot.get(Person.UUID));
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), getCurrentUser().getDistrict());
 		lgaQuery.where(lgaFilter);
@@ -152,7 +151,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		// persons by LGA
 		CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
 		Root<Person> personsRoot = personsQuery.from(Person.class);
-		Join<Person, Location> address = personsRoot.join(Person.ADDRESS);
+		Join<Person, Location> address = personsRoot.join(Person.MAIN_ADDRESS);
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
@@ -166,7 +165,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
-		casePersonsSelect.fetch(Person.ADDRESS);
+		casePersonsSelect.fetch(Person.MAIN_ADDRESS);
 		casePersonsQuery.select(casePersonsSelect);
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
 		// date range
@@ -190,7 +189,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		CriteriaQuery<Person> contactPersonsQuery = cb.createQuery(Person.class);
 		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
 		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
-		contactPersonsSelect.fetch(Person.ADDRESS);
+		contactPersonsSelect.fetch(Person.MAIN_ADDRESS);
 		contactPersonsQuery.select(contactPersonsSelect);
 		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot);
 		// date range
@@ -209,7 +208,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
 		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
 		Join<Person, Person> eventPersonsSelect = eventPersonsRoot.join(EventParticipant.PERSON);
-		eventPersonsSelect.fetch(Person.ADDRESS);
+		eventPersonsSelect.fetch(Person.MAIN_ADDRESS);
 		eventPersonsQuery.select(eventPersonsSelect);
 		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot);
 		// date range
@@ -389,7 +388,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		CriteriaQuery<Location> cq = cb.createQuery(Location.class);
 		Root<Person> root = cq.from(getElementClass());
 		cq.where(cb.equal(root.get(Person.ID), personId));
-		cq.select(root.get(Person.ADDRESS));
+		cq.select(root.get(Person.MAIN_ADDRESS));
 		Location result = em.createQuery(cq).getSingleResult();
 		return result;
 	}
@@ -456,12 +455,8 @@ public class PersonService extends AbstractAdoService<Person> {
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Person> from, Timestamp date) {
 
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-		Join<Person, Location> address = from.join(Person.ADDRESS);
+		Join<Person, Location> address = from.join(Person.MAIN_ADDRESS);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
 		return dateFilter;
-	}
-
-	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-
 	}
 }

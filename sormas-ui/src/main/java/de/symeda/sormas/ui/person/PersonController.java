@@ -32,6 +32,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.location.LocationHelper;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -126,6 +128,25 @@ public class PersonController {
 		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid());
 
 		onPersonChanged(existingPerson, personDto);
+
+		String mainAddressUuid = personDto.getMainAddress().getUuid();
+		boolean mainAddressInList = false;
+		if (!personDto.getAddresses().isEmpty()) {
+			for (LocationDto address : personDto.getAddresses()) {
+				if (mainAddressUuid.equals(address.getUuid()) && !address.isMainAddress()) {
+					address.setUuid(DataHelper.createUuid());
+				}
+				if (address.isMainAddress()) {
+					personDto.setMainAddress(LocationHelper.overrideLocationInformation(personDto.getMainAddress(), address));
+					mainAddressInList = true;
+				} else if (address.checkIsEmptyLocation()) {
+					personDto.getAddresses().remove(address);
+				}
+			}
+		}
+		if (!mainAddressInList) {
+			LocationHelper.clearLocation(personDto.getMainAddress());
+		}
 
 		personFacade.savePerson(personDto);
 

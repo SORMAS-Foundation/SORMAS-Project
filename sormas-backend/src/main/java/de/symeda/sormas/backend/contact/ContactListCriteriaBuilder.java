@@ -178,11 +178,11 @@ public class ContactListCriteriaBuilder {
 				joins.getPerson().get(Person.SEX),
 				joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
-				joins.getAddress().get(Location.CITY),
-				joins.getAddress().get(Location.STREET),
-				joins.getAddress().get(Location.HOUSE_NUMBER),
-				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
-				joins.getAddress().get(Location.POSTAL_CODE),
+				joins.getPersonMainAddress().get(Location.CITY),
+				joins.getPersonMainAddress().get(Location.STREET),
+				joins.getPersonMainAddress().get(Location.HOUSE_NUMBER),
+				joins.getPersonMainAddress().get(Location.ADDITIONAL_INFORMATION),
+				joins.getPersonMainAddress().get(Location.POSTAL_CODE),
 				joins.getPerson().get(Person.PHONE),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME)));
@@ -204,7 +204,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDetailedDto.HOUSE_NUMBER:
 		case ContactIndexDetailedDto.ADDITIONAL_INFORMATION:
 		case ContactIndexDetailedDto.POSTAL_CODE:
-			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
+			return Collections.singletonList(joins.getPersonMainAddress().get(sortProperty.propertyName));
 		case ContactIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		default:

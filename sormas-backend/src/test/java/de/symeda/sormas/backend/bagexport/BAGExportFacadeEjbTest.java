@@ -67,7 +67,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
-			LocationDto homeAddress = p.getAddress();
+			LocationDto homeAddress = p.getMainAddress();
 			homeAddress.setStreet("Home street");
 			homeAddress.setHouseNumber("11A");
 			homeAddress.setCity("Home city");
@@ -253,7 +253,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
-			LocationDto homeAddress = p.getAddress();
+			LocationDto homeAddress = p.getMainAddress();
 			homeAddress.setAddressType(PersonAddressType.HOME);
 			homeAddress.setStreet("Home street");
 			homeAddress.setHouseNumber("11A");
@@ -383,7 +383,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstContact.getExposureLocationCity(), is("Exposure city"));
 		assertThat(firstContact.getExposureLocationPostalCode(), is("098765"));
 		assertThat(firstContact.getExposureLocationCountry(), isEmptyOrNullString());
-
 
 		assertThat(dateFormat.format(firstContact.getStartOfQuarantineDate()), is(dateFormat.format(quarantineFromDate)));
 		assertThat(dateFormat.format(firstContact.getEndOfQuarantineDate()), is(dateFormat.format(quarantineToDate)));

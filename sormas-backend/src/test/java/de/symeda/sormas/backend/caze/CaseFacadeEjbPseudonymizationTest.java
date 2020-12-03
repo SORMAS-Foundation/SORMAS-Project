@@ -308,7 +308,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		address.setLatLonAccuracy(10F);
 
 		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, p -> {
-			p.setAddress(address);
+			p.setMainAddress(address);
 			p.setPresentCondition(PresentCondition.BURIED);
 			p.setBurialPlaceDescription("Burial place desc");
 		});

@@ -40,12 +40,15 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.location.LocationHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -262,6 +265,26 @@ public class EventParticipantsController {
 	}
 
 	private void savePersonAndEventParticipant(Consumer<EventParticipantReferenceDto> doneConsumer, EventParticipantDto dto) {
+
+		String mainAddressUuid = dto.getPerson().getMainAddress().getUuid();
+		boolean mainAddressInList = false;
+		if (!dto.getPerson().getAddresses().isEmpty()) {
+			for (LocationDto address : dto.getPerson().getAddresses()) {
+				if (mainAddressUuid.equals(address.getUuid()) && !address.isMainAddress()) {
+					address.setUuid(DataHelper.createUuid());
+				}
+				if (address.isMainAddress()) {
+					dto.getPerson().setMainAddress(LocationHelper.overrideLocationInformation(dto.getPerson().getMainAddress(), address));
+					mainAddressInList = true;
+				} else if (address.checkIsEmptyLocation()) {
+					dto.getPerson().getAddresses().remove(address);
+				}
+			}
+		}
+		if (!mainAddressInList) {
+			LocationHelper.clearLocation(dto.getPerson().getMainAddress());
+		}
+
 		personFacade.savePerson(dto.getPerson());
 		eventParticipantFacade.saveEventParticipant(dto);
 		Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);

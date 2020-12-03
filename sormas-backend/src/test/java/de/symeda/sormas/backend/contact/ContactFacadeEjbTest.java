@@ -63,12 +63,12 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
-import de.symeda.sormas.api.exposure.ExposureDto;
-import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
@@ -281,11 +281,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 
-		List<MapContactDto> mapContactDtos = getContactFacade().getContactsForMap(
-			caze.getRegion(),
-			caze.getDistrict(),
-			caze.getDisease(),
-			Arrays.asList(mapCaseDto));
+		List<MapContactDto> mapContactDtos =
+			getContactFacade().getContactsForMap(caze.getRegion(), caze.getDistrict(), caze.getDisease(), Arrays.asList(mapCaseDto));
 
 		// List should have one entry
 		assertEquals(1, mapContactDtos.size());
@@ -621,13 +618,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contact.setEpiData(epiData);
 		getContactFacade().saveContact(contact);
 
-		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
-		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
-		contactPerson.getAddress().setCity("City");
-		contactPerson.getAddress().setStreet("Test street");
-		contactPerson.getAddress().setHouseNumber("Test number");
-		contactPerson.getAddress().setAdditionalInformation("Test information");
-		contactPerson.getAddress().setPostalCode("1234");
+		contactPerson.getMainAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		contactPerson.getMainAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		contactPerson.getMainAddress().setCity("City");
+		contactPerson.getMainAddress().setStreet("Test street");
+		contactPerson.getMainAddress().setHouseNumber("Test number");
+		contactPerson.getMainAddress().setAdditionalInformation("Test information");
+		contactPerson.getMainAddress().setPostalCode("1234");
+		contactPerson.getAddresses().add(contactPerson.getMainAddress());
 		getPersonFacade().savePerson(contactPerson);
 
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
