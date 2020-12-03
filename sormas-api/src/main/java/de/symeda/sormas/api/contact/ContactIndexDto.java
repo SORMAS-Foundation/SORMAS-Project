@@ -109,7 +109,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 			caseLastName,
 			regionUuid,
 			districtUuid,
-			null,
 			lastContactDate,
 			contactCategory,
 			contactProximity,
@@ -117,7 +116,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 			contactStatus,
 			followUpStatus,
 			followUpUntil,
-			null,
 			contactOfficerUuid,
 			reportingUserUuid,
 			reportDateTime,
@@ -128,11 +126,13 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 			caseCommunityUuid,
 			caseHealthFacilityUuid,
 			casePointOfEntryUuid,
-			null,
-			null,
 			id,
 			creationDate,
 			completeness,
+			null,
+			null,
+			null,
+			null,
 			0);
 
 		//this.visitCount = visitCount;
@@ -141,14 +141,15 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
-						   String districtUuid, String districtName, String communityUuid, Date lastContactDate, ContactCategory contactCategory,
+						   String districtUuid, String districtName, Date lastContactDate, ContactCategory contactCategory,
 						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
-						   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-						   CaseClassification caseClassification, String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid,
-						   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+						   CaseClassification caseClassification,
+						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   Long id, Date creationDate, Float completeness,
+						   String communityUuid, SymptomJournalStatus symptomJournalStatus,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   String externalID,
-						   Long id, Date creationDate, Float completeness,
 						   int visitCount) {
 	//@formatter:on
 

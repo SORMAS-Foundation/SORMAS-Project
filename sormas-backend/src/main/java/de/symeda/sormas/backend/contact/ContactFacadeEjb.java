@@ -1720,7 +1720,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<ContactIndexDto> cq, Root<Contact> root) {
-		cq.multiselect(listCriteriaBuilder.getContactIndexSelectionsAll(root, new ContactJoins(root)));
+		cq.multiselect(listCriteriaBuilder.getContactIndexMergeSelections(root, new ContactJoins(root)));
 	}
 
 	public void updateCompleteness(String contactUuid) {

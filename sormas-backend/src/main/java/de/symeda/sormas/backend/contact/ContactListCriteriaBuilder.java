@@ -90,7 +90,7 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+	public List<Selection<?>> getContactIndexMergeSelections(Root<Contact> contact, ContactJoins joins) {
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
@@ -105,7 +105,6 @@ public class ContactListCriteriaBuilder {
 			joins.getRegion().get(Region.NAME),
 			joins.getDistrict().get(District.UUID),
 			joins.getDistrict().get(District.NAME),
-			joins.getCommunity().get(Community.UUID),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
 			contact.get(Contact.CONTACT_PROXIMITY),
@@ -113,7 +112,6 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.CONTACT_STATUS),
 			contact.get(Contact.FOLLOW_UP_STATUS),
 			contact.get(Contact.FOLLOW_UP_UNTIL),
-			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			joins.getContactOfficer().get(User.UUID),
 			joins.getReportingUser().get(User.UUID),
 			contact.get(Contact.REPORT_DATE_TIME),
@@ -126,11 +124,22 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseCommunity().get(Community.UUID),
 			joins.getCaseHealthFacility().get(Facility.UUID),
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
-			contact.get(Contact.CHANGE_DATE),
-			contact.get(Contact.EXTERNAL_ID),
 			contact.get(AbstractDomainObject.ID),
 			contact.get(AbstractDomainObject.CREATION_DATE),
 			contact.get(Contact.COMPLETENESS));
+	}
+
+	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+
+		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexMergeSelections(contact, joins));
+		indexSelection.addAll(
+			Arrays.asList(
+				joins.getCommunity().get(Community.UUID),
+				joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+				contact.get(Contact.CHANGE_DATE),
+				contact.get(Contact.EXTERNAL_ID)));
+
+		return indexSelection;
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
