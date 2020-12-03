@@ -471,12 +471,19 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/person_fathersName"
-                    android:nextFocusForward="@+id/person_phone"
+                    android:nextFocusForward="@+id/person_nameOfOtherGuardians"
                     app:value="@={data.fathersName}"
                     app:imeOptions="actionNext"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_nameOfOtherGuardians"
+                android:nextFocusForward="@+id/person_phone"
+                app:value="@={data.nameOfOtherGuardians}"
+                app:imeOptions="actionNext"
+                style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
