@@ -174,10 +174,13 @@ public interface Strings {
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorFieldValidationFailed = "errorFieldValidationFailed";
 	String errorFileNotFound = "errorFileNotFound";
+	String errorFormIdPopulationAgeGroup = "errorFormIdPopulationAgeGroup";
 	String errorIllegalFilename = "errorIllegalFilename";
 	String errorIntegerFieldValidationFailed = "errorIntegerFieldValidationFailed";
 	String errorInvalidValue = "errorInvalidValue";
 	String errorNoAccessToWeb = "errorNoAccessToWeb";
+	String errorNoPopulationDataFound = "errorNoPopulationDataFound";
+	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNotRequiredRights = "errorNotRequiredRights";
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
@@ -216,6 +219,9 @@ public interface Strings {
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";
 	String headingCampaignData = "headingCampaignData";
+	String headingCampaignFormDataAlreadyExisting = "headingCampaignFormDataAlreadyExisting";
+	String headingCampaignFormDataDuplicateExisting = "headingCampaignFormDataDuplicateExisting";
+	String headingCampaignFormDataDuplicateNew = "headingCampaignFormDataDuplicateNew";
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseData = "headingCaseData";
 	String headingCaseImport = "headingCaseImport";
@@ -518,6 +524,7 @@ public interface Strings {
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
 	String infoSelectOrCreatePersonForEventParticipantImport = "infoSelectOrCreatePersonForEventParticipantImport";
+	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	String infoSpecificEventSearch = "infoSpecificEventSearch";
 	String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
@@ -784,6 +791,10 @@ public interface Strings {
 	String on = "on";
 	String or = "or";
 	String pleaseSpecify = "pleaseSpecify";
+	String populationDataByArea = "populationDataByArea";
+	String populationDataByCommunity = "populationDataByCommunity";
+	String populationDataByDistrict = "populationDataByDistrict";
+	String populationDataByRegion = "populationDataByRegion";
 	String previousPeriod = "previousPeriod";
 	String promptActionDateFrom = "promptActionDateFrom";
 	String promptActionDateTo = "promptActionDateTo";

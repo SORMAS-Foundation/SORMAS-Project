@@ -5888,6 +5888,12 @@ UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epi
 
 INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');
 
+-- 2020-11-18 Add date of first contact #3408
+ALTER TABLE contact ADD column multidaycontact boolean default false;
+ALTER TABLE contact ADD column firstcontactdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
+
 -- 2020-11-25 SurvNet Adaptations - Create new field “Prohibition to work” for case and contact #3409
 ALTER TABLE cases
     ADD COLUMN prohibitiontowork varchar(255),
@@ -5909,6 +5915,6 @@ ALTER TABLE contact_history
     ADD COLUMN prohibitiontoworkfrom timestamp,
     ADD COLUMN prohibitiontoworkuntil timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (282, 'Create new field “Prohibition to work” for case and contact #3409');
+INSERT INTO schema_version (version_number, comment) VALUES (283, 'Create new field “Prohibition to work” for case and contact #3409');
 
 -- *** Insert new sql commands BEFORE this line ***

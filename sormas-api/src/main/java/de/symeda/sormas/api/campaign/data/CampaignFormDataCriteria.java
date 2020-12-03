@@ -15,14 +15,15 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-
-import java.io.Serializable;
 
 public class CampaignFormDataCriteria extends BaseCriteria implements Serializable {
 
@@ -31,6 +32,7 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String FORM_DATE = "formDate";
 
 	private static final long serialVersionUID = 8124072093160133408L;
 
@@ -39,6 +41,7 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	private Date formDate;
 
 	public CampaignReferenceDto getCampaign() {
 		return campaign;
@@ -102,6 +105,19 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 
 	public CampaignFormDataCriteria community(CommunityReferenceDto community) {
 		this.community = community;
+		return this;
+	}
+
+	public Date getFormDate() {
+		return formDate;
+	}
+
+	public void setFormDate(Date formDate) {
+		this.formDate = formDate;
+	}
+
+	public CampaignFormDataCriteria formDate(Date formDate) {
+		this.formDate = formDate;
 		return this;
 	}
 }

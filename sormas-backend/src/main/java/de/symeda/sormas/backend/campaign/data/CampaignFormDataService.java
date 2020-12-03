@@ -78,6 +78,13 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 		if (criteria.getCommunity() != null) {
 			filter = and(cb, filter, cb.equal(communityJoin.get(Community.UUID), criteria.getCommunity().getUuid()));
 		}
+		if (criteria.getFormDate() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getStartOfDay(criteria.getFormDate())),
+				cb.lessThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getEndOfDay(criteria.getFormDate())));
+		}
 
 		return filter;
 	}

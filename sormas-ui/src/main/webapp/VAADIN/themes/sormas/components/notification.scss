@@ -3,7 +3,9 @@
 	
 	.v-Notification {
 		@include valo-notification-closable-style;
-		
+
+		text-align: left;
+
 		&:after {
 			line-height: 16px;
 		}
