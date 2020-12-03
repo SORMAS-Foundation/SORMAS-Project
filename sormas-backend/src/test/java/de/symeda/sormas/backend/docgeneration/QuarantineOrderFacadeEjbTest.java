@@ -211,7 +211,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void readTemplateTest() throws IOException {
 		byte[] template = quarantineOrderFacadeEjb.getTemplate("Quarantine.docx");
-		assertEquals(5416, template.length);
+		assertEquals(5428, template.length);
 	}
 
 	private void resetCustomPath() {
