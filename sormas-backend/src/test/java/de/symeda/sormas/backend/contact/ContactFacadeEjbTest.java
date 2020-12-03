@@ -481,6 +481,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			assertThat(dto.getEventCount(), equalTo(0L));
 			assertNull(dto.getLatestEventId());
 			assertNull(dto.getLatestEventTitle());
+			assertThat(dto.getVisitCount(), equalTo(0));
 		}
 
 		// 1b. one Contact with one Event
@@ -493,6 +494,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			assertThat(dto.getEventCount(), equalTo(1L));
 			assertThat(dto.getLatestEventId(), equalTo(event1.getUuid()));
 			assertThat(dto.getLatestEventTitle(), equalTo(event1.getEventTitle()));
+			assertThat(dto.getVisitCount(), equalTo(0));
 		}
 
 		// 1c. one Contact with two Events, second is leading
@@ -505,6 +507,34 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			assertThat(dto.getEventCount(), equalTo(2L));
 			assertThat(dto.getLatestEventId(), equalTo(event2.getUuid()));
 			assertThat(dto.getLatestEventTitle(), equalTo(event2.getEventTitle()));
+			assertThat(dto.getVisitCount(), equalTo(0));
+		}
+
+		// 1d. one Contact with two Events and one visit
+		creator.createVisit(new PersonReferenceDto(contactPerson.getUuid()));
+		result = getContactFacade().getIndexDetailedList(contactCriteria, null, null, sortProperties);
+		assertThat(result, hasSize(1));
+		{
+			ContactIndexDetailedDto dto = result.get(0);
+			assertThat(dto.getUuid(), equalTo(contact1.getUuid()));
+			assertThat(dto.getEventCount(), equalTo(2L));
+			assertThat(dto.getLatestEventId(), equalTo(event2.getUuid()));
+			assertThat(dto.getLatestEventTitle(), equalTo(event2.getEventTitle()));
+			assertThat(dto.getVisitCount(), equalTo(1));
+		}
+
+		// 1e. one Contact with two Events and three visits
+		creator.createVisit(new PersonReferenceDto(contactPerson.getUuid()));
+		creator.createVisit(new PersonReferenceDto(contactPerson.getUuid()));
+		result = getContactFacade().getIndexDetailedList(contactCriteria, null, null, sortProperties);
+		assertThat(result, hasSize(1));
+		{
+			ContactIndexDetailedDto dto = result.get(0);
+			assertThat(dto.getUuid(), equalTo(contact1.getUuid()));
+			assertThat(dto.getEventCount(), equalTo(2L));
+			assertThat(dto.getLatestEventId(), equalTo(event2.getUuid()));
+			assertThat(dto.getLatestEventTitle(), equalTo(event2.getEventTitle()));
+			assertThat(dto.getVisitCount(), equalTo(3));
 		}
 	}
 
