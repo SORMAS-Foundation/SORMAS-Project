@@ -60,6 +60,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -551,6 +552,15 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter,
 				cb.in(personJoin.get(Person.UUID)).value(eventCriteria.getPerson().getUuid()),
 				cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
+		}
+		if (eventCriteria.getFacilityType() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Event.EVENT_LOCATION).get(Location.FACILITY_TYPE), eventCriteria.getFacilityType()));
+		}
+		if (eventCriteria.getFacility() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.equal(from.join(Event.EVENT_LOCATION).join(Location.FACILITY).get(Facility.UUID), eventCriteria.getFacility().getUuid()));
 		}
 
 		return filter;

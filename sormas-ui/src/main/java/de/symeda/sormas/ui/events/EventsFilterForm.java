@@ -3,8 +3,10 @@ package de.symeda.sormas.ui.events;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
@@ -13,6 +15,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -22,6 +25,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -35,8 +42,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
@@ -44,6 +53,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private static final String EVENT_WEEK_AND_DATE_FILTER = "eventWeekDateFilter";
 	private static final String ACTION_WEEK_AND_DATE_FILTER = "actionWeekDateFilter";
+	private static final String FACILITY_TYPE_GROUP_FILTER = "facilityTypeGroupFilter";
 
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(
 		EventDto.SRC_TYPE,
@@ -51,6 +61,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		LocationDto.DISTRICT,
 		LocationDto.COMMUNITY,
 		EventDto.TYPE_OF_PLACE,
+		FACILITY_TYPE_GROUP_FILTER,
+		LocationDto.FACILITY_TYPE,
+		LocationDto.FACILITY,
 		EventDto.EVENT_INVESTIGATION_STATUS) + loc(EVENT_WEEK_AND_DATE_FILTER) + loc(ACTION_WEEK_AND_DATE_FILTER);
 
 	private final boolean hideEventStatusFilter;
@@ -134,6 +147,64 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT), EVENT_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION), ACTION_WEEK_AND_DATE_FILTER);
+
+		ComboBox facilityTypeGroup = new ComboBox();
+		facilityTypeGroup.setId(FACILITY_TYPE_GROUP_FILTER);
+		facilityTypeGroup.setInputPrompt(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE, CssStyles.OPTIONGROUP_GRID_LAYOUT);
+		facilityTypeGroup.setWidth(140, Unit.PIXELS);
+		facilityTypeGroup.addItems((Object[]) FacilityTypeGroup.values());
+		facilityTypeGroup.setVisible(false);
+		moreFiltersContainer.addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_FILTER);
+
+		ComboBox facilityType = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				LocationDto.FACILITY_TYPE,
+				I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.FACILITY_TYPE),
+				140));
+		facilityType.setVisible(false);
+
+		ComboBox facility = addField(
+			moreFiltersContainer,
+			FieldConfiguration
+				.withCaptionAndPixelSized(LocationDto.FACILITY, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.FACILITY), 140));
+		facility.setEnabled(false);
+		facility.setVisible(false);
+
+		getField(EventDto.TYPE_OF_PLACE).addValueChangeListener(e -> {
+			boolean visible = e.getProperty().getValue() == TypeOfPlace.FACILITY;
+			if (!visible) {
+				facility.clear();
+				facilityType.clear();
+				facilityTypeGroup.clear();
+			}
+			facility.setVisible(visible);
+			facilityType.setVisible(visible);
+			facilityTypeGroup.setVisible(visible);
+		});
+
+		facilityTypeGroup.addValueChangeListener(
+			e -> FieldHelper.updateEnumData(
+				facilityType,
+				facilityTypeGroup.getValue() != null
+					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue())
+					: Arrays.stream(FacilityType.values()).collect(Collectors.toList())));
+
+		facilityType.addValueChangeListener(e -> {
+			if (facilityType.getValue() != null) {
+				if (facilityTypeGroup.getValue() == null) {
+					facilityTypeGroup.setValue(((FacilityType) facilityType.getValue()).getFacilityTypeGroup());
+				}
+				facility.setEnabled(true);
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade().getActiveFacilitiesByType((FacilityType) facilityType.getValue(), true, false));
+			} else {
+				facility.removeAllItems();
+				facility.setEnabled(false);
+			}
+		});
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter(EventCriteria.DateType dateType) {
