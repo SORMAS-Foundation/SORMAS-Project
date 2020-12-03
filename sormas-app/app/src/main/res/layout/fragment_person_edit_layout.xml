@@ -434,19 +434,6 @@
 
             </LinearLayout>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/person_armedForcesRelationType"
-                    app:value="@={data.armedForcesRelationType}"
-                    style="@style/ControlSingleColumnStyle" />
-
-        </LinearLayout>
-
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <LinearLayout

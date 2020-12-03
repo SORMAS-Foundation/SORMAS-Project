@@ -5894,9 +5894,4 @@ ALTER TABLE contact ADD column firstcontactdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
 
-ALTER TABLE person ADD COLUMN armedforcesrelationtype varchar(255);
-ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
-
-INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
-
 -- *** Insert new sql commands BEFORE this line ***
