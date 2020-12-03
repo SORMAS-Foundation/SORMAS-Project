@@ -2,15 +2,15 @@
 @mixin sormas-notification {
 	
 	.v-Notification {
+		top: 322px !important;
 		@include valo-notification-closable-style;
-		
+
 		&:after {
 			line-height: 16px;
 		}
 	}
 
 	.v-Notification.tray {
-		
 		&.notification-error {
 			background: #cc0000;
 			color: white;
@@ -27,5 +27,4 @@
 		}
 	
 	}
-
 }
