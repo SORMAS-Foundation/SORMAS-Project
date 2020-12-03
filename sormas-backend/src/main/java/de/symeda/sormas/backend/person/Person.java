@@ -126,6 +126,7 @@ public class Person extends AbstractDomainObject {
 	private String mothersName;
 	private String mothersMaidenName;
 	private String fathersName;
+	private String nameOfOtherGuardians;
 
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
@@ -446,6 +447,15 @@ public class Person extends AbstractDomainObject {
 
 	public void setFathersName(String fathersName) {
 		this.fathersName = fathersName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getNameOfOtherGuardians() {
+		return nameOfOtherGuardians;
+	}
+
+	public void setNameOfOtherGuardians(String otherGuardiansName) {
+		this.nameOfOtherGuardians = otherGuardiansName;
 	}
 
 	@ManyToOne(cascade = {})

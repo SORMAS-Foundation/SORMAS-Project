@@ -5894,4 +5894,13 @@ ALTER TABLE contact ADD column firstcontactdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
 
+-- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+ALTER TABLE person
+    ADD COLUMN nameOfOtherGuardians varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN nameOfOtherGuardians varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (283, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
+
 -- *** Insert new sql commands BEFORE this line ***

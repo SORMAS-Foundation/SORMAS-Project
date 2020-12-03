@@ -1133,6 +1133,7 @@ public interface Captions {
 	String Person_matchingCase = "Person.matchingCase";
 	String Person_mothersMaidenName = "Person.mothersMaidenName";
 	String Person_mothersName = "Person.mothersName";
+	String Person_nameOfOtherGuardians = "Person.nameOfOtherGuardians";
 	String Person_nationalHealthId = "Person.nationalHealthId";
 	String Person_nickname = "Person.nickname";
 	String Person_occupationCommunity = "Person.occupationCommunity";
