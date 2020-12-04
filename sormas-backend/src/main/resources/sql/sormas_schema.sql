@@ -5896,10 +5896,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of f
 
 -- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
 ALTER TABLE person
-    ADD COLUMN nameOfOtherGuardians varchar(512);
+    ADD COLUMN namesOfOtherGuardians varchar(512);
 
 ALTER TABLE person_history
-    ADD COLUMN nameOfOtherGuardians varchar(512);
+    ADD COLUMN namesOfOtherGuardians varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
 
