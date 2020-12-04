@@ -42,7 +42,7 @@
 		<site>
 			<id>local</id>
 			<name>local</name>
-			<url>file://${maven.multiModuleProjectDirectory}/sormas-base/target/doc/</url>
+			<url>file://${project.build.directory}/doc/</url>
 		</site>
 	</distributionManagement>
 
