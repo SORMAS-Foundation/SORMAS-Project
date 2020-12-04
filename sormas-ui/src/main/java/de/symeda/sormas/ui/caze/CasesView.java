@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -68,6 +67,7 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
@@ -332,13 +332,7 @@ public class CasesView extends AbstractView {
 					BAGExportCaseDto.class,
 					null,
 					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(start, max),
-					(propertyId, type) -> {
-						String caption = I18nProperties.findPrefixCaption(propertyId);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
+					(propertyId, type) -> propertyId,
 					createFileNameWithCurrentDate("sormas_BAG_cases_", ".csv"),
 					null);
 

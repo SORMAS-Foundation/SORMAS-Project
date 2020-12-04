@@ -15,8 +15,9 @@
 
 package de.symeda.sormas.rest;
 
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.Date;
+import java.util.function.Consumer;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -25,12 +26,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.utils.CsvStreamUtils;
-import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 
 @Path("/bagexport")
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -42,26 +44,45 @@ public class BAGExportResource {
 	@GET
 	@Path("/cases")
 	public Response exportCases(String file) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		return createFileDownloadResponse(
+			output -> CsvStreamUtils.writeCsvContentToStream(
+				BAGExportCaseDto.class,
+				(from, to) -> FacadeProvider.getBAGExportFacade().getCaseExportList(from, to),
+				(propertyId, type) -> propertyId,
+				null,
+				null,
+				FacadeProvider.getConfigFacade(),
+				output),
+			"sormas_BAG_cases_",
+			"csv");
+	}
 
-		CsvStreamUtils.writeCsvContentToStream(
-			BAGExportCaseDto.class,
-			(from, to) -> FacadeProvider.getBAGExportFacade().getCaseExportList(from, to),
-			(propertyId, type) -> {
-				String caption = I18nProperties.findPrefixCaption(propertyId);
-				if (Date.class.isAssignableFrom(type)) {
-					caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-				}
-				return caption;
-			},
-			null,
-			null,
-			FacadeProvider.getConfigFacade(),
-			baos);
+	@GET
+	@Path("/contacts")
+	public Response exportContacts(String file) {
+		return createFileDownloadResponse(
+			output -> CsvStreamUtils.writeCsvContentToStream(
+				BAGExportContactDto.class,
+				(from, to) -> FacadeProvider.getBAGExportFacade().getContactExportList(from, to),
+				(propertyId, type) -> propertyId,
+				null,
+				null,
+				FacadeProvider.getConfigFacade(),
+				output),
+			"sormas_BAG_contacts_",
+			"csv");
+	}
 
-		Response.ResponseBuilder response = Response.ok(baos);
-		response.header("Content-Disposition", "attachment;filename=test.csv");
+	private Response createFileDownloadResponse(Consumer<OutputStream> writeContent, String fileNamePrefix, String extension) {
+		StreamingOutput fileStream = writeContent::accept;
+
+		Response.ResponseBuilder response = Response.ok(fileStream);
+		response.header("Content-Disposition", "attachment;filename=" + createFileNameWithCurrentDate(fileNamePrefix, extension));
 
 		return response.build();
+	}
+
+	private String createFileNameWithCurrentDate(String fileNamePrefix, String extension) {
+		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + "." + extension;
 	}
 }
