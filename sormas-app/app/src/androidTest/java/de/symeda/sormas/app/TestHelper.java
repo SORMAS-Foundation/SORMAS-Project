@@ -31,6 +31,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
@@ -45,6 +46,7 @@ public class TestHelper {
 	public static final String FACILITY_UUID = "F1F1F1-F1F1F1-F1F1F1-F1F1F1F1";
 	public static final String SECOND_FACILITY_UUID = "F2F2F2-F2F2F2-F2F2F2-F2F2F2F2";
 	public static final String LABORATORY_UUID = "L1L1L1-L1L1L1-L1L1L1-L1L1L1L1";
+	public static final String COUNTRY_UUID = "C3C3C3-C3C3C3-C3C3C3-C3C3C3C3";
 	public static final String USER_UUID = "0123456789";
 	public static final String SECOND_USER_UUID = "0987654321";
 	public static final String INFORMANT_USER_UUID = "0192837465";
@@ -121,7 +123,14 @@ public class TestHelper {
 	}
 
 	private static void insertInfrastructureData() throws SQLException {
-		// Create example region, district, community and health facility
+		// Create example country, region, district, community and health facility
+		Country country = new Country();
+		country.setCreationDate(new Date());
+		country.setChangeDate(new Date());
+		country.setName("Country");
+		country.setUuid(COUNTRY_UUID);
+		DatabaseHelper.getCountryDao().create(country);
+
 		Region region = new Region();
 		region.setCreationDate(new Date());
 		region.setChangeDate(new Date());

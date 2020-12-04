@@ -33,6 +33,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -42,6 +43,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.DocGenerationComponent;
+import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
@@ -65,6 +67,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
+	public static final String EVENTS_LOC = "events";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
@@ -81,6 +84,7 @@ public class ContactDataView extends AbstractContactView {
 			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
@@ -189,9 +193,11 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(buttonsLayout, CASE_BUTTONS_LOC);
 		}
 
-		TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef());
-		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(taskList, TASKS_LOC);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+			TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef());
+			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(taskList, TASKS_LOC);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
@@ -210,6 +216,19 @@ public class ContactDataView extends AbstractContactView {
 			}
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+			VerticalLayout eventsLayout = new VerticalLayout();
+			eventsLayout.setMargin(false);
+			eventsLayout.setSpacing(false);
+
+			EventListComponent eventList = new EventListComponent(getContactRef());
+			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
+			eventsLayout.addComponent(eventList);
+
+			layout.addComponent(eventsLayout, EVENTS_LOC);
 		}
 
 		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();

@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -108,7 +109,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRowCss(VSPACE_3,
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
-					fluidRow(fluidColumn(6,6, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
+					fluidRow(fluidColumn(8,4, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
 					fluidRow(
 							fluidColumn(6, -1,
 									locsCss(VSPACE_3,
@@ -698,9 +699,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Label lesionsLocationsCaption = new Label(I18nProperties.getCaption(Captions.symptomsLesionsLocations));
 		CssStyles.style(lesionsLocationsCaption, VSPACE_3);
 		getContent().addComponent(lesionsLocationsCaption, LESIONS_LOCATIONS_LOC);
-		getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(getFieldGroup().getField(LESIONS).getValue() == SymptomState.YES);
+		getContent().getComponent(LESIONS_LOCATIONS_LOC)
+			.setVisible(FieldHelper.getNullableSourceFieldValue(getFieldGroup().getField(LESIONS)) == SymptomState.YES);
 		getFieldGroup().getField(LESIONS).addValueChangeListener(e -> {
-			getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(e.getProperty().getValue() == SymptomState.YES);
+			getContent().getComponent(LESIONS_LOCATIONS_LOC)
+				.setVisible(FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()) == SymptomState.YES);
 		});
 
 		// Symptoms hint text
@@ -783,7 +786,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		buttonsLayout.addComponent(setEmptyToNoButton);
 		buttonsLayout.addComponent(setEmptyToUnknownButton);
 		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		buttonsLayout.setMargin(true);
+		buttonsLayout.setMargin(new MarginInfo(true, false, true, true));
 
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
 	}
@@ -964,7 +967,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		for (Object sourcePropertyId : sourcePropertyIds) {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
-			if (sourceValues.contains(sourceField.getValue())) {
+			if (sourceValues.contains(FieldHelper.getNullableSourceFieldValue(sourceField))) {
 				return true;
 			}
 		}
@@ -981,7 +984,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		for (Object sourcePropertyId : allPropertyIds) {
 			Field sourceField = getFieldGroup().getField(sourcePropertyId);
 			sourceField.addValueChangeListener(event -> {
-				if (sourceField.getValue() == SymptomState.YES) {
+				if (FieldHelper.getNullableSourceFieldValue(sourceField) == SymptomState.YES) {
 					onsetSymptom.addItem(sourceField.getCaption());
 					onsetDateField.setEnabled(true);
 				} else {
@@ -1016,7 +1019,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		List<String> monkeypoxImages = Arrays.asList(MONKEYPOX_LESIONS_IMG1, MONKEYPOX_LESIONS_IMG2, MONKEYPOX_LESIONS_IMG3, MONKEYPOX_LESIONS_IMG4);
 
 		// Set up initial visibility
-		boolean lesionsSetToYes = getFieldGroup().getField(LESIONS).getValue() == SymptomState.YES;
+		boolean lesionsSetToYes = FieldHelper.getNullableSourceFieldValue(getFieldGroup().getField(LESIONS)) == SymptomState.YES;
 		for (String monkeypoxImage : monkeypoxImages) {
 			getContent().getComponent(monkeypoxImage).setVisible(lesionsSetToYes);
 		}
@@ -1024,7 +1027,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		// Set up image visibility listener
 		getFieldGroup().getField(LESIONS).addValueChangeListener(e -> {
 			for (String monkeypoxImage : monkeypoxImages) {
-				getContent().getComponent(monkeypoxImage).setVisible(e.getProperty().getValue() == SymptomState.YES);
+				getContent().getComponent(monkeypoxImage)
+					.setVisible(FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()) == SymptomState.YES);
 			}
 		});
 	}

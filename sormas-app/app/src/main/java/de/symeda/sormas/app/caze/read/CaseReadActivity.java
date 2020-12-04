@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -71,6 +72,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
 		Case caze = getStoredRootEntity();
 		// Sections must be removed in reverse order
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
+			menuItems.set(CaseSection.TASKS.ordinal(), null);
+		}
 		if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
 			|| (caze != null && caze.isUnreferredPortHealthCase())
 			|| (caze != null && caze.getClinicalCourse() == null)) {

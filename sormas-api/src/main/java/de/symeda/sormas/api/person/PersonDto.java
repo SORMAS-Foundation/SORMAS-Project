@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -82,6 +83,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
+	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
@@ -254,6 +256,9 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private String occupationDetails;
 	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private ArmedForcesRelationType armedForcesRelationType;
+	@SensitiveData
 	private String generalPractitionerDetails;
 	@SensitiveData
 	private String passportNumber;
@@ -262,15 +267,15 @@ public class PersonDto extends PseudonymizableDto {
 	private List<LocationDto> addresses = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	private boolean hasCovidApp;
 	@Diseases(Disease.CORONAVIRUS)
-	@HideForCountriesExcept(countries = "ch")
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
 	@SensitiveData
-	@HideForCountriesExcept(countries = "de")
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String externalId;
 
 	public Integer getBirthdateDD() {
@@ -495,6 +500,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setOccupationDetails(String occupationDetails) {
 		this.occupationDetails = occupationDetails;
+	}
+
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
 	}
 
 	public String getMothersName() {

@@ -25,6 +25,11 @@ public class SormasToSormasValidationException extends Exception {
 		this.errors = errors;
 	}
 
+	public SormasToSormasValidationException(Map<String, ValidationErrors> errors, Throwable cause) {
+		super("Validation error", cause);
+		this.errors = errors;
+	}
+
 	public Map<String, ValidationErrors> getErrors() {
 		return errors;
 	}

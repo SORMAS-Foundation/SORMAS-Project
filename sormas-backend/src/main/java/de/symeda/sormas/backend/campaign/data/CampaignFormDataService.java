@@ -63,6 +63,8 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 
 		if (criteria.getCampaign() != null) {
 			filter = and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
+		} else {
+			filter = and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
 		}
 		if (criteria.getCampaignFormMeta() != null) {
 			filter = and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
@@ -75,6 +77,13 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 		}
 		if (criteria.getCommunity() != null) {
 			filter = and(cb, filter, cb.equal(communityJoin.get(Community.UUID), criteria.getCommunity().getUuid()));
+		}
+		if (criteria.getFormDate() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getStartOfDay(criteria.getFormDate())),
+				cb.lessThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getEndOfDay(criteria.getFormDate())));
 		}
 
 		return filter;

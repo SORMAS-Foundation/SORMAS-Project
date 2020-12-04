@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
+import de.symeda.sormas.api.utils.Required;
+
 import java.io.Serializable;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,6 +28,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 
 	public static final String CAPTION = "caption";
 
+	@Required
 	private String uuid;
 	private String caption;
 
