@@ -85,7 +85,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setPresentCondition(source.getPresentCondition());
 		target.setDeathDate(source.getDeathDate());
 
-		target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
+		target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getMainAddress()));
 
 		target.setEducationType(source.getEducationType());
 		target.setEducationDetails(source.getEducationDetails());
@@ -161,7 +161,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
 
 		Location address = DatabaseHelper.getLocationDao().queryForId(source.getAddress().getId());
-		target.setAddress(locationHelper.adoToDto(address));
+		target.setMainAddress(locationHelper.adoToDto(address));
 
 		target.setEducationType(source.getEducationType());
 		target.setEducationDetails(source.getEducationDetails());
