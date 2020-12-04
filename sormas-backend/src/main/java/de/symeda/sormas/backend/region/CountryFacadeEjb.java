@@ -54,7 +54,10 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
-		return countryService.getByDefaultName(name, includeArchivedEntities).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return countryService.getByDefaultName(name, includeArchivedEntities)
+			.stream()
+			.map(CountryFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -74,10 +77,12 @@ public class CountryFacadeEjb implements CountryFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case Country.DEFAULT_NAME:
-				case Country.EXTERNAL_ID:
-				case Country.ISO_CODE:
-				case Country.UNO_CODE:
+				case CountryIndexDto.DISPLAY_NAME:
+					expression = country.get(Country.DEFAULT_NAME);
+					break;
+				case CountryIndexDto.EXTERNAL_ID:
+				case CountryIndexDto.ISO_CODE:
+				case CountryIndexDto.UNO_CODE:
 					expression = country.get(sortProperty.propertyName);
 					break;
 				default:
