@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,7 +86,7 @@ public class ExternalVisitsResourceTest {
 				if (hasTag(level2, controller)) {
 					resultMap.put(key1, value1);
 				}
-				extractPathsOfController(level2, controller, list);
+				extractPathsOfController(level2, controller, resultMap);
 			}
 		});
 	}
@@ -132,7 +131,7 @@ public class ExternalVisitsResourceTest {
 			if (detailName.equals(e1.getKey())) {
 				resultMap.put(detailName, value1);
 			} else if (isInnerNode(value1)) {
-				extractDetail(innerNode(value1), detailName, list);
+				extractDetail(innerNode(value1), detailName, resultMap);
 			}
 		});
 	}
