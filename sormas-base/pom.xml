@@ -639,21 +639,6 @@
 				<version>${keycloak.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-module-jaxm-annotations</artifactId>
-				<version>${jackson.version}</version>
-				<!-- TODO #3449: Not existing artifactId -->
-			</dependency>
-
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-				<scope>provided</scope>
-				<!-- TODO #3449: not yet somwhere bundled. Needed? -->
-			</dependency>
-
 			<!-- ** Vaadin ** -->
 
 			<dependency>
