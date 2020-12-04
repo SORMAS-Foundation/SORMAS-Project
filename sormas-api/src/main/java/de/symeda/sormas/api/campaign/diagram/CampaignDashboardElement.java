@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.campaign.diagram;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class CampaignDashboardElement implements Serializable {
 
@@ -80,5 +81,27 @@ public class CampaignDashboardElement implements Serializable {
 
 	public void setHeight(Integer height) {
 		this.height = height;
+	}
+
+	/**
+	 * Needed. Otherwise hibernate will persist whenever loading,
+	 * because hibernate types creates new instances that aren't equal.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CampaignDashboardElement that = (CampaignDashboardElement) o;
+		return Objects.equals(diagramId, that.diagramId) &&
+				Objects.equals(tabId, that.tabId) &&
+				Objects.equals(subTabId, that.subTabId) &&
+				Objects.equals(order, that.order) &&
+				Objects.equals(width, that.width) &&
+				Objects.equals(height, that.height);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(diagramId, tabId, subTabId, order, width, height);
 	}
 }

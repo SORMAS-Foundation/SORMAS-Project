@@ -49,6 +49,8 @@ public interface CampaignFormDataFacade {
 
 	List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	CampaignFormDataDto getExistingData(CampaignFormDataCriteria criteria);
+
 	long count(CampaignFormDataCriteria criteria);
 
 	List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
@@ -61,4 +63,6 @@ public interface CampaignFormDataFacade {
 	List<String> getAllActiveUuids();
 
 	List<CampaignFormDataDto> getAllActiveAfter(Date date);
+
+	void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData);
 }

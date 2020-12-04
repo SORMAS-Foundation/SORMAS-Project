@@ -178,7 +178,7 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.DASHBOARD);
 		}
 
-		if (permitted(UserRight.TASK_VIEW)) {
+		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
@@ -216,7 +216,7 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}
-		if (permitted(UserRight.STATISTICS_ACCESS)) {
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.STATISTICS_ACCESS)) {
 			ControllerProvider.getStatisticsController().registerViews(navigator);
 			menu.addView(
 				StatisticsView.class,
@@ -230,7 +230,7 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
-				OutbreaksView.class,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : RegionsView.class,
 				AbstractConfigurationView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuConfiguration),
 				VaadinIcons.COGS);
@@ -342,7 +342,7 @@ public class MainScreen extends HorizontalLayout {
 					}
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					defaultView = SamplesView.VIEW_NAME;
-				} else if (permitted(UserRight.TASK_VIEW)) {
+				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;
 				} else {
 					defaultView = AboutView.VIEW_NAME;
