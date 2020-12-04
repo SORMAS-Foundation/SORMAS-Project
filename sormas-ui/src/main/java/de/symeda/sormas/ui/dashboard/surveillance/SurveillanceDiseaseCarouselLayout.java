@@ -133,6 +133,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 			} else {
 				addComponent(statisticsComponent, 1);
 				epiCurveAndMapLayout.addComponent(mapComponent, 1);
+				mapComponent.refreshMap();
 				epiCurveAndMapLayout.setHeight(BASE_HEIGHT, Unit.PIXELS);
 				setHeightUndefined();
 			}
