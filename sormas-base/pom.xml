@@ -32,6 +32,7 @@
 		<swagger.version>2.1.2</swagger.version>
 		<bouncycastle.version>1.66</bouncycastle.version>
 		<keycloak.version>11.0.0</keycloak.version>
+		<xdocreport.version>2.0.2</xdocreport.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
@@ -269,36 +270,6 @@
 			</dependency>
 
 			<!-- *** Payara modules END *** -->
-
-			<!-- Baseline for tests, so that in all projects in any case the test
-				libs are available -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.12</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-core</artifactId>
-				<version>1.3</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-library</artifactId>
-				<version>1.3</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-inline</artifactId>
-				<version>3.5.13</version>
-				<scope>test</scope>
-			</dependency>
 
 			<!-- *** Domain libs *** -->
 
@@ -572,70 +543,25 @@
 
 			<!-- *** Domain libs END *** -->
 
+			<!-- *** Compile dependencies *** -->
+
 			<dependency>
-				<groupId>org.hibernate.validator</groupId>
-				<artifactId>hibernate-validator</artifactId>
-				<version>6.1.5.Final</version>
-				<scope>test</scope>
+				<groupId>com.googlecode.libphonenumber</groupId>
+				<artifactId>libphonenumber</artifactId>
+				<version>8.12.11</version>
 			</dependency>
 
 			<dependency>
-				<groupId>com.h2database</groupId>
-				<artifactId>h2</artifactId>
-				<version>1.4.200</version>
-				<scope>test</scope>
-				<!-- In-memory-database for bean-test -->
-				<!-- better compatibility to PostgreSQL than HSQLDB -->
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>2.4.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>info.novatec</groupId>
-				<artifactId>bean-test</artifactId>
-				<version>0.2.Final</version>
-				<scope>test</scope>
+				<groupId>com.nexmo</groupId>
+				<artifactId>client</artifactId>
+				<version>3.3.0</version>
 			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
-			<dependency>
-				<groupId>org.apache.poi</groupId>
-				<artifactId>poi-ooxml</artifactId>
-				<version>3.17</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.geronimo.config</groupId>
-				<artifactId>geronimo-config-impl</artifactId>
-				<version>1.0</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>p6spy</groupId>
-				<artifactId>p6spy</artifactId>
-				<version>3.9.0</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>fr.opensagres.xdocreport</groupId>
-				<artifactId>xdocreport</artifactId>
-				<version>2.0.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>fr.opensagres.xdocreport</groupId>
-				<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
-				<version>2.0.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.freemarker</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>2.3.20</version>
-			</dependency>
-
-			<!-- compile dependencies -->
 
 			<dependency>
 				<groupId>commons-validator</groupId>
@@ -644,9 +570,32 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.googlecode.libphonenumber</groupId>
-				<artifactId>libphonenumber</artifactId>
-				<version>8.12.11</version>
+				<groupId>fr.opensagres.xdocreport</groupId>
+				<artifactId>xdocreport</artifactId>
+				<version>${xdocreport.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>fr.opensagres.xdocreport</groupId>
+				<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
+				<version>${xdocreport.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-jaxrs2</artifactId>
+				<version>${swagger.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>2.3.20</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-shapefile</artifactId>
+				<version>21.4</version>
 			</dependency>
 
 			<dependency>
@@ -691,18 +640,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.googlecode.libphonenumber</groupId>
-				<artifactId>libphonenumber</artifactId>
-				<version>8.12.11</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.jayway.jsonpath</groupId>
-				<artifactId>json-path</artifactId>
-				<version>2.4.0</version>
-			</dependency>
-
-			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-module-jaxm-annotations</artifactId>
 				<version>${jackson.version}</version>
@@ -717,7 +654,7 @@
 				<!-- TODO #3449: not yet somwhere bundled. Needed? -->
 			</dependency>
 
-			<!-- Vaadin -->
+			<!-- ** Vaadin ** -->
 
 			<dependency>
 				<groupId>com.vaadin</groupId>
@@ -756,47 +693,104 @@
 				<version>0.3.0</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-shapefile</artifactId>
-				<version>21.4</version>
-			</dependency>
+			<!-- ** Vaadin END ** -->
 
-			<!-- Nexmo SMS API -->
-			<dependency>
-				<groupId>com.nexmo</groupId>
-				<artifactId>client</artifactId>
-				<version>3.3.0</version>
-			</dependency>
-
-			<!-- Swagger -->
-			<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-jaxrs2</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
+			<!-- *** Compile dependencies END *** -->
 			
+			<!-- *** Test dependencies *** -->
+
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>1.4.200</version>
+				<scope>test</scope>
+				<!-- In-memory-database for bean-test -->
+				<!-- better compatibility to PostgreSQL than HSQLDB -->
+			</dependency>
+
+			<dependency>
+				<groupId>info.novatec</groupId>
+				<artifactId>bean-test</artifactId>
+				<version>0.2.Final</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.geronimo.config</groupId>
+				<artifactId>geronimo-config-impl</artifactId>
+				<version>1.0</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>3.17</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-core</artifactId>
+				<version>1.3</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-library</artifactId>
+				<version>1.3</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hibernate.validator</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>6.1.5.Final</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>3.5.13</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>p6spy</groupId>
+				<artifactId>p6spy</artifactId>
+				<version>3.9.0</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- *** Test dependencies END *** -->
+
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
-		<!-- Testbibliotheken für alle Submodule -->
-		<!-- Reihenfolge ist wichtig (Matcher-Implementierungen) -->
+
+		<!-- Test libraries for all modules as baseline -->
+		<!-- Order is important because of Matcher implementations -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-inline</artifactId>
