@@ -38,6 +38,14 @@
 
 	</properties>
 
+	<distributionManagement>
+		<site>
+			<id>local</id>
+			<name>local</name>
+			<url>file://${maven.multiModuleProjectDirectory}/sormas-base/target/doc/</url>
+		</site>
+	</distributionManagement>
+
 	<dependencyManagement>
 		<dependencies>
 
@@ -203,6 +211,14 @@
 			</dependency>
 
 			<dependency>
+				<groupId>net.minidev</groupId>
+				<artifactId>accessors-smart</artifactId>
+				<version>1.2</version>
+				<scope>provided</scope>
+				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
+			</dependency>
+
+			<dependency>
 				<groupId>org.eclipse.microprofile.config</groupId>
 				<artifactId>microprofile-config-api</artifactId>
 				<version>1.4</version>
@@ -246,6 +262,14 @@
 				<artifactId>jersey-media-json-jackson</artifactId>
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.soteria</groupId>
+				<artifactId>javax.security.enterprise</artifactId>
+				<version>1.0</version>
+				<scope>provided</scope>
+				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
 			</dependency>
 
 			<dependency>
@@ -1006,6 +1030,46 @@
 					</dependencies>
 				</plugin>
 
+				<!-- *** Plugins for generate-reports *** -->
+				<plugin>
+					<artifactId>maven-changelog-plugin</artifactId>
+					<version>2.3</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-changes-plugin</artifactId>
+					<version>2.12.1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.9.1</version>
+					<configuration>
+						<inputEncoding>UTF-8</inputEncoding>
+						<outputEncoding>UTF-8</outputEncoding>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>2.12</version>
+							<!-- add support for ssh/scp -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<artifactId>maven-surefire-report-plugin</artifactId>
+					<version>2.22.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.8.1</version>
+				</plugin>
+				<!-- *** Plugins for generate-reports END *** -->
+
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -1080,6 +1144,84 @@
 			<modules>
 				<module>../sormas-app</module>
 			</modules>
+		</profile>
+
+		<profile>
+			<id>generate-reports</id>
+			<!-- Create reports of used dependencies, plugins etc. and available newer versions -->
+			<properties>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+				<!-- Do not execute JavaDoc, because it runs into Exception with JDK 8. See https://bugs.openjdk.java.net/browse/JDK-8170447 -->
+				<!-- Exception that happens: ClassCastException: com.sun.tools.javadoc.MethodDocImpl cannot be cast to com.sun.tools.javadoc.AnnotationTypeElementDocImpl -->
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-dependency-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>analyze</id>
+									<phase>site</phase>
+									<goals>
+										<goal>analyze-only</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+						<plugin>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<configuration>
+								<docencoding>${java.encoding}</docencoding>
+								<minmemory>512</minmemory>
+								<maxmemory>512</maxmemory>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+			<reporting>
+				<plugins>
+					<plugin>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>index</report>
+									<report>team</report>
+									<report>summary</report>
+									<report>modules</report>
+									<report>ci-management</report>
+									<report>issue-management</report>
+									<report>licenses</report>
+									<report>dependencies</report>
+									<report>dependency-convergence</report>
+									<report>dependency-info</report>
+									<report>dependency-management</report>
+									<report>plugins</report>
+									<report>plugin-management</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>versions-maven-plugin</artifactId>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>dependency-updates-report</report>
+									<report>plugin-updates-report</report>
+									<report>property-updates-report</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+				</plugins>
+			</reporting>
 		</profile>
 
 	</profiles>
