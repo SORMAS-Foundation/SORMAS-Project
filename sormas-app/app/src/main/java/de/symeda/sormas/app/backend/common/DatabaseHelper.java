@@ -1778,6 +1778,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column multidaycontact boolean default false;");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column firstcontactdate timestamp;");
+			case 248:
+				currentVersion = 248;
+
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN armedForcesRelationType varchar(255);");
 
 				case 248:
 				currentVersion = 248;

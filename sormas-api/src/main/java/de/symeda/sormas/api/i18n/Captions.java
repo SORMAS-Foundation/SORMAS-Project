@@ -1104,6 +1104,7 @@ public interface Captions {
 	String Person_approximateAge = "Person.approximateAge";
 	String Person_approximateAgeReferenceDate = "Person.approximateAgeReferenceDate";
 	String Person_approximateAgeType = "Person.approximateAgeType";
+	String Person_armedForcesRelationType = "Person.armedForcesRelationType";
 	String Person_birthdate = "Person.birthdate";
 	String Person_birthdateDD = "Person.birthdateDD";
 	String Person_birthdateMM = "Person.birthdateMM";
