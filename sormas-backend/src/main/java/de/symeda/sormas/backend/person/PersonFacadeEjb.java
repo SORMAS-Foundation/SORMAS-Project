@@ -465,16 +465,14 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
-	private boolean listOnlyContainsStatus(List<FollowUpStatusDto> list, FollowUpStatus prameterStatus) {
+	private boolean listOnlyContainsStatus(List<FollowUpStatusDto> list, FollowUpStatus parameterStatus) {
 		if (list.isEmpty()) {
 			return false;
 		}
-		if (prameterStatus == null) {
-			throw new IllegalArgumentException("Object given as parameter must not be null.");
-		}
+		assert (parameterStatus != null);
 
 		for (FollowUpStatusDto status : list) {
-			if (!prameterStatus.equals(status)) {
+			if (!parameterStatus.equals(status)) {
 				return false;
 			}
 		}
