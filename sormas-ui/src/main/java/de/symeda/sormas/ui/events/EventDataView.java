@@ -68,9 +68,9 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 12, 0, DOCUMENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LINK_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LINK_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LINK_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -105,6 +105,10 @@ public class EventDataView extends AbstractEventView {
 			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}
 
+		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef());
+		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			layout.addComponent(
 				ButtonHelper.createButtonWithCaption(
@@ -125,10 +129,6 @@ public class EventDataView extends AbstractEventView {
 					CssStyles.VSPACE_TOP_2),
 				CONTACTS_LINK_LOC);
 		}
-
-		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef());
-		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
 		setEventEditPermission(container);
 	}
