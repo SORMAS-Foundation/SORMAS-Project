@@ -1309,9 +1309,9 @@ public class CaseController {
 	}
 
 	public VerticalLayout getCaseViewTitleLayout(CaseDataDto caseData) {
-		VerticalLayout titleView = new VerticalLayout();
-		titleView.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		titleView.setSpacing(false);
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
+		titleLayout.setSpacing(false);
 
 		Label diseaseLabel = new Label(Disease.valueOf(caseData.getDisease().getName()).toString());
 		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);

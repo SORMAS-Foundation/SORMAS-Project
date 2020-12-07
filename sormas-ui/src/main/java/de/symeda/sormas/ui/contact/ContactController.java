@@ -780,7 +780,7 @@ public class ContactController {
 
 	public VerticalLayout getContactViewTitleLayout(ContactDto contact) {
 		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		titleLayout.setSpacing(false);
 
 		Label diseaseLabel = new Label(Disease.valueOf(contact.getDisease().getName()).toString());

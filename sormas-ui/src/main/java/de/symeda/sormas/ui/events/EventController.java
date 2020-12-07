@@ -564,7 +564,7 @@ public class EventController {
 		EventDto event = findEvent(uuid);
 
 		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		titleLayout.setSpacing(false);
 
 		Label statusLabel = new Label(EventStatus.valueOf(event.getEventStatus().name()).toString());
