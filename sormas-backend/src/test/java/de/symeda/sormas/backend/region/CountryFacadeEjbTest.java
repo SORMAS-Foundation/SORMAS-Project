@@ -1,19 +1,28 @@
 package de.symeda.sormas.backend.region;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
-import de.symeda.sormas.api.region.CountryIndexDto;
-import de.symeda.sormas.api.utils.EmptyValueException;
+import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.region.CountryCriteria;
 import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.region.CountryIndexDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -48,6 +57,41 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		CountryIndexDto actual = actualList.get(0);
 		assertEquals(expected.getUuid(), actual.getUuid());
 		assertEquals(expected.getIsoCode(), actual.getIsoCode());
+	}
+
+	@Test
+	public void testGetAllAfter() {
+		Country country1 = creator.createCountry("Romania", "ROU", "642");
+		Country country2 = creator.createCountry("Germany", "DEU", "276");
+		country2.setChangeDate(Timestamp.from(Instant.now().minus(2, DAYS)));
+		getCountryService().doFlush();
+
+		List<CountryDto> actualList = getCountryFacade().getAllAfter(Timestamp.from(Instant.now().minus(1, DAYS)));
+		CountryDto actual = actualList.get(0);
+		assertTrue(entityIsEqualToDto(country1, actual));
+	}
+
+	@Test
+	public void testGetByUuids() {
+		Country country1 = creator.createCountry("Romania", "ROU", "642");
+		Country country2 = creator.createCountry("Germany", "DEU", "276");
+		creator.createCountry("France", "FRA", "123");
+		getCountryService().doFlush();
+		List<String> uuids = Lists.newArrayList(country1.getUuid(), country2.getUuid());
+
+		List<String> actualList = getCountryFacade().getByUuids(uuids).stream().map(CountryDto::getUuid).collect(toList());
+		assertTrue(uuids.containsAll(actualList));
+	}
+
+	@Test
+	public void testGetUuids() {
+		Country country1 = creator.createCountry("Romania", "ROU", "642");
+		Country country2 = creator.createCountry("Germany", "DEU", "276");
+		Country country3 = creator.createCountry("France", "FRA", "123");
+		getCountryService().doFlush();
+		List<String> uuids = Lists.newArrayList(country1.getUuid(), country2.getUuid(), country3.getUuid());
+		List<String> actualList = getCountryFacade().getAllUuids();
+		assertTrue(uuids.containsAll(actualList));
 	}
 
 	@Test

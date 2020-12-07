@@ -82,6 +82,8 @@ public class Contact extends CoreAdo {
 	public static final String CAZE = "caze";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String MULTI_DAY_CONTACT = "multiDayContact";
+	public static final String FIRST_CONTACT_DATE = "firstContactDate";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
@@ -160,6 +162,8 @@ public class Contact extends CoreAdo {
 	private String diseaseDetails;
 	private ContactRelation relationToCase;
 	private String relationDescription;
+	private boolean multiDayContact;
+	private Date firstContactDate;
 	private Date lastContactDate;
 	private ContactIdentificationSource contactIdentificationSource;
 	private String contactIdentificationSourceDetails;
@@ -279,6 +283,24 @@ public class Contact extends CoreAdo {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	@Column(nullable = false)
+	public boolean isMultiDayContact() {
+		return multiDayContact;
+	}
+
+	public void setMultiDayContact(boolean multiDayContact) {
+		this.multiDayContact = multiDayContact;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getFirstContactDate() {
+		return firstContactDate;
+	}
+
+	public void setFirstContactDate(Date firstContactDate) {
+		this.firstContactDate = firstContactDate;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

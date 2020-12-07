@@ -5,6 +5,8 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
+import java.util.Date;
+
 public class CountryDto extends EntityDto {
 
 	private static final long serialVersionUID = 8309822957203823162L;
@@ -22,6 +24,27 @@ public class CountryDto extends EntityDto {
 	@Size(min = 1, max = 3)
 	private String unoCode;
 	private boolean archived;
+
+	public CountryDto(Date creationDate,
+					  Date changeDate,
+					  String uuid,
+					  boolean archived,
+					  String defaultName,
+					  String externalId,
+					  String isoCode,
+					  String unoCode) {
+
+		super(creationDate, changeDate, uuid);
+		this.archived = archived;
+		this.defaultName = defaultName;
+		this.externalId = externalId;
+		this.isoCode = isoCode;
+		this.unoCode = unoCode;
+	}
+
+	public CountryDto() {
+		super();
+	}
 
 	public String getDefaultName() {
 		return defaultName;

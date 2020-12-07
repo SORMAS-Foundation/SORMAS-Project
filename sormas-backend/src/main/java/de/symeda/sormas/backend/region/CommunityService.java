@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -31,6 +32,8 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.CommunityCriteria;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 
@@ -99,4 +102,19 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		}
 		return filter;
 	}
+
+	public List<CommunityReferenceDto> getByDistrict(DistrictReferenceDto district) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CommunityReferenceDto> cq = cb.createQuery(CommunityReferenceDto.class);
+		Root<Community> root = cq.from(Community.class);
+		Join<Community, District> communityDistrictJoin = root.join(Community.DISTRICT);
+
+		Predicate filter = cb.equal(communityDistrictJoin.get(District.UUID), district.getUuid());
+		cq.where(filter);
+		cq.multiselect(root.get(Community.UUID), root.get(Community.NAME));
+
+		TypedQuery query = em.createQuery(cq);
+		return query.getResultList();
+	}
+
 }

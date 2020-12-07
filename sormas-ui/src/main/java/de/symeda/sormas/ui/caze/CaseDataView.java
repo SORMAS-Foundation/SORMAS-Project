@@ -112,9 +112,11 @@ public class CaseDataView extends AbstractCaseView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, CASE_LOC);
 
-		TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
-		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(taskList, TASKS_LOC);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+			TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
+			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(taskList, TASKS_LOC);
+		}
 
 		boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 		if (externalMessagesEnabled && UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
@@ -123,7 +125,9 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(smsList, SMS_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.checkIsUnreferredPortHealthCase()) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
+			&& !caze.checkIsUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
@@ -145,14 +149,16 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		VerticalLayout eventLayout = new VerticalLayout();
-		eventLayout.setMargin(false);
-		eventLayout.setSpacing(false);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+			VerticalLayout eventLayout = new VerticalLayout();
+			eventLayout.setMargin(false);
+			eventLayout.setSpacing(false);
 
-		EventListComponent eventList = new EventListComponent(getCaseRef());
-		eventList.addStyleName(CssStyles.SIDE_COMPONENT);
-		eventLayout.addComponent(eventList);
-		layout.addComponent(eventLayout, EVENTS_LOC);
+			EventListComponent eventList = new EventListComponent(getCaseRef());
+			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
+			eventLayout.addComponent(eventList);
+			layout.addComponent(eventLayout, EVENTS_LOC);
+		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {

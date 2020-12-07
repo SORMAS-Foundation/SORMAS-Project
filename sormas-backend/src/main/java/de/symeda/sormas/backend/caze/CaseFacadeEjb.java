@@ -572,7 +572,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.EMAIL_ADDRESS),
 				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
-				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN), 
+				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN), 
 				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
@@ -2706,6 +2706,19 @@ public class CaseFacadeEjb implements CaseFacade {
 		final Path<Timestamp> reportDate = from.get(Case.REPORT_DATE);
 		cq.select(cb.least(reportDate));
 		cq.where(cb.greaterThan(from.get(Case.REPORT_DATE), DateHelper.getDateZero(2000, 1, 1)));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public Date getOldestCaseOutcomeDate() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
+		Root<Case> from = cq.from(Case.class);
+
+		final Path<Timestamp> reportDate = from.get(Case.OUTCOME_DATE);
+		cq.select(cb.least(reportDate));
+		cq.where(cb.greaterThan(from.get(Case.OUTCOME_DATE), DateHelper.getDateZero(2000, 1, 1)));
 		return em.createQuery(cq).getSingleResult();
 	}
 

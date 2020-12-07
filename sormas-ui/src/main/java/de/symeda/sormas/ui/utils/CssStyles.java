@@ -182,6 +182,7 @@ public final class CssStyles {
 
 	public static final String FORCE_CAPTION = "force-caption";
 	public static final String FORCE_CAPTION_CHECKBOX = "force-caption-checkbox";
+	public static final String CAPTION_ON_TOP = "on-top";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	public static final String CAPTION_FIXED_WIDTH_100 = "caption-fixed-width-100";
@@ -214,6 +215,7 @@ public final class CssStyles {
 	public static final String GRID_CELL_UNAVAILABLE_EXTERNAL = "follow-up-unavailable-external";
 	public static final String GRID_CELL_UNCOOPERATIVE_EXTERNAL = "follow-up-uncooperative-external";
 	public static final String GRID_CELL_NOT_PERFORMED_EXTERNAL = "follow-up-not-performed-external";
+	public static final String GRID_CELL_LINK = "link";
 
 	public static final String GRID_CELL_ODD = "odd";
 
