@@ -42,7 +42,8 @@ public class ExternalRestResourceConfig extends ResourceConfig {
 			.description(
 				"The purpose of this API is to enable communication between SORMAS and other symptom journals. "
 					+ "Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. "
-					+ "If you would like to receive access, please contact the team to have a user set up. "
+					+ "If you would like to receive access, please contact the System Administrator. "
+					+ "For technical details please contact the dev team on gitter. "
 					+ "Authentication is done using basic auth, with the user and password.")
 			.contact(new Contact().url("https://gitter.im/SORMAS-Project/dev-support"))
 			.license(new License().name("GNU General Public License").url("https://www.gnu.org/licenses/"));
