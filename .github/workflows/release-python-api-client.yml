@@ -1,0 +1,17 @@
+on:
+  #release:
+  #  types: [ created, published, edited, prereleased, released ]
+  push:
+    branches: [ release-testing ]
+
+name: Upload Release Asset
+
+jobs:
+  build:
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project # This would actually build your project, using zip for an example artifact
+        run: |
+          cd sormas-base &&  mvn install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -DskipTests
