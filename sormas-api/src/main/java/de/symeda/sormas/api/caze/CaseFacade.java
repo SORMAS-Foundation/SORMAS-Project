@@ -117,6 +117,8 @@ public interface CaseFacade {
 
 	Date getOldestCaseReportDate();
 
+	Date getOldestCaseOutcomeDate();
+
 	boolean isArchived(String caseUuid);
 
 	boolean isDeleted(String caseUuid);

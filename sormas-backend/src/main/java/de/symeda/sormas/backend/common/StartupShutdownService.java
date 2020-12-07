@@ -48,19 +48,15 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
-import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
-import de.symeda.sormas.api.externaljournal.UserConfig;
-import de.symeda.sormas.backend.user.event.MockPasswordUpdateEvent;
-import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
-import de.symeda.sormas.backend.user.event.PasswordResetEvent;
-import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
+import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
+import de.symeda.sormas.api.externaljournal.UserConfig;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -69,15 +65,11 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
-import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
-import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -85,7 +77,6 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
@@ -93,9 +84,12 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
-import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.user.event.MockPasswordUpdateEvent;
+import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
+import de.symeda.sormas.backend.user.event.PasswordResetEvent;
+import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PasswordHelper;
@@ -195,6 +189,7 @@ public class StartupShutdownService {
 		createMissingDiseaseConfigurations();
 
 		featureConfigurationService.createMissingFeatureConfigurations();
+		featureConfigurationService.updateFeatureConfigurations();
 
 		configFacade.validateAppUrls();
 		configFacade.validateExternalUrls();
@@ -491,7 +486,7 @@ public class StartupShutdownService {
 
 	private void createOrUpdateDefaultUser(Set<UserRole> userRoles, String username, String password, String firstName, String lastName) {
 
-		if(StringUtils.isAnyBlank(username, password)) {
+		if (StringUtils.isAnyBlank(username, password)) {
 			logger.debug("Invalid user details. Will not create/update default user");
 			return;
 		}
@@ -506,8 +501,7 @@ public class StartupShutdownService {
 				userService.persist(newUser);
 				userCreateEvent.fire(new MockUserCreateEvent(newUser, password));
 			}
-		} else if (!DataHelper
-			.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
+		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
 			existingUser.setSeed(PasswordHelper.createPass(16));
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
 

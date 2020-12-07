@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.region;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -22,4 +23,10 @@ public interface CountryFacade {
 	void archive(String countryUuid);
 
 	void dearchive(String countryUuid);
+
+    List<CountryDto> getAllAfter(Date date);
+
+	List<CountryDto> getByUuids(List<String> uuids);
+
+	List<String> getAllUuids();
 }

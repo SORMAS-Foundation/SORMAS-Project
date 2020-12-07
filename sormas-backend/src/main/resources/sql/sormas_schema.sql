@@ -5886,7 +5886,18 @@ INSERT INTO schema_version (version_number, comment) VALUES (280, 'Epi data migr
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id) > 0;
 
-INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');-- *** Insert new sql commands BEFORE this line ***
+INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');
+
+-- 2020-11-18 Add date of first contact #3408
+ALTER TABLE contact ADD column multidaycontact boolean default false;
+ALTER TABLE contact ADD column firstcontactdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
+
+ALTER TABLE person ADD COLUMN armedforcesrelationtype varchar(255);
+ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
 
 -- 2020-11-17 Manually send SMS #3253
 CREATE TABLE manualmessagelog
@@ -5905,5 +5916,5 @@ ALTER TABLE manualmessagelog OWNER TO sormas_user;
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id FOREIGN KEY (sendinguser_id) REFERENCES users(id);
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (282, 'Manually send SMS #3253');
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'Manually send SMS #3253');
 -- *** Insert new sql commands BEFORE this line ***

@@ -30,6 +30,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
 public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
@@ -59,6 +60,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 			CampaignFormDataIndexDto.DISTRICT,
 			CampaignFormDataIndexDto.COMMUNITY,
 			CampaignFormDataIndexDto.FORM_DATE);
+		getColumn(EDIT_BTN_ID).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 
 		((Column<CampaignFormDataIndexDto, Date>) getColumn(CampaignFormDataIndexDto.FORM_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));

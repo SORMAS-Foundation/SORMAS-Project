@@ -126,11 +126,11 @@ import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
-import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -485,6 +485,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getPerson().get(Person.EMAIL_ADDRESS),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
+					joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
 					joins.getRegion().get(Region.NAME),
 					joins.getDistrict().get(District.NAME),
 					joins.getCommunity().get(Community.NAME),
@@ -1030,8 +1031,18 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		// use only date, not time
+		target.setMultiDayContact(source.isMultiDayContact());
+		if(source.isMultiDayContact()) {
+			target.setFirstContactDate(source.getFirstContactDate() != null ?
+				DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) :
+				null);
+		} else {
+			target.setFirstContactDate(null);
+		}
+
 		target.setLastContactDate(
 			source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
+
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
 		target.setTracingApp(source.getTracingApp());
@@ -1267,6 +1278,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
 
+		target.setMultiDayContact(source.isMultiDayContact());
+		target.setFirstContactDate(source.getFirstContactDate());
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());

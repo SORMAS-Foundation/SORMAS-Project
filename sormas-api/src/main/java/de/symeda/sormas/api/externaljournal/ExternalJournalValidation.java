@@ -2,12 +2,12 @@ package de.symeda.sormas.api.externaljournal;
 
 import java.io.Serializable;
 
-public class PatientDiaryPersonValidation implements Serializable {
+public class ExternalJournalValidation implements Serializable {
 
     private boolean valid;
     private String message;
 
-    public PatientDiaryPersonValidation(boolean valid, String message) {
+    public ExternalJournalValidation(boolean valid, String message) {
         this.valid = valid;
         this.message = message;
     }

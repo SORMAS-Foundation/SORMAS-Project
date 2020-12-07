@@ -1,22 +1,25 @@
 package de.symeda.sormas.rest;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import junit.framework.TestCase;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-public class ExternalVisitsResourceTest extends TestCase {
+import org.junit.Test;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class ExternalVisitsResourceTest {
 
 	@Test
 	/*
@@ -26,26 +29,17 @@ public class ExternalVisitsResourceTest extends TestCase {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void testIfRelevantSwaggerDocumentationIsUnchanged() throws IOException {
-		ObjectMapper objectMapper = new ObjectMapper();
 
 		//load released and new swagger docu information
-		String releasedSwaggerDocuPath = System.getProperty("user.dir");
-		releasedSwaggerDocuPath = releasedSwaggerDocuPath + "/src/test/resources/swagger.json";
-		String releasedSwaggerDocu = fileToString(releasedSwaggerDocuPath);
-		Map<String, Object> releasedSwaggerDocuMap = objectMapper.readValue(releasedSwaggerDocu, new TypeReference<Map<String, Object>>() {
-		});
+		Map<String, Object> releasedSwaggerDocuMap = loadJson("./src/test/resources/swagger.json");
 
-		String newSwaggerDocuPath = System.getProperty("user.dir");
-		newSwaggerDocuPath = newSwaggerDocuPath + "/target/test-classes/swagger.json";
-		String newSwaggerDocu = fileToString(newSwaggerDocuPath);
-		Map<String, Object> newSwaggerDocuMap = objectMapper.readValue(newSwaggerDocu, new TypeReference<Map<String, Object>>() {
-		});
+		Map<String, Object> newSwaggerDocuMap = loadJson("./target/test-classes/swagger.json");
 
 		// Check whether path information is equal in new and released swagger docu
-		ArrayList releasedControllerList = new ArrayList();
+		ArrayList<Object> releasedControllerList = new ArrayList<>();
 		extractPathsOfController(releasedSwaggerDocuMap, "External Visits Controller", releasedControllerList);
 
-		ArrayList newControllerList = new ArrayList();
+		ArrayList<Object> newControllerList = new ArrayList<>();
 		extractPathsOfController(newSwaggerDocuMap, "External Visits Controller", newControllerList);
 
 		assertEquals(releasedControllerList, newControllerList);
@@ -62,19 +56,20 @@ public class ExternalVisitsResourceTest extends TestCase {
 			"SymptomState",
 			"YesNoUnknown",
 			"TemperatureSource");
-		ArrayList releasedDetailList = new ArrayList();
-		ArrayList newDetailList = new ArrayList();
 
 		for (String name : enumNames) {
+			ArrayList<Object> releasedDetailList = new ArrayList<>();
+			ArrayList<Object> newDetailList = new ArrayList<>();
 			extractDetail(releasedSwaggerDocuMap, name, releasedDetailList);
 			extractDetail(newSwaggerDocuMap, name, newDetailList);
+
+			assertEquals("", releasedDetailList, newDetailList);
 		}
-		assertEquals(releasedDetailList, newDetailList);
 	}
 
 	/**
 	 * 
-	 * @param topLevelMap
+	 * @param level1
 	 *            Nested Map from which to extract the information. It's supposed to be a mapped swagger.json
 	 * @param controller
 	 *            The name of the controller, e.g. External Visits Controller
@@ -83,36 +78,46 @@ public class ExternalVisitsResourceTest extends TestCase {
 	 * @return Documentation about any path found for the specified controller (e.g. /visits-external/person/{personUuid} for the External
 	 *         Visits Controller). This includes parameter names for that path, but not information about related enums.
 	 */
-	private static ArrayList extractPathsOfController(Map topLevelMap, String controller, ArrayList list) {
-		for (Object firstLayerKey : topLevelMap.keySet()) {
-			Object firstLayerValue = topLevelMap.get(firstLayerKey);
-			if (firstLayerValue instanceof Map) {
-				Map<String, Object> secondLayerMap = (Map<String, Object>) topLevelMap.get(firstLayerKey);
-				for (Object secondLayerKey : secondLayerMap.keySet()) {
-					Object secondLayerValue = secondLayerMap.get(secondLayerKey);
-					if (secondLayerValue instanceof Map) {
-						Map<String, Object> thirdLayerMap = (Map<String, Object>) secondLayerMap.get(secondLayerKey);
-						for (Object thirdLayerKey : thirdLayerMap.keySet()) {
-							// tags are always represented in the third layer and as ArrayLists
-							if ("tags".equals(thirdLayerKey) && thirdLayerMap.get(thirdLayerKey) instanceof ArrayList) {
-								ArrayList tags = (ArrayList) thirdLayerMap.get(thirdLayerKey);
-								if (tags.contains(controller)) {
-									list.add(firstLayerKey);
-									list.add(topLevelMap.get(firstLayerKey));
-								}
-							}
-						}
-					}
+	private static void extractPathsOfController(Map<String, Object> level1, String controller, ArrayList<Object> list) {
+		level1.entrySet().forEach(e1 -> {
+			String key1 = e1.getKey();
+			Object value1 = e1.getValue();
+			if (isInnerNode(value1)) {
+				Map<String, Object> level2 = innerNode(value1);
+				if (hasTag(level2, controller)) {
+					list.add(key1);
+					list.add(value1);
 				}
-				extractPathsOfController((Map) firstLayerValue, controller, list);
+				extractPathsOfController(level2, controller, list);
 			}
+		});
+	}
+
+	private static boolean hasTag(Map<String, Object> level2, String controller) {
+		return level2.values()
+			.stream()
+			.filter(ExternalVisitsResourceTest::isInnerNode)
+			.map(ExternalVisitsResourceTest::innerNode)
+			// tags are always represented in the third layer and as ArrayLists
+			.map(ExternalVisitsResourceTest::tags)
+			.filter(t -> t.contains(controller))
+			.findFirst()
+			.isPresent();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<Object> tags(Map<String, Object> innerNode) {
+		Object tags = innerNode.get("tags");
+		if (tags instanceof List) {
+			return (List<Object>) tags;
+		} else {
+			return Collections.emptyList();
 		}
-		return list;
 	}
 
 	/**
 	 * 
-	 * @param topLevelMap
+	 * @param level1
 	 *            Nested Map from which to extract the information. It's supposed to be a mapped swagger.json
 	 * @param detailName
 	 *            The name of the detail, e.g. JournalPersonDto.
@@ -122,29 +127,37 @@ public class ExternalVisitsResourceTest extends TestCase {
 	 *         Documentation found about the detail. The Map is searched for a key equal to detailName, an it, plus the according value is
 	 *         added to the list.
 	 */
-	private static ArrayList extractDetail(Map topLevelMap, String detailName, ArrayList list) {
-		for (Object firstLayerKey : topLevelMap.keySet()) {
-			Object firstLayerValue = topLevelMap.get(firstLayerKey);
-			if (detailName.equals(firstLayerKey)) {
+	private static void extractDetail(Map<String, Object> level1, String detailName, ArrayList<Object> list) {
+		level1.entrySet().stream().forEach(e1 -> {
+			Object value1 = e1.getValue();
+			if (detailName.equals(e1.getKey())) {
 				list.add(detailName);
-				list.add(firstLayerValue);
-			} else if (firstLayerValue instanceof Map) {
-				extractDetail((Map) firstLayerValue, detailName, list);
+				list.add(value1);
+			} else if (isInnerNode(value1)) {
+				extractDetail(innerNode(value1), detailName, list);
 			}
-		}
-		return list;
+		});
 	}
 
-	private static String fileToString(String filePath) {
-		StringBuilder contentBuilder = new StringBuilder();
+	private static boolean isInnerNode(Object node) {
+		return node instanceof Map;
+	}
 
-		try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8)) {
-			stream.forEach(s -> contentBuilder.append(s).append("\n"));
-		} catch (IOException e) {
-			e.printStackTrace();
+	@SuppressWarnings("unchecked")
+	private static Map<String, Object> innerNode(Object node) {
+		return (Map<String, Object>) node;
+	}
+
+	private static Map<String, Object> loadJson(String relativePath) throws IOException {
+
+		Path path = Paths.get(System.getProperty("user.dir"), relativePath);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		try (Reader rd = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+			return objectMapper.readValue(rd, new TypeReference<Map<String, Object>>() {
+			});
 		}
-
-		return contentBuilder.toString();
 	}
 
 }

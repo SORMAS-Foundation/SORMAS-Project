@@ -1,4 +1,4 @@
-package de.symeda.sormas.api.externaljournal;
+package de.symeda.sormas.api.externaljournal.patientdiary;
 
 import java.io.Serializable;
 
