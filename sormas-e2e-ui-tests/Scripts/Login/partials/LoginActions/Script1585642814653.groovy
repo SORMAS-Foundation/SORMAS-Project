@@ -5,14 +5,15 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import internal.GlobalVariable as GlobalVariable
 
 // check if browser is already opened, if a testcase needs to change some profile properties it automatically would open a browser
-try {
+/*try {
 	WebUI.navigateToUrl(GlobalVariable.gUrl)
 } catch(BrowserNotOpenedException){
 	WebUI.openBrowser('')
 	WebUI.navigateToUrl(GlobalVariable.gUrl)
-}
+}*/
 
-// WebUI.openBrowser(GlobalVariable.gUrl)
+WebUI.openBrowser('')
+WebUI.navigateToUrl(GlobalVariable.gUrl)
 
 WebUI.setText(findTestObject('Login/input_username_username'), Username)
 
