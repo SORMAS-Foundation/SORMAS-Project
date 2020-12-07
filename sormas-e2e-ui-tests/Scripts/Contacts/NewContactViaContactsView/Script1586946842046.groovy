@@ -68,9 +68,9 @@ WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/span_Contacts l
 
 WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'), newContactLastName)
 
-WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
+/*WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
 
-WebUI.click(findTestObject('ReusableORs/Filters/span_Include contacts from other jurisdictions'))
+WebUI.click(findTestObject('ReusableORs/Filters/span_Include contacts from other jurisdictions'))*/
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
 
@@ -79,8 +79,17 @@ WebUI.delay(1)
 int numberOfRows = Table.getNumberOfTableRows()
 
 if (numberOfRows != 1) {
+	WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
+	
+	WebUI.click(findTestObject('ReusableORs/Filters/span_Include contacts from other jurisdictions'))
+	
+	WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+	int numberOfUpdatedRows = Table.getNumberOfTableRows()
+	
+	if (numberOfUpdatedRows != 1){
     WebUI.closeBrowser()
     throw new StepFailedException('Expected one contact: ' + numberOfRows)
+}
 }
 
 WebUI.closeBrowser()
