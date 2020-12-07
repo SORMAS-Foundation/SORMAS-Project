@@ -46,22 +46,31 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	private List<Year> onsetYears;
 	private List<Year> reportYears;
+	private List<Year> outcomeYears;
 	private List<Quarter> onsetQuarters;
 	private List<Quarter> reportQuarters;
+	private List<Quarter> outcomeQuarters;
 	private List<Month> onsetMonths;
 	private List<Month> reportMonths;
+	private List<Month> outcomeMonths;
 	private List<EpiWeek> onsetEpiWeeks;
 	private List<EpiWeek> reportEpiWeeks;
+	private List<EpiWeek> outcomeEpiWeeks;
 	private List<QuarterOfYear> onsetQuartersOfYear;
 	private List<QuarterOfYear> reportQuartersOfYear;
+	private List<QuarterOfYear> outcomeQuartersOfYear;
 	private List<MonthOfYear> onsetMonthsOfYear;
 	private List<MonthOfYear> reportMonthsOfYear;
+	private List<MonthOfYear> outcomeMonthsOfYear;
 	private List<EpiWeek> onsetEpiWeeksOfYear;
 	private List<EpiWeek> reportEpiWeeksOfYear;
+	private List<EpiWeek> outcomeEpiWeeksOfYear;
 	private Date onsetDateFrom;
 	private Date onsetDateTo;
 	private Date reportDateFrom;
 	private Date reportDateTo;
+	private Date outcomeDateFrom;
+	private Date outcomeDateTo;
 	private List<Sex> sexes;
 	private Boolean sexUnknown;
 	private List<IntegerRange> ageIntervals;
@@ -88,12 +97,20 @@ public class StatisticsCaseCriteria implements Serializable {
 		return reportYears;
 	}
 
+	public List<Year> getOutcomeYears() {
+		return outcomeYears;
+	}
+
 	public List<Quarter> getOnsetQuarters() {
 		return onsetQuarters;
 	}
 
 	public List<Quarter> getReportQuarters() {
 		return reportQuarters;
+	}
+
+	public List<Quarter> getOutcomeQuarters() {
+		return outcomeQuarters;
 	}
 
 	public List<Month> getOnsetMonths() {
@@ -104,12 +121,20 @@ public class StatisticsCaseCriteria implements Serializable {
 		return reportMonths;
 	}
 
+	public List<Month> getOutcomeMonths() {
+		return outcomeMonths;
+	}
+
 	public List<EpiWeek> getOnsetEpiWeeks() {
 		return onsetEpiWeeks;
 	}
 
 	public List<EpiWeek> getReportEpiWeeks() {
 		return reportEpiWeeks;
+	}
+
+	public List<EpiWeek> getOutcomeEpiWeeks() {
+		return outcomeEpiWeeks;
 	}
 
 	public List<QuarterOfYear> getOnsetQuartersOfYear() {
@@ -120,6 +145,10 @@ public class StatisticsCaseCriteria implements Serializable {
 		return reportQuartersOfYear;
 	}
 
+	public List<QuarterOfYear> getOutcomeQuartersOfYear() {
+		return outcomeQuartersOfYear;
+	}
+
 	public List<MonthOfYear> getOnsetMonthsOfYear() {
 		return onsetMonthsOfYear;
 	}
@@ -128,12 +157,20 @@ public class StatisticsCaseCriteria implements Serializable {
 		return reportMonthsOfYear;
 	}
 
+	public List<MonthOfYear> getOutcomeMonthsOfYear() {
+		return outcomeMonthsOfYear;
+	}
+
 	public List<EpiWeek> getOnsetEpiWeeksOfYear() {
 		return onsetEpiWeeksOfYear;
 	}
 
 	public List<EpiWeek> getReportEpiWeeksOfYear() {
 		return reportEpiWeeksOfYear;
+	}
+
+	public List<EpiWeek> getOutcomeEpiWeeksOfYear() {
+		return outcomeEpiWeeksOfYear;
 	}
 
 	public Date getOnsetDateFrom() {
@@ -150,6 +187,14 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public Date getReportDateTo() {
 		return reportDateTo;
+	}
+
+	public Date getOutcomeDateFrom() {
+		return outcomeDateFrom;
+	}
+
+	public Date getOutcomeDateTo() {
+		return outcomeDateTo;
 	}
 
 	public List<Sex> getSexes() {
@@ -228,6 +273,9 @@ public class StatisticsCaseCriteria implements Serializable {
 		case REPORT_TIME:
 			this.reportYears = years;
 			break;
+		case OUTCOME_TIME:
+			this.outcomeYears = years;
+			break;
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
 		}
@@ -242,6 +290,9 @@ public class StatisticsCaseCriteria implements Serializable {
 			break;
 		case REPORT_TIME:
 			this.reportQuarters = quarters;
+			break;
+		case OUTCOME_TIME:
+			this.outcomeQuarters = quarters;
 			break;
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
@@ -258,6 +309,9 @@ public class StatisticsCaseCriteria implements Serializable {
 		case REPORT_TIME:
 			this.reportMonths = months;
 			break;
+		case OUTCOME_TIME:
+			this.outcomeMonths = months;
+			break;
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
 		}
@@ -272,6 +326,9 @@ public class StatisticsCaseCriteria implements Serializable {
 			break;
 		case REPORT_TIME:
 			this.reportEpiWeeks = epiWeeks;
+			break;
+		case OUTCOME_TIME:
+			this.outcomeEpiWeeks = epiWeeks;
 			break;
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
@@ -288,6 +345,9 @@ public class StatisticsCaseCriteria implements Serializable {
 		case REPORT_TIME:
 			this.reportQuartersOfYear = quartersOfYear;
 			break;
+		case OUTCOME_TIME:
+			this.outcomeQuartersOfYear = quartersOfYear;
+			break;
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
 		}
@@ -303,6 +363,9 @@ public class StatisticsCaseCriteria implements Serializable {
 		case REPORT_TIME:
 			this.reportMonthsOfYear = monthsOfYear;
 			break;
+		case OUTCOME_TIME:
+			this.outcomeMonthsOfYear = monthsOfYear;
+			break;
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
 		}
@@ -317,6 +380,9 @@ public class StatisticsCaseCriteria implements Serializable {
 			break;
 		case REPORT_TIME:
 			this.reportEpiWeeksOfYear = epiWeeksOfYear;
+			break;
+		case OUTCOME_TIME:
+			this.outcomeEpiWeeksOfYear = epiWeeksOfYear;
 			break;
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
@@ -334,6 +400,10 @@ public class StatisticsCaseCriteria implements Serializable {
 		case REPORT_TIME:
 			this.reportDateFrom = from;
 			this.reportDateTo = to;
+			break;
+		case OUTCOME_TIME:
+			this.outcomeDateFrom = from;
+			this.outcomeDateTo = to;
 			break;
 		default:
 			throw new IllegalArgumentException(mainAttribute.toString());
@@ -455,6 +525,8 @@ public class StatisticsCaseCriteria implements Serializable {
 					return onsetYears;
 				case REPORT_TIME:
 					return reportYears;
+				case OUTCOME_TIME:
+					return outcomeYears;
 				default:
 					throw new IllegalArgumentException(attribute.toString());
 				}
@@ -464,6 +536,8 @@ public class StatisticsCaseCriteria implements Serializable {
 					return onsetQuarters;
 				case REPORT_TIME:
 					return reportQuarters;
+				case OUTCOME_TIME:
+					return outcomeQuarters;
 				default:
 					throw new IllegalArgumentException(attribute.toString());
 				}
@@ -473,6 +547,8 @@ public class StatisticsCaseCriteria implements Serializable {
 					return onsetMonths;
 				case REPORT_TIME:
 					return reportMonths;
+				case OUTCOME_TIME:
+					return outcomeMonths;
 				default:
 					throw new IllegalArgumentException(attribute.toString());
 				}
@@ -482,6 +558,8 @@ public class StatisticsCaseCriteria implements Serializable {
 					return onsetEpiWeeks;
 				case REPORT_TIME:
 					return reportEpiWeeks;
+				case OUTCOME_TIME:
+					return outcomeEpiWeeks;
 				default:
 					throw new IllegalArgumentException(attribute.toString());
 				}
@@ -491,6 +569,8 @@ public class StatisticsCaseCriteria implements Serializable {
 					return onsetQuartersOfYear;
 				case REPORT_TIME:
 					return reportQuartersOfYear;
+				case OUTCOME_TIME:
+					return outcomeQuartersOfYear;
 				default:
 					throw new IllegalArgumentException(attribute.toString());
 				}
@@ -500,6 +580,8 @@ public class StatisticsCaseCriteria implements Serializable {
 					return onsetMonthsOfYear;
 				case REPORT_TIME:
 					return reportMonthsOfYear;
+				case OUTCOME_TIME:
+					return outcomeMonthsOfYear;
 				default:
 					throw new IllegalArgumentException(attribute.toString());
 				}
@@ -509,6 +591,8 @@ public class StatisticsCaseCriteria implements Serializable {
 					return onsetEpiWeeksOfYear;
 				case REPORT_TIME:
 					return reportEpiWeeksOfYear;
+				case OUTCOME_TIME:
+					return outcomeEpiWeeksOfYear;
 				default:
 					throw new IllegalArgumentException(attribute.toString());
 				}
