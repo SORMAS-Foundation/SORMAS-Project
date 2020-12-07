@@ -562,6 +562,11 @@ public class TestDataCreator {
 
 	public EventDto createEvent(UserReferenceDto reportingUser) {
 
+		return createEvent(reportingUser, new Date());
+	}
+
+	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {
+
 		return createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -571,7 +576,7 @@ public class TestDataCreator {
 			"LastName",
 			null,
 			null,
-			new Date(),
+			eventDate,
 			new Date(),
 			reportingUser,
 			null,
