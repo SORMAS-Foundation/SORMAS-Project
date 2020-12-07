@@ -13,13 +13,13 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.backend.util.ClientHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -99,7 +99,7 @@ public class ExternalJournalService {
 			throw new IllegalArgumentException("Property interface.symptomjournal.secret is not defined");
 		}
 		try {
-			Client client = ClientBuilder.newClient();
+			Client client = ClientHelper.newBuilderWithProxy().build();
 			HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(clientId, secret);
 			client.register(feature);
 			WebTarget webTarget = client.target(authenticationUrl);
@@ -146,7 +146,7 @@ public class ExternalJournalService {
 		}
 
 		try {
-			Client client = ClientBuilder.newClient();
+			Client client = ClientHelper.newBuilderWithProxy().build();
 			WebTarget webTarget = client.target(authenticationUrl);
 			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 			Response response = invocationBuilder.post(Entity.json(ImmutableMap.of("email", email, "password", pass)));
@@ -315,7 +315,7 @@ public class ExternalJournalService {
 
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
 		String externalDataUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/external-data/" + personUuid;
-		Client client = ClientBuilder.newClient();
+		Client client = ClientHelper.newBuilderWithProxy().build();
 		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken());
 	}
 
@@ -389,7 +389,7 @@ public class ExternalJournalService {
 			String queryParam = "\"" + key + "\" = \"" + value + "\"";
 			String encodedParams = URLEncoder.encode(queryParam, StandardCharsets.UTF_8.toString());
 			String fullUrl = probandsUrl + "?q=" + encodedParams;
-			Client client = ClientBuilder.newClient();
+			Client client = ClientHelper.newBuilderWithProxy().build();
 			Response response = client.target(fullUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken()).get();
 			if (response.getStatus() == NOT_FOUND_STATUS) {
 				return Optional.empty();
