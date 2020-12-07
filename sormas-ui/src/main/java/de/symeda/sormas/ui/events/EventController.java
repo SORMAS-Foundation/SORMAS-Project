@@ -572,7 +572,10 @@ public class EventController {
 		titleLayout.addComponents(statusLabel);
 
 		if (event.getStartDate() != null) {
-			Label eventStartDateLabel = new Label(DateFormatHelper.formatDate(event.getStartDate()));
+			Label eventStartDateLabel = new Label(
+				event.getEndDate() != null
+					? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
+					: DateFormatHelper.formatDate(event.getStartDate()));
 			eventStartDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 			titleLayout.addComponent(eventStartDateLabel);
 		}

@@ -290,8 +290,11 @@ public class EventParticipantsController {
 		titleLayout.addComponent(eventLabel);
 
 		if (event.getStartDate() != null) {
-			Label eventStartDateLabel = new Label(DateFormatHelper.formatDate(event.getStartDate()));
-			CssStyles.style(eventStartDateLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+			Label eventStartDateLabel = new Label(
+				event.getEndDate() != null
+					? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
+					: DateFormatHelper.formatDate(event.getStartDate()));
+			eventStartDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 			titleLayout.addComponent(eventStartDateLabel);
 		}
 
