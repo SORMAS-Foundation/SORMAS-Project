@@ -150,6 +150,8 @@ public class Case extends CoreAdo {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
+	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
+	public static final String INFECTION_SETTING = "infectionSetting";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
