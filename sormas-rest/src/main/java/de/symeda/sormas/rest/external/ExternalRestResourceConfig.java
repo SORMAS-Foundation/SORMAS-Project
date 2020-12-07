@@ -4,9 +4,6 @@ import javax.servlet.ServletConfig;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Context;
 
-import io.swagger.v3.jaxrs2.Reader;
-import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
-import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
@@ -25,7 +22,7 @@ import io.swagger.v3.oas.models.info.License;
  * Resource configuration used only for external resources i.e. for external systems which communicate with SORMAS
  * Separate from the other resource configuration in order to limit create the swagger documentation only for resources in this package
  */
-@ApplicationPath("/")
+@ApplicationPath("/visits-external")
 public class ExternalRestResourceConfig extends ResourceConfig {
 
 	@Context
@@ -50,8 +47,7 @@ public class ExternalRestResourceConfig extends ResourceConfig {
 			.contact(new Contact().url("https://gitter.im/SORMAS-Project/dev-support"))
 			.license(new License().name("GNU General Public License").url("https://www.gnu.org/licenses/"));
 
-		Reader reader = new Reader(new OpenAPI().info(info));
-		OpenAPI openAPI = reader.read(ExternalVisitsResource.class);
+		OpenAPI openAPI = new OpenAPI().info(info);
 		SwaggerConfiguration openAPIConfiguration = new SwaggerConfiguration().prettyPrint(true)
 			.openAPI(openAPI)
 			.resourceClasses(Sets.newHashSet(ExternalVisitsResource.class.getSimpleName()));
