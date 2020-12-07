@@ -41,6 +41,7 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -99,6 +100,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			loc(LOCATION_HEADING_LOC) +
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
+			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
@@ -190,6 +192,23 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
+
+		ComboBox meansOfTransport = addField(EventDto.MEANS_OF_TRANSPORT);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.MEANS_OF_TRANSPORT),
+			EventDto.TYPE_OF_PLACE,
+			Collections.singletonList(TypeOfPlace.MEANS_OF_TRANSPORT),
+			true);
+
+		TextField meansOfTransportDetails = addField(EventDto.MEANS_OF_TRANSPORT_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.MEANS_OF_TRANSPORT_DETAILS),
+			EventDto.MEANS_OF_TRANSPORT,
+			Collections.singletonList(MeansOfTransport.OTHER),
+			true);
+
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 
@@ -291,6 +310,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			startDate,
 			endDate,
 			typeOfPlace,
+			meansOfTransport,
+			meansOfTransportDetails,
 			surveillanceOfficerField,
 			srcType,
 			srcInstitutionalPartnerType,

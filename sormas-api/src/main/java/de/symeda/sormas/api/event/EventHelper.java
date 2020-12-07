@@ -35,4 +35,13 @@ public final class EventHelper {
 
 		return DataHelper.toStringNullable(institutionalPartnerType);
 	}
+
+	public static String buildMeansOfTransportString(MeansOfTransport meansOfTransport, String meansOfTransportDetails) {
+
+		if (meansOfTransport == MeansOfTransport.OTHER) {
+			return DataHelper.toStringNullable(meansOfTransportDetails);
+		}
+
+		return DataHelper.toStringNullable(meansOfTransport);
+	}
 }
