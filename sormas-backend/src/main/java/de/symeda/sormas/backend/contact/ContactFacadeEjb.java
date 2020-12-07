@@ -59,7 +59,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +94,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -447,6 +447,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.LAST_CONTACT_DATE),
 					joins.getPerson().get(Person.FIRST_NAME),
 					joins.getPerson().get(Person.LAST_NAME),
+					joins.getPerson().get(Person.SALUTATION),
+					joins.getPerson().get(Person.OTHER_SALUTATION),
 					joins.getPerson().get(Person.SEX),
 					joins.getPerson().get(Person.BIRTHDATE_DD),
 					joins.getPerson().get(Person.BIRTHDATE_MM),

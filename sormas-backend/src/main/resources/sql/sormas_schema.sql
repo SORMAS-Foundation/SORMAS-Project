@@ -5903,6 +5903,6 @@ ALTER TABLE person_history
     ADD COLUMN salutation varchar(255),
     ADD COLUMN othersalutation varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (283, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
 
 -- *** Insert new sql commands BEFORE this line ***
