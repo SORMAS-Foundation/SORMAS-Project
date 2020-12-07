@@ -118,9 +118,6 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(taskList, TASKS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
-			&& !caze.checkIsUnreferredPortHealthCase()) {
 		boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 		if (externalMessagesEnabled && UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 			SmsListComponent smsList = new SmsListComponent(getCaseRef());
@@ -128,7 +125,9 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(smsList, SMS_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.checkIsUnreferredPortHealthCase()) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
+			&& !caze.checkIsUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
