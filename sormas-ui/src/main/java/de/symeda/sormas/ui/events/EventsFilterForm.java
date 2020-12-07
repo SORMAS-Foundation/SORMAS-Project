@@ -36,6 +36,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
@@ -234,6 +235,28 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				applyDistrictDependency(district, LocationDto.COMMUNITY);
 			}
 			break;
+		}
+	}
+
+	@Override
+	protected void applyRegionFilterDependency(RegionReferenceDto region, String districtFieldId) {
+		final ComboBox districtField = getField(districtFieldId);
+		if (region != null) {
+			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			districtField.setEnabled(true);
+		} else {
+			districtField.setEnabled(false);
+		}
+	}
+
+	@Override
+	protected void applyDistrictDependency(DistrictReferenceDto district, String communityFieldId) {
+		final ComboBox communityField = getField(communityFieldId);
+		if (district != null) {
+			FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+			communityField.setEnabled(true);
+		} else {
+			communityField.setEnabled(false);
 		}
 	}
 
