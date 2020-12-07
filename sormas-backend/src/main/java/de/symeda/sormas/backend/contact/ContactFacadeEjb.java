@@ -59,6 +59,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,6 +211,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -297,7 +300,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		}
 		if (existingContact != null) {
-			handleExternalJournalPerson(existingContactDto, dto);
+			handleExternalJournalPerson(dto);
 		}
 
 		if (handleChanges) {
@@ -315,9 +318,14 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	// 5 second delay added before notifying of update so that current transaction can complete and new data can be retrieved from DB
-	private void handleExternalJournalPerson(ContactDto existingContact, ContactDto updatedContact) {
+	private void handleExternalJournalPerson(ContactDto updatedContact) {
 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		Runnable notify = () -> externalJournalService.notifyExternalJournalFollowUpUntilUpdate(updatedContact, existingContact.getFollowUpUntil());
+		/**
+		 * The .getPersonForJournal(...) here gets the person in the state it is (most likely) known to an external journal.
+		 * Changes of related data is assumed to be not yet persisted in the database.
+		 */
+		JournalPersonDto existingPerson = personFacade.getPersonForJournal(updatedContact.getPerson().getUuid());
+		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
 		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
 
@@ -485,6 +493,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getPerson().get(Person.EMAIL_ADDRESS),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
+					joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
 					joins.getRegion().get(Region.NAME),
 					joins.getDistrict().get(District.NAME),
 					joins.getCommunity().get(Community.NAME),
@@ -1030,8 +1039,18 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		// use only date, not time
+		target.setMultiDayContact(source.isMultiDayContact());
+		if(source.isMultiDayContact()) {
+			target.setFirstContactDate(source.getFirstContactDate() != null ?
+				DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) :
+				null);
+		} else {
+			target.setFirstContactDate(null);
+		}
+
 		target.setLastContactDate(
 			source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
+
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
 		target.setTracingApp(source.getTracingApp());
@@ -1267,6 +1286,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
 
+		target.setMultiDayContact(source.isMultiDayContact());
+		target.setFirstContactDate(source.getFirstContactDate());
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());

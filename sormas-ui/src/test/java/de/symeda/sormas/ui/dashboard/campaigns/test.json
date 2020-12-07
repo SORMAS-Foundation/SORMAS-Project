@@ -1,0 +1,36 @@
+[
+  {
+    "type": "section",
+    "id": "totalNumbersSection"
+  },
+  {
+    "type": "label",
+    "id": "totalNumbersLabel",
+    "caption": "<h3>Total Numbers</h3>"
+  },
+  {
+    "type": "number",
+    "id": "infected",
+    "caption": "Number of infected",
+    "styles": [
+      "row",
+      "col-3"
+    ],
+    "important": true
+  },
+  {
+    "type": "number",
+    "id": "withAntibodies",
+    "caption": "Number persons with antibodies",
+    "styles": [
+      "row",
+      "col-3"
+    ]
+  },
+  {
+    "type": "yes-no",
+    "id": "mostlyNonBelievers",
+    "caption": "Mostly non believers?",
+    "important": true
+  }
+]

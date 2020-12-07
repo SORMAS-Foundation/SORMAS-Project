@@ -115,7 +115,9 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
 
 		// Handle outbreaks for the disease and district of the case
-		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease()) && caze.getDisease().usesSimpleViewForOutbreaks()) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
+			&& FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease())
+			&& caze.getDisease().usesSimpleViewForOutbreaks()) {
 			hasOutbreak = true;
 
 			//			viewConfiguration.setViewMode(ViewMode.SIMPLE);
@@ -141,8 +143,10 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getCaption(CaseDataDto.I18N_PREFIX), params);
 
-		boolean showExtraMenuEntries =
-			!hasOutbreak || !caze.getDisease().usesSimpleViewForOutbreaks() || viewConfiguration.getViewMode() != ViewMode.SIMPLE;
+		boolean showExtraMenuEntries = FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.OUTBREAKS)
+			|| !hasOutbreak
+			|| !caze.getDisease().usesSimpleViewForOutbreaks()
+			|| viewConfiguration.getViewMode() != ViewMode.SIMPLE;
 		if (showExtraMenuEntries) {
 			menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
 			if (caze.getDisease() == Disease.CONGENITAL_RUBELLA) {

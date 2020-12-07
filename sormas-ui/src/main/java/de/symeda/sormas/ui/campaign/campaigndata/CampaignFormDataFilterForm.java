@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 
+import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -32,6 +33,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -49,7 +51,6 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	@Override
 	protected String[] getMainFilterLocators() {
 		return new String[] {
-			CampaignFormDataCriteria.CAMPAIGN,
 			CampaignFormDataCriteria.CAMPAIGN_FORM_META,
 			CampaignFormDataCriteria.REGION,
 			CampaignFormDataCriteria.DISTRICT,
@@ -107,6 +108,20 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				cbCommunity.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
 			}
 		}
+	}
+
+	@Override
+	protected void applyFieldConfiguration(FieldConfiguration configuration, Field field) {
+		super.applyFieldConfiguration(configuration, field);
+		if (configuration.getCaption() != null) {
+			field.setCaption(configuration.getCaption());
+		}
+	}
+
+	@Override
+	protected <T1 extends Field> void formatField(T1 field, String propertyId) {
+		super.formatField(field, propertyId);
+		field.addStyleName(CssStyles.CAPTION_ON_TOP);
 	}
 
 	@Override

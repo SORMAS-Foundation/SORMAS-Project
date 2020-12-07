@@ -32,6 +32,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -56,6 +57,8 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.region.AreaReferenceDto;
@@ -174,8 +177,23 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		CampaignFormData campaignFormData = fromDto(campaignFormDataDto);
 		CampaignFormDataEntry.removeNullValueEntries(campaignFormData.getFormValues());
+
+		validate(campaignFormDataDto);
+
 		campaignFormDataService.ensurePersisted(campaignFormData);
 		return toDto(campaignFormData);
+	}
+
+	private void validate(CampaignFormDataDto campaignFormDataDto) {
+		if (campaignFormDataDto.getRegion() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+		if (campaignFormDataDto.getDistrict() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
+		}
+		if (campaignFormDataDto.getCommunity() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCommunity));
+		}
 	}
 
 	@Override
@@ -227,11 +245,36 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	}
 
 	@Override
+	public CampaignFormDataDto getExistingData(CampaignFormDataCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
+		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
+
+		Predicate filter = AbstractAdoService
+			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
+
+		CampaignFormData resultEntity;
+		try {
+			resultEntity = em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			resultEntity = null;
+		}
+
+		return resultEntity != null ? toDto(resultEntity) : null;
+	}
+
+	@Override
 	public List<CampaignFormDataIndexDto> getIndexList(
 		CampaignFormDataCriteria criteria,
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
@@ -670,6 +713,12 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData) {
+		DtoHelper.fillDto(existingData, newData, true);
+		saveCampaignFormData(existingData);
 	}
 
 	private CampaignFormDataReferenceDto toReferenceDto(CampaignFormData source) {
