@@ -19,55 +19,52 @@ public class LabMessageDto extends EntityDto {
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
-	public static final String TEST_LAB_NAME = "testLabName";
-	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
-	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
-	public static final String TEST_LAB_CITY = "testLabCity";
+	public static final String LAB_NAME = "LabName";
+	public static final String LAB_EXTERNAL_ID = "LabExternalId";
+	public static final String LAB_POSTAL_CODE = "LabPostalCode";
+	public static final String LAB_CITY = "LabCity";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String TEST_TYPE = "testType";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TEST_DATE_TIME = "testDateTime";
-	public static final String TEST_RESULT = "testResult";
-	public static final String PERSON_FIRST_NAME = "personFirstName";
-	public static final String PERSON_LAST_NAME = "personLastName";
-	public static final String PERSON_SEX = "personSex";
-	public static final String PERSON_BIRTH_DATE_DD = "personBirthDateDD";
-	public static final String PERSON_BIRTH_DATE_MM = "personBirthDateMM";
-	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
+	public static final String RESULT = "result";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String SEX = "sex";
+	public static final String BIRTH_DATE_DD = "birthDateDD";
+	public static final String BIRTH_DATE_MM = "birthDateMM";
+	public static final String BIRTH_DATE_YYYY = "birthDateYYYY";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
-	public static final String PROCESSED = "processed";
 
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
-	private String testLabName;
-	private String testLabExternalId;
-	private String testLabPostalCode;
-	private String testLabCity;
+	private String sampleLabName;
+	private String sampleLabExternalId;
+	private String sampleLabPostalCode;
+	private String sampleLabCity;
 	private SpecimenCondition specimenCondition;
 	private PathogenTestType testType;
 	private Disease testedDisease;
 	private Date testDateTime;
-	private PathogenTestResultType testResult;
-	private String personFirstName;
-	private String personLastName;
-	private Sex personSex;
-	private Integer personBirthDateDD;
-	private Integer personBirthDateMM;
-	private Integer personBirthDateYYYY;
+	private PathogenTestResultType result;
+	private String firstName;
+	private String lastName;
+	private Sex sex;
+	private Integer birthDateDD;
+	private Integer birthDateMM;
+	private Integer birthDateYYYY;
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
 	private String personHouseNumber;
 
 	private String labMessageDetails;
-
-	private boolean processed;
 
 	public Date getSampleDateTime() {
 		return sampleDateTime;
@@ -101,36 +98,36 @@ public class LabMessageDto extends EntityDto {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-	public String getTestLabName() {
-		return testLabName;
+	public String getSampleLabName() {
+		return sampleLabName;
 	}
 
-	public void setTestLabName(String testLabName) {
-		this.testLabName = testLabName;
+	public void setSampleLabName(String sampleLabName) {
+		this.sampleLabName = sampleLabName;
 	}
 
-	public String getTestLabExternalId() {
-		return testLabExternalId;
+	public String getSampleLabExternalId() {
+		return sampleLabExternalId;
 	}
 
-	public void setTestLabExternalId(String testLabExternalId) {
-		this.testLabExternalId = testLabExternalId;
+	public void setSampleLabExternalId(String sampleLabExternalId) {
+		this.sampleLabExternalId = sampleLabExternalId;
 	}
 
-	public String getTestLabPostalCode() {
-		return testLabPostalCode;
+	public String getSampleLabPostalCode() {
+		return sampleLabPostalCode;
 	}
 
-	public void setTestLabPostalCode(String testLabPostalCode) {
-		this.testLabPostalCode = testLabPostalCode;
+	public void setSampleLabPostalCode(String sampleLabPostalCode) {
+		this.sampleLabPostalCode = sampleLabPostalCode;
 	}
 
-	public String getTestLabCity() {
-		return testLabCity;
+	public String getSampleLabCity() {
+		return sampleLabCity;
 	}
 
-	public void setTestLabCity(String testLabCity) {
-		this.testLabCity = testLabCity;
+	public void setSampleLabCity(String sampleLabCity) {
+		this.sampleLabCity = sampleLabCity;
 	}
 
 	public SpecimenCondition getSpecimenCondition() {
@@ -165,60 +162,60 @@ public class LabMessageDto extends EntityDto {
 		this.testDateTime = testDateTime;
 	}
 
-	public PathogenTestResultType getTestResult() {
-		return testResult;
+	public PathogenTestResultType getResult() {
+		return result;
 	}
 
-	public void setTestResult(PathogenTestResultType testResult) {
-		this.testResult = testResult;
+	public void setResult(PathogenTestResultType result) {
+		this.result = result;
 	}
 
-	public String getPersonFirstName() {
-		return personFirstName;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setPersonFirstName(String personFirstName) {
-		this.personFirstName = personFirstName;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public String getPersonLastName() {
-		return personLastName;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setPersonLastName(String personLastName) {
-		this.personLastName = personLastName;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
-	public Sex getPersonSex() {
-		return personSex;
+	public Sex getSex() {
+		return sex;
 	}
 
-	public void setPersonSex(Sex personSex) {
-		this.personSex = personSex;
+	public void setSex(Sex sex) {
+		this.sex = sex;
 	}
 
-	public Integer getPersonBirthDateDD() {
-		return personBirthDateDD;
+	public Integer getBirthDateDD() {
+		return birthDateDD;
 	}
 
-	public void setPersonBirthDateDD(Integer personBirthDateDD) {
-		this.personBirthDateDD = personBirthDateDD;
+	public void setBirthDateDD(Integer birthDateDD) {
+		this.birthDateDD = birthDateDD;
 	}
 
-	public Integer getPersonBirthDateMM() {
-		return personBirthDateMM;
+	public Integer getBirthDateMM() {
+		return birthDateMM;
 	}
 
-	public void setPersonBirthDateMM(Integer personBirthDateMM) {
-		this.personBirthDateMM = personBirthDateMM;
+	public void setBirthDateMM(Integer birthDateMM) {
+		this.birthDateMM = birthDateMM;
 	}
 
-	public Integer getPersonBirthDateYYYY() {
-		return personBirthDateYYYY;
+	public Integer getBirthDateYYYY() {
+		return birthDateYYYY;
 	}
 
-	public void setPersonBirthDateYYYY(Integer personBirthDateYYYY) {
-		this.personBirthDateYYYY = personBirthDateYYYY;
+	public void setBirthDateYYYY(Integer birthDateYYYY) {
+		this.birthDateYYYY = birthDateYYYY;
 	}
 
 	public String getPersonPostalCode() {
@@ -259,14 +256,6 @@ public class LabMessageDto extends EntityDto {
 
 	public void setLabMessageDetails(String labMessageDetails) {
 		this.labMessageDetails = labMessageDetails;
-	}
-
-	public boolean isProcessed() {
-		return processed;
-	}
-
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
 	}
 
 	public static LabMessageDto build() {
