@@ -5899,4 +5899,42 @@ ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
 
+-- 2020-12-07 Add LabMessage #2946
+CREATE TABLE labmessage (
+        id bigint not null,
+        uuid varchar(36) not null unique,
+        changedate timestamp not null,
+        creationdate timestamp not null,
+        sampledatetime timestamp,
+        samplereceiveddate timestamp,
+        exposuretype varchar(255) not null,
+        labsampleid text,
+        samplematerial varchar(255),
+        samplelabname varchar(255),
+        samplelabexternalid varchar(255),
+        samplelabpostalcode varchar(255),
+        samplelabcity varchar(255),
+        specimencondition varchar(255),
+        testtype varchar(255),
+        testeddisease varchar(255),
+        testdatetime timestamp,
+        result varchar(255),
+        firstName varchar(255),
+        lastName varchar(255),
+        sex varchar(255),
+        birthdatedd integer,
+        birthdatemm integer,
+        birthdateyyyy integer,
+        personpostalcode varchar(255),
+        personcity varchar(255),
+        personstreet varchar(255),
+        personhousenumber varchar(255),
+        labMessageDetails text,
+        sys_period tstzrange not null,
+        primary key(id)
+);
+
+CREATE TABLE labmessage_history (LIKE labmessage);
+
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'Add LabMessage #2946');
 -- *** Insert new sql commands BEFORE this line ***

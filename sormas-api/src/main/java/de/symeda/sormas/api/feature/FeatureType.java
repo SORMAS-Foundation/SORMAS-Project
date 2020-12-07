@@ -52,7 +52,8 @@ public enum FeatureType {
 			TASK_MANAGEMENT }),
 	OTHER_NOTIFICATIONS(true, true, null),
 	DOCUMENTS(true, false, null),
-	OUTBREAKS(true, true, null);
+	OUTBREAKS(true, true, null),
+	LAB_MESSAGES(true, false, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
