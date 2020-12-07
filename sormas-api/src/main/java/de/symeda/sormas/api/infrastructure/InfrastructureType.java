@@ -8,5 +8,6 @@ public enum InfrastructureType {
 	COMMUNITY,
 	FACILITY,
 	POINT_OF_ENTRY,
-	POPULATION_DATA;
+	POPULATION_DATA,
+	COUNTRY;
 }

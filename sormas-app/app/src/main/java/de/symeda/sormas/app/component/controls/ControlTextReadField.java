@@ -406,6 +406,23 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 			booleanValue);
 	}
 
+	@BindingAdapter(value = {
+		"enumValue",
+		"detailsEnumValue",
+		"detailsValue" })
+	public static void setEnumValueWithDetails(ControlTextReadField textField, Enum<?> value, Enum<?> detailsEnumValue, String detailsValue) {
+		String fieldValue = null;
+		if (value != null) {
+			if (value == detailsEnumValue && StringUtils.isNotBlank(detailsValue)) {
+				fieldValue = detailsValue;
+			} else {
+				fieldValue = value.toString();
+			}
+		}
+
+		setValue(textField, fieldValue, null, null, null, null);
+	}
+
 	// Time
 	@BindingAdapter(value = {
 		"timeValue",

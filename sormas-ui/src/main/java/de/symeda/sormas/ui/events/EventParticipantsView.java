@@ -26,6 +26,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -44,6 +46,7 @@ import de.symeda.sormas.ui.utils.EventParticipantDownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventParticipantsView extends AbstractEventView {
 
@@ -83,6 +86,18 @@ public class EventParticipantsView extends AbstractEventView {
 			exportLayout.setWidth(250, Unit.PIXELS);
 		}
 
+		// import
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_IMPORT)) {
+			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
+				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventParticipantImportLayout(getEventRef()));
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEventParticipant));
+				popupWindow.addCloseListener(c -> this.grid.reload());
+			}, ValoTheme.BUTTON_PRIMARY);
+
+			addHeaderComponent(importButton);
+		}
+
+		// export
 		PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 		addHeaderComponent(exportPopupButton);
 

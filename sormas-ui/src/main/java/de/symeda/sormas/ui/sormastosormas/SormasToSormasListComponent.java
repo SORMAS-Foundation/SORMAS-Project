@@ -62,7 +62,8 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			canShare ? e -> ControllerProvider.getSormasToSormasController().shareCaseFormDetailsPage(caseRef, this) : null);
+			canShare ? e -> ControllerProvider.getSormasToSormasController().shareCaseFromDetailsPage(caze, this) : null,
+			(e) -> ControllerProvider.getSormasToSormasController().returnCase(caze));
 	}
 
 	public SormasToSormasListComponent(ContactDto contact, boolean canShare) {
@@ -76,7 +77,8 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			canShare ? e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contactRef, this) : null);
+			canShare ? e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contact, this) : null,
+			(e) -> ControllerProvider.getSormasToSormasController().returnContact(contact));
 	}
 
 	public SormasToSormasListComponent(SampleDto sample) {
@@ -87,13 +89,14 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			sample.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared);
 
-		initLayout(sample.getSormasToSormasOriginInfo(), sormasToSormasList, null);
+		initLayout(sample.getSormasToSormasOriginInfo(), sormasToSormasList, null, null);
 	}
 
 	private void initLayout(
 		SormasToSormasOriginInfoDto originInfo,
 		SormasToSormasList sormasToSormasList,
-		Button.ClickListener shareButtonClickListener) {
+		Button.ClickListener shareButtonClickListener,
+		Button.ClickListener returnButtonClickListener) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -105,7 +108,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		addComponent(componentHeader);
 
 		if (originInfo != null) {
-			addComponent(buildSormasOriginInfo(originInfo));
+			addComponent(buildSormasOriginInfo(originInfo, returnButtonClickListener));
 		}
 
 		addComponent(sormasToSormasList);
@@ -180,58 +183,70 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			setWidth(100, Unit.PERCENTAGE);
 			addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 
-			VerticalLayout layout = new VerticalLayout();
-			layout.setWidth(100, Unit.PERCENTAGE);
-			layout.setMargin(false);
-			layout.setSpacing(false);
-			addComponent(layout);
-			setExpandRatio(layout, 1);
+			VerticalLayout infoLayout = new VerticalLayout();
+			infoLayout.setWidth(100, Unit.PERCENTAGE);
+			infoLayout.setMargin(false);
+			infoLayout.setSpacing(false);
 
 			Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getTarget());
 			targetLabel.addStyleName(CssStyles.LABEL_BOLD);
-			layout.addComponent(targetLabel);
+			infoLayout.addComponent(targetLabel);
 
 			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
-			layout.addComponent(senderLabel);
+			infoLayout.addComponent(senderLabel);
 
 			Label shareDateLabel = new Label(
 				I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(shareInfo.getCreationDate()));
-			layout.addComponent(shareDateLabel);
+			infoLayout.addComponent(shareDateLabel);
 
 			if (!DataHelper.isNullOrEmpty(shareInfo.getComment())) {
-				layout.addComponent(new Label(shareInfo.getComment()));
+				infoLayout.addComponent(new Label(shareInfo.getComment()));
 			}
+
+			addComponent(infoLayout);
+			setExpandRatio(infoLayout, 1);
 		}
 	}
 
-	private VerticalLayout buildSormasOriginInfo(SormasToSormasOriginInfoDto originInfo) {
-		VerticalLayout layout = new VerticalLayout();
+	private HorizontalLayout buildSormasOriginInfo(SormasToSormasOriginInfoDto originInfo, Button.ClickListener returnButtonClickListener) {
+		HorizontalLayout layout = new HorizontalLayout();
 		layout.setMargin(false);
-		layout.setSpacing(false);
-		layout.setStyleName(CssStyles.VSPACE_3);
+		layout.setWidthFull();
+
+		VerticalLayout infoLayout = new VerticalLayout();
+		infoLayout.setMargin(false);
+		infoLayout.setSpacing(false);
+		infoLayout.setStyleName(CssStyles.VSPACE_3);
 
 		ServerAccessDataReferenceDto serverAccessDataRef =
 			FacadeProvider.getSormasToSormasFacade().getOrganizationRef(originInfo.getOrganizationId());
 
 		Label senderOrganizationLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
-		senderOrganizationLabel.addStyleName(CssStyles.LABEL_BOLD);
-		layout.addComponent(senderOrganizationLabel);
-		layout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + originInfo.getSenderName()));
+		senderOrganizationLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		infoLayout.addComponent(senderOrganizationLabel);
+		infoLayout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + originInfo.getSenderName()));
 
 		if (originInfo.getSenderEmail() != null) {
-			layout.addComponent(new Label(originInfo.getSenderEmail()));
+			infoLayout.addComponent(new Label(originInfo.getSenderEmail()));
 		}
 
 		if (originInfo.getSenderPhoneNumber() != null) {
-			layout.addComponent(new Label(originInfo.getSenderPhoneNumber()));
+			infoLayout.addComponent(new Label(originInfo.getSenderPhoneNumber()));
 		}
 
 		Label shareDateLabel = new Label(
 			I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(originInfo.getCreationDate()));
-		layout.addComponent(shareDateLabel);
+		infoLayout.addComponent(shareDateLabel);
 
 		if (!DataHelper.isNullOrEmpty(originInfo.getComment())) {
-			layout.addComponent(new Label(originInfo.getComment()));
+			infoLayout.addComponent(new Label(originInfo.getComment()));
+		}
+
+		layout.addComponent(infoLayout);
+		layout.setExpandRatio(infoLayout, 1);
+
+		if (originInfo.isOwnershipHandedOver() && returnButtonClickListener != null) {
+			layout.addComponent(ButtonHelper.createIconButton(Captions.sormasToSormasReturn, VaadinIcons.REPLY, returnButtonClickListener));
 		}
 
 		return layout;

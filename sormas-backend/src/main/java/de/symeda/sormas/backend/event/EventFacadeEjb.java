@@ -67,8 +67,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -154,6 +154,11 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public EventReferenceDto getReferenceByUuid(String uuid) {
 		return toReferenceDto(eventService.getByUuid(uuid));
+	}
+
+	@Override
+	public EventReferenceDto getReferenceByEventParticipant(String uuid) {
+		return toReferenceDto(eventService.getEventReferenceByEventParticipant(uuid));
 	}
 
 	@Override

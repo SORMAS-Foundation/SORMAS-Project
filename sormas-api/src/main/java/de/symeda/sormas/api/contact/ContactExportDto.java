@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -101,7 +102,10 @@ public class ContactExportDto implements Serializable {
 	private String facility;
 	@SensitiveData
 	private String phone;
+	@SensitiveData
+	private String emailAddress;
 	private String occupationType;
+	private ArmedForcesRelationType armedForcesRelationType;
 	private int numberOfVisits;
 	private YesNoUnknown lastCooperativeVisitSymptomatic;
 	private Date lastCooperativeVisitDate;
@@ -117,12 +121,10 @@ public class ContactExportDto implements Serializable {
 	@SensitiveData
 	private String quarantineHelpNeeded;
 	private long epiDataId;
-	private YesNoUnknown traveled;
+	private boolean traveled;
 	private String travelHistory;
-	private YesNoUnknown burialAttended;
-	private YesNoUnknown directContactConfirmedCase;
-	private YesNoUnknown directContactProbableCase;
-	private YesNoUnknown contactWithRodent;
+	private boolean burialAttended;
+	private YesNoUnknown contactWithSourceCaseKnown;
 
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -139,6 +141,7 @@ public class ContactExportDto implements Serializable {
 	private final Long eventCount;
 	private String latestEventId;
 	private String latestEventTitle;
+	private String externalID;
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
@@ -153,12 +156,11 @@ public class ContactExportDto implements Serializable {
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 							String facility, String facilityUuid, String facilityDetails,
-							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
+							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
-							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler, long eventCount,
+							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, long eventCount, String externalID,							
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
+							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//@formatter:on
 
@@ -210,25 +212,24 @@ public class ContactExportDto implements Serializable {
 		this.postalCode = postalCode;
 		this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility, facilityDetails);
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
+		this.emailAddress = emailAddress;
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
+		this.armedForcesRelationType = armedForcesRelationType;
 		this.region = region;
 		this.district = district;
 		this.community = community;
 		this.epiDataId = epiDataId;
-		this.traveled = traveled;
-		this.burialAttended = burialAttended;
-		this.directContactConfirmedCase = directContactConfirmedCase;
-		this.directContactProbableCase = directContactProbableCase;
-		this.contactWithRodent = contactWithRodent;
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
 		this.eventCount = eventCount;
+		this.externalID = externalID;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
 			: new CaseJurisdictionDto(
 				caseReportingUserUuid,
-				caseRegionUui,
-				caseDistrictUud,
+				caseRegionUuid,
+				caseDistrictUuid,
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
@@ -261,26 +262,31 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(1)
+	public String getExternalID() {
+		return externalID;
+	}
+
+	@Order(2)
 	public String getSourceCaseUuid() {
 		return sourceCaseUuid;
 	}
 
-	@Order(2)
+	@Order(3)
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
 
-	@Order(3)
+	@Order(4)
 	public String getDisease() {
 		return disease;
 	}
 
-	@Order(4)
+	@Order(5)
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}
 
-	@Order(5)
+	@Order(6)
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
@@ -325,7 +331,7 @@ public class ContactExportDto implements Serializable {
 		return district;
 	}
 
-	@Order(17)
+	@Order(18)
 	public String getCommunity() {
 		return community;
 	}
@@ -513,41 +519,51 @@ public class ContactExportDto implements Serializable {
 		return phone;
 	}
 
+	@Order(53)
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
 	@Order(60)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
 	@Order(61)
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	@Order(62)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(62)
+	@Order(63)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(63)
+	@Order(64)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(64)
+	@Order(65)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
 
-	@Order(65)
-	public YesNoUnknown getTraveled() {
+	@Order(66)
+	public boolean isTraveled() {
 		return traveled;
 	}
 
-	public void setTraveled(YesNoUnknown traveled) {
+	public void setTraveled(boolean traveled) {
 		this.traveled = traveled;
 	}
 
-	@Order(66)
+	@Order(67)
 	public String getTravelHistory() {
 		return travelHistory;
 	}
@@ -556,43 +572,25 @@ public class ContactExportDto implements Serializable {
 		this.travelHistory = travelHistory;
 	}
 
-	@Order(67)
-	public YesNoUnknown getBurialAttended() {
+	@Order(68)
+	public boolean isBurialAttended() {
 		return burialAttended;
 	}
 
-	public void setBurialAttended(YesNoUnknown burialAttended) {
+	public void setBurialAttended(boolean burialAttended) {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(68)
-	public YesNoUnknown getDirectContactConfirmedCase() {
-		return directContactConfirmedCase;
-	}
-
-	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
-		this.directContactConfirmedCase = directContactConfirmedCase;
-	}
-
 	@Order(69)
-	public YesNoUnknown getDirectContactProbableCase() {
-		return directContactProbableCase;
+	public YesNoUnknown getContactWithSourceCaseKnown() {
+		return contactWithSourceCaseKnown;
 	}
 
-	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
-		this.directContactProbableCase = directContactProbableCase;
+	public void setContactWithSourceCaseKnown(YesNoUnknown directContactConfirmedCase) {
+		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 	}
 
 	@Order(70)
-	public YesNoUnknown getContactWithRodent() {
-		return contactWithRodent;
-	}
-
-	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
-		this.contactWithRodent = contactWithRodent;
-	}
-
-	@Order(62)
 	public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
 	}
@@ -724,8 +722,16 @@ public class ContactExportDto implements Serializable {
 		this.phone = phone;
 	}
 
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
 	public void setOccupationType(String occupationType) {
 		this.occupationType = occupationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
 	}
 
 	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {

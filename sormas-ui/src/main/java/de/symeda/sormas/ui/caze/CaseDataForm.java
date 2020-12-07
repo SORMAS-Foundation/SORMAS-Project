@@ -942,7 +942,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				// Add follow-up until validator
 				Date minimumFollowUpUntilDate = DateHelper.addDays(
 					CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) diseaseField.getValue()));
+					FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()));
 				finalFollowUpUntil.addValidator(
 					new DateRangeValidator(
 						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
@@ -1230,7 +1230,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel, String fieldValue) {
-		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+		if (epidField != null
+			&& epidField.isVisible()
 			&& FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(), getValue().getDisease())) {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);

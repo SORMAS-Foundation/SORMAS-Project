@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
@@ -28,14 +32,18 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -47,41 +55,64 @@ public class SormasToSormasController {
 	public SormasToSormasController() {
 	}
 
-	public void shareCaseFormDetailsPage(CaseReferenceDto caze, SormasToSormasListComponent listComponent) {
+	public void shareCaseFromDetailsPage(CaseDataDto caze, SormasToSormasListComponent listComponent) {
 		shareToSormasFromDetailPage(
 			(options) -> FacadeProvider.getSormasToSormasFacade().shareCases(Collections.singletonList(caze.getUuid()), options),
 			listComponent,
-			new SormasToSormasOptionsForm(true));
+			new SormasToSormasOptionsForm(
+				true,
+				getOrganizationIds(
+					caze.getSormasToSormasOriginInfo(),
+					FacadeProvider.getSormasToSormasFacade()
+						.getShareInfoIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), null, null))));
 	}
 
 	public void shareSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
-		shareToSormas((options) -> {
+		shareHandleShare((options) -> {
 			FacadeProvider.getSormasToSormasFacade()
 				.shareCases(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()), options);
 			callback.run();
-		}, new SormasToSormasOptionsForm(true));
+		}, new SormasToSormasOptionsForm(true, null), new SormasToSormasOptionsDto());
 	}
 
-	public void shareContactFromDetailsPage(ContactReferenceDto contact, SormasToSormasListComponent listComponent) {
+	public void shareContactFromDetailsPage(ContactDto contact, SormasToSormasListComponent listComponent) {
+		SormasToSormasOriginInfoDto sormasToSormas = contact.getSormasToSormasOriginInfo();
 		shareToSormasFromDetailPage(
 			(options) -> FacadeProvider.getSormasToSormasFacade().shareContacts(Collections.singletonList(contact.getUuid()), options),
 			listComponent,
-			new SormasToSormasOptionsForm(false));
+			new SormasToSormasOptionsForm(
+				false,
+				getOrganizationIds(
+					contact.getSormasToSormasOriginInfo(),
+					FacadeProvider.getSormasToSormasFacade()
+						.getShareInfoIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), null, null))));
 	}
 
 	public void shareSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
-		shareToSormas((options) -> {
+		shareHandleShare((options) -> {
 			FacadeProvider.getSormasToSormasFacade()
 				.shareContacts(selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()), options);
 			callback.run();
-		}, new SormasToSormasOptionsForm(false));
+		}, new SormasToSormasOptionsForm(false, null), new SormasToSormasOptionsDto());
+	}
+
+	public void returnCase(CaseDataDto caze) {
+		handleReturn(options -> {
+			FacadeProvider.getSormasToSormasFacade().returnCase(caze.getUuid(), options);
+		}, caze.getSormasToSormasOriginInfo());
+	}
+
+	public void returnContact(ContactDto contact) {
+		handleReturn((options) -> {
+			FacadeProvider.getSormasToSormasFacade().returnContact(contact.getUuid(), options);
+		}, contact.getSormasToSormasOriginInfo());
 	}
 
 	private void shareToSormasFromDetailPage(
 		HandleShareWithOptions handleShareWithOptions,
 		SormasToSormasListComponent listComponent,
 		SormasToSormasOptionsForm optionsForm) {
-		shareToSormas(options -> {
+		shareHandleShare(options -> {
 			handleShareWithOptions.handle(options);
 
 			if (options.isHandOverOwnership()) {
@@ -89,11 +120,14 @@ public class SormasToSormasController {
 			} else {
 				listComponent.reloadList();
 			}
-		}, optionsForm);
+		}, optionsForm, new SormasToSormasOptionsDto());
 	}
 
-	private void shareToSormas(HandleShareWithOptions handleShareWithOptions, SormasToSormasOptionsForm optionsForm) {
-		optionsForm.setValue(new SormasToSormasOptionsDto());
+	private void shareHandleShare(
+		HandleShareWithOptions handleShareWithOptions,
+		SormasToSormasOptionsForm optionsForm,
+		SormasToSormasOptionsDto defaultOptions) {
+		optionsForm.setValue(defaultOptions);
 
 		CommitDiscardWrapperComponent<SormasToSormasOptionsForm> optionsCommitDiscard =
 			new CommitDiscardWrapperComponent<>(optionsForm, optionsForm.getFieldGroup());
@@ -119,6 +153,23 @@ public class SormasToSormasController {
 		optionsCommitDiscard.addDiscardListener(() -> {
 			optionsPopup.close();
 		});
+	}
+
+	private void handleReturn(HandleShareWithOptions handleShareWithOptions, SormasToSormasOriginInfoDto originInfo) {
+		SormasToSormasOptionsDto defaultOptions = new SormasToSormasOptionsDto();
+		defaultOptions.setHandOverOwnership(true);
+		defaultOptions.setOrganization(new ServerAccessDataReferenceDto(originInfo.getOrganizationId()));
+
+		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(true, null);
+		optionsForm.disableOrganizationAndOwnership();
+
+		shareHandleShare(options -> {
+			handleShareWithOptions.handle(options);
+
+			if (options.isHandOverOwnership()) {
+				SormasUI.refreshView();
+			}
+		}, optionsForm, defaultOptions);
 	}
 
 	private Component buildShareErrorMessage(SormasToSormasException ex) {
@@ -161,6 +212,20 @@ public class SormasToSormasController {
 
 			return layout;
 		}).toArray(Component[]::new);
+	}
+
+	private List<String> getOrganizationIds(SormasToSormasOriginInfoDto originInfo, List<SormasToSormasShareInfoDto> shares) {
+		List<String> organizationIds = new ArrayList<>();
+
+		if (originInfo != null) {
+			organizationIds.add(originInfo.getOrganizationId());
+		}
+
+		if (!CollectionUtils.isEmpty(shares)) {
+			organizationIds.addAll(shares.stream().map(s -> s.getTarget().getUuid()).collect(Collectors.toList()));
+		}
+
+		return organizationIds;
 	}
 
 	private interface HandleShareWithOptions {

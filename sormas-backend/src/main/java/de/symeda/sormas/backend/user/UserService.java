@@ -119,7 +119,7 @@ public class UserService extends AbstractAdoService<User> {
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 
-		Predicate filter = null;
+		Predicate filter = createDefaultFilter(cb, from);
 		if (region != null) {
 			filter = cb.equal(from.get(User.REGION), region);
 		}
@@ -155,6 +155,7 @@ public class UserService extends AbstractAdoService<User> {
 		Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 
 		Predicate filter = cb.and(
+			createDefaultFilter(cb, from),
 			cb.equal(from.get(User.HEALTH_FACILITY), facility),
 			joinRoles.in(
 				Arrays.asList(
@@ -177,6 +178,7 @@ public class UserService extends AbstractAdoService<User> {
 		Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 
 		Predicate filter = cb.and(
+			createDefaultFilter(cb, from),
 			cb.equal(from.get(User.LABORATORY), facility),
 			joinRoles.in(
 				Arrays.asList(
@@ -213,7 +215,7 @@ public class UserService extends AbstractAdoService<User> {
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 
-		Predicate filter = buildDistrictFilter(cb, cq, from, district, includeSupervisors, userRoles);
+		Predicate filter = cb.and(createDefaultFilter(cb, from), buildDistrictFilter(cb, cq, from, district, includeSupervisors, userRoles));
 
 		if (createExtraFilters != null) {
 			filter = and(cb, filter, createExtraFilters.apply(cb, from));
@@ -239,7 +241,7 @@ public class UserService extends AbstractAdoService<User> {
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 
-		Predicate filter = cb.and(cb.equal(from.get(User.ASSOCIATED_OFFICER), associatedOfficer));
+		Predicate filter = cb.and(createDefaultFilter(cb, from), cb.equal(from.get(User.ASSOCIATED_OFFICER), associatedOfficer));
 		filter = and(cb, filter, buildUserRolesFilter(from, Arrays.asList(userRoles)));
 		cq.where(filter);
 
@@ -248,12 +250,16 @@ public class UserService extends AbstractAdoService<User> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<User> getAllInJurisdiction() {
+	public List<User> getAllInJurisdiction(boolean includeInactive) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 
 		Predicate jurisdictionFilter = createJurisdictionFilter(cb, from);
+
+		if (!includeInactive) {
+			jurisdictionFilter = and(cb, jurisdictionFilter, createDefaultFilter(cb, from));
+		}
 
 		if (jurisdictionFilter != null) {
 			cq.where(jurisdictionFilter);
@@ -269,7 +275,6 @@ public class UserService extends AbstractAdoService<User> {
 		ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-
 
 		Expression<String> userNameExpression = from.get(User.USER_NAME);
 		String userNameParamValue = userName;
@@ -401,8 +406,8 @@ public class UserService extends AbstractAdoService<User> {
 
 		if (includeSupervisors) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate supervisorFilter =
-				joinRoles.in(Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
+			Predicate supervisorFilter = joinRoles.in(
+				Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
 			if (filter != null) {
 				filter = cb.or(filter, supervisorFilter);
 			} else {
@@ -449,5 +454,9 @@ public class UserService extends AbstractAdoService<User> {
 	public boolean hasRight(UserRight right) {
 		User currentUser = getCurrentUser();
 		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
+	}
+
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, User> root) {
+		return cb.isTrue(root.get(User.ACTIVE));
 	}
 }

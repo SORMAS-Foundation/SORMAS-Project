@@ -115,6 +115,8 @@ public interface CaseFacade {
 
 	Date getOldestCaseReportDate();
 
+	Date getOldestCaseOutcomeDate();
+
 	boolean isArchived(String caseUuid);
 
 	boolean isDeleted(String caseUuid);
@@ -151,7 +153,7 @@ public interface CaseFacade {
 
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
 
-	Boolean isCaseEditAllowed(String caseUuid);
+	boolean isCaseEditAllowed(String caseUuid);
 
 	boolean exists(String uuid);
 
