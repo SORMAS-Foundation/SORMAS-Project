@@ -476,6 +476,7 @@ public interface Strings {
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
+	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoImportAllCountries = "infoImportAllCountries";
