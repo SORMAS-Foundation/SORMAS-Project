@@ -46,8 +46,8 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -1313,20 +1313,20 @@ public class CaseController {
 		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		titleLayout.setSpacing(false);
 
-		Label diseaseLabel = new Label(Disease.valueOf(caseData.getDisease().getName()).toString());
+		Label diseaseLabel = new Label(DiseaseHelper.toString(caseData.getDisease(), caseData.getDiseaseDetails()));
 		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleView.addComponents(diseaseLabel);
+		titleLayout.addComponents(diseaseLabel);
 
-		Label classificationLabel = new Label(CaseClassification.valueOf(caseData.getCaseClassification().getName()).toString());
+		Label classificationLabel = new Label(caseData.getCaseClassification().toString());
 		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleView.addComponent(classificationLabel);
+		titleLayout.addComponent(classificationLabel);
 
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
 		String person = caseData.getPerson().getCaption();
 		Label caseLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
 		caseLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleView.addComponent(caseLabel);
+		titleLayout.addComponent(caseLabel);
 
-		return titleView;
+		return titleLayout;
 	}
 }
