@@ -5973,10 +5973,26 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
 
+-- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+ALTER TABLE person
+    ADD COLUMN namesofotherguardians varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN namesofotherguardians varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
+
+-- 2020-12-08 SurvNet Adaptations - Add multi day contat to contact history #3408
+
+ALTER TABLE contact_history ADD column multidaycontact boolean;
+ALTER TABLE contact_history ADD column firstcontactdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (286, 'Add date of first contact for contact history #3408');
+
 -- 2020-11-30 Add riskLevel to events with cluster status #3271
 ALTER TABLE events ADD column risklevel varchar(255);
 ALTER TABLE events_history ADD column risklevel varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (285, 'Add riskLevel to events with cluster status #3271');
+INSERT INTO schema_version (version_number, comment) VALUES (287, 'Add riskLevel to events with cluster status #3271');
 
 -- *** Insert new sql commands BEFORE this line ***

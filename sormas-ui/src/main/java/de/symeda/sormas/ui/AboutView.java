@@ -119,11 +119,15 @@ public class AboutView extends VerticalLayout implements View {
 		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		dataDictionaryDownloader.extend(dataDictionaryButton);
 
-		Link technicalManualLink = new Link(
-			I18nProperties.getCaption(Captions.aboutTechnicalManual),
-			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"));
-		technicalManualLink.setTargetName("_blank");
-		documentsLayout.addComponent(technicalManualLink);
+		// This link is hidden until an updated version of the document is provided
+		/*
+		 * Link technicalManualLink = new Link(
+		 * I18nProperties.getCaption(Captions.aboutTechnicalManual),
+		 * new ExternalResource(
+		 * "https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"));
+		 * technicalManualLink.setTargetName("_blank");
+		 * documentsLayout.addComponent(technicalManualLink);
+		 */
 
 		setSizeFull();
 		setStyleName("about-view");
