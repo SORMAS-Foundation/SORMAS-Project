@@ -17,12 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -45,13 +51,6 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
@@ -94,30 +93,31 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
 		if (tasksFeatureEnabled) {
 			Column<EventIndexDto, String> pendingTasksColumn = addColumn(
-					entry -> String.format(
-							I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
-							FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(entry.toReference())));
+				entry -> String.format(
+					I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
+					FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(entry.toReference())));
 			pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
 			pendingTasksColumn.setSortable(false);
 		}
 
-		List<String> columnIds = new ArrayList(Arrays.asList(
-			EventIndexDto.UUID,
-			EventIndexDto.EVENT_STATUS,
-			EventIndexDto.EVENT_INVESTIGATION_STATUS,
-			createEventDateColumn(this, userLanguage),
-			DISEASE_SHORT,
-			EventIndexDto.EVENT_TITLE,
-			EventIndexDto.EVENT_LOCATION,
-			EventIndexDto.SRC_TYPE,
-			INFORMATION_SOURCE,
-			EventIndexDto.REPORT_DATE_TIME,
-			NUMBER_OF_PENDING_TASKS,
-			EventIndexDto.PARTICIPANT_COUNT,
-			EventIndexDto.CASE_COUNT,
-			EventIndexDto.DEATH_COUNT,
-			EventIndexDto.CONTACT_COUNT,
-			EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
+		List<String> columnIds = new ArrayList(
+			Arrays.asList(
+				EventIndexDto.UUID,
+				EventIndexDto.EVENT_STATUS,
+				EventIndexDto.EVENT_INVESTIGATION_STATUS,
+				createEventDateColumn(this, userLanguage),
+				DISEASE_SHORT,
+				EventIndexDto.EVENT_TITLE,
+				EventIndexDto.EVENT_LOCATION,
+				EventIndexDto.SRC_TYPE,
+				INFORMATION_SOURCE,
+				EventIndexDto.REPORT_DATE_TIME,
+				NUMBER_OF_PENDING_TASKS,
+				EventIndexDto.PARTICIPANT_COUNT,
+				EventIndexDto.CASE_COUNT,
+				EventIndexDto.DEATH_COUNT,
+				EventIndexDto.CONTACT_COUNT,
+				EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
 
 		if (!tasksFeatureEnabled) {
 			columnIds.remove(NUMBER_OF_PENDING_TASKS);
