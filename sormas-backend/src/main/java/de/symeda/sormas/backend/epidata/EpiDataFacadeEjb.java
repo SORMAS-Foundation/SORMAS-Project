@@ -21,7 +21,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -54,11 +53,6 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private ContactService contactService;
 	@EJB
 	private UserService userService;
-
-	@Override
-	public Map<String, String> getExposureSourceCaseNames(List<String> exposureUuids) {
-		return service.getExposureSourceCaseNames(exposureUuids);
-	}
 
 	public EpiData fromDto(EpiDataDto source) {
 

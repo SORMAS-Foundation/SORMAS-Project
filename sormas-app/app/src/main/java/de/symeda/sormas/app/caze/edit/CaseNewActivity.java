@@ -32,12 +32,15 @@ import androidx.annotation.NonNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -53,7 +56,6 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
 public class CaseNewActivity extends BaseEditActivity<Case> {
@@ -228,6 +230,25 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 					fragment.setActivityRootData(getStoredRootEntity());
 					fragment.updateForRapidCaseEntry(caze);
 				} else {
+					if (!DataHelper.isNullOrEmpty(contactUuid)) {
+						Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+						try {
+							pickedCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+							DatabaseHelper.getCaseDao().saveAndSnapshot(pickedCase);
+
+							contact.setResultingCaseUuid(pickedCase.getUuid());
+							contact.setResultingCaseUser(ConfigProvider.getUser());
+							contact.setContactStatus(ContactStatus.CONVERTED);
+							DatabaseHelper.getContactDao().saveAndSnapshot(contact);
+						} catch (DaoException e) {
+							NotificationHelper.showNotification(
+								this,
+								ERROR,
+								String.format(getActiveActivity().getResources().getString(R.string.message_save_error), contact.getEntityName()));
+							return;
+						}
+					}
+
 					finish();
 					CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
 				}
@@ -271,6 +292,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 					Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
 					sourceContact.setResultingCaseUuid(caseToSave.getUuid());
 					sourceContact.setResultingCaseUser(ConfigProvider.getUser());
+					sourceContact.setContactStatus(ContactStatus.CONVERTED);
 					DatabaseHelper.getContactDao().saveAndSnapshot(sourceContact);
 				}
 

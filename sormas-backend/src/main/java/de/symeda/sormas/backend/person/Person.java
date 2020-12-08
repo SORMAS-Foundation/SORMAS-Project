@@ -42,6 +42,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -94,6 +95,7 @@ public class Person extends AbstractDomainObject {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
+	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String FATHERS_NAME = "fathersName";
@@ -126,6 +128,7 @@ public class Person extends AbstractDomainObject {
 	private String mothersName;
 	private String mothersMaidenName;
 	private String fathersName;
+	private String namesOfOtherGuardians;
 
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
@@ -165,6 +168,7 @@ public class Person extends AbstractDomainObject {
 
 	private OccupationType occupationType;
 	private String occupationDetails;
+	private ArmedForcesRelationType armedForcesRelationType;
 	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
@@ -430,6 +434,15 @@ public class Person extends AbstractDomainObject {
 		this.occupationDetails = occupationDetails;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
+	}
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getMothersName() {
 		return mothersName;
@@ -446,6 +459,15 @@ public class Person extends AbstractDomainObject {
 
 	public void setFathersName(String fathersName) {
 		this.fathersName = fathersName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getNamesOfOtherGuardians() {
+		return namesOfOtherGuardians;
+	}
+
+	public void setNamesOfOtherGuardians(String namesOfOtherGuardians) {
+		this.namesOfOtherGuardians = namesOfOtherGuardians;
 	}
 
 	@ManyToOne(cascade = {})
@@ -664,4 +686,5 @@ public class Person extends AbstractDomainObject {
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
+
 }

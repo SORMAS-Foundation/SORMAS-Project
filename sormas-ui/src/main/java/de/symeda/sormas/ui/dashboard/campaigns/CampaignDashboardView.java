@@ -3,9 +3,13 @@ package de.symeda.sormas.ui.dashboard.campaigns;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.ViewChangeListener;
@@ -22,6 +26,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.SubMenu;
@@ -178,16 +183,20 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					gridTemplateAreaCreator.getGridRows(),
 					gridTemplateAreaCreator.getGridColumns()));
 			diagramsLayout.setStyleName(gridCssClass);
+			Label noPopulationLocationsLabel = new Label();
+			VerticalLayout locationLayout = new VerticalLayout();
 
 			campaignFormDataMap.forEach((campaignDashboardDiagramDto, diagramData) -> {
 				final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto();
 				final String diagramId = campaignDiagramDefinitionDto.getDiagramId();
 				final String diagramCssClass = diagramId + generateRandomString();
+
 				final CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(
 					campaignDiagramDefinitionDto,
 					diagramData,
 					dataProvider.getCampaignFormTotalsMap().get(campaignDashboardDiagramDto),
-					campaignDiagramDefinitionDto.isPercentageDefault());
+					campaignDiagramDefinitionDto.isPercentageDefault(),
+					Objects.nonNull(dataProvider.getDistrict()));
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
 
@@ -196,8 +205,23 @@ public class CampaignDashboardView extends AbstractDashboardView {
 						int index = diagramsLayout.getComponentIndex(diagramComponent);
 						diagramsLayout.removeComponent(diagramComponent);
 						diagramComponent.setShowPercentages(!diagramComponent.isShowPercentages());
-						diagramComponent.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption());
+						diagramComponent
+							.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption(), Objects.nonNull(dataProvider.getDistrict()));
 						diagramsLayout.addComponent(diagramComponent, index);
+						if (diagramComponent.isShowPercentages()) {
+							if (!diagramComponent.getNoPopulationDataLocations().isEmpty()) {
+
+								noPopulationLocationsLabel.setValue(
+									String.format(
+										I18nProperties.getString(Strings.errorNoPopulationDataLocations),
+										String.join(",", diagramComponent.getNoPopulationDataLocations())));
+								locationLayout.addComponent(noPopulationLocationsLabel);
+								locationLayout.setComponentAlignment(noPopulationLocationsLabel, Alignment.MIDDLE_CENTER);
+								diagramsLayout.addComponent(locationLayout);
+							}
+						} else {
+							locationLayout.removeComponent(noPopulationLocationsLabel);
+						}
 					});
 
 				diagramsLayout.addComponent(diagramComponent);

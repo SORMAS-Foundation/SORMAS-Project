@@ -143,21 +143,25 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		return service.getByUuids(uuids).stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
 	}
 
-    @Override
-    public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
-        return service.getCampaignFormMetasAsReferencesByCampaign(uuid);
-    }
+	@Override
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
+		return service.getCampaignFormMetasAsReferencesByCampaign(uuid);
+	}
 
 	@Override
-    public void validateAllFormMetas() {
-        List<CampaignFormMeta> forms = service.getAll();
+	public void validateAllFormMetas() {
+		List<CampaignFormMeta> forms = service.getAll();
 
 		for (CampaignFormMeta form : forms) {
 			try {
 				CampaignFormMetaDto formDto = toDto(form);
 				validateAndClean(formDto);
 			} catch (ValidationRuntimeException e) {
-				throw new ValidationRuntimeException(form.getId() + ": " + e.getMessage());
+				throw new ValidationRuntimeException(form.getFormId() + ": " + e.getMessage());
+			} catch (Exception e) {
+				throw new ValidationRuntimeException(
+					form.getFormId() + ": "
+						+ I18nProperties.getValidationError(Validations.campaignFormMetaValidationUnexpectedError, e.getMessage()));
 			}
 		}
 	}

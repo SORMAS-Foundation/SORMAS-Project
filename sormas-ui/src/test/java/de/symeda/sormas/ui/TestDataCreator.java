@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -25,6 +26,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -398,6 +401,36 @@ public class TestDataCreator {
 		facility.setRegion(region);
 		FacadeProvider.getFacilityFacade().saveFacility(facility);
 		return facility;
+	}
+
+	public CampaignDto createCampaign(UserDto user) {
+
+		CampaignDto campaign = CampaignDto.build();
+		campaign.setCreatingUser(user.toReference());
+		campaign.setName("CampaignName");
+		campaign.setDescription("Campaign description");
+
+		campaign = FacadeProvider.getCampaignFacade().saveCampaign(campaign);
+
+		return campaign;
+	}
+
+	public CampaignFormMetaDto createCampaignForm(CampaignDto campaign) throws IOException {
+
+		CampaignFormMetaDto campaignForm;
+
+		String schema = "[{\n" + "  \"type\": \"section\",\n" + "  \"id\": \"totalNumbersSection\"\n" + "}, {\n" + "  \"type\": \"label\",\n"
+			+ "  \"id\": \"totalNumbersLabel\",\n" + "  \"caption\": \"<h3>Total Numbers</h3>\"\n" + "}, {\n" + "  \"type\": \"number\",\n"
+			+ "  \"id\": \"infected\",\n" + "  \"caption\": \"Number of infected\",\n" + "  \"styles\": [\"row\", \"col-3\"],\n"
+			+ "  \"important\": true\n" + "}, {\n" + "  \"type\": \"number\",\n" + "  \"id\": \"withAntibodies\",\n"
+			+ "  \"caption\": \"Number persons with antibodies\",\n" + "  \"styles\": [\"row\", \"col-3\"]\n" + "}, {\n" + "  \"type\": \"yes-no\",\n"
+			+ "  \"id\": \"mostlyNonBelievers\",\n" + "  \"caption\": \"Mostly non believers?\",\n" + "  \"important\": true\n" + "}]";
+
+		campaignForm = FacadeProvider.getCampaignFormMetaFacade().buildCampaignFormMetaFromJson("testForm", null, schema, null);
+
+		campaignForm = FacadeProvider.getCampaignFormMetaFacade().saveCampaignFormMeta(campaignForm);
+
+		return campaignForm;
 	}
 
 	public class RDCF {

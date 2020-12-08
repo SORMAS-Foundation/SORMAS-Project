@@ -53,17 +53,19 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
-import de.symeda.sormas.api.externaljournal.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -249,10 +251,15 @@ public class ContactController {
 				if (asSourceContact && alternativeCallback != null && casePerson != null) {
 					selectOrCreateContact(dto, casePerson, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
 						if (selectedContactUuid != null) {
-							if (!selectedContactUuid.equals(dto.getUuid())) {
-								dto.setResultingCase(caze.toReference());
-								FacadeProvider.getContactFacade().saveContact(dto);
-							}
+							ContactDto selectedContact = FacadeProvider.getContactFacade().getContactByUuid(selectedContactUuid);
+							selectedContact.setResultingCase(caze.toReference());
+							selectedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
+							selectedContact.setContactStatus(ContactStatus.CONVERTED);
+							selectedContact.setContactClassification(ContactClassification.CONFIRMED);
+							FacadeProvider.getContactFacade().saveContact(selectedContact);
+
+							// Avoid asking the user to discard unsaved changes
+							createComponent.discard();
 							alternativeCallback.run();
 						}
 					});
@@ -674,7 +681,7 @@ public class ContactController {
 	 * Displays the result in a popup
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
-		PatientDiaryPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
+		ExternalJournalValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
 		if (!validationResult.isValid()) {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {

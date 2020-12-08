@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.view.Menu;
 
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -74,7 +75,12 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
-		return PageMenuItem.fromEnum(ContactSection.values(), getContext());
+		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(ContactSection.values(), getContext());
+		// Sections must be removed in reverse order
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
+			menuItems.set(ContactSection.TASKS.ordinal(), null);
+		}
+		return menuItems;
 	}
 
 	@Override

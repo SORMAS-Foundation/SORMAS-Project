@@ -27,14 +27,15 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.docgeneration.DocGenerationComponent;
+import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.survnet.SurvnetGateway;
@@ -108,11 +109,15 @@ public class CaseDataView extends AbstractCaseView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, CASE_LOC);
 
-		TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
-		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(taskList, TASKS_LOC);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+			TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
+			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(taskList, TASKS_LOC);
+		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.checkIsUnreferredPortHealthCase()) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
+			&& !caze.checkIsUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
@@ -134,14 +139,16 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		VerticalLayout eventLayout = new VerticalLayout();
-		eventLayout.setMargin(false);
-		eventLayout.setSpacing(false);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+			VerticalLayout eventLayout = new VerticalLayout();
+			eventLayout.setMargin(false);
+			eventLayout.setSpacing(false);
 
-		EventListComponent eventList = new EventListComponent(getCaseRef());
-		eventList.addStyleName(CssStyles.SIDE_COMPONENT);
-		eventLayout.addComponent(eventList);
-		layout.addComponent(eventLayout, EVENTS_LOC);
+			EventListComponent eventList = new EventListComponent(getCaseRef());
+			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
+			eventLayout.addComponent(eventList);
+			layout.addComponent(eventLayout, EVENTS_LOC);
+		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
 		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {

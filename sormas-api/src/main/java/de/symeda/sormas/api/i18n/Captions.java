@@ -60,6 +60,7 @@ public interface Captions {
 	String actionNewForm = "actionNewForm";
 	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
+	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
 	String actionReplyingLabel = "actionReplyingLabel";
 	String actionResetFilters = "actionResetFilters";
@@ -163,8 +164,10 @@ public interface Captions {
 	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
+	String CampaignFormData_edit = "CampaignFormData.edit";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
 	String campaignNewCampaign = "campaignNewCampaign";
+	String campaignSearch = "campaignSearch";
 	String campaignValidateForms = "campaignValidateForms";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
@@ -219,6 +222,7 @@ public interface Captions {
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
 	String CaseData_healthFacilityName = "CaseData.healthFacilityName";
 	String CaseData_hospitalization = "CaseData.hospitalization";
+	String CaseData_infectionSetting = "CaseData.infectionSetting";
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
@@ -228,6 +232,7 @@ public interface Captions {
 	String CaseData_maternalHistory = "CaseData.maternalHistory";
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
+	String CaseData_nosocomialOutbreak = "CaseData.nosocomialOutbreak";
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
@@ -451,6 +456,7 @@ public interface Captions {
 	String Contact_endOfQuarantineReasonDetails = "Contact.endOfQuarantineReasonDetails";
 	String Contact_epiData = "Contact.epiData";
 	String Contact_externalID = "Contact.externalID";
+	String Contact_firstContactDate = "Contact.firstContactDate";
 	String Contact_firstName = "Contact.firstName";
 	String Contact_followUpComment = "Contact.followUpComment";
 	String Contact_followUpStatus = "Contact.followUpStatus";
@@ -462,6 +468,7 @@ public interface Captions {
 	String Contact_lastName = "Contact.lastName";
 	String Contact_latestEventId = "Contact.latestEventId";
 	String Contact_latestEventTitle = "Contact.latestEventTitle";
+	String Contact_multiDayContact = "Contact.multiDayContact";
 	String Contact_numberOfVisits = "Contact.numberOfVisits";
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
@@ -1102,6 +1109,7 @@ public interface Captions {
 	String Person_approximateAge = "Person.approximateAge";
 	String Person_approximateAgeReferenceDate = "Person.approximateAgeReferenceDate";
 	String Person_approximateAgeType = "Person.approximateAgeType";
+	String Person_armedForcesRelationType = "Person.armedForcesRelationType";
 	String Person_birthdate = "Person.birthdate";
 	String Person_birthdateDD = "Person.birthdateDD";
 	String Person_birthdateMM = "Person.birthdateMM";
@@ -1133,6 +1141,7 @@ public interface Captions {
 	String Person_matchingCase = "Person.matchingCase";
 	String Person_mothersMaidenName = "Person.mothersMaidenName";
 	String Person_mothersName = "Person.mothersName";
+	String Person_namesOfOtherGuardians = "Person.namesOfOtherGuardians";
 	String Person_nationalHealthId = "Person.nationalHealthId";
 	String Person_nickname = "Person.nickname";
 	String Person_occupationCommunity = "Person.occupationCommunity";
