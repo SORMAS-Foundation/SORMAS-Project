@@ -26,9 +26,9 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -145,7 +145,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 		ComboBox facilityTypeGroup = new ComboBox();
 		facilityTypeGroup.setId(FACILITY_TYPE_GROUP_FILTER);
-		facilityTypeGroup.setInputPrompt(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setInputPrompt(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE_GROUP));
 		facilityTypeGroup.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE, CssStyles.OPTIONGROUP_GRID_LAYOUT);
 		facilityTypeGroup.setWidth(140, Unit.PIXELS);
 		facilityTypeGroup.addItems((Object[]) FacilityTypeGroup.values());
