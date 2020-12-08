@@ -208,9 +208,7 @@ public class CaseExportDto implements Serializable {
 	private EmbeddedSampleExportDto sample3 = new EmbeddedSampleExportDto();
 	private List<EmbeddedSampleExportDto> otherSamples = new ArrayList<>();
 
-	@HideForCountriesExcept
 	private Boolean nosocomialOutbreak;
-	@HideForCountriesExcept
 	private InfectionSetting infectionSetting;
 
 	private QuarantineType quarantine;
@@ -641,6 +639,7 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = CaseDataDto.NOSOCOMIAL_OUTBREAK, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
+	@HideForCountriesExcept
 	public Boolean getNosocomialOutbreak() {
 		return nosocomialOutbreak;
 	}
@@ -651,6 +650,7 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = CaseDataDto.INFECTION_SETTING, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
+	@HideForCountriesExcept
 	public InfectionSetting getInfectionSetting() {
 		return infectionSetting;
 	}
