@@ -51,6 +51,7 @@ import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
@@ -149,6 +150,8 @@ public class Case extends CoreAdo {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
+	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
+	public static final String INFECTION_SETTING = "infectionSetting";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
@@ -322,6 +325,9 @@ public class Case extends CoreAdo {
 	private String quarantineReasonBeforeIsolationDetails;
 	private EndOfIsolationReason endOfIsolationReason;
 	private String endOfIsolationReasonDetails;
+
+	private boolean nosocomialOutbreak;
+	private InfectionSetting infectionSetting;
 
 	private YesNoUnknown prohibitionToWork;
 	private Date prohibitionToWorkFrom;
@@ -1347,6 +1353,24 @@ public class Case extends CoreAdo {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	@Column
+	public boolean isNosocomialOutbreak() {
+		return nosocomialOutbreak;
+	}
+
+	public void setNosocomialOutbreak(boolean nosocomialOutbreak) {
+		this.nosocomialOutbreak = nosocomialOutbreak;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionSetting getInfectionSetting() {
+		return infectionSetting;
+	}
+
+	public void setInfectionSetting(InfectionSetting infectionSetting) {
+		this.infectionSetting = infectionSetting;
 	}
 
 	@Enumerated(EnumType.STRING)

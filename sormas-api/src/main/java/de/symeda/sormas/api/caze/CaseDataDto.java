@@ -127,6 +127,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
+	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
+	public static final String INFECTION_SETTING = "infectionSetting";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
@@ -371,6 +373,10 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
 	private boolean sharedToCountry;
+	@HideForCountriesExcept
+	private boolean nosocomialOutbreak;
+	@HideForCountriesExcept
+	private InfectionSetting infectionSetting;
 	private QuarantineType quarantine;
 	@SensitiveData
 	private String quarantineTypeDetails;
@@ -1017,6 +1023,22 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setSharedToCountry(boolean sharedToCountry) {
 		this.sharedToCountry = sharedToCountry;
+	}
+
+	public boolean isNosocomialOutbreak() {
+		return nosocomialOutbreak;
+	}
+
+	public void setNosocomialOutbreak(boolean nosocomialOutbreak) {
+		this.nosocomialOutbreak = nosocomialOutbreak;
+	}
+
+	public InfectionSetting getInfectionSetting() {
+		return infectionSetting;
+	}
+
+	public void setInfectionSetting(InfectionSetting infectionSetting) {
+		this.infectionSetting = infectionSetting;
 	}
 
 	public QuarantineType getQuarantine() {

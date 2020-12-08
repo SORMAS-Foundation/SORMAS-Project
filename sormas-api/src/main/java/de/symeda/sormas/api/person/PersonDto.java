@@ -86,6 +86,7 @@ public class PersonDto extends PseudonymizableDto {
 
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
+	public static final String NAMES_OF_OTHER_GUARDIANS = "namesOfOtherGuardians";
 	public static final String PLACE_OF_BIRTH_REGION = "placeOfBirthRegion";
 	public static final String PLACE_OF_BIRTH_DISTRICT = "placeOfBirthDistrict";
 	public static final String PLACE_OF_BIRTH_COMMUNITY = "placeOfBirthCommunity";
@@ -131,6 +132,10 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private String fathersName;
+	@PersonalData
+	@SensitiveData
+	@HideForCountriesExcept
+	private String namesOfOtherGuardians;
 	@Outbreaks
 	private Sex sex;
 	@Outbreaks
@@ -512,6 +517,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setFathersName(String fathersName) {
 		this.fathersName = fathersName;
+	}
+
+	public String getNamesOfOtherGuardians() {
+		return namesOfOtherGuardians;
+	}
+
+	public void setNamesOfOtherGuardians(String namesOfOtherGuardians) {
+		this.namesOfOtherGuardians = namesOfOtherGuardians;
 	}
 
 	public RegionReferenceDto getPlaceOfBirthRegion() {

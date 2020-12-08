@@ -543,6 +543,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
+				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY),
@@ -568,7 +569,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.EMAIL_ADDRESS),
 				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
-				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN), 
+				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
@@ -2119,6 +2120,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
 
+		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
+		target.setInfectionSetting(source.getInfectionSetting());
+
 		target.setProhibitionToWork(source.getProhibitionToWork());
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
@@ -2364,6 +2368,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
+
+		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
+		target.setInfectionSetting(source.getInfectionSetting());
 
 		target.setProhibitionToWork(source.getProhibitionToWork());
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
@@ -2710,6 +2717,19 @@ public class CaseFacadeEjb implements CaseFacade {
 		final Path<Timestamp> reportDate = from.get(Case.REPORT_DATE);
 		cq.select(cb.least(reportDate));
 		cq.where(cb.greaterThan(from.get(Case.REPORT_DATE), DateHelper.getDateZero(2000, 1, 1)));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public Date getOldestCaseOutcomeDate() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
+		Root<Case> from = cq.from(Case.class);
+
+		final Path<Timestamp> reportDate = from.get(Case.OUTCOME_DATE);
+		cq.select(cb.least(reportDate));
+		cq.where(cb.greaterThan(from.get(Case.OUTCOME_DATE), DateHelper.getDateZero(2000, 1, 1)));
 		return em.createQuery(cq).getSingleResult();
 	}
 

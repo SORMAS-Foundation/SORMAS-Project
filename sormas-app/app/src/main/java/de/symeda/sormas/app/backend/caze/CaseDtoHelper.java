@@ -196,6 +196,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
+		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
+		target.setInfectionSetting(source.getInfectionSetting());
 
 		target.setProhibitionToWork(source.getProhibitionToWork());
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
@@ -403,6 +405,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
+		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
+		target.setInfectionSetting(source.getInfectionSetting());
 
 		target.setProhibitionToWork(source.getProhibitionToWork());
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());

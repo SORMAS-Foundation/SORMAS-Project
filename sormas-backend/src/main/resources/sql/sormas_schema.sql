@@ -5726,13 +5726,6 @@ FROM tl_map tl;
 
 DROP TABLE IF EXISTS tl_map;
 
-DROP TABLE epidataburial;
-DROP TABLE epidatagathering;
-DROP TABLE epidatatravel;
-DROP TABLE epidataburial_history;
-DROP TABLE epidatagathering_history;
-DROP TABLE epidatatravel_history;
-
 INSERT INTO schema_version (version_number, comment) VALUES (279, 'New exposure entity and migration #2948');
 
 -- 2020-10-21 Epi data migration #2949
@@ -5845,15 +5838,78 @@ FROM last_exposure_map;
 INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype, startdate, enddate, animalcondition, animalvaccinated, prophylaxis, prophylaxisdate, description)
 SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'ANIMAL_CONTACT', dateoflastexposure, dateoflastexposure, animalcondition,
        CASE WHEN animalvaccinationstatus = 'VACCINATED' THEN 'YES' WHEN animalvaccinationstatus = 'UNVACCINATED' THEN 'NO' WHEN animalvaccinationstatus = 'UNKNOWN' THEN 'UNKNOWN' END,
-       prophylaxisstatus, dateofprophylaxis, 'Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact'
+       prophylaxisstatus, dateofprophylaxis, 'Automatic epi data migration based on last exposure details. This exposure may be merged with another exposure with the activity type Animal Contact.'
 FROM last_exposure_map;
 
 DROP TABLE IF EXISTS last_exposure_map;
+CREATE TEMP TABLE empty_travels_map AS
+SELECT id as epidata_id,
+       nextval('entity_seq') as location_id,
+       nextval('entity_seq') as exposure_id,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+FROM epidata WHERE traveled = 'YES' AND epidata.id NOT IN (SELECT epidatatravel.epidata_id FROM epidatatravel);
+
+INSERT INTO location (id, uuid, changedate, creationdate)
+SELECT location_id, location_uuid, now(), now()
+FROM empty_travels_map;
+
+INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype)
+SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'TRAVEL'
+FROM empty_travels_map;
+
+DROP TABLE IF EXISTS empty_travels_map;
+CREATE TEMP TABLE empty_gatherings_map AS
+SELECT id as epidata_id,
+       nextval('entity_seq') as location_id,
+       nextval('entity_seq') as exposure_id,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+FROM epidata WHERE gatheringattended = 'YES' AND epidata.id NOT IN (SELECT epidatagathering.epidata_id FROM epidatagathering);
+
+INSERT INTO location (id, uuid, changedate, creationdate)
+SELECT location_id, location_uuid, now(), now()
+FROM empty_gatherings_map;
+
+INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype)
+SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'GATHERING'
+FROM empty_gatherings_map;
+
+DROP TABLE IF EXISTS empty_gatherings_map;
+CREATE TEMP TABLE empty_burials_map AS
+SELECT id as epidata_id,
+       nextval('entity_seq') as location_id,
+       nextval('entity_seq') as exposure_id,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+FROM epidata WHERE burialattended = 'YES' AND epidata.id NOT IN (SELECT epidataburial.epidata_id FROM epidataburial);
+
+INSERT INTO location (id, uuid, changedate, creationdate)
+SELECT location_id, location_uuid, now(), now()
+FROM empty_burials_map;
+
+INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype)
+SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'BURIAL'
+FROM empty_burials_map;
+
+DROP TABLE IF EXISTS empty_burials_map;
 
 UPDATE exposures SET typeofanimaldetails = otheranimalsdetails FROM epidata WHERE epidata.id = epidata_id AND typeofanimal = 'OTHER';
 UPDATE exposures SET animalcontacttypedetails = kindofexposuredetails FROM epidata WHERE epidata.id = epidata_id AND animalcontacttype = 'OTHER';
 UPDATE exposures SET watersource = epidata.watersource, watersourcedetails = epidata.watersourceother FROM epidata WHERE epidata.id = epidata_id AND bodyofwater = 'YES';
-UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure; this exposure may be merged with another exposure with animal contact' WHERE exposuretype = 'ANIMAL_CONTACT' AND typeofanimal IS NULL;
+UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure. This exposure may be merged with another exposure of the activity type Animal Contact.' WHERE exposuretype = 'ANIMAL_CONTACT' AND typeofanimal IS NULL;
 
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirmedcase = 'YES' OR directcontactprobablecase = 'YES' OR closecontactprobablecase = 'YES' OR contactwithsourcerespiratorycase = 'YES';
 
@@ -5875,7 +5931,14 @@ UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirm
     DROP COLUMN directcontactdeadunsafe, DROP COLUMN processingsuspectedcasesampleunsafe, DROP COLUMN eatingrawanimalsininfectedarea, DROP COLUMN eatingrawanimalsdetails,
     DROP COLUMN kindofexposurebite, DROP COLUMN kindofexposuretouch, DROP COLUMN kindofexposurescratch, DROP COLUMN kindofexposurelick, DROP COLUMN kindofexposureother,
     DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
-    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;*/
+    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;
+
+DROP TABLE epidataburial;
+DROP TABLE epidatagathering;
+DROP TABLE epidatatravel;
+DROP TABLE epidataburial_history;
+DROP TABLE epidatagathering_history;
+DROP TABLE epidatatravel_history;*/
 
 UPDATE epidata SET exposuredetailsknown = 'YES' FROM exposures WHERE (exposuredetailsknown IS NULL OR exposuredetailsknown != 'YES') AND exposures.epidata_id = epidata.id;
 
@@ -5893,6 +5956,31 @@ ALTER TABLE contact ADD column multidaycontact boolean default false;
 ALTER TABLE contact ADD column firstcontactdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
+
+ALTER TABLE person ADD COLUMN armedforcesrelationtype varchar(255);
+ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
+
+-- 2020-11-27 SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416
+ALTER TABLE cases
+    ADD COLUMN nosocomialOutbreak boolean default false,
+    ADD COLUMN infectionSetting varchar(255);
+
+ALTER TABLE cases_history
+    ADD COLUMN nosocomialoutbreak boolean default false,
+    ADD COLUMN infectionsetting varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
+
+-- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+ALTER TABLE person
+    ADD COLUMN namesofotherguardians varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN namesofotherguardians varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
 
 -- 2020-11-25 SurvNet Adaptations - Create new field “Prohibition to work” for case and contact #3409
 ALTER TABLE cases
@@ -5915,6 +6003,6 @@ ALTER TABLE contact_history
     ADD COLUMN prohibitiontoworkfrom timestamp,
     ADD COLUMN prohibitiontoworkuntil timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (283, 'Create new field “Prohibition to work” for case and contact #3409');
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'Create new field “Prohibition to work” for case and contact #3409');
 
 -- *** Insert new sql commands BEFORE this line ***

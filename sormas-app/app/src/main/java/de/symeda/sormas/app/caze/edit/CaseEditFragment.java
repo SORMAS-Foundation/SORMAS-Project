@@ -36,6 +36,7 @@ import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
@@ -101,6 +102,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> endOfIsolationReasonList;
 	private List<Item> covidTestReasonList;
 	private List<Item> contactTracingContactTypeList;
+	private List<Item> infectionSettingList;
 
 	// Static methods
 
@@ -267,6 +269,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		endOfIsolationReasonList = DataUtils.getEnumItems(EndOfIsolationReason.class, true);
 		covidTestReasonList = DataUtils.getEnumItems(CovidTestReason.class, true);
 		contactTracingContactTypeList = DataUtils.getEnumItems(ContactTracingContactType.class, true);
+		infectionSettingList = DataUtils.getEnumItems(InfectionSetting.class, true);
 	}
 
 	@Override
@@ -510,7 +513,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		// end swiss fields
-
+		contentBinding.caseDataInfectionSetting.initializeSpinner(infectionSettingList);
 		contentBinding.caseDataProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
 	}
