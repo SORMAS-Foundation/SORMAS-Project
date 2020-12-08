@@ -1774,9 +1774,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EpiData.class).executeRaw("DROP TABLE tmp_epidata;");
 			case 247:
 				currentVersion = 247;
-
-				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column multidaycontact boolean default false;");
-				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column firstcontactdate timestamp;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column multiDayContact boolean default false;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column firstContactDate timestamp;");
 			case 248:
 				currentVersion = 248;
 
