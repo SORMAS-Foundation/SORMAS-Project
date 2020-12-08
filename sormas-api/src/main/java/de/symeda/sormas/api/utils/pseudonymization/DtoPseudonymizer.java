@@ -99,6 +99,10 @@ public class DtoPseudonymizer {
 	}
 
 	public <DTO extends Pseudonymizable> void restorePseudonymizedValues(Class<DTO> type, DTO dto, DTO originalDto, boolean isInJurisdiction) {
+		if (originalDto == null) {
+			return;
+		}
+
 		List<Field> pseudonymizableFields = getPseudonymizableFields(type, isInJurisdiction);
 		List<Field> embeddedFields = getEmbeddedFields(type, isInJurisdiction);
 
