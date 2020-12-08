@@ -14,20 +14,17 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.ui.caze.importer.CountryImporter;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
-import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportLayoutComponent;
-import de.symeda.sormas.ui.importer.InfrastructureImporter;
 
 @SuppressWarnings("serial")
-public class ImportAllCountriesLayout extends AbstractImportLayout {
+public class ImportDefaultCountriesLayout extends AbstractImportLayout {
 
-	public ImportAllCountriesLayout() {
+	public ImportDefaultCountriesLayout() {
 		super();
 
-		addImportAllCountriesCsvComponent(1, (event) -> {
+		addImportDefaultCountriesCsvComponent(1, (event) -> {
 			URI countriesFileUri = FacadeProvider.getImportFacade().getAllCountriesImportFilePath();
 			File countriesFile = Paths.get(countriesFileUri).toFile();
 			resetDownloadErrorReportButton();
@@ -47,10 +44,11 @@ public class ImportAllCountriesLayout extends AbstractImportLayout {
 		addDownloadErrorReportComponent(2);
 	}
 
-	protected void addImportAllCountriesCsvComponent(int step, Button.ClickListener clickListener) {
+	protected void addImportDefaultCountriesCsvComponent(int step, Button.ClickListener clickListener) {
 		String headline = I18nProperties.getString(Strings.headingImportAllCountries);
 		String infoText = I18nProperties.getString(Strings.infoImportAllCountries);
-		ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, infoText, null, I18nProperties.getCaption(Captions.actionImport));
+		ImportLayoutComponent importCsvComponent =
+			new ImportLayoutComponent(step, headline, infoText, null, I18nProperties.getCaption(Captions.actionImport));
 		importCsvComponent.getButton().addClickListener(clickListener);
 		addComponent(importCsvComponent);
 	}

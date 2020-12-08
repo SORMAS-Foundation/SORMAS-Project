@@ -329,6 +329,11 @@
                 app:valueFormat="@string/two_strings_with_hyphen_format"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/person_armedForcesRelationType"
+                app:value="@{data.armedForcesRelationType}"
+                style="@style/ControlSingleColumnStyle" />
+
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <LinearLayout

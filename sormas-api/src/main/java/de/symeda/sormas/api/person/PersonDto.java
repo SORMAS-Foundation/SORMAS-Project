@@ -83,6 +83,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
+	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
@@ -259,6 +260,9 @@ public class PersonDto extends PseudonymizableDto {
 	private OccupationType occupationType;
 	@SensitiveData
 	private String occupationDetails;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
 	private String generalPractitionerDetails;
 	@SensitiveData
@@ -501,6 +505,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setOccupationDetails(String occupationDetails) {
 		this.occupationDetails = occupationDetails;
+	}
+
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
 	}
 
 	public String getMothersName() {
