@@ -5962,4 +5962,15 @@ ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
 
+-- 2020-11-27 SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416
+ALTER TABLE cases
+    ADD COLUMN nosocomialOutbreak boolean default false,
+    ADD COLUMN infectionSetting varchar(255);
+
+ALTER TABLE cases_history
+    ADD COLUMN nosocomialoutbreak boolean default false,
+    ADD COLUMN infectionsetting varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
+
 -- *** Insert new sql commands BEFORE this line ***
