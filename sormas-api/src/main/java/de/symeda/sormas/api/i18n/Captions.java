@@ -222,6 +222,7 @@ public interface Captions {
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
 	String CaseData_healthFacilityName = "CaseData.healthFacilityName";
 	String CaseData_hospitalization = "CaseData.hospitalization";
+	String CaseData_infectionSetting = "CaseData.infectionSetting";
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
@@ -231,6 +232,7 @@ public interface Captions {
 	String CaseData_maternalHistory = "CaseData.maternalHistory";
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
+	String CaseData_nosocomialOutbreak = "CaseData.nosocomialOutbreak";
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
@@ -1102,6 +1104,7 @@ public interface Captions {
 	String Person_approximateAge = "Person.approximateAge";
 	String Person_approximateAgeReferenceDate = "Person.approximateAgeReferenceDate";
 	String Person_approximateAgeType = "Person.approximateAgeType";
+	String Person_armedForcesRelationType = "Person.armedForcesRelationType";
 	String Person_birthdate = "Person.birthdate";
 	String Person_birthdateDD = "Person.birthdateDD";
 	String Person_birthdateMM = "Person.birthdateMM";
@@ -1133,6 +1136,7 @@ public interface Captions {
 	String Person_matchingCase = "Person.matchingCase";
 	String Person_mothersMaidenName = "Person.mothersMaidenName";
 	String Person_mothersName = "Person.mothersName";
+	String Person_namesOfOtherGuardians = "Person.namesOfOtherGuardians";
 	String Person_nationalHealthId = "Person.nationalHealthId";
 	String Person_nickname = "Person.nickname";
 	String Person_occupationCommunity = "Person.occupationCommunity";

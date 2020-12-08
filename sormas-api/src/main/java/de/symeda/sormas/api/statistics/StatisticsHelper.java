@@ -217,6 +217,9 @@ public final class StatisticsHelper {
 		case REPORT_TIME:
 			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReportDate();
 			break;
+		case OUTCOME_TIME:
+			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseOutcomeDate();
+			break;
 		default:
 			return new ArrayList<>();
 		}
