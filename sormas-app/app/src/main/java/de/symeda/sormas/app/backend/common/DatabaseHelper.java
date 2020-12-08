@@ -1793,18 +1793,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD column namesOfOtherGuardians varchar(512);");
 
-			case 250:
-				currentVersion = 250;
-
-				getDao(Event.class).executeRaw(
-						"UPDATE location " +
-						"SET location.facilityType = 'HOSPITAL' " +
-						"FROM location " +
-						"INNER JOIN events ON events.eventLocation_id = location.id " +
-						"WHERE events.typeOfPlace = 'HOSPITAL' " +
-						"AND location.facilityType IS NULL;");
-				getDao(Event.class).executeRaw("UPDATE events SET typeofplace = 'FACILITY' WHERE typeofplace = 'HOSPITAL':");
-
 			case 251:
 				currentVersion = 251;
 
