@@ -46,8 +46,7 @@ public class EventExportDto implements Serializable {
 	private String houseNumber;
 	private String additionalInformation;
 	private EventSourceType srcType;
-	private InstitutionalPartnerType srcInstitutionalPartnerType;
-	private String srcInstitutionalPartnerTypeDetails;
+	private String srcInstitutionalPartnerType;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
@@ -115,8 +114,7 @@ public class EventExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.srcType = srcType;
-		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
-		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
+		this.srcInstitutionalPartnerType = buildSrcInstitutionalPartnerTypeString(srcInstitutionalPartnerType, srcInstitutionalPartnerTypeDetails);
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
 		this.srcTelNo = srcTelNo;
@@ -126,6 +124,19 @@ public class EventExportDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+	}
+
+	private String buildSrcInstitutionalPartnerTypeString(
+		InstitutionalPartnerType srcInstitutionalPartnerType,
+		String srcInstitutionalPartnerTypeDetails) {
+
+		final StringBuilder sb = new StringBuilder();
+		if (srcInstitutionalPartnerType == InstitutionalPartnerType.OTHER) {
+			sb.append(srcInstitutionalPartnerTypeDetails);
+		} else if (srcInstitutionalPartnerType != null) {
+			sb.append(srcInstitutionalPartnerType);
+		}
+		return sb.toString();
 	}
 
 	@Order(0)
@@ -284,16 +295,11 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(19)
-	public InstitutionalPartnerType getSrcInstitutionalPartnerType() {
+	public String getSrcInstitutionalPartnerType() {
 		return srcInstitutionalPartnerType;
 	}
 
 	@Order(20)
-	public String getSrcInstitutionalPartnerTypeDetails() {
-		return srcInstitutionalPartnerTypeDetails;
-	}
-
-	@Order(21)
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -302,7 +308,7 @@ public class EventExportDto implements Serializable {
 		this.srcFirstName = srcFirstName;
 	}
 
-	@Order(22)
+	@Order(21)
 	public String getSrcLastName() {
 		return srcLastName;
 	}
@@ -311,7 +317,7 @@ public class EventExportDto implements Serializable {
 		this.srcLastName = srcLastName;
 	}
 
-	@Order(23)
+	@Order(22)
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}
@@ -320,27 +326,27 @@ public class EventExportDto implements Serializable {
 		this.srcTelNo = srcTelNo;
 	}
 
-	@Order(24)
+	@Order(23)
 	public String getSrcEmail() {
 		return srcEmail;
 	}
 
-	@Order(25)
+	@Order(24)
 	public String getSrcMediaWebsite() {
 		return srcMediaWebsite;
 	}
 
-	@Order(26)
+	@Order(25)
 	public String getSrcMediaName() {
 		return srcMediaName;
 	}
 
-	@Order(27)
+	@Order(26)
 	public String getSrcMediaDetails() {
 		return srcMediaDetails;
 	}
 
-	@Order(28)
+	@Order(27)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
@@ -349,7 +355,7 @@ public class EventExportDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 	}
 
-	@Order(29)
+	@Order(28)
 	public long getParticipantsCount() {
 		return participantsCount;
 	}
