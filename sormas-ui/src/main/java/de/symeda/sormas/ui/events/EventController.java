@@ -20,9 +20,8 @@ package de.symeda.sormas.ui.events;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.text.StringEscapeUtils;
-
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -44,7 +43,11 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -59,6 +62,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 public class EventController {
 
@@ -105,7 +110,7 @@ public class EventController {
 
 					EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 					if (!eventIndexDto.contains(selectedEvent)) {
-						createEventParticipantWithCase(eventReferenceDto, caseDataDto, caseRef);
+						linkCaseToEvent(eventReferenceDto, caseDataDto, caseRef);
 					}
 				} else {
 					create(caseRef);
@@ -153,7 +158,19 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void createEventParticipantWithCase(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
+	public void linkCaseToEvent(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
+		// Check whether Person is already enlisted as EventParticipant in this Event
+		EventParticipantReferenceDto eventParticipantRef =
+			FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventReferenceDto.getUuid(), caseDataDto.getPerson().getUuid());
+		if (eventParticipantRef != null) {
+			EventParticipantDto eventParticipant =
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+			eventParticipant.setResultingCase(caseRef);
+			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+			return;
+		}
+
+		// Create new EventParticipant for this Person
 		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		EventParticipantDto eventParticipantDto;
 		eventParticipantDto =
@@ -242,7 +259,7 @@ public class EventController {
 					if (caseRef != null) {
 						EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
 
-						createEventParticipantWithCase(createdEvent, finalCaseDataDto, caseRef);
+						linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
 						SormasUI.refreshView();
 					} else {
 						navigateToParticipants(dto.getUuid());

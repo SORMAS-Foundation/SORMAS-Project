@@ -88,6 +88,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setContactOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getContactOfficer()));
 
 		target.setMultiDayContact(source.isMultiDayContact());
+		target.setFirstContactDate(source.getFirstContactDate());
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
@@ -210,6 +211,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		}
 		target.setReportDateTime(source.getReportDateTime());
 
+		target.setMultiDayContact(source.isMultiDayContact());
+		target.setFirstContactDate(source.getFirstContactDate());
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
