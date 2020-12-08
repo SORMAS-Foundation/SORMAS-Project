@@ -215,18 +215,17 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/event_srcInstitutionalPartnerType"
                         style="@style/ControlFirstOfTwoColumnsStyle"
-                        app:value="@={data.srcInstitutionalPartnerType}"
+                        app:value="@{data.srcInstitutionalPartnerType}"
                         app:dependencyParentField="@{eventSrcType}"
                         app:dependencyParentValue="@{EventSourceType.INSTITUTIONAL_PARTNER}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/event_srcInstitutionalPartnerTypeDetails"
                         style="@style/ControlSecondOfTwoColumnsStyle"
-                        app:value="@={data.srcInstitutionalPartnerTypeDetails}"
+                        app:value="@{data.srcInstitutionalPartnerTypeDetails}"
                         app:dependencyParentField="@{eventSrcInstitutionalPartnerType}"
                         app:dependencyParentValue="@{InstitutionalPartnerType.OTHER}" />
 
