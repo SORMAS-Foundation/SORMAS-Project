@@ -4,11 +4,10 @@ import javax.servlet.ServletConfig;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Context;
 
+import org.apache.commons.collections4.SetUtils;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-
-import com.google.common.collect.Sets;
 
 import de.symeda.sormas.rest.swagger.SwaggerConfig;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
@@ -51,7 +50,7 @@ public class ExternalRestResourceConfig extends ResourceConfig {
 		OpenAPI openAPI = new OpenAPI().info(info);
 		SwaggerConfiguration openAPIConfiguration = new SwaggerConfiguration().prettyPrint(true)
 			.openAPI(openAPI)
-			.resourceClasses(Sets.newHashSet(ExternalVisitsResource.class.getSimpleName()));
+			.resourceClasses(SetUtils.hashSet(ExternalVisitsResource.class.getSimpleName()));
 		OpenApiResource openApiResource = new OpenApiResource();
 		openApiResource.setOpenApiConfiguration(openAPIConfiguration);
 		register(openApiResource);
