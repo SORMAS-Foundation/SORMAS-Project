@@ -315,6 +315,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					PersonDto.PHONE,
 					PersonDto.EMAIL_ADDRESS);
 
+				setRequired(false, PersonDto.SEX);
+
 				TextField personNameField = addCustomField(PERSON_NAME_LOC, String.class, TextField.class);
 				personNameField.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 				personNameField.setValue(getValue().getPerson().getCaption());

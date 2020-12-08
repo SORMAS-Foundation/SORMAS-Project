@@ -93,6 +93,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -341,6 +342,7 @@ public class TestDataCreator {
 		caze.setFacilityType(beanTest.getFacilityFacade().getByUuid(rdcf.facility.getUuid()).getType());
 		caze.setHealthFacility(rdcf.facility);
 		caze.setPointOfEntry(rdcf.pointOfEntry);
+		caze.setOutcomeDate(DateHelper.addWeeks(reportAndOnsetDate, 2));
 
 		if (setCustomFields != null) {
 			setCustomFields.accept(caze);
@@ -562,6 +564,11 @@ public class TestDataCreator {
 
 	public EventDto createEvent(UserReferenceDto reportingUser) {
 
+		return createEvent(reportingUser, new Date());
+	}
+
+	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {
+
 		return createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -571,7 +578,7 @@ public class TestDataCreator {
 			"LastName",
 			null,
 			null,
-			new Date(),
+			eventDate,
 			new Date(),
 			reportingUser,
 			null,
@@ -987,7 +994,7 @@ public class TestDataCreator {
 		return campaign;
 	}
 
-	public CampaignDiagramDefinitionDto createCampaignDiagramDefinition(String diagramId, String diagramCaption){
+	public CampaignDiagramDefinitionDto createCampaignDiagramDefinition(String diagramId, String diagramCaption) {
 		CampaignDiagramDefinitionDto campaignDiagramDefinition = CampaignDiagramDefinitionDto.build();
 		campaignDiagramDefinition.setDiagramType(DiagramType.COLUMN);
 		campaignDiagramDefinition.setDiagramId(diagramId);

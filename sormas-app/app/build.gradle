@@ -92,6 +92,17 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation("de.symeda.sormas:sormas-api:$sormasVersion") { changing = true }
+    implementation 'com.github.mpkorstanje:simmetrics-core:4.1.1'
+    implementation 'com.google.guava:guava:19.0'
+    implementation 'com.opencsv:opencsv:5.3'
+    implementation 'commons-beanutils:commons-beanutils:1.9.2'
+    implementation 'commons-codec:commons-codec:1.9'
+    implementation 'commons-collections:commons-collections:3.2.2'
+    implementation 'commons-logging:commons-logging:1.2'
+    implementation 'joda-time:joda-time:2.9.4'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.apache.commons:commons-lang3:3.10'
+    implementation 'org.apache.commons:commons-text:1.9'
     implementation 'com.googlecode:openbeans:1.0'
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
     implementation(name: 'CircleProgress-v1.2.1', ext: 'aar')

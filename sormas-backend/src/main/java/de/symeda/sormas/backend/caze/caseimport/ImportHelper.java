@@ -94,6 +94,10 @@ public class ImportHelper {
 			district = person.getPlaceOfBirthDistrict();
 			community = person.getPlaceOfBirthCommunity();
 			break;
+		case LocationDto.FACILITY:
+			district = person.getAddress().getDistrict();
+			community = person.getAddress().getCommunity();
+			break;
 		default:
 			throw new IllegalArgumentException(propertyName);
 		}
