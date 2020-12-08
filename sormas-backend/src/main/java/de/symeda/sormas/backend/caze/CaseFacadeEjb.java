@@ -3111,15 +3111,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, e -> totalCount.addAndGet(caseService.count((cb, root) -> {
 			final Join<Case, Person> personJoin = root.join(Case.PERSON, JoinType.LEFT);
 			final String messageTypeColumn = messageType == MessageType.EMAIL ? Person.EMAIL_ADDRESS : Person.PHONE;
-			return cb.and(root.get(Case.UUID).in(caseUuids), cb.isNull(personJoin.get(messageTypeColumn)));
+			return cb.and(
+				root.get(Case.UUID).in(caseUuids),
+				cb.and(cb.isNull(personJoin.get(messageTypeColumn)), cb.notEqual(personJoin.get(messageTypeColumn), StringUtils.EMPTY)));
 		})));
 
 		return totalCount.get();
 	}
 
 	@Override
-	public List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType) {
-		return manualMessageLogService.getByCaseUuid(caseUuid, messageType)
+	public List<ManualMessageLogDto> getMessageLog(String personUuid, MessageType messageType) {
+		return manualMessageLogService.getByPersonUuid(personUuid, messageType)
 			.stream()
 			.map(
 				mml -> new ManualMessageLogDto(

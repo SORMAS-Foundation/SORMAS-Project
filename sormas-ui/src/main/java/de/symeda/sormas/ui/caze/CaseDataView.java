@@ -118,9 +118,10 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(taskList, TASKS_LOC);
 		}
 
-		boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
-		if (externalMessagesEnabled && UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
-			SmsListComponent smsList = new SmsListComponent(getCaseRef());
+		final boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
+		final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
+		if (isSmsServiceSetUp && externalMessagesEnabled && UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+			SmsListComponent smsList = new SmsListComponent(getCaseRef(), caze.getPerson());
 			smsList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(smsList, SMS_LOC);
 		}

@@ -1,12 +1,9 @@
 package de.symeda.sormas.ui.caze.messaging;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.CustomField;
@@ -39,30 +36,25 @@ public class SmsComponent extends CustomField<String> {
 			mainLayout.addComponent(
 				new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " "
-						+ String.format(I18nProperties.getCaption(Captions.numberOfMissingPhoneNumbers), missingPhoneNumbers),
+						+ String.format(I18nProperties.getCaption(Captions.Messages_numberOfMissingPhoneNumbers), missingPhoneNumbers),
 					ContentMode.HTML));
 			mainLayout.addComponent(new Label());
 		}
 
-		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.enterSMS)));
+		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.Messages_enterSMS)));
 
 		final TextFieldWithMaxLengthWrapper<TextArea> tTextFieldWithMaxLengthWrapper = new TextFieldWithMaxLengthWrapper<>();
 
 		smsTextArea = new TextArea();
 		smsTextArea.setWidth(100, Unit.PERCENTAGE);
 		smsTextArea.setRows(4);
-		mainLayout.addComponent(tTextFieldWithMaxLengthWrapper.wrap(smsTextArea, Captions.characters));
+		mainLayout.addComponent(tTextFieldWithMaxLengthWrapper.wrap(smsTextArea, Captions.Messages_characters));
 
-		final HorizontalLayout nrOfMessagesLayout = new HorizontalLayout();
-		nrOfMessagesLayout.setSpacing(false);
-		nrOfMessagesLayout.setMargin(false);
-
-		final Label numberOfMessagesLabel = new Label(StringUtils.EMPTY);
+		final Label numberOfMessagesLabel = new Label(String.format(I18nProperties.getCaption(Captions.Messages_numberOfMessages), 0));
 		numberOfMessagesLabel.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);
-		nrOfMessagesLayout.addComponent(numberOfMessagesLabel);
+		mainLayout.addComponent(numberOfMessagesLabel);
 
-		mainLayout.addComponent(nrOfMessagesLayout);
-		mainLayout.setComponentAlignment(nrOfMessagesLayout, Alignment.BOTTOM_RIGHT);
+		mainLayout.setComponentAlignment(numberOfMessagesLabel, Alignment.BOTTOM_RIGHT);
 
 		smsTextArea.addTextChangeListener(e -> setNumberOfMessagesLabel(numberOfMessagesLabel, e.getText().length()));
 		smsTextArea.addValueChangeListener(e -> setNumberOfMessagesLabel(numberOfMessagesLabel, smsTextArea.getValue().length()));
@@ -71,7 +63,7 @@ public class SmsComponent extends CustomField<String> {
 	}
 
 	private void setNumberOfMessagesLabel(Label numberOfMessagesLabel, int nrOfCharacters) {
-		numberOfMessagesLabel.setValue(String.format(I18nProperties.getCaption(Captions.numberOfMessages), (1 + nrOfCharacters / 160)));
+		numberOfMessagesLabel.setValue(String.format(I18nProperties.getCaption(Captions.Messages_numberOfMessages), (1 + nrOfCharacters / 160)));
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implemen
 		textField.setNullRepresentation("");
 		textField.setTextChangeTimeout(200);
 
-		Label labelField = new Label();
+		Label labelField = new Label(buildLabelMessage(textField.getValue(), textField, caption));
 		labelField.setId(textField.getId() + "_label");
 		labelField.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		labelField.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);

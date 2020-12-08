@@ -10,26 +10,27 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class SmsList extends PaginationList<ManualMessageLogDto> {
 
-	private CaseReferenceDto caseReferenceDto;
+	private PersonReferenceDto personReferenceDto;
 	private boolean hasPhoneNumber;
 
-	public SmsList(CaseReferenceDto caseReferenceDto, boolean hasPhoneNumber) {
+	public SmsList(PersonReferenceDto personReferenceDto, boolean hasPhoneNumber) {
 		super(5);
-		this.caseReferenceDto = caseReferenceDto;
+		this.personReferenceDto = personReferenceDto;
 		this.hasPhoneNumber = hasPhoneNumber;
 	}
 
 	@Override
 	public void reload() {
 
-		List<ManualMessageLogDto> messageLogs = FacadeProvider.getCaseFacade().getMessageLog(caseReferenceDto.getUuid(), MessageType.SMS);
+		List<ManualMessageLogDto> messageLogs = FacadeProvider.getCaseFacade().getMessageLog(personReferenceDto.getUuid(), MessageType.SMS);
 
 		if (!hasPhoneNumber){
-			Label noPhoneNumberLabel = new Label(I18nProperties.getCaption(Captions.noPhoneNumberForCasePerson));
+			Label noPhoneNumberLabel = new Label(I18nProperties.getCaption(Captions.Messages_noPhoneNumberForCasePerson));
 			listLayout.addComponent(noPhoneNumberLabel);
 		}
 
@@ -38,7 +39,7 @@ public class SmsList extends PaginationList<ManualMessageLogDto> {
 			showPage(1);
 		} else {
 			updatePaginationLayout();
-			Label noMessageLabel = new Label(I18nProperties.getCaption(Captions.noSmsSentForCase));
+			Label noMessageLabel = new Label(I18nProperties.getCaption(Captions.Messages_noSmsSentForCase));
 			listLayout.addComponent(noMessageLabel);
 		}
 	}

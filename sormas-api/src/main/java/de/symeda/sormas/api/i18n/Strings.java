@@ -128,7 +128,6 @@ public interface Strings {
 	String DiseaseNetworkDiagram_subheading = "DiseaseNetworkDiagram.subheading";
 	String done = "done";
 	String edit = "edit";
-	String enterSMS = "enterSMS";
 	String entityAction = "entityAction";
 	String entityActions = "entityActions";
 	String entityAdditionalTest = "entityAdditionalTest";
@@ -724,6 +723,8 @@ public interface Strings {
 	String messageRegionsArchived = "messageRegionsArchived";
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
+	String Messages_enterSMS = "Messages.enterSMS";
+	String Messages_smsSent = "Messages.smsSent";
 	String messageSampleErrors = "messageSampleErrors";
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
