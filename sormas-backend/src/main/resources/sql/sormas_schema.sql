@@ -5909,7 +5909,8 @@ CREATE TABLE manualmessagelog
     messagetype    character varying(255)      NOT NULL,
     sentdate       timestamp                   NOT NULL,
     sendinguser_id bigint                      NOT NULL,
-    recipientperson_id bigint                  NOT NULL
+    recipientperson_id bigint                  NOT NULL,
+    PRIMARY KEY (id)
 );
 
 ALTER TABLE manualmessagelog OWNER TO sormas_user;

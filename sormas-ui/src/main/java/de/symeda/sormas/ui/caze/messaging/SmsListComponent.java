@@ -13,7 +13,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -25,15 +24,15 @@ public class SmsListComponent extends VerticalLayout {
 	private boolean hasPhoneNumber;
 
 	public SmsListComponent(CaseReferenceDto caseRef) {
-		long missingPhoneNumbers = FacadeProvider.getCaseFacade().countCasesWithMissingMessageType(Arrays.asList(caseRef.getUuid()), MessageType.SMS);
+		long missingPhoneNumbers = FacadeProvider.getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caseRef.getUuid()), MessageType.SMS);
 		hasPhoneNumber = missingPhoneNumbers == 0;
 		createSmsListComponent(new SmsList(caseRef, hasPhoneNumber), e -> {
 			final SmsComponent smsComponent = new SmsComponent(missingPhoneNumbers);
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.sendingSms),
+				I18nProperties.getCaption(Captions.sendingSms),
 				smsComponent,
-				I18nProperties.getString(Strings.send),
-				I18nProperties.getString(Strings.cancel),
+				I18nProperties.getCaption(Captions.send),
+				I18nProperties.getCaption(Captions.cancel),
 				640,
 				confirmationEvent -> {
 					if (confirmationEvent.booleanValue()) {
@@ -59,7 +58,7 @@ public class SmsListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label smsHeader = new Label(I18nProperties.getString(Strings.sms));
+		Label smsHeader = new Label(I18nProperties.getCaption(Captions.sms));
 		smsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(smsHeader);
 

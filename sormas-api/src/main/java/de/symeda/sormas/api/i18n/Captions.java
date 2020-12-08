@@ -169,6 +169,7 @@ public interface Captions {
 	String campaignNewCampaign = "campaignNewCampaign";
 	String campaignSearch = "campaignSearch";
 	String campaignValidateForms = "campaignValidateForms";
+	String cancel = "cancel";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
 	String caseArchivedCases = "caseArchivedCases";
@@ -394,6 +395,7 @@ public interface Captions {
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
+	String characters = "characters";
 	String city = "city";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
@@ -740,6 +742,7 @@ public interface Captions {
 	String DocumentTemplate_QuarantineOrder_templates = "DocumentTemplate.QuarantineOrder.templates";
 	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
 	String documentUploadDocument = "documentUploadDocument";
+	String email = "email";
 	String EpiData = "EpiData";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
@@ -1072,6 +1075,8 @@ public interface Captions {
 	String notAvailableShort = "notAvailableShort";
 	String notSpecified = "notSpecified";
 	String numberOfCharacters = "numberOfCharacters";
+	String numberOfMessages = "numberOfMessages";
+	String numberOfMissingPhoneNumbers = "numberOfMissingPhoneNumbers";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	String outbreakNoOutbreak = "outbreakNoOutbreak";
@@ -1368,11 +1373,14 @@ public interface Captions {
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
+	String send = "send";
+	String sendingSms = "sendingSms";
 	String sendSMS = "sendSMS";
 	String sentBy = "sentBy";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
+	String sms = "sms";
 	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
 	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";

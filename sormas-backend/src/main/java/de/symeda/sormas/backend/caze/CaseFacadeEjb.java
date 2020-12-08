@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -3103,13 +3104,17 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public long countCasesWithMissingMessageType(List<String> caseUuids, MessageType messageType) {
+	public long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType) {
 
-		return caseService.count((cb, root) -> {
-			final Join<Object, Object> personJoin = root.join(Case.PERSON, JoinType.LEFT);
+		final AtomicLong totalCount = new AtomicLong();
+
+		IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, e -> totalCount.addAndGet(caseService.count((cb, root) -> {
+			final Join<Case, Person> personJoin = root.join(Case.PERSON, JoinType.LEFT);
 			final String messageTypeColumn = messageType == MessageType.EMAIL ? Person.EMAIL_ADDRESS : Person.PHONE;
 			return cb.and(root.get(Case.UUID).in(caseUuids), cb.isNull(personJoin.get(messageTypeColumn)));
-		});
+		})));
+
+		return totalCount.get();
 	}
 
 	@Override

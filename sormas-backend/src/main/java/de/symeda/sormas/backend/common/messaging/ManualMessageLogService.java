@@ -29,7 +29,7 @@ public class ManualMessageLogService extends AbstractAdoService<ManualMessageLog
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ManualMessageLog> from) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	public List<ManualMessageLog> getByCaseUuid(@NotNull String caseUuid, MessageType messageType) {
@@ -38,16 +38,13 @@ public class ManualMessageLogService extends AbstractAdoService<ManualMessageLog
 		final CriteriaQuery<ManualMessageLog> cq = cb.createQuery(ManualMessageLog.class);
 		final Root<ManualMessageLog> manualMessageLogRoot = cq.from(ManualMessageLog.class);
 
-		final Subquery<Person> casePersonSubQuery = cq.subquery(Person.class);
-		final Root<Case> caseRoot = casePersonSubQuery.from(Case.class);
-		casePersonSubQuery.where(cb.equal(caseRoot.get(Case.UUID), caseUuid));
-		casePersonSubQuery.select(caseRoot.get(Case.PERSON));
+		final Subquery<Person> casePersonIdSubQuery = cq.subquery(Person.class);
+		final Root<Case> caseRoot = casePersonIdSubQuery.from(Case.class);
+		casePersonIdSubQuery.where(cb.equal(caseRoot.get(Case.UUID), caseUuid));
+		casePersonIdSubQuery.select(caseRoot.get(Case.PERSON).get(Person.ID));
 
-		Predicate filter = createUserFilter(cb, cq, manualMessageLogRoot);
-		filter = AbstractAdoService.and(
-			cb,
-			filter,
-			cb.equal(manualMessageLogRoot.get(ManualMessageLog.RECIPIENT_PERSON), casePersonSubQuery),
+		Predicate filter = cb.and(
+			cb.equal(manualMessageLogRoot.get(ManualMessageLog.RECIPIENT_PERSON).get(Person.ID), casePersonIdSubQuery),
 			cb.equal(manualMessageLogRoot.get(ManualMessageLog.MESSAGE_TYPE), messageType));
 
 		cq.where(filter);

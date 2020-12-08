@@ -1163,12 +1163,12 @@ public class CaseController {
 		} else {
 			final List<String> caseUuids = selectedRows.stream().map(caseIndexDto -> caseIndexDto.getUuid()).collect(Collectors.toList());
 			final SmsComponent smsComponent =
-				new SmsComponent(FacadeProvider.getCaseFacade().countCasesWithMissingMessageType(caseUuids, MessageType.SMS));
+				new SmsComponent(FacadeProvider.getCaseFacade().countCasesWithMissingContactInformation(caseUuids, MessageType.SMS));
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.sendingSms),
+				I18nProperties.getCaption(Captions.sendingSms),
 				smsComponent,
-				I18nProperties.getString(Strings.send),
-				I18nProperties.getString(Strings.cancel),
+				I18nProperties.getCaption(Captions.send),
+				I18nProperties.getCaption(Captions.cancel),
 				640,
 				confirmationEvent -> {
 					if (confirmationEvent.booleanValue()) {
