@@ -20,8 +20,7 @@ package de.symeda.sormas.ui.events;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -43,10 +42,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantFacade;
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -55,7 +51,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -259,7 +254,7 @@ public class EventController {
 					if (caseRef != null) {
 						EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
 
-						createEventParticipantWithCase(createdEvent, finalCaseDataDto, caseRef);
+						linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
 						SormasUI.refreshView();
 					} else {
 						navigateToParticipants(dto.getUuid());
