@@ -5962,9 +5962,31 @@ ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
 
+-- 2020-11-27 SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416
+ALTER TABLE cases
+    ADD COLUMN nosocomialOutbreak boolean default false,
+    ADD COLUMN infectionSetting varchar(255);
+
+ALTER TABLE cases_history
+    ADD COLUMN nosocomialoutbreak boolean default false,
+    ADD COLUMN infectionsetting varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
+
+-- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+ALTER TABLE person
+    ADD COLUMN namesofotherguardians varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN namesofotherguardians varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
+
+-- 2020-12-08 SurvNet Adaptations - Add multi day contat to contact history #3408
+
 ALTER TABLE contact_history ADD column multidaycontact boolean;
 ALTER TABLE contact_history ADD column firstcontactdate timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (284, 'Add date of first contact for contact history #3408');
+INSERT INTO schema_version (version_number, comment) VALUES (286, 'Add date of first contact for contact history #3408');
 
 -- *** Insert new sql commands BEFORE this line ***
