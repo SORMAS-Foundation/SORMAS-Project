@@ -18,7 +18,7 @@ public class ValidationHelper {
 
 		ResultCallback<Boolean> dateFromCallback = () -> {
 			if (dateFromControl.getValue() != null && dateUntilContol.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance().compare(dateFromControl.getValue(), dateUntilContol.getValue()) > 0) {
+				if (dateFromControl.getValue().after(dateUntilContol.getValue())) {
 					dateFromControl.enableErrorState(
 						I18nProperties.getValidationError(Validations.beforeDate, dateFromControl.getCaption(), dateUntilContol.getCaption()));
 					return true;
@@ -30,7 +30,7 @@ public class ValidationHelper {
 
 		ResultCallback<Boolean> dateUntilCallback = () -> {
 			if (dateUntilContol.getValue() != null && dateFromControl.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance().compare(dateUntilContol.getValue(), dateFromControl.getValue()) < 0) {
+				if (dateUntilContol.getValue().before(dateFromControl.getValue())) {
 					dateUntilContol.enableErrorState(
 						I18nProperties.getValidationError(Validations.beforeDate, dateUntilContol.getCaption(), dateFromControl.getCaption()));
 					return true;
