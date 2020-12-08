@@ -5973,4 +5973,16 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
 
+-- 2020-12-03 Remove hospital from event's type of place #3617
+UPDATE location
+SET location.facilitytype = 'HOSPITAL'
+FROM location
+INNER JOIN events ON events.eventlocation_id = location.id
+WHERE events.typeofplace = 'HOSPITAL'
+  AND location.facilitytype IS NULL;
+
+UPDATE events SET typeofplace = 'FACILITY' WHERE typeofplace = 'HOSPITAL';
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'Remove hospital from event''s type of place #3617');
+
 -- *** Insert new sql commands BEFORE this line ***
