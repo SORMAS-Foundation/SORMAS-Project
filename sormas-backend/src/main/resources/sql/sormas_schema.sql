@@ -5973,12 +5973,21 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
 
+-- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+ALTER TABLE person
+    ADD COLUMN namesofotherguardians varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN namesofotherguardians varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
+
 -- 2020-11-27 Add institutional partner option to events source type #3207
 ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255);
 ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerType varchar(255);
 ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
 ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (285, 'Add institutional partner option to events source type #3207');
+INSERT INTO schema_version (version_number, comment) VALUES (286, 'Add institutional partner option to events source type #3207');
 
 -- *** Insert new sql commands BEFORE this line ***
