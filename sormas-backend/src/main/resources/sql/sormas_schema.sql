@@ -6003,6 +6003,6 @@ ALTER TABLE contact_history
     ADD COLUMN prohibitiontoworkfrom timestamp,
     ADD COLUMN prohibitiontoworkuntil timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (285, 'Create new field “Prohibition to work” for case and contact #3409');
+INSERT INTO schema_version (version_number, comment) VALUES (286, 'Create new field “Prohibition to work” for case and contact #3409');
 
 -- *** Insert new sql commands BEFORE this line ***
