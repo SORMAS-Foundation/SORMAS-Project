@@ -5973,4 +5973,13 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
 
+-- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+ALTER TABLE person
+    ADD COLUMN namesofotherguardians varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN namesofotherguardians varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
+
 -- *** Insert new sql commands BEFORE this line ***
