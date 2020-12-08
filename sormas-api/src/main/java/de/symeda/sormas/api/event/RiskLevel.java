@@ -21,9 +21,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum RiskLevel {
 
-	LOW_RISK,
-	MODERADE_RISK,
-	HIGH_RISK,
+	LOW,
+	MODERATE,
+	HIGH,
 	UNKNOWN;
 
 	public String toString() {
