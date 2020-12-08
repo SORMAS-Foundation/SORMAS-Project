@@ -5962,7 +5962,7 @@ ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
 
-ALTER TABLE contact_history ADD column multidaycontact boolean default false;
+ALTER TABLE contact_history ADD column multidaycontact boolean;
 ALTER TABLE contact_history ADD column firstcontactdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (284, 'Add date of first contact for contact history #3408');
