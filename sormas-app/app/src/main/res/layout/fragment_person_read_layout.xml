@@ -371,8 +371,8 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/person_nameOfOtherGuardians"
-                app:value="@{data.nameOfOtherGuardians}"
+                android:id="@+id/person_namesOfOtherGuardians"
+                app:value="@{data.namesOfOtherGuardians}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
