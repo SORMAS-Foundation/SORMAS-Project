@@ -999,6 +999,7 @@ public interface Captions {
 	String LabMessage_personHouseNumber = "LabMessage.personHouseNumber";
 	String LabMessage_personPostalCode = "LabMessage.personPostalCode";
 	String LabMessage_personStreet = "LabMessage.personStreet";
+	String LabMessage_processed = "LabMessage.processed";
 	String LabMessage_result = "LabMessage.result";
 	String LabMessage_sampleDateTime = "LabMessage.sampleDateTime";
 	String LabMessage_sampleLabCity = "LabMessage.sampleLabCity";

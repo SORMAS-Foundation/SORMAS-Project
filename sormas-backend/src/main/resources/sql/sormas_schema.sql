@@ -5930,6 +5930,7 @@ CREATE TABLE labmessage (
         personstreet varchar(255),
         personhousenumber varchar(255),
         labMessageDetails text,
+        processed boolean default false,
         sys_period tstzrange not null,
         primary key(id)
 );

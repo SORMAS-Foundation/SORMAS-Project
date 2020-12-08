@@ -30,52 +30,55 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
-	public static final String LAB_NAME = "LabName";
-	public static final String LAB_EXTERNAL_ID = "LabExternalId";
-	public static final String LAB_POSTAL_CODE = "LabPostalCode";
-	public static final String LAB_CITY = "LabCity";
+	public static final String TEST_LAB_NAME = "testLabName";
+	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
+	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
+	public static final String TEST_LAB_CITY = "testLabCity";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String TEST_TYPE = "testType";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TEST_DATE_TIME = "testDateTime";
-	public static final String RESULT = "result";
-	public static final String FIRST_NAME = "firstName";
-	public static final String LAST_NAME = "lastName";
-	public static final String SEX = "sex";
-	public static final String BIRTH_DATE_DD = "birthDateDD";
-	public static final String BIRTH_DATE_MM = "birthDateMM";
-	public static final String BIRTH_DATE_YYYY = "birthDateYYYY";
+	public static final String TEST_RESULT = "testResult";
+	public static final String PERSON_FIRST_NAME = "personFirstName";
+	public static final String PERSON_LAST_NAME = "personLastName";
+	public static final String PERSON_SEX = "personSex";
+	public static final String PERSON_BIRTH_DATE_DD = "personBirthDateDD";
+	public static final String PERSON_BIRTH_DATE_MM = "personBirthDateMM";
+	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
+	public static final String PROCESSED = "processed";
 
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
-	private String sampleLabName;
-	private String sampleLabExternalId;
-	private String sampleLabPostalCode;
-	private String sampleLabCity;
+	private String testLabName;
+	private String testLabExternalId;
+	private String testLabPostalCode;
+	private String testLabCity;
 	private SpecimenCondition specimenCondition;
 	private PathogenTestType testType;
 	private Disease testedDisease;
 	private Date testDateTime;
-	private PathogenTestResultType result;
-	private String firstName;
-	private String lastName;
-	private Sex sex;
-	private Integer birthDateDD;
-	private Integer birthDateMM;
-	private Integer birthDateYYYY;
+	private PathogenTestResultType testResult;
+	private String personFirstName;
+	private String personLastName;
+	private Sex personSex;
+	private Integer personBirthDateDD;
+	private Integer personBirthDateMM;
+	private Integer personBirthDateYYYY;
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
 	private String personHouseNumber;
 
 	private String labMessageDetails;
+
+	private boolean processed;
 
 	public Date getSampleDateTime() {
 		return sampleDateTime;
@@ -112,39 +115,39 @@ public class LabMessage extends AbstractDomainObject {
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSampleLabName() {
-		return sampleLabName;
+	public String getTestLabName() {
+		return testLabName;
 	}
 
-	public void setSampleLabName(String sampleLabName) {
-		this.sampleLabName = sampleLabName;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSampleLabExternalId() {
-		return sampleLabExternalId;
-	}
-
-	public void setSampleLabExternalId(String sampleLabExternalId) {
-		this.sampleLabExternalId = sampleLabExternalId;
+	public void setTestLabName(String testLabName) {
+		this.testLabName = testLabName;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSampleLabPostalCode() {
-		return sampleLabPostalCode;
+	public String getTestLabExternalId() {
+		return testLabExternalId;
 	}
 
-	public void setSampleLabPostalCode(String sampleLabPostalCode) {
-		this.sampleLabPostalCode = sampleLabPostalCode;
+	public void setTestLabExternalId(String testLabExternalId) {
+		this.testLabExternalId = testLabExternalId;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSampleLabCity() {
-		return sampleLabCity;
+	public String getTestLabPostalCode() {
+		return testLabPostalCode;
 	}
 
-	public void setSampleLabCity(String sampleLabCity) {
-		this.sampleLabCity = sampleLabCity;
+	public void setTestLabPostalCode(String testLabPostalCode) {
+		this.testLabPostalCode = testLabPostalCode;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getTestLabCity() {
+		return testLabCity;
+	}
+
+	public void setTestLabCity(String testLabCity) {
+		this.testLabCity = testLabCity;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -183,63 +186,63 @@ public class LabMessage extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public PathogenTestResultType getResult() {
-		return result;
+	public PathogenTestResultType getTestResult() {
+		return testResult;
 	}
 
-	public void setResult(PathogenTestResultType result) {
-		this.result = result;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setTestResult(PathogenTestResultType testResult) {
+		this.testResult = testResult;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getLastName() {
-		return lastName;
+	public String getPersonFirstName() {
+		return personFirstName;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setPersonFirstName(String personFirstName) {
+		this.personFirstName = personFirstName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getPersonLastName() {
+		return personLastName;
+	}
+
+	public void setPersonLastName(String personLastName) {
+		this.personLastName = personLastName;
 	}
 
 	@Enumerated(EnumType.STRING)
-	public Sex getSex() {
-		return sex;
+	public Sex getPersonSex() {
+		return personSex;
 	}
 
-	public void setSex(Sex sex) {
-		this.sex = sex;
+	public void setPersonSex(Sex personSex) {
+		this.personSex = personSex;
 	}
 
-	public Integer getBirthDateDD() {
-		return birthDateDD;
+	public Integer getPersonBirthDateDD() {
+		return personBirthDateDD;
 	}
 
-	public void setBirthDateDD(Integer birthDateDD) {
-		this.birthDateDD = birthDateDD;
+	public void setPersonBirthDateDD(Integer personBirthDateDD) {
+		this.personBirthDateDD = personBirthDateDD;
 	}
 
-	public Integer getBirthDateMM() {
-		return birthDateMM;
+	public Integer getPersonBirthDateMM() {
+		return personBirthDateMM;
 	}
 
-	public void setBirthDateMM(Integer birthDateMM) {
-		this.birthDateMM = birthDateMM;
+	public void setPersonBirthDateMM(Integer personBirthDateMM) {
+		this.personBirthDateMM = personBirthDateMM;
 	}
 
-	public Integer getBirthDateYYYY() {
-		return birthDateYYYY;
+	public Integer getPersonBirthDateYYYY() {
+		return personBirthDateYYYY;
 	}
 
-	public void setBirthDateYYYY(Integer birthDateYYYY) {
-		this.birthDateYYYY = birthDateYYYY;
+	public void setPersonBirthDateYYYY(Integer personBirthDateYYYY) {
+		this.personBirthDateYYYY = personBirthDateYYYY;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -286,5 +289,13 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setLabMessageDetails(String labMessageDetails) {
 		this.labMessageDetails = labMessageDetails;
+	}
+
+	public boolean isProcessed() {
+		return processed;
+	}
+
+	public void setProcessed(boolean processed) {
+		this.processed = processed;
 	}
 }

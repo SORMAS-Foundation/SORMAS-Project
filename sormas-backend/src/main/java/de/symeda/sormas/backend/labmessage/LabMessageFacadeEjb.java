@@ -20,7 +20,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		DtoHelper.validateDto(source, target);
 
-		target.setBirthDateDD(source.getBirthDateDD());
+		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 
 		return target;
 	}
