@@ -35,7 +35,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -121,15 +120,11 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			FieldConfiguration.pixelSized(EventDto.TYPE_OF_PLACE, 140),
 			FieldConfiguration.pixelSized(EventDto.EVENT_INVESTIGATION_STATUS, 140));
 
-		UserDto user = UserProvider.getCurrent().getUser();
-
-		if (user.getRegion() == null) {
-			ComboBox regionField = addField(
-				moreFiltersContainer,
-				FieldConfiguration
-					.withCaptionAndPixelSized(LocationDto.REGION, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION), 140));
-			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		}
+		ComboBox regionField = addField(
+			moreFiltersContainer,
+			FieldConfiguration
+				.withCaptionAndPixelSized(LocationDto.REGION, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION), 140));
+		regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		ComboBox districtField = addField(
 			moreFiltersContainer,
@@ -310,6 +305,28 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				applyDistrictDependency(district, LocationDto.COMMUNITY);
 			}
 			break;
+		}
+	}
+
+	@Override
+	protected void applyRegionFilterDependency(RegionReferenceDto region, String districtFieldId) {
+		final ComboBox districtField = getField(districtFieldId);
+		if (region != null) {
+			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			districtField.setEnabled(true);
+		} else {
+			districtField.setEnabled(false);
+		}
+	}
+
+	@Override
+	protected void applyDistrictDependency(DistrictReferenceDto district, String communityFieldId) {
+		final ComboBox communityField = getField(communityFieldId);
+		if (district != null) {
+			FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+			communityField.setEnabled(true);
+		} else {
+			communityField.setEnabled(false);
 		}
 	}
 

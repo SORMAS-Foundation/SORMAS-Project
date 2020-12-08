@@ -5973,6 +5973,22 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
 
+-- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+ALTER TABLE person
+    ADD COLUMN namesofotherguardians varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN namesofotherguardians varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
+
+-- 2020-12-08 SurvNet Adaptations - Add multi day contat to contact history #3408
+
+ALTER TABLE contact_history ADD column multidaycontact boolean;
+ALTER TABLE contact_history ADD column firstcontactdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (286, 'Add date of first contact for contact history #3408');
+
 -- 2020-12-03 Remove hospital from event's type of place #3617
 UPDATE location
 SET location.facilitytype = 'HOSPITAL'
@@ -5983,6 +5999,6 @@ WHERE events.typeofplace = 'HOSPITAL'
 
 UPDATE events SET typeofplace = 'FACILITY' WHERE typeofplace = 'HOSPITAL';
 
-INSERT INTO schema_version (version_number, comment) VALUES (285, 'Remove hospital from event''s type of place #3617');
+INSERT INTO schema_version (version_number, comment) VALUES (287, 'Remove hospital from event''s type of place #3617');
 
 -- *** Insert new sql commands BEFORE this line ***
