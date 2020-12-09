@@ -42,6 +42,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -59,6 +60,7 @@ public class Event extends CoreAdo {
 
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -92,6 +94,7 @@ public class Event extends CoreAdo {
 	public static final String ARCHIVED = "archived";
 
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
@@ -136,6 +139,15 @@ public class Event extends CoreAdo {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	@Enumerated(EnumType.STRING)

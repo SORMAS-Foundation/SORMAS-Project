@@ -782,6 +782,7 @@ public interface Captions {
 	String Event_participantCount = "Event.participantCount";
 	String Event_reportDateTime = "Event.reportDateTime";
 	String Event_reportingUser = "Event.reportingUser";
+	String Event_riskLevel = "Event.riskLevel";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
 	String Event_srcInstitutionalPartnerType = "Event.srcInstitutionalPartnerType";

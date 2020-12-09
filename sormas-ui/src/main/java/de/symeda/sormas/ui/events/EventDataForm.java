@@ -77,7 +77,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
-			fluidRowLocs(EventDto.EVENT_STATUS) +
+			fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
 			fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS) +
@@ -160,6 +160,15 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
+
+		addField(EventDto.RISK_LEVEL);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.RISK_LEVEL),
+			EventDto.EVENT_STATUS,
+			Collections.singletonList(EventStatus.CLUSTER),
+			true);
+
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
 		addField(EventDto.EVENT_INVESTIGATION_END_DATE, DateField.class);

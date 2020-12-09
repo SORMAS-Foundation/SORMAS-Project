@@ -355,6 +355,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
+			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			participantCount,
 			event.get(Event.DISEASE),
@@ -470,6 +471,7 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -550,6 +552,7 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());

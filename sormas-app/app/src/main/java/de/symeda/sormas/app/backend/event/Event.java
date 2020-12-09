@@ -35,6 +35,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -51,6 +52,7 @@ public class Event extends PseudonymizableAdo {
 	public static final String I18N_PREFIX = "Event";
 
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -79,6 +81,9 @@ public class Event extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private EventStatus eventStatus;
+
+	@Enumerated(EnumType.STRING)
+	private RiskLevel riskLevel;
 
 	@Enumerated(EnumType.STRING)
 	private EventInvestigationStatus eventInvestigationStatus;
@@ -174,6 +179,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {
