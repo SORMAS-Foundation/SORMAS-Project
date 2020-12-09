@@ -339,6 +339,14 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private InfectionSetting infectionSetting;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown prohibitionToWork;
+	@DatabaseField
+	private Date prohibitionToWorkFrom;
+	@DatabaseField
+	private Date prohibitionToWorkUntil;
+
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	@DatabaseField
@@ -1122,6 +1130,30 @@ public class Case extends PseudonymizableAdo {
 
 	public void setInfectionSetting(InfectionSetting infectionSetting) {
 		this.infectionSetting = infectionSetting;
+	}
+
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
