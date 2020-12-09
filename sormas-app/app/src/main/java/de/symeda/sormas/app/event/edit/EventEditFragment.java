@@ -26,6 +26,7 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
