@@ -85,6 +85,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
@@ -136,6 +138,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setTypeOfPlace(source.getTypeOfPlace());
 
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());

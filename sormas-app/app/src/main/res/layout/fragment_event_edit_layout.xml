@@ -28,6 +28,7 @@
         <import type="de.symeda.sormas.api.event.EventStatus" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.event.EventSourceType" />
+        <import type="de.symeda.sormas.api.event.InstitutionalPartnerType" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
 
@@ -224,6 +225,29 @@
                 style="@style/ControlSingleColumnStyle"
                 app:softRequired="true"
                 app:value="@={data.srcType}" />
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/event_srcInstitutionalPartnerType"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:dependencyParentField="@{eventSrcType}"
+                        app:dependencyParentValue="@{EventSourceType.INSTITUTIONAL_PARTNER}"
+                        app:softRequired="true"
+                        app:value="@={data.srcInstitutionalPartnerType}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/event_srcInstitutionalPartnerTypeDetails"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:dependencyParentField="@{eventSrcInstitutionalPartnerType}"
+                        app:dependencyParentValue="@{InstitutionalPartnerType.OTHER}"
+                        app:softRequired="true"
+                        app:value="@={data.srcInstitutionalPartnerTypeDetails}" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
