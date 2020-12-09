@@ -310,6 +310,18 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_nosocomialOutbreak"
+                    app:value="@{data.nosocomialOutbreak}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_infectionSetting"
+                    app:dependencyParentField="@{caseDataNosocomialOutbreak}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@{data.infectionSetting}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -54,10 +54,12 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -250,10 +252,15 @@ public class ContactController {
 				if (asSourceContact && alternativeCallback != null && casePerson != null) {
 					selectOrCreateContact(dto, casePerson, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
 						if (selectedContactUuid != null) {
-							if (!selectedContactUuid.equals(dto.getUuid())) {
-								dto.setResultingCase(caze.toReference());
-								FacadeProvider.getContactFacade().saveContact(dto);
-							}
+							ContactDto selectedContact = FacadeProvider.getContactFacade().getContactByUuid(selectedContactUuid);
+							selectedContact.setResultingCase(caze.toReference());
+							selectedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
+							selectedContact.setContactStatus(ContactStatus.CONVERTED);
+							selectedContact.setContactClassification(ContactClassification.CONFIRMED);
+							FacadeProvider.getContactFacade().saveContact(selectedContact);
+
+							// Avoid asking the user to discard unsaved changes
+							createComponent.discard();
 							alternativeCallback.run();
 						}
 					});
