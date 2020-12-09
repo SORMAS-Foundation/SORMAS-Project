@@ -785,7 +785,7 @@ public class ContactController {
 		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		titleLayout.addComponents(diseaseLabel);
 
-		Label classificationLabel = new Label(contact.getContactClassification().toShortString());
+		Label classificationLabel = new Label(contact.getContactClassification().toString());
 		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		titleLayout.addComponent(classificationLabel);
 
