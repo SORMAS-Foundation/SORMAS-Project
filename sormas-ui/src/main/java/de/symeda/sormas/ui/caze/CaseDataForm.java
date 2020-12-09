@@ -535,8 +535,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addField(CaseDataDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		DateField prohibitionToWorkFrom = addField(CaseDataDto.PROHIBITION_TO_WORK_FROM);
-		DateField prohibitionToWorkUntil = addField(CaseDataDto.PROHIBITION_TO_WORK_UNTIL);
+		DateField prohibitionToWorkFrom = addField(CaseDataDto.PROHIBITION_TO_WORK_FROM, DateField.class);
+		DateField prohibitionToWorkUntil = addDateField(CaseDataDto.PROHIBITION_TO_WORK_UNTIL, DateField.class, -1);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(CaseDataDto.PROHIBITION_TO_WORK_FROM, CaseDataDto.PROHIBITION_TO_WORK_UNTIL),
@@ -548,14 +548,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				prohibitionToWorkFrom,
 				prohibitionToWorkUntil,
 				true,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.beforeDate, prohibitionToWorkFrom.getCaption(), prohibitionToWorkUntil.getCaption())));
 		prohibitionToWorkUntil.addValidator(
 			new DateComparisonValidator(
 				prohibitionToWorkUntil,
 				prohibitionToWorkFrom,
 				false,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
