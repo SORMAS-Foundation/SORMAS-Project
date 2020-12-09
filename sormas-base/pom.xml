@@ -584,7 +584,7 @@
 			<dependency>
 				<groupId>com.nexmo</groupId>
 				<artifactId>client</artifactId>
-				<version>3.3.0</version>
+				<version>5.6.0</version>
 			</dependency>
 
 			<dependency>
