@@ -29,8 +29,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
@@ -87,6 +85,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -250,7 +249,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		DateField prohibitionToWorkFrom = addField(ContactDto.PROHIBITION_TO_WORK_FROM);
-		DateField prohibitionToWorkUntil = addField(ContactDto.PROHIBITION_TO_WORK_UNTIL);
+		DateField prohibitionToWorkUntil = addDateField(ContactDto.PROHIBITION_TO_WORK_UNTIL, DateField.class, -1);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(ContactDto.PROHIBITION_TO_WORK_FROM, ContactDto.PROHIBITION_TO_WORK_UNTIL),
@@ -262,14 +261,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				prohibitionToWorkFrom,
 				prohibitionToWorkUntil,
 				true,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.beforeDate, prohibitionToWorkFrom.getCaption(), prohibitionToWorkUntil.getCaption())));
 		prohibitionToWorkUntil.addValidator(
 			new DateComparisonValidator(
 				prohibitionToWorkUntil,
 				prohibitionToWorkFrom,
 				false,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		quarantine = addField(ContactDto.QUARANTINE);
