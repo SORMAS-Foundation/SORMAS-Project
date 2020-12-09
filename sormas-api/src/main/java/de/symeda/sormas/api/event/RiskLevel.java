@@ -29,8 +29,4 @@ public enum RiskLevel {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
-	public String toShortString() {
-		return I18nProperties.getEnumCaptionShort(this);
-	}
 }
