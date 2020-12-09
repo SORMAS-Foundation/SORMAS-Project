@@ -20,18 +20,68 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		DtoHelper.validateDto(source, target);
 
+		target.setLabMessageDetails(source.getLabMessageDetails());
+		target.setLabSampleId(source.getLabSampleId());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
+		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
+		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());
+		target.setPersonCity(source.getPersonCity());
+		target.setPersonFirstName(source.getPersonFirstName());
+		target.setPersonHouseNumber(source.getPersonHouseNumber());
+		target.setPersonLastName(source.getPersonLastName());
+		target.setPersonPostalCode(source.getPersonPostalCode());
+		target.setPersonSex(source.getPersonSex());
+		target.setPersonStreet(source.getPersonStreet());
+		target.setProcessed(source.isProcessed());
+		target.setSampleDateTime(source.getSampleDateTime());
+		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleReceivedDate(source.getSampleReceivedDate());
+		target.setSpecimenCondition(source.getSpecimenCondition());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setTestedDisease(source.getTestedDisease());
+		target.setTestLabCity(source.getTestLabCity());
+		target.setTestLabExternalId(source.getTestLabExternalId());
+		target.setTestLabName(source.getTestLabName());
+		target.setTestLabPostalCode(source.getTestLabPostalCode());
+		target.setTestResult(source.getTestResult());
+		target.setTestType(source.getTestType());
 
 		return target;
 	}
 
-	public LabMessageDto toDto(LabMessage entity) {
+	public LabMessageDto toDto(LabMessage source) {
 
-		if (entity == null) {
+		if (source == null) {
 			return null;
 		}
 		LabMessageDto target = new LabMessageDto();
-		DtoHelper.fillDto(target, entity);
+		DtoHelper.fillDto(target, source);
+
+		target.setLabMessageDetails(source.getLabMessageDetails());
+		target.setLabSampleId(source.getLabSampleId());
+		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
+		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
+		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());
+		target.setPersonCity(source.getPersonCity());
+		target.setPersonFirstName(source.getPersonFirstName());
+		target.setPersonHouseNumber(source.getPersonHouseNumber());
+		target.setPersonLastName(source.getPersonLastName());
+		target.setPersonPostalCode(source.getPersonPostalCode());
+		target.setPersonSex(source.getPersonSex());
+		target.setPersonStreet(source.getPersonStreet());
+		target.setProcessed(source.isProcessed());
+		target.setSampleDateTime(source.getSampleDateTime());
+		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleReceivedDate(source.getSampleReceivedDate());
+		target.setSpecimenCondition(source.getSpecimenCondition());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setTestedDisease(source.getTestedDisease());
+		target.setTestLabCity(source.getTestLabCity());
+		target.setTestLabExternalId(source.getTestLabExternalId());
+		target.setTestLabName(source.getTestLabName());
+		target.setTestLabPostalCode(source.getTestLabPostalCode());
+		target.setTestResult(source.getTestResult());
+		target.setTestType(source.getTestType());
 
 		return target;
 	}
