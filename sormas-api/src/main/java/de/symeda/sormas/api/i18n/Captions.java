@@ -1006,6 +1006,7 @@ public interface Captions {
 	String LabMessage = "LabMessage";
 	String LabMessage_labMessageDetails = "LabMessage.labMessageDetails";
 	String LabMessage_labSampleId = "LabMessage.labSampleId";
+	String LabMessage_messageDateTime = "LabMessage.messageDateTime";
 	String LabMessage_personBirthDateDD = "LabMessage.personBirthDateDD";
 	String LabMessage_personBirthDateMM = "LabMessage.personBirthDateMM";
 	String LabMessage_personBirthDateYYYY = "LabMessage.personBirthDateYYYY";
@@ -1029,6 +1030,9 @@ public interface Captions {
 	String LabMessage_testLabPostalCode = "LabMessage.testLabPostalCode";
 	String LabMessage_testResult = "LabMessage.testResult";
 	String LabMessage_testType = "LabMessage.testType";
+	String labMessageProcess = "labMessageProcess";
+	String labMessageProcessed = "labMessageProcessed";
+	String labMessageUnprocessed = "labMessageUnprocessed";
 	String lastName = "lastName";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";
@@ -1790,6 +1794,7 @@ public interface Captions {
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
+	String View_labMessages = "View.labMessages";
 	String View_reports = "View.reports";
 	String View_reports_sub = "View.reports.sub";
 	String View_samples = "View.samples";

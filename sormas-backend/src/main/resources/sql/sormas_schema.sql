@@ -6052,6 +6052,7 @@ CREATE TABLE labmessage (
         uuid varchar(36) not null unique,
         changedate timestamp not null,
         creationdate timestamp not null,
+        messagedatetime timestamp,
         sampledatetime timestamp,
         samplereceiveddate timestamp,
         labsampleid text,
@@ -6081,7 +6082,9 @@ CREATE TABLE labmessage (
         primary key(id)
 );
 
+ALTER TABLE labmessage OWNER TO sormas_user;
 CREATE TABLE labmessage_history (LIKE labmessage);
+ALTER TABLE labmessage_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
 

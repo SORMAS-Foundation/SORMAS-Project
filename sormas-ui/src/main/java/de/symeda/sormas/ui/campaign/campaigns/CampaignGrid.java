@@ -22,8 +22,6 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.renderers.ButtonRenderer;
-import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -72,12 +70,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		viewFormsColumn.setSortable(false);
 		viewFormsColumn.setWidth(25);
 
-		setColumns(
-			EDIT_BTN_ID,
-			VIEW_FORMS_BTN_ID,
-			CampaignIndexDto.NAME,
-			CampaignIndexDto.START_DATE,
-			CampaignIndexDto.END_DATE);
+		setColumns(EDIT_BTN_ID, VIEW_FORMS_BTN_ID, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));

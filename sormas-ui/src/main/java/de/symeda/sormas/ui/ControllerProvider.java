@@ -27,6 +27,7 @@ import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
+import de.symeda.sormas.ui.labmessage.LabMessageController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
@@ -63,6 +64,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final AggregateReportController aggregateReportController;
 	private final CampaignController campaignController;
 	private final SormasToSormasController sormasToSormasController;
+	private final LabMessageController labMessageController;
 
 	public ControllerProvider() {
 		super();
@@ -88,6 +90,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		aggregateReportController = new AggregateReportController();
 		campaignController = new CampaignController();
 		sormasToSormasController = new SormasToSormasController();
+		labMessageController = new LabMessageController();
 	}
 
 	protected static ControllerProvider get() {
@@ -176,5 +179,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static SormasToSormasController getSormasToSormasController() {
 		return get().sormasToSormasController;
+	}
+
+	public static LabMessageController getLabMessageController() {
+		return get().labMessageController;
 	}
 }

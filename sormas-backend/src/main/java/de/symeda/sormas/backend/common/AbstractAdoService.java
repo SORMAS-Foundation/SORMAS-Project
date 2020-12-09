@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserQualifier;
 import de.symeda.sormas.backend.user.User;
