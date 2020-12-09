@@ -234,6 +234,13 @@ public class Contact extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String endOfQuarantineReasonDetails;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown prohibitionToWork;
+	@DatabaseField
+	private Date prohibitionToWorkFrom;
+	@DatabaseField
+	private Date prohibitionToWorkUntil;
+
 
 	public Person getPerson() {
 		return person;
@@ -785,5 +792,29 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
 		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
+	}
+
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 }

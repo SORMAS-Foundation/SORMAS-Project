@@ -152,7 +152,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 249;
+	public static final int DATABASE_VERSION = 253;
 
 	private static DatabaseHelper instance = null;
 
@@ -1775,12 +1775,37 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EpiData.class).executeRaw("DROP TABLE tmp_epidata;");
 			case 247:
 				currentVersion = 247;
-
-				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column multidaycontact boolean default false;");
-				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column firstcontactdate timestamp;");
-
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column multiDayContact boolean default false;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column firstContactDate timestamp;");
 			case 248:
 				currentVersion = 248;
+
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN armedForcesRelationType varchar(255);");
+
+			case 249:
+				currentVersion = 249;
+
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN nosocomialOutbreak boolean DEFAULT false");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN infectionSetting varchar(255)");
+
+			case 250:
+				currentVersion = 250;
+
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD column namesOfOtherGuardians varchar(512);");
+
+			case 251:
+				currentVersion = 251;
+
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWork varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWorkFrom timestamp;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWorkUntil timestamp;");
+
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWork varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWorkFrom timestamp;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWorkUntil timestamp;");
+
+			case 252:
+				currentVersion = 252;
 
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN salutation varchar(255)");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN otherSalutation varchar(512)");

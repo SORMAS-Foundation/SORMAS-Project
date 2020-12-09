@@ -140,7 +140,7 @@ public class ContactExportDto implements Serializable {
 
 	private ContactJurisdictionDto jurisdiction;
 
-	private final Long eventCount;
+	private Long eventCount;
 	private String latestEventId;
 	private String latestEventTitle;
 	private String externalID;
@@ -161,7 +161,7 @@ public class ContactExportDto implements Serializable {
 							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, long eventCount, String externalID,							
+							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, String externalID,							
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
@@ -224,7 +224,6 @@ public class ContactExportDto implements Serializable {
 		this.epiDataId = epiDataId;
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
-		this.eventCount = eventCount;
 		this.externalID = externalID;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
@@ -624,6 +623,10 @@ public class ContactExportDto implements Serializable {
 	@Order(73)
 	public long getEventCount() {
 		return this.eventCount;
+	}
+
+	public void setEventCount(Long eventCount) {
+		this.eventCount = eventCount;
 	}
 
 	public void setId(long id) {
