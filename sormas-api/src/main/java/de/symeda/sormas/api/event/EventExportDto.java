@@ -114,7 +114,8 @@ public class EventExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.srcType = srcType;
-		this.srcInstitutionalPartnerType = buildSrcInstitutionalPartnerTypeString(srcInstitutionalPartnerType, srcInstitutionalPartnerTypeDetails);
+		this.srcInstitutionalPartnerType =
+			EventHelper.buildInstitutionalPartnerTypeString(srcInstitutionalPartnerType, srcInstitutionalPartnerTypeDetails);
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
 		this.srcTelNo = srcTelNo;
@@ -124,19 +125,6 @@ public class EventExportDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
-	}
-
-	private String buildSrcInstitutionalPartnerTypeString(
-		InstitutionalPartnerType srcInstitutionalPartnerType,
-		String srcInstitutionalPartnerTypeDetails) {
-
-		final StringBuilder sb = new StringBuilder();
-		if (srcInstitutionalPartnerType == InstitutionalPartnerType.OTHER) {
-			sb.append(srcInstitutionalPartnerTypeDetails);
-		} else if (srcInstitutionalPartnerType != null) {
-			sb.append(srcInstitutionalPartnerType);
-		}
-		return sb.toString();
 	}
 
 	@Order(0)
