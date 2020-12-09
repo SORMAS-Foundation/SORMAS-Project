@@ -38,6 +38,7 @@ import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
@@ -333,6 +334,10 @@ public class Case extends PseudonymizableAdo {
 	private EndOfIsolationReason endOfIsolationReason;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String endOfIsolationReasonDetails;
+	@DatabaseField
+	private boolean nosocomialOutbreak;
+	@Enumerated(EnumType.STRING)
+	private InfectionSetting infectionSetting;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
@@ -1101,6 +1106,22 @@ public class Case extends PseudonymizableAdo {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	public boolean isNosocomialOutbreak() {
+		return nosocomialOutbreak;
+	}
+
+	public void setNosocomialOutbreak(boolean nosocomialOutbreak) {
+		this.nosocomialOutbreak = nosocomialOutbreak;
+	}
+
+	public InfectionSetting getInfectionSetting() {
+		return infectionSetting;
+	}
+
+	public void setInfectionSetting(InfectionSetting infectionSetting) {
+		this.infectionSetting = infectionSetting;
 	}
 
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {

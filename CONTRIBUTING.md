@@ -110,6 +110,18 @@ The GitHub project has been configured to **automatically** move issues that are
 The Development Team is responsible to keep the tickets up to date on this board and to assign the appropriate milestone in which the work is going to be released.
 
 
+### Managing dependencies
+
+For managing Java libraries as dependencies, they are managed by Maven and listed in *sormas-base/pom.xml*.  The purpose of a centralized management is to have an overview of the used libraries and adjust for new versions.
+
+1. **Payara modules**: Provided by Payara in *{payara-home}/glassfish/modules* and used in that version by other libs.
+2. **Domain libs**: Provided in Payara domain under *{payara-domain}/lib* to be usable by deployed artifacts (ear, war). They have to be listed in *sormas-base/dependencies/serverlibs.pom*. Usually for helper libraries that several artifacts need.
+3. **Compile dependencies**: Bundled in respective artifacts who need the dependency explicitly. Usually for dependencies singularly needed in one artifact.
+4. **Test libraries**: Libraries used in automated tests in one or more modules.
+
+Due to the separate build management tool Gradle for *sormas-app*, there exists a redundant listing of compile dependencies in *sormas-app/app/build.gradle*.
+
+
 ### Eclipse Troubleshooting
 
 Unfortunatley, when using eclipse together with the Payara Tools, there are a number of deployment problems that you might run into. Examples of these include:

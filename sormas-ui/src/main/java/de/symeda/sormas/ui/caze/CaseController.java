@@ -176,17 +176,23 @@ public class CaseController {
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
-				caseCreateComponent.addCommitListener(new CommitListener() {
-
-					@Override
-					public void onCommit() {
-						ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-						updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-						FacadeProvider.getContactFacade().saveContact(updatedContact);
-					}
+				caseCreateComponent.addCommitListener(() -> {
+					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
+					FacadeProvider.getContactFacade().saveContact(updatedContact);
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 			} else {
+				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
+				selectedCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+				FacadeProvider.getCaseFacade().saveCase(selectedCase);
+
+				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+				updatedContact.setContactStatus(ContactStatus.CONVERTED);
+				updatedContact.setResultingCase(selectedCase.toReference());
+				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
+				FacadeProvider.getContactFacade().saveContact(updatedContact);
+
 				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}
 		});
@@ -355,6 +361,7 @@ public class CaseController {
 			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
 			if (unrelatedDisease == null) {
 				caze = CaseDataDto.buildFromContact(convertedContact);
+				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
 			} else {
 				caze = CaseDataDto.buildFromUnrelatedContact(convertedContact, unrelatedDisease);
 			}
