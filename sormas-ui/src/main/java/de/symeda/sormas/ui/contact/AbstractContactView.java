@@ -26,7 +26,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -37,7 +36,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -106,9 +104,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 
-		infoLabel.setValue(getReference().getCaption());
-		infoLabelSub.setValue(
-			contact.getDisease() != Disease.OTHER ? contact.getDisease().toShortString() : DataHelper.toStringNullable(contact.getDiseaseDetails()));
+		replaceViewHeader(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
 	}
 
 	@Override

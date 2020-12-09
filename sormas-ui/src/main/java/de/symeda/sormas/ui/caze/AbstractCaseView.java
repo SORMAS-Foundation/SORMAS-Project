@@ -38,7 +38,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -70,7 +69,6 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	private final Property.ValueChangeListener viewModeToggleListener;
 
 	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
-
 		super(viewName);
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
@@ -200,12 +198,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 
-		infoLabel.setValue(getReference().getCaption());
-
-		infoLabelSub.setValue(
-			caze.getDisease() != Disease.OTHER
-				? DataHelper.toStringNullable(caze.getDisease())
-				: DataHelper.toStringNullable(caze.getDiseaseDetails()));
+		replaceViewHeader(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));
 	}
 
 	@Override

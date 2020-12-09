@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -33,6 +34,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -45,6 +47,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -52,12 +55,15 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventController {
@@ -105,7 +111,7 @@ public class EventController {
 
 					EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 					if (!eventIndexDto.contains(selectedEvent)) {
-						createEventParticipantWithCase(eventReferenceDto, caseDataDto, caseRef);
+						linkCaseToEvent(eventReferenceDto, caseDataDto, caseRef);
 					}
 				} else {
 					create(caseRef);
@@ -153,7 +159,19 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void createEventParticipantWithCase(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
+	public void linkCaseToEvent(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
+		// Check whether Person is already enlisted as EventParticipant in this Event
+		EventParticipantReferenceDto eventParticipantRef =
+			FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventReferenceDto.getUuid(), caseDataDto.getPerson().getUuid());
+		if (eventParticipantRef != null) {
+			EventParticipantDto eventParticipant =
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+			eventParticipant.setResultingCase(caseRef);
+			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+			return;
+		}
+
+		// Create new EventParticipant for this Person
 		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		EventParticipantDto eventParticipantDto;
 		eventParticipantDto =
@@ -242,7 +260,7 @@ public class EventController {
 					if (caseRef != null) {
 						EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
 
-						createEventParticipantWithCase(createdEvent, finalCaseDataDto, caseRef);
+						linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
 						SormasUI.refreshView();
 					} else {
 						navigateToParticipants(dto.getUuid());
@@ -552,5 +570,34 @@ public class EventController {
 					}
 				});
 		}
+	}
+
+	public VerticalLayout getEventViewTitleLayout(String uuid) {
+		EventDto event = findEvent(uuid);
+
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
+		titleLayout.setSpacing(false);
+
+		Label statusLabel = new Label(event.getEventStatus().toString());
+		statusLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponents(statusLabel);
+
+		if (event.getStartDate() != null) {
+			Label eventStartDateLabel = new Label(
+				event.getEndDate() != null
+					? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
+					: DateFormatHelper.formatDate(event.getStartDate()));
+			eventStartDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+			titleLayout.addComponent(eventStartDateLabel);
+		}
+
+		String shortUuid = DataHelper.getShortUuid(event.getUuid());
+		String eventTitle = event.getEventTitle();
+		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + shortUuid + ")" : shortUuid);
+		eventLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponent(eventLabel);
+
+		return titleLayout;
 	}
 }

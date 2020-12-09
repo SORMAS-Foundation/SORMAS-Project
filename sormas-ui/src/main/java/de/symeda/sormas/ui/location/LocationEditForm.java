@@ -156,16 +156,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			FacilityType oldType = (FacilityType) facilityType.getValue();
 			FacilityReferenceDto oldFacility = (FacilityReferenceDto) facility.getValue();
 			String oldDetails = facilityDetails.getValue();
-			facilityTypeGroup.removeAllItems();
 			if (PersonAddressType.HOME.equals(addressType.getValue())) {
+				facilityTypeGroup.removeAllItems();
 				facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+				setOldFacilityValuesIfPossible(oldGroup, oldType, oldFacility, oldDetails);
 			} else {
+				facilityTypeGroup.removeAllItems();
 				facilityTypeGroup.addItems(FacilityTypeGroup.values());
+				setOldFacilityValuesIfPossible(oldGroup, oldType, oldFacility, oldDetails);
 			}
-			facilityTypeGroup.setValue(oldGroup);
-			facilityType.setValue(oldType);
-			facility.setValue(oldFacility);
-			facilityDetails.setValue(oldDetails);
 		});
 
 		addField(LocationDto.STREET, TextField.class);
@@ -287,6 +286,17 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+	}
+
+	private void setOldFacilityValuesIfPossible(
+		FacilityTypeGroup oldGroup,
+		FacilityType oldType,
+		FacilityReferenceDto oldFacility,
+		String oldDetails) {
+		facilityTypeGroup.setValue(oldGroup);
+		facilityType.setValue(oldType);
+		facility.setValue(oldFacility);
+		facilityDetails.setValue(oldDetails);
 	}
 
 	private HorizontalLayout createGeoButton() {

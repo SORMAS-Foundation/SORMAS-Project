@@ -494,7 +494,12 @@ public class ContactDto extends PseudonymizableDto {
 	}
 
 	public ContactReferenceDto toReference() {
-		return new ContactReferenceDto(getUuid());
+		return new ContactReferenceDto(
+			getUuid(),
+			getPerson().getFirstName(),
+			getPerson().getLastName(),
+			getCaze() != null ? getCaze().getFirstName() : null,
+			getCaze() != null ? getCaze().getLastName() : null);
 	}
 
 	public UserReferenceDto getResultingCaseUser() {

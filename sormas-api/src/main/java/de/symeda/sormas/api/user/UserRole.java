@@ -61,7 +61,7 @@ public enum UserRole
 	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
 	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NONE),
 	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
-	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NONE),
+	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION),
 	BAG_USER(false, false, false, false, JurisdictionLevel.NONE);
 
 	/*
