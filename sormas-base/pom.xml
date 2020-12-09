@@ -1233,7 +1233,7 @@
 		<module>../sormas-ear</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
-		<module>./dependencies/serverlibs.pom</module>
+		<module>./dependencies</module>
 		<module>../sormas-cargoserver</module>
 	</modules>
 </project>
