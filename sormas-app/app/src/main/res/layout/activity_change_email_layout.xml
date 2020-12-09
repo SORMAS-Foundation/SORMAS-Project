@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
+
+    <data>
+        <variable name="user" type="de.symeda.sormas.app.backend.user.User" />
+    </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/windowBackground">
+
+<!--        <de.symeda.sormas.app.component.controls.ControlTextEditField-->
+<!--            android:id="@+id/change_email_text_field"-->
+<!--            style="@style/ControlSingleColumnStyle"-->
+<!--            app:description="@string/description_email"-->
+<!--            app:hint="@string/hint_user_email"-->
+<!--            app:labelCaption="@string/caption_email"-->
+<!--            app:required="true"-->
+<!--            app:value="@={user.userEmail}" />-->
+
+<!--        <include-->
+<!--            android:id="@+id/notification_frame"-->
+<!--            layout="@layout/activity_root_notification_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content" />-->
+    </FrameLayout>
+</layout>

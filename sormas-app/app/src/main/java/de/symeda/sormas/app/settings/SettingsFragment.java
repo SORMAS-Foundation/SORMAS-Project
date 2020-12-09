@@ -51,6 +51,7 @@ import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
+import de.symeda.sormas.app.login.ChangeEmailActivity;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -82,6 +83,7 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding = (FragmentSettingsLayoutBinding) rootBinding;
 
 		binding.settingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
+		binding.changeEmail.setOnClickListener(v -> changeEmail());
 		binding.changePin.setOnClickListener(v -> changePIN());
 		binding.resynchronizeData.setOnClickListener(v -> repullData());
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
@@ -153,6 +155,12 @@ public class SettingsFragment extends BaseLandingFragment {
 
 	public String getServerUrl() {
 		return binding.settingsServerUrl.getValue();
+	}
+
+	public void changeEmail() {
+		Intent intent = new Intent(getActivity(), ChangeEmailActivity.class);
+		intent.putExtra(ChangeEmailActivity.CALLED_FROM_SETTINGS, true);
+		startActivity(intent);
 	}
 
 	public void changePIN() {

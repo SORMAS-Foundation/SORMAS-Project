@@ -282,7 +282,7 @@ public class UserController {
 		form.setValue(user);
 
 		final CommitDiscardWrapperComponent<UserSettingsForm> component =
-			new CommitDiscardWrapperComponent<UserSettingsForm>(form, form.getFieldGroup());
+				new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();
@@ -292,9 +292,7 @@ public class UserController {
 				commitOrDiscardCallback.run();
 			}
 		});
-		component.addDiscardListener(() -> {
-			commitOrDiscardCallback.run();
-		});
+		component.addDiscardListener(commitOrDiscardCallback::run);
 
 		return component;
 	}
