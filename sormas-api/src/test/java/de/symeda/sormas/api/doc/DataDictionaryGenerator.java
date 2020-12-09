@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.region.CountryDto;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.AreaReference;
@@ -57,6 +56,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -288,7 +288,7 @@ public class DataDictionaryGenerator {
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 
-		List<String> constantFacilities = Arrays.asList(FacilityDto.OTHER_FACILITY, FacilityDto.NO_FACILITY);
+		List<String> constantFacilities = Arrays.asList(FacilityDto.OTHER_FACILITY, FacilityDto.NO_FACILITY, FacilityDto.CONFIGURED_FACILITY);
 		for (String constantFacility : constantFacilities) {
 			XSSFRow row = sheet.createRow(rowNumber++);
 			XSSFCell cell;
@@ -299,7 +299,7 @@ public class DataDictionaryGenerator {
 			}
 
 			cell = row.createCell(EnumColumn.VALUE.ordinal());
-			cell.setCellValue(constantFacility);
+			cell.setCellValue(FacilityDto.CONFIGURED_FACILITY.equals(constantFacility) ? "<text>" : constantFacility);
 
 			cell = row.createCell(EnumColumn.CAPTION.ordinal());
 			String caption = I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, constantFacility);
