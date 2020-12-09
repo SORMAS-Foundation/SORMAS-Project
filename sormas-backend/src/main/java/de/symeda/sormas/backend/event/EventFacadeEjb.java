@@ -376,6 +376,8 @@ public class EventFacadeEjb implements EventFacade {
 			location.get(Location.HOUSE_NUMBER),
 			location.get(Location.ADDITIONAL_INFORMATION),
 			event.get(Event.SRC_TYPE),
+			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE),
+			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
@@ -484,6 +486,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
@@ -563,6 +567,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());

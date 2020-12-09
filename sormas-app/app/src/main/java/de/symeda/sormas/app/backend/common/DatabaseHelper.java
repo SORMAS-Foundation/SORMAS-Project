@@ -151,7 +151,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 252;
+	public static final int DATABASE_VERSION = 254;
 
 	private static DatabaseHelper instance = null;
 
@@ -1783,7 +1783,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 249:
 				currentVersion = 249;
-
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN nosocomialOutbreak boolean DEFAULT false");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN infectionSetting varchar(255)");
 
@@ -1794,6 +1793,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 251:
 				currentVersion = 251;
+
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWork varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWorkFrom timestamp;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWorkUntil timestamp;");
+
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWork varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWorkFrom timestamp;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWorkUntil timestamp;");
+
+			case 252:
+				currentVersion = 252;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255)");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512)");
+
+			case 253:
+				currentVersion = 253;
 				getDao(Contact.class).executeRaw("ALTER TABLE events ADD column riskLevel varchar(255);");
 
 				// ATTENTION: break should only be done after last version
