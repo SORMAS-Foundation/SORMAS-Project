@@ -329,6 +329,10 @@ public class Case extends CoreAdo {
 	private boolean nosocomialOutbreak;
 	private InfectionSetting infectionSetting;
 
+	private YesNoUnknown prohibitionToWork;
+	private Date prohibitionToWorkFrom;
+	private Date prohibitionToWorkUntil;
+
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
@@ -1367,6 +1371,33 @@ public class Case extends CoreAdo {
 
 	public void setInfectionSetting(InfectionSetting infectionSetting) {
 		this.infectionSetting = infectionSetting;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
 	@ManyToOne(cascade = CascadeType.ALL)

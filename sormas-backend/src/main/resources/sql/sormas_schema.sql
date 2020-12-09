@@ -5989,4 +5989,27 @@ ALTER TABLE contact_history ADD column firstcontactdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (286, 'Add date of first contact for contact history #3408');
 
+-- 2020-11-25 SurvNet Adaptations - Create new field “Prohibition to work” for case and contact #3409
+ALTER TABLE cases
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE cases_history
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE contact
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE contact_history
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (287, 'Create new field “Prohibition to work” for case and contact #3409');
+
 -- *** Insert new sql commands BEFORE this line ***
