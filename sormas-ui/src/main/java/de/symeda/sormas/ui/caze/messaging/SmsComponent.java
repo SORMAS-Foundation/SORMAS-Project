@@ -29,6 +29,7 @@ public class SmsComponent extends CustomField<String> {
 	protected Component initContent() {
 		final VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(false);
+		mainLayout.setMargin(false);
 		mainLayout.setSizeUndefined();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
@@ -48,7 +49,7 @@ public class SmsComponent extends CustomField<String> {
 		smsTextArea = new TextArea();
 		smsTextArea.setWidth(100, Unit.PERCENTAGE);
 		smsTextArea.setRows(4);
-		mainLayout.addComponent(tTextFieldWithMaxLengthWrapper.wrap(smsTextArea, Captions.Messages_characters));
+		mainLayout.addComponent(tTextFieldWithMaxLengthWrapper.wrap(smsTextArea, Captions.Messages_characters, false));
 
 		final Label numberOfMessagesLabel = new Label(String.format(I18nProperties.getCaption(Captions.Messages_numberOfMessages), 0));
 		numberOfMessagesLabel.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);
