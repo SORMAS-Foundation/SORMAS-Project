@@ -67,6 +67,7 @@ public interface Captions {
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
 	String actionSelectAll = "actionSelectAll";
+	String actionSend = "actionSend";
 	String actionSettings = "actionSettings";
 	String actionShowLessFilters = "actionShowLessFilters";
 	String actionShowMoreFilters = "actionShowMoreFilters";
@@ -1076,6 +1077,16 @@ public interface Captions {
 	String MaternalHistory_swollenLymphsMonth = "MaternalHistory.swollenLymphsMonth";
 	String MaternalHistory_swollenLymphsOnset = "MaternalHistory.swollenLymphsOnset";
 	String menu = "menu";
+	String messagesCharacters = "messagesCharacters";
+	String messagesEmail = "messagesEmail";
+	String messagesNoPhoneNumberForCasePerson = "messagesNoPhoneNumberForCasePerson";
+	String messagesNoSmsSentForCase = "messagesNoSmsSentForCase";
+	String messagesNumberOfMessages = "messagesNumberOfMessages";
+	String messagesNumberOfMissingPhoneNumbers = "messagesNumberOfMissingPhoneNumbers";
+	String messagesSendingSms = "messagesSendingSms";
+	String messagesSendSMS = "messagesSendSMS";
+	String messagesSentBy = "messagesSentBy";
+	String messagesSms = "messagesSms";
 	String moreActions = "moreActions";
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";

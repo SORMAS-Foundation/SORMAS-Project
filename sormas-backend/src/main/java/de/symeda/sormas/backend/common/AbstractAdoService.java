@@ -104,6 +104,17 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return count;
 	}
 
+	public long count(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
+		cq.select(cb.count(from));
+		cq.where(filterBuilder.apply(cb, from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count;
+	}
+
 	/**
 	 * @return null if no entry exists
 	 */

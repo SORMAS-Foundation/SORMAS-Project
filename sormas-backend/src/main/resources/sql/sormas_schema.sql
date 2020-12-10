@@ -6026,4 +6026,23 @@ ALTER TABLE events_history ADD column risklevel varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (289, 'Add riskLevel to events with cluster status #3271');
 
+-- 2020-11-17 Manually send SMS #3253
+CREATE TABLE manualmessagelog
+(
+    id             bigint                      NOT NULL,
+    changedate     timestamp without time zone NOT NULL,
+    creationdate   timestamp without time zone NOT NULL,
+    uuid           character varying(36)       NOT NULL,
+    messagetype    character varying(255)      NOT NULL,
+    sentdate       timestamp                   NOT NULL,
+    sendinguser_id bigint                      NOT NULL,
+    recipientperson_id bigint                  NOT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE manualmessagelog OWNER TO sormas_user;
+ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id FOREIGN KEY (sendinguser_id) REFERENCES users(id);
+ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (290, 'Manually send SMS #3253');
 -- *** Insert new sql commands BEFORE this line ***
