@@ -707,7 +707,7 @@ public class CasesView extends AbstractView {
 						&& UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 						menuBarItems.add(
 							new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.Messages_sendSMS),
+								I18nProperties.getCaption(Captions.messagesSendSMS),
 								VaadinIcons.MOBILE_RETRO,
 								selectedItem -> ControllerProvider.getCaseController()
 									.sendSmsToAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),

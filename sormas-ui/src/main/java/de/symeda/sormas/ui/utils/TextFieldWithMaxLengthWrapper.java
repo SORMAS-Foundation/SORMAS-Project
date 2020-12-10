@@ -35,13 +35,15 @@ public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implemen
 	private static final int MIN_ROWS = 4;
 
 	@Override
-	public ComponentContainer wrap(T textField, String caption) {
+	public ComponentContainer wrap(T textField, String caption, boolean withMargin) {
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSpacing(false);
 		layout.setMargin(false);
 		layout.setWidth(100, Sizeable.Unit.PERCENTAGE);
-		layout.addStyleName(CssStyles.FIELD_WRAPPER);
+		if (withMargin) {
+			layout.addStyleName(CssStyles.FIELD_WRAPPER);
+		}
 
 		textField.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		textField.addStyleName(CssStyles.RESIZABLE);
@@ -73,6 +75,12 @@ public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implemen
 		layout.addComponents(textField, labelField);
 
 		return layout;
+	}
+
+	@Override
+	public ComponentContainer wrap(T textField, String caption) {
+
+		return wrap(textField, caption, true);
 	}
 
 	private String buildLabelMessage(String text, T textField, String caption) {

@@ -29,6 +29,7 @@ public class SmsComponent extends CustomField<String> {
 	protected Component initContent() {
 		final VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(false);
+		mainLayout.setMargin(false);
 		mainLayout.setSizeUndefined();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
@@ -36,21 +37,21 @@ public class SmsComponent extends CustomField<String> {
 			mainLayout.addComponent(
 				new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " "
-						+ String.format(I18nProperties.getCaption(Captions.Messages_numberOfMissingPhoneNumbers), missingPhoneNumbers),
+						+ String.format(I18nProperties.getCaption(Captions.messagesNumberOfMissingPhoneNumbers), missingPhoneNumbers),
 					ContentMode.HTML));
 			mainLayout.addComponent(new Label());
 		}
 
-		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.Messages_enterSMS)));
+		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.messageEnterSms)));
 
 		final TextFieldWithMaxLengthWrapper<TextArea> tTextFieldWithMaxLengthWrapper = new TextFieldWithMaxLengthWrapper<>();
 
 		smsTextArea = new TextArea();
 		smsTextArea.setWidth(100, Unit.PERCENTAGE);
 		smsTextArea.setRows(4);
-		mainLayout.addComponent(tTextFieldWithMaxLengthWrapper.wrap(smsTextArea, Captions.Messages_characters));
+		mainLayout.addComponent(tTextFieldWithMaxLengthWrapper.wrap(smsTextArea, Captions.messagesCharacters, false));
 
-		final Label numberOfMessagesLabel = new Label(String.format(I18nProperties.getCaption(Captions.Messages_numberOfMessages), 0));
+		final Label numberOfMessagesLabel = new Label(String.format(I18nProperties.getCaption(Captions.messagesNumberOfMessages), 0));
 		numberOfMessagesLabel.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);
 		mainLayout.addComponent(numberOfMessagesLabel);
 
@@ -63,7 +64,7 @@ public class SmsComponent extends CustomField<String> {
 	}
 
 	private void setNumberOfMessagesLabel(Label numberOfMessagesLabel, int nrOfCharacters) {
-		numberOfMessagesLabel.setValue(String.format(I18nProperties.getCaption(Captions.Messages_numberOfMessages), (1 + nrOfCharacters / 160)));
+		numberOfMessagesLabel.setValue(String.format(I18nProperties.getCaption(Captions.messagesNumberOfMessages), (1 + nrOfCharacters / 160)));
 	}
 
 	@Override

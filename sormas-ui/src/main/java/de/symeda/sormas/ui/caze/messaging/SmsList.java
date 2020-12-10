@@ -30,7 +30,7 @@ public class SmsList extends PaginationList<ManualMessageLogDto> {
 		List<ManualMessageLogDto> messageLogs = FacadeProvider.getCaseFacade().getMessageLog(personReferenceDto.getUuid(), MessageType.SMS);
 
 		if (!hasPhoneNumber){
-			Label noPhoneNumberLabel = new Label(I18nProperties.getCaption(Captions.Messages_noPhoneNumberForCasePerson));
+			Label noPhoneNumberLabel = new Label(I18nProperties.getCaption(Captions.messagesNoPhoneNumberForCasePerson));
 			listLayout.addComponent(noPhoneNumberLabel);
 		}
 
@@ -39,7 +39,7 @@ public class SmsList extends PaginationList<ManualMessageLogDto> {
 			showPage(1);
 		} else {
 			updatePaginationLayout();
-			Label noMessageLabel = new Label(I18nProperties.getCaption(Captions.Messages_noSmsSentForCase));
+			Label noMessageLabel = new Label(I18nProperties.getCaption(Captions.messagesNoSmsSentForCase));
 			listLayout.addComponent(noMessageLabel);
 		}
 	}

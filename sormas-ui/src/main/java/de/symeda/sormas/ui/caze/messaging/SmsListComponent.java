@@ -32,7 +32,7 @@ public class SmsListComponent extends VerticalLayout {
 		createSmsListComponent(new SmsList(personRef, hasPhoneNumber), e -> {
 			final SmsComponent smsComponent = new SmsComponent(missingPhoneNumbers);
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getCaption(Captions.Messages_sendingSms),
+				I18nProperties.getCaption(Captions.messagesSendingSms),
 				smsComponent,
 				I18nProperties.getCaption(Captions.actionSend),
 				I18nProperties.getCaption(Captions.actionCancel),
@@ -40,7 +40,7 @@ public class SmsListComponent extends VerticalLayout {
 				confirmationEvent -> {
 					if (confirmationEvent.booleanValue()) {
 						FacadeProvider.getCaseFacade().sendMessage(Arrays.asList(caseRef.getUuid()), "", smsComponent.getValue(), MessageType.SMS);
-						Notification.show(null, I18nProperties.getString(Strings.Messages_smsSent), Notification.Type.TRAY_NOTIFICATION);
+						Notification.show(null, I18nProperties.getString(Strings.notificationSmsSent), Notification.Type.TRAY_NOTIFICATION);
 					}
 				});
 		});
@@ -62,11 +62,11 @@ public class SmsListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label smsHeader = new Label(I18nProperties.getCaption(Captions.Messages_sms));
+		Label smsHeader = new Label(I18nProperties.getCaption(Captions.messagesSms));
 		smsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(smsHeader);
 
-		sendSmsButton = new Button(I18nProperties.getCaption(Captions.Messages_sendSMS));
+		sendSmsButton = new Button(I18nProperties.getCaption(Captions.messagesSendSMS));
 		CssStyles.style(sendSmsButton, ValoTheme.BUTTON_PRIMARY);
 		sendSmsButton.addClickListener(clickListener);
 		componentHeader.addComponent(sendSmsButton);

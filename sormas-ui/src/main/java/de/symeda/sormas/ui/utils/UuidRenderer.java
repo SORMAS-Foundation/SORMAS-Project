@@ -20,8 +20,8 @@ package de.symeda.sormas.ui.utils;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import elemental.json.JsonValue;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class UuidRenderer extends HtmlRenderer {
@@ -30,7 +30,7 @@ public class UuidRenderer extends HtmlRenderer {
 	public JsonValue encode(String value) {
 
 		if (value != null && !value.isEmpty()) {
-			value = "<a title='" + value + "'>" + StringEscapeUtils.escapeHtml4(DataHelper.getShortUuid(value)) + "</a>";
+			value = "<a title='" + value + "'>" + HtmlHelper.cleanHtml(DataHelper.getShortUuid(value)) + "</a>";
 			return super.encode(value);
 		} else {
 			return null;

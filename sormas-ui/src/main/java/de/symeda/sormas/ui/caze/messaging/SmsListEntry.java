@@ -39,7 +39,7 @@ public class SmsListEntry extends HorizontalLayout {
 			topLeftLayout.setSpacing(false);
 			final UserReferenceDto sendingUser = manualMessageLogDto.getSendingUser();
 			final Label sendingInfo = new Label(
-				I18nProperties.getCaption(Captions.Messages_sentBy) + ": " + sendingUser.getFirstName() + " " + sendingUser.getLastName() + " "
+				I18nProperties.getCaption(Captions.messagesSentBy) + ": " + sendingUser.getFirstName() + " " + sendingUser.getLastName() + " "
 					+ DateFormatHelper.formatLocalDateTime(manualMessageLogDto.getSentDate()));
 			topLeftLayout.addComponent(sendingInfo);
 		}

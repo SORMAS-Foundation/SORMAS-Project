@@ -1176,7 +1176,7 @@ public class CaseController {
 			final SmsComponent smsComponent =
 				new SmsComponent(FacadeProvider.getCaseFacade().countCasesWithMissingContactInformation(caseUuids, MessageType.SMS));
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getCaption(Captions.Messages_sendingSms),
+				I18nProperties.getCaption(Captions.messagesSendingSms),
 				smsComponent,
 				I18nProperties.getCaption(Captions.actionSend),
 				I18nProperties.getCaption(Captions.actionCancel),
@@ -1184,7 +1184,7 @@ public class CaseController {
 				confirmationEvent -> {
 					if (confirmationEvent.booleanValue()) {
 						FacadeProvider.getCaseFacade().sendMessage(caseUuids, "", smsComponent.getValue(), MessageType.SMS);
-						Notification.show(null, I18nProperties.getString(Strings.Messages_smsSent), Type.TRAY_NOTIFICATION);
+						Notification.show(null, I18nProperties.getString(Strings.notificationSmsSent), Type.TRAY_NOTIFICATION);
 					}
 				});
 		}
