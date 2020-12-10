@@ -1601,7 +1601,7 @@ public interface Captions {
 	String Symptoms_symptomsUnknownOccurred = "Symptoms.symptomsUnknownOccurred";
 	String Symptoms_temperature = "Symptoms.temperature";
 	String Symptoms_temperatureSource = "Symptoms.temperatureSource";
-	String Symptoms_throbocytopenia = "Symptoms.throbocytopenia";
+	String Symptoms_thrombocytopenia = "Symptoms.thrombocytopenia";
 	String Symptoms_tremor = "Symptoms.tremor";
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";

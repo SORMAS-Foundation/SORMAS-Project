@@ -391,7 +391,7 @@ public final class SymptomsHelper {
 		appendYesSymptom(string, symptomsDto.getConjunctivitis(), SymptomsDto.CONJUNCTIVITIS);
 		appendYesSymptom(string, symptomsDto.getEyePainLightSensitive(), SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE);
 		appendYesSymptom(string, symptomsDto.getKopliksSpots(), SymptomsDto.KOPLIKS_SPOTS);
-		appendYesSymptom(string, symptomsDto.getThrobocytopenia(), SymptomsDto.THROBOCYTOPENIA);
+		appendYesSymptom(string, symptomsDto.getThrombocytopenia(), SymptomsDto.THROMBOCYTOPENIA);
 		appendYesSymptom(string, symptomsDto.getOtitisMedia(), SymptomsDto.OTITIS_MEDIA);
 		appendYesSymptom(string, symptomsDto.getHearingloss(), SymptomsDto.HEARINGLOSS);
 		appendYesSymptom(string, symptomsDto.getDehydration(), SymptomsDto.DEHYDRATION);

@@ -5554,7 +5554,7 @@
           "temperatureSource" : {
             "$ref" : "#/components/schemas/TemperatureSource"
           },
-          "throbocytopenia" : {
+          "thrombocytopenia" : {
             "$ref" : "#/components/schemas/SymptomState"
           },
           "tremor" : {
