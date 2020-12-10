@@ -21,12 +21,18 @@ import java.util.Set;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class UserReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private String firstName;
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private String lastName;
 
 	public UserReferenceDto() {

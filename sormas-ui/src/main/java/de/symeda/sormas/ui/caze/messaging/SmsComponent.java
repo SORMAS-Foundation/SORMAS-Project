@@ -4,14 +4,16 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
 
 public class SmsComponent extends CustomField<String> {
 
@@ -27,6 +29,7 @@ public class SmsComponent extends CustomField<String> {
 	protected Component initContent() {
 		final VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(false);
+		mainLayout.setMargin(false);
 		mainLayout.setSizeUndefined();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
@@ -34,46 +37,34 @@ public class SmsComponent extends CustomField<String> {
 			mainLayout.addComponent(
 				new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " "
-						+ String.format(I18nProperties.getString(Strings.numberOfMissingPhoneNumbers), missingPhoneNumbers),
+						+ String.format(I18nProperties.getCaption(Captions.messagesNumberOfMissingPhoneNumbers), missingPhoneNumbers),
 					ContentMode.HTML));
 			mainLayout.addComponent(new Label());
 		}
 
-		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.enterSMS)));
+		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.messageEnterSms)));
+
+		final TextFieldWithMaxLengthWrapper<TextArea> tTextFieldWithMaxLengthWrapper = new TextFieldWithMaxLengthWrapper<>();
 
 		smsTextArea = new TextArea();
 		smsTextArea.setWidth(100, Unit.PERCENTAGE);
 		smsTextArea.setRows(4);
-		mainLayout.addComponent(smsTextArea);
+		mainLayout.addComponent(tTextFieldWithMaxLengthWrapper.wrap(smsTextArea, Captions.messagesCharacters, false));
 
-		final HorizontalLayout charactersLayout = new HorizontalLayout();
-		charactersLayout.setSpacing(false);
-		charactersLayout.addComponent(new Label(I18nProperties.getString(Strings.characters)));
-		charactersLayout.addComponent(new Label(" "));
-		final Label characterLeftLabel = new Label("0");
-		charactersLayout.addComponent(characterLeftLabel);
-		charactersLayout.addComponent(new Label("/160"));
-		mainLayout.addComponent(charactersLayout);
-		mainLayout.setComponentAlignment(charactersLayout, Alignment.BOTTOM_RIGHT);
+		final Label numberOfMessagesLabel = new Label(String.format(I18nProperties.getCaption(Captions.messagesNumberOfMessages), 0));
+		numberOfMessagesLabel.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);
+		mainLayout.addComponent(numberOfMessagesLabel);
 
-		final HorizontalLayout nrOfMessagesLayout = new HorizontalLayout();
-		nrOfMessagesLayout.setSpacing(false);
-		nrOfMessagesLayout.setMargin(false);
-		nrOfMessagesLayout.addComponent(new Label(I18nProperties.getString(Strings.numberOfMessages)));
-		nrOfMessagesLayout.addComponent(new Label(" "));
-		final Label nrOfMessagesLabel = new Label("1");
-		nrOfMessagesLayout.addComponent(nrOfMessagesLabel);
+		mainLayout.setComponentAlignment(numberOfMessagesLabel, Alignment.BOTTOM_RIGHT);
 
-		mainLayout.addComponent(nrOfMessagesLayout);
-		mainLayout.setComponentAlignment(nrOfMessagesLayout, Alignment.BOTTOM_RIGHT);
-
-		smsTextArea.addValueChangeListener(e -> {
-			final int nrOfCharacters = e.getValue().length();
-			characterLeftLabel.setValue(String.valueOf(nrOfCharacters));
-			nrOfMessagesLabel.setValue(String.valueOf(1 + nrOfCharacters / 160));
-		});
+		smsTextArea.addTextChangeListener(e -> setNumberOfMessagesLabel(numberOfMessagesLabel, e.getText().length()));
+		smsTextArea.addValueChangeListener(e -> setNumberOfMessagesLabel(numberOfMessagesLabel, smsTextArea.getValue().length()));
 
 		return mainLayout;
+	}
+
+	private void setNumberOfMessagesLabel(Label numberOfMessagesLabel, int nrOfCharacters) {
+		numberOfMessagesLabel.setValue(String.format(I18nProperties.getCaption(Captions.messagesNumberOfMessages), (1 + nrOfCharacters / 160)));
 	}
 
 	@Override

@@ -9,11 +9,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
 
@@ -29,25 +27,17 @@ public class ManualMessageLogService extends AbstractAdoService<ManualMessageLog
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ManualMessageLog> from) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
-	public List<ManualMessageLog> getByCaseUuid(@NotNull String caseUuid, MessageType messageType) {
+	public List<ManualMessageLog> getByPersonUuid(@NotNull String personUuid, MessageType messageType) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<ManualMessageLog> cq = cb.createQuery(ManualMessageLog.class);
 		final Root<ManualMessageLog> manualMessageLogRoot = cq.from(ManualMessageLog.class);
 
-		final Subquery<Person> casePersonSubQuery = cq.subquery(Person.class);
-		final Root<Case> caseRoot = casePersonSubQuery.from(Case.class);
-		casePersonSubQuery.where(cb.equal(caseRoot.get(Case.UUID), caseUuid));
-		casePersonSubQuery.select(caseRoot.get(Case.PERSON));
-
-		Predicate filter = createUserFilter(cb, cq, manualMessageLogRoot);
-		filter = AbstractAdoService.and(
-			cb,
-			filter,
-			cb.equal(manualMessageLogRoot.get(ManualMessageLog.RECIPIENT_PERSON), casePersonSubQuery),
+		final Predicate filter = cb.and(
+			cb.equal(manualMessageLogRoot.get(ManualMessageLog.RECIPIENT_PERSON).get(Person.UUID), personUuid),
 			cb.equal(manualMessageLogRoot.get(ManualMessageLog.MESSAGE_TYPE), messageType));
 
 		cq.where(filter);

@@ -84,6 +84,7 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <TextView
+                    android:id="@+id/exposure_investigation_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:htmlValue="@{I18nProperties.getString(Strings.infoExposureInvestigation)}"

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -547,6 +548,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
+				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY),
@@ -572,7 +574,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.EMAIL_ADDRESS),
 				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
-				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN), 
+				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
@@ -2123,6 +2125,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
 
+		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
+		target.setInfectionSetting(source.getInfectionSetting());
+
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
 		return target;
 	}
 
@@ -2364,6 +2373,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
 		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
+
+		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
+		target.setInfectionSetting(source.getInfectionSetting());
+
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
@@ -3103,18 +3119,24 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public long countCasesWithMissingMessageType(List<String> caseUuids, MessageType messageType) {
+	public long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType) {
 
-		return caseService.count((cb, root) -> {
-			final Join<Object, Object> personJoin = root.join(Case.PERSON, JoinType.LEFT);
+		final AtomicLong totalCount = new AtomicLong();
+
+		IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, e -> totalCount.addAndGet(caseService.count((cb, root) -> {
+			final Join<Case, Person> personJoin = root.join(Case.PERSON, JoinType.LEFT);
 			final String messageTypeColumn = messageType == MessageType.EMAIL ? Person.EMAIL_ADDRESS : Person.PHONE;
-			return cb.and(root.get(Case.UUID).in(caseUuids), cb.isNull(personJoin.get(messageTypeColumn)));
-		});
+			return cb.and(
+				root.get(Case.UUID).in(caseUuids),
+				cb.or(cb.isNull(personJoin.get(messageTypeColumn)), cb.equal(personJoin.get(messageTypeColumn), StringUtils.EMPTY)));
+		})));
+
+		return totalCount.get();
 	}
 
 	@Override
-	public List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType) {
-		return manualMessageLogService.getByCaseUuid(caseUuid, messageType)
+	public List<ManualMessageLogDto> getMessageLog(String personUuid, MessageType messageType) {
+		return manualMessageLogService.getByPersonUuid(personUuid, messageType)
 			.stream()
 			.map(
 				mml -> new ManualMessageLogDto(

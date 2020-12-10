@@ -180,7 +180,7 @@ public interface CaseFacade {
 
 	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
 
-	long countCasesWithMissingMessageType(List<String> caseUuids, MessageType messageType);
+	long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType);
 
 	List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType);
 }

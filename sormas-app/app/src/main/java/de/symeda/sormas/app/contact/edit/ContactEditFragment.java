@@ -347,7 +347,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactDistrict.setRequired(true);
 		}
 
-		ContactValidator.initializeValidation(record, contentBinding);
+		ContactValidator.initializeLastContactDateValidation(record, contentBinding);
+		ContactValidator.initializeProhibitionToWorkIntervalValidator(contentBinding);
 
 		//contentBinding.setContactProximityClass(ContactProximity.class);
 
@@ -410,6 +411,9 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
 		contentBinding.contactQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
 		contentBinding.contactQuarantineOfficialOrderSentDate.initializeDateField(getChildFragmentManager());
+
+		contentBinding.contactProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
+		contentBinding.contactProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
 	}
 
 	@Override

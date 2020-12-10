@@ -138,14 +138,14 @@ public class MessagingService {
 		String emailAddress,
 		String phoneNumber,
 		String recipientUuid,
-		final String recipient,
+		final String recipientType,
 		MessageType... messageTypes)
 		throws NotificationDeliveryFailedException {
 		for (MessageType messageType : messageTypes) {
 			if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
-				logger.info(String.format("Tried to send an email to a " + recipient + " without an email address (UUID: %s).", recipientUuid));
+				logger.info(String.format("Tried to send an email to a " + recipientType + " without an email address (UUID: %s).", recipientUuid));
 			} else if (messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
-				logger.info(String.format("Tried to send an SMS to a " + recipient + " without a phone number (UUID: %s).", recipientUuid));
+				logger.info(String.format("Tried to send an SMS to a " + recipientType + " without a phone number (UUID: %s).", recipientUuid));
 			} else {
 				try {
 					if (messageType == MessageType.EMAIL) {

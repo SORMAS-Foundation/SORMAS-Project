@@ -30,6 +30,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
 		</dependency>
@@ -130,6 +135,7 @@
 		<dependency>
 	    	<groupId>org.glassfish.jersey.inject</groupId>
 	    	<artifactId>jersey-hk2</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
