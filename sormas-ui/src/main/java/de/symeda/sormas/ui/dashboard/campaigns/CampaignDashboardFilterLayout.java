@@ -3,11 +3,16 @@ package de.symeda.sormas.ui.dashboard.campaigns;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
+import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignPhase;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -16,6 +21,7 @@ import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
@@ -29,6 +35,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 
+	private OptionGroup campaignPhaseSelector;
+
 	public CampaignDashboardFilterLayout(CampaignDashboardView dashboardView, CampaignDashboardDataProvider dashboardDataProvider) {
 
 		this.dashboardView = dashboardView;
@@ -39,7 +47,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		this.areaFilter = new ComboBox();
 
 		setSpacing(true);
-		setSizeUndefined();
+		setWidthFull();
 		setMargin(new MarginInfo(true, true, false, true));
 
 		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
@@ -47,6 +55,16 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		createCampaignFilter();
 		createJurisdictionFilters();
+
+		campaignPhaseSelector = new OptionGroup();
+		campaignPhaseSelector.setDescription(I18nProperties.getPrefixDescription(CampaignDto.I18N_PREFIX, "campaignPhase"));
+		CssStyles.style(campaignPhaseSelector, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		campaignPhaseSelector.addItems(CampaignPhase.values());
+		campaignPhaseSelector.setValue(CampaignPhase.INTRA);
+		campaignPhaseSelector.setEnabled(false);
+		addComponent(campaignPhaseSelector);
+		setExpandRatio(campaignPhaseSelector, 1);
+		setComponentAlignment(campaignPhaseSelector, Alignment.MIDDLE_RIGHT);
 	}
 
 	private void createCampaignFilter() {

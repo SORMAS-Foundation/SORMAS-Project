@@ -88,9 +88,11 @@ public class EventDataView extends AbstractEventView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EVENT_LOC);
 
-		TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef());
-		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(taskList, TASKS_LOC);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+			TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef());
+			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(taskList, TASKS_LOC);
+		}
 
 		ActionStatsComponent actionList = new ActionStatsComponent(ActionContext.EVENT, getEventRef());
 		actionList.addStyleName(CssStyles.SIDE_COMPONENT);

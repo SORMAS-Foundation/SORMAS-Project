@@ -38,13 +38,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.data.validator.EmailValidator;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -78,9 +78,9 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
@@ -160,6 +160,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             VSPACE_3,
                             fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
                                     fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
+                                    fluidRowLocs(PersonDto.NAMES_OF_OTHER_GUARDIANS) +
                                     fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
                                     fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
                                     loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
@@ -203,6 +204,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
 		addFields(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
+		addFields(PersonDto.NAMES_OF_OTHER_GUARDIANS);
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3

@@ -24,6 +24,7 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -49,7 +50,8 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
 		editComponent = ControllerProvider.getCampaignController()
-			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignFormMeta(), true, true, () -> {
+			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaign(), campaignFormData.getCampaignFormMeta(), true, true, () -> {
+				SormasUI.refreshView();
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
 					TRAY_NOTIFICATION);

@@ -21,12 +21,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Validator;
 
@@ -42,12 +45,17 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventParticipantsController {
@@ -206,9 +214,40 @@ public class EventParticipantsController {
 			if (!editForm.getFieldGroup().isModified()) {
 
 				EventParticipantDto dto = editForm.getValue();
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid());
 				UserDto user = UserProvider.getCurrent().getUser();
-				if ((user.getRegion() != null && !user.getRegion().equals(dto.getRegion()))
-					|| (user.getDistrict() != null && !user.getDistrict().equals(dto.getDistrict()))) {
+
+				RegionReferenceDto userRegion = user.getRegion();
+				DistrictReferenceDto userDistrict = user.getDistrict();
+
+				RegionReferenceDto epResponsibleRegion = dto.getRegion();
+				DistrictReferenceDto epResponsibleDistrict = dto.getDistrict();
+
+				RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
+				DistrictReferenceDto epEventDistrict = eventDto.getEventLocation().getDistrict();
+
+				//Responsible region of the event participant is filled and differs from user Region - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleRegionDiffersFromUserRegion =
+					(userRegion != null && epResponsibleRegion != null && !userRegion.equals(epResponsibleRegion));
+
+				//Responsible district of the event participant is filled and differs from user District - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleDistrictDiffersFromUserDistrict =
+					(userDistrict != null && epResponsibleDistrict != null && !userDistrict.equals(epResponsibleDistrict));
+
+				//both responsible region and district of the event participant are empty and the fall back towards event location: 
+				// event region or event district is different from user's region or district - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleFieldsEmptyAndEventOutsideJurisdiction = (epResponsibleRegion == null
+					&& epResponsibleDistrict == null
+					&& (userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict)));
+
+				//if only district is not filled and either responsible region or district are different from user region or district - warning about loosing full access rights to the event participant should be triggered
+				Boolean responsibleDistrictIsEmpty = ((epResponsibleRegion != null && epResponsibleDistrict == null)
+					&& (userRegion != null && !userRegion.equals(epResponsibleRegion) || userDistrict != null));
+
+				if (responsibleRegionDiffersFromUserRegion
+					|| responsibleDistrictDiffersFromUserDistrict
+					|| responsibleFieldsEmptyAndEventOutsideJurisdiction
+					|| responsibleDistrictIsEmpty) {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingEventParticipantResponsibleJurisdictionUpdated),
 						new Label(I18nProperties.getString(Strings.messageEventParticipantResponsibleJurisdictionUpdated)),
@@ -217,17 +256,54 @@ public class EventParticipantsController {
 						500,
 						confirmed -> {
 							if (confirmed) {
-								personFacade.savePerson(dto.getPerson());
-								eventParticipantFacade.saveEventParticipant(dto);
-								Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
-								if (doneConsumer != null)
-									doneConsumer.accept(null);
-								SormasUI.refreshView();
+								savePersonAndEventParticipant(doneConsumer, dto);
 							}
 						});
+				} else {
+					savePersonAndEventParticipant(doneConsumer, dto);
 				}
 			}
 		});
 		return editComponent;
+	}
+
+	private void savePersonAndEventParticipant(Consumer<EventParticipantReferenceDto> doneConsumer, EventParticipantDto dto) {
+		personFacade.savePerson(dto.getPerson());
+		eventParticipantFacade.saveEventParticipant(dto);
+		Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
+		if (doneConsumer != null)
+			doneConsumer.accept(null);
+		SormasUI.refreshView();
+	}
+
+	public VerticalLayout getEventParticipantViewTitleLayout(EventParticipantDto eventParticipant) {
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
+		titleLayout.setSpacing(false);
+
+		String eventShortUuid = DataHelper.getShortUuid(event.getUuid());
+		String eventTitle = event.getEventTitle();
+		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + eventShortUuid + ")" : eventShortUuid);
+		eventLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponent(eventLabel);
+
+		if (event.getStartDate() != null) {
+			Label eventStartDateLabel = new Label(
+				event.getEndDate() != null
+					? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
+					: DateFormatHelper.formatDate(event.getStartDate()));
+			eventStartDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+			titleLayout.addComponent(eventStartDateLabel);
+		}
+
+		String shortUuid = DataHelper.getShortUuid(eventParticipant.getUuid());
+		String person = eventParticipant.getPerson().toReference().getCaption();
+		Label eventParticipantLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
+		eventParticipantLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponents(eventParticipantLabel);
+
+		return titleLayout;
 	}
 }

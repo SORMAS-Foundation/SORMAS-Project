@@ -67,8 +67,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -296,6 +296,24 @@ public class EventFacadeEjb implements EventFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = community.get(Community.NAME);
 					break;
+				case EventIndexDto.REGION:
+					expression = region.get(Region.NAME);
+					break;
+				case EventIndexDto.DISTRICT:
+					expression = district.get(District.NAME);
+					break;
+				case EventIndexDto.COMMUNITY:
+					expression = community.get(Community.NAME);
+					break;
+				case EventIndexDto.ADDRESS:
+					expression = location.get(Location.CITY);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.STREET);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.HOUSE_NUMBER);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.ADDITIONAL_INFORMATION);
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
@@ -337,6 +355,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
+			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			participantCount,
 			event.get(Event.DISEASE),
@@ -357,6 +376,8 @@ public class EventFacadeEjb implements EventFacade {
 			location.get(Location.HOUSE_NUMBER),
 			location.get(Location.ADDITIONAL_INFORMATION),
 			event.get(Event.SRC_TYPE),
+			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE),
+			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
@@ -450,6 +471,7 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -464,6 +486,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
@@ -528,6 +552,7 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -542,6 +567,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());

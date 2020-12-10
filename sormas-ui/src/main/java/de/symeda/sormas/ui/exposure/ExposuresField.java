@@ -15,10 +15,7 @@
 
 package de.symeda.sormas.ui.exposure;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -34,8 +31,8 @@ import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -67,7 +64,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private static final String COLUMN_SOURCE_CASE_NAME = Captions.exposureSourceCaseName;
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
-	private Map<String, String> sourceCaseNames = new HashMap<>();
 	private Supplier<List<ContactReferenceDto>> getSourceContactsCallback;
 	private Class<? extends EntityDto> epiDataParentClass;
 	private boolean isPseudonymized;
@@ -161,7 +157,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		table.addGeneratedColumn(COLUMN_SOURCE_CASE_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			return !isPseudonymized
-				? DataHelper.toStringNullable(sourceCaseNames.get(exposure.getUuid()))
+				? DataHelper.toStringNullable(exposure.getContactToCase() != null ? exposure.getContactToCase().getCaseName() : "")
 				: I18nProperties.getCaption(Captions.inaccessibleValue);
 		});
 	}
@@ -216,6 +212,8 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		component.addCommitListener(() -> {
 			if (!exposureForm.getFieldGroup().isModified()) {
 				commitCallback.accept(exposureForm.getValue());
+
+				updateAddButtonVisibility(getValue().size());
 			}
 		});
 
@@ -223,6 +221,8 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			component.addDeleteListener(() -> {
 				popupWindow.close();
 				ExposuresField.this.removeEntry(entry);
+
+				updateAddButtonVisibility(getValue().size());
 			}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
 		}
 	}
@@ -238,16 +238,12 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		return exposure;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setPropertyDataSource(Property newDataSource) {
 		super.setPropertyDataSource(newDataSource);
-		if (newDataSource != null) {
-			sourceCaseNames = FacadeProvider.getEpiDataFacade()
-				.getExposureSourceCaseNames(
-					((Collection<ExposureDto>) newDataSource.getValue()).stream().map(EntityDto::getUuid).collect(Collectors.toList()));
-		} else {
-			sourceCaseNames = new HashMap<>();
+
+		if (getValue() != null) {
+			updateAddButtonVisibility(getValue().size());
 		}
 	}
 
@@ -261,5 +257,13 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	public void setPseudonymized(boolean isPseudonymized) {
 		this.isPseudonymized = isPseudonymized;
+	}
+
+	private void updateAddButtonVisibility(int exposureCount) {
+		if (isReadOnly() || epiDataParentClass == ContactDto.class && exposureCount > 0) {
+			getAddButton().setVisible(false);
+		} else {
+			getAddButton().setVisible(true);
+		}
 	}
 }

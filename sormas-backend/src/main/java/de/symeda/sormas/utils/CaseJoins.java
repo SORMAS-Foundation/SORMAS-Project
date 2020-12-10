@@ -35,6 +35,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
@@ -63,6 +64,7 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	private Join<ClinicalCourse, HealthConditions> healthConditions;
 	private Join<Case, EventParticipant> eventParticipants;
 	private Join<Person, List<Location>> personAddresses;
+	private Join<Case, Sample> samples;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -234,5 +236,13 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 
 	private void setPersonAddresses(Join<Person, List<Location>> personAddresses) {
 		this.personAddresses = personAddresses;
+	}
+
+	public Join<Case, Sample> getSamples() {
+		return getOrCreate(samples, Case.SAMPLES, JoinType.LEFT, this::setSamples);
+	}
+
+	private void setSamples(Join<Case, Sample> samples) {
+		this.samples = samples;
 	}
 }

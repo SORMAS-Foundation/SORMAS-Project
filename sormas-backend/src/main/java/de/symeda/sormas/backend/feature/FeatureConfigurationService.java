@@ -1,9 +1,10 @@
 package de.symeda.sormas.backend.feature;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -123,28 +124,47 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 	public void createMissingFeatureConfigurations() {
 
 		List<FeatureConfiguration> featureConfigurations = getAll();
-		Map<FeatureType, FeatureConfiguration> existingListOfConfigurations = new HashMap<>();
-
-		for (FeatureConfiguration singleFeatureConfiguration : featureConfigurations) {
-			existingListOfConfigurations.put(singleFeatureConfiguration.getFeatureType(), singleFeatureConfiguration);
-		}
+		Map<FeatureType, FeatureConfiguration> existingListOfConfigurations =
+			featureConfigurations.stream().collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity()));
 
 		FeatureType.getAllServerFeatures().forEach(featureType -> {
 			FeatureConfiguration savedConfiguration = existingListOfConfigurations.get(featureType);
-			if (savedConfiguration != null) {
-				if (featureType.isDependent() && featureType.dependencyTriggered()) {
-					savedConfiguration.setEnabled(false);
-					ensurePersisted(savedConfiguration);
-				}
-			} else {
-				FeatureConfiguration configuration;
-				if (featureType.isDependent() && featureType.dependencyTriggered()) {
-					configuration = FeatureConfiguration.build(featureType, false);
-				} else {
-					configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
-				}
+			if (savedConfiguration == null) {
+				FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
 				ensurePersisted(configuration);
 			}
 		});
+	}
+
+	public void updateFeatureConfigurations() {
+
+		List<FeatureConfiguration> featureConfigurations = getAll();
+		Map<FeatureType, FeatureConfiguration> featureConfigurationMap =
+			featureConfigurations.stream().collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity()));
+
+		FeatureType.getAllServerFeatures().forEach(featureType -> {
+			if (featureType.isDependent()) {
+				boolean hasEnabledDependentFeature = hasEnabledDependentFeature(featureType, featureConfigurationMap);
+
+				if (!hasEnabledDependentFeature) {
+					FeatureConfiguration configuration = featureConfigurationMap.get(featureType);
+					configuration.setEnabled(false);
+					ensurePersisted(configuration);
+				}
+			}
+		});
+	}
+
+	private boolean hasEnabledDependentFeature(FeatureType featureType, Map<FeatureType, FeatureConfiguration> featureConfigurationMap) {
+
+		for (FeatureType dependentFeatureType : featureType.getDependentFeatures()) {
+			if (dependentFeatureType.isDependent()) {
+				return hasEnabledDependentFeature(dependentFeatureType, featureConfigurationMap);
+			} else if (featureConfigurationMap.get(dependentFeatureType).isEnabled()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

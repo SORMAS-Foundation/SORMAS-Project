@@ -25,6 +25,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
@@ -66,6 +67,8 @@ public interface PersonFacade {
 	List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomsJournal);
 
 	Date getLatestFollowUpEndDateByUuid(String uuid);
+
+	FollowUpStatus getMostRelevantFollowUpStatusByUuid(String uuid);
 
 	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
 
