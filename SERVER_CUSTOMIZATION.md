@@ -88,3 +88,14 @@ The following features are currently configurable:
 * **Case Follow-Up** `CASE_FOLLOWUP`: Enables the contact follow-up module for cases as well to allow a more detailed daily documentation of symptoms.
 * **Line Listing** `LINE_LISTING`: Whether or not using line listing for case entry is enabled in the specified jurisdiction for the specified disease. Configurable from the UI, no database interaction needed.
 * **Documents** `DOCUMENTS`: Enables document storage.
+
+## Proxy Settings
+Some SORMAS integrations support proxy settings:
+* **Patient diary interface**
+* **Geocoding**
+* **SORMAS 2 SORMAS**
+
+The proxy can be configured through the following system properties which can be passed as JVM arguments to the server:
+* `org.jboss.resteasy.jaxrs.client.proxy.host`
+* `org.jboss.resteasy.jaxrs.client.proxy.port`
+* `org.jboss.resteasy.jaxrs.client.proxy.scheme`

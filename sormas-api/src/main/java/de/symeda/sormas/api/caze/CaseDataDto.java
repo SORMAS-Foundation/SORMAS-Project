@@ -127,6 +127,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
+	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
+	public static final String INFECTION_SETTING = "infectionSetting";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
@@ -164,6 +166,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS = "quarantineReasonBeforeIsolationDetails";
 	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
 	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
+
+	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
+	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
+	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -367,6 +373,10 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
 	private boolean sharedToCountry;
+	@HideForCountriesExcept
+	private boolean nosocomialOutbreak;
+	@HideForCountriesExcept
+	private InfectionSetting infectionSetting;
 	private QuarantineType quarantine;
 	@SensitiveData
 	private String quarantineTypeDetails;
@@ -443,6 +453,13 @@ public class CaseDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
 	private String endOfIsolationReasonDetails;
+
+	@HideForCountriesExcept
+	private YesNoUnknown prohibitionToWork;
+	@HideForCountriesExcept
+	private Date prohibitionToWorkFrom;
+	@HideForCountriesExcept
+	private Date prohibitionToWorkUntil;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1008,6 +1025,22 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.sharedToCountry = sharedToCountry;
 	}
 
+	public boolean isNosocomialOutbreak() {
+		return nosocomialOutbreak;
+	}
+
+	public void setNosocomialOutbreak(boolean nosocomialOutbreak) {
+		this.nosocomialOutbreak = nosocomialOutbreak;
+	}
+
+	public InfectionSetting getInfectionSetting() {
+		return infectionSetting;
+	}
+
+	public void setInfectionSetting(InfectionSetting infectionSetting) {
+		this.infectionSetting = infectionSetting;
+	}
+
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
@@ -1294,6 +1327,30 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
 	public boolean isOwnershipHandedOver() {

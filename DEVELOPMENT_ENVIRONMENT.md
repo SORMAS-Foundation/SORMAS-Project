@@ -51,7 +51,7 @@
 - Clone the SORMAS-Project repository and open the project in IntelliJ
 	- make sure the under "File -> Project Structure -> Modules" all the modules (except the android app - this should not be added) are recognized, if not add the modules with +
 - Make sure under "File -> Settings -> Plugins" Glassfish & Ant integrations are enabled (look into the "Installed" tab)
-- Install the Vaadin Designer plugin
+- Install the Vaadin plugin (not the Vaadin Designer plugin!)
 - Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
 - Run "Maven install" on the sormas-base project
 - Add a Payara server to IntelliJ:
