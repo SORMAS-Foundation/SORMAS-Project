@@ -224,6 +224,10 @@ public class Contact extends CoreAdo {
 	private EndOfQuarantineReason endOfQuarantineReason;
 	private String endOfQuarantineReasonDetails;
 
+	private YesNoUnknown prohibitionToWork;
+	private Date prohibitionToWorkFrom;
+	private Date prohibitionToWorkUntil;
+
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
@@ -874,8 +878,35 @@ public class Contact extends CoreAdo {
 		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
 	}
 
-  @Enumerated(EnumType.STRING)
-  public YesNoUnknown getReturningTraveler() {
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getReturningTraveler() {
 		return returningTraveler;
 	}
 
