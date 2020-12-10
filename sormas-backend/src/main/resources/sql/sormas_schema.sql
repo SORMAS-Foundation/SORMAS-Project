@@ -5899,7 +5899,7 @@ ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
 
--- 2020-12-07 Add LabMessage #2946
+-- 2020-12-07 Add LabMessage #3486
 CREATE TABLE labmessage (
         id bigint not null,
         uuid varchar(36) not null unique,
@@ -5936,5 +5936,5 @@ CREATE TABLE labmessage (
 
 CREATE TABLE labmessage_history (LIKE labmessage);
 
-INSERT INTO schema_version (version_number, comment) VALUES (284, 'Add LabMessage #2946');
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'Add LabMessage #3486');
 -- *** Insert new sql commands BEFORE this line ***
