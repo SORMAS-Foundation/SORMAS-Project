@@ -711,7 +711,7 @@
 			<!-- ** Vaadin END ** -->
 
 			<!-- *** Compile dependencies END *** -->
-			
+
 			<!-- *** Test dependencies *** -->
 
 			<dependency>
@@ -776,6 +776,12 @@
 				<artifactId>mockito-inline</artifactId>
 				<version>3.5.15</version>
 				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+				<version>${swagger.version}</version>
 			</dependency>
 
 			<dependency>
