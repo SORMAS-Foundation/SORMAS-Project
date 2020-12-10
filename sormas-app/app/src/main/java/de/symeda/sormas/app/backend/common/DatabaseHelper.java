@@ -38,7 +38,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -152,7 +151,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 253;
+	public static final int DATABASE_VERSION = 255;
 
 	private static DatabaseHelper instance = null;
 
@@ -1784,7 +1783,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 249:
 				currentVersion = 249;
-
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN nosocomialOutbreak boolean DEFAULT false");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN infectionSetting varchar(255)");
 
@@ -1806,6 +1804,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 252:
 				currentVersion = 252;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255)");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512)");
+
+			case 253:
+				currentVersion = 253;
+				getDao(Contact.class).executeRaw("ALTER TABLE events ADD column riskLevel varchar(255);");
+
+			case 254:
+				currentVersion = 254;
 
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN salutation varchar(255)");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN otherSalutation varchar(512)");

@@ -15,34 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.rest;
+package de.symeda.sormas.api.event;
 
-import javax.ws.rs.ApplicationPath;
+import de.symeda.sormas.api.utils.DataHelper;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+public final class EventHelper {
 
-import de.symeda.sormas.rest.swagger.SwaggerConfig;
+	private EventHelper() {
+		// Hide Utility Class Constructor
+	}
 
-/**
- * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>
- */
-@ApplicationPath("/")
-public class RestConfig extends ResourceConfig {
+	public static String buildInstitutionalPartnerTypeString(
+		InstitutionalPartnerType institutionalPartnerType,
+		String institutionalPartnerTypeDetails) {
 
-	public RestConfig() {
+		if (institutionalPartnerType == InstitutionalPartnerType.OTHER) {
+			return DataHelper.toStringNullable(institutionalPartnerTypeDetails);
+		}
 
-		super(RestConfig.class);
-
-		// Resources.
-		packages(getClass().getPackage().getName());
-
-		// as described in https://jersey.github.io/documentation/latest/security.html
-		register(RolesAllowedDynamicFeature.class);
-
-		register(JacksonFeature.class);
-
-		SwaggerConfig.init();
+		return DataHelper.toStringNullable(institutionalPartnerType);
 	}
 }

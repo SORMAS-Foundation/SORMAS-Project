@@ -6012,6 +6012,20 @@ ALTER TABLE contact_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (287, 'Create new field “Prohibition to work” for case and contact #3409');
 
+-- 2020-11-27 Add institutional partner option to events source type #3207
+ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255);
+ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerType varchar(255);
+ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
+ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (288, 'Add institutional partner option to events source type #3207');
+
+-- 2020-11-30 Add riskLevel to events with cluster status #3271
+ALTER TABLE events ADD column risklevel varchar(255);
+ALTER TABLE events_history ADD column risklevel varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (289, 'Add riskLevel to events with cluster status #3271');
+
 -- SurvNet Adaptations - Create new field “Salutation” for persons #3411
 ALTER TABLE person
     ADD COLUMN salutation varchar(255),
@@ -6021,6 +6035,6 @@ ALTER TABLE person_history
     ADD COLUMN salutation varchar(255),
     ADD COLUMN othersalutation varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (288, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
+INSERT INTO schema_version (version_number, comment) VALUES (290, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
 
 -- *** Insert new sql commands BEFORE this line ***

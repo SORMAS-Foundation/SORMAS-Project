@@ -17,13 +17,14 @@ package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum EventSourceType {
+public enum InstitutionalPartnerType {
 
-	NOT_APPLICABLE,
-	MEDIA_NEWS,
-	HOTLINE_PERSON,
-	MATHEMATICAL_MODEL,
-	INSTITUTIONAL_PARTNER;
+	HEALTH_INSURANCE,
+	TERRITORIAL_COMMUNITIES,
+	NATIONAL_EDUCATION,
+	HEALTH_ESTABLISHMENTS,
+	MEDICO_SOCIAL_ESTABLISHMENTS,
+	OTHER;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

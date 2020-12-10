@@ -229,6 +229,7 @@ public interface Captions {
 	String CaseData_latestEventId = "CaseData.latestEventId";
 	String CaseData_latestEventStatus = "CaseData.latestEventStatus";
 	String CaseData_latestEventTitle = "CaseData.latestEventTitle";
+	String CaseData_latestSampleDateTime = "CaseData.latestSampleDateTime";
 	String CaseData_maternalHistory = "CaseData.maternalHistory";
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
@@ -781,8 +782,11 @@ public interface Captions {
 	String Event_participantCount = "Event.participantCount";
 	String Event_reportDateTime = "Event.reportDateTime";
 	String Event_reportingUser = "Event.reportingUser";
+	String Event_riskLevel = "Event.riskLevel";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
+	String Event_srcInstitutionalPartnerType = "Event.srcInstitutionalPartnerType";
+	String Event_srcInstitutionalPartnerTypeDetails = "Event.srcInstitutionalPartnerTypeDetails";
 	String Event_srcLastName = "Event.srcLastName";
 	String Event_srcMediaDetails = "Event.srcMediaDetails";
 	String Event_srcMediaName = "Event.srcMediaName";
