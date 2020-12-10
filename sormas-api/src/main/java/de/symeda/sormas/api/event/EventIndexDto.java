@@ -49,6 +49,10 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+	public static final String ADDRESS = "address";
 
 	private String uuid;
 	private EventStatus eventStatus;
@@ -295,6 +299,22 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
+	public String getRegion() {
+		return getEventLocation().getRegion();
+	}
+
+	public String getDistrict() {
+		return getEventLocation().getDistrict();
+	}
+
+	public String getCommunity() {
+		return getEventLocation().getCommunity();
+	}
+
+	public String getAddress() {
+		return getEventLocation().getAddress();
+	}
+
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
 	}
@@ -348,6 +368,22 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 			this.street = street;
 			this.houseNumber = houseNumber;
 			this.additionalInformation = additionalInformation;
+		}
+
+		public String getRegion() {
+			return regionName;
+		}
+
+		public String getDistrict() {
+			return districtName;
+		}
+
+		public String getCommunity() {
+			return communityName;
+		}
+
+		public String getAddress() {
+			return LocationReferenceDto.buildCaption(city, street, houseNumber, additionalInformation);
 		}
 
 		@Override

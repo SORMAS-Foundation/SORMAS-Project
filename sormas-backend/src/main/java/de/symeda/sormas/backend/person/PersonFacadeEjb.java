@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,18 +43,19 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -651,7 +651,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
-		target.setArmedForcesRelationType(source.getArmedForcesRelationType());
 
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());
@@ -811,7 +810,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
-		target.setArmedForcesRelationType(source.getArmedForcesRelationType());
 
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());

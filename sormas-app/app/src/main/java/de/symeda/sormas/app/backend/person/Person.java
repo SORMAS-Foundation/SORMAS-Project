@@ -35,7 +35,6 @@ import androidx.databinding.Bindable;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -159,8 +158,6 @@ public class Person extends PseudonymizableAdo {
 	private OccupationType occupationType;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String occupationDetails;
-	@Enumerated
-	private ArmedForcesRelationType armedForcesRelationType;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String generalPractitionerDetails;
@@ -357,14 +354,6 @@ public class Person extends PseudonymizableAdo {
 		this.occupationDetails = occupationDetails;
 	}
 
-	public ArmedForcesRelationType getArmedForcesRelationType() {
-		return armedForcesRelationType;
-	}
-
-	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
-		this.armedForcesRelationType = armedForcesRelationType;
-	}
-
 	public CauseOfDeath getCauseOfDeath() {
 		return causeOfDeath;
 	}
@@ -553,12 +542,7 @@ public class Person extends PseudonymizableAdo {
 		this.addresses = addresses;
 	}
 
-	public String getExternalId() {
-		return externalId;
-	}
+	public String getExternalId() { return externalId; }
 
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-	}
-
+	public void setExternalId(String externalId) { this.externalId = externalId; }
 }

@@ -20,6 +20,7 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -54,7 +55,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private String comment;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public Case getCaze() {
 		return caze;
@@ -64,7 +65,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.caze = caze;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public Contact getContact() {
 		return contact;
@@ -74,7 +75,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.contact = contact;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public Sample getSample() {
 		return sample;
