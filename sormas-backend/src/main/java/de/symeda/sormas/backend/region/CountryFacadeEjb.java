@@ -260,6 +260,11 @@ public class CountryFacadeEjb implements CountryFacade {
 		return countryService.getAllUuids();
 	}
 
+	@Override
+	public List<CountryReferenceDto> getAllActiveAsReference() {
+		return countryService.getAllActive(Country.DEFAULT_NAME, true).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
 	// Need to be in the same order as in the constructor
 	private void selectDtoFields(CriteriaQuery<CountryDto> cq, Root<Country> root) {
 

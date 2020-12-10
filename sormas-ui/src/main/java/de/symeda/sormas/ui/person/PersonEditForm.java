@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,6 +67,7 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -158,11 +160,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     loc(CONTACT_INFORMATION_HEADER) +
                     divsCss(
                             VSPACE_3,
-                            fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
-                                    fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-                                    fluidRowLocs(PersonDto.NAMES_OF_OTHER_GUARDIANS) +
+                            fluidRowLocs(PersonDto.BIRTH_NAME, PersonDto.NICKNAME) +
+                                    fluidRowLocs(PersonDto.MOTHERS_MAIDEN_NAME, PersonDto.MOTHERS_NAME) +
+                                    fluidRowLocs(PersonDto.FATHERS_NAME, PersonDto.NAMES_OF_OTHER_GUARDIANS) +
                                     fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
                                     fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
                                     loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 	//@formatter:on
 
@@ -201,6 +204,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
+		addField(PersonDto.BIRTH_NAME, TextField.class);
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
 		addFields(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
@@ -253,20 +257,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
-		addFields(
-			PersonDto.OCCUPATION_TYPE,
-			PersonDto.OCCUPATION_DETAILS,
-			PersonDto.EDUCATION_TYPE,
-			PersonDto.EDUCATION_DETAILS);
+		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		TextField phoneNumber = addField(PersonDto.PHONE, TextField.class);
 		addField(PersonDto.PHONE_OWNER, TextField.class);
 		TextField emailAddress = addField(PersonDto.EMAIL_ADDRESS, TextField.class);
 
-		addFields(
-			PersonDto.PASSPORT_NUMBER,
-			PersonDto.NATIONAL_HEALTH_ID,
-			PersonDto.EXTERNAL_ID);
+		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
+		((ComboBox) addField(PersonDto.BIRTH_COUNTRY)).addItems(countries);
+		((ComboBox) addField(PersonDto.CITIZENSHIP)).addItems(countries);
+
+		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID, PersonDto.EXTERNAL_ID);
 
 		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
@@ -411,13 +412,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
 
-		phoneNumber.addValidator(
-			new PhoneNumberValidator(
-				I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
+		phoneNumber.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
 
-		emailAddress.addValidator(
-			new EmailValidator(
-				I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
+		emailAddress.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
 
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
