@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.labmessage;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
@@ -10,6 +11,9 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "LabMessageFacade")
 public class LabMessageFacadeEjb implements LabMessageFacade {
+
+	@EJB
+	LabMessageService labMessageService;
 
 	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target) {
 
@@ -47,6 +51,15 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestType(source.getTestType());
 
 		return target;
+	}
+
+	@Override
+	public void save(LabMessageDto dto) {
+
+		LabMessage labMessage = labMessageService.getByUuid(dto.getUuid());
+
+		labMessage = fromDto(dto, labMessage);
+		labMessageService.ensurePersisted(labMessage);
 	}
 
 	public LabMessageDto toDto(LabMessage source) {
