@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,15 +43,19 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -79,6 +82,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -114,6 +118,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CaseService caseService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -282,7 +288,18 @@ public class PersonFacadeEjb implements PersonFacade {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
 			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
-			exportPerson.setPhone(detailedPerson.getPhone());
+			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
+				try {
+					PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+					Phonenumber.PhoneNumber numberProto = phoneUtil.parse(detailedPerson.getPhone(), "DE");
+					String internationalPhone = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+					exportPerson.setPhone(internationalPhone);
+				} catch (NumberParseException e) {
+					exportPerson.setPhone(detailedPerson.getPhone());
+				}
+			} else {
+				exportPerson.setPhone(detailedPerson.getPhone());
+			}
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -323,7 +340,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private void handleExternalJournalPerson(PersonDto existingPerson, PersonDto updatedPerson) {
 		SymptomJournalStatus status = existingPerson.getSymptomJournalStatus();
-		if (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status)) {
+		if (configFacade.getPatientDiaryConfig().getUrl() != null
+			&& (SymptomJournalStatus.REGISTERED.equals(status) || SymptomJournalStatus.ACCEPTED.equals(status))) {
 			ExternalJournalValidation validationResult = externalJournalService.validatePatientDiaryPerson(updatedPerson);
 			if (!validationResult.isValid()) {
 				throw new ValidationRuntimeException(validationResult.getMessage());
@@ -633,10 +651,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
-		target.setArmedForcesRelationType(source.getArmedForcesRelationType());
 
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());
+		target.setNamesOfOtherGuardians(source.getNamesOfOtherGuardians());
 		target.setPlaceOfBirthRegion(regionService.getByReferenceDto(source.getPlaceOfBirthRegion()));
 		target.setPlaceOfBirthDistrict(districtService.getByReferenceDto(source.getPlaceOfBirthDistrict()));
 		target.setPlaceOfBirthCommunity(communityService.getByReferenceDto(source.getPlaceOfBirthCommunity()));
@@ -792,10 +810,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
-		target.setArmedForcesRelationType(source.getArmedForcesRelationType());
 
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());
+		target.setNamesOfOtherGuardians(source.getNamesOfOtherGuardians());
 		target.setPlaceOfBirthRegion(RegionFacadeEjb.toReferenceDto(source.getPlaceOfBirthRegion()));
 		target.setPlaceOfBirthDistrict(DistrictFacadeEjb.toReferenceDto(source.getPlaceOfBirthDistrict()));
 		target.setPlaceOfBirthCommunity(CommunityFacadeEjb.toReferenceDto(source.getPlaceOfBirthCommunity()));

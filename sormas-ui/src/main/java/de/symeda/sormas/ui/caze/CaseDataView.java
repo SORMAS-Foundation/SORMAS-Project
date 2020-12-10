@@ -34,6 +34,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.docgeneration.DocGenerationComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -61,6 +62,7 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String SAMPLES_LOC = "samples";
 	public static final String EVENTS_LOC = "events";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
+	public static final String SMS_LOC = "sms";
 
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -81,6 +83,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SMS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DocGenerationComponent.QUARANTINE_LOC));
 
@@ -113,6 +116,14 @@ public class CaseDataView extends AbstractCaseView {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(taskList, TASKS_LOC);
+		}
+
+		final boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
+		final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
+		if (isSmsServiceSetUp && externalMessagesEnabled && UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+			SmsListComponent smsList = new SmsListComponent(getCaseRef(), caze.getPerson());
+			smsList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(smsList, SMS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)

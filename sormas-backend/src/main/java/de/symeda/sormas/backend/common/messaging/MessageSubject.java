@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.backend.common.messaging;
 
 public enum MessageSubject {
 

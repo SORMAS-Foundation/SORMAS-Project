@@ -434,19 +434,6 @@
 
             </LinearLayout>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/person_armedForcesRelationType"
-                    app:value="@={data.armedForcesRelationType}"
-                    style="@style/ControlSingleColumnStyle" />
-
-        </LinearLayout>
-
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <LinearLayout
@@ -484,12 +471,19 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/person_fathersName"
-                    android:nextFocusForward="@+id/person_phone"
+                    android:nextFocusForward="@+id/person_namesOfOtherGuardians"
                     app:value="@={data.fathersName}"
                     app:imeOptions="actionNext"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_namesOfOtherGuardians"
+                android:nextFocusForward="@+id/person_phone"
+                app:value="@={data.namesOfOtherGuardians}"
+                app:imeOptions="actionNext"
+                style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"

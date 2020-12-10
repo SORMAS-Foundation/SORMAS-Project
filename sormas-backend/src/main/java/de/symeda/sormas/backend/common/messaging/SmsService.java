@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.backend.common.messaging;
 
 import java.io.IOException;
 
@@ -29,12 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import com.nexmo.client.NexmoClient;
 import com.nexmo.client.NexmoClientException;
-import com.nexmo.client.auth.AuthMethod;
-import com.nexmo.client.auth.TokenAuthMethod;
 import com.nexmo.client.insight.CarrierDetails.NetworkType;
 import com.nexmo.client.insight.InsightClient;
-import com.nexmo.client.insight.standard.StandardInsightResponse;
-import com.nexmo.client.sms.SmsSubmissionResult;
+import com.nexmo.client.insight.InsightStatus;
+import com.nexmo.client.insight.StandardInsightResponse;
+import com.nexmo.client.sms.MessageStatus;
+import com.nexmo.client.sms.SmsSubmissionResponse;
+import com.nexmo.client.sms.SmsSubmissionResponseMessage;
 import com.nexmo.client.sms.messages.TextMessage;
 
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -49,31 +50,33 @@ public class SmsService {
 	private ConfigFacadeEjbLocal configFacade;
 
 	@Asynchronous
-	public void sendSms(String phoneNumber, String subject, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
+	public void sendSms(String phoneNumber, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
 
 		// Remove the initial + that indicates the beginning of the country code to match the Nexmo specification of allowed number formats
 		if (phoneNumber.startsWith("+")) {
 			phoneNumber = phoneNumber.substring(1);
 		}
 
-		AuthMethod auth = new TokenAuthMethod(configFacade.getSmsAuthKey(), configFacade.getSmsAuthSecret());
-		NexmoClient client = new NexmoClient(auth);
+		NexmoClient client = NexmoClient.builder().apiKey(configFacade.getSmsAuthKey()).apiSecret(configFacade.getSmsAuthSecret()).build();
 
 		// If the phone number is invalid, e.g. because it is a landline number or malformed otherwise, throw an exception
 		InsightClient insightClient = client.getInsightClient();
 		StandardInsightResponse insightResponse = insightClient.getStandardNumberInsight(phoneNumber);
-		if (insightResponse.getStatus() != 0 || insightResponse.getCurrentCarrier().getNetworkType() != NetworkType.MOBILE) {
+		if (insightResponse.getStatus() != InsightStatus.SUCCESS || insightResponse.getCurrentCarrier().getNetworkType() != NetworkType.MOBILE) {
 			throw new InvalidPhoneNumberException("Cannot send an SMS to the specified phone number", null);
 		}
 
-		SmsSubmissionResult[] results =
+		SmsSubmissionResponse response =
 			client.getSmsClient().submitMessage(new TextMessage(configFacade.getSormasInstanceName(), phoneNumber, content));
-
-		for (SmsSubmissionResult result : results) {
-			if (result.getStatus() == 0) {
+		for (SmsSubmissionResponseMessage message : response.getMessages()) {
+			if (message.getStatus() == MessageStatus.OK) {
 				logger.info("SMS successfully sent to {}.", phoneNumber);
-			} else if (result.getErrorText() != null) {
-				logger.info("Error sending SMS to {} with following error: {}.", phoneNumber, result.getErrorText());
+			} else if (message.getErrorText() != null) {
+				logger.info(
+					"Error sending SMS to {} with following error: status: {}, text: '{}'.",
+					phoneNumber,
+					message.getStatus(),
+					message.getErrorText());
 			}
 		}
 	}

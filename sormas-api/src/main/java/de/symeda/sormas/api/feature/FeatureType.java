@@ -50,6 +50,7 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT }),
+	MANUAL_EXTERNAL_MESSAGES(true, true, null),
 	OTHER_NOTIFICATIONS(true, true, null),
 	DOCUMENTS(true, false, null),
 	OUTBREAKS(true, true, null),

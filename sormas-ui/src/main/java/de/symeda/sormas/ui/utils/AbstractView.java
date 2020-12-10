@@ -29,6 +29,7 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -113,6 +114,12 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 	public Label getViewSubTitleLabel() {
 		return viewSubTitleLabel;
+	}
+
+	public void replaceViewHeader(AbstractLayout headerLayout) {
+		this.viewHeader.removeAllComponents();
+		this.viewHeader.addComponent(headerLayout);
+		this.viewHeader.setExpandRatio(headerLayout, 1);
 	}
 
 	public boolean navigateTo(BaseCriteria criteria) {

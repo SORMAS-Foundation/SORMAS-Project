@@ -24,13 +24,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.component.controls.ControlDateField;
+import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
 public final class ContactValidator {
 
-	public static void initializeValidation(final Contact contact, final FragmentContactEditLayoutBinding contentBinding) {
+	public static void initializeLastContactDateValidation(final Contact contact, final FragmentContactEditLayoutBinding contentBinding) {
 		if (contact != null) {
 			ResultCallback<Boolean> firstDateCallBack = () -> {
 				Date firstContactDate = contentBinding.contactFirstContactDate.getValue();
@@ -59,7 +60,7 @@ public final class ContactValidator {
 		}
 	}
 
-	public static void initializeValidation(final Contact contact, final FragmentContactNewLayoutBinding contentBinding) {
+	public static void initializeLastContactDateValidation(final Contact contact, final FragmentContactNewLayoutBinding contentBinding) {
 		if (contact != null) {
 			ResultCallback<Boolean> firstDateCallBack = () -> {
 				Date firstContactDate = contentBinding.contactFirstContactDate.getValue();
@@ -137,5 +138,9 @@ public final class ContactValidator {
 		}
 
 		return false;
+	}
+
+	static void initializeProhibitionToWorkIntervalValidator(FragmentContactEditLayoutBinding contentBinding) {
+		ValidationHelper.initDateIntervalValidator(contentBinding.contactProhibitionToWorkFrom, contentBinding.contactProhibitionToWorkUntil);
 	}
 }
