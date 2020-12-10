@@ -34,7 +34,10 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -45,6 +48,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -113,6 +117,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String SYMPTOMS_HINT_LOC = "symptomsHintLoc";
 	private static final String COMPLICATIONS_HEADING = "complicationsHeading";
 
+	private static Map<String, List<String>> symptomGroupMap = new HashMap();
+
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(CLINICAL_MEASUREMENTS_HEADING_LOC) +
@@ -124,22 +130,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
 					fluidRow(fluidColumn(8,4, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
-					loc(GENERAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					createSymptomGroupLayout(SymptomGroup.GENERAL) +
-					loc(RESPIRATORY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					createSymptomGroupLayout(SymptomGroup.RESPIRATORY) +
-					loc(CARDIOVASCULAR_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					createSymptomGroupLayout(SymptomGroup.CARDIOVASCULAR) +
-					loc(GASTROINTESTINAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					createSymptomGroupLayout(SymptomGroup.GASTROINTESTINAL) +
-					loc(URINARY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					createSymptomGroupLayout(SymptomGroup.URINARY) +
-					loc(NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					createSymptomGroupLayout(SymptomGroup.NERVOUS_SYSTEM) +
-					loc(SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC ) +
-					createSymptomGroupLayout(SymptomGroup.SKIN) +
-					loc(OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					createSymptomGroupLayout(SymptomGroup.OTHER) +
+					createSymptomGroupLayout(SymptomGroup.GENERAL, GENERAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.RESPIRATORY, RESPIRATORY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.CARDIOVASCULAR, CARDIOVASCULAR_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.GASTROINTESTINAL, GASTROINTESTINAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.URINARY, URINARY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.NERVOUS_SYSTEM, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.SKIN, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.OTHER, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
 					loc(COMPLICATIONS_HEADING) +
@@ -155,7 +153,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					);
 	//@formatter:on
 	
-	private static String createSymptomGroupLayout(SymptomGroup symptomGroup) {
+	private static String createSymptomGroupLayout(SymptomGroup symptomGroup, String loc) {
 
 		final Predicate<java.lang.reflect.Field> groupSymptoms =
 			field -> field.isAnnotationPresent(SymptomGrouping.class) && field.getAnnotation(SymptomGrouping.class).value() == symptomGroup;
@@ -165,11 +163,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			.sorted(Comparator.comparing(fieldName -> I18nProperties.getPrefixCaption(I18N_PREFIX, fieldName)))
 			.collect(Collectors.toList());
 
-		return fluidRow(
+		symptomGroupMap.put(loc, symptomLocations);
+
+		return loc(loc) + fluidRow(
 			fluidColumn(6, -1, locsCss(VSPACE_3, new ArrayList<>(symptomLocations.subList(0, symptomLocations.size() / 2)))),
 			fluidColumn(6, 0, locsCss(VSPACE_3, new ArrayList<>(symptomLocations.subList(symptomLocations.size() / 2, symptomLocations.size())))));
 	}
-
 
 	private final CaseDataDto caze;
 	private final Disease disease;
@@ -718,6 +717,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getFieldGroup().getField(PATIENT_ILL_LOCATION).setVisible(false);
 		}
 
+		symptomGroupMap.forEach((location, strings) -> {
+			final Component groupLabel = getContent().getComponent(location);
+			final Optional<String> groupHasVisibleSymptom = strings.stream().filter(s -> getFieldGroup().getField(s).isVisible()).findAny();
+			if (!groupHasVisibleSymptom.isPresent()) {
+				groupLabel.setVisible(false);
+			}
+		});
+
 		if (isEditableAllowed(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)) {
 			FieldHelper.setRequiredWhen(
 				getFieldGroup(),
@@ -788,11 +795,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
 	}
 
-	private Label createLabel(String text, String h4, String generalSignsAndSymptomsHeadingLoc) {
-		final Label generalSymptomsHeadingLabel = new Label(text);
-		generalSymptomsHeadingLabel.addStyleName(h4);
-		getContent().addComponent(generalSymptomsHeadingLabel, generalSignsAndSymptomsHeadingLoc);
-		return generalSymptomsHeadingLabel;
+	private Label createLabel(String text, String h4, String location) {
+		final Label label = new Label(text);
+		label.setId(text);
+		label.addStyleName(h4);
+		getContent().addComponent(label, location);
+		return label;
 	}
 
 	@Override

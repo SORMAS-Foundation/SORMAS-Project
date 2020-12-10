@@ -104,7 +104,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setSymptomsComments(source.getSymptomsComments());
 		target.setTemperature(source.getTemperature());
 		target.setTemperatureSource(source.getTemperatureSource());
-		target.setThrobocytopenia(source.getThrobocytopenia());
+		target.setThrobocytopenia(source.getThrombocytopenia());
 		target.setUnexplainedBleeding(source.getUnexplainedBleeding());
 		target.setVomiting(source.getVomiting());
 		target.setBackache(source.getBackache());
@@ -290,7 +290,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setSymptomsComments(source.getSymptomsComments());
 		target.setTemperature(source.getTemperature());
 		target.setTemperatureSource(source.getTemperatureSource());
-		target.setThrobocytopenia(source.getThrobocytopenia());
+		target.setThrombocytopenia(source.getThrobocytopenia());
 		target.setUnexplainedBleeding(source.getUnexplainedBleeding());
 		target.setVomiting(source.getVomiting());
 		target.setBackache(source.getBackache());
