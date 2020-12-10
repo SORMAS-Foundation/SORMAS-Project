@@ -22,6 +22,7 @@ import static java.util.Collections.singletonList;
 import static org.keycloak.representations.IDToken.LOCALE;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
@@ -55,7 +58,6 @@ import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -122,17 +124,7 @@ public class KeycloakService {
 		}
 
 		User user = userCreateEvent.getUser();
-		String password = null;
-		if (userCreateEvent instanceof MockUserCreateEvent) {
-			password = ((MockUserCreateEvent) userCreateEvent).getPassword();
-			Optional<UserRepresentation> mockUser = getUserByUsername(keycloak.get(), user.getUserName());
-			if (mockUser.isPresent()) {
-				logger.info("Mock user {} already exists. Will not create a new one", user.getUserName());
-				return;
-			}
-		}
-
-		String userId = createUser(keycloak.get(), user, password);
+		String userId = createUser(keycloak.get(), user, null);
 		if (StringUtils.isNotBlank(user.getUserEmail())) {
 			sendActivationEmail(keycloak.get(), userId);
 		}
@@ -151,10 +143,7 @@ public class KeycloakService {
 		Optional<UserRepresentation> userRepresentation = updateUser(keycloak.get(), oldUser, newUser);
 		if (!userRepresentation.isPresent()) {
 			logger.debug("Cannot find user in Keycloak. Will try to create it");
-			String userId = createUser(keycloak.get(), newUser, null);
-			if (StringUtils.isNotBlank(newUser.getUserEmail())) {
-				sendActivationEmail(keycloak.get(), userId);
-			}
+			createUser(keycloak.get(), newUser, newUser.getPassword());
 		}
 	}
 
@@ -174,7 +163,7 @@ public class KeycloakService {
 		userRepresentation.ifPresent(existing -> sendPasswordResetEmail(keycloak.get(), existing.getId()));
 	}
 
-	private UserRepresentation createUserRepresentation(User user, String password) {
+	private UserRepresentation createUserRepresentation(User user, String hashedPassword) {
 		UserRepresentation userRepresentation = new UserRepresentation();
 
 		userRepresentation.setEnabled(user.isActive());
@@ -182,8 +171,8 @@ public class KeycloakService {
 		userRepresentation.setFirstName(user.getFirstName());
 		userRepresentation.setLastName(user.getLastName());
 		setLanguage(userRepresentation, user.getLanguage());
-		if(StringUtils.isNotBlank(password)) {
-			setCredentials(userRepresentation, password);
+		if(StringUtils.isNotBlank(hashedPassword)) {
+			setCredentials(userRepresentation, hashedPassword, user.getSeed());
 		}
 
 		if (StringUtils.isNotBlank(user.getUserEmail())) {
@@ -203,8 +192,8 @@ public class KeycloakService {
 		setLanguage(userRepresentation, user.getLanguage());
 	}
 
-	private String createUser(Keycloak keycloak, User user, String initialPassword) {
-		UserRepresentation userRepresentation = createUserRepresentation(user, initialPassword);
+	private String createUser(Keycloak keycloak, User user, String presetPassword) {
+		UserRepresentation userRepresentation = createUserRepresentation(user, presetPassword);
 		Response response = keycloak.realm(REALM_NAME).users().create(userRepresentation);
 		if (response.getStatus() != Response.Status.CREATED.getStatusCode()) {
 			throw new WebApplicationException(response);
@@ -283,15 +272,25 @@ public class KeycloakService {
 		}
 	}
 
-	private void setCredentials(UserRepresentation userRepresentation, String password) {
+	private void setCredentials(UserRepresentation userRepresentation, String password, String salt) {
+		JsonObjectBuilder secretData = Json.createObjectBuilder();
+		secretData.add("value", password);
+		secretData.add("salt", Base64.getEncoder().encodeToString(salt.getBytes()));
+
+		JsonObjectBuilder credentialData = Json.createObjectBuilder();
+		credentialData.add("hashIterations", 1);
+		credentialData.add("algorithm", "sormas-sha256");
+
 		CredentialRepresentation credential = new CredentialRepresentation();
 		credential.setType(CredentialRepresentation.PASSWORD);
-		credential.setValue(password);
 		credential.setTemporary(false);
+		credential.setSecretData(secretData.build().toString());
+		credential.setCredentialData(credentialData.build().toString());
 		userRepresentation.setCredentials(singletonList(credential));
 	}
 
 	private Optional<Keycloak> getKeycloak() {
 		return Optional.ofNullable(keycloak);
 	}
+
 }
