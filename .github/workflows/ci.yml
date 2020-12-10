@@ -23,6 +23,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Cache Maven packages
+        # FIXME(@JonasCir) #3733 remove '**/*.pom' once serverlib pom is renamed
         uses: actions/cache@v2
         with:
           path: ~/.m2
