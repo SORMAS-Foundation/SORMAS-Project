@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @RolesAllowed("REST_EXTERNAL_VISITS_USER")
 public class ExternalVisitsResource extends EntityDtoResource {
 
-	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.0";
+	public static final String EXTERNAL_VISITS_API_VERSION = "1.42.0";
 
 	@GET
 	@Path("/person/{personUuid}")
