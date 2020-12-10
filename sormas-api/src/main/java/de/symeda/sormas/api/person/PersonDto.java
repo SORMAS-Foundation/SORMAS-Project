@@ -127,6 +127,7 @@ public class PersonDto extends PseudonymizableDto {
 	private String lastName;
 	@PersonalData
 	@SensitiveData
+	@HideForCountriesExcept
 	private String birthName;
 	@PersonalData
 	@SensitiveData

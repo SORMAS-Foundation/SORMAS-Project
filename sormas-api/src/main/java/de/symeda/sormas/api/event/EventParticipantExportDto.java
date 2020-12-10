@@ -29,11 +29,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -135,6 +138,11 @@ public class EventParticipantExportDto implements Serializable {
 	private String phone;
 	@SensitiveData
 	private String emailAddress;
+	@PersonalData
+	@SensitiveData
+	private String birthName;
+	private String birthCountry;
+	private String citizenship;
 
 	private String caseUuid;
 
@@ -152,7 +160,8 @@ public class EventParticipantExportDto implements Serializable {
 									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType,
 									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate,
 									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
-									 String additionalInformation, String postalCode, String phone, String emailAddress, String caseUuid) {
+									 String additionalInformation, String postalCode, String phone, String emailAddress, String caseUuid,
+									 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName) {
     	//@formatter:on
 
 		this.id = id;
@@ -199,6 +208,9 @@ public class EventParticipantExportDto implements Serializable {
 		this.phone = phone;
 		this.emailAddress = emailAddress;
 		this.caseUuid = caseUuid;
+		this.birthName = birthName;
+		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
+		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
 
 		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}
@@ -335,6 +347,27 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(42)
+	@ExportProperty(PersonDto.BIRTH_NAME)
+	@HideForCountriesExcept
+	public String getBirthName() {
+		return birthName;
+	}
+
+	@Order(43)
+	@ExportProperty(PersonDto.BIRTH_COUNTRY)
+	@HideForCountriesExcept
+	public String getBirthCountry() {
+		return birthCountry;
+	}
+
+	@Order(44)
+	@ExportProperty(PersonDto.CITIZENSHIP)
+	@HideForCountriesExcept
+	public String getCitizenship() {
+		return citizenship;
+	}
+
+	@Order(45)
 	@ExportProperty(EventParticipantExportDto.SAMPLE_INFORMATION)
 	public String getOtherSamplesString() {
 		StringBuilder samples = new StringBuilder();
@@ -347,7 +380,7 @@ public class EventParticipantExportDto implements Serializable {
 		return samples.length() > 0 ? samples.substring(0, samples.length() - separator.length()) : "";
 	}
 
-	@Order(43)
+	@Order(46)
 	@ExportProperty(EventParticipantExportDto.EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION)
 	public String getInvolvmentDescription() {
 		return involvmentDescription;

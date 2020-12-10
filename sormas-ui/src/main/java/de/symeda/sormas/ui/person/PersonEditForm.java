@@ -159,12 +159,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
                     loc(CONTACT_INFORMATION_HEADER) +
                     divsCss(
-                            VSPACE_3,
-                            fluidRowLocs(PersonDto.BIRTH_NAME, PersonDto.NICKNAME) +
-                                    fluidRowLocs(PersonDto.MOTHERS_MAIDEN_NAME, PersonDto.MOTHERS_NAME) +
-                                    fluidRowLocs(PersonDto.FATHERS_NAME, PersonDto.NAMES_OF_OTHER_GUARDIANS) +
-                                    fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
-                                    fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+                            VSPACE_3, 
+							fluidRowLocs(PersonDto.BIRTH_NAME, "") +
+									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
+									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
+									fluidRowLocs(PersonDto.NAMES_OF_OTHER_GUARDIANS) +
+									fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
+									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
                                     fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
                                     loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 	//@formatter:on

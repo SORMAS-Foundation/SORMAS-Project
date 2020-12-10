@@ -242,6 +242,12 @@ public class CaseExportDto implements Serializable {
 	private EventStatus latestEventStatus;
 	private String externalID;
 
+	@PersonalData
+	@SensitiveData
+	private String birthName;
+	private String birthCountry;
+	private String citizenship;
+
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
@@ -268,7 +274,8 @@ public class CaseExportDto implements Serializable {
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
 						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
-						 long eventCount, String externalID) {
+						 long eventCount, String externalID,
+						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName) {
 		//@formatter:on
 
 		this.id = id;
@@ -345,6 +352,9 @@ public class CaseExportDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.eventCount = eventCount;
 		this.externalID = externalID;
+		this.birthName = birthName;
+		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
+		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -1360,6 +1370,39 @@ public class CaseExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.EVENT)
 	public String getLatestEventTitle() {
 		return latestEventTitle;
+	}
+
+	@Order(150)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(PersonDto.BIRTH_NAME)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountriesExcept
+	public String getBirthName() {
+		return birthName;
+	}
+
+	@Order(151)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(PersonDto.BIRTH_COUNTRY)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountriesExcept
+	public String getBirthCountry() {
+		return birthCountry;
+	}
+
+	@Order(152)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(PersonDto.CITIZENSHIP)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountriesExcept
+	public String getCitizenship() {
+		return citizenship;
 	}
 
 	public void setCountry(String country) {

@@ -212,7 +212,7 @@ public class Person extends AbstractDomainObject {
 		this.lastName = lastName;
 	}
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getBirthName() {
 		return birthName;
 	}

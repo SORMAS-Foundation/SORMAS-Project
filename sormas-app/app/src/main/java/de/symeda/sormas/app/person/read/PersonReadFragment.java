@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -31,11 +32,10 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
@@ -128,12 +128,23 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		addresses.addAll(record.getAddresses());
 
 		contentBinding.setData(record);
+		initCountryTranslations(contentBinding, record);
 
 		contentBinding.setAddressList(addresses);
 		contentBinding.setAddressItemClickCallback(onAddressItemClickListener);
 		contentBinding.setAddressBindCallback(v -> {
 			setFieldAccesses(LocationDto.class, v);
 		});
+	}
+
+	public static void initCountryTranslations(FragmentPersonReadLayoutBinding contentBinding, Person personData){
+		Country birthCountry = personData.getBirthCountry();
+		contentBinding
+				.setBirthCountry(birthCountry != null ? I18nProperties.getCountryName(birthCountry.getIsoCode(), birthCountry.getName()) : null);
+
+		Country citizenship = personData.getCitizenship();
+		contentBinding.setCitizenship(citizenship != null ? I18nProperties.getCountryName(citizenship.getIsoCode(), citizenship.getName()) : null);
+
 	}
 
 	@Override
