@@ -27,7 +27,8 @@ jobs:
         with:
           path: ~/.m2
           key: ${{ runner.os }}-java-${{ matrix.java }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
-          restore-keys: ${{ runner.os }}-m2
+          restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-m2
       - name: Build with Maven
-        run: mvn verify -B -ntp
         working-directory: ./sormas-base
+        run: mvn verify -B -ntp
+
