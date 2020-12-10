@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.i18n.Captions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,7 +249,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		field.setId(propertyId);
 		// Add validators before wrapping field, so the wrapper can access validators
 		addDefaultAdditionalValidators(field, null);
-		layout.addComponent(fieldWrapper.wrap(field), propertyId);
+		layout.addComponent(fieldWrapper.wrap(field, Captions.numberOfCharacters), propertyId);
 		return field;
 	}
 

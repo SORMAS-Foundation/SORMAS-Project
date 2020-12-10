@@ -280,13 +280,7 @@ public class ContactsView extends AbstractView {
 					BAGExportContactDto.class,
 					null,
 					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getContactExportList(start, max),
-					(propertyId, type) -> {
-						String caption = I18nProperties.findPrefixCaption(propertyId);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
+					(propertyId, type) -> propertyId,
 					createFileNameWithCurrentDate("sormas_BAG_contacts_", ".csv"),
 					null);
 

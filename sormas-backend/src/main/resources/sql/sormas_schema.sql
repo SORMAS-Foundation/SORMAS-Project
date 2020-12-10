@@ -6026,6 +6026,65 @@ ALTER TABLE events_history ADD column risklevel varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (289, 'Add riskLevel to events with cluster status #3271');
 
+-- 2020-11-17 Manually send SMS #3253
+CREATE TABLE manualmessagelog
+(
+    id             bigint                      NOT NULL,
+    changedate     timestamp without time zone NOT NULL,
+    creationdate   timestamp without time zone NOT NULL,
+    uuid           character varying(36)       NOT NULL,
+    messagetype    character varying(255)      NOT NULL,
+    sentdate       timestamp                   NOT NULL,
+    sendinguser_id bigint                      NOT NULL,
+    recipientperson_id bigint                  NOT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE manualmessagelog OWNER TO sormas_user;
+ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id FOREIGN KEY (sendinguser_id) REFERENCES users(id);
+ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (290, 'Manually send SMS #3253');
+
+-- 2020-12-07 Add LabMessage #3486
+CREATE TABLE labmessage (
+        id bigint not null,
+        uuid varchar(36) not null unique,
+        changedate timestamp not null,
+        creationdate timestamp not null,
+        sampledatetime timestamp,
+        samplereceiveddate timestamp,
+        labsampleid text,
+        samplematerial varchar(255),
+        testlabname varchar(255),
+        testlabexternalid varchar(255),
+        testlabpostalcode varchar(255),
+        testlabcity varchar(255),
+        specimencondition varchar(255),
+        testtype varchar(255),
+        testeddisease varchar(255),
+        testdatetime timestamp,
+        testresult varchar(255),
+        personfirstName varchar(255),
+        personlastName varchar(255),
+        personsex varchar(255),
+        personbirthdatedd integer,
+        personbirthdatemm integer,
+        personbirthdateyyyy integer,
+        personpostalcode varchar(255),
+        personcity varchar(255),
+        personstreet varchar(255),
+        personhousenumber varchar(255),
+        labMessageDetails text,
+        processed boolean default false,
+        sys_period tstzrange not null,
+        primary key(id)
+);
+
+CREATE TABLE labmessage_history (LIKE labmessage);
+
+INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
+
 -- 2020-12-09 SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412
 ALTER TABLE person
     ADD COLUMN birthname varchar(512),
@@ -6041,6 +6100,6 @@ ALTER TABLE person_history
     ADD CONSTRAINT fk_person_birthcountry_id FOREIGN KEY (birthcountry_id) REFERENCES country (id),
     ADD CONSTRAINT fk_person_citizenship_id FOREIGN KEY (citizenship_id) REFERENCES country (id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (290, 'SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412');
+INSERT INTO schema_version (version_number, comment) VALUES (292, 'SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412');
 
 -- *** Insert new sql commands BEFORE this line ***
