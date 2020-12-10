@@ -3128,7 +3128,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			final String messageTypeColumn = messageType == MessageType.EMAIL ? Person.EMAIL_ADDRESS : Person.PHONE;
 			return cb.and(
 				root.get(Case.UUID).in(caseUuids),
-				cb.and(cb.isNull(personJoin.get(messageTypeColumn)), cb.notEqual(personJoin.get(messageTypeColumn), StringUtils.EMPTY)));
+				cb.or(cb.isNull(personJoin.get(messageTypeColumn)), cb.equal(personJoin.get(messageTypeColumn), StringUtils.EMPTY)));
 		})));
 
 		return totalCount.get();
