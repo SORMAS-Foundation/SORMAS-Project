@@ -15,13 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.auth0.jwt.internal.org.apache.commons.io.FileUtils;
-import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
