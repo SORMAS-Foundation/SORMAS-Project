@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 1.8, 1.11 ]
+        java: [ 8, 11 ]
     name: Test with Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v2
@@ -26,9 +26,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-java-${{ matrix.java }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-        run: |
-          cd sormas-base
-          mvn verify -B -ntp
+        run: mvn verify -B -ntp
+        working-directory: ./sormas-base
