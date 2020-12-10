@@ -86,7 +86,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 	// title & status
 	private View applicationTitleBar = null;
-	private View statusFrame = null;
+	protected View statusFrame = null;
 
 	// footer menu
 	protected PageMenuControl pageMenu = null;

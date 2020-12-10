@@ -51,10 +51,10 @@ import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
-import de.symeda.sormas.app.login.ChangeEmailActivity;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.user.EmailEditActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
@@ -158,8 +158,7 @@ public class SettingsFragment extends BaseLandingFragment {
 	}
 
 	public void changeEmail() {
-		Intent intent = new Intent(getActivity(), ChangeEmailActivity.class);
-		intent.putExtra(ChangeEmailActivity.CALLED_FROM_SETTINGS, true);
+		Intent intent = new Intent(getContext(), EmailEditActivity.class);
 		startActivity(intent);
 	}
 
@@ -170,7 +169,7 @@ public class SettingsFragment extends BaseLandingFragment {
 	}
 
 	private void repullData() {
-		checkAndShowUnsynchronizedChangesDialog(() -> showRepullDataConfirmationDialog(), "SYNC");
+		checkAndShowUnsynchronizedChangesDialog(this::showRepullDataConfirmationDialog, "SYNC");
 	}
 
 	private void checkAndShowUnsynchronizedChangesDialog(Callback confirmedCallback, String wordToType) {

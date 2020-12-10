@@ -300,6 +300,7 @@
     <string name="heading_create_pin">Create PIN</string>
     <string name="heading_disease_detection">Disease Detection</string>
     <string name="heading_disease_prevention">Disease Prevention</string>
+    <string name="heading_email_edit">Edit Email</string>
     <string name="heading_enter_pin">Enter PIN</string>
     <string name="heading_environmental_exposure">Environmental Exposure</string>
     <string name="heading_epidemiological_info">Epidemiological Info</string>
