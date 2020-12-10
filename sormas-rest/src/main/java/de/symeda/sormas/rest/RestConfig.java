@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
+import javax.ws.rs.ApplicationPath;
+
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-
-import javax.ws.rs.ApplicationPath;
 
 import de.symeda.sormas.rest.swagger.SwaggerConfig;
 

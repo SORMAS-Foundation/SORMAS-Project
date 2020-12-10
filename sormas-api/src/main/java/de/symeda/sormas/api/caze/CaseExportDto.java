@@ -42,7 +42,6 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
@@ -186,7 +185,6 @@ public class CaseExportDto implements Serializable {
 	@SensitiveData
 	private String emailAddress;
 	private String occupationType;
-	private ArmedForcesRelationType armedForcesRelationType;
 	private String educationType;
 	private String travelHistory;
 	private boolean traveled;
@@ -266,7 +264,7 @@ public class CaseExportDto implements Serializable {
 						 String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 						 String facility, String facilityUuid, String facilityDetails,
 						 String phone, String phoneOwner, String emailAddress, EducationType educationType, String educationDetails,
-						 OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
+						 OccupationType occupationType, String occupationDetails, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
 						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
@@ -283,7 +281,6 @@ public class CaseExportDto implements Serializable {
 		this.healthConditionsId = healthConditionsId;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
-		this.armedForcesRelationType = ArmedForcesRelationType;
 		this.diseaseFormatted = DiseaseHelper.toString(disease, diseaseDetails);
 		this.disease = disease;
 		this.firstName = firstName;
@@ -336,7 +333,6 @@ public class CaseExportDto implements Serializable {
 		this.emailAddress = emailAddress;
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
-		this.armedForcesRelationType = armedForcesRelationType;
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 //		this.onsetDate = onsetDate;
 		this.vaccination = vaccination;
@@ -1003,8 +999,8 @@ public class CaseExportDto implements Serializable {
 
 	@Order(75)
 	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(PersonDto.EMAIL_ADDRESS)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getEmailAddress() {
@@ -1037,16 +1033,6 @@ public class CaseExportDto implements Serializable {
 
 	@Order(78)
 	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(PersonDto.ARMED_FORCES_RELATION_TYPE)
-	@ExportGroup(ExportGroupType.PERSON)
-	public ArmedForcesRelationType getArmedForcesRelationType() {
-		return armedForcesRelationType;
-	}
-
-	@Order(79)
-	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVELED)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
@@ -1058,7 +1044,7 @@ public class CaseExportDto implements Serializable {
 		this.traveled = traveled;
 	}
 
-	@Order(80)
+	@Order(79)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVEL_HISTORY)
@@ -1067,7 +1053,7 @@ public class CaseExportDto implements Serializable {
 		return travelHistory;
 	}
 
-	@Order(81)
+	@Order(80)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(BURIAL_ATTENDED)
@@ -1080,7 +1066,7 @@ public class CaseExportDto implements Serializable {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(82)
+	@Order(81)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN)
@@ -1530,10 +1516,6 @@ public class CaseExportDto implements Serializable {
 
 	public void setOccupationType(String occupationType) {
 		this.occupationType = occupationType;
-	}
-
-	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
-		this.armedForcesRelationType = armedForcesRelationType;
 	}
 
 	public void setTravelHistory(String travelHistory) {

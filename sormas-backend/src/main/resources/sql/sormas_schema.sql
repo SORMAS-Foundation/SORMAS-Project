@@ -5982,4 +5982,48 @@ ALTER TABLE person_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
 
+-- 2020-12-08 SurvNet Adaptations - Add multi day contat to contact history #3408
+
+ALTER TABLE contact_history ADD column multidaycontact boolean;
+ALTER TABLE contact_history ADD column firstcontactdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (286, 'Add date of first contact for contact history #3408');
+
+-- 2020-11-25 SurvNet Adaptations - Create new field “Prohibition to work” for case and contact #3409
+ALTER TABLE cases
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE cases_history
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE contact
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE contact_history
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (287, 'Create new field “Prohibition to work” for case and contact #3409');
+
+-- 2020-11-27 Add institutional partner option to events source type #3207
+ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255);
+ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerType varchar(255);
+ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
+ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (288, 'Add institutional partner option to events source type #3207');
+
+-- 2020-11-30 Add riskLevel to events with cluster status #3271
+ALTER TABLE events ADD column risklevel varchar(255);
+ALTER TABLE events_history ADD column risklevel varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (289, 'Add riskLevel to events with cluster status #3271');
+
 -- *** Insert new sql commands BEFORE this line ***
