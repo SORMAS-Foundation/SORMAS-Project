@@ -43,11 +43,14 @@ public class AuthProvider {
 
     private final boolean isDefaultProvider;
 
+    private final boolean isUserSyncSupported;
+
     private AuthProvider() {
         String configuredProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
         isUsernameCaseSensitive = SORMAS.equalsIgnoreCase(configuredProvider);
         isEmailRequired = KEYCLOAK.equalsIgnoreCase(configuredProvider);
         isDefaultProvider = SORMAS.equalsIgnoreCase(configuredProvider);
+        isUserSyncSupported = KEYCLOAK.equalsIgnoreCase(configuredProvider);
     }
 
     public static AuthProvider getProvider() {
@@ -81,4 +84,12 @@ public class AuthProvider {
     public boolean isDefaultProvider() {
         return isDefaultProvider;
     }
+
+    /**
+     * Authentication Provider enables users to be synced from the default provider.
+     */
+    public boolean isUserSyncSupported() {
+        return isUserSyncSupported;
+    }
+
 }

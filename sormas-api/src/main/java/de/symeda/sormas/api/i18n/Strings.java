@@ -420,6 +420,7 @@ public interface Strings {
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
+	String headingSyncUsers = "headingSyncUsers";
 	String headingTasksDeleted = "headingTasksDeleted";
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
 	String headingTests = "headingTests";
@@ -532,6 +533,7 @@ public interface Strings {
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
+	String infoSyncUsers = "infoSyncUsers";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";

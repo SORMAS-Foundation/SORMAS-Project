@@ -308,4 +308,9 @@ public class UserController {
 	public boolean isEmailRequired() {
 		return AuthProvider.getProvider().isEmailRequired();
 	}
+
+	public void sync() {
+		Window window = VaadinUiUtil.showPopupWindow(new UsersSyncLayout());
+		window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
+	}
 }

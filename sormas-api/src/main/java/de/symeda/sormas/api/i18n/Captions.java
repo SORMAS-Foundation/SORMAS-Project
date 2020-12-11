@@ -1604,6 +1604,12 @@ public interface Captions {
 	String symptomsMaxTemperature = "symptomsMaxTemperature";
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";
 	String symptomsSetClearedToUnknown = "symptomsSetClearedToUnknown";
+	String sync = "sync";
+	String syncCreated = "syncCreated";
+	String syncErrors = "syncErrors";
+	String syncProcessed = "syncProcessed";
+	String syncUpdated = "syncUpdated";
+	String syncUsers = "syncUsers";
 	String system = "system";
 	String Task = "Task";
 	String Task_assigneeReply = "Task.assigneeReply";
