@@ -33,7 +33,10 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EnumHelper;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -100,6 +103,8 @@ public class EventParticipantExportDto implements Serializable {
 	@PersonalData
 	@SensitiveData
 	private String lastName;
+	@SensitiveData
+	private String salutation;
 	private Sex sex;
 	private String approximateAge;
 	private String ageGroup;
@@ -149,7 +154,7 @@ public class EventParticipantExportDto implements Serializable {
 
 									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
-									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType,
+									 String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType,
 									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate,
 									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber,
 									 String additionalInformation, String postalCode, String phone, String emailAddress, String caseUuid) {
@@ -180,6 +185,7 @@ public class EventParticipantExportDto implements Serializable {
 
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.salutation = EnumHelper.toString(salutation, otherSalutation, Salutation.OTHER);
 		this.sex = sex;
 		this.involvmentDescription = involvmentDescription;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
@@ -240,6 +246,12 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(15)
+	@HideForCountriesExcept
+	public String getSalutation() {
+		return salutation;
+	}
+
+	@Order(16)
 	public Sex getSex() {
 		return sex;
 	}

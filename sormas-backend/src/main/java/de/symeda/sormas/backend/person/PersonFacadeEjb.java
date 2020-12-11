@@ -610,6 +610,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
 		target.setSex(source.getSex());
 
 		target.setPresentCondition(source.getPresentCondition());
@@ -759,6 +761,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
 		target.setSex(source.getSex());
 
 		target.setPresentCondition(source.getPresentCondition());
