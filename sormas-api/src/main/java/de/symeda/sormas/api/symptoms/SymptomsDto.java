@@ -209,7 +209,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SYMPTOMS_COMMENTS = "symptomsComments";
 	public static final String TEMPERATURE = "temperature";
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
-	public static final String THROMBOCYTOPENIA = "thrombocytopenia";
+	public static final String THROMBOCYTOPENIA = "throbocytopenia";
 	public static final String TREMOR = "tremor";
 	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
 	public static final String UNILATERAL_CATARACTS = "unilateralCataracts";
@@ -1588,7 +1588,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.OTHER)
-	private SymptomState thrombocytopenia;
+	private SymptomState throbocytopenia;
 
 	@Diseases({
 		AFP,
@@ -2902,8 +2902,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	}
 
 	@Order(251)
-	public SymptomState getThrombocytopenia() {
-		return thrombocytopenia;
+	public SymptomState getThrobocytopenia() {
+		return throbocytopenia;
 	}
 
 	@Order(252)
@@ -3513,8 +3513,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.temperatureSource = temperatureSource;
 	}
 
-	public void setThrombocytopenia(SymptomState thrombocytopenia) {
-		this.thrombocytopenia = thrombocytopenia;
+	public void setThrobocytopenia(SymptomState throbocytopenia) {
+		this.throbocytopenia = throbocytopenia;
 	}
 
 	public void setTremor(SymptomState tremor) {

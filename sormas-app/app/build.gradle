@@ -123,6 +123,7 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    implementation 'org.jsoup:jsoup:1.13.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
