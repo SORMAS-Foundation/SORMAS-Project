@@ -6087,11 +6087,11 @@ INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessag
 -- SurvNet Adaptations - Create new field “Salutation” for persons #3411
 ALTER TABLE person
     ADD COLUMN salutation varchar(255),
-    ADD COLUMN othersalutation varchar(512);
+    ADD COLUMN othersalutation text;
 
 ALTER TABLE person_history
     ADD COLUMN salutation varchar(255),
-    ADD COLUMN othersalutation varchar(512);
+    ADD COLUMN othersalutation text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (292, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
 
