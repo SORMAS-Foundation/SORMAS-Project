@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -156,9 +157,9 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
@@ -977,23 +978,36 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 	}
 
+	@SuppressWarnings("JpaQueryApiInspection")
 	@Override
 	public int getNonSourceCaseCountForDashboard(List<String> caseUuids) {
 
 		if (CollectionUtils.isEmpty(caseUuids)) {
 			// Avoid empty IN clause
 			return 0;
+		} else if (caseUuids.size() > ModelConstants.PARAMETER_LIMIT) {
+			List<BigInteger> countResults = new LinkedList<>();
+			IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, batchedCaseUuids -> {
+				Query query = em.createNativeQuery(
+					String.format(
+						"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (:uuidList)",
+						Contact.RESULTING_CASE.toLowerCase(),
+						Case.UUID));
+				query.setParameter("uuidList", batchedCaseUuids);
+				countResults.add((BigInteger) query.getSingleResult());
+			});
+			return countResults.stream().collect(Collectors.summingInt(BigInteger::intValue));
+		} else {
+			Query query = em.createNativeQuery(
+				String.format(
+					"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (:uuidList)",
+					Contact.RESULTING_CASE.toLowerCase(),
+					Case.UUID));
+			query.setParameter("uuidList", caseUuids);
+			BigInteger count = (BigInteger) query.getSingleResult();
+			return count.intValue();
 		}
 
-		Query query = em.createNativeQuery(
-			String.format(
-				"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (%s)",
-				Contact.RESULTING_CASE.toLowerCase(),
-				Case.UUID,
-				QueryHelper.concatStrings(caseUuids)));
-
-		BigInteger count = (BigInteger) query.getSingleResult();
-		return count.intValue();
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
@@ -1023,10 +1037,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// use only date, not time
 		target.setMultiDayContact(source.isMultiDayContact());
-		if(source.isMultiDayContact()) {
-			target.setFirstContactDate(source.getFirstContactDate() != null ?
-				DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) :
-				null);
+		if (source.isMultiDayContact()) {
+			target.setFirstContactDate(
+				source.getFirstContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) : null);
 		} else {
 			target.setFirstContactDate(null);
 		}
