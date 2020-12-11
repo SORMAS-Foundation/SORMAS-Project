@@ -63,6 +63,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
@@ -80,6 +81,7 @@ public class Person extends AbstractDomainObject {
 	public static final String SALUTATION = "salutation";
 	public static final String OTHER_SALUTATION = "otherSalutation";
 	public static final String NICKNAME = "nickname";
+	public static final String BIRTH_NAME = "birthName";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
@@ -124,6 +126,8 @@ public class Person extends AbstractDomainObject {
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String BIRTH_COUNTRY = "birthCountry";
+	public static final String CITIZENSHIP = "citizenship";
 	public static final String PERSON_CASES = "personCases";
 	public static final String PERSON_CONTACTS = "personContacts";
 	public static final String PERSON_EVENT_PARTICIPANTS = "personEventParticipants";
@@ -132,6 +136,7 @@ public class Person extends AbstractDomainObject {
 	private String lastName;
 	private Salutation salutation;
 	private String otherSalutation;
+	private String birthName;
 	private String nickname;
 	private String mothersName;
 	private String mothersMaidenName;
@@ -191,6 +196,9 @@ public class Person extends AbstractDomainObject {
 	private boolean covidCodeDelivered;
 	private String externalId;
 
+	private Country birthCountry;
+	private Country citizenship;
+
 	private Set<EventParticipant> eventParticipants = new HashSet<>();
 	private Set<Contact> contacts = new HashSet<>();
 
@@ -232,6 +240,15 @@ public class Person extends AbstractDomainObject {
 
 	public void setOtherSalutation(String otherSalutation) {
 		this.otherSalutation = otherSalutation;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getBirthName() {
+		return birthName;
+	}
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -662,6 +679,24 @@ public class Person extends AbstractDomainObject {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	@ManyToOne
+	public Country getBirthCountry() {
+		return birthCountry;
+	}
+
+	public void setBirthCountry(Country placeOfBirthCountry) {
+		this.birthCountry = placeOfBirthCountry;
+	}
+
+	@ManyToOne
+	public Country getCitizenship() {
+		return citizenship;
+	}
+
+	public void setCitizenship(Country nationality) {
+		this.citizenship = nationality;
 	}
 
 	public void setEventParticipants(Set<EventParticipant> eventParticipants) {

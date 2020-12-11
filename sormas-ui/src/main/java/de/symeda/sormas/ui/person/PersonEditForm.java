@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,6 +68,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -161,11 +163,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     loc(CONTACT_INFORMATION_HEADER) +
                     divsCss(
                             VSPACE_3,
-                            fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
-                                    fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-                                    fluidRowLocs(PersonDto.NAMES_OF_OTHER_GUARDIANS) +
-                                    fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
-                                    fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+							fluidRowLocs(PersonDto.BIRTH_NAME, "") +
+									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
+									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
+									fluidRowLocs(PersonDto.NAMES_OF_OTHER_GUARDIANS) +
+									fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
+									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
                                     loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 	//@formatter:on
 
@@ -208,6 +212,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.OTHER_SALUTATION, PersonDto.SALUTATION, Salutation.OTHER, true);
 
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
+		addField(PersonDto.BIRTH_NAME, TextField.class);
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
 		addFields(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
@@ -270,6 +275,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField phoneNumber = addField(PersonDto.PHONE, TextField.class);
 		addField(PersonDto.PHONE_OWNER, TextField.class);
 		TextField emailAddress = addField(PersonDto.EMAIL_ADDRESS, TextField.class);
+
+		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
+		((ComboBox) addField(PersonDto.BIRTH_COUNTRY)).addItems(countries);
+		((ComboBox) addField(PersonDto.CITIZENSHIP)).addItems(countries);
 
 		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID, PersonDto.EXTERNAL_ID);
 

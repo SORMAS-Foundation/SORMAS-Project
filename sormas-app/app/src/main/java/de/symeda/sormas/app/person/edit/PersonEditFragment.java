@@ -66,7 +66,6 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -136,6 +135,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
 		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
+		List<Item> countryList = InfrastructureHelper.loadCountries();
 
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.personPlaceOfBirthFacility,
@@ -218,6 +218,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 				contentBinding.personApproximateAgeType.setValue(ApproximateAgeType.YEARS);
 			}
 		}
+
+		contentBinding.personBirthCountry.initializeSpinner(countryList);
+		contentBinding.personCitizenship.initializeSpinner(countryList);
 
 		// Initialize ControlDateFields
 		contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());

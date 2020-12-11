@@ -6107,4 +6107,21 @@ ALTER TABLE exposures_history ADD COLUMN patientexpositionrole varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (294, 'Add patient exposition role to exposures #3407');
 
+-- 2020-12-09 SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412
+ALTER TABLE person
+    ADD COLUMN birthname varchar(512),
+    ADD COLUMN birthcountry_id bigint,
+    ADD COLUMN citizenship_id bigint,
+    ADD CONSTRAINT fk_person_placeofbirthcountry_id FOREIGN KEY (birthcountry_id) REFERENCES country (id),
+    ADD CONSTRAINT fk_person_nationality_id FOREIGN KEY (citizenship_id) REFERENCES country (id);
+
+ALTER TABLE person_history
+    ADD COLUMN birthname varchar(512),
+    ADD COLUMN birthcountry_id bigint,
+    ADD COLUMN citizenship_id bigint,
+    ADD CONSTRAINT fk_person_birthcountry_id FOREIGN KEY (birthcountry_id) REFERENCES country (id),
+    ADD CONSTRAINT fk_person_citizenship_id FOREIGN KEY (citizenship_id) REFERENCES country (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (295, 'SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412');
+
 -- *** Insert new sql commands BEFORE this line ***

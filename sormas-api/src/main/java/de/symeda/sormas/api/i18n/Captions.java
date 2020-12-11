@@ -1153,10 +1153,12 @@ public interface Captions {
 	String Person_approximateAgeReferenceDate = "Person.approximateAgeReferenceDate";
 	String Person_approximateAgeType = "Person.approximateAgeType";
 	String Person_armedForcesRelationType = "Person.armedForcesRelationType";
+	String Person_birthCountry = "Person.birthCountry";
 	String Person_birthdate = "Person.birthdate";
 	String Person_birthdateDD = "Person.birthdateDD";
 	String Person_birthdateMM = "Person.birthdateMM";
 	String Person_birthdateYYYY = "Person.birthdateYYYY";
+	String Person_birthName = "Person.birthName";
 	String Person_birthWeight = "Person.birthWeight";
 	String Person_burialConductor = "Person.burialConductor";
 	String Person_burialDate = "Person.burialDate";
@@ -1166,6 +1168,7 @@ public interface Captions {
 	String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	String Person_causeOfDeathDisease = "Person.causeOfDeathDisease";
 	String Person_causeOfDeathDiseaseDetails = "Person.causeOfDeathDiseaseDetails";
+	String Person_citizenship = "Person.citizenship";
 	String Person_covidCodeDelivered = "Person.covidCodeDelivered";
 	String Person_deathDate = "Person.deathDate";
 	String Person_deathPlaceDescription = "Person.deathPlaceDescription";

@@ -28,6 +28,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -75,6 +76,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String BURIAL_PLACE_DESCRIPTION = "burialPlaceDescription";
 	public static final String BURIAL_CONDUCTOR = "burialConductor";
 
+	public static final String BIRTH_NAME = "birthName";
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
 
@@ -112,6 +114,9 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 	public static final String EXTERNAL_ID = "externalId";
 
+	public static final String BIRTH_COUNTRY = "birthCountry";
+	public static final String CITIZENSHIP = "citizenship";
+
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
@@ -131,6 +136,10 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private String otherSalutation;
+	@PersonalData
+	@SensitiveData
+	@HideForCountriesExcept
+	private String birthName;
 	@PersonalData
 	@SensitiveData
 	private String nickname;
@@ -293,6 +302,11 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String externalId;
 
+	@HideForCountriesExcept
+	private CountryReferenceDto birthCountry;
+	@HideForCountriesExcept
+	private CountryReferenceDto citizenship;
+
 	public Integer getBirthdateDD() {
 		return birthdateDD;
 	}
@@ -451,6 +465,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setAddress(LocationDto address) {
 		this.address = address;
+	}
+
+	public String getBirthName() {
+		return birthName;
+	}
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
 	}
 
 	public String getNickname() {
@@ -700,6 +722,22 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public CountryReferenceDto getBirthCountry() {
+		return birthCountry;
+	}
+
+	public void setBirthCountry(CountryReferenceDto birthCountry) {
+		this.birthCountry = birthCountry;
+	}
+
+	public CountryReferenceDto getCitizenship() {
+		return citizenship;
+	}
+
+	public void setCitizenship(CountryReferenceDto citizenship) {
+		this.citizenship = citizenship;
 	}
 
 	@Override
