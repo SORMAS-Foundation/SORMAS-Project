@@ -6084,4 +6084,10 @@ CREATE TABLE labmessage (
 CREATE TABLE labmessage_history (LIKE labmessage);
 
 INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
+
+-- 2020-12-11 Create contacts-visits index #3673
+CREATE INDEX IF NOT EXISTS idx_contacts_visits_contact_id ON contacts_visits USING HASH (contact_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (292, 'Create contacts-visits index #3673');
+
 -- *** Insert new sql commands BEFORE this line ***
