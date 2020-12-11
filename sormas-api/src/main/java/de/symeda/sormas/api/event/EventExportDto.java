@@ -70,10 +70,6 @@ public class EventExportDto implements Serializable {
 		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
 		long participantCount,
-		long caseCount,
-		long deathCount,
-		long contactCount,
-		long contactCountSourceInEvent,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -110,10 +106,6 @@ public class EventExportDto implements Serializable {
 		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.participantCount = participantCount;
-		this.caseCount = caseCount;
-		this.deathCount = deathCount;
-		this.contactCount = contactCount;
-		this.contactCountSourceInEvent = contactCountSourceInEvent;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;

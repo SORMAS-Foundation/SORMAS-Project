@@ -82,10 +82,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		EventStatus eventStatus,
 		EventInvestigationStatus eventInvestigationStatus,
 		Long participantCount,
-		Long caseCount,
-		Long deathCount,
-		Long contactCount,
-		Long contactCountSourceInEvent,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -129,10 +125,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.reportDateTime = reportDateTime;
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
 		this.participantCount = participantCount;
-		this.caseCount = caseCount;
-		this.deathCount = deathCount;
-		this.contactCount = contactCount;
-		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
 	public String getUuid() {
