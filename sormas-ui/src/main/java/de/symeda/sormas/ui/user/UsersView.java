@@ -148,7 +148,7 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles()));
+		userRolesFilter.addItems(UserUiHelper.getAssignableRoles());
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRole) e.getProperty().getValue());
 			navigateTo(criteria);

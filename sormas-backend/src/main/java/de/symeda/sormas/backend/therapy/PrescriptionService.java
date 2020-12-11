@@ -15,7 +15,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.backend.caze.Case;

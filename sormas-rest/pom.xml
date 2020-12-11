@@ -58,6 +58,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+		</dependency>
+
+		<!-- Keycloak -->
+		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-servlet-filter-adapter</artifactId>
 		</dependency>
