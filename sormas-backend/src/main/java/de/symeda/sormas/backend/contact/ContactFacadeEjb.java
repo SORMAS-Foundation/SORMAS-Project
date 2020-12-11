@@ -303,7 +303,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);
 
-			contactService.updateFollowUpUntilAndStatus(entity);
+			final boolean convertedToCase =
+				(existingContactDto == null || existingContactDto.getResultingCase() == null) && entity.getResultingCase() != null;
+			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED;
+			if (dropped || convertedToCase) {
+				entity.setFollowUpStatus(FollowUpStatus.CANCELED);
+			} else {
+				contactService.updateFollowUpUntilAndStatus(entity);
+			}
 			contactService.udpateContactStatus(entity);
 
 			if (entity.getCaze() != null) {
