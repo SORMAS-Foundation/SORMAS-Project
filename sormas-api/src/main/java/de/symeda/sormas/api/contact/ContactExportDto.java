@@ -28,10 +28,13 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EnumHelper;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -59,6 +62,8 @@ public class ContactExportDto implements Serializable {
 	private String firstName;
 	@PersonalData
 	private String lastName;
+	@SensitiveData
+	private String salutation;
 	private Sex sex;
 	private BirthDateDto birthdate;
 	private String approximateAge;
@@ -104,6 +109,7 @@ public class ContactExportDto implements Serializable {
 	@SensitiveData
 	private String emailAddress;
 	private String occupationType;
+	private ArmedForcesRelationType armedForcesRelationType;
 	private int numberOfVisits;
 	private YesNoUnknown lastCooperativeVisitSymptomatic;
 	private Date lastCooperativeVisitDate;
@@ -143,7 +149,8 @@ public class ContactExportDto implements Serializable {
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
-							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
+							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName,
+							Salutation salutation, String otherSalutation, Sex sex,
 							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactIdentificationSource contactIdentificationSource,
 							String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, ContactProximity contactProximity,
@@ -154,7 +161,7 @@ public class ContactExportDto implements Serializable {
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 							String facility, String facilityUuid, String facilityDetails,
-							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails,
+							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, String externalID,							
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
@@ -173,6 +180,7 @@ public class ContactExportDto implements Serializable {
 		this.lastContactDate = lastContactDate;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.salutation = EnumHelper.toString(salutation, otherSalutation, Salutation.OTHER);
 		this.sex = sex;
 		this.birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
@@ -212,6 +220,7 @@ public class ContactExportDto implements Serializable {
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.emailAddress = emailAddress;
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
+		this.armedForcesRelationType = armedForcesRelationType;
 		this.region = region;
 		this.district = district;
 		this.community = community;
@@ -298,36 +307,42 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(12)
+	@HideForCountriesExcept
+	public String getSalutation() {
+		return salutation;
+	}
+
+	@Order(13)
 	public Sex getSex() {
 		return sex;
 	}
 
-	@Order(13)
+	@Order(14)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
 	}
 
-	@Order(14)
+	@Order(15)
 	public String getApproximateAge() {
 		return approximateAge;
 	}
 
-	@Order(15)
+	@Order(16)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@Order(16)
+	@Order(17)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(17)
+	@Order(18)
 	public String getDistrict() {
 		return district;
 	}
 
-	@Order(18)
+	@Order(19)
 	public String getCommunity() {
 		return community;
 	}
@@ -526,26 +541,31 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(61)
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	@Order(62)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(62)
+	@Order(63)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(63)
+	@Order(64)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(64)
+	@Order(65)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
 
-	@Order(65)
+	@Order(66)
 	public boolean isTraveled() {
 		return traveled;
 	}
@@ -554,7 +574,7 @@ public class ContactExportDto implements Serializable {
 		this.traveled = traveled;
 	}
 
-	@Order(66)
+	@Order(67)
 	public String getTravelHistory() {
 		return travelHistory;
 	}
@@ -563,7 +583,7 @@ public class ContactExportDto implements Serializable {
 		this.travelHistory = travelHistory;
 	}
 
-	@Order(67)
+	@Order(68)
 	public boolean isBurialAttended() {
 		return burialAttended;
 	}
@@ -572,7 +592,7 @@ public class ContactExportDto implements Serializable {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(68)
+	@Order(69)
 	public YesNoUnknown getContactWithSourceCaseKnown() {
 		return contactWithSourceCaseKnown;
 	}
@@ -723,6 +743,10 @@ public class ContactExportDto implements Serializable {
 
 	public void setOccupationType(String occupationType) {
 		this.occupationType = occupationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
 	}
 
 	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {

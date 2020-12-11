@@ -111,17 +111,22 @@ public class CaseListCriteriaBuilder {
 			Subquery<Timestamp> latestSampleDateTimeSq = cq.subquery(Timestamp.class);
 			Root<Sample> sample = latestSampleDateTimeSq.from(Sample.class);
 			Path<Timestamp> sampleDateTime = sample.get(Sample.SAMPLE_DATE_TIME);
-			latestSampleDateTimeSq.where(cb.equal(sample.get(Sample.ID), joins.getSamples().get(Sample.ID)), cb.isFalse(sample.get(Sample.DELETED)));
+			latestSampleDateTimeSq.where(
+				cb.equal(sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)),
+				cb.isFalse(sample.get(Sample.DELETED)));
 			latestSampleDateTimeSq.select(cb.greatest(sampleDateTime));
 			selectionList.add(latestSampleDateTimeSq);
 
 			// Samples count subquery
 			Subquery<Long> sampleCountSq = cq.subquery(Long.class);
-			Root<Sample> sampleRoot = sampleCountSq.from(Sample.class);
-			sampleCountSq.where(cb.equal(sampleRoot.get(Sample.ID), joins.getSamples().get(Sample.ID)), cb.isFalse(sampleRoot.get(Sample.DELETED)));
-			sampleCountSq.select(cb.countDistinct(sampleRoot.get(Sample.ID)));
+			Root<Sample> sampleCountRoot = sampleCountSq.from(Sample.class);
+			sampleCountSq.where(
+				cb.equal(sampleCountRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)),
+				cb.isFalse(sampleCountRoot.get(Sample.DELETED)));
+			sampleCountSq.select(cb.countDistinct(sampleCountRoot.get(AbstractDomainObject.ID)));
 			selectionList.add(sampleCountSq);
 		}
+
 		cq.multiselect(selectionList);
 		cq.distinct(true);
 

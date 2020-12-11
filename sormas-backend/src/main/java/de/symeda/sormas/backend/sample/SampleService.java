@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.sample;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +39,8 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -243,26 +246,38 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		// Avoid parameter limit by joining caseIds to a String instead of n parameters 
 		StringBuilder queryBuilder = new StringBuilder();
 		//@formatter:off
-		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
-				.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
-				.append(" FROM ").append(Sample.TABLE_NAME).append(" WHERE (").append(Sample.SPECIMEN_CONDITION).append(" IS NULL OR ")
-				.append(Sample.SPECIMEN_CONDITION).append(" = '").append(SpecimenCondition.ADEQUATE.name()).append("') AND ").append(Sample.TABLE_NAME)
-				.append(".").append(Sample.DELETED).append(" = false ORDER BY ").append(Sample.ASSOCIATED_CASE).append("_id, ")
-				.append(Sample.SAMPLE_DATE_TIME).append(" desc) SELECT sortedsamples.").append(Sample.PATHOGEN_TEST_RESULT).append(", COUNT(")
-				.append(Sample.ASSOCIATED_CASE).append("_id) FROM sortedsamples JOIN ").append(Case.TABLE_NAME).append(" ON sortedsamples.")
-				.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
-				.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (").append(QueryHelper.concatLongs(caseIds)).append(") ")
-				.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
-		//@formatter:on
+			queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
+					.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
+					.append(" FROM ").append(Sample.TABLE_NAME).append(" WHERE (").append(Sample.SPECIMEN_CONDITION).append(" IS NULL OR ")
+					.append(Sample.SPECIMEN_CONDITION).append(" = '").append(SpecimenCondition.ADEQUATE.name()).append("') AND ").append(Sample.TABLE_NAME)
+					.append(".").append(Sample.DELETED).append(" = false ORDER BY ").append(Sample.ASSOCIATED_CASE).append("_id, ")
+					.append(Sample.SAMPLE_DATE_TIME).append(" desc) SELECT sortedsamples.").append(Sample.PATHOGEN_TEST_RESULT).append(", COUNT(")
+					.append(Sample.ASSOCIATED_CASE).append("_id) FROM sortedsamples JOIN ").append(Case.TABLE_NAME).append(" ON sortedsamples.")
+					.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
+					.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (:caseIds)")
+					.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
+			//@formatter:on
 
-		Query query = em.createNativeQuery(queryBuilder.toString());
+		if (caseIds.size() < ModelConstants.PARAMETER_LIMIT) {
+			List<Object[]> results;
+			Query query = em.createNativeQuery(queryBuilder.toString());
+			query.setParameter("caseIds", caseIds);
+			results = query.getResultList();
 
-		@SuppressWarnings("unchecked")
-		List<Object[]> results = query.getResultList();
-
-		return results.stream()
-			.filter(e -> e[0] != null)
-			.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+			return results.stream()
+				.filter(e -> e[0] != null)
+				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+		} else {
+			List<Object[]> results = new LinkedList<>();
+			IterableHelper.executeBatched(caseIds, ModelConstants.PARAMETER_LIMIT, batchedCaseIds -> {
+				Query query = em.createNativeQuery(queryBuilder.toString());
+				query.setParameter("caseIds", batchedCaseIds);
+				results.addAll(query.getResultList());
+			});
+			return results.stream()
+				.filter(e -> e[0] != null)
+				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+		}
 	}
 
 	@Override

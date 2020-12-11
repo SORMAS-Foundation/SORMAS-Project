@@ -6045,7 +6045,7 @@ ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id F
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (290, 'Manually send SMS #3253');
-                                         
+
 -- 2020-12-07 Add LabMessage #3486
 CREATE TABLE labmessage (
         id bigint not null,
@@ -6084,4 +6084,21 @@ CREATE TABLE labmessage (
 CREATE TABLE labmessage_history (LIKE labmessage);
 
 INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
+
+-- 2020-12-11 Create contacts-visits index #3673
+CREATE INDEX IF NOT EXISTS idx_contacts_visits_contact_id ON contacts_visits USING HASH (contact_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (292, 'Create contacts-visits index #3673');
+
+-- SurvNet Adaptations - Create new field “Salutation” for persons #3411
+ALTER TABLE person
+    ADD COLUMN salutation varchar(255),
+    ADD COLUMN othersalutation text;
+
+ALTER TABLE person_history
+    ADD COLUMN salutation varchar(255),
+    ADD COLUMN othersalutation text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (293, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
+
 -- *** Insert new sql commands BEFORE this line ***
