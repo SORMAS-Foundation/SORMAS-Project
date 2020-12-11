@@ -308,9 +308,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED;
 			if (dropped || convertedToCase) {
 				entity.setFollowUpStatus(FollowUpStatus.CANCELED);
+			} else {
+				contactService.updateFollowUpUntilAndStatus(entity);
 			}
-
-			contactService.updateFollowUpUntilAndStatus(entity);
 			contactService.udpateContactStatus(entity);
 
 			if (entity.getCaze() != null) {
