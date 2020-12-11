@@ -58,7 +58,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,8 +91,10 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -309,6 +310,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED;
 			if (dropped || convertedToCase) {
 				entity.setFollowUpStatus(FollowUpStatus.CANCELED);
+				entity.setFollowUpComment(
+					I18nProperties
+						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
 			} else {
 				contactService.updateFollowUpUntilAndStatus(entity);
 			}
@@ -908,8 +912,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// Load event count and latest events info per contact
 		Map<String, List<ContactEventSummaryDetails>> eventSummaries =
-			eventService.getEventSummaryDetailsByContacts(
-				dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
+			eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
 				.stream()
 				.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
 		for (ContactIndexDetailedDto contact : dtos) {
