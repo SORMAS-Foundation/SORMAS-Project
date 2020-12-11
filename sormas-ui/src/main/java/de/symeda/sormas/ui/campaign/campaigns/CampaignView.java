@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.campaign.campaigns;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -71,13 +70,11 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
 		container.addComponent(editComponent);
 
-		hideInfoLabel();
-
 		getViewTitleLabel().setValue(campaignDto.getName());
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
 		if (!findReferenceByParams(params)) {
 			return;
 		}

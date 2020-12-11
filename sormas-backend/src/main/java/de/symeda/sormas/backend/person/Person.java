@@ -42,6 +42,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -75,6 +77,8 @@ public class Person extends AbstractDomainObject {
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
+	public static final String SALUTATION = "salutation";
+	public static final String OTHER_SALUTATION = "otherSalutation";
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
 	public static final String APPROXIMATE_AGE = "approximateAge";
@@ -97,6 +101,7 @@ public class Person extends AbstractDomainObject {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
+	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String FATHERS_NAME = "fathersName";
@@ -125,6 +130,8 @@ public class Person extends AbstractDomainObject {
 
 	private String firstName;
 	private String lastName;
+	private Salutation salutation;
+	private String otherSalutation;
 	private String nickname;
 	private String mothersName;
 	private String mothersMaidenName;
@@ -170,6 +177,7 @@ public class Person extends AbstractDomainObject {
 
 	private OccupationType occupationType;
 	private String occupationDetails;
+	private ArmedForcesRelationType armedForcesRelationType;
 	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
@@ -206,6 +214,24 @@ public class Person extends AbstractDomainObject {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Salutation getSalutation() {
+		return salutation;
+	}
+
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getOtherSalutation() {
+		return otherSalutation;
+	}
+
+	public void setOtherSalutation(String otherSalutation) {
+		this.otherSalutation = otherSalutation;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -433,6 +459,15 @@ public class Person extends AbstractDomainObject {
 
 	public void setOccupationDetails(String occupationDetails) {
 		this.occupationDetails = occupationDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -691,4 +726,5 @@ public class Person extends AbstractDomainObject {
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
+
 }

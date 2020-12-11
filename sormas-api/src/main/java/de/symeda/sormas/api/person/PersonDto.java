@@ -51,6 +51,9 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 
+	public static final String SALUTATION = "salutation";
+	public static final String OTHER_SALUTATION = "otherSalutation";
+
 	public static final String PRESENT_CONDITION = "presentCondition";
 	public static final String BIRTH_DATE = "birthdate";
 	public static final String BIRTH_DATE_DD = "birthdateDD";
@@ -83,6 +86,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
+	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
@@ -120,6 +124,13 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	private String lastName;
+	@HideForCountriesExcept
+	@PersonalData
+	@SensitiveData
+	private Salutation salutation;
+	@PersonalData
+	@SensitiveData
+	private String otherSalutation;
 	@PersonalData
 	@SensitiveData
 	private String nickname;
@@ -259,6 +270,9 @@ public class PersonDto extends PseudonymizableDto {
 	private OccupationType occupationType;
 	@SensitiveData
 	private String occupationDetails;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
 	private String generalPractitionerDetails;
 	@SensitiveData
@@ -471,6 +485,22 @@ public class PersonDto extends PseudonymizableDto {
 		this.lastName = lastName;
 	}
 
+	public Salutation getSalutation() {
+		return salutation;
+	}
+
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	public String getOtherSalutation() {
+		return otherSalutation;
+	}
+
+	public void setOtherSalutation(String otherSalutation) {
+		this.otherSalutation = otherSalutation;
+	}
+
 	public EducationType getEducationType() {
 		return educationType;
 	}
@@ -501,6 +531,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setOccupationDetails(String occupationDetails) {
 		this.occupationDetails = occupationDetails;
+	}
+
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
 	}
 
 	public String getMothersName() {

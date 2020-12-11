@@ -738,6 +738,7 @@ public interface Strings {
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
+	String messageSystemFollowUpCanceledByDropping = "messageSystemFollowUpCanceledByDropping";
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageTreatmentCreated = "messageTreatmentCreated";

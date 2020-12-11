@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,7 +58,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,8 +91,10 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -156,9 +158,9 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 
@@ -308,6 +310,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED;
 			if (dropped || convertedToCase) {
 				entity.setFollowUpStatus(FollowUpStatus.CANCELED);
+				entity.setFollowUpComment(
+					I18nProperties
+						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
 			} else {
 				contactService.updateFollowUpUntilAndStatus(entity);
 			}
@@ -437,6 +442,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.LAST_CONTACT_DATE),
 					joins.getPerson().get(Person.FIRST_NAME),
 					joins.getPerson().get(Person.LAST_NAME),
+					joins.getPerson().get(Person.SALUTATION),
+					joins.getPerson().get(Person.OTHER_SALUTATION),
 					joins.getPerson().get(Person.SEX),
 					joins.getPerson().get(Person.BIRTHDATE_DD),
 					joins.getPerson().get(Person.BIRTHDATE_MM),
@@ -483,6 +490,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getPerson().get(Person.EMAIL_ADDRESS),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),
+					joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
 					joins.getRegion().get(Region.NAME),
 					joins.getDistrict().get(District.NAME),
 					joins.getCommunity().get(Community.NAME),
@@ -906,8 +914,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// Load event count and latest events info per contact
 		Map<String, List<ContactEventSummaryDetails>> eventSummaries =
-			eventService.getEventSummaryDetailsByContacts(
-				dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
+			eventService.getEventSummaryDetailsByContacts(dtos.stream().map(ContactIndexDetailedDto::getUuid).collect(Collectors.toList()))
 				.stream()
 				.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
 		for (ContactIndexDetailedDto contact : dtos) {
@@ -976,23 +983,36 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 	}
 
+	@SuppressWarnings("JpaQueryApiInspection")
 	@Override
 	public int getNonSourceCaseCountForDashboard(List<String> caseUuids) {
 
 		if (CollectionUtils.isEmpty(caseUuids)) {
 			// Avoid empty IN clause
 			return 0;
+		} else if (caseUuids.size() > ModelConstants.PARAMETER_LIMIT) {
+			List<BigInteger> countResults = new LinkedList<>();
+			IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, batchedCaseUuids -> {
+				Query query = em.createNativeQuery(
+					String.format(
+						"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (:uuidList)",
+						Contact.RESULTING_CASE.toLowerCase(),
+						Case.UUID));
+				query.setParameter("uuidList", batchedCaseUuids);
+				countResults.add((BigInteger) query.getSingleResult());
+			});
+			return countResults.stream().collect(Collectors.summingInt(BigInteger::intValue));
+		} else {
+			Query query = em.createNativeQuery(
+				String.format(
+					"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (:uuidList)",
+					Contact.RESULTING_CASE.toLowerCase(),
+					Case.UUID));
+			query.setParameter("uuidList", caseUuids);
+			BigInteger count = (BigInteger) query.getSingleResult();
+			return count.intValue();
 		}
 
-		Query query = em.createNativeQuery(
-			String.format(
-				"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (%s)",
-				Contact.RESULTING_CASE.toLowerCase(),
-				Case.UUID,
-				QueryHelper.concatStrings(caseUuids)));
-
-		BigInteger count = (BigInteger) query.getSingleResult();
-		return count.intValue();
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
@@ -1022,10 +1042,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// use only date, not time
 		target.setMultiDayContact(source.isMultiDayContact());
-		if(source.isMultiDayContact()) {
-			target.setFirstContactDate(source.getFirstContactDate() != null ?
-				DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) :
-				null);
+		if (source.isMultiDayContact()) {
+			target.setFirstContactDate(
+				source.getFirstContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) : null);
 		} else {
 			target.setFirstContactDate(null);
 		}
