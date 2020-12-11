@@ -5,10 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import de.symeda.sormas.api.CountryHelper;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface HideForCountries {
 
 	String[] countries() default {
-		"de" };
+		CountryHelper.COUNTRY_CODE_GERMANY };
 }

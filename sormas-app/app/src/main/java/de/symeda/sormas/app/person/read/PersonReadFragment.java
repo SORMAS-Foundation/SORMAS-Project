@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -43,6 +44,8 @@ import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
+
+import static android.view.View.GONE;
 
 public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayoutBinding, Person, AbstractDomainObject> {
 
@@ -98,6 +101,10 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			contentBinding.personCauseOfDeath,
 			contentBinding.personCauseOfDeathDisease,
 			contentBinding.personCauseOfDeathDetails);
+
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
+		}
 	}
 
 	// Overrides

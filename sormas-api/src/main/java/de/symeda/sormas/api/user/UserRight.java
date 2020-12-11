@@ -19,6 +19,7 @@ package de.symeda.sormas.api.user;
 
 import static de.symeda.sormas.api.user.UserRole.ADMIN;
 import static de.symeda.sormas.api.user.UserRole.ADMIN_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.BAG_USER;
 import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.COMMUNITY_INFORMANT;
@@ -784,6 +785,10 @@ public enum UserRight {
 			SURVEILLANCE_SUPERVISOR,
 			ADMIN_SUPERVISOR
 	),
+	SEND_MANUAL_EXTERNAL_MESSAGES(
+			ADMIN,
+			NATIONAL_USER
+	),
 	STATISTICS_ACCESS(
 			ADMIN,
 			NATIONAL_USER,
@@ -1182,16 +1187,7 @@ public enum UserRight {
 			POE_SUPERVISOR
 	),
 	BAG_EXPORT(
-			ADMIN,
-			NATIONAL_USER,
-			NATIONAL_CLINICIAN,
-			POE_NATIONAL_USER,
-			SURVEILLANCE_SUPERVISOR,
-			ADMIN_SUPERVISOR,
-			CASE_SUPERVISOR,
-			CONTACT_SUPERVISOR,
-			POE_SUPERVISOR,
-			LAB_USER
+			BAG_USER
 	),
 	SORMAS_TO_SORMAS_SHARE(	
 			ADMIN,

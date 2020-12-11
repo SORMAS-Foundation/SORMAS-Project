@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.backend.common.messaging;
 
 import java.io.IOException;
 
@@ -50,7 +50,7 @@ public class SmsService {
 	private ConfigFacadeEjbLocal configFacade;
 
 	@Asynchronous
-	public void sendSms(String phoneNumber, String subject, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
+	public void sendSms(String phoneNumber, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
 
 		// Remove the initial + that indicates the beginning of the country code to match the Nexmo specification of allowed number formats
 		if (phoneNumber.startsWith("+")) {

@@ -42,18 +42,22 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -97,6 +101,7 @@ public class Person extends AbstractDomainObject {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
+	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String FATHERS_NAME = "fathersName";
@@ -150,6 +155,7 @@ public class Person extends AbstractDomainObject {
 	private String phone;
 	private String phoneOwner;
 	private String emailAddress;
+	private List<ManualMessageLog> manualMessageLogs;
 
 	private Sex sex;
 
@@ -171,6 +177,7 @@ public class Person extends AbstractDomainObject {
 
 	private OccupationType occupationType;
 	private String occupationDetails;
+	private ArmedForcesRelationType armedForcesRelationType;
 	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
@@ -454,6 +461,15 @@ public class Person extends AbstractDomainObject {
 		this.occupationDetails = occupationDetails;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
+	}
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getMothersName() {
 		return mothersName;
@@ -684,17 +700,31 @@ public class Person extends AbstractDomainObject {
 		this.personEventParticipants = personEventParticipants;
 	}
 
+	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
+	public Set<Contact> getContacts() {
+		return contacts;
+	}
+
 	public void setContacts(Set<Contact> contacts) {
 		this.contacts = contacts;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
-	public Set<Contact> getContacts() {
-		return contacts;
+	@OneToMany(mappedBy = ManualMessageLog.RECIPIENT_PERSON, fetch = FetchType.LAZY)
+	public List<ManualMessageLog> getManualMessageLogs() {
+		return manualMessageLogs;
+	}
+
+	public void setManualMessageLogs(List<ManualMessageLog> manualMessageLogs) {
+		this.manualMessageLogs = manualMessageLogs;
+	}
+
+	public PersonReferenceDto toReference() {
+		return new PersonReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
+
 }

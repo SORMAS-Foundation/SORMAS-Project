@@ -147,7 +147,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
-                            fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
+                            fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS) +
+                            fluidRow(oneOfTwoCol(PersonDto.ARMED_FORCES_RELATION_TYPE)),
                             fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
                     ) +
 
@@ -259,7 +260,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
-		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
+		addFields(
+			PersonDto.OCCUPATION_TYPE,
+			PersonDto.OCCUPATION_DETAILS,
+			PersonDto.ARMED_FORCES_RELATION_TYPE,
+			PersonDto.EDUCATION_TYPE,
+			PersonDto.EDUCATION_DETAILS);
 
 		TextField phoneNumber = addField(PersonDto.PHONE, TextField.class);
 		addField(PersonDto.PHONE_OWNER, TextField.class);
@@ -328,7 +334,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible() && !getField(PersonDto.EDUCATION_TYPE).isVisible())
+		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible()
+			&& !getField(PersonDto.ARMED_FORCES_RELATION_TYPE).isVisible()
+			&& !getField(PersonDto.EDUCATION_TYPE).isVisible())
 			occupationHeader.setVisible(false);
 		if (!getField(PersonDto.ADDRESS).isVisible())
 			addressHeader.setVisible(false);
