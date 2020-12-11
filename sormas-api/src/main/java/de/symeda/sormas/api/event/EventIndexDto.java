@@ -81,7 +81,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String uuid,
 		EventStatus eventStatus,
 		EventInvestigationStatus eventInvestigationStatus,
-		Long participantCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -124,7 +123,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
-		this.participantCount = participantCount;
 	}
 
 	public String getUuid() {
