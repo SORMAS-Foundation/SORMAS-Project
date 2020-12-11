@@ -34,8 +34,6 @@ public class EventExportDto implements Serializable {
 	private long participantCount;
 	private long caseCount;
 	private long deathCount;
-	private long contactCount; // number of contacts who are also event participants
-	private long contactCountSourceInEvent; // number of contacts who are also event participants, and whose source case is also part of the event
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -382,24 +380,6 @@ public class EventExportDto implements Serializable {
 
 	public void setDeathCount(long deathCount) {
 		this.deathCount = deathCount;
-	}
-
-	@Order(32)
-	public long getContactCount() {
-		return contactCount;
-	}
-
-	public void setContactCount(long contactCount) {
-		this.contactCount = contactCount;
-	}
-
-	@Order(33)
-	public long getContactCountSourceInEvent() {
-		return contactCountSourceInEvent;
-	}
-
-	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
-		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
 	public EventJurisdictionDto getJurisdiction() {

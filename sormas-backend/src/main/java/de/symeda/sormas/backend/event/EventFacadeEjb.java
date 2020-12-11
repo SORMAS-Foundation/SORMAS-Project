@@ -66,7 +66,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -331,8 +330,6 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> participantCounts = new HashMap<>();
 		Map<String, Long> caseCounts = new HashMap<>();;
 		Map<String, Long> deathCounts = new HashMap<>();
-		Map<String, Long> contactCounts = new HashMap<>();
-		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
 		if (indexList != null) {
 			List<Object[]> objectQueryList = null;
 
@@ -367,41 +364,12 @@ public class EventFacadeEjb implements EventFacade {
 			deathsCount.select(cb.count(eventParticipantRoot));
 			deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
 
-			// number of contacts who are also event participants
-			// for each contact ( if person is participant in this event (counter + 1))
-			Subquery<Long> contactCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = contactCount.from(EventParticipant.class);
-			Join<EventParticipant, Person> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.INNER);
-			Join<Person, Contact> contactsJoin = personJoin.join(Person.CONTACTS, JoinType.INNER);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			Predicate contactNotDeleted = cb.isFalse(contactsJoin.get(Contact.DELETED));
-			contactCount.select(cb.count(eventParticipantRoot));
-			contactCount.where(assignedToEvent, notDeleted, contactNotDeleted);
-
-			// number of contacts, who are also participants, and whose source case is also a participant
-			// for each participant (if participant is case ( for all contacts of participant ( if contact is also participant (count + 1))))
-			Subquery<Long> contactsWithSourceInEvent = objectCQ.subquery(Long.class);
-			Root<Contact> contactRoot = contactsWithSourceInEvent.from(Contact.class);
-			Join<Contact, Person> personJoin2 = contactRoot.join(Contact.PERSON, JoinType.INNER);
-			Join<Person, EventParticipant> participantJoin = personJoin2.join(Person.EVENT_PARTICIPANTS, JoinType.INNER);
-			Join<Contact, Case> sourceCaseJoin = contactRoot.join(Contact.CAZE, JoinType.INNER);
-			Join<Case, EventParticipant> sourceCaseParticipantJoin = sourceCaseJoin.join(Case.EVENT_PARTICIPANTS, JoinType.INNER);
-			notDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			Predicate participantNotDeleted = cb.isFalse(participantJoin.get(EventParticipant.DELETED));
-			assignedToEvent = cb.equal(participantJoin.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			Predicate sourceInEvent = cb.equal(sourceCaseParticipantJoin.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			contactsWithSourceInEvent.select(cb.count(contactRoot));
-			contactsWithSourceInEvent.where(notDeleted, participantNotDeleted, assignedToEvent, sourceInEvent);
-
-			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount, contactCount, contactsWithSourceInEvent);
+			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount);
 			objectQueryList = em.createQuery(objectCQ).getResultList();
 			objectQueryList.forEach(r -> {
 				participantCounts.put((String) r[0], (Long) r[1]);
 				caseCounts.put((String) r[0], (Long) r[2]);
 				deathCounts.put((String) r[0], (Long) r[3]);
-				contactCounts.put((String) r[0], (Long) r[4]);
-				contactCountsSourceInEvent.put((String) r[0], (Long) r[5]);
 			});
 
 		}
@@ -411,8 +379,6 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(participantCounts.get(eventDto.getUuid())).ifPresent(eventDto::setParticipantCount);
 				Optional.ofNullable(caseCounts.get(eventDto.getUuid())).ifPresent(eventDto::setCaseCount);
 				Optional.ofNullable(deathCounts.get(eventDto.getUuid())).ifPresent(eventDto::setDeathCount);
-				Optional.ofNullable(contactCounts.get(eventDto.getUuid())).ifPresent(eventDto::setContactCount);
-				Optional.ofNullable(contactCountsSourceInEvent.get(eventDto.getUuid())).ifPresent(eventDto::setContactCountSourceInEvent);
 			}
 		}
 
@@ -488,8 +454,6 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> participantCounts = new HashMap<>();
 		Map<String, Long> caseCounts = new HashMap<>();;
 		Map<String, Long> deathCounts = new HashMap<>();
-		Map<String, Long> contactCounts = new HashMap<>();
-		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
 		if (exportList != null) {
 			List<Object[]> objectQueryList = null;
 
@@ -524,41 +488,12 @@ public class EventFacadeEjb implements EventFacade {
 			deathsCount.select(cb.count(eventParticipantRoot));
 			deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
 
-			// number of contacts who are also event participants
-			// for each contact ( if person is participant in this event (counter + 1))
-			Subquery<Long> contactCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = contactCount.from(EventParticipant.class);
-			Join<EventParticipant, Person> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.INNER);
-			Join<Person, Contact> contactsJoin = personJoin.join(Person.CONTACTS, JoinType.INNER);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			Predicate contactNotDeleted = cb.isFalse(contactsJoin.get(Contact.DELETED));
-			contactCount.select(cb.count(eventParticipantRoot));
-			contactCount.where(assignedToEvent, notDeleted, contactNotDeleted);
-
-			// number of contacts, who are also participants, and whose source case is also a participant
-			// for each participant (if participant is case ( for all contacts of participant ( if contact is also participant (count + 1))))
-			Subquery<Long> contactsWithSourceInEvent = objectCQ.subquery(Long.class);
-			Root<Contact> contactRoot = contactsWithSourceInEvent.from(Contact.class);
-			Join<Contact, Person> personJoin2 = contactRoot.join(Contact.PERSON, JoinType.INNER);
-			Join<Person, EventParticipant> participantJoin = personJoin2.join(Person.EVENT_PARTICIPANTS, JoinType.INNER);
-			Join<Contact, Case> sourceCaseJoin = contactRoot.join(Contact.CAZE, JoinType.INNER);
-			Join<Case, EventParticipant> sourceCaseParticipantJoin = sourceCaseJoin.join(Case.EVENT_PARTICIPANTS, JoinType.INNER);
-			notDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			Predicate participantNotDeleted = cb.isFalse(participantJoin.get(EventParticipant.DELETED));
-			assignedToEvent = cb.equal(participantJoin.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			Predicate sourceInEvent = cb.equal(sourceCaseParticipantJoin.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			contactsWithSourceInEvent.select(cb.count(contactRoot));
-			contactsWithSourceInEvent.where(notDeleted, participantNotDeleted, assignedToEvent, sourceInEvent);
-
-			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount, contactCount, contactsWithSourceInEvent);
+			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount);
 			objectQueryList = em.createQuery(objectCQ).getResultList();
 			objectQueryList.forEach(r -> {
 				participantCounts.put((String) r[0], (Long) r[1]);
 				caseCounts.put((String) r[0], (Long) r[2]);
 				deathCounts.put((String) r[0], (Long) r[3]);
-				contactCounts.put((String) r[0], (Long) r[4]);
-				contactCountsSourceInEvent.put((String) r[0], (Long) r[5]);
 			});
 
 		}
@@ -568,8 +503,6 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(participantCounts.get(exportDto.getUuid())).ifPresent(exportDto::setParticipantCount);
 				Optional.ofNullable(caseCounts.get(exportDto.getUuid())).ifPresent(exportDto::setCaseCount);
 				Optional.ofNullable(deathCounts.get(exportDto.getUuid())).ifPresent(exportDto::setDeathCount);
-				Optional.ofNullable(contactCounts.get(exportDto.getUuid())).ifPresent(exportDto::setContactCount);
-				Optional.ofNullable(contactCountsSourceInEvent.get(exportDto.getUuid())).ifPresent(exportDto::setContactCountSourceInEvent);
 			}
 		}
 
