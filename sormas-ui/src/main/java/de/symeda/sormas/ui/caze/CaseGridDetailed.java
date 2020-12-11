@@ -1,8 +1,10 @@
 package de.symeda.sormas.ui.caze;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -11,14 +13,18 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 	private static final long serialVersionUID = 3734206041728541742L;
+
+	private static final String LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT = "latestSampleDateTimeAndSampleCount";
 
 	public CaseGridDetailed(CaseCriteria criteria) {
 		super(CaseIndexDetailedDto.class, criteria);
@@ -58,9 +64,30 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 				CaseIndexDetailedDto.PHONE));
 	}
 
+	@Override
+	protected Stream<String> getSymptomsColumns() {
+		return Stream.concat(super.getSampleColumns(), Stream.of(CaseIndexDetailedDto.SYMPTOM_ONSET_DATE));
+	}
+
+	@Override
+	protected Stream<String> getSampleColumns() {
+		return Stream.concat(super.getSampleColumns(), Stream.of(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void initColumns() {
+
+		addColumn(caze -> {
+			if (caze.getLatestSampleDateTime() != null) {
+				return DateFormatHelper.formatLocalDateTime(caze.getLatestSampleDateTime()) + " [" + caze.getSampleCount() + "]";
+			} else {
+				return null;
+			}
+		}).setCaption(I18nProperties.getPrefixCaption(CaseIndexDetailedDto.I18N_PREFIX, CaseIndexDetailedDto.LATEST_SAMPLE_DATE_TIME))
+			.setId(LATEST_SAMPLE_DATE_TIME_AND_SAMPLE_COUNT)
+			.setSortable(false)
+			.setWidth(150);
 
 		super.initColumns();
 
@@ -94,5 +121,10 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 					value.getBirthdateYYYY(),
 					I18nProperties.getUserLanguage()),
 			new TextRenderer());
+
+		((Column<CaseIndexDetailedDto, Date>) getColumn(CaseIndexDetailedDto.SYMPTOM_ONSET_DATE))
+			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()))
+			.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))
+			.setWidth(80);
 	}
 }

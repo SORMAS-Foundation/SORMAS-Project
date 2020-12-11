@@ -629,6 +629,7 @@ public interface Strings {
 	String messageDistrictsArchivingNotPossible = "messageDistrictsArchivingNotPossible";
 	String messageDistrictsDearchived = "messageDistrictsDearchived";
 	String messageDistrictsDearchivingNotPossible = "messageDistrictsDearchivingNotPossible";
+	String messageEnterSms = "messageEnterSms";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
@@ -769,6 +770,7 @@ public interface Strings {
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
 	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";
 	String notificationLabSampleShippedShortForEventParticipant = "notificationLabSampleShippedShortForEventParticipant";
+	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";

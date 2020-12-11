@@ -26,7 +26,6 @@ import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.VerticalLayout;
 
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implements FieldWrapper<T> {
@@ -36,38 +35,40 @@ public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implemen
 	private static final int MIN_ROWS = 4;
 
 	@Override
-	public ComponentContainer wrap(T textField) {
+	public ComponentContainer wrap(T textField, String caption, boolean withMargin) {
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSpacing(false);
 		layout.setMargin(false);
 		layout.setWidth(100, Sizeable.Unit.PERCENTAGE);
-		layout.addStyleName(CssStyles.FIELD_WRAPPER);
+		if (withMargin) {
+			layout.addStyleName(CssStyles.FIELD_WRAPPER);
+		}
 
 		textField.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		textField.addStyleName(CssStyles.RESIZABLE);
-			textField.getValidators()
-				.stream()
-				.filter(v -> v instanceof MaxLengthValidator)
-				.findFirst()
-				.map(v -> ((MaxLengthValidator) v).getMaxLength())
+		textField.getValidators()
+			.stream()
+			.filter(v -> v instanceof MaxLengthValidator)
+			.findFirst()
+			.map(v -> ((MaxLengthValidator) v).getMaxLength())
 			.ifPresent(textField::setMaxLength);
 		textField.setNullRepresentation("");
 		textField.setTextChangeTimeout(200);
 
-		Label labelField = new Label();
+		Label labelField = new Label(buildLabelMessage(textField.getValue(), textField, caption));
 		labelField.setId(textField.getId() + "_label");
 		labelField.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		labelField.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);
 
 		textField.addTextChangeListener(e -> {
 			// XXX: notify user if text is not valid (e.g. too long)
-			labelField.setValue(buildLabelMessage(e.getText(), textField));
+			labelField.setValue(buildLabelMessage(e.getText(), textField, caption));
 			adjustRows(textField, e.getText());
 		});
 		textField.addValueChangeListener(e -> {
 			// XXX: notify user if text is not valid (e.g. too long)
-			labelField.setValue(buildLabelMessage(textField.getValue(), textField));
+			labelField.setValue(buildLabelMessage(textField.getValue(), textField, caption));
 			adjustRows(textField, textField.getValue());
 		});
 
@@ -76,8 +77,14 @@ public class TextFieldWithMaxLengthWrapper<T extends AbstractTextField> implemen
 		return layout;
 	}
 
-	private String buildLabelMessage(String text, T textField) {
-		return String.format(I18nProperties.getCaption(Captions.numberOfCharacters), Strings.nullToEmpty(text).length(), textField.getMaxLength());
+	@Override
+	public ComponentContainer wrap(T textField, String caption) {
+
+		return wrap(textField, caption, true);
+	}
+
+	private String buildLabelMessage(String text, T textField, String caption) {
+		return String.format(I18nProperties.getCaption(caption), Strings.nullToEmpty(text).length(), textField.getMaxLength());
 	}
 
 	/**

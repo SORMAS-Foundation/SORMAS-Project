@@ -15,10 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.api.event;
 
-public enum MessageType {
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-	EMAIL,
-	SMS;
+public enum RiskLevel {
+
+	LOW,
+	MODERATE,
+	HIGH,
+	UNKNOWN;
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }
