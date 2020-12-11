@@ -45,11 +45,13 @@ import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -87,7 +89,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			PersonEditFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
@@ -110,6 +113,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 		fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
 
+		List<Item> salutationList = DataUtils.getEnumItems(Salutation.class, true);
 		List<Item> monthList = DataUtils.getMonthItems(true);
 		List<Item> yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
 		List<Item> approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
@@ -166,6 +170,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			false);
 
 		// Initialize ControlSpinnerFields
+		contentBinding.personSalutation.initializeSpinner(salutationList);
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
 		contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
 			updateApproximateAgeField(contentBinding);
