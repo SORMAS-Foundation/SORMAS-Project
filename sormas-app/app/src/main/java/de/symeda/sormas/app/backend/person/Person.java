@@ -598,8 +598,6 @@ public class Person extends PseudonymizableAdo {
 		this.externalId = externalId;
 	}
 
-	public void setExternalId(String externalId) { this.externalId = externalId; }
-
 	public Country getBirthCountry() {
 		return birthCountry;
 	}
