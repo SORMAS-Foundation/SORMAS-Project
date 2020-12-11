@@ -6045,4 +6045,43 @@ ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id F
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (290, 'Manually send SMS #3253');
+                                         
+-- 2020-12-07 Add LabMessage #3486
+CREATE TABLE labmessage (
+        id bigint not null,
+        uuid varchar(36) not null unique,
+        changedate timestamp not null,
+        creationdate timestamp not null,
+        sampledatetime timestamp,
+        samplereceiveddate timestamp,
+        labsampleid text,
+        samplematerial varchar(255),
+        testlabname varchar(255),
+        testlabexternalid varchar(255),
+        testlabpostalcode varchar(255),
+        testlabcity varchar(255),
+        specimencondition varchar(255),
+        testtype varchar(255),
+        testeddisease varchar(255),
+        testdatetime timestamp,
+        testresult varchar(255),
+        personfirstName varchar(255),
+        personlastName varchar(255),
+        personsex varchar(255),
+        personbirthdatedd integer,
+        personbirthdatemm integer,
+        personbirthdateyyyy integer,
+        personpostalcode varchar(255),
+        personcity varchar(255),
+        personstreet varchar(255),
+        personhousenumber varchar(255),
+        labMessageDetails text,
+        processed boolean default false,
+        sys_period tstzrange not null,
+        primary key(id)
+);
+
+CREATE TABLE labmessage_history (LIKE labmessage);
+
+INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
 -- *** Insert new sql commands BEFORE this line ***

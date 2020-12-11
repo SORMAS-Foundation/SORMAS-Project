@@ -334,13 +334,7 @@ public class CasesView extends AbstractView {
 					BAGExportCaseDto.class,
 					null,
 					(Integer start, Integer max) -> FacadeProvider.getBAGExportFacade().getCaseExportList(start, max),
-					(propertyId, type) -> {
-						String caption = I18nProperties.findPrefixCaption(propertyId);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
+					(propertyId, type) -> propertyId,
 					createFileNameWithCurrentDate("sormas_BAG_cases_", ".csv"),
 					null);
 
