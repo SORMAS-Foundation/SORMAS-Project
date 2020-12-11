@@ -907,6 +907,7 @@ public interface Captions {
 	String Exposure_meansOfTransportDetails = "Exposure.meansOfTransportDetails";
 	String Exposure_otherProtectiveMeasures = "Exposure.otherProtectiveMeasures";
 	String Exposure_outdoors = "Exposure.outdoors";
+	String Exposure_patientExpositionRole = "Exposure.patientExpositionRole";
 	String Exposure_percutaneous = "Exposure.percutaneous";
 	String Exposure_physicalContactDuringPreparation = "Exposure.physicalContactDuringPreparation";
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
