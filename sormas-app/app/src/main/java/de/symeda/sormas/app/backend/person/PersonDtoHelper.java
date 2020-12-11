@@ -69,6 +69,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
 		target.setBirthName(source.getBirthName());
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
@@ -94,6 +96,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
+		target.setArmedForcesRelationType(source.getArmedForcesRelationType());
 		target.setDeathPlaceType(source.getDeathPlaceType());
 		target.setDeathPlaceDescription(source.getDeathPlaceDescription());
 		target.setBurialDate(source.getBurialDate());
@@ -141,6 +144,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
 		target.setBirthName(source.getBirthName());
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
@@ -174,6 +179,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
+		target.setArmedForcesRelationType(source.getArmedForcesRelationType());
 
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());

@@ -60,7 +60,6 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 	public EventParticipantDataView() {
 		super(VIEW_NAME);
-		hideInfoLabel();
 	}
 
 	@Override
@@ -158,7 +157,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
 
 		if (!findReferenceByParams(params)) {
 			return;
@@ -174,9 +173,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			true);
 
 		menu.addView(EventParticipantDataView.VIEW_NAME, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX), params);
-		infoLabel.setValue(I18nProperties.getCaption(Captions.EventParticipant));
-		infoLabelSub.setValue(eventParticipantDto.getPerson().toString());
 
-		replaceViewHeader(ControllerProvider.getEventParticipantController().getEventParticipantViewTitleLayout(eventParticipantDto));
+		setMainHeaderComponent(ControllerProvider.getEventParticipantController().getEventParticipantViewTitleLayout(eventParticipantDto));
 	}
 }

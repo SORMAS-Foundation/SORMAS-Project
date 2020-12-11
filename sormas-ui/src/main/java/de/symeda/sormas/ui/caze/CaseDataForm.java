@@ -1272,6 +1272,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getContent().removeComponent(epidNumberWarningLabel);
 			assignNewEpidNumberButton.setVisible(
 				!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+					&& !isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)
 					&& !CaseLogic.isEpidNumberPrefix(fieldValue)
 					&& !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}

@@ -66,6 +66,7 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -115,6 +116,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
             loc(PERSON_INFORMATION_HEADING_LOC) +
 					fluidRowLocs(PersonDto.UUID, "")+
                     fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+					fluidRowLocs(PersonDto.SALUTATION, PersonDto.OTHER_SALUTATION) +
                     fluidRow(
                             fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
                             fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
@@ -147,7 +149,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
-                            fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
+                            fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS) +
+                            fluidRow(oneOfTwoCol(PersonDto.ARMED_FORCES_RELATION_TYPE)),
                             fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
                     ) +
 
@@ -159,7 +162,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
                     loc(CONTACT_INFORMATION_HEADER) +
                     divsCss(
-                            VSPACE_3, 
+                            VSPACE_3,
 							fluidRowLocs(PersonDto.BIRTH_NAME, "") +
 									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
@@ -204,6 +207,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.UUID).setReadOnly(true);
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
+
+		addFields(PersonDto.SALUTATION, PersonDto.OTHER_SALUTATION);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.OTHER_SALUTATION, PersonDto.SALUTATION, Salutation.OTHER, true);
+
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
 		addField(PersonDto.BIRTH_NAME, TextField.class);
 		addField(PersonDto.NICKNAME, TextField.class);
@@ -258,7 +265,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
-		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
+		addFields(
+			PersonDto.OCCUPATION_TYPE,
+			PersonDto.OCCUPATION_DETAILS,
+			PersonDto.ARMED_FORCES_RELATION_TYPE,
+			PersonDto.EDUCATION_TYPE,
+			PersonDto.EDUCATION_DETAILS);
 
 		TextField phoneNumber = addField(PersonDto.PHONE, TextField.class);
 		addField(PersonDto.PHONE_OWNER, TextField.class);
@@ -331,7 +343,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible() && !getField(PersonDto.EDUCATION_TYPE).isVisible())
+		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible()
+			&& !getField(PersonDto.ARMED_FORCES_RELATION_TYPE).isVisible()
+			&& !getField(PersonDto.EDUCATION_TYPE).isVisible())
 			occupationHeader.setVisible(false);
 		if (!getField(PersonDto.ADDRESS).isVisible())
 			addressHeader.setVisible(false);

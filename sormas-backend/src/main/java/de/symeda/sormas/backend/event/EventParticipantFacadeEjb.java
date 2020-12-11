@@ -380,6 +380,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 			person.get(Person.FIRST_NAME),
 			person.get(Person.LAST_NAME),
+			person.get(Person.SALUTATION),
+			person.get(Person.OTHER_SALUTATION),
 			person.get(Person.SEX),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			person.get(Person.APPROXIMATE_AGE),

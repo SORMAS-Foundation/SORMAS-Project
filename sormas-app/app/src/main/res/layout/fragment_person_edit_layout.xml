@@ -29,6 +29,7 @@
         <import type="de.symeda.sormas.api.person.OccupationType" />
         <import type="de.symeda.sormas.api.person.EducationType" />
         <import type="de.symeda.sormas.api.person.CauseOfDeath" />
+        <import type="de.symeda.sormas.api.person.Salutation" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
@@ -74,6 +75,18 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/person_salutation"
+                app:value="@={data.salutation}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_otherSalutation"
+                app:dependencyParentField="@{personSalutation}"
+                app:dependencyParentValue="@{Salutation.OTHER}"
+                app:value="@={data.otherSalutation}"
+                style="@style/ControlSingleColumnStyle" />
 
             <TextView
                 android:id="@+id/person_birthdateLabel"
@@ -433,6 +446,19 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_armedForcesRelationType"
+                    app:value="@={data.armedForcesRelationType}"
+                    style="@style/ControlSingleColumnStyle" />
+
+        </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
