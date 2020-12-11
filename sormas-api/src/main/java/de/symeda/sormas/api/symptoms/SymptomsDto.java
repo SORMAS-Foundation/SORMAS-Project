@@ -209,7 +209,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SYMPTOMS_COMMENTS = "symptomsComments";
 	public static final String TEMPERATURE = "temperature";
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
-	public static final String THROMBOCYTOPENIA = "throbocytopenia";
+	public static final String THROBOCYTOPENIA = "throbocytopenia";
 	public static final String TREMOR = "tremor";
 	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
 	public static final String UNILATERAL_CATARACTS = "unilateralCataracts";
