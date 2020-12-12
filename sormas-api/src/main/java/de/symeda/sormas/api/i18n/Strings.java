@@ -538,6 +538,7 @@ public interface Strings {
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
+	String infoUserSyncProcess = "infoUserSyncProcess";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
@@ -747,6 +748,11 @@ public interface Strings {
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
 	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRoleCombination = "messageUserRoleCombination";
+	String messageUserSyncCanceled = "messageUserSyncCanceled";
+	String messageUserSyncCanceledErrors = "messageUserSyncCanceledErrors";
+	String messageUserSyncFailedFull = "messageUserSyncFailedFull";
+	String messageUserSyncPartiallySuccessful = "messageUserSyncPartiallySuccessful";
+	String messageUserSyncSuccessful = "messageUserSyncSuccessful";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
 	String min = "min";

@@ -354,61 +354,61 @@ public class StartupShutdownService {
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
 			admin.setUserName("admin");
 			userService.persist(admin);
-			userUpdateEvent.fire(new UserUpdateEvent(admin, admin));
+			userUpdateEvent.fire(new UserUpdateEvent(admin));
 
 			// Create Surveillance Supervisor
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");
 			surveillanceSupervisor.setUserName("SurvSup");
 			surveillanceSupervisor.setRegion(region);
 			userService.persist(surveillanceSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(surveillanceSupervisor, surveillanceSupervisor));
+			userUpdateEvent.fire(new UserUpdateEvent(surveillanceSupervisor));
 
 			// Create Case Supervisor
 			User caseSupervisor = MockDataGenerator.createUser(UserRole.CASE_SUPERVISOR, "Case", "Supervisor", "CaseSup");
 			caseSupervisor.setUserName("CaseSup");
 			caseSupervisor.setRegion(region);
 			userService.persist(caseSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(caseSupervisor, caseSupervisor));
+			userUpdateEvent.fire(new UserUpdateEvent(caseSupervisor));
 
 			// Create Contact Supervisor
 			User contactSupervisor = MockDataGenerator.createUser(UserRole.CONTACT_SUPERVISOR, "Contact", "Supervisor", "ContSup");
 			contactSupervisor.setUserName("ContSup");
 			contactSupervisor.setRegion(region);
 			userService.persist(contactSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(contactSupervisor, contactSupervisor));
+			userUpdateEvent.fire(new UserUpdateEvent(contactSupervisor));
 
 			// Create Point of Entry Supervisor
 			User poeSupervisor = MockDataGenerator.createUser(UserRole.POE_SUPERVISOR, "Point of Entry", "Supervisor", "PoeSup");
 			poeSupervisor.setUserName("PoeSup");
 			poeSupervisor.setRegion(region);
 			userService.persist(poeSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(poeSupervisor, poeSupervisor));
+			userUpdateEvent.fire(new UserUpdateEvent(poeSupervisor));
 
 			// Create Laboratory Officer
 			User laboratoryOfficer = MockDataGenerator.createUser(UserRole.LAB_USER, "Laboratory", "Officer", "LabOff");
 			laboratoryOfficer.setUserName("LabOff");
 			laboratoryOfficer.setLaboratory(laboratory);
 			userService.persist(laboratoryOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(laboratoryOfficer, laboratoryOfficer));
+			userUpdateEvent.fire(new UserUpdateEvent(laboratoryOfficer));
 
 			// Create Event Officer
 			User eventOfficer = MockDataGenerator.createUser(UserRole.EVENT_OFFICER, "Event", "Officer", "EveOff");
 			eventOfficer.setUserName("EveOff");
 			eventOfficer.setRegion(region);
 			userService.persist(eventOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(eventOfficer, eventOfficer));
+			userUpdateEvent.fire(new UserUpdateEvent(eventOfficer));
 
 			// Create National User
 			User nationalUser = MockDataGenerator.createUser(UserRole.NATIONAL_USER, "National", "User", "NatUser");
 			nationalUser.setUserName("NatUser");
 			userService.persist(nationalUser);
-			userUpdateEvent.fire(new UserUpdateEvent(nationalUser, nationalUser));
+			userUpdateEvent.fire(new UserUpdateEvent(nationalUser));
 
 			// Create National Clinician
 			User nationalClinician = MockDataGenerator.createUser(UserRole.NATIONAL_CLINICIAN, "National", "Clinician", "NatClin");
 			nationalClinician.setUserName("NatClin");
 			userService.persist(nationalClinician);
-			userUpdateEvent.fire(new UserUpdateEvent(nationalClinician, nationalClinician));
+			userUpdateEvent.fire(new UserUpdateEvent(nationalClinician));
 
 			// Create Surveillance Officer
 			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance", "Officer", "SurvOff");
@@ -416,7 +416,7 @@ public class StartupShutdownService {
 			surveillanceOfficer.setRegion(region);
 			surveillanceOfficer.setDistrict(district);
 			userService.persist(surveillanceOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(surveillanceOfficer, surveillanceOfficer));
+			userUpdateEvent.fire(new UserUpdateEvent(surveillanceOfficer));
 
 			// Create Hospital Informant
 			User hospitalInformant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Hospital", "Informant", "HospInf");
@@ -426,7 +426,7 @@ public class StartupShutdownService {
 			hospitalInformant.setHealthFacility(facility);
 			hospitalInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(hospitalInformant);
-			userUpdateEvent.fire(new UserUpdateEvent(hospitalInformant, hospitalInformant));
+			userUpdateEvent.fire(new UserUpdateEvent(hospitalInformant));
 
 			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
 			poeInformant.setUserName("PoeInf");
@@ -435,7 +435,7 @@ public class StartupShutdownService {
 			poeInformant.setPointOfEntry(pointOfEntry);
 			poeInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(poeInformant);
-			userUpdateEvent.fire(new UserUpdateEvent(poeInformant, poeInformant));
+			userUpdateEvent.fire(new UserUpdateEvent(poeInformant));
 		}
 	}
 
@@ -498,7 +498,7 @@ public class StartupShutdownService {
 				newUser.setUserName(username);
 
 				userService.persist(newUser);
-				userUpdateEvent.fire(new UserUpdateEvent(newUser, newUser));
+				userUpdateEvent.fire(new UserUpdateEvent(newUser));
 			}
 		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
 			existingUser.setSeed(PasswordHelper.createPass(16));

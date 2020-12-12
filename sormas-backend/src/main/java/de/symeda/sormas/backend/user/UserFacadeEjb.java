@@ -23,13 +23,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -43,6 +46,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.user.UserSyncResult;
 import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -428,6 +432,24 @@ public class UserFacadeEjb implements UserFacade {
 			c.setContactOfficer(null);
 			contactService.ensurePersisted(c);
 		});
+	}
+
+	@Override
+	public UserSyncResult syncUser(String uuid) {
+		User user = userService.getByUuid(uuid);
+
+		UserSyncResult userSyncResult = new UserSyncResult();
+		userSyncResult.setSuccess(true);
+
+		UserUpdateEvent event = new UserUpdateEvent(user);
+		event.setExceptionCallback(exceptionMessage -> {
+			userSyncResult.setSuccess(false);
+			userSyncResult.setErrorMessage(exceptionMessage);
+		});
+
+		this.userUpdateEvent.fire(event);
+
+		return userSyncResult;
 	}
 
 	@LocalBean

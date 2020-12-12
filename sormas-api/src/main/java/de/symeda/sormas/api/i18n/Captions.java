@@ -1654,10 +1654,9 @@ public interface Captions {
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";
 	String symptomsSetClearedToUnknown = "symptomsSetClearedToUnknown";
 	String sync = "sync";
-	String syncCreated = "syncCreated";
 	String syncErrors = "syncErrors";
 	String syncProcessed = "syncProcessed";
-	String syncUpdated = "syncUpdated";
+	String syncSuccessful = "syncSuccessful";
 	String syncUsers = "syncUsers";
 	String system = "system";
 	String Task = "Task";
@@ -1716,6 +1715,7 @@ public interface Captions {
 	String User_userEmail = "User.userEmail";
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
+	String User_uuid = "User.uuid";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";

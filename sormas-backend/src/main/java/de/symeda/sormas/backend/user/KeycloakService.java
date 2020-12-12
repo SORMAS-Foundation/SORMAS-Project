@@ -140,10 +140,15 @@ public class KeycloakService {
 		User newUser = userUpdateEvent.getNewUser();
 		User oldUser = userUpdateEvent.getOldUser();
 
-		Optional<UserRepresentation> userRepresentation = updateUser(keycloak.get(), oldUser, newUser);
-		if (!userRepresentation.isPresent()) {
-			logger.debug("Cannot find user in Keycloak. Will try to create it");
-			createUser(keycloak.get(), newUser, newUser.getPassword());
+		try {
+			Optional<UserRepresentation> userRepresentation = updateUser(keycloak.get(), oldUser, newUser);
+			if (!userRepresentation.isPresent()) {
+				logger.debug("Cannot find user in Keycloak. Will try to create it");
+				createUser(keycloak.get(), newUser, newUser.getPassword());
+			}
+		} catch (Exception e) {
+			userUpdateEvent.getExceptionCallback().accept(e.getMessage());
+			logger.error(e.getMessage(), e);
 		}
 	}
 

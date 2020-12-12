@@ -34,7 +34,6 @@ import com.vaadin.v7.ui.ProgressBar;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -48,8 +47,7 @@ public class UserSyncProgressLayout extends VerticalLayout {
 	// Components
 	private final ProgressBar progressBar;
 	private final Label processedImportsLabel;
-	private final Label syncCreatedLabel;
-	private final Label syncUpdatedLabel;
+	private final Label syncSuccessLabel;
 	private final Label syncErrorsLabel;
 	private final Button closeCancelButton;
 	private final HorizontalLayout infoLayout;
@@ -65,14 +63,13 @@ public class UserSyncProgressLayout extends VerticalLayout {
 
 	// Counts
 	private int processedImportsCount;
-	private int syncCreatedCount;
-	private int syncUpdatedCount;
+	private int syncSuccessCount;
 	private int syncErrorCount;
-	private final int totalCount;
+	private final long totalCount;
 
 	private final UI currentUI;
 
-	public UserSyncProgressLayout(int totalCount, UI currentUI, Runnable cancelCallback) {
+	public UserSyncProgressLayout(long totalCount, UI currentUI, Runnable cancelCallback) {
 		this.totalCount = totalCount;
 		this.currentUI = currentUI;
 
@@ -86,7 +83,7 @@ public class UserSyncProgressLayout extends VerticalLayout {
 		initializeInfoComponents();
 		currentInfoComponent = progressCircle;
 		infoLayout.addComponent(currentInfoComponent);
-		infoLabel = new Label(String.format(I18nProperties.getString(Strings.infoImportProcess), totalCount));
+		infoLabel = new Label(String.format(I18nProperties.getString(Strings.infoUserSyncProcess), totalCount));
 		infoLabel.setContentMode(ContentMode.HTML);
 		infoLayout.addComponent(infoLabel);
 		infoLayout.setExpandRatio(infoLabel, 1);
@@ -103,16 +100,13 @@ public class UserSyncProgressLayout extends VerticalLayout {
 		HorizontalLayout progressInfoLayout = new HorizontalLayout();
 		CssStyles.style(progressInfoLayout, CssStyles.VSPACE_TOP_5);
 		progressInfoLayout.setSpacing(true);
-		processedImportsLabel = new Label(String.format(I18nProperties.getCaption(Captions.importProcessed), 0, totalCount));
+		processedImportsLabel = new Label(String.format(I18nProperties.getCaption(Captions.syncProcessed), 0, totalCount));
 		progressInfoLayout.addComponent(processedImportsLabel);
-		syncCreatedLabel = new Label(String.format(I18nProperties.getCaption(Captions.syncCreated), 0));
-		CssStyles.style(syncCreatedLabel, CssStyles.LABEL_POSITIVE);
-		progressInfoLayout.addComponent(syncCreatedLabel);
-		syncUpdatedLabel = new Label(String.format(I18nProperties.getCaption(Captions.syncUpdated), 0));
-		CssStyles.style(syncUpdatedLabel, CssStyles.LABEL_POSITIVE);
-		progressInfoLayout.addComponent(syncUpdatedLabel);
+		syncSuccessLabel = new Label(String.format(I18nProperties.getCaption(Captions.syncSuccessful), 0));
+		CssStyles.style(syncSuccessLabel, CssStyles.LABEL_POSITIVE);
+		progressInfoLayout.addComponent(syncSuccessLabel);
 		syncErrorsLabel = new Label(String.format(I18nProperties.getCaption(Captions.syncErrors), 0));
-		CssStyles.style(syncErrorsLabel, CssStyles.LABEL_MINOR);
+		CssStyles.style(syncErrorsLabel, CssStyles.LABEL_CRITICAL);
 		progressInfoLayout.addComponent(syncErrorsLabel);
 
 		addComponent(progressInfoLayout);
@@ -146,14 +140,12 @@ public class UserSyncProgressLayout extends VerticalLayout {
 	public void updateProgress(SyncResult result) {
 		currentUI.access(() -> {
 			processedImportsCount++;
-			if (result == SyncResult.CREATED) {
-				syncCreatedLabel.setValue(String.format(I18nProperties.getCaption(Captions.importImports), ++syncCreatedCount));
-			} else if (result == SyncResult.UPDATED) {
-				syncUpdatedLabel.setValue(String.format(I18nProperties.getCaption(Captions.importErrors), ++syncUpdatedCount));
+			if (result == SyncResult.SUCCESS) {
+				syncSuccessLabel.setValue(String.format(I18nProperties.getCaption(Captions.syncSuccessful), ++syncSuccessCount));
 			} else if (result == SyncResult.ERROR) {
-				syncErrorsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importSkips), ++syncErrorCount));
+				syncErrorsLabel.setValue(String.format(I18nProperties.getCaption(Captions.syncErrors), ++syncErrorCount));
 			}
-			processedImportsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importProcessed), processedImportsCount, totalCount));
+			processedImportsLabel.setValue(String.format(I18nProperties.getCaption(Captions.syncProcessed), processedImportsCount, totalCount));
 			progressBar.setValue((float) processedImportsCount / (float) totalCount);
 		});
 	}
@@ -187,8 +179,7 @@ public class UserSyncProgressLayout extends VerticalLayout {
 	}
 
 	public enum SyncResult {
-		CREATED,
-		UPDATED,
+		SUCCESS,
 		ERROR
 	}
 }
