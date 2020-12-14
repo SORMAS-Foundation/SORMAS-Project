@@ -25,7 +25,6 @@ import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -72,9 +71,11 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		}
 
 		for (Column<ContactFollowUpDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId(), column.getCaption()));
-			if (!dateColumnIds.contains(column.getId())) {
-				column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+			final String columnId = column.getId();
+			final String i18nPrefix = columnId.equals(FollowUpDto.REPORT_DATE) ? FollowUpDto.I18N_PREFIX : ContactFollowUpDto.I18N_PREFIX;
+			column.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, columnId, column.getCaption()));
+			if (!dateColumnIds.contains(columnId)) {
+				column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), columnId));
 			}
 		}
 
