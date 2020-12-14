@@ -22,6 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -111,6 +112,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
+	private ContactReferenceDto contact;
 
 	@Override
 	public CaseCriteria clone() {
@@ -559,5 +561,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setIncludeCasesFromOtherJurisdictions(Boolean includeCasesFromOtherJurisdictions) {
 		this.includeCasesFromOtherJurisdictions = includeCasesFromOtherJurisdictions;
+	}
+
+	public ContactReferenceDto getContact() {
+		return contact;
+	}
+
+	public CaseCriteria contact(ContactReferenceDto contact) {
+		this.contact = contact;
+		return this;
 	}
 }

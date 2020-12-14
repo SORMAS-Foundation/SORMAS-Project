@@ -6248,4 +6248,14 @@ ALTER TABLE events_history ADD COLUMN diseasetransmissionmode varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (306, 'Add new fields to outbreak events needed for SurvNet #4013');
 
+-- 2021-01-15 Contact Duplicates #2409
+ALTER TABLE contact ADD completeness real;
+ALTER TABLE contact_history ADD completeness real;
+
+ALTER TABLE contact ADD COLUMN duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD COLUMN duplicateof_id BIGINT;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_duplicateof_id FOREIGN KEY (duplicateof_id) REFERENCES contact(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (307, 'Add two columns completeness and duplicateOf for contact');
 -- *** Insert new sql commands BEFORE this line ***
