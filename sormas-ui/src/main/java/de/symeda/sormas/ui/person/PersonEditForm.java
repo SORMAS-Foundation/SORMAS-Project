@@ -166,7 +166,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 							fluidRowLocs(PersonDto.BIRTH_NAME, "") +
 									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-									fluidRowLocs(PersonDto.NAMES_OF_OTHER_GUARDIANS) +
+									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
 									fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
 									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
                                     fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
@@ -216,7 +216,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
 		addFields(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
-		addFields(PersonDto.NAMES_OF_OTHER_GUARDIANS);
+		addFields(PersonDto.NAMES_OF_GUARDIANS);
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
