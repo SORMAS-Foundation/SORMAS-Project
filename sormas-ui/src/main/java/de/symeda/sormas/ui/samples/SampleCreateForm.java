@@ -12,11 +12,14 @@ import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -36,6 +39,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		setPathogenTestFieldCaptions();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
@@ -45,7 +49,11 @@ public class SampleCreateForm extends AbstractSampleForm {
 		NullableOptionGroup testVerifiedField = addCustomField(PathogenTestDto.TEST_RESULT_VERIFIED, Boolean.class, NullableOptionGroup.class);
 		ComboBox testTypeField = addCustomField(PathogenTestDto.TEST_TYPE, PathogenTestType.class, ComboBox.class);
 		ComboBox testDiseaseField = addCustomField(PathogenTestDto.TESTED_DISEASE, Disease.class, ComboBox.class);
-		DateTimeField testDateField = addCustomField(PathogenTestDto.TEST_DATE_TIME, Date.class, DateTimeField.class);
+		DateTimeField testDateField = addCustomField(
+			PathogenTestDto.TEST_DATE_TIME,
+			I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME),
+			Date.class,
+			DateTimeField.class);
 		TextArea testDetailsField = addCustomField(PathogenTestDto.TEST_RESULT_TEXT, String.class, TextArea.class);
 
 		initializeRequestedTestFields();
@@ -72,6 +80,15 @@ public class SampleCreateForm extends AbstractSampleForm {
 				PathogenTestResultType.INDETERMINATE),
 			false,
 			null);
+
+		final DateTimeField sampleDateField = getField(SampleDto.SAMPLE_DATE_TIME);
+		testDateField.addValidator(
+			new DateComparisonValidator(
+				testDateField,
+				sampleDateField,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, testDateField.getCaption(), sampleDateField.getCaption())));
 
 		includeTestField.addValueChangeListener(e -> {
 			final Boolean includeTest = (Boolean) e.getProperty().getValue();
