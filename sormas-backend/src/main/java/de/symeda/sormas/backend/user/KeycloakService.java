@@ -207,7 +207,13 @@ public class KeycloakService {
 		String[] pathSegments = response.getLocation().getPath().split("/");
 		String userId = pathSegments[pathSegments.length - 1];
 
-		ensureRestRoles(keycloak, userId, user.getUserRoles(), Collections.emptySet());
+		try {
+			ensureRestRoles(keycloak, userId, user.getUserRoles(), Collections.emptySet());
+		} catch (Exception e) {
+			logger.warn("Cannot set the user roles property, will remove the user");
+			keycloak.realm(REALM_NAME).users().delete(userId);
+			throw e;
+		}
 
 		return userId;
 	}
@@ -221,11 +227,10 @@ public class KeycloakService {
 		}
 
 		UserRepresentation newUserRepresentation = userRepresentation.get();
-		updateUserRepresentation(newUserRepresentation, newUser);
-
-		keycloak.realm(REALM_NAME).users().get(newUserRepresentation.getId()).update(newUserRepresentation);
-
 		ensureRestRoles(keycloak, newUserRepresentation.getId(), newUser.getUserRoles(), oldUser.getUserRoles());
+
+		updateUserRepresentation(newUserRepresentation, newUser);
+		keycloak.realm(REALM_NAME).users().get(newUserRepresentation.getId()).update(newUserRepresentation);
 
 		return Optional.of(newUserRepresentation);
 	}
