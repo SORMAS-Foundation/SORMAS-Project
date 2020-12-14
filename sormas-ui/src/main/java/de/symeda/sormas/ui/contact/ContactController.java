@@ -547,11 +547,14 @@ public class ContactController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
+			VaadinUiUtil.showConfirmationPopup(
+				String.format(I18nProperties.getString(Strings.headingContactsCancelFollowUp)),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
@@ -580,11 +583,14 @@ public class ContactController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
+			VaadinUiUtil.showConfirmationPopup(
+				String.format(I18nProperties.getString(Strings.headingContactsLostToFollowUp)),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
