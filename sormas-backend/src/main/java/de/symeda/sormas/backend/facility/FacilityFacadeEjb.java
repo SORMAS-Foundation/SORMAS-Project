@@ -420,6 +420,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 				case Facility.LATITUDE:
 				case Facility.LONGITUDE:
 				case Facility.EXTERNAL_ID:
+				case Facility.TYPE:
 					expression = facility.get(sortProperty.propertyName);
 					break;
 				case Facility.REGION:
