@@ -629,6 +629,7 @@ public interface Strings {
 	String messageDistrictsArchivingNotPossible = "messageDistrictsArchivingNotPossible";
 	String messageDistrictsDearchived = "messageDistrictsDearchived";
 	String messageDistrictsDearchivingNotPossible = "messageDistrictsDearchivingNotPossible";
+	String messageEnterSms = "messageEnterSms";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
@@ -728,6 +729,7 @@ public interface Strings {
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
 	String messageSamplesDeleted = "messageSamplesDeleted";
+	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
 	String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
@@ -735,6 +737,7 @@ public interface Strings {
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
+	String messageSystemFollowUpCanceledByDropping = "messageSystemFollowUpCanceledByDropping";
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageTreatmentCreated = "messageTreatmentCreated";
@@ -769,6 +772,7 @@ public interface Strings {
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
 	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";
 	String notificationLabSampleShippedShortForEventParticipant = "notificationLabSampleShippedShortForEventParticipant";
+	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";

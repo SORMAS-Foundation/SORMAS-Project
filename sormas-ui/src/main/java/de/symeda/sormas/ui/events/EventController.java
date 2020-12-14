@@ -20,8 +20,9 @@ package de.symeda.sormas.ui.events;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -32,6 +33,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -43,10 +45,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantFacade;
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -55,15 +54,17 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import org.apache.commons.text.StringEscapeUtils;
 
 public class EventController {
 
@@ -493,7 +494,7 @@ public class EventController {
 								String.format(
 									I18nProperties.getString(Strings.messageCountEventsNotDeleted),
 									String.format("<b>%s</b>", countNotDeletedEvents),
-									String.format("<b>%s</b>", StringEscapeUtils.escapeHtml4(nonDeletableEvents.toString()))),
+									String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEvents.toString()))),
 								I18nProperties.getString(Strings.messageEventsNotDeletedReason)),
 							ContentMode.HTML);
 						response.setWidth(600, Sizeable.Unit.PIXELS);
@@ -569,5 +570,34 @@ public class EventController {
 					}
 				});
 		}
+	}
+
+	public VerticalLayout getEventViewTitleLayout(String uuid) {
+		EventDto event = findEvent(uuid);
+
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
+		titleLayout.setSpacing(false);
+
+		Label statusLabel = new Label(event.getEventStatus().toString());
+		statusLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponents(statusLabel);
+
+		if (event.getStartDate() != null) {
+			Label eventStartDateLabel = new Label(
+				event.getEndDate() != null
+					? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
+					: DateFormatHelper.formatDate(event.getStartDate()));
+			eventStartDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+			titleLayout.addComponent(eventStartDateLabel);
+		}
+
+		String shortUuid = DataHelper.getShortUuid(event.getUuid());
+		String eventTitle = event.getEventTitle();
+		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + shortUuid + ")" : shortUuid);
+		eventLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponent(eventLabel);
+
+		return titleLayout;
 	}
 }

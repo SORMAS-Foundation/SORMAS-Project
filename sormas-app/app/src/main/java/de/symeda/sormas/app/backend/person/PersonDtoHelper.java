@@ -28,6 +28,7 @@ import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -68,6 +69,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
+		target.setBirthName(source.getBirthName());
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 		target.setSex(source.getSex());
@@ -131,6 +135,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setAddresses(addresses);
 
 		target.setExternalId(source.getExternalId());
+		target.setBirthCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getBirthCountry()));
+		target.setCitizenship(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCitizenship()));
 	}
 
 	@Override
@@ -138,6 +144,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
+		target.setBirthName(source.getBirthName());
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 		target.setSex(source.getSex());
@@ -223,6 +232,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setAddresses(locationDtos);
 
 		target.setExternalId(source.getExternalId());
+		target.setBirthCountry(CountryDtoHelper.toReferenceDto(source.getBirthCountry()));
+		target.setCitizenship(CountryDtoHelper.toReferenceDto(source.getCitizenship()));
 	}
 
 	public static PersonReferenceDto toReferenceDto(Person ado) {

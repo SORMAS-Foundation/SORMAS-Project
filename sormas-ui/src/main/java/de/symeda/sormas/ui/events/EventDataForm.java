@@ -40,6 +40,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -76,7 +77,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
-			fluidRowLocs(EventDto.EVENT_STATUS) +
+			fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
 			fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS) +
@@ -89,6 +90,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			loc(INFORMATION_SOURCE_HEADING_LOC) +
 			fluidRowLocs(EventDto.SRC_TYPE, "") +
+			fluidRowLocs(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE, EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS) +
 			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
 			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
 
@@ -158,6 +160,15 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
+
+		addField(EventDto.RISK_LEVEL);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.RISK_LEVEL),
+			EventDto.EVENT_STATUS,
+			Collections.singletonList(EventStatus.CLUSTER),
+			true);
+
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
 		addField(EventDto.EVENT_INVESTIGATION_END_DATE, DateField.class);
@@ -193,6 +204,22 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextField srcMediaName = addField(EventDto.SRC_MEDIA_NAME, TextField.class);
 		TextArea srcMediaDetails = addField(EventDto.SRC_MEDIA_DETAILS, TextArea.class);
 		srcMediaDetails.setRows(4);
+
+		ComboBox srcInstitutionalPartnerType = addField(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE),
+			EventDto.SRC_TYPE,
+			Collections.singletonList(EventSourceType.INSTITUTIONAL_PARTNER),
+			true);
+
+		TextField srcInstitutionalPartnerTypeDetails = addField(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS),
+			EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE,
+			Collections.singletonList(InstitutionalPartnerType.OTHER),
+			true);
 
 		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
 			.setCaption(null);
@@ -267,6 +294,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			typeOfPlace,
 			surveillanceOfficerField,
 			srcType,
+			srcInstitutionalPartnerType,
+			srcInstitutionalPartnerTypeDetails,
 			srcFirstName,
 			srcLastName,
 			srcTelNo,

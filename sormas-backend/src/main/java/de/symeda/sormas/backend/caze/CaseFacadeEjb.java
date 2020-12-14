@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -120,6 +121,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.messaging.ManualMessageLogDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
@@ -173,10 +176,10 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.common.MessageSubject;
-import de.symeda.sormas.backend.common.MessageType;
-import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
+import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
+import de.symeda.sormas.backend.common.messaging.MessageSubject;
+import de.symeda.sormas.backend.common.messaging.MessagingService;
+import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -214,6 +217,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -363,6 +367,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
+	@EJB
+	private ManualMessageLogService manualMessageLogService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -531,7 +537,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getEpiData().get(EpiData.ID), joins.getSymptoms().get(Symptoms.ID), joins.getHospitalization().get(Hospitalization.ID),
 				joins.getDistrict().get(District.ID), joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_DETAILS),
-				joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME), joins.getPerson().get(Person.SEX),
+				joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
+				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE), joins.getPerson().get(Person.BIRTHDATE_DD),
 				joins.getPerson().get(Person.BIRTHDATE_MM), joins.getPerson().get(Person.BIRTHDATE_YYYY),
@@ -573,7 +580,12 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
-				caseRoot.get(Case.EXTERNAL_ID)
+				caseRoot.get(Case.EXTERNAL_ID),
+				joins.getPerson().get(Person.BIRTH_NAME),
+				joins.getPersonBirthCountry().get(Country.ISO_CODE),
+				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
+				joins.getPersonCitizenship().get(Country.ISO_CODE),
+				joins.getPersonCitizenship().get(Country.DEFAULT_NAME)
 				);
 		//@formatter:on
 
@@ -1266,6 +1278,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Symptoms> symptoms2 = root2.join(Case.SYMPTOMS, JoinType.LEFT);
 
 		cq.distinct(true);
+
+		// similarity:
+		// * first & last name concatenated with whitespace. Similarity function with default threshold of 0.65D
+		// uses postgres pg_trgm: https://www.postgresql.org/docs/9.6/pgtrgm.html
+		// * same disease
+		// * same region (optional)
+		// * report date within 30 days of each other
+		// * same sex or same birth date (when defined)
+		// * same birth date (when fully defined)
+		// * onset date within 30 days of each other (when defined)
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root);
 		Predicate criteriaFilter = criteria != null ? caseService.createCriteriaFilter(criteria, cb, cq, root, joins) : null;
@@ -2123,6 +2145,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
 		target.setInfectionSetting(source.getInfectionSetting());
 
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
 		return target;
 	}
 
@@ -2367,6 +2393,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setNosocomialOutbreak(source.isNosocomialOutbreak());
 		target.setInfectionSetting(source.getInfectionSetting());
+
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
@@ -3084,6 +3114,54 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = caseService.getByUuid(caseUuid);
 
 		return caseService.isCaseEditAllowed(caze);
+	}
+
+	@Override
+	public void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes) {
+		caseUuids.forEach(uuid -> {
+			final Case aCase = caseService.getByUuid(uuid);
+			final Person person = aCase.getPerson();
+
+			try {
+				messagingService.sendMessage(person, subject, messageContent, messageTypes);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String.format(
+						"NotificationDeliveryFailedException when trying to notify person about: %s" + "Failed to send " + e.getMessageType()
+							+ " to person with UUID %s.",
+						subject,
+						person.getUuid()));
+			}
+		});
+	}
+
+	@Override
+	public long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType) {
+
+		final AtomicLong totalCount = new AtomicLong();
+
+		IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, e -> totalCount.addAndGet(caseService.count((cb, root) -> {
+			final Join<Case, Person> personJoin = root.join(Case.PERSON, JoinType.LEFT);
+			final String messageTypeColumn = messageType == MessageType.EMAIL ? Person.EMAIL_ADDRESS : Person.PHONE;
+			return cb.and(
+				root.get(Case.UUID).in(caseUuids),
+				cb.or(cb.isNull(personJoin.get(messageTypeColumn)), cb.equal(personJoin.get(messageTypeColumn), StringUtils.EMPTY)));
+		})));
+
+		return totalCount.get();
+	}
+
+	@Override
+	public List<ManualMessageLogDto> getMessageLog(String personUuid, MessageType messageType) {
+		return manualMessageLogService.getByPersonUuid(personUuid, messageType)
+			.stream()
+			.map(
+				mml -> new ManualMessageLogDto(
+					mml.getMessageType(),
+					mml.getSentDate(),
+					mml.getSendingUser().toReference(),
+					mml.getRecipientPerson().toReference()))
+			.collect(Collectors.toList());
 	}
 
 	@LocalBean

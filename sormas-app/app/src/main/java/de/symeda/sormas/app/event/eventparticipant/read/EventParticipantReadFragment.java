@@ -89,6 +89,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
+		PersonReadFragment.initCountryTranslations(contentBinding.eventParticipantPersonLayout, record.getPerson());
 	}
 
 	@Override

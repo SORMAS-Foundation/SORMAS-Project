@@ -26,13 +26,16 @@ import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EnumHelper;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -60,6 +63,8 @@ public class ContactExportDto implements Serializable {
 	private String firstName;
 	@PersonalData
 	private String lastName;
+	@SensitiveData
+	private String salutation;
 	private Sex sex;
 	private BirthDateDto birthdate;
 	private String approximateAge;
@@ -143,9 +148,16 @@ public class ContactExportDto implements Serializable {
 	private String latestEventTitle;
 	private String externalID;
 
+	@PersonalData
+	@SensitiveData
+	private String birthName;
+	private String birthCountry;
+	private String citizenship;
+
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
-							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
+							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName,
+							Salutation salutation, String otherSalutation, Sex sex,
 							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactIdentificationSource contactIdentificationSource,
 							String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, ContactProximity contactProximity,
@@ -158,7 +170,8 @@ public class ContactExportDto implements Serializable {
 							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, String externalID,							
+							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, String externalID,
+							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
@@ -175,6 +188,7 @@ public class ContactExportDto implements Serializable {
 		this.lastContactDate = lastContactDate;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.salutation = EnumHelper.toString(salutation, otherSalutation, Salutation.OTHER);
 		this.sex = sex;
 		this.birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
@@ -222,6 +236,9 @@ public class ContactExportDto implements Serializable {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
 		this.externalID = externalID;
+		this.birthName = birthName;
+		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
+		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -301,36 +318,42 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(12)
+	@HideForCountriesExcept
+	public String getSalutation() {
+		return salutation;
+	}
+
+	@Order(13)
 	public Sex getSex() {
 		return sex;
 	}
 
-	@Order(13)
+	@Order(14)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
 	}
 
-	@Order(14)
+	@Order(15)
 	public String getApproximateAge() {
 		return approximateAge;
 	}
 
-	@Order(15)
+	@Order(16)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@Order(16)
+	@Order(17)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(17)
+	@Order(18)
 	public String getDistrict() {
 		return district;
 	}
 
-	@Order(18)
+	@Order(19)
 	public String getCommunity() {
 		return community;
 	}
@@ -619,6 +642,24 @@ public class ContactExportDto implements Serializable {
 	@Order(73)
 	public long getEventCount() {
 		return this.eventCount;
+	}
+
+	@Order(80)
+	@HideForCountriesExcept
+	public String getBirthName() {
+		return birthName;
+	}
+
+	@Order(81)
+	@HideForCountriesExcept
+	public String getBirthCountry() {
+		return birthCountry;
+	}
+
+	@Order(82)
+	@HideForCountriesExcept
+	public String getCitizenship() {
+		return citizenship;
 	}
 
 	public void setEventCount(Long eventCount) {

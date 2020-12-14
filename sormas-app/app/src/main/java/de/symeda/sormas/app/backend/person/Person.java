@@ -42,11 +42,13 @@ import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
@@ -74,6 +76,12 @@ public class Person extends PseudonymizableAdo {
 	private String firstName;
 	@Column(nullable = false)
 	private String lastName;
+	@Enumerated(EnumType.STRING)
+	private Salutation salutation;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String otherSalutation;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String birthName;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String nickname;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -174,6 +182,11 @@ public class Person extends PseudonymizableAdo {
 	@Column
 	private String externalId;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Country birthCountry;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Country citizenship;
+
 	public Person() {
 	}
 
@@ -193,6 +206,30 @@ public class Person extends PseudonymizableAdo {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public Salutation getSalutation() {
+		return salutation;
+	}
+
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	public String getOtherSalutation() {
+		return otherSalutation;
+	}
+
+	public void setOtherSalutation(String otherSalutation) {
+		this.otherSalutation = otherSalutation;
+	}
+
+	public String getBirthName() {
+		return birthName;
+	}
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
 	}
 
 	public String getNickname() {
@@ -561,4 +598,19 @@ public class Person extends PseudonymizableAdo {
 		this.externalId = externalId;
 	}
 
+	public Country getBirthCountry() {
+		return birthCountry;
+	}
+
+	public void setBirthCountry(Country birthCountry) {
+		this.birthCountry = birthCountry;
+	}
+
+	public Country getCitizenship() {
+		return citizenship;
+	}
+
+	public void setCitizenship(Country citizenship) {
+		this.citizenship = citizenship;
+	}
 }

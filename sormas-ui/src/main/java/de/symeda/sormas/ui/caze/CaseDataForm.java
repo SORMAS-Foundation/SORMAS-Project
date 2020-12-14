@@ -109,6 +109,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
@@ -168,6 +169,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
+					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_POSSIBLE, 8, CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
@@ -531,6 +533,30 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
+
+		addField(CaseDataDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		DateField prohibitionToWorkFrom = addField(CaseDataDto.PROHIBITION_TO_WORK_FROM, DateField.class);
+		DateField prohibitionToWorkUntil = addDateField(CaseDataDto.PROHIBITION_TO_WORK_UNTIL, DateField.class, -1);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(CaseDataDto.PROHIBITION_TO_WORK_FROM, CaseDataDto.PROHIBITION_TO_WORK_UNTIL),
+			CaseDataDto.PROHIBITION_TO_WORK,
+			YesNoUnknown.YES,
+			true);
+		prohibitionToWorkFrom.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkFrom,
+				prohibitionToWorkUntil,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, prohibitionToWorkFrom.getCaption(), prohibitionToWorkUntil.getCaption())));
+		prohibitionToWorkUntil.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkUntil,
+				prohibitionToWorkFrom,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
 		tfReportLat.setConverter(new StringToAngularLocationConverter());
@@ -1246,6 +1272,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getContent().removeComponent(epidNumberWarningLabel);
 			assignNewEpidNumberButton.setVisible(
 				!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+					&& !isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)
 					&& !CaseLogic.isEpidNumberPrefix(fieldValue)
 					&& !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}

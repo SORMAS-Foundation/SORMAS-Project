@@ -49,9 +49,11 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.EnumHelper;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -123,6 +125,8 @@ public class CaseExportDto implements Serializable {
 	@PersonalData
 	@SensitiveData
 	private String lastName;
+	@SensitiveData
+	private String salutation;
 	private Sex sex;
 	private YesNoUnknown pregnant;
 	private String approximateAge;
@@ -244,10 +248,16 @@ public class CaseExportDto implements Serializable {
 	private EventStatus latestEventStatus;
 	private String externalID;
 
+	@PersonalData
+	@SensitiveData
+	private String birthName;
+	private String birthCountry;
+	private String citizenship;
+
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
-						 Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex, YesNoUnknown pregnant,
+						 Disease disease, String diseaseDetails, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
 						 Integer birthdateYYYY, Date reportDate, String reportingUserUuid, String regionUuid, String region,
 						 String districtUuid, String district, String communityUuid, String community,
@@ -270,7 +280,8 @@ public class CaseExportDto implements Serializable {
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
 						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
-						 long eventCount, String externalID) {
+						 long eventCount, String externalID,
+						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName) {
 		//@formatter:on
 
 		this.id = id;
@@ -288,6 +299,7 @@ public class CaseExportDto implements Serializable {
 		this.disease = disease;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.salutation = EnumHelper.toString(salutation, otherSalutation, Salutation.OTHER);
 		this.sex = sex;
 		this.pregnant = pregnant;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
@@ -336,7 +348,6 @@ public class CaseExportDto implements Serializable {
 		this.emailAddress = emailAddress;
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
-		this.armedForcesRelationType = armedForcesRelationType;
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 //		this.onsetDate = onsetDate;
 		this.vaccination = vaccination;
@@ -349,6 +360,9 @@ public class CaseExportDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.eventCount = eventCount;
 		this.externalID = externalID;
+		this.birthName = birthName;
+		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
+		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -469,13 +483,24 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(PersonDto.SALUTATION)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountriesExcept
+	public String getSalutation() {
+		return salutation;
+	}
+
+	@Order(13)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(PersonDto.SEX)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public Sex getSex() {
 		return sex;
 	}
 
-	@Order(13)
+	@Order(14)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -485,7 +510,7 @@ public class CaseExportDto implements Serializable {
 		return pregnant;
 	}
 
-	@Order(14)
+	@Order(15)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -495,7 +520,7 @@ public class CaseExportDto implements Serializable {
 		return trimester;
 	}
 
-	@Order(15)
+	@Order(16)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -505,7 +530,7 @@ public class CaseExportDto implements Serializable {
 		return postpartum;
 	}
 
-	@Order(16)
+	@Order(17)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -515,7 +540,7 @@ public class CaseExportDto implements Serializable {
 		return approximateAge;
 	}
 
-	@Order(17)
+	@Order(18)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -525,7 +550,7 @@ public class CaseExportDto implements Serializable {
 		return ageGroup;
 	}
 
-	@Order(18)
+	@Order(19)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1374,6 +1399,39 @@ public class CaseExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.EVENT)
 	public String getLatestEventTitle() {
 		return latestEventTitle;
+	}
+
+	@Order(150)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(PersonDto.BIRTH_NAME)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountriesExcept
+	public String getBirthName() {
+		return birthName;
+	}
+
+	@Order(151)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(PersonDto.BIRTH_COUNTRY)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountriesExcept
+	public String getBirthCountry() {
+		return birthCountry;
+	}
+
+	@Order(152)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(PersonDto.CITIZENSHIP)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountriesExcept
+	public String getCitizenship() {
+		return citizenship;
 	}
 
 	public void setCountry(String country) {
