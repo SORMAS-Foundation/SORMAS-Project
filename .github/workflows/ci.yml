@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: Build (Java ${{ env.java }})
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
