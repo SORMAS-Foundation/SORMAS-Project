@@ -729,6 +729,7 @@ public interface Strings {
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
 	String messageSamplesDeleted = "messageSamplesDeleted";
+	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
 	String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
