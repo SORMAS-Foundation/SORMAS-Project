@@ -111,14 +111,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getActiveFacilitiesByType(FacilityType type, boolean includeOtherFacility, boolean includeNoneFacility) {
-		return facilityService.getActiveFacilitiesByType(type, includeOtherFacility, includeNoneFacility)
-			.stream()
-			.map(FacilityFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
-	}
-
-	@Override
 	public List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto communityRef, boolean includeOtherFacility) {
 		Community community = communityService.getByUuid(communityRef.getUuid());
 		List<Facility> facilities =

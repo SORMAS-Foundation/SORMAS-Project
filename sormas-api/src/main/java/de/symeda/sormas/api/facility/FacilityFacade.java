@@ -48,8 +48,6 @@ public interface FacilityFacade {
 		boolean includeOtherFacility,
 		boolean includeNoneFacility);
 
-	List<FacilityReferenceDto> getActiveFacilitiesByType(FacilityType type, boolean includeOtherFacility, boolean includeNoneFacility);
-
 	List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto community, boolean includeOtherFacility);
 
 	List<FacilityReferenceDto> getActiveHospitalsByDistrict(DistrictReferenceDto district, boolean includeOtherFacility);

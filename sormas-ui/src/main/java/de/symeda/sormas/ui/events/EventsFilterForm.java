@@ -33,8 +33,10 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -143,61 +145,82 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT), EVENT_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION), ACTION_WEEK_AND_DATE_FILTER);
 
-		ComboBox facilityTypeGroup = new ComboBox();
-		facilityTypeGroup.setId(FACILITY_TYPE_GROUP_FILTER);
-		facilityTypeGroup.setInputPrompt(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE_GROUP));
-		facilityTypeGroup.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE, CssStyles.OPTIONGROUP_GRID_LAYOUT);
-		facilityTypeGroup.setWidth(140, Unit.PIXELS);
-		facilityTypeGroup.addItems((Object[]) FacilityTypeGroup.values());
-		facilityTypeGroup.setVisible(false);
-		moreFiltersContainer.addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_FILTER);
+		ComboBox facilityTypeGroupField = new ComboBox();
+		facilityTypeGroupField.setId(FACILITY_TYPE_GROUP_FILTER);
+		facilityTypeGroupField.setInputPrompt(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE_GROUP));
+		facilityTypeGroupField
+			.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE, CssStyles.OPTIONGROUP_GRID_LAYOUT);
+		facilityTypeGroupField.setWidth(140, Unit.PIXELS);
+		facilityTypeGroupField.addItems((Object[]) FacilityTypeGroup.values());
+		facilityTypeGroupField.setVisible(false);
+		moreFiltersContainer.addComponent(facilityTypeGroupField, FACILITY_TYPE_GROUP_FILTER);
 
-		ComboBox facilityType = addField(
+		ComboBox facilityTypeField = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(
 				LocationDto.FACILITY_TYPE,
 				I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.FACILITY_TYPE),
 				140));
-		facilityType.setVisible(false);
+		facilityTypeField.setVisible(false);
 
-		ComboBox facility = addField(
+		ComboBox facilityField = addField(
 			moreFiltersContainer,
 			FieldConfiguration
 				.withCaptionAndPixelSized(LocationDto.FACILITY, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.FACILITY), 140));
-		facility.setEnabled(false);
-		facility.setVisible(false);
+		facilityField.setEnabled(false);
+		facilityField.setVisible(false);
 
-		getField(EventDto.TYPE_OF_PLACE).addValueChangeListener(e -> {
-			boolean visible = e.getProperty().getValue() == TypeOfPlace.FACILITY;
+		ComboBox typeOfPlaceField = getField(EventDto.TYPE_OF_PLACE);
+
+		Arrays.asList(districtField, communityField, typeOfPlaceField).forEach(field -> field.addValueChangeListener(e -> {
+			final UserDto user = UserProvider.getCurrent().getUser();
+			final CommunityReferenceDto community =
+				user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
+			final DistrictReferenceDto district = user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
+			boolean visible = (community != null || district != null) && typeOfPlaceField.getValue() == TypeOfPlace.FACILITY;
 			if (!visible) {
-				facility.clear();
-				facilityType.clear();
-				facilityTypeGroup.clear();
+				facilityField.clear();
+				facilityTypeField.clear();
+				facilityTypeGroupField.clear();
 			}
-			facility.setVisible(visible);
-			facilityType.setVisible(visible);
-			facilityTypeGroup.setVisible(visible);
+			facilityField.setVisible(visible);
+			facilityTypeField.setVisible(visible);
+			facilityTypeGroupField.setVisible(visible);
+		}));
+
+		facilityTypeGroupField.addValueChangeListener(e -> {
+			FieldHelper.updateEnumData(
+				facilityTypeField,
+				facilityTypeGroupField.getValue() != null
+					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroupField.getValue())
+					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
 		});
 
-		facilityTypeGroup.addValueChangeListener(
-			e -> FieldHelper.updateEnumData(
-				facilityType,
-				facilityTypeGroup.getValue() != null
-					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue())
-					: Arrays.stream(FacilityType.values()).collect(Collectors.toList())));
+		facilityTypeField.addValueChangeListener(e -> {
+			if (facilityTypeField.getValue() != null) {
+				final UserDto user = UserProvider.getCurrent().getUser();
+				final CommunityReferenceDto community =
+					user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
+				final FacilityType facilityType = (FacilityType) facilityTypeField.getValue();
 
-		facilityType.addValueChangeListener(e -> {
-			if (facilityType.getValue() != null) {
-				if (facilityTypeGroup.getValue() == null) {
-					facilityTypeGroup.setValue(((FacilityType) facilityType.getValue()).getFacilityTypeGroup());
+				facilityField.setEnabled(true);
+				if (community != null) {
+					FieldHelper.updateItems(
+						facilityField,
+						FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false));
+				} else {
+					FieldHelper.updateItems(
+						facilityField,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(
+								user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue(),
+								facilityType,
+								true,
+								false));
 				}
-				facility.setEnabled(true);
-				FieldHelper.updateItems(
-					facility,
-					FacadeProvider.getFacilityFacade().getActiveFacilitiesByType((FacilityType) facilityType.getValue(), true, false));
 			} else {
-				facility.removeAllItems();
-				facility.setEnabled(false);
+				facilityField.removeAllItems();
+				facilityField.setEnabled(false);
 			}
 		});
 	}
