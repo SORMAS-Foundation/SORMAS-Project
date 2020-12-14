@@ -391,9 +391,13 @@ public class ExternalJournalService {
 				.stream()
 				.map(PatientDiaryPersonData::getIdatId)
 				.map(PatientDiaryIdatId::getIdat)
-				.map(PatientDiaryPersonDto::getLastName)
-				.anyMatch(lastName -> person.getLastName().equals(lastName));
+				.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
 		return notUsed || samePerson || sameFamily;
+	}
+
+	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
+		return patientDiaryPerson.getLastName().equals(person.getLastName()) &&
+				!patientDiaryPerson.getFirstName().equals(person.getFirstName());
 	}
 
 	private boolean isPhoneAvailable(PersonDto person, String phone) {
