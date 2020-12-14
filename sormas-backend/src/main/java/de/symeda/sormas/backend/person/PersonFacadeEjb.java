@@ -94,6 +94,8 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -138,6 +140,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private UserService userService;
 	@EJB
 	private ExternalJournalService externalJournalService;
+	@EJB
+	private CountryService countryService;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -610,6 +614,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
 		target.setSex(source.getSex());
 
 		target.setPresentCondition(source.getPresentCondition());
@@ -629,6 +635,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setBurialPlaceDescription(source.getBurialPlaceDescription());
 		target.setBurialConductor(source.getBurialConductor());
 
+		target.setBirthName(source.getBirthName());
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 
@@ -674,6 +681,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 		target.setExternalId(source.getExternalId());
+
+		target.setBirthCountry(countryService.getByReferenceDto(source.getBirthCountry()));
+		target.setCitizenship(countryService.getByReferenceDto(source.getCitizenship()));
 
 		return target;
 	}
@@ -759,6 +769,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setSalutation(source.getSalutation());
+		target.setOtherSalutation(source.getOtherSalutation());
 		target.setSex(source.getSex());
 
 		target.setPresentCondition(source.getPresentCondition());
@@ -793,6 +805,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setBurialPlaceDescription(source.getBurialPlaceDescription());
 		target.setBurialConductor(source.getBurialConductor());
 
+		target.setBirthName(source.getBirthName());
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 
@@ -834,6 +847,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 		target.setExternalId(source.getExternalId());
+
+		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
+		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
 
 		return target;
 	}

@@ -140,6 +140,7 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -442,6 +443,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.LAST_CONTACT_DATE),
 					joins.getPerson().get(Person.FIRST_NAME),
 					joins.getPerson().get(Person.LAST_NAME),
+					joins.getPerson().get(Person.SALUTATION),
+					joins.getPerson().get(Person.OTHER_SALUTATION),
 					joins.getPerson().get(Person.SEX),
 					joins.getPerson().get(Person.BIRTHDATE_DD),
 					joins.getPerson().get(Person.BIRTHDATE_MM),
@@ -495,7 +498,12 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.ID),
 					joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 					contact.get(Contact.RETURNING_TRAVELER),
-					contact.get(Contact.EXTERNAL_ID)),
+					contact.get(Contact.EXTERNAL_ID),
+					joins.getPerson().get(Person.BIRTH_NAME),
+					joins.getPersonBirthCountry().get(Country.ISO_CODE),
+					joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
+					joins.getPersonCitizenship().get(Country.ISO_CODE),
+					joins.getPersonCitizenship().get(Country.DEFAULT_NAME)),
 				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
 		cq.distinct(true);

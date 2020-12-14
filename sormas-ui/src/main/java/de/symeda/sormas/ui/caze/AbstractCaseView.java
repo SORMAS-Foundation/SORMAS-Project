@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
@@ -104,7 +103,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
 
 		if (!findReferenceByParams(params)) {
 			return;
@@ -198,7 +197,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 
-		replaceViewHeader(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));
+		setMainHeaderComponent(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));
 	}
 
 	@Override

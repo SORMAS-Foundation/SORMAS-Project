@@ -217,6 +217,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -536,7 +537,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getEpiData().get(EpiData.ID), joins.getSymptoms().get(Symptoms.ID), joins.getHospitalization().get(Hospitalization.ID),
 				joins.getDistrict().get(District.ID), joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_DETAILS),
-				joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME), joins.getPerson().get(Person.SEX),
+				joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
+				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE), joins.getPerson().get(Person.BIRTHDATE_DD),
 				joins.getPerson().get(Person.BIRTHDATE_MM), joins.getPerson().get(Person.BIRTHDATE_YYYY),
@@ -578,7 +580,12 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
-				caseRoot.get(Case.EXTERNAL_ID)
+				caseRoot.get(Case.EXTERNAL_ID),
+				joins.getPerson().get(Person.BIRTH_NAME),
+				joins.getPersonBirthCountry().get(Country.ISO_CODE),
+				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
+				joins.getPersonCitizenship().get(Country.ISO_CODE),
+				joins.getPersonCitizenship().get(Country.DEFAULT_NAME)
 				);
 		//@formatter:on
 

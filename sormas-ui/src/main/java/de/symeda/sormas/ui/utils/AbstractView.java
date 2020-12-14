@@ -29,7 +29,6 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -49,6 +48,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 	protected final String viewName;
 	private final HorizontalLayout viewHeader;
+	private final VerticalLayout viewTitleLayout;
 	private final Label viewTitleLabel;
 	private final Label viewSubTitleLabel;
 
@@ -68,7 +68,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		viewHeader.setSpacing(true);
 		CssStyles.style(viewHeader, "view-header");
 
-		VerticalLayout viewTitleLayout = new VerticalLayout();
+		viewTitleLayout = new VerticalLayout();
 		{
 			viewTitleLayout.setSizeUndefined();
 			viewTitleLayout.setSpacing(false);
@@ -98,6 +98,12 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		viewHeader.setComponentAlignment(c, Alignment.MIDDLE_RIGHT);
 	}
 
+	protected void setMainHeaderComponent(Component c) {
+		viewHeader.removeComponent(viewTitleLayout);
+		viewHeader.addComponent(c, 0);
+		viewHeader.setExpandRatio(c, 1);
+	}
+
 	@Override
 	public void addComponent(Component c) {
 		super.addComponent(c);
@@ -114,12 +120,6 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 	public Label getViewSubTitleLabel() {
 		return viewSubTitleLabel;
-	}
-
-	public void replaceViewHeader(AbstractLayout headerLayout) {
-		this.viewHeader.removeAllComponents();
-		this.viewHeader.addComponent(headerLayout);
-		this.viewHeader.setExpandRatio(headerLayout, 1);
 	}
 
 	public boolean navigateTo(BaseCriteria criteria) {

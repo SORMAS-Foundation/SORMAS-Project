@@ -761,6 +761,8 @@ public interface Captions {
 	String epiWeekFrom = "epiWeekFrom";
 	String epiWeekTo = "epiWeekTo";
 	String Event = "Event";
+	String Event_caseCount = "Event.caseCount";
+	String Event_deathCount = "Event.deathCount";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
 	String Event_endDate = "Event.endDate";
@@ -907,6 +909,7 @@ public interface Captions {
 	String Exposure_meansOfTransportDetails = "Exposure.meansOfTransportDetails";
 	String Exposure_otherProtectiveMeasures = "Exposure.otherProtectiveMeasures";
 	String Exposure_outdoors = "Exposure.outdoors";
+	String Exposure_patientExpositionRole = "Exposure.patientExpositionRole";
 	String Exposure_percutaneous = "Exposure.percutaneous";
 	String Exposure_physicalContactDuringPreparation = "Exposure.physicalContactDuringPreparation";
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
@@ -1152,10 +1155,12 @@ public interface Captions {
 	String Person_approximateAgeReferenceDate = "Person.approximateAgeReferenceDate";
 	String Person_approximateAgeType = "Person.approximateAgeType";
 	String Person_armedForcesRelationType = "Person.armedForcesRelationType";
+	String Person_birthCountry = "Person.birthCountry";
 	String Person_birthdate = "Person.birthdate";
 	String Person_birthdateDD = "Person.birthdateDD";
 	String Person_birthdateMM = "Person.birthdateMM";
 	String Person_birthdateYYYY = "Person.birthdateYYYY";
+	String Person_birthName = "Person.birthName";
 	String Person_birthWeight = "Person.birthWeight";
 	String Person_burialConductor = "Person.burialConductor";
 	String Person_burialDate = "Person.burialDate";
@@ -1165,6 +1170,7 @@ public interface Captions {
 	String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	String Person_causeOfDeathDisease = "Person.causeOfDeathDisease";
 	String Person_causeOfDeathDiseaseDetails = "Person.causeOfDeathDiseaseDetails";
+	String Person_citizenship = "Person.citizenship";
 	String Person_covidCodeDelivered = "Person.covidCodeDelivered";
 	String Person_deathDate = "Person.deathDate";
 	String Person_deathPlaceDescription = "Person.deathPlaceDescription";
@@ -1195,6 +1201,7 @@ public interface Captions {
 	String Person_occupationRegion = "Person.occupationRegion";
 	String Person_occupationType = "Person.occupationType";
 	String Person_other_occupationDetails = "Person.other.occupationDetails";
+	String Person_otherSalutation = "Person.otherSalutation";
 	String Person_passportNumber = "Person.passportNumber";
 	String Person_phone = "Person.phone";
 	String Person_phoneOwner = "Person.phoneOwner";
@@ -1205,6 +1212,7 @@ public interface Captions {
 	String Person_placeOfBirthFacilityType = "Person.placeOfBirthFacilityType";
 	String Person_placeOfBirthRegion = "Person.placeOfBirthRegion";
 	String Person_presentCondition = "Person.presentCondition";
+	String Person_salutation = "Person.salutation";
 	String Person_sex = "Person.sex";
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
