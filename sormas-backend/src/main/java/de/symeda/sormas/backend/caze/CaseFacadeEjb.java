@@ -131,6 +131,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -225,6 +226,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sample.AdditionalTest;
+import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestService;
@@ -369,6 +372,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
+	@EJB
+	private AdditionalTestFacadeEjbLocal additionalTestFacade;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -2839,7 +2844,12 @@ public class CaseFacadeEjb implements CaseFacade {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
 					fillDto(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
 					sampleTestFacade.savePathogenTest(newPathogenTest);
+				}
 
+				for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
+					AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
+					fillDto(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
+					additionalTestFacade.saveAdditionalTest(newAdditionalTest);
 				}
 			} else {
 				// simply move existing entities to the merge target
