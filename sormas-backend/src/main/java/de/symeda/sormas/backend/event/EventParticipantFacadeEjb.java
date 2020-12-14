@@ -54,10 +54,12 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.labmessage.EventParticipantSimilarityCriteria;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -483,6 +485,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		return eventParticipantResultList;
+	}
+
+	@Override
+	public List<SimilarEventParticipantDto> getSimilarEventParticipants(EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria) {
 	}
 
 	@Override

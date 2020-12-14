@@ -399,6 +399,7 @@ public interface Captions {
 	String caseReferToFacility = "caseReferToFacility";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
+	String caseSelect = "caseSelect";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
 	String city = "city";
@@ -863,6 +864,7 @@ public interface Captions {
 	String EventParticipantExport_eventTypeOfPlace = "EventParticipantExport.eventTypeOfPlace";
 	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
 	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
+	String eventParticipantSelect = "eventParticipantSelect";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
 	String eventSelect = "eventSelect";

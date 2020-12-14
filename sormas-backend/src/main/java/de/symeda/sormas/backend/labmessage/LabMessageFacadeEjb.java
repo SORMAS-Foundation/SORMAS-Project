@@ -206,6 +206,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return labMessages;
 	}
 
+	@Override
+	public void fetchExternalLabMessages(boolean onlyNew) {
+
+	}
+
 	@LocalBean
 	@Stateless
 	public static class LabMessageFacadeEjbLocal extends LabMessageFacadeEjb {

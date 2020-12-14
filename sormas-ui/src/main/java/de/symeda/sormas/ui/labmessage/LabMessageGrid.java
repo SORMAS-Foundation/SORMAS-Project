@@ -56,7 +56,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		addShowColumn(e -> ControllerProvider.getLabMessageController().show(e.getUuid()));
 
 		addComponentColumn(indexDto -> ButtonHelper.createButton(Captions.labMessageProcess, e -> {
-			ControllerProvider.getLabMessageController().show(indexDto.getUuid());
+			ControllerProvider.getLabMessageController().process(indexDto.getUuid());
 		}, ValoTheme.BUTTON_PRIMARY)).setId(COLUMN_PROCESS);
 
 		setColumns(

@@ -9,11 +9,13 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface LabMessageFacade {
 
-    void save(LabMessageDto dto);
+	void save(LabMessageDto dto);
 
 	LabMessageDto getByUuid(String uuid);
 
 	long count(LabMessageCriteria criteria);
 
 	List<LabMessageIndexDto> getIndexList(LabMessageCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	void fetchExternalLabMessages(boolean onlyNew);
 }
