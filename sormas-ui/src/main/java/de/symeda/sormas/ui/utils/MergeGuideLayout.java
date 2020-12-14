@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.utils;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
@@ -7,7 +7,6 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.utils.CssStyles;
 
 public class MergeGuideLayout extends VerticalLayout {
 

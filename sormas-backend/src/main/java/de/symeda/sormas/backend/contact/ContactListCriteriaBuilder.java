@@ -28,6 +28,8 @@ import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -77,7 +79,7 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+	public List<Selection<?>> getContactIndexMergeSelections(Root<Contact> contact, ContactJoins joins) {
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
@@ -113,9 +115,18 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseCommunity().get(Community.UUID),
 			joins.getCaseHealthFacility().get(Facility.UUID),
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
-			contact.get(Contact.CHANGE_DATE),
-			contact.get(Contact.EXTERNAL_ID),
-			contact.get(Contact.EXTERNAL_TOKEN));
+			contact.get(Contact.EXTERNAL_TOKEN),
+			contact.get(AbstractDomainObject.ID),
+			contact.get(AbstractDomainObject.CREATION_DATE),
+			contact.get(Contact.COMPLETENESS));
+	}
+
+	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+
+		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexMergeSelections(contact, joins));
+		indexSelection.addAll(Arrays.asList(contact.get(Contact.CHANGE_DATE), contact.get(Contact.EXTERNAL_ID)));
+
+		return indexSelection;
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
@@ -152,6 +163,9 @@ public class ContactListCriteriaBuilder {
 		case ContactJurisdictionDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
 			break;
+		case ContactIndexDto.ID:
+		case ContactIndexDto.CREATION_DATE:
+		case ContactIndexDto.COMPLETENESS:
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
 		}

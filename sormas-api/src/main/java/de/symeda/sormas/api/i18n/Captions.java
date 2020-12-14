@@ -459,6 +459,7 @@ public interface Captions {
 	String Contact_climedoAccount = "Contact.climedoAccount";
 	String Contact_community = "Contact.community";
 	String Contact_communityUuid = "Contact.communityUuid";
+	String Contact_completeness = "Contact.completeness";
 	String Contact_contactCategory = "Contact.contactCategory";
 	String Contact_contactClassification = "Contact.contactClassification";
 	String Contact_contactIdentificationSource = "Contact.contactIdentificationSource";
@@ -535,6 +536,7 @@ public interface Captions {
 	String contactActiveContacts = "contactActiveContacts";
 	String contactAllContacts = "contactAllContacts";
 	String contactArchivedContacts = "contactArchivedContacts";
+	String contactBackToDirectory = "contactBackToDirectory";
 	String contactCancelFollowUp = "contactCancelFollowUp";
 	String contactCaseContacts = "contactCaseContacts";
 	String contactChangeCase = "contactChangeCase";
@@ -1865,6 +1867,7 @@ public interface Captions {
 	String View_contacts_archive = "View.contacts.archive";
 	String View_contacts_data = "View.contacts.data";
 	String View_contacts_epidata = "View.contacts.epidata";
+	String View_contacts_merge = "View.contacts.merge";
 	String View_contacts_person = "View.contacts.person";
 	String View_contacts_sub = "View.contacts.sub";
 	String View_contacts_visits = "View.contacts.visits";

@@ -1,19 +1,18 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.contact;
 
 import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -23,38 +22,38 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.MergeGuideLayout;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-@SuppressWarnings("serial")
-public class MergeCasesView extends AbstractView {
+public class MergeContactsView extends AbstractView {
 
-	public static final String VIEW_NAME = CasesView.VIEW_NAME + "/merge";
+	public static final String VIEW_NAME = ContactsView.VIEW_NAME + "/merge";
 
-	private CaseCriteria criteria;
+	private ContactCriteria criteria;
 
-	private MergeCasesGrid grid;
-	private MergeCasesFilterComponent filterComponent;
+	private MergeContactsGrid grid;
+	private MergeContactsFilterComponent filterComponent;
 
-	public MergeCasesView() {
+	public MergeContactsView() {
 		super(VIEW_NAME);
 
-		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
+		boolean criteriaUninitialized = !ViewModelProviders.of(MergeContactsView.class).has(ContactCriteria.class);
 
-		criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
+		criteria = ViewModelProviders.of(MergeContactsView.class).get(ContactCriteria.class);
 		if (criteriaUninitialized) {
 			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
 				.creationDateTo(new Date())
 				.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		}
 
-		grid = new MergeCasesGrid();
+		grid = new MergeContactsGrid();
 		grid.setCriteria(criteria);
 
 		VerticalLayout gridLayout = new VerticalLayout();
-		filterComponent = new MergeCasesFilterComponent(criteria);
+		filterComponent = new MergeContactsFilterComponent(criteria);
 		filterComponent.setFiltersUpdatedCallback(() -> {
-			if (ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class)) {
+			if (ViewModelProviders.of(MergeContactsView.class).has(ContactCriteria.class)) {
 				grid.reload();
 				filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
 			} else {
@@ -75,6 +74,7 @@ public class MergeCasesView extends AbstractView {
 		addComponent(gridLayout);
 
 		Button btnOpenGuide = ButtonHelper.createIconButton(Captions.caseOpenMergeGuide, VaadinIcons.QUESTION, e -> buildAndOpenMergeInstructions());
+		CssStyles.style(btnOpenGuide, CssStyles.HSPACE_LEFT_5);
 		addHeaderComponent(btnOpenGuide);
 
 		Button btnCalculateCompleteness =
@@ -83,9 +83,9 @@ public class MergeCasesView extends AbstractView {
 		addHeaderComponent(btnCalculateCompleteness);
 
 		Button btnBack = ButtonHelper.createIconButton(
-			Captions.caseBackToDirectory,
+			Captions.contactBackToDirectory,
 			VaadinIcons.ARROW_BACKWARD,
-			e -> ControllerProvider.getCaseController().navigateToIndex(),
+			e -> ControllerProvider.getContactController().navigateToIndex(),
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
@@ -110,14 +110,14 @@ public class MergeCasesView extends AbstractView {
 					new Notification(
 						I18nProperties.getString(Strings.headingCasesArchived),
 						I18nProperties.getString(Strings.messageCompletenessValuesUpdated),
-						Type.HUMANIZED_MESSAGE,
+						Notification.Type.HUMANIZED_MESSAGE,
 						false).show(Page.getCurrent());
 				}
 			});
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		grid.reload();
 		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
 	}

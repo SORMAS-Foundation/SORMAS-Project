@@ -6296,4 +6296,14 @@ ALTER TABLE exportconfiguration_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
 
+-- 2021-01-29 Contact Duplicates #2409
+ALTER TABLE contact ADD completeness real;
+ALTER TABLE contact_history ADD completeness real;
+
+ALTER TABLE contact ADD COLUMN duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD COLUMN duplicateof_id BIGINT;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_duplicateof_id FOREIGN KEY (duplicateof_id) REFERENCES contact(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'Add two columns completeness and duplicateOf for contact');
 -- *** Insert new sql commands BEFORE this line ***

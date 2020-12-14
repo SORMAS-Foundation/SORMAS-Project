@@ -511,4 +511,16 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Sample> root) {
 		return cb.isFalse(root.get(Sample.DELETED));
 	}
+
+	public int getSampleCountByContact(Contact contact) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Sample> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Sample.ASSOCIATED_CONTACT), contact)));
+
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
 }
