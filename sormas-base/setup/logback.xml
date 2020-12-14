@@ -79,6 +79,9 @@
     <!-- Don't log personal data when copying to/from dto -->
     <logger name="org.apache.commons.beanutils.BeanUtils" level="INFO" />
 
+    <!-- Log only errors and warnings for document generation -->
+    <logger name="fr.opensagres.xdocreport" level="WARN" />
+
     <root level="debug">
             <appender-ref ref="FILE_DEBUG" />
             <appender-ref ref="FILE_INFO" />

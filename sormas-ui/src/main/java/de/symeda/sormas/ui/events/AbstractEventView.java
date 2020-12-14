@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.events;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
@@ -48,7 +47,7 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
 
 		if (!findReferenceByParams(params)) {
 			return;
@@ -60,7 +59,7 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventParticipants), params);
 		menu.addView(EventActionsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventActions), params);
 
-		replaceViewHeader(ControllerProvider.getEventController().getEventViewTitleLayout(getReference().getUuid()));
+		setMainHeaderComponent(ControllerProvider.getEventController().getEventViewTitleLayout(getReference().getUuid()));
 	}
 
 	@Override

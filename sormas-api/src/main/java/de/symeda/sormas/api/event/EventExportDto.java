@@ -31,7 +31,9 @@ public class EventExportDto implements Serializable {
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
-	private long participantsCount;
+	private long participantCount;
+	private long caseCount;
+	private long deathCount;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -65,7 +67,6 @@ public class EventExportDto implements Serializable {
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
-		long participantsCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -101,7 +102,6 @@ public class EventExportDto implements Serializable {
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
-		this.participantsCount = participantsCount;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
@@ -356,12 +356,30 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(29)
-	public long getParticipantsCount() {
-		return participantsCount;
+	public long getParticipantCount() {
+		return participantCount;
 	}
 
-	public void setParticipantsCount(long participantsCount) {
-		this.participantsCount = participantsCount;
+	public void setParticipantCount(long participantCount) {
+		this.participantCount = participantCount;
+	}
+
+	@Order(30)
+	public long getCaseCount() {
+		return caseCount;
+	}
+
+	public void setCaseCount(long caseCount) {
+		this.caseCount = caseCount;
+	}
+
+	@Order(31)
+	public long getDeathCount() {
+		return deathCount;
+	}
+
+	public void setDeathCount(long deathCount) {
+		this.deathCount = deathCount;
 	}
 
 	public EventJurisdictionDto getJurisdiction() {

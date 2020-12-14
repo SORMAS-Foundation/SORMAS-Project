@@ -23,7 +23,6 @@ import java.util.List;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -86,7 +85,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
 
 		if (!findReferenceByParams(params)) {
 			return;
@@ -104,7 +103,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 
-		replaceViewHeader(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
+		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
 	}
 
 	@Override
@@ -148,7 +147,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	}
 
 	public void setContactEditPermission(Component component) {
-		Boolean isContactEditAllowed = isContactEditAllowed();
+		boolean isContactEditAllowed = isContactEditAllowed();
 		if (!isContactEditAllowed) {
 			getComponent(getComponentIndex(component)).setEnabled(false);
 		}

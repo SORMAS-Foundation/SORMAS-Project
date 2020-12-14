@@ -21,7 +21,7 @@ import io.swagger.v3.oas.models.info.License;
  * Resource configuration used only for external resources i.e. for external systems which communicate with SORMAS
  * Separate from the other resource configuration in order to limit create the swagger documentation only for resources in this package
  */
-@ApplicationPath("/visits-external")
+@ApplicationPath("/")
 public class ExternalRestResourceConfig extends ResourceConfig {
 
 	@Context

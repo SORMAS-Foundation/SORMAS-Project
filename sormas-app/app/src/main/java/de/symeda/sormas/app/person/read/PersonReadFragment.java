@@ -21,26 +21,31 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
+
+import static android.view.View.GONE;
 
 public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayoutBinding, Person, AbstractDomainObject> {
 
@@ -58,7 +63,8 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			PersonReadFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
@@ -95,6 +101,10 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			contentBinding.personCauseOfDeath,
 			contentBinding.personCauseOfDeathDisease,
 			contentBinding.personCauseOfDeathDetails);
+
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
+		}
 	}
 
 	// Overrides
@@ -128,12 +138,23 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		addresses.addAll(record.getAddresses());
 
 		contentBinding.setData(record);
+		initCountryTranslations(contentBinding, record);
 
 		contentBinding.setAddressList(addresses);
 		contentBinding.setAddressItemClickCallback(onAddressItemClickListener);
 		contentBinding.setAddressBindCallback(v -> {
 			setFieldAccesses(LocationDto.class, v);
 		});
+	}
+
+	public static void initCountryTranslations(FragmentPersonReadLayoutBinding contentBinding, Person personData){
+		Country birthCountry = personData.getBirthCountry();
+		contentBinding
+				.setBirthCountry(birthCountry != null ? I18nProperties.getCountryName(birthCountry.getIsoCode(), birthCountry.getName()) : null);
+
+		Country citizenship = personData.getCitizenship();
+		contentBinding.setCitizenship(citizenship != null ? I18nProperties.getCountryName(citizenship.getIsoCode(), citizenship.getName()) : null);
+
 	}
 
 	@Override
