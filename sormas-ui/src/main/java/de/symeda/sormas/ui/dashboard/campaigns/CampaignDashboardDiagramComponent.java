@@ -15,6 +15,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
 import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.ui.Notification;
@@ -59,8 +61,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		campaignColumnChart = new HighChart();
 
-		setSizeFull();
-		campaignColumnChart.setSizeFull();
+		campaignColumnChart.setHeight(90, Unit.PERCENTAGE);
+		campaignColumnChart.setWidthFull();
 
 		setMargin(false);
 		addComponent(campaignColumnChart);
@@ -239,6 +241,20 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("]");
 		hcjs.append("}");
 		campaignColumnChart.setHcjs(hcjs.toString());
+		if (showPercentages) {
+			campaignColumnChart.setHeight(80, Unit.PERCENTAGE);
+			Label noPopulationLocationsLabel = new Label();
+			VerticalLayout locationLayout = new VerticalLayout();
+			noPopulationLocationsLabel.setValue(
+				String.format(
+					I18nProperties.getString(Strings.errorNoPopulationDataLocations),
+					String.join(", ", this.getNoPopulationDataLocations())));
+			locationLayout.addComponent(noPopulationLocationsLabel);
+			locationLayout.setComponentAlignment(noPopulationLocationsLabel, Alignment.MIDDLE_CENTER);
+			locationLayout.setHeight(10, Unit.PERCENTAGE);
+			locationLayout.setWidthFull();
+			addComponent(locationLayout);
+		}
 	}
 
 	public boolean isShowPercentages() {
