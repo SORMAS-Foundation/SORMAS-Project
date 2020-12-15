@@ -1360,7 +1360,7 @@ public class CaseController {
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
 		String person = caseData.getPerson().getCaption();
 		Label caseLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
-		caseLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		caseLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponent(caseLabel);
 
 		return titleLayout;

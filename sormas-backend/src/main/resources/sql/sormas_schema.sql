@@ -6124,4 +6124,10 @@ ALTER TABLE person_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (295, 'SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412');
 
+-- 2020-12-14 Change namesOfOtherGuardians to namesOfGuardians #3413
+ALTER TABLE person RENAME COLUMN namesofotherguardians TO namesofguardians;
+ALTER TABLE person_history RENAME COLUMN namesofotherguardians TO namesofguardians;
+
+INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesOfOtherGuardians to namesOfGuardians #3413');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -54,7 +54,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
@@ -141,7 +140,7 @@ public class Person extends AbstractDomainObject {
 	private String mothersName;
 	private String mothersMaidenName;
 	private String fathersName;
-	private String namesOfOtherGuardians;
+	private String namesOfGuardians;
 
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
@@ -506,12 +505,12 @@ public class Person extends AbstractDomainObject {
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getNamesOfOtherGuardians() {
-		return namesOfOtherGuardians;
+	public String getNamesOfGuardians() {
+		return namesOfGuardians;
 	}
 
-	public void setNamesOfOtherGuardians(String namesOfOtherGuardians) {
-		this.namesOfOtherGuardians = namesOfOtherGuardians;
+	public void setNamesOfGuardians(String namesOfGuardians) {
+		this.namesOfGuardians = namesOfGuardians;
 	}
 
 	@ManyToOne(cascade = {})
