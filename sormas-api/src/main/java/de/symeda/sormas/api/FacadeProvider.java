@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api;
 
+import javax.naming.ConfigurationException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -48,6 +49,7 @@ import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
+import de.symeda.sormas.api.labmessage.LabResultsAdapter;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.AreaFacade;
@@ -160,6 +162,7 @@ public class FacadeProvider {
 	public static CountryFacade getCountryFacade() {
 		return get().lookupEjbRemote(CountryFacade.class);
 	}
+
 	public static RegionFacade getRegionFacade() {
 		return get().lookupEjbRemote(RegionFacade.class);
 	}
@@ -318,6 +321,19 @@ public class FacadeProvider {
 
 	public static DocumentFacade getDocumentFacade() {
 		return get().lookupEjbRemote(DocumentFacade.class);
+	}
+
+	public static LabResultsAdapter getLabResultsAdapter() {
+		try {
+			String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
+			if (jndiName == null) {
+				throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
+			} else {
+				return (LabResultsAdapter) get().ic.lookup(jndiName);
+			}
+		} catch (NamingException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
