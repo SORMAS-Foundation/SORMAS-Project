@@ -374,9 +374,9 @@ public class CaseController {
 			symptoms = null;
 			person = convertedEventParticipant.getPerson();
 			if (unrelatedDisease == null) {
-				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, event.getDisease());
+				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, person, event.getDisease());
 			} else {
-				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, unrelatedDisease);
+				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, person, unrelatedDisease);
 			}
 		} else {
 			symptoms = null;
