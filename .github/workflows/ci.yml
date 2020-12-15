@@ -14,7 +14,7 @@ on:
 
 jobs:
   test:
-    name: mvn test
+    name: mvn verify
     runs-on: ubuntu-latest
 
     steps:
@@ -34,7 +34,7 @@ jobs:
           key: ${{ runner.os }}-java-${{ env.java }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
           restore-keys: ${{ runner.os }}-java-${{ env.java }}-m2
 
-      - name: Run mvn test
+      - name: Run mvn verify
         # see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         working-directory: ./sormas-base
-        run: mvn test -B -ntp
+        run: mvn verify -B -ntp
