@@ -65,8 +65,8 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			VisitIndexDto.VISIT_STATUS,
 			VisitIndexDto.VISIT_REMARKS,
 			VisitIndexDto.DISEASE,
-			SymptomsDto.SYMPTOMATIC,
-			SymptomsDto.TEMPERATURE,
+			VisitIndexDto.SYMPTOMATIC,
+			VisitIndexDto.TEMPERATURE,
 			VisitIndexDto.ORIGIN);
 
 		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME))
