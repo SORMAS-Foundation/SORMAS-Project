@@ -391,22 +391,22 @@ public class EventFacadeEjb implements EventFacade {
 		// Sort indexList based on generated Properties
 		if (indexList != null && sortProperties != null && sortProperties.size() > 0) {
 			for (SortProperty sortProperty : sortProperties) {
-				Comparator<? super EventIndexDto> comp = null;
+				Comparator<? super EventIndexDto> comparator = null;
 				switch (sortProperty.propertyName) {
 				case EventIndexDto.DEATH_COUNT:
-					comp = Comparator.comparing(EventIndexDto::getDeathCount);
+					comparator = Comparator.comparing(EventIndexDto::getDeathCount);
 					break;
 				case EventIndexDto.CASE_COUNT:
-					comp = Comparator.comparing(EventIndexDto::getCaseCount);
+					comparator = Comparator.comparing(EventIndexDto::getCaseCount);
 					break;
 				case EventIndexDto.PARTICIPANT_COUNT:
-					comp = Comparator.comparing(EventIndexDto::getParticipantCount);
+					comparator = Comparator.comparing(EventIndexDto::getParticipantCount);
 					break;
 				default:
 					break;
 				}
-				if (comp != null) {
-					indexList.sort(sortProperty.ascending ? comp.reversed() : comp);
+				if (comparator != null) {
+					indexList.sort(sortProperty.ascending ? comparator.reversed() : comparator);
 				}
 			}
 		}
