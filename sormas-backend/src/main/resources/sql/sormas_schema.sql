@@ -6124,6 +6124,12 @@ ALTER TABLE person_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (295, 'SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412');
 
+-- 2020-12-14 Change namesOfOtherGuardians to namesOfGuardians #3413
+ALTER TABLE person RENAME COLUMN namesofotherguardians TO namesofguardians;
+ALTER TABLE person_history RENAME COLUMN namesofotherguardians TO namesofguardians;
+
+INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesOfOtherGuardians to namesOfGuardians #3413');
+
 -- 2020-12-03 Remove hospital from event's type of place #3617
 UPDATE location
 SET location.facilitytype = 'HOSPITAL'
@@ -6138,6 +6144,6 @@ FROM events
 INNER JOIN location ON location.id = events.eventlocation_id
 WHERE location.facilitytype IS NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (296, 'Remove hospital from event''s type of place #3617');
+INSERT INTO schema_version (version_number, comment) VALUES (297, 'Remove hospital from event''s type of place #3617');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -511,7 +511,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/person_fathersName"
-                    android:nextFocusForward="@+id/person_namesOfOtherGuardians"
+                    android:nextFocusForward="@+id/person_namesOfGuardians"
                     app:value="@={data.fathersName}"
                     app:imeOptions="actionNext"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -519,9 +519,9 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/person_namesOfOtherGuardians"
+                android:id="@+id/person_namesOfGuardians"
                 android:nextFocusForward="@+id/person_phone"
-                app:value="@={data.namesOfOtherGuardians}"
+                app:value="@={data.namesOfGuardians}"
                 app:imeOptions="actionNext"
                 style="@style/ControlSingleColumnStyle" />
 

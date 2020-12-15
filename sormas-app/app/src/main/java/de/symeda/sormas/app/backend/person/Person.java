@@ -91,7 +91,7 @@ public class Person extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String fathersName;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String namesOfOtherGuardians;
+	private String namesOfGuardians;
 	@Column
 	private Integer birthdateDD;
 	@Column
@@ -478,12 +478,12 @@ public class Person extends PseudonymizableAdo {
 		this.fathersName = fathersName;
 	}
 
-	public String getNamesOfOtherGuardians() {
-		return namesOfOtherGuardians;
+	public String getNamesOfGuardians() {
+		return namesOfGuardians;
 	}
 
-	public void setNamesOfOtherGuardians(String namesOfOtherGuardians) {
-		this.namesOfOtherGuardians = namesOfOtherGuardians;
+	public void setNamesOfGuardians(String namesOfGuardians) {
+		this.namesOfGuardians = namesOfGuardians;
 	}
 
 	public Region getPlaceOfBirthRegion() {

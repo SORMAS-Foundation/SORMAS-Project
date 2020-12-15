@@ -987,6 +987,7 @@ public interface Captions {
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";
 	String importDownloadCaseImportTemplate = "importDownloadCaseImportTemplate";
 	String importDownloadDataDictionary = "importDownloadDataDictionary";
@@ -1189,7 +1190,7 @@ public interface Captions {
 	String Person_matchingCase = "Person.matchingCase";
 	String Person_mothersMaidenName = "Person.mothersMaidenName";
 	String Person_mothersName = "Person.mothersName";
-	String Person_namesOfOtherGuardians = "Person.namesOfOtherGuardians";
+	String Person_namesOfGuardians = "Person.namesOfGuardians";
 	String Person_nationalHealthId = "Person.nationalHealthId";
 	String Person_nickname = "Person.nickname";
 	String Person_occupationCommunity = "Person.occupationCommunity";

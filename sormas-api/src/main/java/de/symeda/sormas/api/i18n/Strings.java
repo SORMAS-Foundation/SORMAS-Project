@@ -250,9 +250,11 @@ public interface Strings {
 	String headingContactDataNotComplete = "headingContactDataNotComplete";
 	String headingContactInformation = "headingContactInformation";
 	String headingContactMap = "headingContactMap";
+	String headingContactsCancelFollowUp = "headingContactsCancelFollowUp";
 	String headingContactsConvertedToCase = "headingContactsConvertedToCase";
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
+	String headingContactsLostToFollowUp = "headingContactsLostToFollowUp";
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
 	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
@@ -707,6 +709,9 @@ public interface Strings {
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";
+	String messagePersonAddedAsEventParticipant = "messagePersonAddedAsEventParticipant";
+	String messagePersonAlreadyCaseInEvent = "messagePersonAlreadyCaseInEvent";
+	String messagePersonAlreadyEventParticipant = "messagePersonAlreadyEventParticipant";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
 	String messagePlagueTypeChange = "messagePlagueTypeChange";
