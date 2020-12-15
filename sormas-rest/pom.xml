@@ -122,7 +122,6 @@
 					<!-- Swagger Generation Config -->
 					<resourcePackages>
 						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
-						<resourcePackage>de.symeda.sormas.rest.external</resourcePackage>
 						<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
 					</resourcePackages>
 					<outputDirectory>${basedir}/target/</outputDirectory>
