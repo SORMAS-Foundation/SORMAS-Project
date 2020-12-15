@@ -71,11 +71,11 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 
 		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
-		((Column<VisitIndexDto, String>) getColumn(SymptomsDto.SYMPTOMATIC)).setRenderer(new BooleanRenderer());
+		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new BooleanRenderer());
 
 		for (Column<VisitIndexDto, ?> column : getColumns()) {
 			final String columnId = column.getId();
-			final String i18nPrefix = columnId.equals(SymptomsDto.SYMPTOMATIC) || columnId.equals(SymptomsDto.TEMPERATURE)
+			final String i18nPrefix = columnId.equals(VisitIndexDto.SYMPTOMATIC) || columnId.equals(VisitIndexDto.TEMPERATURE)
 				? SymptomsDto.I18N_PREFIX
 				: VisitIndexDto.I18N_PREFIX;
 			column.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, columnId, column.getCaption()));
