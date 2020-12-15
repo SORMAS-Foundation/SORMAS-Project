@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
-import java.util.Optional;
-
 import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
 
 import com.google.common.base.MoreObjects;
@@ -27,7 +25,6 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -35,6 +32,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionPriority;
+import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -158,16 +156,7 @@ public class ActionListEntry extends HorizontalLayout {
 		topLayout.addComponent(topRightLayout);
 		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
 
-		String statusStyle;
-		switch (action.getActionStatus()) {
-		case DONE:
-			statusStyle = CssStyles.LABEL_DONE;
-			break;
-		default:
-			statusStyle = null;
-			break;
-		}
-
+		String statusStyle = action.getActionStatus() == ActionStatus.DONE ? CssStyles.LABEL_DONE : null;
 		if (statusStyle != null) {
 			statusLabel.addStyleName(statusStyle);
 			dateLabel.addStyleName(statusStyle);
@@ -182,7 +171,7 @@ public class ActionListEntry extends HorizontalLayout {
 		}
 	}
 
-	public void addEditListener(int rowIndex, ClickListener editClickListener) {
+	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
 		if (editButton == null) {
 			editButton = ButtonHelper.createIconButtonWithCaption(
 				"edit-action-" + rowIndex,
