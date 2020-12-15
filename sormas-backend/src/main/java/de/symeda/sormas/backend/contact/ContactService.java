@@ -753,6 +753,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			break;
 		case NO_CONTACT:
 			contact.setContactStatus(ContactStatus.DROPPED);
+			cancelFollowUp(contact, I18nProperties.getString(Strings.messageSystemFollowUpCanceledByDropping));
 			break;
 		case CONFIRMED:
 			if (contact.getResultingCase() != null) {
@@ -860,6 +861,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
+		ensurePersisted(contact);
+	}
+
+	public void cancelFollowUp(Contact contact, String comment) {
+		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
+		contact.setFollowUpComment(comment);
 		ensurePersisted(contact);
 	}
 
