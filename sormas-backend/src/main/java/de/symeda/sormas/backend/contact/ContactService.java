@@ -1273,7 +1273,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.greaterThanOrEqualTo(contact.get(Contact.QUARANTINE_TO), to)));
 	}
 
-	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<Long> cq, ContactJoins joins) {
+	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<Long> cq, Root<Contact> contactRoot, ContactJoins joins) {
 		final User currentUser = this.getCurrentUser();
 
 		final Subquery<Long> contactCaseJurisdictionSubQuery = cq.subquery(Long.class);
@@ -1310,7 +1310,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		default:
 			jurisdictionPredicate = cb.disjunction();
 		}
-		return cb.or(reportedByCurrentUser, contactCaseInJurisdiction, jurisdictionPredicate);
+		return cb.or(reportedByCurrentUser, jurisdictionPredicate, cb.and(cb.isNull(contactRoot.get(Contact.REGION)), contactCaseInJurisdiction));
 	}
 
 	public boolean isContactEditAllowed(Contact contact) {
