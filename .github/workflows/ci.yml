@@ -35,6 +35,6 @@ jobs:
           restore-keys: ${{ runner.os }}-java-${{ env.java }}-m2
 
       - name: Run mvn verify
-        # see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
+        # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         working-directory: ./sormas-base
         run: mvn verify -B -ntp
