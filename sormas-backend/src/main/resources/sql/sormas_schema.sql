@@ -6132,7 +6132,11 @@ INNER JOIN events ON events.eventlocation_id = location.id
 WHERE events.typeofplace = 'HOSPITAL'
   AND location.facilitytype IS NULL;
 
-UPDATE events SET typeofplace = 'FACILITY' WHERE typeofplace = 'HOSPITAL';
+UPDATE events
+SET events.typeofplace = 'FACILITY'
+FROM events
+INNER JOIN location ON location.id = events.eventlocation_id
+WHERE location.facilitytype IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (296, 'Remove hospital from event''s type of place #3617');
 
