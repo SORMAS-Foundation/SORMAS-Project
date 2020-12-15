@@ -308,10 +308,11 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			final boolean convertedToCase =
 				(existingContactDto == null || existingContactDto.getResultingCase() == null) && entity.getResultingCase() != null;
-			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED;
+			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
+				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
 			if (dropped || convertedToCase) {
-				entity.setFollowUpStatus(FollowUpStatus.CANCELED);
-				entity.setFollowUpComment(
+				contactService.cancelFollowUp(
+					entity,
 					I18nProperties
 						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
 			} else {
