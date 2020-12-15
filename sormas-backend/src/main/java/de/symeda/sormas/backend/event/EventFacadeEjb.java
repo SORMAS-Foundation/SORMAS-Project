@@ -334,7 +334,7 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Map<String, Long> participantCounts = new HashMap<>();
-		Map<String, Long> caseCounts = new HashMap<>();;
+		Map<String, Long> caseCounts = new HashMap<>();
 		Map<String, Long> deathCounts = new HashMap<>();
 		if (indexList != null) {
 			List<Object[]> objectQueryList = null;
@@ -481,7 +481,7 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Map<String, Long> participantCounts = new HashMap<>();
-		Map<String, Long> caseCounts = new HashMap<>();;
+		Map<String, Long> caseCounts = new HashMap<>();
 		Map<String, Long> deathCounts = new HashMap<>();
 		if (exportList != null) {
 			List<Object[]> objectQueryList = null;
