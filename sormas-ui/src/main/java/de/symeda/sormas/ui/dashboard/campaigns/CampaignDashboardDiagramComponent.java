@@ -61,8 +61,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		campaignColumnChart = new HighChart();
 
-		campaignColumnChart.setHeight(90, Unit.PERCENTAGE);
-		campaignColumnChart.setWidthFull();
+		setSizeFull();
+		campaignColumnChart.setSizeFull();
 
 		setMargin(false);
 		addComponent(campaignColumnChart);
@@ -138,7 +138,22 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ "title:{ text: '" + StringEscapeUtils.escapeEcmaScript(title) + "', style: { fontSize: '15px' } },");
 		//@formatter:on
 
+		noPopulationDataLocations.clear();
+		if (Objects.nonNull(totalValuesMap)) {
+			for (Object key : axisCaptions.keySet()) {
+				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
+					noPopulationDataLocations.add(axisCaptions.get(key));
+				}
+			}
+		}
+
 		hcjs.append("xAxis: {");
+		if (showPercentages) {
+			hcjs.append(
+				"title: {" + "        text:'" + String
+					.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(", ", this.getNoPopulationDataLocations()))
+					+ "' },");
+		}
 		if (stackMap.size() > 1) {
 			hcjs.append("opposite: true,");
 		}
@@ -177,14 +192,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 
 		hcjs.append("series: [");
-		noPopulationDataLocations.clear();
-		if (Objects.nonNull(totalValuesMap)) {
-			for (Object key : axisCaptions.keySet()) {
-				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
-					noPopulationDataLocations.add(axisCaptions.get(key));
-				}
-			}
-		}
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
 			String seriesKey = series.getFormId() + series.getFieldId();
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
@@ -241,20 +248,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("]");
 		hcjs.append("}");
 		campaignColumnChart.setHcjs(hcjs.toString());
-		if (showPercentages) {
-			campaignColumnChart.setHeight(80, Unit.PERCENTAGE);
-			Label noPopulationLocationsLabel = new Label();
-			VerticalLayout locationLayout = new VerticalLayout();
-			noPopulationLocationsLabel.setValue(
-				String.format(
-					I18nProperties.getString(Strings.errorNoPopulationDataLocations),
-					String.join(", ", this.getNoPopulationDataLocations())));
-			locationLayout.addComponent(noPopulationLocationsLabel);
-			locationLayout.setComponentAlignment(noPopulationLocationsLabel, Alignment.MIDDLE_CENTER);
-			locationLayout.setHeight(10, Unit.PERCENTAGE);
-			locationLayout.setWidthFull();
-			addComponent(locationLayout);
-		}
 	}
 
 	public boolean isShowPercentages() {
