@@ -35,5 +35,6 @@ jobs:
           restore-keys: ${{ runner.os }}-java-${{ env.java }}-m2
 
       - name: Run mvn test
+        # see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         working-directory: ./sormas-base
         run: mvn test -B -ntp
