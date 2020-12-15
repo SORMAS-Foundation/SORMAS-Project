@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -310,6 +310,12 @@ public class EventFacadeEjb implements EventFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = location.get(Location.ADDITIONAL_INFORMATION);
 					break;
+				case EventIndexDto.DEATH_COUNT:
+				case EventIndexDto.PARTICIPANT_COUNT:
+				case EventIndexDto.CASE_COUNT:
+					// generated properties - sorting happens at the end of this method
+					expression = event.get(Event.REPORT_DATE_TIME);
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
@@ -317,7 +323,7 @@ public class EventFacadeEjb implements EventFacade {
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(event.get(Contact.CHANGE_DATE)));
+			cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
 		}
 
 		List<EventIndexDto> indexList;
@@ -379,6 +385,29 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(participantCounts.get(eventDto.getUuid())).ifPresent(eventDto::setParticipantCount);
 				Optional.ofNullable(caseCounts.get(eventDto.getUuid())).ifPresent(eventDto::setCaseCount);
 				Optional.ofNullable(deathCounts.get(eventDto.getUuid())).ifPresent(eventDto::setDeathCount);
+			}
+		}
+
+		// Sort indexList based on generated Properties
+		if (indexList != null && sortProperties != null && sortProperties.size() > 0) {
+			for (SortProperty sortProperty : sortProperties) {
+				Comparator<? super EventIndexDto> comp = null;
+				switch (sortProperty.propertyName) {
+				case EventIndexDto.DEATH_COUNT:
+					comp = Comparator.comparing(EventIndexDto::getDeathCount);
+					break;
+				case EventIndexDto.CASE_COUNT:
+					comp = Comparator.comparing(EventIndexDto::getCaseCount);
+					break;
+				case EventIndexDto.PARTICIPANT_COUNT:
+					comp = Comparator.comparing(EventIndexDto::getParticipantCount);
+					break;
+				default:
+					break;
+				}
+				if (comp != null) {
+					indexList.sort(sortProperty.ascending ? comp.reversed() : comp);
+				}
 			}
 		}
 

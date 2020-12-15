@@ -126,10 +126,6 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		setColumns(columnIds.toArray(new String[columnIds.size()]));
 
-		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
-		getColumn(EventIndexDto.CASE_COUNT).setSortable(false);
-		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
-
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
