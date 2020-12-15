@@ -77,4 +77,8 @@ public interface UserFacade {
 	void removeUserAsSurveillanceAndContactOfficer(String userUuid);
 
 	UserSyncResult syncUser(String userUuid);
+
+	String encodePassword(String rawPassword, String seed);
+
+	String createPassword(int length);
 }

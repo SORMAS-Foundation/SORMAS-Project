@@ -18,7 +18,7 @@
 package de.symeda.sormas.backend.util;
 
 import java.math.BigInteger;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -65,11 +65,6 @@ public final class PasswordHelper {
 		}
 	}
 
-	private static final Charset UTF8_CHARSET;
-	static {
-		UTF8_CHARSET = Charset.forName("UTF-8");
-	}
-
 	public static String createPass(final int length) {
 
 		SecureRandom rnd = new SecureRandom();
@@ -88,7 +83,7 @@ public final class PasswordHelper {
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
 			digest.reset();
-			byte[] digested = digest.digest((password + seed).getBytes(UTF8_CHARSET));
+			byte[] digested = digest.digest((password + seed).getBytes(StandardCharsets.UTF_8));
 			String encoded = hexEncode(digested);
 
 			return encoded;

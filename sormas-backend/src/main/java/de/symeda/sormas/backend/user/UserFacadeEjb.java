@@ -452,6 +452,16 @@ public class UserFacadeEjb implements UserFacade {
 		return userSyncResult;
 	}
 
+	@Override
+	public String encodePassword(String rawPassword, String seed) {
+		return PasswordHelper.encodePassword(rawPassword, seed);
+	}
+
+	@Override
+	public String createPassword(int length) {
+		return PasswordHelper.createPass(length);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class UserFacadeEjbLocal extends UserFacadeEjb {

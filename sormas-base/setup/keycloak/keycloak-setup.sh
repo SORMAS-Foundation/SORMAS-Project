@@ -158,8 +158,8 @@ KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_UI_SECRET=${KEYCLOAK_SORMAS_UI_SECRET} 
 KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_REST_SECRET=${KEYCLOAK_SORMAS_REST_SECRET} "
 KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_BACKEND_SECRET=${KEYCLOAK_SORMAS_BACKEND_SECRET} "
 KEYCLOAK_DOCKER_CMD+="-p ${KEYCLOAK_PORT}:8080 "
-#TODO replace public keycloak image with somras keycloak image
-KEYCLOAK_DOCKER_CMD+="jboss/keycloak:${KEYCLOAK_VERSION}"
+
+KEYCLOAK_DOCKER_CMD+="hzibraunschweig/sormas-keycloak:latest"
 
 docker run -d --name sormas_keycloak ${KEYCLOAK_DOCKER_CMD}
 
@@ -173,14 +173,14 @@ else
   KCADM="//opt/jboss/keycloak/bin/kcadm.sh"
 fi
 
-docker cp ./SORMAS.json sormas_keycloak:/tmp/SORMAS.json
-docker cp ./themes sormas_keycloak:/opt/jboss/keycloak/themes
-docker exec -i sormas_keycloak sh -c sed -i 's/${SORMAS_SERVER_URL}/'"${SORMAS_SERVER_URL}"'/' /tmp/SORMAS.json
-docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_REST_SECRET}/'"${KEYCLOAK_SORMAS_REST_SECRET}"'/' /tmp/SORMAS.json
-docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_UI_SECRET}/'"${KEYCLOAK_SORMAS_UI_SECRET}"'/' /tmp/SORMAS.json
-docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_BACKEND_SECRET}/'"${KEYCLOAK_SORMAS_BACKEND_SECRET}"'/' /tmp/SORMAS.json
-docker exec -i sormas_keycloak sh -c "${KCADM} config credentials --server http://localhost:8080/auth --user ${KEYCLOAK_ADMIN_USER} --password ${KEYCLOAK_ADMIN_PASSWORD} --realm master"
-docker exec -i sormas_keycloak sh -c "${KCADM} create realms -f /tmp/SORMAS.json"
+#docker cp ./SORMAS.json sormas_keycloak:/tmp/SORMAS.json
+#docker cp ./themes sormas_keycloak:/opt/jboss/keycloak/themes
+#docker exec -i sormas_keycloak sh -c sed -i 's/${SORMAS_SERVER_URL}/'"${SORMAS_SERVER_URL}"'/' /tmp/SORMAS.json
+#docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_REST_SECRET}/'"${KEYCLOAK_SORMAS_REST_SECRET}"'/' /tmp/SORMAS.json
+#docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_UI_SECRET}/'"${KEYCLOAK_SORMAS_UI_SECRET}"'/' /tmp/SORMAS.json
+#docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_BACKEND_SECRET}/'"${KEYCLOAK_SORMAS_BACKEND_SECRET}"'/' /tmp/SORMAS.json
+#docker exec -i sormas_keycloak sh -c "${KCADM} config credentials --server http://localhost:8080/auth --user ${KEYCLOAK_ADMIN_USER} --password ${KEYCLOAK_ADMIN_PASSWORD} --realm master"
+#docker exec -i sormas_keycloak sh -c "${KCADM} create realms -f /tmp/SORMAS.json"
 
 echo "Updating Payara with Keycloak configurations"
 
