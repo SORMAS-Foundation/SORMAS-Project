@@ -33,6 +33,7 @@ import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.action.ActionStatEntry;
+import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRight;
@@ -198,6 +199,11 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public List<EventActionIndexDto> getEventActionList(EventCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		return actionService.getEventActionIndexList(criteria, first, max, sortProperties);
+	}
+
+	@Override
+	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
+		return actionService.getEventActionExportList(criteria, first, max);
 	}
 
 	@Override
