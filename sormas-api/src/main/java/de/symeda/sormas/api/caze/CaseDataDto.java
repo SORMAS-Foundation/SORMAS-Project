@@ -37,6 +37,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -508,10 +509,16 @@ public class CaseDataDto extends PseudonymizableDto {
 		cazeData.setEpiData(contact.getEpiData());
 	}
 
-	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, Disease eventDisease) {
+	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, PersonDto person, Disease eventDisease) {
 
-		CaseDataDto cazeData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
-		return cazeData;
+		CaseDataDto caseData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
+
+		if (person.getPresentCondition() != null && person.getPresentCondition().isDeceased() && eventDisease == person.getCauseOfDeathDisease()) {
+			caseData.setOutcome(CaseOutcome.DECEASED);
+			caseData.setOutcomeDate(new Date());
+		}
+
+		return caseData;
 	}
 
 	public CaseReferenceDto toReference() {

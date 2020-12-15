@@ -101,7 +101,7 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 
 		for (Object columnId : table.getVisibleColumns()) {
 			if (!columnId.equals(EDIT_COLUMN_ID)) {
-				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
+				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, (String) columnId));
 			}
 		}
 	}
