@@ -109,6 +109,19 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		assertEquals(1, getPointOfEntryFacade().count(new PointOfEntryCriteria()));
 	}
 
+	@Test
+	public void testImportFromFileWithBom() throws InterruptedException, InvalidColumnException, CsvValidationException, IOException {
+		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+
+		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_bom_test.csv").getFile());
+		InfrastructureImporter importer = new InfrastructureImporterExtension(districtCsvFile, user.toReference(), InfrastructureType.DISTRICT);
+		importer.runImport();
+
+		// expected Default District + 2 imported districts
+		assertEquals(3, getDistrictFacade().count(new DistrictCriteria()));
+	}
+
 	private static class InfrastructureImporterExtension extends InfrastructureImporter {
 
 		private InfrastructureImporterExtension(File inputFile, UserReferenceDto currentUser, InfrastructureType infrastructureType) {
