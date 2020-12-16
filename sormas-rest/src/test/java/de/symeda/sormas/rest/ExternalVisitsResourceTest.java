@@ -78,9 +78,7 @@ public class ExternalVisitsResourceTest {
 	 *         Visits Controller). This includes parameter names for that path, but not information about related enums.
 	 */
 	private static void extractPathsOfController(Map<String, Object> level1, String controller, Map resultMap) {
-		level1.entrySet().forEach(e1 -> {
-			String key1 = e1.getKey();
-			Object value1 = e1.getValue();
+		level1.forEach((key1, value1) -> {
 			if (isInnerNode(value1)) {
 				Map<String, Object> level2 = innerNode(value1);
 				if (hasTag(level2, controller)) {
@@ -98,9 +96,7 @@ public class ExternalVisitsResourceTest {
 			.map(ExternalVisitsResourceTest::innerNode)
 			// tags are always represented in the third layer and as ArrayLists
 			.map(ExternalVisitsResourceTest::tags)
-			.filter(t -> t.contains(controller))
-			.findFirst()
-			.isPresent();
+			.anyMatch(t -> t.contains(controller));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -126,9 +122,8 @@ public class ExternalVisitsResourceTest {
 	 *         added to the list.
 	 */
 	private static void extractDetail(Map<String, Object> level1, String detailName, Map resultMap) {
-		level1.entrySet().stream().forEach(e1 -> {
-			Object value1 = e1.getValue();
-			if (detailName.equals(e1.getKey())) {
+		level1.forEach((key, value1) -> {
+			if (detailName.equals(key)) {
 				resultMap.put(detailName, value1);
 			} else if (isInnerNode(value1)) {
 				extractDetail(innerNode(value1), detailName, resultMap);

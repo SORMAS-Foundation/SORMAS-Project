@@ -38,6 +38,27 @@
         }
       }
     },
+    "/actions/uuids" : {
+      "get" : {
+        "tags" : [ "Action Controller" ],
+        "operationId" : "getAllUuids",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/actions/query" : {
       "post" : {
         "tags" : [ "Action Controller" ],
@@ -63,27 +84,6 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/ActionDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/actions/uuids" : {
-      "get" : {
-        "tags" : [ "Action Controller" ],
-        "operationId" : "getAllUuids",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
                   }
                 }
               }
@@ -125,6 +125,27 @@
         }
       }
     },
+    "/additionaltests/uuids" : {
+      "get" : {
+        "tags" : [ "Additional Test Controller" ],
+        "operationId" : "getAllActiveUuids",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/additionaltests/all/{since}" : {
       "get" : {
         "tags" : [ "Additional Test Controller" ],
@@ -138,6 +159,39 @@
             "format" : "int64"
           }
         } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/AdditionalTestDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/additionaltests/query" : {
+      "post" : {
+        "tags" : [ "Additional Test Controller" ],
+        "operationId" : "getByUuids_1",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -188,22 +242,19 @@
         }
       }
     },
-    "/additionaltests/query" : {
-      "post" : {
-        "tags" : [ "Additional Test Controller" ],
-        "operationId" : "getByUuids_1",
-        "requestBody" : {
-          "content" : {
-            "application/json; charset=UTF-8" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                }
-              }
-            }
+    "/aggregatereports/all/{since}" : {
+      "get" : {
+        "tags" : [ "Aggregate Report Controller" ],
+        "operationId" : "getAllAggregateReports",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        },
+        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -212,7 +263,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/AdditionalTestDto"
+                    "$ref" : "#/components/schemas/AggregateReportDto"
                   }
                 }
               }
@@ -221,10 +272,10 @@
         }
       }
     },
-    "/additionaltests/uuids" : {
+    "/aggregatereports/uuids" : {
       "get" : {
-        "tags" : [ "Additional Test Controller" ],
-        "operationId" : "getAllActiveUuids",
+        "tags" : [ "Aggregate Report Controller" ],
+        "operationId" : "getAllUuids_1",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -275,57 +326,6 @@
         }
       }
     },
-    "/aggregatereports/uuids" : {
-      "get" : {
-        "tags" : [ "Aggregate Report Controller" ],
-        "operationId" : "getAllUuids_1",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/aggregatereports/all/{since}" : {
-      "get" : {
-        "tags" : [ "Aggregate Report Controller" ],
-        "operationId" : "getAllAggregateReports",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/AggregateReportDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/aggregatereports/push" : {
       "post" : {
         "tags" : [ "Aggregate Report Controller" ],
@@ -359,22 +359,65 @@
         }
       }
     },
-    "/campaignFormData/query" : {
-      "post" : {
-        "tags" : [ "Campaign Form Data Controller" ],
-        "operationId" : "getByUuids_3",
+    "/bagexport/cases" : {
+      "get" : {
+        "tags" : [ "B A G Export Controller" ],
+        "operationId" : "exportCases",
         "requestBody" : {
           "content" : {
-            "*/*" : {
+            "application/json; charset=UTF-8" : {
               "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                }
+                "type" : "string"
               }
             }
           }
         },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/octet-stream" : { }
+            }
+          }
+        }
+      }
+    },
+    "/bagexport/contacts" : {
+      "get" : {
+        "tags" : [ "B A G Export Controller" ],
+        "operationId" : "exportContacts",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/octet-stream" : { }
+            }
+          }
+        }
+      }
+    },
+    "/campaignFormData/all/{since}" : {
+      "get" : {
+        "tags" : [ "Campaign Form Data Controller" ],
+        "operationId" : "getAllCampaignFormData",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -413,19 +456,22 @@
         }
       }
     },
-    "/campaignFormData/all/{since}" : {
-      "get" : {
+    "/campaignFormData/query" : {
+      "post" : {
         "tags" : [ "Campaign Form Data Controller" ],
-        "operationId" : "getAllCampaignFormData",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+        "operationId" : "getByUuids_3",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
           }
-        } ],
+        },
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -476,22 +522,19 @@
         }
       }
     },
-    "/campaignFormMeta/query" : {
-      "post" : {
+    "/campaignFormMeta/all/{since}" : {
+      "get" : {
         "tags" : [ "Campaign Form Meta Controller" ],
-        "operationId" : "getByUuids_4",
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                }
-              }
-            }
+        "operationId" : "getAllCampaignFormMeta",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        },
+        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -530,10 +573,43 @@
         }
       }
     },
-    "/campaignFormMeta/all/{since}" : {
-      "get" : {
+    "/campaignFormMeta/query" : {
+      "post" : {
         "tags" : [ "Campaign Form Meta Controller" ],
-        "operationId" : "getAllCampaignFormMeta",
+        "operationId" : "getByUuids_4",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CampaignFormMetaDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/all/{since}" : {
+      "get" : {
+        "tags" : [ "Campaign Controller" ],
+        "operationId" : "getAllCampaignFormData_1",
         "parameters" : [ {
           "name" : "since",
           "in" : "path",
@@ -551,7 +627,28 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/CampaignFormMetaDto"
+                    "$ref" : "#/components/schemas/CampaignDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/uuids" : {
+      "get" : {
+        "tags" : [ "Campaign Controller" ],
+        "operationId" : "getAllUuids_4",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -593,31 +690,10 @@
         }
       }
     },
-    "/campaigns/uuids" : {
+    "/cases/all/{since}" : {
       "get" : {
-        "tags" : [ "Campaign Controller" ],
-        "operationId" : "getAllUuids_4",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/campaigns/all/{since}" : {
-      "get" : {
-        "tags" : [ "Campaign Controller" ],
-        "operationId" : "getAllCampaignFormData_1",
+        "tags" : [ "Case Controller" ],
+        "operationId" : "getAllCases",
         "parameters" : [ {
           "name" : "since",
           "in" : "path",
@@ -635,7 +711,58 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/CampaignDto"
+                    "$ref" : "#/components/schemas/CaseDataDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cases/uuids" : {
+      "get" : {
+        "tags" : [ "Case Controller" ],
+        "operationId" : "getAllUuids_5",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cases/archived/{since}" : {
+      "get" : {
+        "tags" : [ "Case Controller" ],
+        "operationId" : "getArchivedUuidsSince",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -677,10 +804,19 @@
         }
       }
     },
-    "/cases/uuids" : {
+    "/cases/deleted/{since}" : {
       "get" : {
         "tags" : [ "Case Controller" ],
-        "operationId" : "getAllUuids_5",
+        "operationId" : "getDeletedUuidsSince",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -731,96 +867,6 @@
         }
       }
     },
-    "/cases/all/{since}" : {
-      "get" : {
-        "tags" : [ "Case Controller" ],
-        "operationId" : "getAllCases",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/CaseDataDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/cases/archived/{since}" : {
-      "get" : {
-        "tags" : [ "Case Controller" ],
-        "operationId" : "getArchivedUuidsSince",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/cases/deleted/{since}" : {
-      "get" : {
-        "tags" : [ "Case Controller" ],
-        "operationId" : "getDeletedUuidsSince",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/classification/all/{since}" : {
       "get" : {
         "tags" : [ "Classification Controller" ],
@@ -843,6 +889,57 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/DiseaseClassificationCriteriaDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clinicalvisits/uuids" : {
+      "get" : {
+        "tags" : [ "Clinical Visit Controller" ],
+        "operationId" : "getAllActiveUuids_1",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clinicalvisits/all/{since}" : {
+      "get" : {
+        "tags" : [ "Clinical Visit Controller" ],
+        "operationId" : "getAllVisits",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ClinicalVisitDto"
                   }
                 }
               }
@@ -917,57 +1014,6 @@
         }
       }
     },
-    "/clinicalvisits/all/{since}" : {
-      "get" : {
-        "tags" : [ "Clinical Visit Controller" ],
-        "operationId" : "getAllVisits",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/ClinicalVisitDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/clinicalvisits/uuids" : {
-      "get" : {
-        "tags" : [ "Clinical Visit Controller" ],
-        "operationId" : "getAllActiveUuids_1",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/communities/all/{since}" : {
       "get" : {
         "tags" : [ "Community Controller" ],
@@ -990,6 +1036,27 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/CommunityDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/communities/uuids" : {
+      "get" : {
+        "tags" : [ "Community Controller" ],
+        "operationId" : "getAllUuids_6",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -1031,10 +1098,10 @@
         }
       }
     },
-    "/communities/uuids" : {
+    "/contacts/uuids" : {
       "get" : {
-        "tags" : [ "Community Controller" ],
-        "operationId" : "getAllUuids_6",
+        "tags" : [ "Contact Controller" ],
+        "operationId" : "getAllActiveUuids_2",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -1044,6 +1111,36 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/all/{since}" : {
+      "get" : {
+        "tags" : [ "Contact Controller" ],
+        "operationId" : "getAllContacts",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ContactDto"
                   }
                 }
               }
@@ -1085,10 +1182,10 @@
         }
       }
     },
-    "/contacts/all/{since}" : {
+    "/contacts/deleted/{since}" : {
       "get" : {
         "tags" : [ "Contact Controller" ],
-        "operationId" : "getAllContacts",
+        "operationId" : "getDeletedUuidsSince_1",
         "parameters" : [ {
           "name" : "since",
           "in" : "path",
@@ -1106,7 +1203,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/ContactDto"
+                    "type" : "string"
                   }
                 }
               }
@@ -1148,57 +1245,6 @@
         }
       }
     },
-    "/contacts/uuids" : {
-      "get" : {
-        "tags" : [ "Contact Controller" ],
-        "operationId" : "getAllActiveUuids_2",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/contacts/deleted/{since}" : {
-      "get" : {
-        "tags" : [ "Contact Controller" ],
-        "operationId" : "getDeletedUuidsSince_1",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/countries/all/{since}" : {
       "get" : {
         "tags" : [ "Country Controller" ],
@@ -1221,6 +1267,27 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/CountryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/countries/uuids" : {
+      "get" : {
+        "tags" : [ "Country Controller" ],
+        "operationId" : "getAllUuids_7",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -1262,10 +1329,40 @@
         }
       }
     },
-    "/countries/uuids" : {
+    "/diseaseconfigurations/all/{since}" : {
       "get" : {
-        "tags" : [ "Country Controller" ],
-        "operationId" : "getAllUuids_7",
+        "tags" : [ "Disease Configuration Controller" ],
+        "operationId" : "getAllDiseaseConfigurations",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/DiseaseConfigurationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/diseaseconfigurations/uuids" : {
+      "get" : {
+        "tags" : [ "Disease Configuration Controller" ],
+        "operationId" : "getAllUuids_8",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -1316,57 +1413,6 @@
         }
       }
     },
-    "/diseaseconfigurations/uuids" : {
-      "get" : {
-        "tags" : [ "Disease Configuration Controller" ],
-        "operationId" : "getAllUuids_8",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/diseaseconfigurations/all/{since}" : {
-      "get" : {
-        "tags" : [ "Disease Configuration Controller" ],
-        "operationId" : "getAllDiseaseConfigurations",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/DiseaseConfigurationDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/districts/all/{since}" : {
       "get" : {
         "tags" : [ "District Controller" ],
@@ -1389,6 +1435,27 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/DistrictDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/districts/uuids" : {
+      "get" : {
+        "tags" : [ "District Controller" ],
+        "operationId" : "getAllUuids_9",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -1430,10 +1497,10 @@
         }
       }
     },
-    "/districts/uuids" : {
+    "/eventparticipants/uuids" : {
       "get" : {
-        "tags" : [ "District Controller" ],
-        "operationId" : "getAllUuids_9",
+        "tags" : [ "Event Participant Controller" ],
+        "operationId" : "getAllActiveUuids_3",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -1443,6 +1510,36 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/eventparticipants/all/{since}" : {
+      "get" : {
+        "tags" : [ "Event Participant Controller" ],
+        "operationId" : "getAllEventParticipantsAfter",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EventParticipantDto"
                   }
                 }
               }
@@ -1484,10 +1581,10 @@
         }
       }
     },
-    "/eventparticipants/all/{since}" : {
+    "/eventparticipants/deleted/{since}" : {
       "get" : {
         "tags" : [ "Event Participant Controller" ],
-        "operationId" : "getAllEventParticipantsAfter",
+        "operationId" : "getDeletedUuidsSince_2",
         "parameters" : [ {
           "name" : "since",
           "in" : "path",
@@ -1505,7 +1602,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EventParticipantDto"
+                    "type" : "string"
                   }
                 }
               }
@@ -1547,10 +1644,10 @@
         }
       }
     },
-    "/eventparticipants/uuids" : {
+    "/events/uuids" : {
       "get" : {
-        "tags" : [ "Event Participant Controller" ],
-        "operationId" : "getAllActiveUuids_3",
+        "tags" : [ "Event Controller" ],
+        "operationId" : "getAllActiveUuids_4",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -1560,102 +1657,6 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/eventparticipants/deleted/{since}" : {
-      "get" : {
-        "tags" : [ "Event Participant Controller" ],
-        "operationId" : "getDeletedUuidsSince_2",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/events/query" : {
-      "post" : {
-        "tags" : [ "Event Controller" ],
-        "operationId" : "getByUuids_14",
-        "requestBody" : {
-          "content" : {
-            "application/json; charset=UTF-8" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/EventDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/events/push" : {
-      "post" : {
-        "tags" : [ "Event Controller" ],
-        "operationId" : "postEvents",
-        "requestBody" : {
-          "content" : {
-            "application/json; charset=UTF-8" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/EventDto"
-                }
-              }
-            }
-          }
-        },
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/PushResult"
                   }
                 }
               }
@@ -1724,10 +1725,22 @@
         }
       }
     },
-    "/events/uuids" : {
-      "get" : {
+    "/events/query" : {
+      "post" : {
         "tags" : [ "Event Controller" ],
-        "operationId" : "getAllActiveUuids_4",
+        "operationId" : "getByUuids_14",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -1736,7 +1749,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string"
+                    "$ref" : "#/components/schemas/EventDto"
                   }
                 }
               }
@@ -1775,19 +1788,68 @@
         }
       }
     },
-    "/visits-external/version" : {
-      "get" : {
-        "tags" : [ "External Visits Controller" ],
-        "summary" : "Get API version",
-        "operationId" : "getVersion",
+    "/events/push" : {
+      "post" : {
+        "tags" : [ "Event Controller" ],
+        "operationId" : "postEvents",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/EventDto"
+                }
+              }
+            }
+          }
+        },
         "responses" : {
           "default" : {
-            "description" : "The minimal version needed for compatibility with the external ReST API of SORMAS.",
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PushResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external/followUpEndDates/{since}" : {
+      "get" : {
+        "tags" : [ "External Visits Controller" ],
+        "summary" : "Get follow up end dates",
+        "description" : "Get latest follow up end date assigned to the specified person. Note: Only returns values for persons who have their symptom journal status set to ACCEPTED! Only returns values changed after {since}, which is interpreted as a UNIX timestamp.",
+        "operationId" : "getLatestFollowUpEndDates",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "List of personUuids and their latest follow up end dates as UNIX timestamps.",
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
                   "type" : "string",
-                  "example" : "1.37.0"
+                  "example" : [ {
+                    "personUuid" : "Q56VFD-G3TXKT-R2DBIW-FTWIKAMI",
+                    "latestFollowUpEndDate" : 1599602400000
+                  }, {
+                    "personUuid" : "TEYCIW-BHWHMH-MH2QIW-KBP72JMU",
+                    "latestFollowUpEndDate" : 1593727200000
+                  } ]
                 }
               }
             }
@@ -1817,6 +1879,88 @@
                 "schema" : {
                   "type" : "string",
                   "example" : "[  {    \"pseudonymized\": false,    \"firstName\": \"Tim\",    \"lastName\": \"Tahler\",    \"emailAddress\": \"test@test.de\"    \"phone\": \"0123456789\",    \"birthdateDD\": 6,    \"birthdateMM\": 4,    \"birthdateYYYY\": 1974,    \"sex\": \"MALE\",    \"uuid\": \"UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M\",    \"latestFollowUpEndDate\": 1601416800000,  }]"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external/version" : {
+      "get" : {
+        "tags" : [ "External Visits Controller" ],
+        "summary" : "Get API version",
+        "operationId" : "getVersion",
+        "responses" : {
+          "default" : {
+            "description" : "The minimal version needed for compatibility with the external ReST API of SORMAS.",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : "1.37.0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external/person/{personUuid}/isValid" : {
+      "get" : {
+        "tags" : [ "External Visits Controller" ],
+        "summary" : "Check person validity",
+        "description" : "Check if a the Uuid given as parameter exists in SORMAS.",
+        "operationId" : "isValidPersonUuid",
+        "parameters" : [ {
+          "name" : "personUuid",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "true a person with the given Uuid exists in SORMAS, false otherwise.",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits-external" : {
+      "post" : {
+        "tags" : [ "External Visits Controller" ],
+        "summary" : "Save visits",
+        "description" : "Upload visits with all symptom and disease related data to SORMAS.",
+        "operationId" : "postExternalVisits",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/ExternalVisitDto"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "OK when visit was successfully saved, ERROR otherwise.",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : "OK"
                 }
               }
             }
@@ -1863,46 +2007,18 @@
         }
       }
     },
-    "/visits-external" : {
-      "post" : {
-        "tags" : [ "External Visits Controller" ],
-        "summary" : "Save visits",
-        "description" : "Upload visits with all symptom and disease related data to SORMAS.",
-        "operationId" : "postExternalVisits",
-        "requestBody" : {
-          "content" : {
-            "application/json; charset=UTF-8" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/ExternalVisitDto"
-                }
-              }
-            }
-          }
-        },
-        "responses" : {
-          "default" : {
-            "description" : "OK when visit was successfully saved, ERROR otherwise.",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "string",
-                  "example" : "OK"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/visits-external/followUpEndDates/{since}" : {
+    "/facilities/region/{regionUuid}/{since}" : {
       "get" : {
-        "tags" : [ "External Visits Controller" ],
-        "summary" : "Get follow up end dates",
-        "description" : "Get latest follow up end date assigned to the specified person. Note: Only returns values for persons who have their symptom journal status set to ACCEPTED! Only returns values changed after {since}, which is interpreted as a UNIX timestamp.",
-        "operationId" : "getLatestFollowUpEndDates",
+        "tags" : [ "Facility Controller" ],
+        "operationId" : "getAllByRegion",
         "parameters" : [ {
+          "name" : "regionUuid",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
           "name" : "since",
           "in" : "path",
           "required" : true,
@@ -1913,18 +2029,14 @@
         } ],
         "responses" : {
           "default" : {
-            "description" : "List of personUuids and their latest follow up end dates as UNIX timestamps.",
+            "description" : "default response",
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
-                  "example" : [ {
-                    "personUuid" : "Q56VFD-G3TXKT-R2DBIW-FTWIKAMI",
-                    "latestFollowUpEndDate" : 1599602400000
-                  }, {
-                    "personUuid" : "TEYCIW-BHWHMH-MH2QIW-KBP72JMU",
-                    "latestFollowUpEndDate" : 1593727200000
-                  } ]
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/FacilityDto"
+                  }
                 }
               }
             }
@@ -1932,28 +2044,20 @@
         }
       }
     },
-    "/visits-external/person/{personUuid}/isValid" : {
+    "/facilities/uuids" : {
       "get" : {
-        "tags" : [ "External Visits Controller" ],
-        "summary" : "Check person validity",
-        "description" : "Check if a the Uuid given as parameter exists in SORMAS.",
-        "operationId" : "isValidPersonUuid",
-        "parameters" : [ {
-          "name" : "personUuid",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "tags" : [ "Facility Controller" ],
+        "operationId" : "getAllUuids_10",
         "responses" : {
           "default" : {
-            "description" : "true a person with the given Uuid exists in SORMAS, false otherwise.",
+            "description" : "default response",
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
-                  "example" : true
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
                 }
               }
             }
@@ -2024,39 +2128,11 @@
         }
       }
     },
-    "/facilities/uuids" : {
+    "/featureconfigurations/all/{since}" : {
       "get" : {
-        "tags" : [ "Facility Controller" ],
-        "operationId" : "getAllUuids_10",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/facilities/region/{regionUuid}/{since}" : {
-      "get" : {
-        "tags" : [ "Facility Controller" ],
-        "operationId" : "getAllByRegion",
+        "tags" : [ "Feature Configuration Controller" ],
+        "operationId" : "getAllFeatureConfigurations",
         "parameters" : [ {
-          "name" : "regionUuid",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
           "name" : "since",
           "in" : "path",
           "required" : true,
@@ -2073,7 +2149,28 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/FacilityDto"
+                    "$ref" : "#/components/schemas/FeatureConfigurationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/featureconfigurations/uuids" : {
+      "get" : {
+        "tags" : [ "Feature Configuration Controller" ],
+        "operationId" : "getAllUuids_11",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -2145,38 +2242,15 @@
         }
       }
     },
-    "/featureconfigurations/uuids" : {
+    "/info/appurl" : {
       "get" : {
-        "tags" : [ "Feature Configuration Controller" ],
-        "operationId" : "getAllUuids_11",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/featureconfigurations/all/{since}" : {
-      "get" : {
-        "tags" : [ "Feature Configuration Controller" ],
-        "operationId" : "getAllFeatureConfigurations",
+        "tags" : [ "Info Controller" ],
+        "operationId" : "getAppUrl",
         "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
+          "name" : "appVersion",
+          "in" : "query",
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string"
           }
         } ],
         "responses" : {
@@ -2185,10 +2259,7 @@
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/FeatureConfigurationDto"
-                  }
+                  "type" : "string"
                 }
               }
             }
@@ -2218,31 +2289,6 @@
       "get" : {
         "tags" : [ "Info Controller" ],
         "operationId" : "getVersion_1",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/info/appurl" : {
-      "get" : {
-        "tags" : [ "Info Controller" ],
-        "operationId" : "getAppUrl",
-        "parameters" : [ {
-          "name" : "appVersion",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2309,27 +2355,6 @@
         }
       }
     },
-    "/outbreaks/uuids" : {
-      "get" : {
-        "tags" : [ "Outbreak Controller" ],
-        "operationId" : "getActiveUuids",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/outbreaks/active/{since}" : {
       "get" : {
         "tags" : [ "Outbreak Controller" ],
@@ -2352,6 +2377,27 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/OutbreakDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/outbreaks/uuids" : {
+      "get" : {
+        "tags" : [ "Outbreak Controller" ],
+        "operationId" : "getActiveUuids",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -2390,22 +2436,40 @@
         }
       }
     },
-    "/pathogentests/query" : {
-      "post" : {
+    "/pathogentests/uuids" : {
+      "get" : {
         "tags" : [ "Pathogen Test Controller" ],
-        "operationId" : "getByUuids_17",
-        "requestBody" : {
-          "content" : {
-            "application/json; charset=UTF-8" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
+        "operationId" : "getAllActiveUuids_5",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
                 }
               }
             }
           }
-        },
+        }
+      }
+    },
+    "/pathogentests/all/{since}" : {
+      "get" : {
+        "tags" : [ "Pathogen Test Controller" ],
+        "operationId" : "getAllPathogenTests",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2456,10 +2520,43 @@
         }
       }
     },
-    "/pathogentests/all/{since}" : {
+    "/pathogentests/query" : {
+      "post" : {
+        "tags" : [ "Pathogen Test Controller" ],
+        "operationId" : "getByUuids_17",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PathogenTestDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pathogentests/deleted/{since}" : {
       "get" : {
         "tags" : [ "Pathogen Test Controller" ],
-        "operationId" : "getAllPathogenTests",
+        "operationId" : "getDeletedUuidsSince_4",
         "parameters" : [ {
           "name" : "since",
           "in" : "path",
@@ -2477,7 +2574,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/PathogenTestDto"
+                    "type" : "string"
                   }
                 }
               }
@@ -2519,31 +2616,10 @@
         }
       }
     },
-    "/pathogentests/uuids" : {
+    "/persons/all/{since}" : {
       "get" : {
-        "tags" : [ "Pathogen Test Controller" ],
-        "operationId" : "getAllActiveUuids_5",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/pathogentests/deleted/{since}" : {
-      "get" : {
-        "tags" : [ "Pathogen Test Controller" ],
-        "operationId" : "getDeletedUuidsSince_4",
+        "tags" : [ "Person Controller" ],
+        "operationId" : "getAllPersons",
         "parameters" : [ {
           "name" : "since",
           "in" : "path",
@@ -2553,39 +2629,6 @@
             "format" : "int64"
           }
         } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/persons/query" : {
-      "post" : {
-        "tags" : [ "Person Controller" ],
-        "operationId" : "getByUuids_18",
-        "requestBody" : {
-          "content" : {
-            "application/json; charset=UTF-8" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        },
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2624,19 +2667,22 @@
         }
       }
     },
-    "/persons/all/{since}" : {
-      "get" : {
+    "/persons/query" : {
+      "post" : {
         "tags" : [ "Person Controller" ],
-        "operationId" : "getAllPersons",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+        "operationId" : "getByUuids_18",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
           }
-        } ],
+        },
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2717,6 +2763,27 @@
         }
       }
     },
+    "/pointsofentry/uuids" : {
+      "get" : {
+        "tags" : [ "Point Of Entry Controller" ],
+        "operationId" : "getAllUuids_13",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/pointsofentry/query" : {
       "post" : {
         "tags" : [ "Point Of Entry Controller" ],
@@ -2750,10 +2817,10 @@
         }
       }
     },
-    "/pointsofentry/uuids" : {
+    "/prescriptions/uuids" : {
       "get" : {
-        "tags" : [ "Point Of Entry Controller" ],
-        "operationId" : "getAllUuids_13",
+        "tags" : [ "Prescription Controller" ],
+        "operationId" : "getAllActiveUuids_6",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2763,6 +2830,36 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prescriptions/all/{since}" : {
+      "get" : {
+        "tags" : [ "Prescription Controller" ],
+        "operationId" : "getAllPrescriptions",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PrescriptionDto"
                   }
                 }
               }
@@ -2787,36 +2884,6 @@
             }
           }
         },
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/PrescriptionDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/prescriptions/all/{since}" : {
-      "get" : {
-        "tags" : [ "Prescription Controller" ],
-        "operationId" : "getAllPrescriptions",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2867,27 +2934,6 @@
         }
       }
     },
-    "/prescriptions/uuids" : {
-      "get" : {
-        "tags" : [ "Prescription Controller" ],
-        "operationId" : "getAllActiveUuids_6",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/regions/all/{since}" : {
       "get" : {
         "tags" : [ "Region Controller" ],
@@ -2910,6 +2956,27 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/RegionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/regions/uuids" : {
+      "get" : {
+        "tags" : [ "Region Controller" ],
+        "operationId" : "getAllUuids_14",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -2951,10 +3018,10 @@
         }
       }
     },
-    "/regions/uuids" : {
+    "/samples/uuids" : {
       "get" : {
-        "tags" : [ "Region Controller" ],
-        "operationId" : "getAllUuids_14",
+        "tags" : [ "Sample Controller" ],
+        "operationId" : "getAllActiveUuids_7",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -2972,22 +3039,19 @@
         }
       }
     },
-    "/samples/query" : {
-      "post" : {
+    "/samples/all/{since}" : {
+      "get" : {
         "tags" : [ "Sample Controller" ],
-        "operationId" : "getByUuids_22",
-        "requestBody" : {
-          "content" : {
-            "application/json; charset=UTF-8" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "string"
-                }
-              }
-            }
+        "operationId" : "getAllSamples",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        },
+        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -3038,10 +3102,43 @@
         }
       }
     },
-    "/samples/all/{since}" : {
+    "/samples/query" : {
+      "post" : {
+        "tags" : [ "Sample Controller" ],
+        "operationId" : "getByUuids_22",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/SampleDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/samples/deleted/{since}" : {
       "get" : {
         "tags" : [ "Sample Controller" ],
-        "operationId" : "getAllSamples",
+        "operationId" : "getDeletedUuidsSince_5",
         "parameters" : [ {
           "name" : "since",
           "in" : "path",
@@ -3059,7 +3156,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/SampleDto"
+                    "type" : "string"
                   }
                 }
               }
@@ -3093,57 +3190,6 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/PushResult"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/samples/uuids" : {
-      "get" : {
-        "tags" : [ "Sample Controller" ],
-        "operationId" : "getAllActiveUuids_7",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/samples/deleted/{since}" : {
-      "get" : {
-        "tags" : [ "Sample Controller" ],
-        "operationId" : "getDeletedUuidsSince_5",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
                   }
                 }
               }
@@ -3270,6 +3316,27 @@
         }
       }
     },
+    "/tasks/uuids" : {
+      "get" : {
+        "tags" : [ "Task Controller" ],
+        "operationId" : "getAllActiveUuids_8",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tasks/query" : {
       "post" : {
         "tags" : [ "Task Controller" ],
@@ -3336,10 +3403,10 @@
         }
       }
     },
-    "/tasks/uuids" : {
+    "/treatments/uuids" : {
       "get" : {
-        "tags" : [ "Task Controller" ],
-        "operationId" : "getAllActiveUuids_8",
+        "tags" : [ "Treatment Controller" ],
+        "operationId" : "getAllActiveUuids_9",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -3349,6 +3416,36 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/treatments/all/{since}" : {
+      "get" : {
+        "tags" : [ "Treatment Controller" ],
+        "operationId" : "getAllTreatments",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/TreatmentDto"
                   }
                 }
               }
@@ -3373,36 +3470,6 @@
             }
           }
         },
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/TreatmentDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/treatments/all/{since}" : {
-      "get" : {
-        "tags" : [ "Treatment Controller" ],
-        "operationId" : "getAllTreatments",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -3453,27 +3520,6 @@
         }
       }
     },
-    "/treatments/uuids" : {
-      "get" : {
-        "tags" : [ "Treatment Controller" ],
-        "operationId" : "getAllActiveUuids_9",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/users/all/{since}" : {
       "get" : {
         "tags" : [ "User Controller" ],
@@ -3496,6 +3542,27 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/uuids" : {
+      "get" : {
+        "tags" : [ "User Controller" ],
+        "operationId" : "getAllUuids_15",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -3537,27 +3604,6 @@
         }
       }
     },
-    "/users/uuids" : {
-      "get" : {
-        "tags" : [ "User Controller" ],
-        "operationId" : "getAllUuids_15",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/userroles/all/{since}" : {
       "get" : {
         "tags" : [ "User Role Config Controller" ],
@@ -3580,6 +3626,27 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/UserRoleConfigDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userroles/uuids" : {
+      "get" : {
+        "tags" : [ "User Role Config Controller" ],
+        "operationId" : "getAllUuids_16",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -3618,10 +3685,10 @@
         }
       }
     },
-    "/userroles/uuids" : {
+    "/visits/uuids" : {
       "get" : {
-        "tags" : [ "User Role Config Controller" ],
-        "operationId" : "getAllUuids_16",
+        "tags" : [ "Visit Controller" ],
+        "operationId" : "getAllActiveUuids_10",
         "responses" : {
           "default" : {
             "description" : "default response",
@@ -3631,6 +3698,36 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visits/all/{since}" : {
+      "get" : {
+        "tags" : [ "Visit Controller" ],
+        "operationId" : "getAllVisits_1",
+        "parameters" : [ {
+          "name" : "since",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/VisitDto"
                   }
                 }
               }
@@ -3705,10 +3802,31 @@
         }
       }
     },
-    "/visits/all/{since}" : {
+    "/weeklyreports/uuids" : {
       "get" : {
-        "tags" : [ "Visit Controller" ],
-        "operationId" : "getAllVisits_1",
+        "tags" : [ "Weekly Report Controller" ],
+        "operationId" : "getAllUuids_17",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/weeklyreports/all/{since}" : {
+      "get" : {
+        "tags" : [ "Weekly Report Controller" ],
+        "operationId" : "getAllWeeklyReports",
         "parameters" : [ {
           "name" : "since",
           "in" : "path",
@@ -3726,28 +3844,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/VisitDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/visits/uuids" : {
-      "get" : {
-        "tags" : [ "Visit Controller" ],
-        "operationId" : "getAllActiveUuids_10",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
+                    "$ref" : "#/components/schemas/WeeklyReportDto"
                   }
                 }
               }
@@ -3789,27 +3886,6 @@
         }
       }
     },
-    "/weeklyreports/uuids" : {
-      "get" : {
-        "tags" : [ "Weekly Report Controller" ],
-        "operationId" : "getAllUuids_17",
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/weeklyreports/push" : {
       "post" : {
         "tags" : [ "Weekly Report Controller" ],
@@ -3835,36 +3911,6 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/PushResult"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/weeklyreports/all/{since}" : {
-      "get" : {
-        "tags" : [ "Weekly Report Controller" ],
-        "operationId" : "getAllWeeklyReports",
-        "parameters" : [ {
-          "name" : "since",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "default response",
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/WeeklyReportDto"
                   }
                 }
               }
@@ -3977,6 +4023,14 @@
           },
           "caption" : {
             "type" : "string"
+          },
+          "firstName" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true
+          },
+          "lastName" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true
           }
         }
       },
@@ -4526,8 +4580,8 @@
           },
           "epidNumber" : {
             "type" : "string",
-            "x-sormas-outbreaks" : true,
-            "x-sormas-countries-except" : [ "de", "ch" ]
+            "x-sormas-countries-except" : [ "de", "ch" ],
+            "x-sormas-outbreaks" : true
           },
           "reportDate" : {
             "type" : "string",
@@ -4613,8 +4667,8 @@
           },
           "healthFacilityDetails" : {
             "type" : "string",
-            "x-sormas-outbreaks" : true,
-            "x-sormas-personal-data" : true
+            "x-sormas-personal-data" : true,
+            "x-sormas-outbreaks" : true
           },
           "pregnant" : {
             "$ref" : "#/components/schemas/YesNoUnknown"
@@ -4724,6 +4778,13 @@
           },
           "sharedToCountry" : {
             "type" : "boolean"
+          },
+          "nosocomialOutbreak" : {
+            "type" : "boolean",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "infectionSetting" : {
+            "$ref" : "#/components/schemas/InfectionSetting"
           },
           "quarantine" : {
             "$ref" : "#/components/schemas/QuarantineType"
@@ -4853,6 +4914,19 @@
           "endOfIsolationReasonDetails" : {
             "type" : "string",
             "x-sormas-countries-for" : [ "ch" ]
+          },
+          "prohibitionToWork" : {
+            "$ref" : "#/components/schemas/YesNoUnknown"
+          },
+          "prohibitionToWorkFrom" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "prohibitionToWorkUntil" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-countries-for" : [ "de" ]
           }
         }
       },
@@ -5011,6 +5085,9 @@
           },
           "location" : {
             "$ref" : "#/components/schemas/LocationDto"
+          },
+          "patientExpositionRole" : {
+            "$ref" : "#/components/schemas/PatientExpositionRole"
           },
           "typeOfPlace" : {
             "$ref" : "#/components/schemas/TypeOfPlace"
@@ -5314,6 +5391,10 @@
           }
         }
       },
+      "InfectionSetting" : {
+        "type" : "string",
+        "enum" : [ "UNKNOWN", "AMBULATORY", "MEDICAL_PRACTICE", "OPERATIVE_1200", "HOSPITAL_1300", "OTHER_OUTPATIENT_FACILITY", "STATIONARY", "HOSPITAL_2100", "NORMAL_WARD", "OPERATIVE_2111", "NOT_OPERATIVE", "HEMATOLOGICAL_ONCOLOGY", "CHILDREN_WARD", "NEONATOLOGY", "INTENSIVE_CARE_UNIT", "OTHER_STATION", "NURSING_HOME", "REHAB_FACILITY", "OTHER_STATIONARY_FACILITY" ]
+      },
       "InvestigationStatus" : {
         "type" : "string",
         "enum" : [ "PENDING", "DONE", "DISCARDED" ]
@@ -5520,6 +5601,10 @@
       "MeansOfTransport" : {
         "type" : "string",
         "enum" : [ "BUS", "FERRY", "PLANE", "TRAIN", "OTHER" ]
+      },
+      "PatientExpositionRole" : {
+        "type" : "string",
+        "enum" : [ "NOT_COLLECTED", "UNKNOWN", "WORKING_AT", "ACCOMMODATED_IN", "CARED_FOR", "OTHER" ]
       },
       "PersonAddressType" : {
         "type" : "string",
@@ -5907,14 +5992,14 @@
           "lesionsAllOverBody" : {
             "type" : "boolean",
             "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsArms" : {
             "type" : "boolean",
             "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "ANTHRAX", "POLIO", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsDeepProfound" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -5922,33 +6007,33 @@
           "lesionsFace" : {
             "type" : "boolean",
             "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsGenitals" : {
             "type" : "boolean",
             "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsLegs" : {
             "type" : "boolean",
             "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsOnsetDate" : {
             "type" : "string",
             "format" : "date-time",
             "x-sormas-diseases" : [ "MONKEYPOX", "ANTHRAX" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsPalmsHands" : {
             "type" : "boolean",
             "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsResembleImg1" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -5971,8 +6056,8 @@
           "lesionsSolesFeet" : {
             "type" : "boolean",
             "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lesionsThatItch" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -5980,8 +6065,8 @@
           "lesionsThorax" : {
             "type" : "boolean",
             "x-sormas-diseases" : [ "AFP", "GUINEA_WORM", "MONKEYPOX", "POLIO", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "lesions"
+            "x-sormas-depends-on" : "lesions",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "lossSkinTurgor" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -6040,8 +6125,8 @@
           "otherHemorrhagicSymptomsText" : {
             "type" : "string",
             "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "PLAGUE", "POLIO", "UNSPECIFIED_VHF", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de", "ch" ],
-            "x-sormas-depends-on" : "otherHemorrhagicSymptoms"
+            "x-sormas-depends-on" : "otherHemorrhagicSymptoms",
+            "x-sormas-countries-except" : [ "de", "ch" ]
           },
           "otherNonHemorrhagicSymptoms" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -6049,8 +6134,8 @@
           "otherNonHemorrhagicSymptomsText" : {
             "type" : "string",
             "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "NEW_INFLUENZA", "CSM", "CHOLERA", "MEASLES", "DENGUE", "MONKEYPOX", "PLAGUE", "POLIO", "UNSPECIFIED_VHF", "CONGENITAL_RUBELLA", "CORONAVIRUS", "UNDEFINED", "OTHER" ],
-            "x-sormas-outbreaks" : true,
-            "x-sormas-depends-on" : "otherNonHemorrhagicSymptoms"
+            "x-sormas-depends-on" : "otherNonHemorrhagicSymptoms",
+            "x-sormas-outbreaks" : true
           },
           "otitisMedia" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -6313,8 +6398,8 @@
           "otherComplicationsText" : {
             "type" : "string",
             "x-sormas-diseases" : [ "AFP", "EVD", "GUINEA_WORM", "LASSA", "NEW_INFLUENZA", "CSM", "CHOLERA", "MEASLES", "POLIO", "UNSPECIFIED_VHF", "GUINEA_WORM", "RABIES", "YELLOW_FEVER", "DENGUE", "PLAGUE", "ANTHRAX", "CORONAVIRUS", "UNDEFINED", "OTHER" ],
-            "x-sormas-countries-except" : [ "de" ],
-            "x-sormas-depends-on" : "otherComplications"
+            "x-sormas-depends-on" : "otherComplications",
+            "x-sormas-countries-except" : [ "de" ]
           },
           "seizures" : {
             "$ref" : "#/components/schemas/SymptomState"
@@ -6982,6 +7067,19 @@
           "endOfQuarantineReasonDetails" : {
             "type" : "string",
             "x-sormas-countries-for" : [ "ch" ]
+          },
+          "prohibitionToWork" : {
+            "$ref" : "#/components/schemas/YesNoUnknown"
+          },
+          "prohibitionToWorkFrom" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-countries-for" : [ "de" ]
+          },
+          "prohibitionToWorkUntil" : {
+            "type" : "string",
+            "format" : "date-time",
+            "x-sormas-countries-for" : [ "de" ]
           }
         }
       },
@@ -7129,6 +7227,10 @@
         "type" : "string",
         "enum" : [ "YEARS", "MONTHS", "DAYS" ]
       },
+      "ArmedForcesRelationType" : {
+        "type" : "string",
+        "enum" : [ "UNKNOWN", "NO_RELATION", "CIVIL", "SOLDIER_OR_RELATIVE" ]
+      },
       "BurialConductor" : {
         "type" : "string",
         "enum" : [ "FAMILY_COMMUNITY", "OUTBREAK_TEAM" ]
@@ -7136,6 +7238,18 @@
       "CauseOfDeath" : {
         "type" : "string",
         "enum" : [ "EPIDEMIC_DISEASE", "OTHER_CAUSE" ]
+      },
+      "CountryReferenceDto" : {
+        "required" : [ "uuid" ],
+        "type" : "object",
+        "properties" : {
+          "uuid" : {
+            "type" : "string"
+          },
+          "caption" : {
+            "type" : "string"
+          }
+        }
       },
       "DeathPlaceType" : {
         "type" : "string",
@@ -7212,13 +7326,25 @@
           },
           "firstName" : {
             "type" : "string",
-            "x-sormas-outbreaks" : true,
-            "x-sormas-personal-data" : true
+            "x-sormas-personal-data" : true,
+            "x-sormas-outbreaks" : true
           },
           "lastName" : {
             "type" : "string",
-            "x-sormas-outbreaks" : true,
+            "x-sormas-personal-data" : true,
+            "x-sormas-outbreaks" : true
+          },
+          "salutation" : {
+            "$ref" : "#/components/schemas/Salutation"
+          },
+          "otherSalutation" : {
+            "type" : "string",
             "x-sormas-personal-data" : true
+          },
+          "birthName" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true,
+            "x-sormas-countries-for" : [ "de" ]
           },
           "nickname" : {
             "type" : "string",
@@ -7236,14 +7362,19 @@
             "type" : "string",
             "x-sormas-personal-data" : true
           },
+          "namesOfGuardians" : {
+            "type" : "string",
+            "x-sormas-personal-data" : true,
+            "x-sormas-countries-for" : [ "de" ]
+          },
           "sex" : {
             "$ref" : "#/components/schemas/Sex"
           },
           "birthdateDD" : {
             "type" : "integer",
             "format" : "int32",
-            "x-sormas-outbreaks" : true,
-            "x-sormas-personal-data" : true
+            "x-sormas-personal-data" : true,
+            "x-sormas-outbreaks" : true
           },
           "birthdateMM" : {
             "type" : "integer",
@@ -7356,6 +7487,9 @@
           "occupationDetails" : {
             "type" : "string"
           },
+          "armedForcesRelationType" : {
+            "$ref" : "#/components/schemas/ArmedForcesRelationType"
+          },
           "generalPractitionerDetails" : {
             "type" : "string"
           },
@@ -7373,13 +7507,13 @@
           },
           "hasCovidApp" : {
             "type" : "boolean",
-            "x-sormas-diseases" : [ "CORONAVIRUS" ],
-            "x-sormas-countries-for" : [ "ch" ]
+            "x-sormas-countries-for" : [ "ch" ],
+            "x-sormas-diseases" : [ "CORONAVIRUS" ]
           },
           "covidCodeDelivered" : {
             "type" : "boolean",
-            "x-sormas-diseases" : [ "CORONAVIRUS" ],
-            "x-sormas-countries-for" : [ "ch" ]
+            "x-sormas-countries-for" : [ "ch" ],
+            "x-sormas-diseases" : [ "CORONAVIRUS" ]
           },
           "symptomJournalStatus" : {
             "$ref" : "#/components/schemas/SymptomJournalStatus"
@@ -7387,12 +7521,22 @@
           "externalId" : {
             "type" : "string",
             "x-sormas-countries-for" : [ "de" ]
+          },
+          "birthCountry" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
+          },
+          "citizenship" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
           }
         }
       },
       "PresentCondition" : {
         "type" : "string",
         "enum" : [ "ALIVE", "DEAD", "BURIED", "UNKNOWN" ]
+      },
+      "Salutation" : {
+        "type" : "string",
+        "enum" : [ "MR", "MRS", "MR_AND_MRS", "FAMILY", "GUARDIAN_OF_MINOR", "OTHER" ]
       },
       "Sex" : {
         "type" : "string",
@@ -7423,6 +7567,9 @@
           },
           "eventStatus" : {
             "$ref" : "#/components/schemas/EventStatus"
+          },
+          "riskLevel" : {
+            "$ref" : "#/components/schemas/RiskLevel"
           },
           "eventInvestigationStatus" : {
             "$ref" : "#/components/schemas/EventInvestigationStatus"
@@ -7470,6 +7617,12 @@
           },
           "srcType" : {
             "$ref" : "#/components/schemas/EventSourceType"
+          },
+          "srcInstitutionalPartnerType" : {
+            "$ref" : "#/components/schemas/InstitutionalPartnerType"
+          },
+          "srcInstitutionalPartnerTypeDetails" : {
+            "type" : "string"
           },
           "srcFirstName" : {
             "type" : "string"
@@ -7527,11 +7680,31 @@
       },
       "EventSourceType" : {
         "type" : "string",
-        "enum" : [ "NOT_APPLICABLE", "MEDIA_NEWS", "HOTLINE_PERSON", "MATHEMATICAL_MODEL" ]
+        "enum" : [ "NOT_APPLICABLE", "MEDIA_NEWS", "HOTLINE_PERSON", "MATHEMATICAL_MODEL", "INSTITUTIONAL_PARTNER" ]
       },
       "EventStatus" : {
         "type" : "string",
         "enum" : [ "SIGNAL", "EVENT", "SCREENING", "CLUSTER", "DROPPED" ]
+      },
+      "InstitutionalPartnerType" : {
+        "type" : "string",
+        "enum" : [ "HEALTH_INSURANCE", "TERRITORIAL_COMMUNITIES", "NATIONAL_EDUCATION", "HEALTH_ESTABLISHMENTS", "MEDICO_SOCIAL_ESTABLISHMENTS", "OTHER" ]
+      },
+      "RiskLevel" : {
+        "type" : "string",
+        "enum" : [ "LOW", "MODERATE", "HIGH", "UNKNOWN" ]
+      },
+      "PersonFollowUpEndDto" : {
+        "type" : "object",
+        "properties" : {
+          "personUuid" : {
+            "type" : "string"
+          },
+          "latestFollowUpEndDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
       },
       "JournalPersonDto" : {
         "type" : "object",
@@ -7577,18 +7750,9 @@
           "latestFollowUpEndDate" : {
             "type" : "string",
             "format" : "date-time"
-          }
-        }
-      },
-      "PersonSymptomJournalStatusDto" : {
-        "required" : [ "status" ],
-        "type" : "object",
-        "properties" : {
-          "status" : {
-            "$ref" : "#/components/schemas/SymptomJournalStatus"
           },
-          "statusDateTime" : {
-            "type" : "string"
+          "followUpStatus" : {
+            "$ref" : "#/components/schemas/FollowUpStatus"
           }
         }
       },
@@ -7633,15 +7797,15 @@
         "type" : "string",
         "enum" : [ "UNAVAILABLE", "UNCOOPERATIVE", "COOPERATIVE" ]
       },
-      "PersonFollowUpEndDto" : {
+      "PersonSymptomJournalStatusDto" : {
+        "required" : [ "status" ],
         "type" : "object",
         "properties" : {
-          "personUuid" : {
-            "type" : "string"
+          "status" : {
+            "$ref" : "#/components/schemas/SymptomJournalStatus"
           },
-          "latestFollowUpEndDate" : {
-            "type" : "string",
-            "format" : "date-time"
+          "statusDateTime" : {
+            "type" : "string"
           }
         }
       },
@@ -7735,7 +7899,7 @@
       },
       "FeatureType" : {
         "type" : "string",
-        "enum" : [ "LINE_LISTING", "AGGREGATE_REPORTING", "EVENT_SURVEILLANCE", "WEEKLY_REPORTING", "CLINICAL_MANAGEMENT", "NATIONAL_CASE_SHARING", "TASK_GENERATION_CASE_SURVEILLANCE", "TASK_GENERATION_CONTACT_TRACING", "TASK_GENERATION_EVENT_SURVEILLANCE", "TASK_GENERATION_GENERAL", "CAMPAIGNS", "CASE_SURVEILANCE", "CONTACT_TRACING", "SAMPLES_LAB", "INFRASTRUCTURE_TYPE_AREA", "CASE_FOLLOWUP", "TASK_NOTIFICATIONS", "OTHER_NOTIFICATIONS", "DOCUMENTS", "OUTBREAKS" ]
+        "enum" : [ "LINE_LISTING", "AGGREGATE_REPORTING", "EVENT_SURVEILLANCE", "WEEKLY_REPORTING", "CLINICAL_MANAGEMENT", "NATIONAL_CASE_SHARING", "TASK_MANAGEMENT", "TASK_GENERATION_CASE_SURVEILLANCE", "TASK_GENERATION_CONTACT_TRACING", "TASK_GENERATION_EVENT_SURVEILLANCE", "TASK_GENERATION_GENERAL", "CAMPAIGNS", "CASE_SURVEILANCE", "CONTACT_TRACING", "SAMPLES_LAB", "INFRASTRUCTURE_TYPE_AREA", "CASE_FOLLOWUP", "TASK_NOTIFICATIONS", "MANUAL_EXTERNAL_MESSAGES", "OTHER_NOTIFICATIONS", "DOCUMENTS", "OUTBREAKS", "LAB_MESSAGES" ]
       },
       "CompatibilityCheckResponse" : {
         "type" : "string",
@@ -8027,11 +8191,11 @@
       },
       "UserRight" : {
         "type" : "string",
-        "enum" : [ "CASE_CREATE", "CASE_VIEW", "CASE_EDIT", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_SHARE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_MERGE", "SAMPLE_CREATE", "SAMPLE_VIEW", "SAMPLE_EDIT", "SAMPLE_EDIT_NOT_OWNED", "SAMPLE_DELETE", "SAMPLE_TRANSFER", "SAMPLE_EXPORT", "SAMPLE_VIEW_ARCHIVED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_CREATE", "CONTACT_IMPORT", "CONTACT_VIEW", "CONTACT_ASSIGN", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_CLASSIFY", "CONTACT_CONVERT", "CONTACT_EXPORT", "CONTACT_VIEW_ARCHIVED", "CONTACT_REASSIGN_CASE", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_CREATE", "TASK_VIEW", "TASK_EDIT", "TASK_ASSIGN", "TASK_VIEW_ARCHIVED", "TASK_DELETE", "TASK_EXPORT", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_CREATE", "EVENT_VIEW", "EVENT_EDIT", "EVENT_EXPORT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_VIEW_ARCHIVED", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "WEEKLYREPORT_CREATE", "WEEKLYREPORT_VIEW", "USER_CREATE", "USER_EDIT", "USER_VIEW", "CONFIGURATION_ACCESS", "OUTBREAK_CONFIGURE_ALL", "OUTBREAK_CONFIGURE_RESTRICTED", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "DATABASE_EXPORT_ACCESS", "PERFORM_BULK_OPERATIONS", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "USER_RIGHTS_MANAGE", "DASHBOARD_VIEW", "DASHBOARD_SURVEILLANCE_ACCESS", "DASHBOARD_CONTACT_ACCESS", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_ACCESS", "CASE_MANAGEMENT_ACCESS", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "POPULATION_MANAGE", "DOCUMENT_TEMPLATE_MANAGEMENT", "QUARANTINE_ORDER_CREATE", "LINE_LISTING_CONFIGURE", "LINE_LISTING_CONFIGURE_NATION", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EXPORT", "AGGREGATE_REPORT_EDIT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "BAG_EXPORT", "SORMAS_TO_SORMAS_SHARE" ]
+        "enum" : [ "CASE_CREATE", "CASE_VIEW", "CASE_EDIT", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_SHARE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_MERGE", "SAMPLE_CREATE", "SAMPLE_VIEW", "SAMPLE_EDIT", "SAMPLE_EDIT_NOT_OWNED", "SAMPLE_DELETE", "SAMPLE_TRANSFER", "SAMPLE_EXPORT", "SAMPLE_VIEW_ARCHIVED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_CREATE", "CONTACT_IMPORT", "CONTACT_VIEW", "CONTACT_ASSIGN", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_CLASSIFY", "CONTACT_CONVERT", "CONTACT_EXPORT", "CONTACT_VIEW_ARCHIVED", "CONTACT_REASSIGN_CASE", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_CREATE", "TASK_VIEW", "TASK_EDIT", "TASK_ASSIGN", "TASK_VIEW_ARCHIVED", "TASK_DELETE", "TASK_EXPORT", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_CREATE", "EVENT_VIEW", "EVENT_EDIT", "EVENT_EXPORT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_VIEW_ARCHIVED", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "WEEKLYREPORT_CREATE", "WEEKLYREPORT_VIEW", "USER_CREATE", "USER_EDIT", "USER_VIEW", "CONFIGURATION_ACCESS", "OUTBREAK_CONFIGURE_ALL", "OUTBREAK_CONFIGURE_RESTRICTED", "SEND_MANUAL_EXTERNAL_MESSAGES", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "DATABASE_EXPORT_ACCESS", "PERFORM_BULK_OPERATIONS", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "USER_RIGHTS_MANAGE", "DASHBOARD_VIEW", "DASHBOARD_SURVEILLANCE_ACCESS", "DASHBOARD_CONTACT_ACCESS", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_ACCESS", "CASE_MANAGEMENT_ACCESS", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "POPULATION_MANAGE", "DOCUMENT_TEMPLATE_MANAGEMENT", "QUARANTINE_ORDER_CREATE", "LINE_LISTING_CONFIGURE", "LINE_LISTING_CONFIGURE_NATION", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EXPORT", "AGGREGATE_REPORT_EDIT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "BAG_EXPORT", "SORMAS_TO_SORMAS_SHARE" ]
       },
       "UserRole" : {
         "type" : "string",
-        "enum" : [ "ADMIN", "NATIONAL_USER", "SURVEILLANCE_SUPERVISOR", "ADMIN_SUPERVISOR", "SURVEILLANCE_OFFICER", "HOSPITAL_INFORMANT", "COMMUNITY_INFORMANT", "CASE_SUPERVISOR", "CASE_OFFICER", "CONTACT_SUPERVISOR", "CONTACT_OFFICER", "EVENT_OFFICER", "LAB_USER", "EXTERNAL_LAB_USER", "NATIONAL_OBSERVER", "STATE_OBSERVER", "DISTRICT_OBSERVER", "NATIONAL_CLINICIAN", "POE_INFORMANT", "POE_SUPERVISOR", "POE_NATIONAL_USER", "IMPORT_USER", "REST_EXTERNAL_VISITS_USER", "REST_USER", "SORMAS_TO_SORMAS_CLIENT" ]
+        "enum" : [ "ADMIN", "NATIONAL_USER", "SURVEILLANCE_SUPERVISOR", "ADMIN_SUPERVISOR", "SURVEILLANCE_OFFICER", "HOSPITAL_INFORMANT", "COMMUNITY_INFORMANT", "CASE_SUPERVISOR", "CASE_OFFICER", "CONTACT_SUPERVISOR", "CONTACT_OFFICER", "EVENT_OFFICER", "LAB_USER", "EXTERNAL_LAB_USER", "NATIONAL_OBSERVER", "STATE_OBSERVER", "DISTRICT_OBSERVER", "NATIONAL_CLINICIAN", "POE_INFORMANT", "POE_SUPERVISOR", "POE_NATIONAL_USER", "IMPORT_USER", "REST_EXTERNAL_VISITS_USER", "REST_USER", "SORMAS_TO_SORMAS_CLIENT", "BAG_USER" ]
       },
       "UserRoleConfigDto" : {
         "type" : "object",
