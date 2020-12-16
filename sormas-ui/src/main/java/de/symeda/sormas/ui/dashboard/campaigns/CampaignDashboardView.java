@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -183,8 +184,6 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					gridTemplateAreaCreator.getGridRows(),
 					gridTemplateAreaCreator.getGridColumns()));
 			diagramsLayout.setStyleName(gridCssClass);
-			Label noPopulationLocationsLabel = new Label();
-			VerticalLayout locationLayout = new VerticalLayout();
 
 			campaignFormDataMap.forEach((campaignDashboardDiagramDto, diagramData) -> {
 				final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto();
@@ -208,20 +207,6 @@ public class CampaignDashboardView extends AbstractDashboardView {
 						diagramComponent
 							.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption(), Objects.nonNull(dataProvider.getDistrict()));
 						diagramsLayout.addComponent(diagramComponent, index);
-						if (diagramComponent.isShowPercentages()) {
-							if (!diagramComponent.getNoPopulationDataLocations().isEmpty()) {
-
-								noPopulationLocationsLabel.setValue(
-									String.format(
-										I18nProperties.getString(Strings.errorNoPopulationDataLocations),
-										String.join(",", diagramComponent.getNoPopulationDataLocations())));
-								locationLayout.addComponent(noPopulationLocationsLabel);
-								locationLayout.setComponentAlignment(noPopulationLocationsLabel, Alignment.MIDDLE_CENTER);
-								diagramsLayout.addComponent(locationLayout);
-							}
-						} else {
-							locationLayout.removeComponent(noPopulationLocationsLabel);
-						}
 					});
 
 				diagramsLayout.addComponent(diagramComponent);

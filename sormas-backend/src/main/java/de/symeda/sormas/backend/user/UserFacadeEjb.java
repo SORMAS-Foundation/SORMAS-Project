@@ -376,7 +376,7 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public String resetPassword(String uuid) {
 		String resetPassword = userService.resetPassword(uuid);
-		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
+		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid), resetPassword));
 		return resetPassword;
 	}
 

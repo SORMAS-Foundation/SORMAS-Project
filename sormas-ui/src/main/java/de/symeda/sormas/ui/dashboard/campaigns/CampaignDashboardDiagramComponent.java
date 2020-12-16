@@ -12,9 +12,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.ui.Notification;
@@ -92,7 +96,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("var options = {"
 				+ "chart:{ "
 				+ " type: 'column', "
-				+ " backgroundColor: 'transparent', "
+				+ " backgroundColor: 'white', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
 				+ " spacing: [20, 20, 20, 20], "
@@ -136,7 +140,28 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ "title:{ text: '" + StringEscapeUtils.escapeEcmaScript(title) + "', style: { fontSize: '15px' } },");
 		//@formatter:on
 
+		noPopulationDataLocations.clear();
+		if (Objects.nonNull(totalValuesMap)) {
+			for (Object key : axisCaptions.keySet()) {
+				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
+					noPopulationDataLocations.add(axisCaptions.get(key));
+				}
+			}
+		}
+
 		hcjs.append("xAxis: {");
+		if (Objects.nonNull(diagramDefinition.getCampaignSeriesTotal())) {
+			Optional isPopulationGroupUsed =
+				diagramDefinition.getCampaignSeriesTotal().stream().filter(series -> Objects.nonNull(series.getPopulationGroup())).findFirst();
+			if (showPercentages && isPopulationGroupUsed.isPresent() && !CollectionUtils.isEmpty(this.getNoPopulationDataLocations())) {
+				hcjs.append(
+					"title: {" + "        text:'"
+						+ String.format(
+							I18nProperties.getString(Strings.errorNoPopulationDataLocations),
+							String.join(", ", this.getNoPopulationDataLocations()))
+						+ "' },");
+			}
+		}
 		if (stackMap.size() > 1) {
 			hcjs.append("opposite: true,");
 		}
@@ -175,14 +200,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 
 		hcjs.append("series: [");
-		noPopulationDataLocations.clear();
-		if (Objects.nonNull(totalValuesMap)) {
-			for (Object key : axisCaptions.keySet()) {
-				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
-					noPopulationDataLocations.add(axisCaptions.get(key));
-				}
-			}
-		}
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
 			String seriesKey = series.getFormId() + series.getFieldId();
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
