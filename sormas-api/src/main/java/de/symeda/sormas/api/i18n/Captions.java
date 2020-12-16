@@ -10,9 +10,11 @@ public interface Captions {
 	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
 	 */
 
+	String about = "about";
 	String aboutCaseClassificationRules = "aboutCaseClassificationRules";
 	String aboutChangelog = "aboutChangelog";
 	String aboutDataDictionary = "aboutDataDictionary";
+	String aboutDocuments = "aboutDocuments";
 	String aboutSormasVersion = "aboutSormasVersion";
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
@@ -1269,6 +1271,8 @@ public interface Captions {
 	String Prescription_prescriptionDate = "Prescription.prescriptionDate";
 	String Prescription_prescriptionDetails = "Prescription.prescriptionDetails";
 	String Prescription_prescriptionEnd = "Prescription.prescriptionEnd";
+	String Prescription_prescriptionPeriod = "Prescription.prescriptionPeriod";
+	String Prescription_prescriptionRoute = "Prescription.prescriptionRoute";
 	String Prescription_prescriptionStart = "Prescription.prescriptionStart";
 	String Prescription_prescriptionType = "Prescription.prescriptionType";
 	String Prescription_route = "Prescription.route";
@@ -1291,7 +1295,10 @@ public interface Captions {
 	String reportingUser = "reportingUser";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
+	String Sample_additionalTestingStatus = "Sample.additionalTestingStatus";
 	String Sample_associatedCase = "Sample.associatedCase";
+	String Sample_associatedContact = "Sample.associatedContact";
+	String Sample_associatedEventParticipant = "Sample.associatedEventParticipant";
 	String Sample_caseClassification = "Sample.caseClassification";
 	String Sample_caseDistrict = "Sample.caseDistrict";
 	String Sample_casePersonName = "Sample.casePersonName";
@@ -1697,6 +1704,7 @@ public interface Captions {
 	String Treatment_textFilter = "Treatment.textFilter";
 	String Treatment_treatmentDateTime = "Treatment.treatmentDateTime";
 	String Treatment_treatmentDetails = "Treatment.treatmentDetails";
+	String Treatment_treatmentRoute = "Treatment.treatmentRoute";
 	String Treatment_treatmentType = "Treatment.treatmentType";
 	String Treatment_typeOfDrug = "Treatment.typeOfDrug";
 	String treatmentCreateTreatment = "treatmentCreateTreatment";

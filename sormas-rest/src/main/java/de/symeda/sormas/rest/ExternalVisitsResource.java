@@ -1,4 +1,4 @@
-package de.symeda.sormas.rest.external;
+package de.symeda.sormas.rest;
 
 import java.util.Date;
 import java.util.List;

@@ -20,6 +20,8 @@ package de.symeda.sormas.ui;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -63,6 +65,10 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.setMargin(false);
 		aboutContent.addComponent(infoLayout, "info");
 
+		Label aboutLabel = new Label(I18nProperties.getCaption(Captions.about), ContentMode.HTML);
+		aboutLabel.addStyleName(CssStyles.H1);
+		infoLayout.addComponent(aboutLabel);
+
 		Label versionLabel = new Label(
 			VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(),
 			ContentMode.HTML);
@@ -94,6 +100,10 @@ public class AboutView extends VerticalLayout implements View {
 		documentsLayout.setSpacing(false);
 		documentsLayout.setMargin(false);
 		aboutContent.addComponent(documentsLayout, "documents");
+
+		Label documentsLabel = new Label(I18nProperties.getCaption(Captions.aboutDocuments), ContentMode.HTML);
+		documentsLabel.addStyleName(CssStyles.H1);
+		documentsLayout.addComponent(documentsLabel);
 
 		Button classificationDocumentButton =
 			ButtonHelper.createButton(Captions.aboutCaseClassificationRules, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
