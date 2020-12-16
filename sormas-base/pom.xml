@@ -710,6 +710,46 @@
 
 			<!-- ** Vaadin END ** -->
 
+<!-- *** Security updates *** -->
+<!-- These are mostly vulnerable dependencies of vaadin8 -->
+
+<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit -->
+<dependency>
+    <groupId>net.sourceforge.htmlunit</groupId>
+    <artifactId>htmlunit</artifactId>
+    <version>2.45.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-webapp -->
+<dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-webapp</artifactId>
+    <version>11.0.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/apache-jsp -->
+<dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>apache-jsp</artifactId>
+    <version>11.0.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlets -->
+<dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-servlets</artifactId>
+    <version>11.0.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-annotations -->
+<dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-annotations</artifactId>
+    <version>11.0.0</version>
+</dependency>
+
+<!-- *** Security updates *** END -->
+
 			<!-- *** Compile dependencies END *** -->
 
 			<!-- *** Test dependencies *** -->
@@ -821,6 +861,22 @@
 
 	<build>
 		<plugins>
+            <plugin>
+              <groupId>org.owasp</groupId>
+              <artifactId>dependency-check-maven</artifactId>
+              <version>6.0.3</version>
+                <configuration>
+                    <failBuildOnCVSS>8</failBuildOnCVSS>
+                </configuration>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>check</goal>
+                      </goals>
+                  </execution>
+              </executions>
+            </plugin>
+
 
 			<!-- Code Coverage / Integration Tests aktivieren -->
 			<plugin>
@@ -843,7 +899,6 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
