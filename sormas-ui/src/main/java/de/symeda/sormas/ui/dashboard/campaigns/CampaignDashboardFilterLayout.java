@@ -8,8 +8,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-
 import com.vaadin.v7.ui.OptionGroup;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignPhase;
@@ -95,75 +95,73 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		final DistrictReferenceDto userDistrict = UserProvider.getCurrent().getUser().getDistrict();
 
 		dashboardDataProvider.setArea(userArea);
-		if (userArea == null && userRegion == null) {
-			enableFiltersBasedOnArea(areaFilter.getValue());
-			areaFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_area));
-			areaFilter.setWidth(200, Unit.PIXELS);
-			areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllAreas));
-			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
-			areaFilter.addValueChangeListener(e -> {
-				final Object value = areaFilter.getValue();
-				dashboardDataProvider.setArea((AreaReferenceDto) value);
-				dashboardView.refreshDashboard();
-				enableFiltersBasedOnArea(value);
-			});
-			addComponent(areaFilter);
-			dashboardDataProvider.setArea((AreaReferenceDto) areaFilter.getValue());
-		}
+		areaFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_area));
+		areaFilter.setWidth(200, Unit.PIXELS);
+		areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllAreas));
+		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		areaFilter.addValueChangeListener(e -> {
+			final Object value = areaFilter.getValue();
+			dashboardDataProvider.setArea((AreaReferenceDto) value);
+			dashboardView.refreshDashboard();
+			updateFiltersBasedOnArea(value);
+		});
+		addComponent(areaFilter);
+		dashboardDataProvider.setArea((AreaReferenceDto) areaFilter.getValue());
 
 		dashboardDataProvider.setRegion(userRegion);
-		if (userRegion == null) {
-			enableFiltersBasedOnRegion(regionFilter.getValue());
-			regionFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_region));
-			regionFilter.setWidth(200, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
-			regionFilter.addValueChangeListener(e -> {
-				final Object value = regionFilter.getValue();
-				dashboardDataProvider.setRegion((RegionReferenceDto) value);
-				dashboardView.refreshDashboard();
-				enableFiltersBasedOnRegion(value);
-			});
-			addComponent(regionFilter);
-			dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
-		}
+		regionFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_region));
+		regionFilter.setWidth(200, Unit.PIXELS);
+		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
+		regionFilter.addValueChangeListener(e -> {
+			final Object value = regionFilter.getValue();
+			dashboardDataProvider.setRegion((RegionReferenceDto) value);
+			dashboardView.refreshDashboard();
+			updateFiltersBasedOnRegion(value);
+		});
+		addComponent(regionFilter);
+		dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 
 		dashboardDataProvider.setDistrict(userDistrict);
-		if (userRegion != null || userDistrict == null) {
-			districtFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_district));
-			districtFilter.setWidth(200, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
-			if (userRegion != null) {
-				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
-			}
-			districtFilter.addValueChangeListener(e -> {
-				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
-				dashboardView.refreshDashboard();
-			});
-			addComponent(districtFilter);
+		districtFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_district));
+		districtFilter.setWidth(200, Unit.PIXELS);
+		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
+		if (userRegion != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
+		}
+		districtFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
+			dashboardView.refreshDashboard();
+		});
+		addComponent(districtFilter);
+		dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
+
+		if (userRegion != null) {
+			areaFilter.setValue(userArea);
+			regionFilter.setValue(userRegion);
+			areaFilter.setEnabled(false);
+			regionFilter.setEnabled(false);
+			if (userDistrict != null) {
+				districtFilter.setValue(userDistrict);
+				districtFilter.setEnabled(false);
+			}
 		}
 	}
 
-	private void enableFiltersBasedOnRegion(Object value) {
+	private void updateFiltersBasedOnRegion(Object value) {
 		if (value != null) {
-			districtFilter.setEnabled(true);
 			districtFilter.removeAllItems();
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(((RegionReferenceDto) value).getUuid()));
 		} else {
-			districtFilter.setEnabled(false);
 			districtFilter.clear();
 		}
 	}
 
-	private void enableFiltersBasedOnArea(Object value) {
+	private void updateFiltersBasedOnArea(Object value) {
 		if (value != null) {
 			regionFilter.removeAllItems();
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
-			regionFilter.setEnabled(true);
 		} else {
-			regionFilter.setEnabled(false);
 			regionFilter.clear();
-			districtFilter.setEnabled(false);
 			districtFilter.clear();
 		}
 	}
