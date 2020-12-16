@@ -131,6 +131,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -217,6 +218,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -224,6 +226,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sample.AdditionalTest;
+import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestService;
@@ -368,6 +372,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
+	@EJB
+	private AdditionalTestFacadeEjbLocal additionalTestFacade;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -579,7 +585,12 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
-				caseRoot.get(Case.EXTERNAL_ID)
+				caseRoot.get(Case.EXTERNAL_ID),
+				joins.getPerson().get(Person.BIRTH_NAME),
+				joins.getPersonBirthCountry().get(Country.ISO_CODE),
+				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
+				joins.getPersonCitizenship().get(Country.ISO_CODE),
+				joins.getPersonCitizenship().get(Country.DEFAULT_NAME)
 				);
 		//@formatter:on
 
@@ -1272,6 +1283,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Symptoms> symptoms2 = root2.join(Case.SYMPTOMS, JoinType.LEFT);
 
 		cq.distinct(true);
+
+		// similarity:
+		// * first & last name concatenated with whitespace. Similarity function with default threshold of 0.65D
+		// uses postgres pg_trgm: https://www.postgresql.org/docs/9.6/pgtrgm.html
+		// * same disease
+		// * same region (optional)
+		// * report date within 30 days of each other
+		// * same sex or same birth date (when defined)
+		// * same birth date (when fully defined)
+		// * onset date within 30 days of each other (when defined)
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root);
 		Predicate criteriaFilter = criteria != null ? caseService.createCriteriaFilter(criteria, cb, cq, root, joins) : null;
@@ -2823,7 +2844,12 @@ public class CaseFacadeEjb implements CaseFacade {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
 					fillDto(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
 					sampleTestFacade.savePathogenTest(newPathogenTest);
+				}
 
+				for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
+					AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
+					fillDto(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
+					additionalTestFacade.saveAdditionalTest(newAdditionalTest);
 				}
 			} else {
 				// simply move existing entities to the merge target

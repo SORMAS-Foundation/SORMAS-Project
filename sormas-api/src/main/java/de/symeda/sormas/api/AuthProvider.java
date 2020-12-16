@@ -39,8 +39,6 @@ public class AuthProvider {
 
     private final boolean isUsernameCaseSensitive;
 
-    private final boolean isEmailRequired;
-
     private final boolean isDefaultProvider;
 
     private final boolean isUserSyncSupported;
@@ -48,7 +46,6 @@ public class AuthProvider {
     private AuthProvider() {
         String configuredProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
         isUsernameCaseSensitive = SORMAS.equalsIgnoreCase(configuredProvider);
-        isEmailRequired = KEYCLOAK.equalsIgnoreCase(configuredProvider);
         isDefaultProvider = SORMAS.equalsIgnoreCase(configuredProvider);
         isUserSyncSupported = KEYCLOAK.equalsIgnoreCase(configuredProvider);
     }
@@ -69,13 +66,6 @@ public class AuthProvider {
      */
     public boolean isUsernameCaseSensitive() {
         return isUsernameCaseSensitive;
-    }
-
-    /**
-     * Authentication Provider requires emails to be required or optional.
-     */
-    public boolean isEmailRequired() {
-        return isEmailRequired;
     }
 
     /**

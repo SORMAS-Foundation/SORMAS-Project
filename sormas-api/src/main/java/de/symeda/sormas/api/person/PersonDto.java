@@ -28,6 +28,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -75,6 +76,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String BURIAL_PLACE_DESCRIPTION = "burialPlaceDescription";
 	public static final String BURIAL_CONDUCTOR = "burialConductor";
 
+	public static final String BIRTH_NAME = "birthName";
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
 
@@ -90,7 +92,7 @@ public class PersonDto extends PseudonymizableDto {
 
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
-	public static final String NAMES_OF_OTHER_GUARDIANS = "namesOfOtherGuardians";
+	public static final String NAMES_OF_GUARDIANS = "namesOfGuardians";
 	public static final String PLACE_OF_BIRTH_REGION = "placeOfBirthRegion";
 	public static final String PLACE_OF_BIRTH_DISTRICT = "placeOfBirthDistrict";
 	public static final String PLACE_OF_BIRTH_COMMUNITY = "placeOfBirthCommunity";
@@ -111,6 +113,9 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String HAS_COVID_APP = "hasCovidApp";
 	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 	public static final String EXTERNAL_ID = "externalId";
+
+	public static final String BIRTH_COUNTRY = "birthCountry";
+	public static final String CITIZENSHIP = "citizenship";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -133,6 +138,10 @@ public class PersonDto extends PseudonymizableDto {
 	private String otherSalutation;
 	@PersonalData
 	@SensitiveData
+	@HideForCountriesExcept
+	private String birthName;
+	@PersonalData
+	@SensitiveData
 	private String nickname;
 	@PersonalData
 	@SensitiveData
@@ -146,7 +155,7 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
-	private String namesOfOtherGuardians;
+	private String namesOfGuardians;
 	@Outbreaks
 	private Sex sex;
 	@Outbreaks
@@ -292,6 +301,11 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String externalId;
+
+	@HideForCountriesExcept
+	private CountryReferenceDto birthCountry;
+	@HideForCountriesExcept
+	private CountryReferenceDto citizenship;
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -453,6 +467,14 @@ public class PersonDto extends PseudonymizableDto {
 		this.address = address;
 	}
 
+	public String getBirthName() {
+		return birthName;
+	}
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
+	}
+
 	public String getNickname() {
 		return nickname;
 	}
@@ -557,12 +579,12 @@ public class PersonDto extends PseudonymizableDto {
 		this.fathersName = fathersName;
 	}
 
-	public String getNamesOfOtherGuardians() {
-		return namesOfOtherGuardians;
+	public String getNamesOfGuardians() {
+		return namesOfGuardians;
 	}
 
-	public void setNamesOfOtherGuardians(String namesOfOtherGuardians) {
-		this.namesOfOtherGuardians = namesOfOtherGuardians;
+	public void setNamesOfGuardians(String namesOfGuardians) {
+		this.namesOfGuardians = namesOfGuardians;
 	}
 
 	public RegionReferenceDto getPlaceOfBirthRegion() {
@@ -700,6 +722,22 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public CountryReferenceDto getBirthCountry() {
+		return birthCountry;
+	}
+
+	public void setBirthCountry(CountryReferenceDto birthCountry) {
+		this.birthCountry = birthCountry;
+	}
+
+	public CountryReferenceDto getCitizenship() {
+		return citizenship;
+	}
+
+	public void setCitizenship(CountryReferenceDto citizenship) {
+		this.citizenship = citizenship;
 	}
 
 	@Override

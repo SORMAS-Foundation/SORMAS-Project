@@ -48,6 +48,7 @@ import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
@@ -80,6 +81,8 @@ public class Person extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String otherSalutation;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String birthName;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String nickname;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String mothersMaidenName;
@@ -88,7 +91,7 @@ public class Person extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String fathersName;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String namesOfOtherGuardians;
+	private String namesOfGuardians;
 	@Column
 	private Integer birthdateDD;
 	@Column
@@ -179,6 +182,11 @@ public class Person extends PseudonymizableAdo {
 	@Column
 	private String externalId;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Country birthCountry;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Country citizenship;
+
 	public Person() {
 	}
 
@@ -214,6 +222,14 @@ public class Person extends PseudonymizableAdo {
 
 	public void setOtherSalutation(String otherSalutation) {
 		this.otherSalutation = otherSalutation;
+	}
+
+	public String getBirthName() {
+		return birthName;
+	}
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
 	}
 
 	public String getNickname() {
@@ -462,12 +478,12 @@ public class Person extends PseudonymizableAdo {
 		this.fathersName = fathersName;
 	}
 
-	public String getNamesOfOtherGuardians() {
-		return namesOfOtherGuardians;
+	public String getNamesOfGuardians() {
+		return namesOfGuardians;
 	}
 
-	public void setNamesOfOtherGuardians(String namesOfOtherGuardians) {
-		this.namesOfOtherGuardians = namesOfOtherGuardians;
+	public void setNamesOfGuardians(String namesOfGuardians) {
+		this.namesOfGuardians = namesOfGuardians;
 	}
 
 	public Region getPlaceOfBirthRegion() {
@@ -582,4 +598,19 @@ public class Person extends PseudonymizableAdo {
 		this.externalId = externalId;
 	}
 
+	public Country getBirthCountry() {
+		return birthCountry;
+	}
+
+	public void setBirthCountry(Country birthCountry) {
+		this.birthCountry = birthCountry;
+	}
+
+	public Country getCitizenship() {
+		return citizenship;
+	}
+
+	public void setCitizenship(Country citizenship) {
+		this.citizenship = citizenship;
+	}
 }

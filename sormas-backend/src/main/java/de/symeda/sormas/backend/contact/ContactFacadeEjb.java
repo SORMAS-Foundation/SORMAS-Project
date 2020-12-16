@@ -140,6 +140,7 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -284,6 +285,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		validate(dto);
 
+		if (existingContact != null) {
+			handleExternalJournalPerson(dto);
+		}
 		// taking this out because it may lead to server problems
 		// case disease can change over time and there is currently no mechanism that would delete all related contacts
 		// in this case the best solution is to only keep this hidden from the UI and still allow it in the backend
@@ -298,19 +302,17 @@ public class ContactFacadeEjb implements ContactFacade {
 			createInvestigationTask(entity);
 
 		}
-		if (existingContact != null) {
-			handleExternalJournalPerson(dto);
-		}
 
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);
 
 			final boolean convertedToCase =
 				(existingContactDto == null || existingContactDto.getResultingCase() == null) && entity.getResultingCase() != null;
-			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED;
+			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
+				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
 			if (dropped || convertedToCase) {
-				entity.setFollowUpStatus(FollowUpStatus.CANCELED);
-				entity.setFollowUpComment(
+				contactService.cancelFollowUp(
+					entity,
 					I18nProperties
 						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
 			} else {
@@ -497,7 +499,12 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.ID),
 					joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 					contact.get(Contact.RETURNING_TRAVELER),
-					contact.get(Contact.EXTERNAL_ID)),
+					contact.get(Contact.EXTERNAL_ID),
+					joins.getPerson().get(Person.BIRTH_NAME),
+					joins.getPersonBirthCountry().get(Country.ISO_CODE),
+					joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
+					joins.getPersonCitizenship().get(Country.ISO_CODE),
+					joins.getPersonCitizenship().get(Country.DEFAULT_NAME)),
 				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
 		cq.distinct(true);

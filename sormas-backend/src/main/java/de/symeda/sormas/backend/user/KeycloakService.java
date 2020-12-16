@@ -116,6 +116,23 @@ public class KeycloakService {
 
 	}
 
+	/**
+	 * Handles a user create event.
+	 * <p>
+	 * There are 3 scenarios for a user created event:
+	 * <ol>
+	 * <li>The user is a mock user (like the default system users) in which case the password is prefilled with the one defined in the
+	 * code</li>
+	 * <li>The user is a real and has an email address, in which case an email is sent to the user to activate the account</li>
+	 * <li>The user is a real and doesn't have an email address, in which case the password will be setup by the system and user will be
+	 * active automatically</li>
+	 * </ol>
+	 * </p>
+	 *
+	 * @param userCreateEvent
+	 *            a real / mock user created event
+	 * @see de.symeda.sormas.backend.common.StartupShutdownService
+	 */
 	public void handleUserCreateEvent(@Observes UserCreateEvent userCreateEvent) {
 		Optional<Keycloak> keycloak = getKeycloak();
 		if (!keycloak.isPresent()) {
@@ -124,12 +141,25 @@ public class KeycloakService {
 		}
 
 		User user = userCreateEvent.getUser();
-		String userId = createUser(keycloak.get(), user, null);
+		String userId = createUser(keycloak.get(), user, userCreateEvent.getPassword());
 		if (StringUtils.isNotBlank(user.getUserEmail())) {
 			sendActivationEmail(keycloak.get(), userId);
 		}
 	}
 
+	/**
+	 * Handles a user update event.
+	 * <p>
+	 * There are 2 possible scenarios handled here:
+	 * <ol>
+	 * <li>The user already exists in Keycloak, which will trigger the update</li>
+	 * <li>The user doesn't exist in Keycloak yet (maybe due to activating Keycloak later) which will trigger the user to be created</li>
+	 * </ol>
+	 * </p>
+	 *
+	 * @param userUpdateEvent
+	 *            contains the old user and the new user information
+	 */
 	public void handleUserUpdateEvent(@Observes UserUpdateEvent userUpdateEvent) {
 		Optional<Keycloak> keycloak = getKeycloak();
 		if (!keycloak.isPresent()) {
@@ -152,6 +182,21 @@ public class KeycloakService {
 		}
 	}
 
+	/**
+	 * Handles a user password request event.
+	 * <p>
+	 * There are 2 ways this is handled:
+	 * <ol>
+	 * <li>In case the user has an email address, the password reset email will be sent. This means the password will not be updated
+	 * until the user follows the instructions in the email.</li>
+	 * <li>In case the user doesn't have an email address, the password will automatically be updated for the user and login won't be
+	 * possible with the old password anymore.</li>
+	 * </ol>
+	 * </p>
+	 *
+	 * @param passwordResetEvent
+	 *            user and the plain text password which was set
+	 */
 	public void handlePasswordResetEvent(@Observes PasswordResetEvent passwordResetEvent) {
 		Optional<Keycloak> keycloak = getKeycloak();
 		if (!keycloak.isPresent()) {
@@ -162,10 +207,17 @@ public class KeycloakService {
 		User user = passwordResetEvent.getUser();
 		Optional<UserRepresentation> userRepresentation = getUserByUsername(keycloak.get(), user.getUserName());
 		if (!userRepresentation.isPresent()) {
-			logger.warn("Cannot find user to update for username {}", user.getUserName());
+			logger.warn("Cannot find user or email for user with username {} to reset the password", user.getUserName());
 			return;
 		}
-		userRepresentation.ifPresent(existing -> sendPasswordResetEmail(keycloak.get(), existing.getId()));
+		if (StringUtils.isNotBlank(user.getUserEmail())) {
+			userRepresentation.ifPresent(existing -> sendPasswordResetEmail(keycloak.get(), existing.getId()));
+		} else {
+			userRepresentation.ifPresent(existing -> {
+				setCredentials(existing, passwordResetEvent.getInternalPassword());
+				keycloak.get().realm(REALM_NAME).users().get(existing.getId()).update(existing);
+			});
+		}
 	}
 
 	private UserRepresentation createUserRepresentation(User user, String hashedPassword) {

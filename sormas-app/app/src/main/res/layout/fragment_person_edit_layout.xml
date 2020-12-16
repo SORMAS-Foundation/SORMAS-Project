@@ -468,6 +468,20 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_birthName"
+                    android:nextFocusForward="@+id/person_nickname"
+                    app:value="@={data.birthName}"
+                    app:imeOptions="actionNext"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/person_nickname"
                     android:nextFocusForward="@+id/person_mothersMaidenName"
                     app:value="@={data.nickname}"
@@ -497,7 +511,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/person_fathersName"
-                    android:nextFocusForward="@+id/person_namesOfOtherGuardians"
+                    android:nextFocusForward="@+id/person_namesOfGuardians"
                     app:value="@={data.fathersName}"
                     app:imeOptions="actionNext"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -505,9 +519,9 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/person_namesOfOtherGuardians"
+                android:id="@+id/person_namesOfGuardians"
                 android:nextFocusForward="@+id/person_phone"
-                app:value="@={data.namesOfOtherGuardians}"
+                app:value="@={data.namesOfGuardians}"
                 app:imeOptions="actionNext"
                 style="@style/ControlSingleColumnStyle" />
 
@@ -534,6 +548,25 @@
                 android:id="@+id/person_emailAddress"
                 app:value="@={data.emailAddress}"
                 style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_birthCountry"
+                    android:nextFocusForward="@+id/person_citizenship"
+                    app:value="@={data.birthCountry}"
+                    app:imeOptions="actionNext"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_citizenship"
+                    app:value="@={data.citizenship}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/person_generalPractitionerDetails"
