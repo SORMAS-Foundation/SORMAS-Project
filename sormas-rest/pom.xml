@@ -118,6 +118,15 @@
 			<plugin>
 				<groupId>io.openapitools.swagger</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-swagger</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
 					<!-- Swagger Generation Config -->
 					<resourcePackages>
