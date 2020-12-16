@@ -7,4 +7,10 @@
 	<property name="maven.artifactId" value="sormas-keycloak-service-provider" />
 	<property name="file.suffix" value="jar" />
 
+	<target name="3-collect" description="Kopiert das Artefakt nach deploy/apps.">
+
+		<property name="copy.path" value="../deploy/keycloak" />
+		<antcall inheritAll="true" target="--copy-artifact" />
+	</target>
+
 </project>
