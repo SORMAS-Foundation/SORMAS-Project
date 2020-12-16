@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
-import de.symeda.sormas.api.labmessage.LabResultsAdapter;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
@@ -174,9 +173,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		this.viewMode = viewMode;
 		this.disease = disease;
-
-		LabResultsAdapter adapter = FacadeProvider.getLabResultsAdapter();
-		adapter.getExternalLabMessages(true);
 		addFields();
 	}
 

@@ -49,7 +49,7 @@ import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
-import de.symeda.sormas.api.labmessage.LabResultsAdapter;
+import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.AreaFacade;
@@ -323,13 +323,13 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(DocumentFacade.class);
 	}
 
-	public static LabResultsAdapter getLabResultsAdapter() {
+	public static ExternalLabResultsFacade getExternalLabResultsFacade() {
 		try {
 			String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
 			if (jndiName == null) {
 				throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
 			} else {
-				return (LabResultsAdapter) get().ic.lookup(jndiName);
+				return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
 			}
 		} catch (NamingException e) {
 			throw new RuntimeException(e.getMessage(), e);
