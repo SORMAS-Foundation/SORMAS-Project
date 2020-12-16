@@ -96,7 +96,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("var options = {"
 				+ "chart:{ "
 				+ " type: 'column', "
-				+ " backgroundColor: 'transparent', "
+				+ " backgroundColor: 'white', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
 				+ " spacing: [20, 20, 20, 20], "
