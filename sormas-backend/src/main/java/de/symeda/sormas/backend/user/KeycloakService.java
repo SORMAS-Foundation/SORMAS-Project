@@ -141,7 +141,7 @@ public class KeycloakService {
 		}
 
 		User user = userCreateEvent.getUser();
-		String userId = createUser(keycloak.get(), user, userCreateEvent.getPassword());
+		String userId = createUser(keycloak.get(), user);
 		if (StringUtils.isNotBlank(user.getUserEmail())) {
 			sendActivationEmail(keycloak.get(), userId);
 		}
@@ -174,7 +174,7 @@ public class KeycloakService {
 			Optional<UserRepresentation> userRepresentation = updateUser(keycloak.get(), oldUser, newUser);
 			if (!userRepresentation.isPresent()) {
 				logger.debug("Cannot find user in Keycloak. Will try to create it");
-				createUser(keycloak.get(), newUser, newUser.getPassword());
+				createUser(keycloak.get(), newUser);
 			}
 		} catch (Exception e) {
 			userUpdateEvent.getExceptionCallback().accept(e.getMessage());
@@ -214,7 +214,7 @@ public class KeycloakService {
 			userRepresentation.ifPresent(existing -> sendPasswordResetEmail(keycloak.get(), existing.getId()));
 		} else {
 			userRepresentation.ifPresent(existing -> {
-				setCredentials(existing, passwordResetEvent.getInternalPassword());
+				setCredentials(existing, user.getPassword(), user.getSeed());
 				keycloak.get().realm(REALM_NAME).users().get(existing.getId()).update(existing);
 			});
 		}
@@ -249,8 +249,8 @@ public class KeycloakService {
 		setLanguage(userRepresentation, user.getLanguage());
 	}
 
-	private String createUser(Keycloak keycloak, User user, String presetPassword) {
-		UserRepresentation userRepresentation = createUserRepresentation(user, presetPassword);
+	private String createUser(Keycloak keycloak, User user) {
+		UserRepresentation userRepresentation = createUserRepresentation(user, user.getPassword());
 		Response response = keycloak.realm(REALM_NAME).users().create(userRepresentation);
 		if (response.getStatus() != Response.Status.CREATED.getStatusCode()) {
 			throw new WebApplicationException(response);

@@ -215,10 +215,10 @@ public class UserController {
 
 	private void showPasswordResetExternalSuccessPopup() {
 		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordReset)));
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordResetEmailLink)));
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
-		popupWindow.setWidth(350, Unit.PIXELS);
+		popupWindow.setWidth(450, Unit.PIXELS);
 		layout.setMargin(true);
 	}
 
@@ -304,10 +304,6 @@ public class UserController {
 		for (Language language : Language.values()) {
 			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
 		}
-	}
-
-	public boolean isEmailRequired() {
-		return AuthProvider.getProvider().isEmailRequired();
 	}
 
 	public void sync() {

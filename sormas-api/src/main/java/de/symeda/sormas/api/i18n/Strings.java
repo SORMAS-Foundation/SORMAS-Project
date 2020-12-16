@@ -709,6 +709,7 @@ public interface Strings {
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
 	String messageOutbreakSaved = "messageOutbreakSaved";
 	String messagePasswordReset = "messagePasswordReset";
+	String messagePasswordResetEmailLink = "messagePasswordResetEmailLink";
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";

@@ -505,7 +505,7 @@ public class StartupShutdownService {
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
 
 			userService.persist(existingUser);
-			passwordResetEvent.fire(new PasswordResetEvent(existingUser, password));
+			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		}
 
 	}
