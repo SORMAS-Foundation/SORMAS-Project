@@ -989,6 +989,7 @@ public interface Captions {
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";
 	String importDownloadCaseImportTemplate = "importDownloadCaseImportTemplate";
 	String importDownloadDataDictionary = "importDownloadDataDictionary";

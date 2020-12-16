@@ -82,12 +82,12 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 		Label newFormDataHeading = new Label(I18nProperties.getString(Strings.headingCampaignFormDataDuplicateNew));
 		CssStyles.style(newFormDataHeading, CssStyles.H3);
 		formDataDetailsLayout.addComponent(newFormDataHeading);
-		formDataDetailsLayout.addComponent(buildFormDataDetailsComponent(newData));
+		formDataDetailsLayout.addComponent(buildFormDataDetailsComponent(newData, false));
 
 		Label existingFormDataHeading = new Label(I18nProperties.getString(Strings.headingCampaignFormDataDuplicateExisting));
 		CssStyles.style(existingFormDataHeading, CssStyles.H3);
 		formDataDetailsLayout.addComponent(existingFormDataHeading);
-		formDataDetailsLayout.addComponent(buildFormDataDetailsComponent(existingData));
+		formDataDetailsLayout.addComponent(buildFormDataDetailsComponent(existingData, true));
 
 		addComponent(formDataDetailsLayout);
 	}
@@ -97,7 +97,7 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidthUndefined();
 
-		Button btnCancel = new Button(I18nProperties.getCaption(Captions.actionCancel));
+		Button btnCancel = new Button(I18nProperties.getCaption(Captions.importCancelImport));
 		btnCancel.addClickListener(e -> cancelCallback.run());
 		buttonLayout.addComponent(btnCancel);
 
@@ -114,7 +114,7 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 		setComponentAlignment(buttonLayout, Alignment.MIDDLE_RIGHT);
 	}
 
-	private HorizontalLayout buildFormDataDetailsComponent(CampaignFormDataDto formData) {
+	private HorizontalLayout buildFormDataDetailsComponent(CampaignFormDataDto formData, boolean existingData) {
 		HorizontalLayout formDataLayout = new HorizontalLayout();
 		formDataLayout.setSpacing(true);
 		{
@@ -138,15 +138,17 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 			fdFormDate.setWidthUndefined();
 			formDataLayout.addComponent(fdFormDate);
 
-			Label fdCreatingUser = new Label(formData.getCreatingUser() != null ? formData.getCreatingUser().toString() : "");
-			fdCreatingUser.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CREATING_USER));
-			fdCreatingUser.setWidthUndefined();
-			formDataLayout.addComponent(fdCreatingUser);
+			if (existingData) {
+				Label fdCreatingUser = new Label(formData.getCreatingUser() != null ? formData.getCreatingUser().toString() : "");
+				fdCreatingUser.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CREATING_USER));
+				fdCreatingUser.setWidthUndefined();
+				formDataLayout.addComponent(fdCreatingUser);
 
-			Label fdCreationDate = new Label(DateFormatHelper.formatDate(formData.getCreationDate()));
-			fdCreationDate.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CREATION_DATE));
-			fdCreationDate.setWidthUndefined();
-			formDataLayout.addComponent(fdCreationDate);
+				Label fdCreationDate = new Label(DateFormatHelper.formatDate(formData.getCreationDate()));
+				fdCreationDate.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CREATION_DATE));
+				fdCreationDate.setWidthUndefined();
+				formDataLayout.addComponent(fdCreationDate);
+			}
 		}
 
 		return formDataLayout;

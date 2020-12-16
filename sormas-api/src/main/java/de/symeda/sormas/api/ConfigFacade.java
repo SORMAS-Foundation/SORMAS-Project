@@ -115,4 +115,5 @@ public interface ConfigFacade {
 
 	boolean isSmsServiceSetUp();
 
+	String getDemisJndiName();
 }
