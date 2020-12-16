@@ -1822,22 +1822,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD column birthName varchar(255);");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD column birthCountry_id bigint REFERENCES country (id);");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD column citizenship_id bigint REFERENCES country (id);");
-				
+
 			case 256:
 				currentVersion = 256;
 				getDao(Location.class).executeRaw(
-						"UPDATE location " +
-						"SET location.facilitytype = 'HOSPITAL' " +
-						"FROM location " +
-						"INNER JOIN events ON events.eventlocation_id = location.id " +
-						"WHERE events.typeofplace = 'HOSPITAL' " +
-						"AND location.facilitytype IS NULL;");
+					"UPDATE location " + "SET location.facilityType = 'HOSPITAL' " + "FROM location "
+						+ "INNER JOIN events ON events.eventLocation_id = location.id " + "WHERE events.typeOfPlace = 'HOSPITAL' "
+						+ "AND location.facilityType IS NULL;");
 				getDao(Event.class).executeRaw(
-						"UPDATE events " +
-						"SET events.typeofplace = 'FACILITY' " +
-						"FROM events " +
-						"INNER JOIN location ON location.id = events.eventlocation_id " +
-						"WHERE location.facilitytype IS NOT NULL;");
+					"UPDATE events " + "SET events.typeOfPlace = 'FACILITY' " + "FROM events "
+						+ "INNER JOIN location ON location.id = events.eventLocation_id " + "WHERE location.facilityType IS NOT NULL;");
 
 				// ATTENTION: break should only be done after last version
 				break;
