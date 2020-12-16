@@ -34,6 +34,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String PARTICIPANT_COUNT = "participantCount";
+	public static final String CASE_COUNT = "caseCount";
+	public static final String DEATH_COUNT = "deathCount";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
@@ -54,6 +56,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private EventStatus eventStatus;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private long participantCount;
+	private long caseCount;
+	private long deathCount;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -73,7 +77,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String uuid,
 		EventStatus eventStatus,
 		EventInvestigationStatus eventInvestigationStatus,
-		Long participantCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -116,7 +119,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
-		this.participantCount = participantCount;
 	}
 
 	public String getUuid() {
@@ -249,6 +251,22 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setParticipantCount(long participantCount) {
 		this.participantCount = participantCount;
+	}
+
+	public long getCaseCount() {
+		return caseCount;
+	}
+
+	public void setCaseCount(long caseCount) {
+		this.caseCount = caseCount;
+	}
+
+	public long getDeathCount() {
+		return deathCount;
+	}
+
+	public void setDeathCount(long deathCount) {
+		this.deathCount = deathCount;
 	}
 
 	public String getRegion() {

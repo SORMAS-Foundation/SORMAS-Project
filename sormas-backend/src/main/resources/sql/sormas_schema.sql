@@ -6045,4 +6045,89 @@ ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id F
 ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (290, 'Manually send SMS #3253');
+
+-- 2020-12-07 Add LabMessage #3486
+CREATE TABLE labmessage (
+        id bigint not null,
+        uuid varchar(36) not null unique,
+        changedate timestamp not null,
+        creationdate timestamp not null,
+        sampledatetime timestamp,
+        samplereceiveddate timestamp,
+        labsampleid text,
+        samplematerial varchar(255),
+        testlabname varchar(255),
+        testlabexternalid varchar(255),
+        testlabpostalcode varchar(255),
+        testlabcity varchar(255),
+        specimencondition varchar(255),
+        testtype varchar(255),
+        testeddisease varchar(255),
+        testdatetime timestamp,
+        testresult varchar(255),
+        personfirstName varchar(255),
+        personlastName varchar(255),
+        personsex varchar(255),
+        personbirthdatedd integer,
+        personbirthdatemm integer,
+        personbirthdateyyyy integer,
+        personpostalcode varchar(255),
+        personcity varchar(255),
+        personstreet varchar(255),
+        personhousenumber varchar(255),
+        labMessageDetails text,
+        processed boolean default false,
+        sys_period tstzrange not null,
+        primary key(id)
+);
+
+CREATE TABLE labmessage_history (LIKE labmessage);
+
+INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
+
+-- 2020-12-11 Create contacts-visits index #3673
+CREATE INDEX IF NOT EXISTS idx_contacts_visits_contact_id ON contacts_visits USING HASH (contact_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (292, 'Create contacts-visits index #3673');
+
+-- SurvNet Adaptations - Create new field “Salutation” for persons #3411
+ALTER TABLE person
+    ADD COLUMN salutation varchar(255),
+    ADD COLUMN othersalutation text;
+
+ALTER TABLE person_history
+    ADD COLUMN salutation varchar(255),
+    ADD COLUMN othersalutation text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (293, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
+
+-- 2020-12-11 - Add patient exposition role to exposures #3407
+ALTER TABLE exposures ADD COLUMN patientexpositionrole varchar(255);
+ALTER TABLE exposures_history ADD COLUMN patientexpositionrole varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (294, 'Add patient exposition role to exposures #3407');
+
+-- 2020-12-09 SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412
+ALTER TABLE person
+    ADD COLUMN birthname varchar(512),
+    ADD COLUMN birthcountry_id bigint,
+    ADD COLUMN citizenship_id bigint,
+    ADD CONSTRAINT fk_person_placeofbirthcountry_id FOREIGN KEY (birthcountry_id) REFERENCES country (id),
+    ADD CONSTRAINT fk_person_nationality_id FOREIGN KEY (citizenship_id) REFERENCES country (id);
+
+ALTER TABLE person_history
+    ADD COLUMN birthname varchar(512),
+    ADD COLUMN birthcountry_id bigint,
+    ADD COLUMN citizenship_id bigint,
+    ADD CONSTRAINT fk_person_birthcountry_id FOREIGN KEY (birthcountry_id) REFERENCES country (id),
+    ADD CONSTRAINT fk_person_citizenship_id FOREIGN KEY (citizenship_id) REFERENCES country (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (295, 'SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412');
+
+-- 2020-12-14 Change namesOfOtherGuardians to namesOfGuardians #3413
+ALTER TABLE person RENAME COLUMN namesofotherguardians TO namesofguardians;
+ALTER TABLE person_history RENAME COLUMN namesofotherguardians TO namesofguardians;
+
+INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesOfOtherGuardians to namesOfGuardians #3413');
+
 -- *** Insert new sql commands BEFORE this line ***

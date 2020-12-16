@@ -63,6 +63,8 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			DistrictIndexDto.POPULATION,
 			DistrictIndexDto.GROWTH_RATE);
 
+		getColumn(DistrictIndexDto.POPULATION).setSortable(false);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid()));
 		}

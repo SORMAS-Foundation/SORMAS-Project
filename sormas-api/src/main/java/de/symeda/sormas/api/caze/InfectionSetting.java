@@ -52,7 +52,8 @@ public enum InfectionSetting {
 	public String toString() {
 		String caption = I18nProperties.getEnumCaption(this);
 		if (this.parent != null) {
-			caption = this.parent.toString() + " / " + caption;
+			// Heavy Wide-Headed Rightwards Arrow U+2794
+			caption = this.parent.toString() + " ➔ " + caption;
 		}
 
 		return caption;

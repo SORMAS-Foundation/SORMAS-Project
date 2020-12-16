@@ -74,6 +74,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -343,6 +344,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<Person, Location> address = person.join(Person.ADDRESS);
+		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
+		Join<Person, Country> citizenship = person.join(Person.CITIZENSHIP, JoinType.LEFT);
 
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
@@ -377,6 +380,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 			person.get(Person.FIRST_NAME),
 			person.get(Person.LAST_NAME),
+			person.get(Person.SALUTATION),
+			person.get(Person.OTHER_SALUTATION),
 			person.get(Person.SEX),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			person.get(Person.APPROXIMATE_AGE),
@@ -401,7 +406,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.PHONE),
 			person.get(Person.EMAIL_ADDRESS),
 
-			resultingCase.get(Case.UUID));
+			resultingCase.get(Case.UUID),
+
+			person.get(Person.BIRTH_NAME),
+			birthCountry.get(Country.ISO_CODE),
+			birthCountry.get(Country.DEFAULT_NAME),
+			citizenship.get(Country.ISO_CODE),
+			citizenship.get(Country.DEFAULT_NAME));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
 		cq.where(filter);

@@ -86,7 +86,6 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.user.event.MockPasswordUpdateEvent;
 import de.symeda.sormas.backend.user.event.MockUserCreateEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
@@ -506,7 +505,7 @@ public class StartupShutdownService {
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
 
 			userService.persist(existingUser);
-			passwordResetEvent.fire(new MockPasswordUpdateEvent(existingUser, password));
+			passwordResetEvent.fire(new PasswordResetEvent(existingUser, password));
 		}
 
 	}

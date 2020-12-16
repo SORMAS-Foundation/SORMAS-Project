@@ -17,11 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration;
 
-import java.util.Optional;
-
 import com.vaadin.navigator.Navigator;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -56,7 +52,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
 		menu.removeAllViews();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
@@ -68,16 +64,16 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 		boolean isAnySurveillanceEnabled = isCaseSurveillanceEnabled
-				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
+			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			if (isAnySurveillanceEnabled) {
 				menu.addView(
-						CountriesView.VIEW_NAME,
-						I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-						null,
-						false);
+					CountriesView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
 			}
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				menu.addView(
@@ -162,8 +158,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 		boolean isAnySurveillanceEnabled = isCaseSurveillanceEnabled
-				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
+			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
@@ -204,8 +200,4 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		}
 	}
 
-	@Override
-	protected Optional<VerticalLayout> createInfoLayout() {
-		return Optional.empty();
-	}
 }

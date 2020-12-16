@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -98,25 +97,35 @@ public class EventController {
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
-		component.addCommitListener(new CommitListener() {
+		component.addCommitListener(() -> {
+			EventIndexDto selectedEvent = eventSelect.getValue();
+			if (selectedEvent != null) {
 
-			@Override
-			public void onCommit() {
-				EventIndexDto selectedEvent = eventSelect.getValue();
-				if (selectedEvent != null) {
+				EventCriteria eventCriteria = new EventCriteria();
+				eventCriteria.caze(caseRef);
+				eventCriteria.setUserFilterIncluded(false);
+				List<EventIndexDto> eventIndexDto = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
 
-					EventCriteria eventCriteria = new EventCriteria();
-					eventCriteria.caze(caseRef);
-					eventCriteria.setUserFilterIncluded(false);
-					List<EventIndexDto> eventIndexDto = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
-
-					EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
-					if (!eventIndexDto.contains(selectedEvent)) {
-						linkCaseToEvent(eventReferenceDto, caseDataDto, caseRef);
-					}
+				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
+				if (!eventIndexDto.contains(selectedEvent)) {
+					boolean wasEventParticipant = linkCaseToEvent(eventReferenceDto, caseDataDto, caseRef);
+					SormasUI.refreshView();
+					Notification notification = new Notification(
+						I18nProperties.getString(
+							wasEventParticipant ? Strings.messagePersonAlreadyEventParticipant : Strings.messagePersonAddedAsEventParticipant),
+						"",
+						Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(10000);
+					notification.show(Page.getCurrent());
 				} else {
-					create(caseRef);
+					SormasUI.refreshView();
+					Notification notification =
+						new Notification(I18nProperties.getString(Strings.messagePersonAlreadyCaseInEvent), "", Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(10000);
+					notification.show(Page.getCurrent());
 				}
+			} else {
+				create(caseRef);
 				SormasUI.refreshView();
 			}
 		});
@@ -160,7 +169,10 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void linkCaseToEvent(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
+	/**
+	 * @return true if the person was already an event participant in the event, false if not
+	 */
+	public boolean linkCaseToEvent(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
 		// Check whether Person is already enlisted as EventParticipant in this Event
 		EventParticipantReferenceDto eventParticipantRef =
 			FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventReferenceDto.getUuid(), caseDataDto.getPerson().getUuid());
@@ -169,7 +181,7 @@ public class EventController {
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 			eventParticipant.setResultingCase(caseRef);
 			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
-			return;
+			return true;
 		}
 
 		// Create new EventParticipant for this Person
@@ -178,6 +190,7 @@ public class EventController {
 		eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
 		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
+		return false;
 	}
 
 	public void createEventParticipantWithContact(EventReferenceDto eventReferenceDto, ContactDto contact) {
@@ -249,23 +262,19 @@ public class EventController {
 			eventCreateForm.getFieldGroup());
 
 		CaseDataDto finalCaseDataDto = caseDataDto;
-		editView.addCommitListener(new CommitListener() {
+		editView.addCommitListener(() -> {
+			if (!eventCreateForm.getFieldGroup().isModified()) {
+				EventDto dto = eventCreateForm.getValue();
+				FacadeProvider.getEventFacade().saveEvent(dto);
+				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 
-			@Override
-			public void onCommit() {
-				if (!eventCreateForm.getFieldGroup().isModified()) {
-					EventDto dto = eventCreateForm.getValue();
-					FacadeProvider.getEventFacade().saveEvent(dto);
-					Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
+				if (caseRef != null) {
+					EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
 
-					if (caseRef != null) {
-						EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
-
-						linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
-						SormasUI.refreshView();
-					} else {
-						navigateToParticipants(dto.getUuid());
-					}
+					linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
+					SormasUI.refreshView();
+				} else {
+					navigateToParticipants(dto.getUuid());
 				}
 			}
 		});
@@ -596,7 +605,7 @@ public class EventController {
 		String shortUuid = DataHelper.getShortUuid(event.getUuid());
 		String eventTitle = event.getEventTitle();
 		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + shortUuid + ")" : shortUuid);
-		eventLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		eventLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponent(eventLabel);
 
 		return titleLayout;
