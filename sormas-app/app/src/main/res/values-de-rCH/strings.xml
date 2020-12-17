@@ -322,7 +322,7 @@
     <string name="heading_pick_or_create_event">Ereignis auswählen oder erstellen</string>
     <string name="heading_prescription">Verschreibung</string>
     <string name="heading_prescription_edit">Verschreibung bearbeiten</string>
-    <string name="heading_prescription_new">Neue Verschreibung</string>
+    <string name="heading_prescription_new">Neues Rezept</string>
     <string name="heading_previous_hospitalization">Vorheriger Krankenhausaufenthalt</string>
     <string name="heading_previous_hospitalizations">Vorherige Krankenhausaufenthalte</string>
     <string name="heading_refer_case_from_poe">Fall vom Einreiseort weiterleiten</string>
