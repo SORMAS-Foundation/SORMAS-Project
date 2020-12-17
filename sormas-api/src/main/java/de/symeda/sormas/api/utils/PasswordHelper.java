@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.util;
+package de.symeda.sormas.api.utils;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;

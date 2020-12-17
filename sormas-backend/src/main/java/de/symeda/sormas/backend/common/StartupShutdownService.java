@@ -48,6 +48,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -87,11 +88,9 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.user.event.MockPasswordUpdateEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Singleton(name = "StartupShutdownService")
 @Startup

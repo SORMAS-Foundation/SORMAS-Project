@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.providers.credential.hash;
 
-import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import org.keycloak.Config;
 import org.keycloak.credential.hash.PasswordHashProvider;
 import org.keycloak.credential.hash.PasswordHashProviderFactory;
@@ -80,11 +80,11 @@ public class SormasPasswordHashProvider implements PasswordHashProviderFactory, 
 	}
 
 	private String getSalt() {
-		return FacadeProvider.getUserFacade().createPassword(16);
+		return PasswordHelper.createPass(16);
 	}
 
 	private String encodePassword(String rawPassword, String salt) {
-		return FacadeProvider.getUserFacade().encodePassword(rawPassword, salt);
+		return PasswordHelper.encodePassword(rawPassword, salt);
 	}
 
 }

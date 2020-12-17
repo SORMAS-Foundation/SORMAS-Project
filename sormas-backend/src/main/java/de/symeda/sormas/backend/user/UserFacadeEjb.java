@@ -23,16 +23,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -47,6 +44,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.ValidationException;
 
 import de.symeda.sormas.api.user.UserSyncResult;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -85,7 +83,6 @@ import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -450,16 +447,6 @@ public class UserFacadeEjb implements UserFacade {
 		this.userUpdateEvent.fire(event);
 
 		return userSyncResult;
-	}
-
-	@Override
-	public String encodePassword(String rawPassword, String seed) {
-		return PasswordHelper.encodePassword(rawPassword, seed);
-	}
-
-	@Override
-	public String createPassword(int length) {
-		return PasswordHelper.createPass(length);
 	}
 
 	@LocalBean
