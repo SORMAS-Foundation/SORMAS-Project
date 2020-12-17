@@ -489,6 +489,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@Override
 	public List<SimilarEventParticipantDto> getSimilarEventParticipants(EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria) {
+		return null;
 	}
 
 	@Override

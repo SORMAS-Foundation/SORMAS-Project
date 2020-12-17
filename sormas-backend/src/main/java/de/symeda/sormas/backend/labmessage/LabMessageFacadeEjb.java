@@ -6,6 +6,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,6 +18,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
@@ -33,6 +37,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@EJB
 	private LabMessageService labMessageService;
+	@EJB
+	private ConfigFacade configFacade;
 
 	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target) {
 
@@ -208,7 +214,20 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@Override
 	public void fetchExternalLabMessages(boolean onlyNew) {
-
+		List<LabMessageDto> newMessages = null;
+		try {
+			InitialContext ic = new InitialContext();
+			String jndiName = configFacade.getDemisJndiName();
+			// Maybe catch that jndiName can be null
+			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
+			newMessages = labResultsFacade.getExternalLabMessages(onlyNew);
+		} catch (NamingException e) {
+			// That should be handled properly
+			e.printStackTrace();
+		}
+		if (newMessages != null) {
+			newMessages.stream().forEach(labMessageDto -> save(labMessageDto));
+		}
 	}
 
 	@LocalBean

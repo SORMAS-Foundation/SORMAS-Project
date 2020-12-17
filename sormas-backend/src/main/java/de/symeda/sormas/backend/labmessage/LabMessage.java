@@ -300,8 +300,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personHouseNumber = personHouseNumber;
 	}
 
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Column
 	public String getLabMessageDetails() {
 		return labMessageDetails;
 	}
