@@ -108,15 +108,15 @@ public class ActionListEntry extends HorizontalLayout {
 		creatorLabel.addStyleName(CssStyles.LABEL_ITALIC);
 		topLeftLayout.addComponent(creatorLabel);
 
-		Label replyingUserLabel = null;
-		if (action.getReplyingUser() != null) {
-			replyingUserLabel = new Label(
+		Label lastModifiedByUserLabel = null;
+		if (action.getLastModifiedByUser() != null) {
+			lastModifiedByUserLabel = new Label(
 				String.format(
-					I18nProperties.getCaption(Captions.actionReplyingLabel),
+					I18nProperties.getCaption(Captions.actionLastModifiedByLabel),
 					DateFormatHelper.formatDate(action.getChangeDate()),
-					action.getReplyingUser().getCaption()));
-			replyingUserLabel.addStyleName(CssStyles.LABEL_ITALIC);
-			topLeftLayout.addComponent(replyingUserLabel);
+					action.getLastModifiedByUser().getCaption()));
+			lastModifiedByUserLabel.addStyleName(CssStyles.LABEL_ITALIC);
+			topLeftLayout.addComponent(lastModifiedByUserLabel);
 		}
 
 		topLayout.addComponent(topLeftLayout);
@@ -164,8 +164,8 @@ public class ActionListEntry extends HorizontalLayout {
 				statusChangeLabel.addStyleName(statusStyle);
 			}
 			creatorLabel.addStyleName(statusStyle);
-			if (replyingUserLabel != null) {
-				replyingUserLabel.addStyleName(statusStyle);
+			if (lastModifiedByUserLabel != null) {
+				lastModifiedByUserLabel.addStyleName(statusStyle);
 			}
 			priorityLabel.addStyleName(statusStyle);
 		}

@@ -56,7 +56,7 @@ public class ActionDto extends EntityDto {
 	private String title;
 	private String description;
 	private String reply;
-	private UserReferenceDto replyingUser;
+	private UserReferenceDto lastModifiedByUser;
 
 	public static ActionDto build(ActionContext context, ReferenceDto entityRef) {
 
@@ -146,12 +146,12 @@ public class ActionDto extends EntityDto {
 		this.reply = reply;
 	}
 
-	public UserReferenceDto getReplyingUser() {
-		return replyingUser;
+	public UserReferenceDto getLastModifiedByUser() {
+		return lastModifiedByUser;
 	}
 
-	public void setReplyingUser(UserReferenceDto replyingUser) {
-		this.replyingUser = replyingUser;
+	public void setLastModifiedByUser(UserReferenceDto lastModifiedByUser) {
+		this.lastModifiedByUser = lastModifiedByUser;
 	}
 
 	public ActionPriority getPriority() {

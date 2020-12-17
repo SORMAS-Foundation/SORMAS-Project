@@ -48,7 +48,7 @@ public class Action extends AbstractDomainObject {
 	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
 	public static final String REPLY = "reply";
-	public static final String REPLYING_USER = "replyingUser";
+	public static final String LAST_MODIFIED_BY_USER = "lastModifiedByUser";
 	public static final String CREATOR_USER = "creatorUser";
 	public static final String PRIORITY = "priority";
 	public static final String DATE = "date";
@@ -69,7 +69,7 @@ public class Action extends AbstractDomainObject {
 	private String title;
 	private String description;
 	private String reply;
-	private User replyingUser;
+	private User lastModifiedByUser;
 
 	@Enumerated(EnumType.STRING)
 	public ActionContext getActionContext() {
@@ -162,11 +162,11 @@ public class Action extends AbstractDomainObject {
 	}
 
 	@ManyToOne
-	public User getReplyingUser() {
-		return replyingUser;
+	public User getLastModifiedByUser() {
+		return lastModifiedByUser;
 	}
 
-	public void setReplyingUser(User replyingUser) {
-		this.replyingUser = replyingUser;
+	public void setLastModifiedByUser(User lastModifiedByUser) {
+		this.lastModifiedByUser = lastModifiedByUser;
 	}
 }

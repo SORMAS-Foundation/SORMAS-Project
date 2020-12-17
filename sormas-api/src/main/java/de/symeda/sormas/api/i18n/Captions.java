@@ -26,6 +26,7 @@ public interface Captions {
 	String Action_date = "Action.date";
 	String Action_description = "Action.description";
 	String Action_event = "Action.event";
+	String Action_lastModifiedByUser = "Action.lastModifiedByUser";
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String Action_title = "Action.title";
@@ -54,6 +55,7 @@ public interface Captions {
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
 	String actionImportAllCountries = "actionImportAllCountries";
+	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
@@ -64,7 +66,6 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
-	String actionReplyingLabel = "actionReplyingLabel";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -817,8 +818,8 @@ public interface Captions {
 	String Event_uuid = "Event.uuid";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
+	String EventAction_actionLastModifiedByUser = "EventAction.actionLastModifiedByUser";
 	String EventAction_actionPriority = "EventAction.actionPriority";
-	String EventAction_actionReplyingUser = "EventAction.actionReplyingUser";
 	String EventAction_actionStatus = "EventAction.actionStatus";
 	String EventAction_actionTitle = "EventAction.actionTitle";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
