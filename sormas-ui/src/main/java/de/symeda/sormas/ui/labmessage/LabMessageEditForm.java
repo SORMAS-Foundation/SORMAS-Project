@@ -6,6 +6,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
@@ -17,11 +18,8 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 			fluidRowLocs(LabMessageDto.LAB_MESSAGE_DETAILS);
 	//@formatter:on
 
-	private final String HTML = "<html>\n" + "<body>\n" + "\n" + "<h2>An Unordered HTML List</h2>\n" + "\n" + "<ul>\n" + "  <li>Coffee</li>\n"
-		+ "  <li>Tea</li>\n" + "  <li>Milk</li>\n" + "</ul>  \n" + "\n" + "<h2>An Ordered HTML List</h2>\n" + "\n" + "<ol>\n" + "  <li>Coffee</li>\n"
-		+ "  <li>Tea</li>\n" + "  <li>Milk</li>\n" + "</ol> \n" + "\n" + "</body>\n" + "</html>";
-
 	private final boolean readOnly;
+	private Label labMessageDetails;
 
 	public LabMessageEditForm() {
 		this(false);
@@ -39,7 +37,7 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 	@Override
 	protected void addFields() {
 		addFields(LabMessageDto.UUID, LabMessageDto.MESSAGE_DATE_TIME);
-		Label labMessageDetails = new Label(HTML);
+		labMessageDetails = new Label();
 		labMessageDetails.setContentMode(ContentMode.HTML);
 		getContent().addComponent(labMessageDetails, LabMessageDto.LAB_MESSAGE_DETAILS);
 	}
@@ -52,6 +50,7 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 	@Override
 	public void setValue(LabMessageDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
+		labMessageDetails.setValue(FacadeProvider.getExternalLabResultsFacade().convertToHTML(newFieldValue));
 		getFieldGroup().setReadOnly(readOnly);
 	}
 }

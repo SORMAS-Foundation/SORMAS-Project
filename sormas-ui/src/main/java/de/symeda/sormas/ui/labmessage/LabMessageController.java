@@ -15,8 +15,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.EventParticipantSimilarityCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.SimilarEntitiesDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class LabMessageController {
@@ -87,5 +89,19 @@ public class LabMessageController {
 		List<SimilarContactDto> contacts,
 		List<SimilarEventParticipantDto> eventParticipants) {
 		EntitySelectionField selectField = new EntitySelectionField(labMessageDto, cases, contacts, eventParticipants);
+
+		final CommitDiscardWrapperComponent<EntitySelectionField> component = new CommitDiscardWrapperComponent<>(selectField);
+		component.addCommitListener(() -> {
+			SimilarEntitiesDto similarEntitiesDto = selectField.getValue();
+//			if (resultConsumer != null) {
+//				resultConsumer.accept(similarEntitiesDto.toReference());
+//			}
+		});
+
+		selectField.setSelectionChangeCallback((commitAllowed) -> {
+			component.getCommitButton().setEnabled(commitAllowed);
+		});
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEntity));
 	}
 }

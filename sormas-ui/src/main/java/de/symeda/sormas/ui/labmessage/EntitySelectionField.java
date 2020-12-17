@@ -268,4 +268,8 @@ public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
 		}
 		return null;
 	}
+
+	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
+		this.selectionChangeCallback = callback;
+	}
 }

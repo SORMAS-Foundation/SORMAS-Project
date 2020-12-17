@@ -1033,6 +1033,7 @@ public interface Captions {
 	String LabMessage_testLabPostalCode = "LabMessage.testLabPostalCode";
 	String LabMessage_testResult = "LabMessage.testResult";
 	String LabMessage_testType = "LabMessage.testType";
+	String labMessageFetch = "labMessageFetch";
 	String labMessageProcess = "labMessageProcess";
 	String labMessageProcessed = "labMessageProcessed";
 	String labMessageUnprocessed = "labMessageUnprocessed";

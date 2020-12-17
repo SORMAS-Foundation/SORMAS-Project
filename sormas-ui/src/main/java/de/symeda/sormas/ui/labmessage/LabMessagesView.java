@@ -50,7 +50,7 @@ public class LabMessagesView extends AbstractView {
 		});
 		addHeaderComponent(samplesViewSwitcher);
 
-		addHeaderComponent(ButtonHelper.createIconButton(Captions.taskNewTask, VaadinIcons.REFRESH, e -> {
+		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
 			FacadeProvider.getLabMessageFacade().fetchExternalLabMessages(true);
 			listComponent.getGrid().reload();
 		}, ValoTheme.BUTTON_PRIMARY));
