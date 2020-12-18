@@ -94,15 +94,12 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 		final CommunityReferenceDto userCommunity = user.getCommunity();
 		if (userRegion != null) {
-			regionFilter.setValue(userRegion);
 			regionFilter.setEnabled(false);
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
 			if (userDistrict != null) {
-				districtFilter.setValue(userDistrict);
 				districtFilter.setEnabled(false);
 				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
 				if (userCommunity != null) {
-					communityFilter.setValue(userCommunity);
 					communityFilter.setEnabled(false);
 				}
 			}
@@ -152,28 +149,6 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	@Override
 	protected void applyDependenciesOnNewValue(CampaignFormDataCriteria criteria) {
-
-		if (regionFilter != null && districtFilter != null) {
-			RegionReferenceDto region = criteria.getRegion();
-			if (region != null) {
-				districtFilter.removeAllItems();
-				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-			} else {
-				districtFilter.clear();
-				communityFilter.clear();
-			}
-		}
-
-		if (districtFilter != null && communityFilter != null) {
-			DistrictReferenceDto district = criteria.getDistrict();
-			if (district != null) {
-				communityFilter.removeAllItems();
-				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
-			} else {
-				communityFilter.clear();
-			}
-		}
-
 		cbCampaignForm.removeAllItems();
 		if (criteria.getCampaign() != null) {
 			cbCampaignForm
