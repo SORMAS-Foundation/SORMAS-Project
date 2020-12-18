@@ -25,13 +25,13 @@
 		<!-- *** Other dependency versions *** -->
 		<glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<logback.version>1.1.7</logback.version>
+		<logback.version>1.2.3</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.12.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>11.0.3</keycloak.version>
+		<keycloak.version>12.0.0</keycloak.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
@@ -710,45 +710,45 @@
 
 			<!-- ** Vaadin END ** -->
 
-<!-- *** Security updates *** -->
-<!-- These are mostly vulnerable dependencies of vaadin8 -->
+			<!-- *** Security updates *** -->
+			<!-- These are mostly vulnerable dependencies of vaadin8 -->
 
-<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit -->
-<dependency>
-    <groupId>net.sourceforge.htmlunit</groupId>
-    <artifactId>htmlunit</artifactId>
-    <version>2.45.0</version>
-</dependency>
+			<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit -->
+			<dependency>
+				<groupId>net.sourceforge.htmlunit</groupId>
+				<artifactId>htmlunit</artifactId>
+				<version>2.45.0</version>
+			</dependency>
 
-<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-webapp -->
-<dependency>
-    <groupId>org.eclipse.jetty</groupId>
-    <artifactId>jetty-webapp</artifactId>
-    <version>11.0.0</version>
-</dependency>
+			<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-webapp -->
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>11.0.0</version>
+			</dependency>
 
-<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/apache-jsp -->
-<dependency>
-    <groupId>org.eclipse.jetty</groupId>
-    <artifactId>apache-jsp</artifactId>
-    <version>11.0.0</version>
-</dependency>
+			<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/apache-jsp -->
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>apache-jsp</artifactId>
+				<version>11.0.0</version>
+			</dependency>
 
-<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlets -->
-<dependency>
-    <groupId>org.eclipse.jetty</groupId>
-    <artifactId>jetty-servlets</artifactId>
-    <version>11.0.0</version>
-</dependency>
+			<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlets -->
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-servlets</artifactId>
+				<version>11.0.0</version>
+			</dependency>
 
-<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-annotations -->
-<dependency>
-    <groupId>org.eclipse.jetty</groupId>
-    <artifactId>jetty-annotations</artifactId>
-    <version>11.0.0</version>
-</dependency>
+			<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-annotations -->
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-annotations</artifactId>
+				<version>11.0.0</version>
+			</dependency>
 
-<!-- *** Security updates *** END -->
+			<!-- *** Security updates *** END -->
 
 			<!-- *** Compile dependencies END *** -->
 
@@ -861,23 +861,6 @@
 
 	<build>
 		<plugins>
-            <plugin>
-              <groupId>org.owasp</groupId>
-              <artifactId>dependency-check-maven</artifactId>
-              <version>6.0.3</version>
-                <configuration>
-                    <failBuildOnCVSS>8</failBuildOnCVSS>
-                </configuration>
-              <executions>
-                  <execution>
-                      <goals>
-                          <goal>check</goal>
-                      </goals>
-                  </execution>
-              </executions>
-            </plugin>
-
-
 			<!-- Code Coverage / Integration Tests aktivieren -->
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
@@ -1249,6 +1232,24 @@
 			</build>
 			<reporting>
 				<plugins>
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>6.0.3</version>
+						<configuration>
+							<failBuildOnCVSS>8</failBuildOnCVSS>
+							<suppressionFiles>
+								<suppressionFile>project-suppression.xml</suppressionFile>
+							</suppressionFiles>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<artifactId>maven-project-info-reports-plugin</artifactId>
 						<reportSets>
