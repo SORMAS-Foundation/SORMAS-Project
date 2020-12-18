@@ -10,6 +10,8 @@
 
 Please read adhere to the following guidelines when submitting new issues. This allows us to process your request as quickly as possible. Make sure to always use the templates that are automatically provided when creating an issue.
 
+If you want to report a **security issue**, please follow our guideline for [*Responsible Disclosure*](SECURITY.md).
+
 **Important:** Whenever creating a new issue, **please search the repository for similar issues first** to avoid duplicates. You can do this manually or by using the search functionality in the header and limiting your results to the SORMAS repository.
 
 * [Bug Report](#bug-report)
