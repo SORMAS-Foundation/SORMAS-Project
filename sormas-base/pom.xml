@@ -1242,13 +1242,6 @@
 								<suppressionFile>project-suppression.xml</suppressionFile>
 							</suppressionFiles>
 						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
 					</plugin>
 					<plugin>
 						<artifactId>maven-project-info-reports-plugin</artifactId>
