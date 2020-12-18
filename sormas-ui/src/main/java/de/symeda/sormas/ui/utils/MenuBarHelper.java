@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.vaadin.server.Resource;
 import com.vaadin.ui.MenuBar;
 
@@ -8,6 +11,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public class MenuBarHelper {
 
 	public static MenuBar createDropDown(String captionKey, MenuBarItem... items) {
+		return createDropDown(captionKey, Arrays.asList(items));
+	}
+
+	public static MenuBar createDropDown(String captionKey, List<MenuBarItem> items) {
 		MenuBar menuBar = new MenuBar();
 		menuBar.setId(captionKey);
 

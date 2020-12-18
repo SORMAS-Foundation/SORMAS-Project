@@ -8,11 +8,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import com.vaadin.ui.Notification;
@@ -37,18 +43,19 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
 	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
-
+	private List<String> noPopulationDataLocations;
 	private final HighChart campaignColumnChart;
 
 	public CampaignDashboardDiagramComponent(
 		CampaignDiagramDefinitionDto diagramDefinition,
 		List<CampaignDiagramDataDto> diagramDataList,
 		Map<CampaignDashboardTotalsReference, Double> totalValuesMap,
-		boolean showPercentages) {
-
+		boolean showPercentages,
+		boolean isCommunityGrouping) {
 		this.diagramDefinition = diagramDefinition;
 		this.showPercentages = showPercentages;
 		this.totalValuesMap = totalValuesMap;
+		noPopulationDataLocations = new LinkedList<>();
 
 		if (this.totalValuesMap != null && this.totalValuesMap.keySet().stream().noneMatch(r -> r.getStack() != null)) {
 			totalValuesWithoutStacks = true;
@@ -79,17 +86,17 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			objectCampaignDiagramDataDtoMap.put(diagramData.getGroupingKey(), diagramData);
 		}
 
-		buildDiagramChart(diagramDefinition.getDiagramCaption());
+		buildDiagramChart(diagramDefinition.getDiagramCaption(), isCommunityGrouping);
 	}
 
-	public void buildDiagramChart(String title) {
+	public void buildDiagramChart(String title, boolean isCommunityGrouping) {
 		final StringBuilder hcjs = new StringBuilder();
 
 		//@formatter:off
 		hcjs.append("var options = {"
 				+ "chart:{ "
 				+ " type: 'column', "
-				+ " backgroundColor: 'transparent', "
+				+ " backgroundColor: 'white', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
 				+ " spacing: [20, 20, 20, 20], "
@@ -109,12 +116,15 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					+ "' } }, ");
 		}
 
-		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }");
+		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }, ")
+			.append(
+				"menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS'");
 
 		if (totalValuesMap != null) {
-			hcjs.append(
-				", menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS', 'viewData', 'separator', 'togglePercentages']");
+			hcjs.append(", 'separator', 'togglePercentages'");
 		}
+
+		hcjs.append("]");
 
 		Map<String, Long> stackMap = diagramDefinition.getCampaignDiagramSeries()
 			.stream()
@@ -130,7 +140,28 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ "title:{ text: '" + StringEscapeUtils.escapeEcmaScript(title) + "', style: { fontSize: '15px' } },");
 		//@formatter:on
 
+		noPopulationDataLocations.clear();
+		if (Objects.nonNull(totalValuesMap)) {
+			for (Object key : axisCaptions.keySet()) {
+				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
+					noPopulationDataLocations.add(axisCaptions.get(key));
+				}
+			}
+		}
+
 		hcjs.append("xAxis: {");
+		if (Objects.nonNull(diagramDefinition.getCampaignSeriesTotal())) {
+			Optional isPopulationGroupUsed =
+				diagramDefinition.getCampaignSeriesTotal().stream().filter(series -> Objects.nonNull(series.getPopulationGroup())).findFirst();
+			if (showPercentages && isPopulationGroupUsed.isPresent() && !CollectionUtils.isEmpty(this.getNoPopulationDataLocations())) {
+				hcjs.append(
+					"title: {" + "        text:'"
+						+ String.format(
+							I18nProperties.getString(Strings.errorNoPopulationDataLocations),
+							String.join(", ", this.getNoPopulationDataLocations()))
+						+ "' },");
+			}
+		}
 		if (stackMap.size() > 1) {
 			hcjs.append("opposite: true,");
 		}
@@ -177,7 +208,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
 			Collection<CampaignDiagramDataDto> values = seriesData.values();
 			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
-			final String fieldName = iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey;
+			String fieldName = (iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey);
+			if (showPercentages) {
+				if (isCommunityGrouping) {
+					fieldName = I18nProperties.getString(Strings.populationDataByCommunity);
+				}
+			}
+
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {
@@ -187,11 +224,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 								seriesData.get(axisKey).getGroupingKey(),
 								totalValuesWithoutStacks ? null : series.getStack()));
 						if (totalValue == null) {
-							Notification.show(
-								String.format(
-									I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError),
-									diagramDefinition.getDiagramCaption()),
-								ERROR_MESSAGE);
+							if (!isCommunityGrouping) {
+								Notification.show(
+									String.format(
+										I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError),
+										diagramDefinition.getDiagramCaption()),
+									ERROR_MESSAGE);
+							}
 						} else if (totalValue > 0) {
 							hcjs.append(
 								BigDecimal.valueOf(seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100)
@@ -216,7 +255,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		hcjs.append("]");
 		hcjs.append("}");
-
 		campaignColumnChart.setHcjs(hcjs.toString());
 	}
 
@@ -226,5 +264,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	public void setShowPercentages(boolean showPercentages) {
 		this.showPercentages = showPercentages;
+	}
+
+	public List<String> getNoPopulationDataLocations() {
+		return noPopulationDataLocations;
+	}
+
+	public void setNoPopulationDataLocations(List<String> noPopulationDataLocations) {
+		this.noPopulationDataLocations = noPopulationDataLocations;
 	}
 }

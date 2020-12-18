@@ -1,13 +1,22 @@
 package de.symeda.sormas.backend.externaljournal;
 
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.EMAIL_TAKEN;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_BIRTHDATE;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_EMAIL;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.INVALID_PHONE;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.NO_PHONE_OR_EMAIL;
+import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError.PHONE_TAKEN;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -19,6 +28,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.backend.util.ClientHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,12 +47,14 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonDto;
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonQueryResponse;
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
-import de.symeda.sormas.api.externaljournal.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -190,21 +202,19 @@ public class ExternalJournalService {
 	/**
 	 * Notify external journals that a person has been updated
 	 * 
-	 * @param existingPerson
+	 * @param existingJournalPerson
 	 *            the person already available in the external journal
-	 * @param updatedPerson
-	 *            the updated person in SORMAS
 	 * @return true if the person data change was considered relevant for external journals, false otherwise.
 	 *
 	 */
-	public boolean notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-		boolean shouldNotify = shouldNotify(existingPerson, updatedPerson);
-		if (shouldNotify) {
+	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
+		boolean shouldNotify = shouldNotify(existingJournalPerson);
+		if (shouldNotify(existingJournalPerson)) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
-				notifySymptomJournal(existingPerson.getUuid());
+				notifySymptomJournal(existingJournalPerson.getUuid());
 			}
 			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
-				notifyPatientDiary(existingPerson.getUuid());
+				notifyPatientDiary(existingJournalPerson.getUuid());
 			}
 		}
 		return shouldNotify;
@@ -214,19 +224,12 @@ public class ExternalJournalService {
 	 * Note: This method just checks for changes in the Person data.
 	 * It can not check for Contact related data such as FollowUpUntil dates.
 	 */
-	private boolean shouldNotify(PersonDto existingPerson, PersonDto updatedPerson) {
-		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(existingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(existingPerson.getSymptomJournalStatus());
-		boolean relevantFieldsUpdated = Comparator.comparing(PersonDto::getFirstName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getLastName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getEmailAddress, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getPhone, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateDD, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateMM, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateYYYY, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getSex, Comparator.nullsLast(Comparator.naturalOrder()))
-			.compare(existingPerson, updatedPerson)
-			!= 0;
+	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
+		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
+		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
+			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus());
+		JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
+		boolean relevantFieldsUpdated = !existingJournalPerson.equals(updatedJournalPerson);
 		return relevantPerson && relevantFieldsUpdated;
 	}
 
@@ -272,10 +275,10 @@ public class ExternalJournalService {
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
 			JsonNode idatData = node.get("idatData");
-			PatientDiaryPersonDto patientDiaryPersonDto = mapper.treeToValue(idatData, PatientDiaryPersonDto.class);
+			PatientDiaryPersonDto personDto = mapper.treeToValue(idatData, PatientDiaryPersonDto.class);
 			String endDate = node.get("endDate").textValue();
-			patientDiaryPersonDto.setEndDate(endDate);
-			return Optional.of(patientDiaryPersonDto);
+			personDto.setEndDate(endDate);
+			return Optional.of(personDto);
 		} catch (IOException e) {
 			logger.error("Could not retrieve patient: {}", e.getMessage());
 			throw new RuntimeException(e);
@@ -285,7 +288,7 @@ public class ExternalJournalService {
 	/**
 	 * Attempts to register a new patient in the CLIMEDO patient diary.
 	 * Sets the person symptom journal status to REGISTERED if successful.
-	 * 
+	 *
 	 * @param person
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
@@ -327,63 +330,99 @@ public class ExternalJournalService {
 	 *            the person to validate
 	 * @return the result of the validation
 	 */
-	public PatientDiaryPersonValidation validatePatientDiaryPerson(PersonDto person) {
+	public ExternalJournalValidation validatePatientDiaryPerson(PersonDto person) {
+		EnumSet<PatientDiaryValidationError> validationErrors = EnumSet.noneOf(PatientDiaryValidationError.class);
+
 		String email = person.getEmailAddress();
 		String phone = person.getPhone();
-		boolean validEmail = true;
-		boolean validPhone = true;
-		boolean validBirthdate = true;
-		boolean emailAvailable = true;
-		boolean phoneAvailable = true;
+		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
+		if (!hasPhoneOrEmail) {
+			validationErrors.add(NO_PHONE_OR_EMAIL);
+		}
+
 		if (StringUtils.isNotEmpty(email)) {
 			EmailValidator validator = EmailValidator.getInstance();
-			validEmail = validator.isValid(email);
-			emailAvailable = isEmailAvailable(person.getEmailAddress());
+			if (!validator.isValid(email)) {
+				validationErrors.add(INVALID_EMAIL);
+			}
+			if (!isEmailAvailable(person)) {
+				validationErrors.add(EMAIL_TAKEN);
+			}
 		}
+
 		if (StringUtils.isNotEmpty(phone)) {
-			validPhone = false;
 			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 			try {
 				Phonenumber.PhoneNumber germanNumberProto = phoneUtil.parse(phone, "DE");
-				validPhone = phoneUtil.isValidNumber(germanNumberProto);
+				if (!phoneUtil.isValidNumber(germanNumberProto)) {
+					validationErrors.add(INVALID_PHONE);
+				}
 				String internationalPhone = phoneUtil.format(germanNumberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-				phoneAvailable = isPhoneAvailable(internationalPhone);
+				if (!isPhoneAvailable(person, internationalPhone)) {
+					validationErrors.add(PHONE_TAKEN);
+				}
 			} catch (NumberParseException e) {
 				logger.warn("NumberParseException was thrown: " + e.toString());
+				validationErrors.add(INVALID_PHONE);
 			}
 		}
+
 		if (ObjectUtils.anyNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY())) {
-			validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+			boolean validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+			if (!validBirthdate) {
+				validationErrors.add(INVALID_BIRTHDATE);
+			}
 		}
 
-		boolean hasPhoneOrEmail = !StringUtils.isAllEmpty(email, phone);
-		boolean valid = hasPhoneOrEmail && validEmail && validPhone && validBirthdate && emailAvailable && phoneAvailable;
-		String message = getValidationMessage(hasPhoneOrEmail, validEmail, validPhone, validBirthdate, emailAvailable, phoneAvailable);
-		return new PatientDiaryPersonValidation(valid, message);
+		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
 	}
 
-	private boolean isEmailAvailable(String emailAddress) {
-		return queryPatientDiary(EMAIL_QUERY_PARAM, emailAddress)
-			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"))
-			.getCount() == 0;
+	private boolean isEmailAvailable(PersonDto person) {
+		PatientDiaryQueryResponse response = queryPatientDiary(EMAIL_QUERY_PARAM, person.getEmailAddress())
+			.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
+		boolean notUsed = response.getCount() == 0;
+		boolean samePerson = response.getResults()
+			.stream()
+			.map(PatientDiaryPersonData::getIdatId)
+			.map(PatientDiaryIdatId::getIdat)
+			.map(PatientDiaryPersonDto::getPersonUUID)
+			.anyMatch(uuid -> person.getUuid().equals(uuid));
+		boolean sameFamily = response.getResults()
+				.stream()
+				.map(PatientDiaryPersonData::getIdatId)
+				.map(PatientDiaryIdatId::getIdat)
+				.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
+		return notUsed || samePerson || sameFamily;
 	}
 
-	private boolean isPhoneAvailable(String phone) {
-		return queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, phone)
-			.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"))
-			.getCount() == 0;
+	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
+		return patientDiaryPerson.getLastName().equals(person.getLastName()) &&
+				!patientDiaryPerson.getFirstName().equals(person.getFirstName());
+	}
+
+	private boolean isPhoneAvailable(PersonDto person, String phone) {
+		PatientDiaryQueryResponse response = queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, phone)
+			.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"));
+		boolean notUsed = response.getCount() == 0;
+		boolean samePerson = response.getResults()
+			.stream()
+			.map(PatientDiaryPersonData::getIdatId)
+			.map(PatientDiaryIdatId::getIdat)
+			.map(PatientDiaryPersonDto::getPersonUUID)
+			.anyMatch(uuid -> person.getUuid().equals(uuid));
+		return notUsed || samePerson;
 	}
 
 	/**
 	 * Queries the CLIMEDO patients for ones matching the given property
-	 * 
+	 *
 	 * @param key
 	 *            the name of the property to match
 	 * @param value
 	 *            the value of the property to match
 	 * @return result of query
 	 */
-	public Optional<PatientDiaryPersonQueryResponse> queryPatientDiary(String key, String value) {
+	public Optional<PatientDiaryQueryResponse> queryPatientDiary(String key, String value) {
 		try {
 			String probandsUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/probands";
 			String queryParam = "\"" + key + "\" = \"" + value + "\"";
@@ -394,45 +433,17 @@ public class ExternalJournalService {
 			if (response.getStatus() == NOT_FOUND_STATUS) {
 				return Optional.empty();
 			}
-			return Optional.ofNullable(response.readEntity(PatientDiaryPersonQueryResponse.class));
+			return Optional.ofNullable(response.readEntity(PatientDiaryQueryResponse.class));
 		} catch (IOException e) {
 			logger.error("Could not retrieve patient query response: {}", e.getMessage());
 			throw new RuntimeException(e);
 		}
 	}
 
-	private String getValidationMessage(
-		boolean hasPhoneOrEmail,
-		boolean validEmail,
-		boolean validPhone,
-		boolean validBirthdate,
-		boolean emailAvailable,
-		boolean phoneAvailable) {
-		StringBuilder message = new StringBuilder();
-		if (!hasPhoneOrEmail) {
-			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationNoEmailOrPhone));
-			message.append('\n');
-		}
-		if (!validEmail) {
-			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationEmail));
-			message.append('\n');
-		}
-		if (!validPhone) {
-			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationPhone));
-			message.append('\n');
-		}
-		if (!validBirthdate) {
-			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationBirthdate));
-			message.append('\n');
-		}
-		if (!emailAvailable) {
-			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationEmailTaken));
-			message.append('\n');
-		}
-		if (!phoneAvailable) {
-			message.append(I18nProperties.getValidationError(Validations.externalJournalPersonValidationPhoneTaken));
-			message.append('\n');
-		}
-		return message.toString();
+	private String getValidationMessage(EnumSet<PatientDiaryValidationError> validationErrors) {
+		return validationErrors.stream()
+			.map(PatientDiaryValidationError::getErrorLanguageKey)
+			.map(I18nProperties::getValidationError)
+			.collect(Collectors.joining("\n"));
 	}
 }

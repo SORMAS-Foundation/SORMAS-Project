@@ -327,7 +327,7 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.toString());
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
 		return dto;
 	}
 
@@ -376,7 +376,7 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public String resetPassword(String uuid) {
 		String resetPassword = userService.resetPassword(uuid);
-		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
+		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid), resetPassword));
 		return resetPassword;
 	}
 

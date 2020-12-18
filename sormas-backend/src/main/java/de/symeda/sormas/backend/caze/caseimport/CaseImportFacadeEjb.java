@@ -40,8 +40,10 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.caseimport.ImportLineResultDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -64,8 +66,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
@@ -109,7 +111,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	@EJB
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	@Override
 	@Transactional
@@ -191,6 +193,11 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		List<PathogenTestDto> pathogenTests = entities.getPathogenTests();
 
 		try {
+			// Necessary to make sure that the follow-up information is retained
+			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP) && caze.getFollowUpStatus() == null) {
+				caze.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+			}
+
 			if (caze.getEpidNumber() != null && caseFacade.doesEpidNumberExist(caze.getEpidNumber(), caze.getUuid(), caze.getDisease())) {
 				return ImportLineResultDto.errorResult(I18nProperties.getString(Strings.messageEpidNumberWarning));
 			}

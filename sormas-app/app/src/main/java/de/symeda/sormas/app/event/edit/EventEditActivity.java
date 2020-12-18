@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.view.Menu;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -69,7 +70,12 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
-		return PageMenuItem.fromEnum(EventSection.values(), getContext());
+		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventSection.values(), getContext());
+		// Sections must be removed in reverse order
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
+			menuItems.set(EventSection.TASKS.ordinal(), null);
+		}
+		return menuItems;
 	}
 
 	@Override
