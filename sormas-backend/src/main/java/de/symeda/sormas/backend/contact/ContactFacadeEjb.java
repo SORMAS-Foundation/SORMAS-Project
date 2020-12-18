@@ -285,6 +285,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		validate(dto);
 
+		if (existingContact != null) {
+			handleExternalJournalPerson(dto);
+		}
 		// taking this out because it may lead to server problems
 		// case disease can change over time and there is currently no mechanism that would delete all related contacts
 		// in this case the best solution is to only keep this hidden from the UI and still allow it in the backend
@@ -298,9 +301,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
 			createInvestigationTask(entity);
 
-		}
-		if (existingContact != null) {
-			handleExternalJournalPerson(dto);
 		}
 
 		if (handleChanges) {
