@@ -69,6 +69,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -900,11 +901,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath, ContactCriteria contactCriteria) {
 
-//		Predicate userFilter = null;
+		Predicate userFilter = null;
 
-//		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
-//		}
+		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
+			userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
+		} else {
+			CaseUserFilterCriteria userFilterCriteria = new CaseUserFilterCriteria();
+			userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT), userFilterCriteria);
+		}
+
 		Predicate filter;
 		if (userFilter != null) {
 			filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath, contactCriteria), userFilter);
@@ -937,12 +942,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
-//		Predicate filter = null;
+		Predicate filter = null;
 		// whoever created it or is assigned to it is allowed to access it
-//		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
-		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
-//		}
+		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
+//		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
+			filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
+			filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
+		}
+
 		switch (jurisdictionLevel) {
 		case REGION:
 			final Region region = currentUser.getRegion();
