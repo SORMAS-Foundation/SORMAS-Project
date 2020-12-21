@@ -72,6 +72,15 @@
         "attributes": {}
       },
       {
+        "id": "39771f20-31d4-4c28-b014-467f791ffa88",
+        "name": "USER",
+        "description": "Default USER role",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "SORMAS",
+        "attributes": {}
+      },
+      {
         "id": "b40b55b3-a4b1-4f5e-95eb-224f21a40b5a",
         "name": "offline_access",
         "description": "${role_offline-access}",
