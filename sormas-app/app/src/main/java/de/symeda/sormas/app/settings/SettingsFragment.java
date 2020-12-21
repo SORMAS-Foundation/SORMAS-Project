@@ -54,6 +54,7 @@ import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
+import de.symeda.sormas.app.user.EmailEditActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
@@ -82,6 +83,7 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding = (FragmentSettingsLayoutBinding) rootBinding;
 
 		binding.settingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
+		binding.changeEmail.setOnClickListener(v -> changeEmail());
 		binding.changePin.setOnClickListener(v -> changePIN());
 		binding.resynchronizeData.setOnClickListener(v -> repullData());
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
@@ -155,6 +157,11 @@ public class SettingsFragment extends BaseLandingFragment {
 		return binding.settingsServerUrl.getValue();
 	}
 
+	public void changeEmail() {
+		Intent intent = new Intent(getContext(), EmailEditActivity.class);
+		startActivity(intent);
+	}
+
 	public void changePIN() {
 		Intent intent = new Intent(getActivity(), EnterPinActivity.class);
 		intent.putExtra(EnterPinActivity.CALLED_FROM_SETTINGS, true);
@@ -162,7 +169,7 @@ public class SettingsFragment extends BaseLandingFragment {
 	}
 
 	private void repullData() {
-		checkAndShowUnsynchronizedChangesDialog(() -> showRepullDataConfirmationDialog(), "SYNC");
+		checkAndShowUnsynchronizedChangesDialog(this::showRepullDataConfirmationDialog, "SYNC");
 	}
 
 	private void checkAndShowUnsynchronizedChangesDialog(Callback confirmedCallback, String wordToType) {

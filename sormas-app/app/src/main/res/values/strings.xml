@@ -39,6 +39,7 @@
     <string name="action_back_to_settings">Back to settings</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_change_PIN">Change PIN</string>
+    <string name="action_change_Email">Change Email</string>
     <string name="action_change_settings"><u>Change Settings</u></string>
     <string name="action_clear">Clear</string>
     <string name="action_clear_all">Clear All</string>
@@ -153,6 +154,7 @@
     <string name="caption_drawer_close">Close navigation drawer</string>
     <string name="caption_drawer_open">Open navigation drawer</string>
     <string name="caption_dropped">Dropped</string>
+    <string name="caption_email">Email</string>
     <string name="caption_epi_week">Epi Week</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
@@ -238,6 +240,7 @@
     <string name="confirmation_reduce_quarantine">Are you sure you want to reduce the quarantine?</string>
     <string name="confirmation_extend_followup">Would you also want the follow-up period to be extended accordingly?</string>
 
+    <string name="description_email">Email</string>
     <string name="description_epi_week">Epi Week</string>
     <string name="description_first_name">First Name</string>
     <string name="description_last_name">Last Name</string>
@@ -297,6 +300,7 @@
     <string name="heading_create_pin">Create PIN</string>
     <string name="heading_disease_detection">Disease Detection</string>
     <string name="heading_disease_prevention">Disease Prevention</string>
+    <string name="heading_email_edit">Edit Email</string>
     <string name="heading_enter_pin">Enter PIN</string>
     <string name="heading_environmental_exposure">Environmental Exposure</string>
     <string name="heading_epidemiological_info">Epidemiological Info</string>
@@ -406,6 +410,7 @@
     <string name="hint_select_epi_week">Select Epi Week</string>
     <string name="hint_select_year">Select Year</string>
     <string name="hint_settings_server_url">e.g. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
+    <string name="hint_user_email">User Email</string>
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
     <string name="hint_case_numbers_not_submitted">Case numbers not submitted yet</string>
