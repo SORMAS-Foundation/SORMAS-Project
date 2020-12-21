@@ -341,7 +341,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.multiselect(selections);
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
@@ -699,7 +699,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		SampleJoins<Sample> joins = new SampleJoins<>(root);
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);

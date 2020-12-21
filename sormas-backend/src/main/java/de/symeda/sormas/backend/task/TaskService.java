@@ -256,7 +256,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			}
 		}
 		if (taskCriteria.getTaskContext() != null) {
-			filter = cb.and(filter, cb.equal(from.get(Task.TASK_CONTEXT), taskCriteria.getTaskContext()));
+			filter = and(cb, filter, cb.equal(from.get(Task.TASK_CONTEXT), taskCriteria.getTaskContext()));
 		}
 		if (taskCriteria.getRegion() != null) {
 			Expression<Object> region = cb.selectCase()

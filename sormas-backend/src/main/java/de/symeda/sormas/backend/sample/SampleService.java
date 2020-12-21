@@ -284,18 +284,22 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(cq, cb, new SampleJoins<>(samplePath));
+		return createUserFilter(cq, cb, new SampleJoins<>(samplePath), new SampleCriteria());
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins) {
+	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleCriteria criteria) {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, joins.getCaze(), null);
-		Predicate contactFilter = contactService.createUserFilterForJoin(cb, cq, joins.getContact());
-		Predicate eventParticipantFilter = eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant());
-		filter = or(cb, filter, caseFilter, contactFilter, eventParticipantFilter);
+		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
+		if (sampleAssociationType == SampleAssociationType.CASE) {
+			filter = or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
+		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
+			filter = or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
+		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
+			filter = or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+		}
 
 		return filter;
 	}

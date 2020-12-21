@@ -54,7 +54,7 @@ public class Exposure extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -5570515874416024604L;
 
-	public static final String TABLE_NAME = "exposure";
+	public static final String TABLE_NAME = "exposures";
 
 	public static final String EPI_DATA = "epiData";
 	public static final String LOCATION = "location";
