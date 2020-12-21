@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.messaging.MessageType;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -147,6 +148,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertEquals(null, contact.getFollowUpUntil());
+	}
+
+	@Test
+	public void testCountCasesWithMisingContactInformation() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+				user.toReference(),
+				cazePerson.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+
+		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
+
+		cazePerson.setPhone("40742140797");
+		getPersonFacade().savePerson(cazePerson);
+
+		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 	}
 
 	@Test

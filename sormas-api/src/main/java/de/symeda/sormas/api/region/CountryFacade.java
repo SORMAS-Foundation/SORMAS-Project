@@ -29,4 +29,6 @@ public interface CountryFacade {
 	List<CountryDto> getByUuids(List<String> uuids);
 
 	List<String> getAllUuids();
+
+	List<CountryReferenceDto> getAllActiveAsReference();
 }

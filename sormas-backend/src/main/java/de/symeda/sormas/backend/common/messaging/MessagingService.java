@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.backend.common.messaging;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -29,10 +30,12 @@ import org.slf4j.LoggerFactory;
 
 import com.nexmo.client.NexmoClientException;
 
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -78,6 +81,8 @@ public class MessagingService {
 	@EJB
 	private SmsService smsService;
 	@EJB
+	private ManualMessageLogService manualMessageLogService;
+	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	/**
@@ -100,20 +105,53 @@ public class MessagingService {
 			return;
 		}
 
-		String emailAddress = recipient.getUserEmail();
-		String phoneNumber = recipient.getPhone();
+		sendMessage(recipient, I18nProperties.getEnumCaption(subject), messageContent, messageTypes);
+	}
 
+	private void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes)
+		throws NotificationDeliveryFailedException {
+		final String emailAddress = recipient.getUserEmail();
+		final String phoneNumber = recipient.getPhone();
+		final String recipientUuid = recipient.getUuid();
+		sendMessage(subject, messageContent, emailAddress, phoneNumber, recipientUuid, "user", messageTypes);
+	}
+
+	public void sendMessage(Person recipient, String subject, String messageContent, MessageType... messageTypes)
+		throws NotificationDeliveryFailedException {
+		final String emailAddress = recipient.getEmailAddress();
+		final String phoneNumber = recipient.getPhone();
+		final String recipientUuid = recipient.getUuid();
+		for (MessageType messageType : messageTypes) {
+			sendMessage(subject, messageContent, emailAddress, phoneNumber, recipientUuid, "person", messageType);
+			final ManualMessageLog manualMessageLog = new ManualMessageLog();
+			manualMessageLog.setMessageType(messageType);
+			manualMessageLog.setRecipientPerson(recipient);
+			manualMessageLog.setSendingUser(userService.getCurrentUser());
+			manualMessageLog.setSentDate(new Date());
+			manualMessageLogService.ensurePersisted(manualMessageLog);
+		}
+	}
+
+	private void sendMessage(
+		String subject,
+		String messageContent,
+		String emailAddress,
+		String phoneNumber,
+		String recipientUuid,
+		final String recipientType,
+		MessageType... messageTypes)
+		throws NotificationDeliveryFailedException {
 		for (MessageType messageType : messageTypes) {
 			if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
-				logger.info(String.format("Tried to send an email to a user without an email address (UUID: %s).", recipient.getUuid()));
+				logger.info(String.format("Tried to send an email to a " + recipientType + " without an email address (UUID: %s).", recipientUuid));
 			} else if (messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
-				logger.info(String.format("Tried to send an SMS to a user without a phone number (UUID: %s).", recipient.getUuid()));
+				logger.info(String.format("Tried to send an SMS to a " + recipientType + " without a phone number (UUID: %s).", recipientUuid));
 			} else {
 				try {
 					if (messageType == MessageType.EMAIL) {
-						emailService.sendEmail(emailAddress, I18nProperties.getEnumCaption(subject), messageContent);
+						emailService.sendEmail(emailAddress, subject, messageContent);
 					} else if (messageType == MessageType.SMS) {
-						smsService.sendSms(phoneNumber, I18nProperties.getEnumCaption(subject), messageContent);
+						smsService.sendSms(phoneNumber, messageContent);
 					}
 				} catch (MessagingException e) {
 					throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);

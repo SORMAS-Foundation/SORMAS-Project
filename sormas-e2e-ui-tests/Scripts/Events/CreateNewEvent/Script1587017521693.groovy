@@ -1,8 +1,6 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
 import org.openqa.selenium.Keys as Keys
-
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
@@ -25,10 +23,10 @@ WebUI.setText(findTestObject('Events/NewEventView/input_Title_eventTitle'), 'Rob
 WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'This is a Robo Marathon Event')
 
 //WebUI.click(findTestObject('Events/NewEventView/div_Source type_v-filterselect-button'))
-
 //WebUI.click(findTestObject('Events/NewEventView/td_HotlinePerson'))
 //Sending text instead of selecting from drop down due to issue #2447
 WebUI.setText(findTestObject('Events/NewEventView/SourceType_Input'), 'Hotline/Person')
+
 WebUI.sendKeys(findTestObject('Events/NewEventView/SourceType_Input'), Keys.chord(Keys.ENTER))
 
 WebUI.setText(findTestObject('Events/NewEventView/input_SourceFirstName_inputBox'), 'Karl')
@@ -43,7 +41,6 @@ WebUI.click(findTestObject('Events/NewEventView/td_TypeOfPlace_Festivities_DDIte
 
 /*WebUI.click(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'))
 WebUI.setText(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'), 'Am Klammerberg 3')*/
-
 WebUI.setText(findTestObject('Events/NewEventView/input_Street'), 'Alpha street')
 
 WebUI.click(findTestObject('Events/NewEventView/input_House number'))
@@ -57,15 +54,17 @@ WebUI.setText(findTestObject('Events/NewEventView/input_City_inputBox'), 'Klammh
 /*WebUI.click(findTestObject('Events/NewEventView/div_AreaType_v-filterselect-button'))
 
 WebUI.click(findTestObject('Events/NewEventView/td_AreaType_Urban_DDItem'))*/
-
 WebUI.click(findTestObject('Events/NewEventView/div_District_v-filterselect-button'))
 
-WebUI.click(findTestObject('Events/NewEventView/td_Voreingestellter Landkreis'))
+WebUI.setText(findTestObject('Events/NewEventView/input_district'), 'vorein')
+
+WebUI.sendKeys(findTestObject('Events/NewEventView/input_district'), Keys.chord(Keys.ENTER))
+
+//WebUI.click(findTestObject('Events/NewEventView/td_Voreingestellter Landkreis'))
 
 /*WebUI.click(findTestObject('Events/NewEventView/div_Community_v-filterselect-button'))
 
 WebUI.click(findTestObject('Events/NewEventView/span_Community_CharlottenburgWilmersdorf-DDItem')) */
-
 WebUI.click(findTestObject('ReusableORs/div_Save'))
 
 WebUI.delay(1)

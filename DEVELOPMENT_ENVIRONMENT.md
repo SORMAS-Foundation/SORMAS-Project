@@ -22,7 +22,7 @@
   - **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 
 ## Eclipse
-- Install the latest Eclipse version
+- Install the latest Eclipse version, best fit is [Eclipse IDE for Enterprise Java Developers](https://www.eclipse.org/downloads/packages).
 - Set the default JRE of Eclipse to the installed Zulu Java SDK: [Assigning the default JRE for the workbench ](https://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-assign_default_jre.htm)
 - Clone the SORMAS-Open repository and import the projects to Eclipse
 	- If you're using Eclipse to clone, choose "File -> Import -> Git -> Projects from Git" and continue until you're asked to create a new project from the cloned repository; click cancel instead and use "File -> Import -> Maven -> Existing Maven Projects" to import the separate projects into your workspace

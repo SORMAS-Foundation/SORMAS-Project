@@ -50,12 +50,19 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
 		editComponent = ControllerProvider.getCampaignController()
-			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaign(), campaignFormData.getCampaignFormMeta(), true, true, () -> {
-				SormasUI.refreshView();
-				Notification.show(
-					String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
-					TRAY_NOTIFICATION);
-			}, null);
+			.getCampaignFormDataComponent(
+				campaignFormData,
+				campaignFormData.getCampaign(),
+				campaignFormData.getCampaignFormMeta(),
+				true,
+				true,
+				() -> {
+					SormasUI.refreshView();
+					Notification.show(
+						String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
+						TRAY_NOTIFICATION);
+				},
+				null);
 		editComponent.setMargin(false);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.setHeightUndefined();
@@ -63,8 +70,6 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 
 		container.addComponent(editComponent);
-
-		hideInfoLabel();
 
 		getViewTitleLabel().setValue(campaignFormData.getCampaignFormMeta().toString());
 	}

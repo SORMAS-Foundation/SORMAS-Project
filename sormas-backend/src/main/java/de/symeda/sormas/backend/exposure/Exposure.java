@@ -39,6 +39,7 @@ import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.PatientExpositionRole;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -53,7 +54,7 @@ public class Exposure extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -5570515874416024604L;
 
-	public static final String TABLE_NAME = "exposure";
+	public static final String TABLE_NAME = "exposures";
 
 	public static final String EPI_DATA = "epiData";
 	public static final String LOCATION = "location";
@@ -68,6 +69,7 @@ public class Exposure extends AbstractDomainObject {
 	private ExposureType exposureType;
 	private String exposureTypeDetails;
 	private Location location;
+	private PatientExpositionRole patientExpositionRole;
 
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
@@ -196,6 +198,15 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PatientExpositionRole getPatientExpositionRole() {
+		return patientExpositionRole;
+	}
+
+	public void setPatientExpositionRole(PatientExpositionRole patientExpositionRole) {
+		this.patientExpositionRole = patientExpositionRole;
 	}
 
 	@Enumerated(EnumType.STRING)

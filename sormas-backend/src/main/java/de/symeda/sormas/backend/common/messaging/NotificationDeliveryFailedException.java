@@ -15,10 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.backend.common.messaging;
 
-public enum MessageType {
+import de.symeda.sormas.api.messaging.MessageType;
 
-	EMAIL,
-	SMS;
+@SuppressWarnings("serial")
+public class NotificationDeliveryFailedException extends Exception {
+
+	private MessageType messageType;
+
+	public NotificationDeliveryFailedException(String message, MessageType messageType, Throwable cause) {
+		super(message, cause);
+		this.messageType = messageType;
+	}
+
+	public MessageType getMessageType() {
+		return messageType;
+	}
 }

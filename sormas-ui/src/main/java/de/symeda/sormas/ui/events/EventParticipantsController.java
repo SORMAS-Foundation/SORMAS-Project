@@ -286,7 +286,7 @@ public class EventParticipantsController {
 		String eventShortUuid = DataHelper.getShortUuid(event.getUuid());
 		String eventTitle = event.getEventTitle();
 		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + eventShortUuid + ")" : eventShortUuid);
-		eventLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		eventLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		titleLayout.addComponent(eventLabel);
 
 		if (event.getStartDate() != null) {
@@ -301,7 +301,7 @@ public class EventParticipantsController {
 		String shortUuid = DataHelper.getShortUuid(eventParticipant.getUuid());
 		String person = eventParticipant.getPerson().toReference().getCaption();
 		Label eventParticipantLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
-		eventParticipantLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		eventParticipantLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponents(eventParticipantLabel);
 
 		return titleLayout;

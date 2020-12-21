@@ -50,6 +50,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.lang3.StringUtils;
 
 public class UserController {
 
@@ -102,7 +103,7 @@ public class UserController {
 			userEditForm.getFieldGroup());
 
 		// Add reset password button
-		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);
+		Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
 		editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
 
 		editView.addDiscardListener(closeWindowCallback::run);
@@ -162,7 +163,7 @@ public class UserController {
 					UserDto dto = createForm.getValue();
 					dto = FacadeProvider.getUserFacade().saveUser(dto);
 					refreshView();
-					makeInitialPassword(dto.getUuid());
+					makeInitialPassword(dto.getUuid(), dto.getUserEmail());
 				}
 			}
 		});
@@ -173,8 +174,8 @@ public class UserController {
 		return FacadeProvider.getUserFacade().isLoginUnique(uuid, userName);
 	}
 
-	public void makeInitialPassword(String userUuid) {
-		if (AuthProvider.getProvider().isDefaultProvider()) {
+	public void makeInitialPassword(String userUuid, String userEmail) {
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider().isDefaultProvider()) {
 			String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
@@ -182,10 +183,10 @@ public class UserController {
 		}
 	}
 
-	public void makeNewPassword(String userUuid) {
+	public void makeNewPassword(String userUuid, String userEmail) {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
-		if (AuthProvider.getProvider().isDefaultProvider()) {
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider().isDefaultProvider()) {
 			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
 			showPasswordResetExternalSuccessPopup();
@@ -229,7 +230,7 @@ public class UserController {
 		}
 	}
 
-	public Button createResetPasswordButton(String userUuid, CommitDiscardWrapperComponent<UserEditForm> editView) {
+	public Button createResetPasswordButton(String userUuid, String userEmail, CommitDiscardWrapperComponent<UserEditForm> editView) {
 
 		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
 
@@ -237,7 +238,7 @@ public class UserController {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				ConfirmationComponent resetPasswordComponent = getResetPasswordConfirmationComponent(userUuid, editView);
+				ConfirmationComponent resetPasswordComponent = getResetPasswordConfirmationComponent(userUuid, userEmail, editView);
 				Window popupWindow = VaadinUiUtil.showPopupWindow(resetPasswordComponent);
 				resetPasswordComponent.addDoneListener(() -> popupWindow.close());
 				resetPasswordComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -254,7 +255,7 @@ public class UserController {
 		}, ValoTheme.BUTTON_LINK);
 	}
 
-	public ConfirmationComponent getResetPasswordConfirmationComponent(String userUuid, CommitDiscardWrapperComponent<UserEditForm> editView) {
+	public ConfirmationComponent getResetPasswordConfirmationComponent(String userUuid, String userEmail, CommitDiscardWrapperComponent<UserEditForm> editView) {
 		ConfirmationComponent resetPasswordConfirmationComponent = new ConfirmationComponent(false) {
 
 			private static final long serialVersionUID = 1L;
@@ -263,7 +264,7 @@ public class UserController {
 			protected void onConfirm() {
 				onDone();
 				editView.discard();
-				makeNewPassword(userUuid);
+				makeNewPassword(userUuid, userEmail);
 			}
 
 			@Override
@@ -301,9 +302,5 @@ public class UserController {
 		for (Language language : Language.values()) {
 			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
 		}
-	}
-
-	public boolean isEmailRequired() {
-		return AuthProvider.getProvider().isEmailRequired();
 	}
 }
