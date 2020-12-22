@@ -403,6 +403,7 @@ public interface Captions {
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
+	String changeUserEmail = "changeUserEmail";
 	String city = "city";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
@@ -1855,5 +1856,4 @@ public interface Captions {
 	String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
 	String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	String weeklyReportsInDistrict = "weeklyReportsInDistrict";
-	String changeUserEmail="changeUserEmail";
 }
