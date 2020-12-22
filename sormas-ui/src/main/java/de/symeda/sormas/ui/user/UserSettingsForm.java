@@ -6,6 +6,7 @@ import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -40,11 +41,11 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 		ControllerProvider.getUserController().setFlagIcons(cbLanguage);
 
 		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
-//		if ("KEYCLOAK".equals(authenticationProvider)) {
+		if (AuthProvider.KEYCLOAK.equals(authenticationProvider)) {
 			emailTf = addField(UserDto.USER_EMAIL, TextField.class);
 			emailTf.setCaption(I18nProperties.getCaption(Captions.User_userEmail));
 			emailTf.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, emailTf.getCaption())));
-//		}
+		}
 	}
 
 	@Override
