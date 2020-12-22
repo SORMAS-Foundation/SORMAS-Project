@@ -1,4 +1,4 @@
-##Custom SORMAS Keycloak Service Provider
+## Custom SORMAS Keycloak Service Provider
 
 For more information about the Service Provider Interface see https://www.keycloak.org/docs/11.0/server_development/#_providers
 
@@ -31,3 +31,8 @@ algorithm will be changed to `sormas-sha256`.
 
 However once a user chooses to change their password in Keycloak (trough the *Forgot Password* mechanism or by the admin),
 their credentials will be updated using the default or configured Password Policies from Keycloak.
+
+### Deployment of the SPI
+
+To deploy the Custom SPI, make sure to build this project and then follow the steps described in 
+[Register an SPI Using the Keycloak Deployer](https://www.keycloak.org/docs/11.0/server_development/#using-the-keycloak-deployer) 
