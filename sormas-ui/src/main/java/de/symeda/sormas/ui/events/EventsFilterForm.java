@@ -29,13 +29,11 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -94,7 +92,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
 		ComboBox officerField = addField(FieldConfiguration.pixelSized(EventCriteria.SURVEILLANCE_OFFICER, 140));
-		officerField.addItems(fetchSurveillanceOfficersByRegion(currentUser().getRegion()));
+		officerField.addItems(fetchSurveillanceOfficersByRegion(currentUserDto().getRegion()));
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
 		searchField.setNullRepresentation("");
@@ -299,7 +297,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	}
 
 	private void populateSurveillanceOfficersForRegion(RegionReferenceDto regionReferenceDto) {
-		List<UserReferenceDto> items = fetchSurveillanceOfficersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUser().getRegion());
+		List<UserReferenceDto> items =
+			fetchSurveillanceOfficersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
 		populateSurveillanceOfficers(items);
 	}
 
@@ -322,10 +321,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
 		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER);
-	}
-
-	private UserDto currentUser() {
-		return UserProvider.getCurrent().getUser();
 	}
 
 	@Override

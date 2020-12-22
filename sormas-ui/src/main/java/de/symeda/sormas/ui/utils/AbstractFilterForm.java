@@ -11,7 +11,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
@@ -92,6 +91,10 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected abstract String[] getMainFilterLocators();
+
+	protected UserDto currentUserDto() {
+		return UserProvider.getCurrent().getUser();
+	}
 
 	protected String createMoreFiltersHtmlLayout() {
 		return "";

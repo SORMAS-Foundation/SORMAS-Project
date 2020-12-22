@@ -19,8 +19,8 @@ import java.util.function.Consumer;
 
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
-
 import com.vaadin.v7.ui.Field;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -31,7 +31,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -75,7 +74,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			});
 		}
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = currentUserDto();
 		if (user.getRegion() == null) {
 			ComboBox cbRegion = addField(
 				FieldConfiguration.withCaptionAndPixelSized(

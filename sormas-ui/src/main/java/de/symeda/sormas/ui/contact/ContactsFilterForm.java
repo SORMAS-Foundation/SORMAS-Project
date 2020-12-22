@@ -44,7 +44,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -138,7 +137,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
-		UserDto user = currentUser();
+		UserDto user = currentUserDto();
 
 		if (user.getRegion() == null) {
 			ComboBox regionField = addField(
@@ -177,7 +176,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.CONTACT_OFFICER,
 				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID),
 				140));
-		officerField.addItems(fetchSurveillanceOfficersByRegion(currentUser().getRegion()));
+		officerField.addItems(fetchSurveillanceOfficersByRegion(currentUserDto().getRegion()));
 		addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
@@ -358,7 +357,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		final DistrictReferenceDto district = newValue.getDistrict();
 		applyRegionAndDistrictFilterDependency(region, ContactCriteria.DISTRICT, district, ContactCriteria.COMMUNITY);
 
-		final UserDto user = currentUser();
+		final UserDto user = currentUserDto();
 
 		ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
@@ -501,7 +500,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	private void populateSurveillanceOfficersForRegion(RegionReferenceDto regionReferenceDto) {
-		List<UserReferenceDto> items = fetchSurveillanceOfficersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUser().getRegion());
+		List<UserReferenceDto> items =
+			fetchSurveillanceOfficersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
 		populateSurveillanceOfficers(items);
 	}
 
@@ -524,9 +524,5 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
 		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER);
-	}
-
-	private UserDto currentUser() {
-		return UserProvider.getCurrent().getUser();
 	}
 }
