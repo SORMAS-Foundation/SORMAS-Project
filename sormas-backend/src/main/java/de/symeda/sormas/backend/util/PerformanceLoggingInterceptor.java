@@ -37,12 +37,12 @@ public class PerformanceLoggingInterceptor {
 			return context.proceed();
 		}
 
-		long startTime = DateHelper.startTime();
 		boolean traceEnabled = logger.isTraceEnabled();
 		if (traceEnabled) {
 			logger.trace("Started: {} with parameters '{}'", getInvokedMethod(context), context.getParameters());
 		}
 
+		long startTime = DateHelper.startTime();
 		try {
 			return context.proceed();
 		} finally {
