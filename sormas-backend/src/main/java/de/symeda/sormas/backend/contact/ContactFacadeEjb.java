@@ -1743,7 +1743,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<ContactIndexDto> cq, Root<Contact> root) {
-		List<Selection<?>> selections = listCriteriaBuilder.getContactIndexMergeSelections(root, new ContactJoins(root));
+		List<Selection<?>> selections = listCriteriaBuilder.getContactIndexSelections(root, new ContactJoins(root));
 		cq.multiselect(selections);
 
 	}
