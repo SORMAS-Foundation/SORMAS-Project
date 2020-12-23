@@ -20,14 +20,14 @@ import de.symeda.sormas.api.utils.DateHelper;
  * 
  * @see https://www.adam-bien.com/roller/abien/entry/simplest_possible_ejb_3_12
  */
-public class MethodDurationLogger {
+public class PerformanceLoggingInterceptor {
 
 	/**
 	 * Avoids fast but noisy and mostly internal EJB calls to be logged on DEBUG level.
 	 */
 	private static final int SIGNIFANT_DURATION = 5;
 
-	private final Logger logger = LoggerFactory.getLogger(MethodDurationLogger.class);
+	private final Logger logger = LoggerFactory.getLogger(PerformanceLoggingInterceptor.class);
 
 	@AroundInvoke
 	public Object logInvokeDuration(InvocationContext context) throws Exception {
