@@ -12,10 +12,10 @@ import javax.interceptor.InvocationContext;
 import org.junit.Test;
 
 /**
- * @see MethodDurationLogger
+ * @see PerformanceLoggingInterceptor
  *
  */
-public class MethodDurationLoggerTest {
+public class PerformanceLoggingInterceptorTest {
 
 	@Test
 	public void testGetInvokedMethod() {
@@ -26,9 +26,9 @@ public class MethodDurationLoggerTest {
 
 		when(context.getTarget()).thenReturn("de.symeda.sormas.backend.region.CommunityService@15301bba");
 		when(context.getMethod().getName()).thenReturn("count");
-		assertThat(MethodDurationLogger.getInvokedMethod(context), equalTo("CommunityService.count"));
+		assertThat(PerformanceLoggingInterceptor.getInvokedMethod(context), equalTo("CommunityService.count"));
 
 		when(context.getTarget()).thenReturn("de.symeda.sormas.backend.facility.FacilityFacadeEjb$FacilityFacadeEjbLocal@630e5556");
-		assertThat(MethodDurationLogger.getInvokedMethod(context), equalTo("FacilityFacadeEjb.count"));
+		assertThat(PerformanceLoggingInterceptor.getInvokedMethod(context), equalTo("FacilityFacadeEjb.count"));
 	}
 }
