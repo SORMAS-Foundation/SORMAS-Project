@@ -76,7 +76,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
-		target.setReplyingUser(userService.getByReferenceDto(source.getReplyingUser()));
+		target.setReplyingUser(userService.getCurrentUser());
 		target.setReply(source.getReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setTitle(source.getTitle());

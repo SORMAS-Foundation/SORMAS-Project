@@ -33,7 +33,10 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import javax.ejb.EJB;
+
 public class ActionController {
+
 
 	public ActionController() {
 	}
@@ -86,7 +89,6 @@ public class ActionController {
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				ActionDto dto1 = form.getValue();
-				dto1.setReplyingUser(FacadeProvider.getUserFacade().getCurrentUser().toReference());
 				FacadeProvider.getActionFacade().saveAction(dto1);
 				popupWindow.close();
 				callback.run();
