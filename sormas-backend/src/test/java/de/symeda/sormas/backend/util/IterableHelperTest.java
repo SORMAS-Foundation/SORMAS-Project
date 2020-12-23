@@ -3,12 +3,14 @@ package de.symeda.sormas.backend.util;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -23,7 +25,6 @@ public class IterableHelperTest {
 		int batchSize = 3;
 
 		// 0. No execution on empty collection
-//		assertExecuteCount(batchSize, 0);
 
 		// 1. No execution on empty collection
 		assertExecuteCount(batchSize, 1, 1);
@@ -45,5 +46,10 @@ public class IterableHelperTest {
 
 		IterableHelper.executeBatched(Arrays.asList(entries), batchSize, batchFunction);
 		verify(batchFunction, times(executions)).accept(anyList());
+	}
+
+	@After
+	public void validate() {
+		validateMockitoUsage();
 	}
 }
