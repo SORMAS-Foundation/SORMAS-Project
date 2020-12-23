@@ -82,6 +82,8 @@
     <!-- Log only errors and warnings for document generation -->
     <logger name="fr.opensagres.xdocreport" level="WARN" />
 
+	<!-- NOOP, but something changed to force Github CI to run -->
+
     <root level="debug">
             <appender-ref ref="FILE_DEBUG" />
             <appender-ref ref="FILE_INFO" />
