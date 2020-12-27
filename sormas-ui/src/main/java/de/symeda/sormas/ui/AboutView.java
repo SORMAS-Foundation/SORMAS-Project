@@ -20,8 +20,6 @@ package de.symeda.sormas.ui;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Strings;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -69,9 +67,11 @@ public class AboutView extends VerticalLayout implements View {
 		aboutLabel.addStyleName(CssStyles.H1);
 		infoLayout.addComponent(aboutLabel);
 
-		Label versionLabel = new Label(
-			VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(),
-			ContentMode.HTML);
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " SORMAS", ContentMode.HTML);
+		infoLayout.addComponent(infoLabel);
+
+		Label versionLabel =
+			new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
 		infoLayout.addComponent(versionLabel);
 
 		Link whatsNewLink = new Link(
