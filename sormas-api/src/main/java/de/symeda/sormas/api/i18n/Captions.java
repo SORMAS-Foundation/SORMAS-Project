@@ -16,6 +16,7 @@ public interface Captions {
 	String aboutDataDictionary = "aboutDataDictionary";
 	String aboutDocuments = "aboutDocuments";
 	String aboutSormasVersion = "aboutSormasVersion";
+	String aboutBrandedSormasVersion = "aboutBrandedSormasVersion";
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
 	String aboutWhatsNew = "aboutWhatsNew";

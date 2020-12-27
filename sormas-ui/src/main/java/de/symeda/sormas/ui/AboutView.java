@@ -38,6 +38,7 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
@@ -67,7 +68,11 @@ public class AboutView extends VerticalLayout implements View {
 		aboutLabel.addStyleName(CssStyles.H1);
 		infoLayout.addComponent(aboutLabel);
 
-		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " SORMAS", ContentMode.HTML);
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+		String infoLabelStr = configFacade.isCustomBranding()
+			? String.format(I18nProperties.getCaption(Captions.aboutBrandedSormasVersion), configFacade.getCustomBrandingName())
+			: "SORMAS";
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + infoLabelStr, ContentMode.HTML);
 		infoLayout.addComponent(infoLabel);
 
 		Label versionLabel =
