@@ -30,9 +30,7 @@ public final class StringToAngularLocationConverter extends StringToDoubleConver
 
 	protected NumberFormat getFormat(Locale locale) {
 
-		if (locale == null) {
-			locale = Locale.getDefault();
-		}
+		locale = Locale.getDefault();
 
 		DecimalFormat numberFormat = (DecimalFormat) NumberFormat.getNumberInstance(locale);
 		numberFormat.setGroupingUsed(false);
