@@ -17,8 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -26,6 +31,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
@@ -112,6 +118,17 @@ public class AboutView extends VerticalLayout implements View {
 			documentsLabel.addStyleName(CssStyles.H1);
 			documentsLayout.addComponent(documentsLabel);
 
+			List<String> customDocuments = listCustomDocumentsFiles();
+			if (!customDocuments.isEmpty()) {
+				customDocuments.stream().forEach(customDocument -> {
+					Button customDocumentButton = ButtonHelper.createButton(customDocument, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+					documentsLayout.addComponent(customDocumentButton);
+					String customDocumentPath = getCustomDocumentsPath() + File.separator + customDocument;
+					FileDownloader customDocumentDownloader = new FileDownloader(new FileResource(new File(customDocumentPath)));
+					customDocumentDownloader.extend(customDocumentButton);
+				});
+			}
+
 			if (shouldShowClassificationDocumentLink()) {
 				Button classificationDocumentButton =
 					ButtonHelper.createButton(Captions.aboutCaseClassificationRules, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
@@ -165,7 +182,19 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private boolean shouldShowDocumentsSection() {
-		return shouldShowClassificationDocumentLink() || shouldShowDataDictionaryLink();
+		return !listCustomDocumentsFiles().isEmpty() || shouldShowClassificationDocumentLink() || shouldShowDataDictionaryLink();
+	}
+
+	private List<String> listCustomDocumentsFiles() {
+		File customDocumentsDir = new File(getCustomDocumentsPath());
+		if (!customDocumentsDir.exists() || !customDocumentsDir.isDirectory()) {
+			return Collections.emptyList();
+		}
+		File[] customDocuments = customDocumentsDir.listFiles();
+		if (customDocuments == null) {
+			return Collections.emptyList();
+		}
+		return Arrays.stream(customDocuments).map(File::getName).sorted(String::compareTo).collect(Collectors.toList());
 	}
 
 	private boolean shouldShowClassificationDocumentLink() {
@@ -177,4 +206,9 @@ public class AboutView extends VerticalLayout implements View {
 		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
 			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE);
 	}
+
+	private String getCustomDocumentsPath() {
+		return FacadeProvider.getConfigFacade().getCustomFilesPath() + "aboutfiles";
+	}
+
 }
