@@ -11,12 +11,12 @@ public interface Captions {
 	 */
 
 	String about = "about";
+	String aboutBrandedSormasVersion = "aboutBrandedSormasVersion";
 	String aboutCaseClassificationRules = "aboutCaseClassificationRules";
 	String aboutChangelog = "aboutChangelog";
 	String aboutDataDictionary = "aboutDataDictionary";
 	String aboutDocuments = "aboutDocuments";
 	String aboutSormasVersion = "aboutSormasVersion";
-	String aboutBrandedSormasVersion = "aboutBrandedSormasVersion";
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
 	String aboutWhatsNew = "aboutWhatsNew";
