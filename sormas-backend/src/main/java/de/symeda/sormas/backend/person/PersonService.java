@@ -197,7 +197,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date));
 			Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
-			contactPersonsFilter = AbstractAdoService.and(cb, contactPersonsFilter, cb.or(dateFilter, contactDateFilter));
+			contactPersonsFilter = and(cb, contactPersonsFilter, cb.or(dateFilter, contactDateFilter));
 		}
 		if (contactPersonsFilter != null) {
 			contactPersonsQuery.where(contactPersonsFilter);
@@ -217,7 +217,7 @@ public class PersonService extends AbstractAdoService<Person> {
 			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, DateHelper.toTimestampUpper(date));
 			Predicate eventParticipantDateFilter =
 				eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, DateHelper.toTimestampUpper(date));
-			eventPersonsFilter = AbstractAdoService.and(cb, eventPersonsFilter, cb.or(dateFilter, eventParticipantDateFilter));
+			eventPersonsFilter = and(cb, eventPersonsFilter, cb.or(dateFilter, eventParticipantDateFilter));
 		}
 		if (eventPersonsFilter != null) {
 			eventPersonsQuery.where(eventPersonsFilter);
