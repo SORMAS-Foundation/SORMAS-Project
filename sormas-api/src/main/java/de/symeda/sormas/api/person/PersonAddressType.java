@@ -18,6 +18,7 @@ public enum PersonAddressType {
 			return new PersonAddressType[] {
 				HOME,
 				PLACE_OF_WORK,
+				PLACE_OF_ISOLATION,
 				OTHER_ADDRESS };
 		}
 
