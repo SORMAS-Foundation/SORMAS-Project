@@ -23,7 +23,7 @@ import org.jsoup.safety.Whitelist;
 // This class provides general XSS-Prevention methods using Jsoup.clean
 public class HtmlHelper {
 
-	public static final Whitelist EventActionWhitelist =
+	public static final Whitelist EVENTACTION_WHITELIST =
 		Whitelist.relaxed().addTags("hr", "font").addAttributes("font", "size", "face", "color").addAttributes("div", "align");
 
 	public static String cleanHtml(String string) {

@@ -46,10 +46,15 @@ public class V7CaseUuidRenderer extends HtmlRenderer {
 		}
 
 		if (value != null && !value.isEmpty()) {
-			value = "<a title='" + value + "'>" + HtmlHelper.cleanHtml(DataHelper.getShortUuid(value)) + "</a>";
+			value = sanitizeInput(value);
 			return super.encode(value);
 		} else {
 			return null;
 		}
+	}
+
+	public String sanitizeInput(String value) {
+		value = "<a title='" + HtmlHelper.cleanHtml(value) + "'>" + HtmlHelper.cleanHtml(DataHelper.getShortUuid(value)) + "</a>";
+		return value;
 	}
 }
