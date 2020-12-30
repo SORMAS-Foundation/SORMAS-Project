@@ -124,15 +124,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		addressType = addField(LocationDto.ADDRESS_TYPE, ComboBox.class);
 		addressType.setVisible(false);
+		final PersonAddressType[] personAddressTypeValues = PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode());
 		if (!isConfiguredServer("ch")) {
 			addressType.removeAllItems();
 			addressType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
-			addressType.addItems(PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode()));
+			addressType.addItems(personAddressTypeValues);
 		}
 		TextField addressTypeDetails = addField(LocationDto.ADDRESS_TYPE_DETAILS, TextField.class);
 		addressTypeDetails.setVisible(false);
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), LocationDto.ADDRESS_TYPE_DETAILS, addressType, Arrays.asList(PersonAddressType.OTHER_ADDRESS), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			LocationDto.ADDRESS_TYPE_DETAILS,
+			addressType,
+			Arrays.asList(personAddressTypeValues).subList(1, personAddressTypeValues.length),
+			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
 			addressType,
