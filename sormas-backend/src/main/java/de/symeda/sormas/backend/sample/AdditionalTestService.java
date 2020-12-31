@@ -103,7 +103,6 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 
 		// whoever created the sample the additional test is associated with is allowed to access it
 		Join<Sample, Sample> sampleJoin = additionalTestPath.join(AdditionalTest.SAMPLE);
-		// Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin);
 		return sampleService.createUserFilter(cq, cb, new SampleJoins<>(sampleJoin), new SampleCriteria());
 	}
 }
