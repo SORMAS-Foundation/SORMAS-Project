@@ -175,6 +175,13 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> root = cq.from(getElementClass());
 
+		addSinceFilter(since, cb, cq, root);
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	protected void addSinceFilter(Date since, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<? extends ADO> root) {
 		Predicate filter = createUserFilter(cb, cq, root);
 		if (since != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, root, since);
@@ -188,10 +195,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 			cq.where(filter);
 		}
 		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
-		cq.distinct(true);
-
-		List<ADO> resultList = em.createQuery(cq).getResultList();
-		return resultList;
 	}
 
 	public List<String> getAllUuids() {
@@ -244,14 +247,14 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	 * Used by most getAll* and getAllUuids methods to filter by user
 	 */
 	@SuppressWarnings("rawtypes")
-	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
+	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends ADO> from);
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends ADO> from, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		return dateFilter;
 	}
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends ADO> from, Date date) {
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 	}
 
@@ -327,7 +330,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		em.flush();
 	}
 
-	protected Boolean exists(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+	protected Boolean exists(@NotNull BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -357,7 +360,8 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	/**
 	 * TODO move to CriteriaBuilderHelper
 	 * 
-	 * @param existing
+	 * @param cb
+	 * @param predicates
 	 *            nullable
 	 */
 	public static Predicate and(CriteriaBuilder cb, Predicate... predicates) {
@@ -467,10 +471,10 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 
 	public static <T> StringBuilder appendInFilterValues(
-		StringBuilder filterBuilder,
-		List<Object> filterBuilderParameters,
-		List<T> values,
-		Function<T, ?> valueMapper) {
+		@NotNull StringBuilder filterBuilder,
+		@NotNull List<Object> filterBuilderParameters,
+		@NotNull List<T> values,
+		@NotNull Function<T, ?> valueMapper) {
 
 		filterBuilder.append("(");
 		boolean first = true;
@@ -488,7 +492,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return filterBuilder;
 	}
 
-	public List<Long> getIdsByReferenceDtos(List<? extends ReferenceDto> references) {
+	public List<Long> getIdsByReferenceDtos(@NotNull List<? extends ReferenceDto> references) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);

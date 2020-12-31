@@ -48,7 +48,7 @@ public class PopulationDataService extends AbstractAdoService<PopulationData> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PopulationData> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends PopulationData> from) {
 		return null;
 	}
 }

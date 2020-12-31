@@ -47,7 +47,7 @@ public class ExposureService extends AbstractAdoService<Exposure> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Exposure> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Exposure> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

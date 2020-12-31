@@ -136,7 +136,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ClinicalVisit> path, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends ClinicalVisit> path, Timestamp date) {
 
 		Predicate dateFilter = cb.greaterThan(path.get(ClinicalVisit.CHANGE_DATE), date);
 
@@ -148,7 +148,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalVisit> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends ClinicalVisit> from) {
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		return caseService.createUserFilter(cb, cq, clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT));
 	}

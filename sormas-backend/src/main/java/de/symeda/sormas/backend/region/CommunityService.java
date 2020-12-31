@@ -68,7 +68,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Community> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Community> from) {
 		// no filter by user needed
 		return null;
 	}

@@ -26,7 +26,7 @@ public class ManualMessageLogService extends AbstractAdoService<ManualMessageLog
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ManualMessageLog> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends ManualMessageLog> from) {
 		throw new UnsupportedOperationException();
 	}
 

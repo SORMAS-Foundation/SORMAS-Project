@@ -14,7 +14,7 @@ public class LabMessageService extends AbstractAdoService<LabMessage> {
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, LabMessage> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends LabMessage> from) {
 		throw new UnsupportedOperationException();
 	}
 }

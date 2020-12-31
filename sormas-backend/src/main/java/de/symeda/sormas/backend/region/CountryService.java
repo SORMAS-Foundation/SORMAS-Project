@@ -87,7 +87,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Country> from) {
+    public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Country> from) {
         // no filter by user needed
         return null;
     }

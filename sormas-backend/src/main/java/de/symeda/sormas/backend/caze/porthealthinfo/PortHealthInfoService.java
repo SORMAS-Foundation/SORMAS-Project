@@ -19,7 +19,7 @@ public class PortHealthInfoService extends AbstractAdoService<PortHealthInfo> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PortHealthInfo> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends PortHealthInfo> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

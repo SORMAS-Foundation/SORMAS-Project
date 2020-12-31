@@ -347,7 +347,7 @@ public class UserService extends AbstractAdoService<User> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, User> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends User> from) {
 		// a user can read all other users
 		return null;
 	}

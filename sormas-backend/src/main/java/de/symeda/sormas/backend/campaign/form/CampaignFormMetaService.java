@@ -15,7 +15,6 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -27,7 +26,7 @@ public class CampaignFormMetaService extends AbstractAdoService<CampaignFormMeta
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignFormMeta> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends CampaignFormMeta> from) {
 		return null;
 	}
 
@@ -37,19 +36,7 @@ public class CampaignFormMetaService extends AbstractAdoService<CampaignFormMeta
 		CriteriaQuery<CampaignFormMeta> cq = cb.createQuery(getElementClass());
 		Root<CampaignFormMeta> root = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, root);
-		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
+		addSinceFilter(since, cb, cq, root);
 
 		List<CampaignFormMeta> resultList = em.createQuery(cq).getResultList();
 		return resultList;

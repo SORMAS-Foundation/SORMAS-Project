@@ -106,7 +106,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Outbreak> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Outbreak> from) {
 		// no filter by user needed
 		return null;
 	}

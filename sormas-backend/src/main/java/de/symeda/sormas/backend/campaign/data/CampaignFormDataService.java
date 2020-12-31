@@ -90,7 +90,7 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignFormData> campaignPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends CampaignFormData> campaignPath) {
 		final User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;

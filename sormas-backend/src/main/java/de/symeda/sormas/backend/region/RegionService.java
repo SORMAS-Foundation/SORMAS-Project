@@ -59,7 +59,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Region> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Region> from) {
 		// no filter by user needed
 		return null;
 	}

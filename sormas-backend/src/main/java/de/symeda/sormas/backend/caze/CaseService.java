@@ -800,7 +800,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends Case> casePath, Timestamp date) {
 		return createChangeDateFilter(cb, casePath, date, false);
 	}
 
@@ -813,7 +813,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 *            additional change dates filters for: sample, pathogenTests, patient and location
 	 * @return
 	 */
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date, boolean includeExtendedChangeDateFilters) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends Case> casePath, Timestamp date, boolean includeExtendedChangeDateFilters) {
 
 		Builder<Predicate> filters = Stream.builder();
 
@@ -851,7 +851,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -950,7 +950,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Case> casePath) {
 		return createUserFilter(cb, cq, casePath, null);
 	}
 

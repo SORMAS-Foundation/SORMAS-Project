@@ -12,7 +12,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Stateless
 @LocalBean
@@ -23,7 +22,7 @@ public class CampaignDiagramDefinitionService extends AbstractAdoService<Campaig
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CampaignDiagramDefinition> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends CampaignDiagramDefinition> from) {
 		return null;
 	}
 

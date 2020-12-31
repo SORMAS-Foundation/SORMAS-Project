@@ -171,12 +171,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends Contact> from, Date date) {
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends Contact> from, Timestamp date) {
 
 		Predicate dateFilter = changeDateFilter(cb, date, from);
 		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
@@ -888,17 +888,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Contact> contactPath) {
 		return createUserFilterForJoin(cb, cq, contactPath);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
+	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Contact> contactPath) {
 		return createUserFilterForJoin(cb, cq, contactPath, null);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath, ContactCriteria contactCriteria) {
+	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Contact> contactPath, ContactCriteria contactCriteria) {
 
 //		Predicate userFilter = null;
 
@@ -914,7 +914,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return filter;
 	}
 
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
+	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Contact> contactPath) {
 		return createUserFilterWithoutCase(cb, cq, contactPath, null);
 	}
 
@@ -922,7 +922,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public Predicate createUserFilterWithoutCase(
 		CriteriaBuilder cb,
 		CriteriaQuery cq,
-		From<?, Contact> contactPath,
+		From<?, ? extends Contact> contactPath,
 		ContactCriteria contactCriteria) {
 
 		// National users can access all contacts in the system

@@ -313,7 +313,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Event> eventPath) {
 		return createUserFilter(cb, cq, eventPath, null);
 	}
 
@@ -321,7 +321,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	public Predicate createUserFilter(
 		CriteriaBuilder cb,
 		CriteriaQuery cq,
-		From<?, Event> eventPath,
+		From<?, ? extends Event> eventPath,
 		EventUserFilterCriteria eventUserFilterCriteria) {
 
 		final User currentUser = getCurrentUser();
@@ -372,7 +372,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return filter;
 	}
 
-	public Predicate createCaseFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
+	public Predicate createCaseFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Event> eventPath) {
 
 		Predicate filter = null;
 
@@ -391,7 +391,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends Event> eventPath, Timestamp date) {
 
 		Predicate dateFilter = greaterThanAndNotNull(cb, eventPath.get(AbstractDomainObject.CHANGE_DATE), date);
 

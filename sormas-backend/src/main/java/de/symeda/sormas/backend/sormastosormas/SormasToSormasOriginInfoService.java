@@ -33,7 +33,7 @@ public class SormasToSormasOriginInfoService extends AbstractAdoService<SormasTo
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, SormasToSormasOriginInfo> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends SormasToSormasOriginInfo> from) {
 		// no user filter needed right now
 		return null;
 	}

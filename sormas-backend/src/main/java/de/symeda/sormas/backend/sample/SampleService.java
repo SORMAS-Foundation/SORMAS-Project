@@ -66,7 +66,6 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -283,8 +282,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	@Override
 	@SuppressWarnings("rawtypes")
 	@Deprecated
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(cq, cb, new SampleJoins<>(samplePath), new SampleCriteria());
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Sample> samplePath) {
+		return createUserFilter(cq, cb, new SampleJoins(samplePath), new SampleCriteria());
 	}
 
 	@SuppressWarnings("rawtypes")

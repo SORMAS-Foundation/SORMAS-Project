@@ -43,7 +43,7 @@ public class DiseaseConfigurationService extends AbstractAdoService<DiseaseConfi
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, DiseaseConfiguration> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends DiseaseConfiguration> from) {
 		return null;
 	}
 }

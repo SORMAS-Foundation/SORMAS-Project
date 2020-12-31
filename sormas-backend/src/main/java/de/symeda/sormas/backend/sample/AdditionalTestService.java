@@ -13,7 +13,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
@@ -97,12 +99,11 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, AdditionalTest> additionalTestPath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, @NotNull From<?, ? extends AdditionalTest> additionalTestPath) {
 
 		// whoever created the sample the additional test is associated with is allowed to access it
 		Join<Sample, Sample> sampleJoin = additionalTestPath.join(AdditionalTest.SAMPLE);
-		Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin);
-
-		return filter;
+		// Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin);
+		return sampleService.createUserFilter(cq, cb, new SampleJoins<>(sampleJoin), new SampleCriteria());
 	}
 }

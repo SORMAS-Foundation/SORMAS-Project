@@ -50,13 +50,13 @@ public class EpiDataService extends AbstractAdoService<EpiData> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EpiData> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends EpiData> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EpiData> epiData, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ? extends EpiData> epiData, Timestamp date) {
 		Predicate dateFilter = greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date);
 
 		Join<EpiData, Exposure> exposures = epiData.join(EpiData.EXPOSURES, JoinType.LEFT);

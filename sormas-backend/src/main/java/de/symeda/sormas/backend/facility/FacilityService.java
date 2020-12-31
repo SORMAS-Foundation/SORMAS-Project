@@ -191,7 +191,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Facility> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Facility> from) {
 		// no filter by user needed
 		return null;
 	}

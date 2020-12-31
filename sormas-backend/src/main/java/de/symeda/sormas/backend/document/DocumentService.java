@@ -27,7 +27,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.event.Event;
 
 @Stateless
 @LocalBean
@@ -39,7 +38,7 @@ public class DocumentService extends AbstractAdoService<Document> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Document> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Document> from) {
 		return null;
 	}
 

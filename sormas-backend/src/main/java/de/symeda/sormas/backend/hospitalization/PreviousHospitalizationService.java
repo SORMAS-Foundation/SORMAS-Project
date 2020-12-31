@@ -43,7 +43,7 @@ public class PreviousHospitalizationService extends AbstractAdoService<PreviousH
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PreviousHospitalization> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends PreviousHospitalization> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

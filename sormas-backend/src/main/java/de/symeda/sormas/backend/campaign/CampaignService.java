@@ -32,7 +32,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ? extends Campaign> from) {
 		return null;
 	}
 
@@ -96,22 +96,9 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
 		Root<Campaign> root = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, root);
-		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
+		addSinceFilter(since, cb, cq, root);
 
-		List<Campaign> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<Campaign> getAllActive() {
