@@ -36,16 +36,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
 		Root<AdditionalTest> from = cq.from(getElementClass());
-		Join<AdditionalTest, Sample> sample = from.join(AdditionalTest.SAMPLE, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
-
-		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
-		}
-
+		Predicate filter = addUserFilter(user, cb, cq, from);
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = cb.and(filter, dateFilter);
@@ -58,11 +49,11 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getAllActiveUuids(User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<AdditionalTest> from = cq.from(getElementClass());
+	private Predicate addUserFilter(User user,
+									@NotNull CriteriaBuilder cb,
+									CriteriaQuery<AdditionalTest> cq,
+									@NotNull Root<AdditionalTest> from)
+	{
 		Join<AdditionalTest, Sample> sample = from.join(AdditionalTest.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
@@ -72,6 +63,15 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
+		return filter;
+	}
+
+	public List<String> getAllActiveUuids(User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<AdditionalTest> from = cq.from(getElementClass());
+		Predicate filter = addUserFilter(user, cb, cq, from);
 
 		cq.where(filter);
 		cq.select(from.get(AdditionalTest.UUID));
