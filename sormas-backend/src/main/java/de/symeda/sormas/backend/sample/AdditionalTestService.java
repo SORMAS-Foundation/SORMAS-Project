@@ -51,7 +51,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 
 	private Predicate addUserFilter(User user,
 									@NotNull CriteriaBuilder cb,
-									CriteriaQuery<AdditionalTest> cq,
+									CriteriaQuery cq,
 									@NotNull Root<AdditionalTest> from)
 	{
 		Join<AdditionalTest, Sample> sample = from.join(AdditionalTest.SAMPLE, JoinType.LEFT);
