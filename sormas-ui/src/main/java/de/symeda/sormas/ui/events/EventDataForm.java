@@ -100,7 +100,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			loc(LOCATION_HEADING_LOC) +
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
-			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) +
+			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT) +
+			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
