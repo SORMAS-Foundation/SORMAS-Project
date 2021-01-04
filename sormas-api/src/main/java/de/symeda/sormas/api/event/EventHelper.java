@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 
 public final class EventHelper {
 
@@ -34,5 +37,16 @@ public final class EventHelper {
 		}
 
 		return DataHelper.toStringNullable(institutionalPartnerType);
+	}
+
+	public static String buildEventDateString(Date eventStartDate, Date eventEndDate) {
+
+		if (eventStartDate == null) {
+			return "";
+		} else if (eventEndDate == null) {
+			return DateFormatHelper.formatDate(eventStartDate);
+		} else {
+			return String.format("%s - %s", DateFormatHelper.formatDate(eventStartDate), DateFormatHelper.formatDate(eventEndDate));
+		}
 	}
 }
