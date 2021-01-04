@@ -38,6 +38,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -287,7 +288,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleCriteria criteria) {
+	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, @NotNull SampleCriteria criteria) {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
@@ -303,7 +304,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return filter;
 	}
 
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, SampleJoins joins) {
+	public Predicate createUserFilterWithoutCase(@NotNull CriteriaBuilder cb, SampleJoins joins) {
 		Predicate filter = null;
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
@@ -332,7 +333,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return filter;
 	}
 
-	public Predicate buildCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
+	public Predicate buildCriteriaFilter(@NotNull SampleCriteria criteria, CriteriaBuilder cb, @NotNull SampleJoins joins) {
 		final From<?, ?> sample = joins.getRoot();
 
 		Predicate filter = null;
@@ -455,7 +456,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	@Override
-	public void delete(Sample sample) {
+	public void delete(@NotNull Sample sample) {
 
 		// Mark all pathogen tests of this sample as deleted
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
@@ -481,7 +482,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	 * Creates a filter that excludes all samples that are either {@link CoreAdo#deleted} or associated with
 	 * cases that are {@link Case#archived}.
 	 */
-	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, Root<Sample> root) {
+	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, @NotNull Root<Sample> root) {
 
 		Join<Sample, Case> caze = root.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		return cb.and(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
@@ -491,7 +492,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link SampleCriteria}.
 	 * This essentially removes {@link CoreAdo#deleted} samples from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Sample> root) {
+	public Predicate createDefaultFilter(@NotNull CriteriaBuilder cb, @NotNull Root<Sample> root) {
 		return cb.isFalse(root.get(Sample.DELETED));
 	}
 }
