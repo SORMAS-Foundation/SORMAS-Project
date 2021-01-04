@@ -15,7 +15,7 @@ on:
 jobs:
   test:
     name: mvn verify
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout repository
@@ -37,4 +37,4 @@ jobs:
       - name: Run mvn verify
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         working-directory: ./sormas-base
-        run: mvn -T 1C verify -B -ntp
+        run: mvn verify -B -ntp
