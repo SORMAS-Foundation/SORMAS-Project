@@ -6132,16 +6132,16 @@ INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesO
 
 -- 2020-12-03 Remove hospital from event's type of place #3617
 UPDATE location
-SET location.facilitytype = 'HOSPITAL'
-FROM location
-INNER JOIN events ON events.eventlocation_id = location.id
+SET facilitytype = 'HOSPITAL'
+FROM location AS l
+INNER JOIN events ON events.eventlocation_id = l.id
 WHERE events.typeofplace = 'HOSPITAL'
-  AND location.facilitytype IS NULL;
+  AND l.facilitytype IS NULL;
 
 UPDATE events
-SET events.typeofplace = 'FACILITY'
-FROM events
-INNER JOIN location ON location.id = events.eventlocation_id
+SET typeofplace = 'FACILITY'
+FROM events as e
+INNER JOIN location ON location.id = e.eventlocation_id
 WHERE location.facilitytype IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (297, 'Remove hospital from event''s type of place #3617');
