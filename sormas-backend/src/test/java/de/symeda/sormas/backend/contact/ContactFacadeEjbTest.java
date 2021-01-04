@@ -430,8 +430,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
-
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -444,38 +442,157 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
-		PersonDto contactPersonNoResponsibleRegion = creator.createPerson("ContactNoRespRegion", "Person");
-		creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			contactPersonNoResponsibleRegion.toReference(),
+		// Database should contain one contact, associated visit and task
+		assertEquals(1, getContactFacade().getIndexList(null, 0, 100, null).size());
+	}
+
+	@Test
+	public void testIncludeContactsFromOtherJurisdictionsFilter() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RegionReferenceDto regionReferenceDto = getRegionFacade().getByName("Region", false).get(0);
+		DistrictReferenceDto districtReferenceDto = getDistrictFacade().getByName("District", regionReferenceDto, false).get(0);
+
+		RDCFEntities rdcf2 = creator.createRDCFEntities("NewRegion", "NewDistrict", "Community2", "Facility2");
+		RegionReferenceDto region2ReferenceDto = getRegionFacade().getByName("NewRegion", false).get(0);
+		DistrictReferenceDto district2ReferenceDto = getDistrictFacade().getByName("NewDistrict", region2ReferenceDto, false).get(0);
+
+		// "mainUser" is the user which executes the grid query
+		UserDto mainUser = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			mainUser.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		// 1) contact created by main user, jurisdiction same with main user, no case linked
+		PersonDto contactPersonSameJurisdictionMainUserCreatorNoCase =
+			creator.createPerson("contactSameJurisdictionMainUserCreatorNoCase", "Person1");
+		ContactDto contactSameJurisdictionMainUserCreatorNoCase = creator.createContact(
+			mainUser.toReference(),
+			mainUser.toReference(),
+			contactPersonSameJurisdictionMainUserCreatorNoCase.toReference(),
+			null,
+			new Date(),
+			new Date(),
+			null);
+		updateContactJurisdictionAndCase(contactSameJurisdictionMainUserCreatorNoCase.getUuid(), regionReferenceDto, districtReferenceDto, null);
+
+		// 2) contact created by main user, jurisdiction different from main user, no case linked
+		PersonDto contactPersonDiffJurisMainUserCreatorNoCase = creator.createPerson("contactDiffJurisdictionMainUserCreatorNoCase", "Person2");
+		ContactDto contactDiffJurisdictionMainUserCreatorNoCase = creator.createContact(
+			mainUser.toReference(),
+			mainUser.toReference(),
+			contactPersonDiffJurisMainUserCreatorNoCase.toReference(),
+			null,
+			new Date(),
+			new Date(),
+			null);
+		updateContactJurisdictionAndCase(contactDiffJurisdictionMainUserCreatorNoCase.getUuid(), region2ReferenceDto, district2ReferenceDto, null);
+
+		// 3) contact created by main user, jurisdiction null, linked to case from main user's jurisdiction
+		PersonDto contactPersonJurisdictionNullMainUserCreatorCaseSameJurisdiction =
+			creator.createPerson("contactJurisdictionNullMainUserCreatorCaseSameJurisdiction", "Person3");
+		ContactDto contactJurisdictionNullMainUserCreatorCaseSameJurisdiction = creator.createContact(
+			mainUser.toReference(),
+			mainUser.toReference(),
+			contactPersonJurisdictionNullMainUserCreatorCaseSameJurisdiction.toReference(),
 			caze,
 			new Date(),
 			new Date(),
 			null);
+		updateContactJurisdictionAndCase(
+			contactJurisdictionNullMainUserCreatorCaseSameJurisdiction.getUuid(),
+			null,
+			null,
+			new CaseReferenceDto(caze.getUuid()));
 
-		// Database should contain one contact, associated visit and task
-		assertEquals(2, getContactFacade().getIndexList(null, 0, 100, null).size());
+		UserDto user2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv2",
+			"Sup2",
+			UserRole.SURVEILLANCE_SUPERVISOR);
+		when(MockProducer.getPrincipal().getName()).thenReturn("Surv2Sup2");
 
-		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
-		List<RegionReferenceDto> regionReferenceDto = getRegionFacade().getByName("Region2", false);
-		List<DistrictReferenceDto> districtReferenceDto = getDistrictFacade().getByName("District2", regionReferenceDto.get(0), false);
+		// 4) contact created by different user, jurisdiction same with main user, no case linked
+		PersonDto contactPersonSameJurisdictionDiffUserNoCase = creator.createPerson("contactSameJurisdictionDiffUserNoCase", "Person4");
+		ContactDto contactSameJurisdictionDiffUserNoCase = creator.createContact(
+			user2.toReference(),
+			user2.toReference(),
+			contactPersonSameJurisdictionDiffUserNoCase.toReference(),
+			null,
+			new Date(),
+			new Date(),
+			null);
+		updateContactJurisdictionAndCase(contactSameJurisdictionDiffUserNoCase.getUuid(), regionReferenceDto, districtReferenceDto, null);
 
-		ContactCriteria contactCriteria = new ContactCriteria();
-		contactCriteria.setNameUuidCaseLike("ContactNoRespRegion");
-		List<ContactIndexDto> contactList = getContactFacade().getIndexList(contactCriteria, 0, 100, null);
+		// 5) contact created by different user, jurisdiction different from main user, no case linked
+		PersonDto contactPersonDiffJurisdictionDiffUserNoCase = creator.createPerson("contactDiffJurisdictionDiffUserNoCase", "Person5");
+		ContactDto contactDiffJurisdictionDiffUserNoCase = creator.createContact(
+			user2.toReference(),
+			user2.toReference(),
+			contactPersonDiffJurisdictionDiffUserNoCase.toReference(),
+			null,
+			new Date(),
+			new Date(),
+			null);
 
-		ContactDto contactDto = getContactFacade().getContactByUuid(contactList.get(0).getUuid());
-		contactDto.setRegion(regionReferenceDto.get(0));
-		contactDto.setDistrict(districtReferenceDto.get(0));
-		contactDto.setCaze(null);
+		// 6) contact created by different user, jurisdiction null, linked to case from main user's jurisdiction
+		PersonDto contactPersonDiffJurisdictionDiffUserCaseSameJurisdiction =
+			creator.createPerson("contactDiffJurisdictionDiffUserCaseSameJurisdiction", "Person6");
+		ContactDto contactDiffJurisdictionDiffUserCaseSameJurisdiction = creator.createContact(
+			user2.toReference(),
+			user2.toReference(),
+			contactPersonDiffJurisdictionDiffUserCaseSameJurisdiction.toReference(),
+			null,
+			new Date(),
+			new Date(),
+			null);
+		updateContactJurisdictionAndCase(
+			contactDiffJurisdictionDiffUserCaseSameJurisdiction.getUuid(),
+			null,
+			null,
+			new CaseReferenceDto(caze.getUuid()));
+
+		// includeContactsFromOtherJurisdictionsFilter = false - return 1, 3, 4, 6
+		// includeContactsFromOtherJurisdictionsFilter = true - return 1, 2, 3, 4, 6
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+		ContactCriteria gridContactCriteria = new ContactCriteria();
+		List<ContactIndexDto> contactList = getContactFacade().getIndexList(gridContactCriteria, 0, 100, null);
+		List<String> contactListUuids = new ArrayList<>();
+		contactList.stream().forEach(contactIndexDto -> contactListUuids.add(contactIndexDto.getUuid()));
+		assertEquals(4, getContactFacade().getIndexList(gridContactCriteria, 0, 100, null).size());
+		assertFalse(contactListUuids.contains(contactDiffJurisdictionMainUserCreatorNoCase.getUuid()));
+		assertFalse(contactListUuids.contains(contactDiffJurisdictionDiffUserNoCase.getUuid()));
+
+		gridContactCriteria.setIncludeContactsFromOtherJurisdictions(true);
+		contactListUuids.clear();
+		List<ContactIndexDto> newContactList = getContactFacade().getIndexList(gridContactCriteria, 0, 100, null);
+		newContactList.stream().forEach(contactIndexDto -> contactListUuids.add(contactIndexDto.getUuid()));
+		assertEquals(5, getContactFacade().getIndexList(gridContactCriteria, 0, 100, null).size());
+		assertFalse(contactListUuids.contains(contactDiffJurisdictionDiffUserNoCase.getUuid()));
+	}
+
+	public void updateContactJurisdictionAndCase(
+		String contactUuid,
+		RegionReferenceDto regionReferenceDto,
+		DistrictReferenceDto districtReferenceDto,
+		CaseReferenceDto caze) {
+
+		ContactDto contactDto = getContactFacade().getContactByUuid(contactUuid);
+		contactDto.setRegion(regionReferenceDto);
+		contactDto.setDistrict(districtReferenceDto);
+		contactDto.setCaze(caze);
 		contactDto = getContactFacade().saveContact(contactDto);
-		contactCriteria.setNameUuidCaseLike(null);
-
-		assertEquals(1, getContactFacade().getIndexList(contactCriteria, 0, 100, null).size());
-
-		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
-		assertEquals(2, getContactFacade().getIndexList(contactCriteria, 0, 100, null).size());
 	}
 
 	@Test
