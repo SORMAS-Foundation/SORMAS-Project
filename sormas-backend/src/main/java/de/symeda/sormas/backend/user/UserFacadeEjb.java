@@ -43,6 +43,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.user.UserSyncResult;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -81,7 +83,6 @@ import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -327,7 +328,7 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.toString());
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
 		return dto;
 	}
 
@@ -428,6 +429,24 @@ public class UserFacadeEjb implements UserFacade {
 			c.setContactOfficer(null);
 			contactService.ensurePersisted(c);
 		});
+	}
+
+	@Override
+	public UserSyncResult syncUser(String uuid) {
+		User user = userService.getByUuid(uuid);
+
+		UserSyncResult userSyncResult = new UserSyncResult();
+		userSyncResult.setSuccess(true);
+
+		UserUpdateEvent event = new UserUpdateEvent(user);
+		event.setExceptionCallback(exceptionMessage -> {
+			userSyncResult.setSuccess(false);
+			userSyncResult.setErrorMessage(exceptionMessage);
+		});
+
+		this.userUpdateEvent.fire(event);
+
+		return userSyncResult;
 	}
 
 	@LocalBean

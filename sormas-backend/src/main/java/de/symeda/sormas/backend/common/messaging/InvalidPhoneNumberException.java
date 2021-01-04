@@ -1,6 +1,6 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,28 +14,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.backend.common.messaging;
 
-package de.symeda.sormas.backend.user.event;
+@SuppressWarnings("serial")
+public class InvalidPhoneNumberException extends Exception {
 
-import de.symeda.sormas.backend.user.User;
-
-/**
- * Event used for hard coded user password changes.
- *
- * @author Alex Vidrean
- * @since 05-Oct-20
- */
-public class MockPasswordUpdateEvent extends PasswordResetEvent {
-
-    private final String password;
-
-    public MockPasswordUpdateEvent(User user, String password) {
-        super(user);
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
+	public InvalidPhoneNumberException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

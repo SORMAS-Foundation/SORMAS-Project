@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionStatEntry;
+import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRole;
@@ -328,6 +329,56 @@ public class ActionService extends AbstractAdoService<Action> {
 		}
 
 		List<EventActionIndexDto> actions;
+		if (first != null && max != null) {
+			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			actions = em.createQuery(cq).getResultList();
+		}
+
+		return actions;
+	}
+
+	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventActionExportDto> cq = cb.createQuery(EventActionExportDto.class);
+		Root<Action> action = cq.from(getElementClass());
+		ActionJoins actionJoins = new ActionJoins(action);
+		Join<Action, User> replyingUser = actionJoins.getReplyingUser();
+		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
+
+		// Add filters
+		Predicate filter = eventService.createUserFilter(cb, cq, event);
+
+		if (criteria != null) {
+			Predicate criteriaFilter = buildEventCriteriaFilter(criteria, cb, actionJoins);
+			filter = and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.multiselect(
+			event.get(Event.UUID),
+			event.get(Event.EVENT_TITLE),
+			event.get(Event.EVENT_DESC),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
+			event.get(Event.EVENT_STATUS),
+			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			action.get(Action.TITLE),
+			action.get(Action.CREATION_DATE),
+			action.get(Action.CHANGE_DATE),
+			action.get(Action.ACTION_STATUS),
+			action.get(Action.PRIORITY),
+			replyingUser.get(User.UUID),
+			replyingUser.get(User.FIRST_NAME),
+			replyingUser.get(User.LAST_NAME));
+
+		cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
+
+		List<EventActionExportDto> actions;
 		if (first != null && max != null) {
 			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {

@@ -1,6 +1,6 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,28 +14,22 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.backend.common.messaging;
 
-package de.symeda.sormas.backend.user.event;
+import de.symeda.sormas.api.messaging.MessageType;
 
-import de.symeda.sormas.backend.user.User;
+@SuppressWarnings("serial")
+public class NotificationDeliveryFailedException extends Exception {
 
-/**
- * Event used for hard coded created users.
- *
- * @author Alex Vidrean
- * @since 15-Aug-20
- */
-public class MockUserCreateEvent extends UserCreateEvent {
+	private MessageType messageType;
 
-	private final String password;
-
-	public MockUserCreateEvent(User user, String password) {
-		super(user);
-		this.password = password;
+	public NotificationDeliveryFailedException(String message, MessageType messageType, Throwable cause) {
+		super(message, cause);
+		this.messageType = messageType;
 	}
 
-	public String getPassword() {
-		return password;
+	public MessageType getMessageType() {
+		return messageType;
 	}
 }

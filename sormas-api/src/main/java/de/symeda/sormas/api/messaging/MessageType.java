@@ -15,39 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.util;
+package de.symeda.sormas.api.messaging;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+public enum MessageType {
 
-import org.junit.Test;
-
-/**
- * @see PasswordHelper
- */
-public class PasswordHelperTest {
-
-	private static final int LENGTH = 20;
-
-	private static final String[] FORBIDDEN = {
-		"0",
-		"1",
-		"O",
-		"I",
-		"V",
-		"l",
-		"v" };
-
-	@Test
-	public void testCreatePass() {
-
-		for (int i = 0; i < 100; i++) {
-
-			String password = PasswordHelper.createPass(LENGTH);
-			assertEquals("Unerwartete Passwortlänge", LENGTH, password.length());
-			for (int j = 0; j < FORBIDDEN.length; j++) {
-				assertFalse("Unerlaubtes Zeichen " + FORBIDDEN[j] + " enthalten: " + password, password.contains(FORBIDDEN[j]));
-			}
-		}
-	}
+	EMAIL,
+	SMS;
 }

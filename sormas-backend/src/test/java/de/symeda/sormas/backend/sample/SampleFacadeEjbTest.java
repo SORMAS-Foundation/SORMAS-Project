@@ -95,11 +95,35 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null);
 
-		// List should have one entry
 		assertEquals(2, sampleIndexDtos.size());
 
 		// First sample should have an additional test
 		assertEquals(AdditionalTestingStatus.PERFORMED, sampleIndexDtos.get(1).getAdditionalTestingStatus());
+	}
+
+	@Test
+	public void testCount() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto referredSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		sample.setReferredTo(referredSample.toReference());
+		creator.createAdditionalTest(sample.toReference());
+		creator.createAdditionalTest(sample.toReference());
+
+		long count = getSampleFacade().count(new SampleCriteria());
+		assertEquals(2, count);
 	}
 
 	@Test
@@ -193,6 +217,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
 		Assert.assertEquals(rdcf.district, sample14.getDistrict());
 
+		assertEquals(2, getSampleFacade().count(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT)));
 		assertEquals(
 			2,
 			getSampleFacade().getIndexList(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT), 0, 100, null).size());

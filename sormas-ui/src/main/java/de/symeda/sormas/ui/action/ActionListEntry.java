@@ -17,10 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
-import java.util.Optional;
-
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
@@ -28,7 +25,6 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -36,9 +32,11 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionPriority;
+import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -82,15 +80,11 @@ public class ActionListEntry extends HorizontalLayout {
 		descReplyLayout.addStyleName(CssStyles.RICH_TEXT_CONTENT_CONTAINER);
 		withContentLayout.addComponents(descReplyLayout);
 
-		Whitelist whitelist = Whitelist.relaxed();
-		whitelist.addTags("hr", "font");
-		whitelist.addAttributes("font", "size", "face", "color");
-		whitelist.addAttributes("div", "align");
-		Label description = new Label(Jsoup.clean(Optional.ofNullable(action.getDescription()).orElse(""), whitelist), ContentMode.HTML);
+		Label description = new Label(cleanHtml(action.getDescription(), HtmlHelper.EventActionWhitelist), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		descReplyLayout.addComponent(description);
 		if (!Strings.isNullOrEmpty(action.getReply())) {
-			Label replyLabel = new Label(Jsoup.clean(Optional.ofNullable(action.getReply()).orElse(""), whitelist), ContentMode.HTML);
+			Label replyLabel = new Label(cleanHtml(action.getReply(), HtmlHelper.EventActionWhitelist), ContentMode.HTML);
 			replyLabel.setWidth(100, Unit.PERCENTAGE);
 			replyLabel.addStyleName(CssStyles.REPLY);
 			descReplyLayout.addComponent(replyLabel);
@@ -162,16 +156,7 @@ public class ActionListEntry extends HorizontalLayout {
 		topLayout.addComponent(topRightLayout);
 		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
 
-		String statusStyle;
-		switch (action.getActionStatus()) {
-		case DONE:
-			statusStyle = CssStyles.LABEL_DONE;
-			break;
-		default:
-			statusStyle = null;
-			break;
-		}
-
+		String statusStyle = action.getActionStatus() == ActionStatus.DONE ? CssStyles.LABEL_DONE : null;
 		if (statusStyle != null) {
 			statusLabel.addStyleName(statusStyle);
 			dateLabel.addStyleName(statusStyle);
@@ -186,7 +171,7 @@ public class ActionListEntry extends HorizontalLayout {
 		}
 	}
 
-	public void addEditListener(int rowIndex, ClickListener editClickListener) {
+	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
 		if (editButton == null) {
 			editButton = ButtonHelper.createIconButtonWithCaption(
 				"edit-action-" + rowIndex,

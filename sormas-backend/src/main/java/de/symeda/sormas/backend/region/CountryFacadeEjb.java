@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -166,7 +167,7 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new CountryReferenceDto(entity.getUuid(), entity.toString());
+		return new CountryReferenceDto(entity.getUuid(), I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()));
 	}
 
 	public CountryDto toDto(Country entity) {
@@ -258,6 +259,15 @@ public class CountryFacadeEjb implements CountryFacade {
 			return Collections.emptyList();
 		}
 		return countryService.getAllUuids();
+	}
+
+	@Override
+	public List<CountryReferenceDto> getAllActiveAsReference() {
+		return countryService.getAllActive(Country.ISO_CODE, true)
+			.stream()
+			.map(CountryFacadeEjb::toReferenceDto)
+			.sorted(Comparator.comparing(CountryReferenceDto::getCaption))
+			.collect(Collectors.toList());
 	}
 
 	// Need to be in the same order as in the constructor

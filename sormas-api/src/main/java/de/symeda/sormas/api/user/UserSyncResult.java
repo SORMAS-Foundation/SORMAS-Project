@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,37 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.backend.common;
+ */
 
-@SuppressWarnings("serial")
-public class NotificationDeliveryFailedException extends Exception {
+package de.symeda.sormas.api.user;
 
-	private MessageType messageType;
+import java.io.Serializable;
 
-	public NotificationDeliveryFailedException(String message, MessageType messageType, Throwable cause) {
-		super(message, cause);
-		this.messageType = messageType;
+/**
+ * @author Alex Vidrean
+ * @since 12-Dec-20
+ */
+public class UserSyncResult implements Serializable {
+
+	private static final long serialVersionUID = 6280244664797129634L;
+
+	private boolean success;
+
+	private String errorMessage;
+
+	public boolean isSuccess() {
+		return success;
 	}
 
-	public MessageType getMessageType() {
-		return messageType;
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 }
