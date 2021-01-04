@@ -36,6 +36,27 @@
 		<property name="shared.installed" value="true" />
 	</target>
 
+	<target name="install-with-keycloak" description="Compile main source tree java files and install, include keycloak artifacts" unless="shared.installed">
+		<artifact:mvn dir="${basedir}" fork="true" mavenhome="${env.M2_HOME}" failonerror="true">
+			<sysproperty key="maven.multiModuleProjectDirectory" value="${basedir}" />
+			<arg value="install" />
+			<arg value="-Pwith-keycloak" />
+			<arg value="-Dmaven.test.skip=true" />
+		</artifact:mvn>
+		<property name="shared.installed" value="true" />
+	</target>
+
+	<target name="install-with-app-and-keycloak" description="Compile main source tree java files and install, include android app and keycloak artifacts" unless="shared.installed">
+		<artifact:mvn dir="${basedir}" fork="true" mavenhome="${env.M2_HOME}" failonerror="true">
+			<sysproperty key="maven.multiModuleProjectDirectory" value="${basedir}" />
+			<arg value="install" />
+			<arg value="-Pwith-app" />
+			<arg value="-Pwith-keycloak" />
+			<arg value="-Dmaven.test.skip=true" />
+		</artifact:mvn>
+		<property name="shared.installed" value="true" />
+	</target>
+
 	<target name="generate-api-doc" description="Call the generators">
 		<artifact:mvn pom="../sormas-api/pom.xml" fork="true" mavenhome="${env.M2_HOME}" failonerror="true">
 			<sysproperty key="maven.multiModuleProjectDirectory" value="../sormas-api" />
@@ -105,6 +126,7 @@
 		<ant dir="../sormas-ui" target="3-collect" />
 		<ant dir="../sormas-rest" target="3-collect" />
 		<ant dir="../sormas-app" target="3-collect" />
+		<ant dir="../sormas-keycloak-service-provider" target="3-collect" />
 	</target>
 
 	<target name="collect-all" description="collects all serverlibs, bundles and so on for the setup-script.">
