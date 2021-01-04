@@ -49,4 +49,13 @@ public final class EventHelper {
 			return String.format("%s - %s", DateFormatHelper.formatDate(eventStartDate), DateFormatHelper.formatDate(eventEndDate));
 		}
 	}
+
+	public static String buildMeansOfTransportString(MeansOfTransport meansOfTransport, String meansOfTransportDetails) {
+
+		if (meansOfTransport == MeansOfTransport.OTHER) {
+			return DataHelper.toStringNullable(meansOfTransportDetails);
+		}
+
+		return DataHelper.toStringNullable(meansOfTransport);
+	}
 }

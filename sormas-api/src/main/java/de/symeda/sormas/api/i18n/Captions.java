@@ -782,6 +782,8 @@ public interface Captions {
 	String Event_eventType = "Event.eventType";
 	String Event_externalId = "Event.externalId";
 	String Event_informationSource = "Event.informationSource";
+	String Event_meansOfTransport = "Event.meansOfTransport";
+	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
 	String Event_multiDayEvent = "Event.multiDayEvent";
 	String Event_nosocomial = "Event.nosocomial";
 	String Event_numberOfPendingTasks = "Event.numberOfPendingTasks";
