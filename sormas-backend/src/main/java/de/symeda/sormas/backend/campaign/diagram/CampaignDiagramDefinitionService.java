@@ -13,10 +13,11 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AbstractUserAdoService;
 
 @Stateless
 @LocalBean
-public class CampaignDiagramDefinitionService extends AbstractAdoService<CampaignDiagramDefinition> {
+public class CampaignDiagramDefinitionService extends AbstractUserAdoService<CampaignDiagramDefinition> {
 
 	public CampaignDiagramDefinitionService() {
 		super(CampaignDiagramDefinition.class);

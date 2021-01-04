@@ -17,10 +17,4 @@ public class ClinicalCourseService extends AbstractAdoService<ClinicalCourse> {
 		super(ClinicalCourse.class);
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ClinicalCourse> from) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
-	}
 }

@@ -17,10 +17,4 @@ public class HealthConditionsService extends AbstractAdoService<HealthConditions
 		super(HealthConditions.class);
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, HealthConditions> from) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
-	}
 }

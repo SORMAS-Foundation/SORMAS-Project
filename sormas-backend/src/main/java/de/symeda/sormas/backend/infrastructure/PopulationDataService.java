@@ -10,12 +10,13 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractUserAdoService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
 @Stateless
 @LocalBean
-public class PopulationDataService extends AbstractAdoService<PopulationData> {
+public class PopulationDataService extends AbstractUserAdoService<PopulationData> {
 
 	public PopulationDataService() {
 		super(PopulationData.class);

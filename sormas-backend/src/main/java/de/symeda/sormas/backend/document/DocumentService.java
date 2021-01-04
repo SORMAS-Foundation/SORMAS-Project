@@ -27,11 +27,12 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractUserAdoService;
 import de.symeda.sormas.backend.event.Event;
 
 @Stateless
 @LocalBean
-public class DocumentService extends AbstractAdoService<Document> {
+public class DocumentService extends AbstractUserAdoService<Document> {
 
 	public DocumentService() {
 		super(Document.class);

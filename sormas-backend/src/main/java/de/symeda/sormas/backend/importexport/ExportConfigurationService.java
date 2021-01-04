@@ -17,10 +17,4 @@ public class ExportConfigurationService extends AbstractAdoService<ExportConfigu
 		super(ExportConfiguration.class);
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ExportConfiguration> from) {
-		// A user should not query for this
-		throw new UnsupportedOperationException();
-	}
 }

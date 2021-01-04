@@ -252,13 +252,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
-		// getAllUuids and getAllAfter have custom implementations
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Visit> visitPath, Timestamp date) {
 

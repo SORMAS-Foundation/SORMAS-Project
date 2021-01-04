@@ -25,11 +25,6 @@ public class ManualMessageLogService extends AbstractAdoService<ManualMessageLog
 		super(ManualMessageLog.class);
 	}
 
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ManualMessageLog> from) {
-		throw new UnsupportedOperationException();
-	}
-
 	public List<ManualMessageLog> getByPersonUuid(@NotNull String personUuid, MessageType messageType) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();

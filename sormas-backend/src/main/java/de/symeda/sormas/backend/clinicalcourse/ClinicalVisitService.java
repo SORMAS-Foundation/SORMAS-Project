@@ -22,12 +22,13 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AbstractUserAdoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
+public class ClinicalVisitService extends AbstractUserAdoService<ClinicalVisit> {
 
 	@EJB
 	CaseService caseService;

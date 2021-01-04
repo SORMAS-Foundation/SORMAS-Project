@@ -45,10 +45,4 @@ public class ExposureService extends AbstractAdoService<Exposure> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Exposure> from) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
-	}
 }

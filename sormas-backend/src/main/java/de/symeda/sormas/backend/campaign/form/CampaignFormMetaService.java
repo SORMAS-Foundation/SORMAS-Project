@@ -16,11 +16,12 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AbstractUserAdoService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class CampaignFormMetaService extends AbstractAdoService<CampaignFormMeta> {
+public class CampaignFormMetaService extends AbstractUserAdoService<CampaignFormMeta> {
 
 	public CampaignFormMetaService() {
 		super(CampaignFormMeta.class);

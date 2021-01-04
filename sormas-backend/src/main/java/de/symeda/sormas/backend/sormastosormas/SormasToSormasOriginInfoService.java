@@ -22,11 +22,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractUserAdoService;
 
 @Stateless
 @LocalBean
-public class SormasToSormasOriginInfoService extends AbstractAdoService<SormasToSormasOriginInfo> {
+public class SormasToSormasOriginInfoService extends AbstractUserAdoService<SormasToSormasOriginInfo> {
 
 	public SormasToSormasOriginInfoService() {
 		super(SormasToSormasOriginInfo.class);

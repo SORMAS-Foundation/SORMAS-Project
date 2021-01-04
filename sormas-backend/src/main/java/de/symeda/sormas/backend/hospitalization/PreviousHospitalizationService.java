@@ -27,7 +27,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
@@ -39,13 +38,6 @@ public class PreviousHospitalizationService extends AbstractAdoService<PreviousH
 
 	public PreviousHospitalizationService() {
 		super(PreviousHospitalization.class);
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PreviousHospitalization> from) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
 	}
 
 	public List<Object[]> getFirstPreviousHospitalizations(List<Long> caseIds) {

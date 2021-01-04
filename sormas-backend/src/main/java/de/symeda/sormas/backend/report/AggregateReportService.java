@@ -16,6 +16,7 @@ import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractUserAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.District;
@@ -24,7 +25,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class AggregateReportService extends AbstractAdoService<AggregateReport> {
+public class AggregateReportService extends AbstractUserAdoService<AggregateReport> {
 
 	public AggregateReportService() {
 		super(AggregateReport.class);
