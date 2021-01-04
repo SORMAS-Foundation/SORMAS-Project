@@ -222,28 +222,21 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_meansOfTransport"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                app:softRequired="true"
+                app:value="@={data.meansOfTransport}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/event_meansOfTransport"
-                    style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:dependencyParentField="@{eventTypeOfPlace}"
-                    app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
-                    app:softRequired="true"
-                    app:value="@={data.meansOfTransport}" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/event_meansOfTransportDetails"
-                    style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:dependencyParentField="@{eventMeansOfTransport}"
-                    app:dependencyParentValue="@{MeansOfTransport.OTHER}"
-                    app:softRequired="true"
-                    app:value="@={data.meansOfTransportDetails}" />
-
-            </LinearLayout>
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_meansOfTransportDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventMeansOfTransport}"
+                app:dependencyParentValue="@{MeansOfTransport.OTHER}"
+                app:softRequired="true"
+                app:value="@={data.meansOfTransportDetails}" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
