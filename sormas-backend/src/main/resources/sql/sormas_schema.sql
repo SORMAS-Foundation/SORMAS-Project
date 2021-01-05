@@ -6081,6 +6081,7 @@ CREATE TABLE labmessage (
         primary key(id)
 );
 
+CREATE TABLE labmessage_history (LIKE labmessage);
 
 INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
 
