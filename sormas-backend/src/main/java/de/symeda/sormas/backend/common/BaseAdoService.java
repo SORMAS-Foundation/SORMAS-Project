@@ -77,7 +77,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
-	public BaseAdoService(Class<ADO> elementClass) {
+	protected BaseAdoService(Class<ADO> elementClass) {
 		this.elementClass = elementClass;
 	}
 
