@@ -85,6 +85,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 
 		UserRoleConfig entity = fromDto(dto);
 		userRoleConfigService.ensurePersisted(entity);
+		resetUserRoleRightsCache();
 		return toDto(entity);
 	}
 
@@ -93,12 +94,13 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 
 		UserRoleConfig entity = userRoleConfigService.getByUuid(dto.getUuid());
 		userRoleConfigService.delete(entity);
+		resetUserRoleRightsCache();
 	}
 
 	@Override
 	public Set<UserRight> getEffectiveUserRights(UserRole... userRoles) {
 
-		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRights();
+		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRightsCached();
 
 		Set<UserRight> userRights = EnumSet.noneOf(UserRight.class);
 		for (UserRole userRole : userRoles) {
@@ -108,7 +110,11 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		return userRights;
 	}
 
-	private Map<UserRole, Set<UserRight>> getUserRoleRights() {
+	public void resetUserRoleRightsCache() {
+		userRoleRightsCache = null;
+	}
+
+	private Map<UserRole, Set<UserRight>> getUserRoleRightsCached() {
 
 		if (userRoleRightsCache == null) {
 			Map<UserRole, Set<UserRight>> cache = new EnumMap<>(UserRole.class);
