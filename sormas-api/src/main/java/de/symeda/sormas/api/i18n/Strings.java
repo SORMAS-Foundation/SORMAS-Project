@@ -191,6 +191,7 @@ public interface Strings {
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasCountry = "errorSormasToSormasCountry";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
