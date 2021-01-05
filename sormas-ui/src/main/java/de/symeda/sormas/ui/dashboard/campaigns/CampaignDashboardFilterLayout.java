@@ -110,54 +110,57 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 
 		dashboardDataProvider.setArea(userArea);
-		if (userArea == null && userRegion == null) {
-			updateFiltersBasedOnArea(areaFilter.getValue());
-			areaFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_area));
-			areaFilter.setWidth(200, Unit.PIXELS);
-			areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllAreas));
-			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
-			areaFilter.addValueChangeListener(e -> {
-				final Object value = areaFilter.getValue();
-				updateFiltersBasedOnArea(value);
-				dashboardDataProvider.setArea((AreaReferenceDto) value);
-				dashboardView.refreshDashboard();
-			});
-			addComponent(areaFilter);
-			dashboardDataProvider.setArea((AreaReferenceDto) areaFilter.getValue());
-		}
+		areaFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_area));
+		areaFilter.setWidth(200, Unit.PIXELS);
+		areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllAreas));
+		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		areaFilter.addValueChangeListener(e -> {
+			final Object value = areaFilter.getValue();
+			dashboardDataProvider.setArea((AreaReferenceDto) value);
+			dashboardView.refreshDashboard();
+			updateFiltersBasedOnArea(value);
+		});
+		addComponent(areaFilter);
+		dashboardDataProvider.setArea((AreaReferenceDto) areaFilter.getValue());
 
 		dashboardDataProvider.setRegion(userRegion);
-		if (userRegion == null) {
-			updateFiltersBasedOnRegion(regionFilter.getValue());
-			regionFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_region));
-			regionFilter.setWidth(200, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
-			regionFilter.addValueChangeListener(e -> {
-				final Object value = regionFilter.getValue();
-				updateFiltersBasedOnRegion(value);
-				dashboardDataProvider.setRegion((RegionReferenceDto) value);
-				dashboardView.refreshDashboard();
-			});
-			addComponent(regionFilter);
-			dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
-		}
+		regionFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_region));
+		regionFilter.setWidth(200, Unit.PIXELS);
+		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
+		regionFilter.addValueChangeListener(e -> {
+			final Object value = regionFilter.getValue();
+			dashboardDataProvider.setRegion((RegionReferenceDto) value);
+			dashboardView.refreshDashboard();
+			updateFiltersBasedOnRegion(value);
+		});
+		addComponent(regionFilter);
+		dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 
 		dashboardDataProvider.setDistrict(userDistrict);
-		if (userRegion != null || userDistrict == null) {
-			districtFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_district));
-			districtFilter.setWidth(200, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
-			if (userRegion != null) {
-				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
+		districtFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_district));
+		districtFilter.setWidth(200, Unit.PIXELS);
+		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
+		if (userRegion != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
+		}
+		districtFilter.addValueChangeListener(e -> {
+			final Object value = districtFilter.getValue();
+			updateFiltersBasedOnDistrict(value);
+			dashboardDataProvider.setDistrict((DistrictReferenceDto) value);
+			dashboardView.refreshDashboard();
+		});
+		addComponent(districtFilter);
+		dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
+
+		if (userRegion != null) {
+			areaFilter.setValue(userArea);
+			regionFilter.setValue(userRegion);
+			areaFilter.setEnabled(false);
+			regionFilter.setEnabled(false);
+			if (userDistrict != null) {
+				districtFilter.setValue(userDistrict);
+				districtFilter.setEnabled(false);
 			}
-			districtFilter.addValueChangeListener(e -> {
-				final Object value = districtFilter.getValue();
-				updateFiltersBasedOnDistrict(value);
-				dashboardDataProvider.setDistrict((DistrictReferenceDto) value);
-				dashboardView.refreshDashboard();
-			});
-			addComponent(districtFilter);
-			dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 		}
 
 		campaignJurisdictionGroupByFilter.setCaption(I18nProperties.getCaption(Captions.campaignDiagramGroupBy));
@@ -193,15 +196,14 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private void updateFiltersBasedOnRegion(Object value) {
 		if (value != null) {
-			districtFilter.setEnabled(true);
 			districtFilter.removeAllItems();
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(((RegionReferenceDto) value).getUuid()));
 			campaignJurisdictionGroupByFilter.removeItem(AREA);
 			campaignJurisdictionGroupByFilter.addItems(REGION, DISTRICT, COMMUNITY);
 			campaignJurisdictionGroupByFilter.setValue(DISTRICT);
 		} else {
-			districtFilter.setEnabled(false);
 			districtFilter.clear();
+			districtFilter.removeAllItems();
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
 			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
 			campaignJurisdictionGroupByFilter.setValue(REGION);
@@ -217,10 +219,10 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
 			campaignJurisdictionGroupByFilter.setValue(REGION);
 		} else {
-			regionFilter.setEnabled(false);
 			regionFilter.clear();
-			districtFilter.setEnabled(false);
+			regionFilter.removeAllItems();
 			districtFilter.clear();
+			districtFilter.removeAllItems();
 			campaignJurisdictionGroupByFilter.removeItem(DISTRICT);
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
 			campaignJurisdictionGroupByFilter.addItems(AREA, REGION);

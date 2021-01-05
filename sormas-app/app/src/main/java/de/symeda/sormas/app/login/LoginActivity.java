@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.app.login;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -265,7 +265,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 	private void initializeFirebase() {
 		((SormasApplication) getApplication()).getFirebaseAnalytics().setUserId(ConfigProvider.getUser().getUuid());
-		Crashlytics.setUserIdentifier(ConfigProvider.getUser().getUuid());
+		FirebaseCrashlytics.getInstance().setUserId(ConfigProvider.getUser().getUuid());
 	}
 
 	private void openLandingActivity() {
