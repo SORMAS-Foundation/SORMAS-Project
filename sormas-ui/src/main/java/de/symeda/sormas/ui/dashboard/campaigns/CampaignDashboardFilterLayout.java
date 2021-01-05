@@ -153,6 +153,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(((RegionReferenceDto) value).getUuid()));
 		} else {
 			districtFilter.clear();
+			districtFilter.removeAllItems();
 		}
 	}
 
@@ -162,7 +163,9 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
 		} else {
 			regionFilter.clear();
+			regionFilter.removeAllItems();
 			districtFilter.clear();
+			districtFilter.removeAllItems();
 		}
 	}
 

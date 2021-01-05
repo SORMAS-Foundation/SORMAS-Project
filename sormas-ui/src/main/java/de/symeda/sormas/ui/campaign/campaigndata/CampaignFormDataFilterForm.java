@@ -131,6 +131,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				districtFilter.removeAllItems();
 				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 			} else {
+				districtFilter.removeAllItems();
 				districtFilter.clear();
 			}
 			break;
@@ -141,6 +142,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				communityFilter.removeAllItems();
 				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
 			} else {
+				communityFilter.removeAllItems();
 				communityFilter.clear();
 			}
 			break;
