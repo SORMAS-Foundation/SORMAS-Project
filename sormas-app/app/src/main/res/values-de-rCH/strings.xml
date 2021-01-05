@@ -93,7 +93,7 @@
     <string name="action_save_contact">Kontakt speichern</string>
     <string name="action_save_event">Ereignis speichern</string>
     <string name="action_save_event_participant">Ereignisteilnehmer*in speichern</string>
-    <string name="action_save_prescription">Verschreibung speichern</string>
+    <string name="action_save_prescription">Rezept speichern</string>
     <string name="action_save_sample">Probe speichern</string>
     <string name="action_save_task">Aufgabe speichern</string>
     <string name="action_save_treatment">Behandlung speichern</string>
@@ -123,7 +123,7 @@
     <string name="caption_case_information">Fallinformationen</string>
     <string name="caption_case_maternal_history">Vorgeschichte der Mutter</string>
     <string name="caption_case_port_health_info">Einreiseinformation</string>
-    <string name="caption_case_prescriptions">Verschreibungen</string>
+    <string name="caption_case_prescriptions">Rezepte</string>
     <string name="caption_case_samples">Fall-Proben</string>
     <string name="caption_case_tasks">Fall Aufgaben</string>
     <string name="caption_case_events">Fallereignisse</string>
@@ -320,9 +320,9 @@
     <string name="heading_pick_or_create_person">Person auswählen oder erstellen</string>
     <string name="heading_pick_or_create_case">Fall auswählen oder erstellen</string>
     <string name="heading_pick_or_create_event">Ereignis auswählen oder erstellen</string>
-    <string name="heading_prescription">Verschreibung</string>
-    <string name="heading_prescription_edit">Verschreibung bearbeiten</string>
-    <string name="heading_prescription_new">Neue Verschreibung</string>
+    <string name="heading_prescription">Rezept</string>
+    <string name="heading_prescription_edit">Rezept bearbeiten</string>
+    <string name="heading_prescription_new">Neues Rezept</string>
     <string name="heading_previous_hospitalization">Vorheriger Krankenhausaufenthalt</string>
     <string name="heading_previous_hospitalizations">Vorherige Krankenhausaufenthalte</string>
     <string name="heading_refer_case_from_poe">Fall vom Einreiseort weiterleiten</string>
@@ -365,6 +365,7 @@
     <string name="heading_reduce_quarantine">Isolation/Quarantäne verkürzen</string>
     <string name="heading_extend_followup">Nachverfolgungszeitraum verlängern</string>
     <string name="heading_contact_tracing_first_contact">Erstkontakt mit kantonaler Contact-Tracing-Stelle</string>
+    <string name="heading_exposure">Exposition</string>
     <string name="hint_add_to_empty_list">Fügen Sie einen neuen Eintrag hinzu, indem Sie das \"+\" Symbol oben rechts drücken.</string>
     <string name="hint_clear">Löschen</string>
     <string name="hint_create_pin">Bitte wählen Sie eine vierstellige PIN aus, mit der Sie sich bei jedem Öffnen der SORMAS-App authentifizieren werden.</string>

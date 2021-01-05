@@ -48,22 +48,25 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
-import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
-import de.symeda.sormas.api.externaljournal.PatientDiaryRegisterResult;
+import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -249,10 +252,15 @@ public class ContactController {
 				if (asSourceContact && alternativeCallback != null && casePerson != null) {
 					selectOrCreateContact(dto, casePerson, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
 						if (selectedContactUuid != null) {
-							if (!selectedContactUuid.equals(dto.getUuid())) {
-								dto.setResultingCase(caze.toReference());
-								FacadeProvider.getContactFacade().saveContact(dto);
-							}
+							ContactDto selectedContact = FacadeProvider.getContactFacade().getContactByUuid(selectedContactUuid);
+							selectedContact.setResultingCase(caze.toReference());
+							selectedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
+							selectedContact.setContactStatus(ContactStatus.CONVERTED);
+							selectedContact.setContactClassification(ContactClassification.CONFIRMED);
+							FacadeProvider.getContactFacade().saveContact(selectedContact);
+
+							// Avoid asking the user to discard unsaved changes
+							createComponent.discard();
 							alternativeCallback.run();
 						}
 					});
@@ -539,11 +547,14 @@ public class ContactController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
+			VaadinUiUtil.showConfirmationPopup(
+				String.format(I18nProperties.getString(Strings.headingContactsCancelFollowUp)),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
@@ -572,11 +583,14 @@ public class ContactController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
+			VaadinUiUtil.showConfirmationPopup(
+				String.format(I18nProperties.getString(Strings.headingContactsLostToFollowUp)),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
@@ -674,7 +688,7 @@ public class ContactController {
 	 * Displays the result in a popup
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
-		PatientDiaryPersonValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
+		ExternalJournalValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
 		if (!validationResult.isValid()) {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {
@@ -773,5 +787,25 @@ public class ContactController {
 				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
 				callback.run();
 			});
+	}
+
+	public VerticalLayout getContactViewTitleLayout(ContactDto contact) {
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
+		titleLayout.setSpacing(false);
+
+		Label diseaseLabel = new Label(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
+		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponents(diseaseLabel);
+
+		Label classificationLabel = new Label(contact.getContactClassification().toString());
+		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponent(classificationLabel);
+
+		Label contactLabel = new Label(contact.toReference().getCaptionAlwaysWithUuid());
+		contactLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		titleLayout.addComponent(contactLabel);
+
+		return titleLayout;
 	}
 }

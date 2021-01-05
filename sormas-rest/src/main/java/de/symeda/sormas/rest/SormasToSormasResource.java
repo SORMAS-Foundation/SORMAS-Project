@@ -18,6 +18,7 @@ package de.symeda.sormas.rest;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -51,11 +52,39 @@ public class SormasToSormasResource {
 		return Response.noContent().build();
 	}
 
+	@PUT
+	@Path(SormasToSormasApiConstants.CASE_ENDPOINT)
+	public Response saveReturnedCase(SormasToSormasEncryptedDataDto sharedCases) {
+		try {
+			FacadeProvider.getSormasToSormasFacade().saveReturnedCase(sharedCases);
+		} catch (SormasToSormasValidationException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
+		} catch (SormasToSormasException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
+
+		return Response.noContent().build();
+	}
+
 	@POST
 	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
 	public Response saveSharedContact(SormasToSormasEncryptedDataDto sharedContacts) {
 		try {
 			FacadeProvider.getSormasToSormasFacade().saveSharedContacts(sharedContacts);
+		} catch (SormasToSormasValidationException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
+		} catch (SormasToSormasException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
+
+		return Response.noContent().build();
+	}
+
+	@PUT
+	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
+	public Response saveReturnedContact(SormasToSormasEncryptedDataDto sharedContacts) {
+		try {
+			FacadeProvider.getSormasToSormasFacade().saveReturnedContact(sharedContacts);
 		} catch (SormasToSormasValidationException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
 		} catch (SormasToSormasException e) {

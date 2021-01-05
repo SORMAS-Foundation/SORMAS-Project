@@ -16,7 +16,7 @@
 package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Label;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -41,7 +41,7 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
 		if (!findReferenceByParams(params)) {
 			return;
 		}

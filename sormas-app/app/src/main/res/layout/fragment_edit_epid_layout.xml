@@ -84,6 +84,7 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <TextView
+                    android:id="@+id/exposure_investigation_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:htmlValue="@{I18nProperties.getString(Strings.infoExposureInvestigation)}"
@@ -155,7 +156,7 @@
                     android:id="@+id/source_contacts_heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{I18nProperties.getString(Strings.headingSourceContacts)}"
+                    android:text="@{I18nProperties.getString(Strings.headingEpiDataSourceCaseContacts)}"
                     android:layout_marginBottom="24dp"
                     style="@style/SubHeadingCompactStyle" />
 

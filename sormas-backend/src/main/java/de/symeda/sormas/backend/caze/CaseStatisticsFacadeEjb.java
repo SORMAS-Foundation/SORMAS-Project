@@ -53,7 +53,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -571,6 +571,89 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				caseCriteria.getReportDateTo(),
 				Case.TABLE_NAME,
 				Case.REPORT_DATE);
+		}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getOutcomeYears())) {
+			extendFilterBuilderWithDateElement(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				"YEAR",
+				Case.TABLE_NAME,
+				Case.OUTCOME_DATE,
+				caseCriteria.getOutcomeYears(),
+				dateValue -> (dateValue.getValue()));
+		}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getOutcomeQuarters())) {
+			extendFilterBuilderWithDateElement(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				"QUARTER",
+				Case.TABLE_NAME,
+				Case.OUTCOME_DATE,
+				caseCriteria.getOutcomeQuarters(),
+				dateValue -> (dateValue.getValue()));
+		}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getOutcomeMonths())) {
+			extendFilterBuilderWithDateElement(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				"MONTH",
+				Case.TABLE_NAME,
+				Case.OUTCOME_DATE,
+				caseCriteria.getOutcomeMonths(),
+				dateValue -> (dateValue.ordinal() + 1));
+		}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getOutcomeEpiWeeks())) {
+			extendFilterBuilderWithEpiWeek(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				Case.TABLE_NAME,
+				Case.OUTCOME_DATE,
+				caseCriteria.getOutcomeEpiWeeks(),
+				value -> value.getWeek());
+		}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getOutcomeQuartersOfYear())) {
+			extendFilterBuilderWithQuarterOfYear(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				Case.TABLE_NAME,
+				Case.OUTCOME_DATE,
+				caseCriteria.getOutcomeQuartersOfYear(),
+				value -> value.getYear().getValue() * 10 + value.getQuarter().getValue());
+		}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getOutcomeMonthsOfYear())) {
+			extendFilterBuilderWithMonthOfYear(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				Case.TABLE_NAME,
+				Case.OUTCOME_DATE,
+				caseCriteria.getOutcomeMonthsOfYear(),
+				value -> value.getYear().getValue() * 100 + (value.getMonth().ordinal() + 1));
+		}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getOutcomeEpiWeeksOfYear())) {
+			extendFilterBuilderWithEpiWeekOfYear(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				Case.TABLE_NAME,
+				Case.OUTCOME_DATE,
+				caseCriteria.getOutcomeEpiWeeksOfYear(),
+				value -> value.getYear() * 100 + value.getWeek());
+		}
+
+		if (caseCriteria.getOutcomeDateFrom() != null || caseCriteria.getOutcomeDateTo() != null) {
+			extendFilterBuilderWithDate(
+				caseFilterBuilder,
+				filterBuilderParameters,
+				caseCriteria.getOutcomeDateFrom(),
+				caseCriteria.getOutcomeDateTo(),
+				Case.TABLE_NAME,
+				Case.OUTCOME_DATE);
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getPersonRegions())) {
@@ -1107,7 +1190,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 
 		filterBuilder.append(tableName).append(".").append(fieldName).append(" IN ");
-		return AbstractAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private StringBuilder extendFilterBuilderWithDate(
@@ -1159,7 +1242,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(")  AS integer))")
 			.append(" IN ");
-		return AbstractAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithEpiWeek(
@@ -1175,7 +1258,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 
 		filterBuilder.append("epi_week(").append(tableName).append(".").append(fieldName).append(")").append(" IN ");
-		return AbstractAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithEpiWeekOfYear(
@@ -1202,7 +1285,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append("))")
 			.append(" IN ");
-		return AbstractAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithQuarterOfYear(
@@ -1228,7 +1311,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(") AS integer))")
 			.append(" IN ");
-		return AbstractAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithMonthOfYear(
@@ -1254,7 +1337,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(") AS integer))")
 			.append(" IN ");
-		return AbstractAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private String buildCaseGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping, String groupAlias) {
@@ -1349,6 +1432,33 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				break;
 			case EPI_WEEK_OF_YEAR:
 				extendGroupingBuilderWithEpiWeekOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.REPORT_DATE, groupAlias);
+				break;
+			default:
+				throw new IllegalArgumentException(subGrouping.toString());
+			}
+			break;
+		case OUTCOME_TIME:
+			switch (subGrouping) {
+			case YEAR:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "YEAR", Case.TABLE_NAME, Case.OUTCOME_DATE, groupAlias);
+				break;
+			case QUARTER:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "QUARTER", Case.TABLE_NAME, Case.OUTCOME_DATE, groupAlias);
+				break;
+			case MONTH:
+				extendGroupingBuilderWithDate(groupingSelectPartBuilder, "MONTH", Case.TABLE_NAME, Case.OUTCOME_DATE, groupAlias);
+				break;
+			case EPI_WEEK:
+				extendGroupingBuilderWithEpiWeek(groupingSelectPartBuilder, Case.TABLE_NAME, Case.OUTCOME_DATE, groupAlias);
+				break;
+			case QUARTER_OF_YEAR:
+				extendGroupingBuilderWithQuarterOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.OUTCOME_DATE, groupAlias);
+				break;
+			case MONTH_OF_YEAR:
+				extendGroupingBuilderWithMonthOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.OUTCOME_DATE, groupAlias);
+				break;
+			case EPI_WEEK_OF_YEAR:
+				extendGroupingBuilderWithEpiWeekOfYear(groupingSelectPartBuilder, Case.TABLE_NAME, Case.OUTCOME_DATE, groupAlias);
 				break;
 			default:
 				throw new IllegalArgumentException(subGrouping.toString());

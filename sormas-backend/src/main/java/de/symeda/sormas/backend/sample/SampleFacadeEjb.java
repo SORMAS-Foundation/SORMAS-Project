@@ -75,12 +75,12 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.MessageSubject;
-import de.symeda.sormas.backend.common.MessageType;
-import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
+import de.symeda.sormas.backend.common.messaging.MessageSubject;
+import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.backend.common.messaging.MessagingService;
+import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
@@ -102,8 +102,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
@@ -169,7 +169,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
-	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
@@ -341,11 +341,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.multiselect(selections);
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -607,12 +607,12 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
 			CaseJoins<Sample> caseJoins = new CaseJoins<>(joins.getCaze());
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, joins.getCaze(), caseJoins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-			filter = AbstractAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
 		}
 
 		if (filter != null) {
@@ -699,10 +699,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		SampleJoins<Sample> joins = new SampleJoins<>(root);
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -789,7 +789,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasFacade.fromSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo()));
 		}
 
 		return target;
@@ -918,7 +918,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
-		target.setSormasToSormasOriginInfo(SormasToSormasFacadeEjb.toSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;

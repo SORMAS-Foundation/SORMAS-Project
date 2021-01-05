@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.bagexport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,9 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		Join<Case, Person> person = caseJoins.getPerson();
 		Join<Person, Location> homeAddress = caseJoins.getPersonAddress();
 
+		Expression<String> homeAddressCountry = cb.literal(TODO_VALUE);
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
+		Expression<String> activityMappingYn = cb.literal(TODO_VALUE);
 
 		cq.multiselect(
 			caseRoot.get(Case.CASE_ID_ISM),
@@ -84,6 +87,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			homeAddress.get(Location.HOUSE_NUMBER),
 			homeAddress.get(Location.CITY),
 			homeAddress.get(Location.POSTAL_CODE),
+			homeAddressCountry,
 			person.get(Person.PHONE),
 			mobileNumber,
 			person.get(Person.EMAIL_ADDRESS),
@@ -92,14 +96,23 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.BIRTHDATE_MM),
 			person.get(Person.BIRTHDATE_YYYY),
 			person.get(Person.OCCUPATION_TYPE),
+
 			caseJoins.getSymptoms().get(Symptoms.SYMPTOMATIC),
 			caseRoot.get(Case.COVID_TEST_REASON),
 			caseRoot.get(Case.COVID_TEST_REASON_DETAILS),
 			caseJoins.getSymptoms().get(Symptoms.ONSET_DATE),
+
+			activityMappingYn,
+
 			caseRoot.get(Case.CONTACT_TRACING_FIRST_CONTACT_DATE),
+
+			caseRoot.get(Case.WAS_IN_QUARANTINE_BEFORE_ISOLATION),
+			caseRoot.get(Case.QUARANTINE_REASON_BEFORE_ISOLATION),
+			caseRoot.get(Case.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS),
+
 			caseRoot.get(Case.QUARANTINE),
 			caseRoot.get(Case.QUARANTINE_TYPE_DETAILS),
-			caseRoot.get(Case.FOLLOW_UP_UNTIL),
+			caseRoot.get(Case.QUARANTINE_FROM),
 			caseRoot.get(Case.QUARANTINE_TO),
 			caseRoot.get(Case.END_OF_ISOLATION_REASON),
 			caseRoot.get(Case.END_OF_ISOLATION_REASON_DETAILS));
@@ -151,20 +164,26 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			List<Location> addresses = personAddresses.getOrDefault(caze.getPersonId(), Collections.emptyList());
 
 			addresses.stream().filter(a -> PersonAddressType.PLACE_OF_WORK.equals(a.getAddressType())).findFirst().ifPresent(workAddress -> {
+				caze.setWorkPlaceName(TODO_VALUE);
 				caze.setWorkPlaceStreet(workAddress.getStreet());
 				caze.setWorkPlaceStreetNumber(workAddress.getHouseNumber());
-				caze.setWorkPlaceLocation(workAddress.getCity());
+				caze.setWorkPlaceCity(workAddress.getCity());
 				caze.setWorkPlacePostalCode(workAddress.getPostalCode());
+				caze.setWorkPlaceCountry(TODO_VALUE);
 			});
 
-			caze.setInfectionLocationYn(YesNoUnknown.NO);
+			caze.setExposureLocationYn(YesNoUnknown.NO);
 			addresses.stream().filter(a -> PersonAddressType.PLACE_OF_EXPOSURE.equals(a.getAddressType())).findFirst().ifPresent(exposureAddress -> {
-				caze.setInfectionLocationYn(YesNoUnknown.YES);
-
-				caze.setInfectionLocationStreet(exposureAddress.getStreet());
-				caze.setInfectionLocationStreetNumber(exposureAddress.getHouseNumber());
-				caze.setInfectionLocationCity(exposureAddress.getCity());
-				caze.setInfectionLocationPostalCode(exposureAddress.getPostalCode());
+				caze.setExposureLocationYn(YesNoUnknown.YES);
+				caze.setExposureCountry(TODO_VALUE);
+				caze.setExposureLocationType(exposureAddress.getFacilityType());
+				caze.setExposureLocationFlightDetail(exposureAddress.getFacilityDetails());
+				caze.setExposureLocationName(TODO_VALUE);
+				caze.setExposureLocationStreet(exposureAddress.getStreet());
+				caze.setExposureLocationStreetNumber(exposureAddress.getHouseNumber());
+				caze.setExposureLocationCity(exposureAddress.getCity());
+				caze.setExposureLocationPostalCode(exposureAddress.getPostalCode());
+				caze.setExposureLocationFlightDetail(TODO_VALUE);
 			});
 
 			addresses.stream()
@@ -175,6 +194,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 					caze.setIsolationLocationStreetNumber(isolationAddress.getHouseNumber());
 					caze.setIsolationLocationCity(isolationAddress.getCity());
 					caze.setIsolationLocationPostalCode(isolationAddress.getPostalCode());
+					caze.setIsolationLocationCountry(TODO_VALUE);
 				});
 
 			List<Sample> caseSamples = samples.get(caze.getCaseId());
@@ -208,8 +228,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 
 		Join<Contact, Person> person = contactJoins.getPerson();
 		Join<Person, Location> homeAddress = contactJoins.getPersonAddress();
+		Join<Contact, Case> caze = contactJoins.getCaze();
 
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
+		Expression<Date> caseLinkContactDate = cb.nullLiteral(Date.class);
 
 		cq.multiselect(
 			contactRoot.get(Contact.ID),
@@ -222,7 +244,6 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			homeAddress.get(Location.POSTAL_CODE),
 			person.get(Person.PHONE),
 			mobileNumber,
-			person.get(Person.EMAIL_ADDRESS),
 			person.get(Person.SEX),
 			person.get(Person.BIRTHDATE_DD),
 			person.get(Person.BIRTHDATE_MM),
@@ -230,7 +251,10 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.OCCUPATION_TYPE),
 			contactRoot.get(Contact.QUARANTINE),
 			contactRoot.get(Contact.QUARANTINE_TYPE_DETAILS),
-			contactRoot.get(Contact.FOLLOW_UP_UNTIL),
+			caze.get(Case.CASE_ID_ISM),
+			caze.get(Case.ID),
+			caseLinkContactDate,
+			contactRoot.get(Contact.QUARANTINE_FROM),
 			contactRoot.get(Contact.QUARANTINE_TO),
 			contactRoot.get(Contact.END_OF_QUARANTINE_REASON),
 			contactRoot.get(Contact.END_OF_QUARANTINE_REASON_DETAILS));
@@ -282,31 +306,23 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			List<Location> addresses = personAddresses.getOrDefault(contact.getPersonId(), Collections.emptyList());
 
 			addresses.stream().filter(a -> PersonAddressType.PLACE_OF_WORK.equals(a.getAddressType())).findFirst().ifPresent(workAddress -> {
-				contact.setWorkPlaceStreet(workAddress.getStreet());
-				contact.setWorkPlaceStreetNumber(workAddress.getHouseNumber());
-				contact.setWorkPlaceLocation(workAddress.getCity());
+				contact.setWorkPlaceName(TODO_VALUE);
 				contact.setWorkPlacePostalCode(workAddress.getPostalCode());
+				contact.setWorkPlaceName(TODO_VALUE);
 			});
 
-			contact.setExposureLocationYn(YesNoUnknown.NO);
 			addresses.stream().filter(a -> PersonAddressType.PLACE_OF_EXPOSURE.equals(a.getAddressType())).findFirst().ifPresent(exposureAddress -> {
-				contact.setExposureLocationYn(YesNoUnknown.YES);
-
+				contact.setExposureLocationCountry(TODO_VALUE);
+				contact.setExposureLocationType(exposureAddress.getFacilityType());
+				contact.setExposureLocationTypeDetails(exposureAddress.getFacilityDetails());
+				contact.setExposureLocationName(TODO_VALUE);
+				contact.setOtherExposureLocation(exposureAddress.getFacilityDetails());
 				contact.setExposureLocationStreet(exposureAddress.getStreet());
 				contact.setExposureLocationStreetNumber(exposureAddress.getHouseNumber());
 				contact.setExposureLocationCity(exposureAddress.getCity());
 				contact.setExposureLocationPostalCode(exposureAddress.getPostalCode());
+				contact.setExposureLocationFlightDetail(TODO_VALUE);
 			});
-
-			addresses.stream()
-				.filter(a -> PersonAddressType.PLACE_OF_ISOLATION.equals(a.getAddressType()))
-				.findFirst()
-				.ifPresent(isolationAddress -> {
-					contact.setQuarantineLocationStreet(isolationAddress.getStreet());
-					contact.setQuarantineLocationStreetNumber(isolationAddress.getHouseNumber());
-					contact.setQuarantineLocationCity(isolationAddress.getCity());
-					contact.setQuarantineLocationPostalCode(isolationAddress.getPostalCode());
-				});
 
 			List<Sample> contactSamples = samples.get(contact.getContactId());
 			if (contactSamples != null && contactSamples.size() > 0) {
@@ -336,7 +352,6 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 	}
 
 	private void setContactPathogenTestData(BAGExportContactDto contact, PathogenTest test) {
-		contact.setLabReportDate(test.getTestDateTime());
 		contact.setTestType(test.getTestType());
 		contact.setTestResult(test.getTestResult());
 	}

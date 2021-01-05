@@ -17,14 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
-import static de.symeda.sormas.api.utils.HtmlHelper.escapeAndUnescapeBasicTags;
-import static de.symeda.sormas.api.utils.HtmlHelper.unescapeBasicTags;
-
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
+import org.jsoup.safety.Whitelist;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -34,6 +31,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 
 /**
@@ -176,7 +174,7 @@ public final class ClassificationHtmlRenderer {
 		html.append("<h1 style=\"text-align: center; color: #005A9C;\">").append(I18nProperties.getString(Strings.classificationClassificationRules)).append("</h1>");
 		html.append("<h4 style=\"text-align: center;\">")
 				.append(I18nProperties.getString(Strings.classificationGeneratedFor))
-				.append(" ").append(StringEscapeUtils.escapeHtml4(InfoProvider.get().getVersion()))
+				.append(" ").append(HtmlHelper.cleanHtml(InfoProvider.get().getVersion()))
 				.append(StringUtils.wrap(I18nProperties.getString(Strings.on), " "))
 				.append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.at), " "))
 				.append(DateHelper.formatLocalDateTime(new Date(), language)).append("</h4>");
@@ -241,7 +239,7 @@ public final class ClassificationHtmlRenderer {
 		for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
-				subCriteriaSb.append("- " + escapeAndUnescapeBasicTags(subCriteria.buildDescription() + "</br>"));
+				subCriteriaSb.append("- " + HtmlHelper.cleanHtml(subCriteria.buildDescription(), Whitelist.basic()) + "</br>");
 			} else if (subCriteria instanceof ClassificationCollectiveCriteria
 				&& !(subCriteria instanceof ClassificationAllOfCriteriaDto)
 				&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
@@ -273,7 +271,7 @@ public final class ClassificationHtmlRenderer {
 		//@formatter:off
 		return "<div class='classification-rules'>"
 				+ "<div class='main-criteria main-criteria-"
-				+ StringEscapeUtils.escapeHtml4(criteriaType.toString())
+				+ HtmlHelper.cleanHtml(criteriaType.toString())
 				+ "'>"
 				+ content
 				+ "</div></div>";
@@ -287,7 +285,7 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='headline'>"
-				+ StringEscapeUtils.escapeHtml4(headline)
+				+ HtmlHelper.cleanHtml(headline, Whitelist.basic())
 				+ "</div>";
 		//@formatter:on
 	}
@@ -296,13 +294,12 @@ public final class ClassificationHtmlRenderer {
 	 * Creates a div containing an info text.
 	 */
 	private static String createInfoDiv() {
-		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(I18nProperties.getString(Strings.classificationInfoText)));
+		return HtmlHelper.cleanI18nString(I18nProperties.getString(Strings.classificationInfoText));
 	}
 
 	private static String createInfoDiv(int requirementsNumber) {
-		return unescapeBasicTags(
-			StringEscapeUtils.escapeHtml4(
-				String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber))));
+		return HtmlHelper.cleanI18nString(
+			String.format(I18nProperties.getString(Strings.classificationInfoNumberText), DataHelper.parseNumberToString(requirementsNumber)));
 	}
 
 	/**
@@ -334,7 +331,7 @@ public final class ClassificationHtmlRenderer {
 	 * Specific tags are allowed to be contained in i18n strings and are thus unescaped
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(text) + "<br>");
+		return (HtmlHelper.cleanHtml(text, Whitelist.basic()) + "<br>");
 	}
 
 	private enum ClassificationCriteriaType {

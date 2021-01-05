@@ -44,7 +44,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -83,7 +83,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		if (campaignCriteria != null) {
 			Predicate criteriaFilter = campaignService.buildCriteriaFilter(campaignCriteria, cb, campaign);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -132,7 +132,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		final CriteriaQuery<Campaign> query = cb.createQuery(Campaign.class);
 		final Root<Campaign> from = query.from(Campaign.class);
 		query.select(from);
-		query.where(cb.lessThanOrEqualTo(from.get(Campaign.START_DATE), new Date()));
+		query.where(cb.and(campaignService.createActiveCampaignsFilter(cb, from), cb.lessThanOrEqualTo(from.get(Campaign.START_DATE), new Date())));
 		query.orderBy(cb.desc(from.get(Campaign.START_DATE)));
 
 		final TypedQuery<Campaign> q = em.createQuery(query);
@@ -152,7 +152,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		if (campaignCriteria != null) {
 			Predicate criteriaFilter = campaignService.buildCriteriaFilter(campaignCriteria, cb, campaign);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);

@@ -22,6 +22,8 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.renderers.ButtonRenderer;
+import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -34,9 +36,9 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
-import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteria> {
@@ -73,12 +75,10 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		setColumns(
 			EDIT_BTN_ID,
 			VIEW_FORMS_BTN_ID,
-			CampaignIndexDto.UUID,
 			CampaignIndexDto.NAME,
 			CampaignIndexDto.START_DATE,
 			CampaignIndexDto.END_DATE);
 		Language userLanguage = I18nProperties.getUserLanguage();
-		((Column<CampaignIndexDto, String>) getColumn(CampaignIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.END_DATE))
@@ -87,8 +87,8 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
-		getColumn(EDIT_BTN_ID).setWidth(40);
-		getColumn(VIEW_FORMS_BTN_ID).setWidth(40);
+		getColumn(EDIT_BTN_ID).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
+		getColumn(VIEW_FORMS_BTN_ID).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 
 		addItemClickListener(
 			new ShowDetailsListener<>(VIEW_FORMS_BTN_ID, e -> ControllerProvider.getCampaignController().navigateToCampaignData(e.getUuid())));

@@ -280,7 +280,7 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 					+ "', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < convertedNumbers.length; i++) {
 				if (i == convertedNumbers.length - 1) {
-					hcjs.append(convertedNumbers[i] + "]}]};");
+					hcjs.append(convertedNumbers[i] + "]}],");
 				} else {
 					hcjs.append(convertedNumbers[i] + ", ");
 				}
@@ -311,12 +311,31 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 					+ "', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < followUpUntilNumbers.length; i++) {
 				if (i == followUpUntilNumbers.length - 1) {
-					hcjs.append(followUpUntilNumbers[i] + "]}]};");
+					hcjs.append(followUpUntilNumbers[i] + "]}],");
 				} else {
 					hcjs.append(followUpUntilNumbers[i] + ", ");
 				}
 			}
 		}
+
+		hcjs.append("exporting: {\n" +
+				"        buttons: {\n" +
+				"            contextButton: {\n" +
+				"                menuItems: [\n" +
+				"                    'printChart',\n" +
+				"                    'separator',\n" +
+				"                    'downloadPNG',\n" +
+				"                    'downloadJPEG',\n" +
+				"                    'downloadPDF',\n" +
+				"                    'downloadSVG',\n" +
+				"                    'downloadCSV',\n" +
+				"                    'downloadXLS'\n" +
+				"                ]\n" +
+				"            }\n" +
+				"        }\n" +
+				"    }");
+
+		hcjs.append("};");
 
 		epiCurveChart.setHcjs(hcjs.toString());
 	}

@@ -11,7 +11,7 @@ import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractAdoService<ADO> {
+public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AdoServiceWithUserFilter<ADO> {
 
 	public static final int NR_OF_LAST_PHONE_DIGITS_TO_SEARCH = 6;
 

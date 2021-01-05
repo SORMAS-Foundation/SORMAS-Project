@@ -5726,13 +5726,6 @@ FROM tl_map tl;
 
 DROP TABLE IF EXISTS tl_map;
 
-DROP TABLE epidataburial;
-DROP TABLE epidatagathering;
-DROP TABLE epidatatravel;
-DROP TABLE epidataburial_history;
-DROP TABLE epidatagathering_history;
-DROP TABLE epidatatravel_history;
-
 INSERT INTO schema_version (version_number, comment) VALUES (279, 'New exposure entity and migration #2948');
 
 -- 2020-10-21 Epi data migration #2949
@@ -5845,15 +5838,78 @@ FROM last_exposure_map;
 INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype, startdate, enddate, animalcondition, animalvaccinated, prophylaxis, prophylaxisdate, description)
 SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'ANIMAL_CONTACT', dateoflastexposure, dateoflastexposure, animalcondition,
        CASE WHEN animalvaccinationstatus = 'VACCINATED' THEN 'YES' WHEN animalvaccinationstatus = 'UNVACCINATED' THEN 'NO' WHEN animalvaccinationstatus = 'UNKNOWN' THEN 'UNKNOWN' END,
-       prophylaxisstatus, dateofprophylaxis, 'Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact'
+       prophylaxisstatus, dateofprophylaxis, 'Automatic epi data migration based on last exposure details. This exposure may be merged with another exposure with the activity type Animal Contact.'
 FROM last_exposure_map;
 
 DROP TABLE IF EXISTS last_exposure_map;
+CREATE TEMP TABLE empty_travels_map AS
+SELECT id as epidata_id,
+       nextval('entity_seq') as location_id,
+       nextval('entity_seq') as exposure_id,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+FROM epidata WHERE traveled = 'YES' AND epidata.id NOT IN (SELECT epidatatravel.epidata_id FROM epidatatravel);
+
+INSERT INTO location (id, uuid, changedate, creationdate)
+SELECT location_id, location_uuid, now(), now()
+FROM empty_travels_map;
+
+INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype)
+SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'TRAVEL'
+FROM empty_travels_map;
+
+DROP TABLE IF EXISTS empty_travels_map;
+CREATE TEMP TABLE empty_gatherings_map AS
+SELECT id as epidata_id,
+       nextval('entity_seq') as location_id,
+       nextval('entity_seq') as exposure_id,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+FROM epidata WHERE gatheringattended = 'YES' AND epidata.id NOT IN (SELECT epidatagathering.epidata_id FROM epidatagathering);
+
+INSERT INTO location (id, uuid, changedate, creationdate)
+SELECT location_id, location_uuid, now(), now()
+FROM empty_gatherings_map;
+
+INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype)
+SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'GATHERING'
+FROM empty_gatherings_map;
+
+DROP TABLE IF EXISTS empty_gatherings_map;
+CREATE TEMP TABLE empty_burials_map AS
+SELECT id as epidata_id,
+       nextval('entity_seq') as location_id,
+       nextval('entity_seq') as exposure_id,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as location_uuid,
+       overlay(overlay(overlay(
+                               substring(upper(REPLACE(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), '-', '')), 0, 30)
+                               placing '-' from 7) placing '-' from 14) placing '-' from 21) as exposure_uuid
+FROM epidata WHERE burialattended = 'YES' AND epidata.id NOT IN (SELECT epidataburial.epidata_id FROM epidataburial);
+
+INSERT INTO location (id, uuid, changedate, creationdate)
+SELECT location_id, location_uuid, now(), now()
+FROM empty_burials_map;
+
+INSERT INTO exposures(id, uuid, changedate, creationdate, epidata_id, location_id, exposuretype)
+SELECT exposure_id, exposure_uuid, now(), now(), epidata_id, location_id, 'BURIAL'
+FROM empty_burials_map;
+
+DROP TABLE IF EXISTS empty_burials_map;
 
 UPDATE exposures SET typeofanimaldetails = otheranimalsdetails FROM epidata WHERE epidata.id = epidata_id AND typeofanimal = 'OTHER';
 UPDATE exposures SET animalcontacttypedetails = kindofexposuredetails FROM epidata WHERE epidata.id = epidata_id AND animalcontacttype = 'OTHER';
 UPDATE exposures SET watersource = epidata.watersource, watersourcedetails = epidata.watersourceother FROM epidata WHERE epidata.id = epidata_id AND bodyofwater = 'YES';
-UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure; this exposure may be merged with another exposure with animal contact' WHERE exposuretype = 'ANIMAL_CONTACT' AND typeofanimal IS NULL;
+UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure. This exposure may be merged with another exposure of the activity type Animal Contact.' WHERE exposuretype = 'ANIMAL_CONTACT' AND typeofanimal IS NULL;
 
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirmedcase = 'YES' OR directcontactprobablecase = 'YES' OR closecontactprobablecase = 'YES' OR contactwithsourcerespiratorycase = 'YES';
 
@@ -5875,9 +5931,16 @@ UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirm
     DROP COLUMN directcontactdeadunsafe, DROP COLUMN processingsuspectedcasesampleunsafe, DROP COLUMN eatingrawanimalsininfectedarea, DROP COLUMN eatingrawanimalsdetails,
     DROP COLUMN kindofexposurebite, DROP COLUMN kindofexposuretouch, DROP COLUMN kindofexposurescratch, DROP COLUMN kindofexposurelick, DROP COLUMN kindofexposureother,
     DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
-    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;*/
+    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;
 
-UPDATE epidata SET exposuredetailsknown = 'YES' WHERE (exposuredetailsknown IS NULL OR exposuredetailsknown != 'YES') AND (SELECT COUNT(id) FROM exposures WHERE exposures.epidata_id = epidata.id LIMIT 1) > 0;
+DROP TABLE epidataburial;
+DROP TABLE epidatagathering;
+DROP TABLE epidatatravel;
+DROP TABLE epidataburial_history;
+DROP TABLE epidatagathering_history;
+DROP TABLE epidatatravel_history;*/
+
+UPDATE epidata SET exposuredetailsknown = 'YES' FROM exposures WHERE (exposuredetailsknown IS NULL OR exposuredetailsknown != 'YES') AND exposures.epidata_id = epidata.id;
 
 UPDATE epidata SET changedate = now();
 
@@ -5886,4 +5949,193 @@ INSERT INTO schema_version (version_number, comment) VALUES (280, 'Epi data migr
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id) > 0;
 
-INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');-- *** Insert new sql commands BEFORE this line ***
+INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');
+
+-- 2020-11-18 Add date of first contact #3408
+ALTER TABLE contact ADD column multidaycontact boolean default false;
+ALTER TABLE contact ADD column firstcontactdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (282, 'Add date of first contact #3408');
+
+ALTER TABLE person ADD COLUMN armedforcesrelationtype varchar(255);
+ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
+
+-- 2020-11-27 SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416
+ALTER TABLE cases
+    ADD COLUMN nosocomialOutbreak boolean default false,
+    ADD COLUMN infectionSetting varchar(255);
+
+ALTER TABLE cases_history
+    ADD COLUMN nosocomialoutbreak boolean default false,
+    ADD COLUMN infectionsetting varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
+
+-- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+ALTER TABLE person
+    ADD COLUMN namesofotherguardians varchar(512);
+
+ALTER TABLE person_history
+    ADD COLUMN namesofotherguardians varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
+
+-- 2020-12-08 SurvNet Adaptations - Add multi day contat to contact history #3408
+
+ALTER TABLE contact_history ADD column multidaycontact boolean;
+ALTER TABLE contact_history ADD column firstcontactdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (286, 'Add date of first contact for contact history #3408');
+
+-- 2020-11-25 SurvNet Adaptations - Create new field “Prohibition to work” for case and contact #3409
+ALTER TABLE cases
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE cases_history
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE contact
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+ALTER TABLE contact_history
+    ADD COLUMN prohibitiontowork varchar(255),
+    ADD COLUMN prohibitiontoworkfrom timestamp,
+    ADD COLUMN prohibitiontoworkuntil timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (287, 'Create new field “Prohibition to work” for case and contact #3409');
+
+-- 2020-11-27 Add institutional partner option to events source type #3207
+ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255);
+ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerType varchar(255);
+ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
+ALTER TABLE events_history ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (288, 'Add institutional partner option to events source type #3207');
+
+-- 2020-11-30 Add riskLevel to events with cluster status #3271
+ALTER TABLE events ADD column risklevel varchar(255);
+ALTER TABLE events_history ADD column risklevel varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (289, 'Add riskLevel to events with cluster status #3271');
+
+-- 2020-11-17 Manually send SMS #3253
+CREATE TABLE manualmessagelog
+(
+    id             bigint                      NOT NULL,
+    changedate     timestamp without time zone NOT NULL,
+    creationdate   timestamp without time zone NOT NULL,
+    uuid           character varying(36)       NOT NULL,
+    messagetype    character varying(255)      NOT NULL,
+    sentdate       timestamp                   NOT NULL,
+    sendinguser_id bigint                      NOT NULL,
+    recipientperson_id bigint                  NOT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE manualmessagelog OWNER TO sormas_user;
+ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_sendinguser_id FOREIGN KEY (sendinguser_id) REFERENCES users(id);
+ALTER TABLE manualmessagelog ADD CONSTRAINT fk_manualmessagelog_recipientperson_id FOREIGN KEY (recipientperson_id) REFERENCES person(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (290, 'Manually send SMS #3253');
+
+-- 2020-12-07 Add LabMessage #3486
+CREATE TABLE labmessage (
+        id bigint not null,
+        uuid varchar(36) not null unique,
+        changedate timestamp not null,
+        creationdate timestamp not null,
+        sampledatetime timestamp,
+        samplereceiveddate timestamp,
+        labsampleid text,
+        samplematerial varchar(255),
+        testlabname varchar(255),
+        testlabexternalid varchar(255),
+        testlabpostalcode varchar(255),
+        testlabcity varchar(255),
+        specimencondition varchar(255),
+        testtype varchar(255),
+        testeddisease varchar(255),
+        testdatetime timestamp,
+        testresult varchar(255),
+        personfirstName varchar(255),
+        personlastName varchar(255),
+        personsex varchar(255),
+        personbirthdatedd integer,
+        personbirthdatemm integer,
+        personbirthdateyyyy integer,
+        personpostalcode varchar(255),
+        personcity varchar(255),
+        personstreet varchar(255),
+        personhousenumber varchar(255),
+        labMessageDetails text,
+        processed boolean default false,
+        sys_period tstzrange not null,
+        primary key(id)
+);
+
+CREATE TABLE labmessage_history (LIKE labmessage);
+
+INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
+
+-- 2020-12-11 Create contacts-visits index #3673
+CREATE INDEX IF NOT EXISTS idx_contacts_visits_contact_id ON contacts_visits USING HASH (contact_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (292, 'Create contacts-visits index #3673');
+
+-- SurvNet Adaptations - Create new field “Salutation” for persons #3411
+ALTER TABLE person
+    ADD COLUMN salutation varchar(255),
+    ADD COLUMN othersalutation text;
+
+ALTER TABLE person_history
+    ADD COLUMN salutation varchar(255),
+    ADD COLUMN othersalutation text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (293, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
+
+-- 2020-12-11 - Add patient exposition role to exposures #3407
+ALTER TABLE exposures ADD COLUMN patientexpositionrole varchar(255);
+ALTER TABLE exposures_history ADD COLUMN patientexpositionrole varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (294, 'Add patient exposition role to exposures #3407');
+
+-- 2020-12-09 SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412
+ALTER TABLE person
+    ADD COLUMN birthname varchar(512),
+    ADD COLUMN birthcountry_id bigint,
+    ADD COLUMN citizenship_id bigint,
+    ADD CONSTRAINT fk_person_placeofbirthcountry_id FOREIGN KEY (birthcountry_id) REFERENCES country (id),
+    ADD CONSTRAINT fk_person_nationality_id FOREIGN KEY (citizenship_id) REFERENCES country (id);
+
+ALTER TABLE person_history
+    ADD COLUMN birthname varchar(512),
+    ADD COLUMN birthcountry_id bigint,
+    ADD COLUMN citizenship_id bigint,
+    ADD CONSTRAINT fk_person_birthcountry_id FOREIGN KEY (birthcountry_id) REFERENCES country (id),
+    ADD CONSTRAINT fk_person_citizenship_id FOREIGN KEY (citizenship_id) REFERENCES country (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (295, 'SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412');
+
+-- 2020-12-14 Change namesOfOtherGuardians to namesOfGuardians #3413
+ALTER TABLE person RENAME COLUMN namesofotherguardians TO namesofguardians;
+ALTER TABLE person_history RENAME COLUMN namesofotherguardians TO namesofguardians;
+
+INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesOfOtherGuardians to namesOfGuardians #3413');
+
+-- 2020-12-7 Add a means of transports field to events #3618
+ALTER TABLE events ADD COLUMN meansOfTransport varchar(255);
+ALTER TABLE events_history ADD COLUMN meansOfTransport varchar(255);
+ALTER TABLE events ADD COLUMN meansOfTransportDetails text;
+ALTER TABLE events_history ADD COLUMN meansOfTransportDetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (297, 'Add a means of transports field to events #3618');
+
+-- *** Insert new sql commands BEFORE this line ***

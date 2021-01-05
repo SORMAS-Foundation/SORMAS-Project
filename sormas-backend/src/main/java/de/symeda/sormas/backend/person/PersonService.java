@@ -43,17 +43,17 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
@@ -68,7 +68,7 @@ import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
-public class PersonService extends AbstractAdoService<Person> {
+public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@EJB
 	private CaseService caseService;
@@ -142,6 +142,11 @@ public class PersonService extends AbstractAdoService<Person> {
 			.flatMap(List<String>::stream)
 			.distinct()
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -244,13 +249,13 @@ public class PersonService extends AbstractAdoService<Person> {
 		inJurisdictionQuery.select(personRoot.get(Person.ID));
 
 		final Predicate isFromSelectedPersons =
-			cb.in(personRoot.get(Person.ID)).value(selectedPersons.stream().map(p -> p.getId()).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, isInJurisdiction(cb, inJurisdictionQuery, personRoot)));
+			cb.in(personRoot.get(Person.ID)).value(selectedPersons.stream().map(Person::getId).collect(Collectors.toList()));
+		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, getJurisdictionPredicate(cb, inJurisdictionQuery, personRoot)));
 
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}
 
-	private Predicate isInJurisdiction(CriteriaBuilder cb, CriteriaQuery<Long> cq, Root<Person> personRoot) {
+	private Predicate getJurisdictionPredicate(CriteriaBuilder cb, CriteriaQuery<Long> cq, Root<Person> personRoot) {
 
 		final Path<Object> personId = personRoot.get(Person.ID);
 
@@ -267,7 +272,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		contactJurisdictionSubQuery.where(
 			cb.and(
 				cb.equal(contactRoot.get(Contact.PERSON).get(Person.ID), personId),
-				contactService.isInJurisdictionOrOwned(cb, cq, new ContactJoins(contactRoot))));
+				contactService.isInJurisdictionOrOwned(cb, cq, contactRoot, new ContactJoins(contactRoot))));
 		final Predicate isContactInJurisdiction = cb.exists(contactJurisdictionSubQuery);
 
 		final Subquery<Long> eventParticipantJurisdictionSubQuery = cq.subquery(Long.class);
@@ -443,13 +448,6 @@ public class PersonService extends AbstractAdoService<Person> {
 		}
 
 		return filter;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
-		// getAllUuids and getAllAfter have custom implementations
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -23,10 +23,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.region.CountryFacade;
-import de.symeda.sormas.backend.region.CountryFacadeEjb;
-import de.symeda.sormas.backend.region.CountryService;
-import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -60,6 +56,7 @@ import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
@@ -106,6 +103,7 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -120,6 +118,8 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
@@ -133,6 +133,7 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -435,6 +436,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasFacadeEjbLocal getSormasToSormasFacade() {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasShareInfoService getSormasToSormasShareInfoService() {
+		return getBean(SormasToSormasShareInfoService.class);
 	}
 
 	public SormasToSormasEncryptionService getSormasToSormasEncryptionService() {

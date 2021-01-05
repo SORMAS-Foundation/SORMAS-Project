@@ -36,6 +36,7 @@ public class EventDto extends PseudonymizableDto {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
 	public static final String EVENT_PERSONS = "eventPersons";
@@ -52,7 +53,11 @@ public class EventDto extends PseudonymizableDto {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
+	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String SRC_TYPE = "srcType";
+	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
+	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
@@ -69,6 +74,7 @@ public class EventDto extends PseudonymizableDto {
 
 	@Required
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
@@ -85,7 +91,11 @@ public class EventDto extends PseudonymizableDto {
 	private UserReferenceDto reportingUser;
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
+	private MeansOfTransport meansOfTransport;
+	private String meansOfTransportDetails;
 	private EventSourceType srcType;
+	private InstitutionalPartnerType srcInstitutionalPartnerType;
+	private String srcInstitutionalPartnerTypeDetails;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
@@ -120,6 +130,14 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {
@@ -226,12 +244,44 @@ public class EventDto extends PseudonymizableDto {
 		this.typeOfPlace = typeOfPlace;
 	}
 
+	public MeansOfTransport getMeansOfTransport() {
+		return meansOfTransport;
+	}
+
+	public void setMeansOfTransport(MeansOfTransport meansOfTransport) {
+		this.meansOfTransport = meansOfTransport;
+	}
+
+	public String getMeansOfTransportDetails() {
+		return meansOfTransportDetails;
+	}
+
+	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
+		this.meansOfTransportDetails = meansOfTransportDetails;
+	}
+
 	public EventSourceType getSrcType() {
 		return srcType;
 	}
 
 	public void setSrcType(EventSourceType srcType) {
 		this.srcType = srcType;
+	}
+
+	public InstitutionalPartnerType getSrcInstitutionalPartnerType() {
+		return srcInstitutionalPartnerType;
+	}
+
+	public void setSrcInstitutionalPartnerType(InstitutionalPartnerType srcInstitutionalPartnerType) {
+		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
+	}
+
+	public String getSrcInstitutionalPartnerTypeDetails() {
+		return srcInstitutionalPartnerTypeDetails;
+	}
+
+	public void setSrcInstitutionalPartnerTypeDetails(String srcInstitutionalPartnerTypeDetails) {
+		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
 	}
 
 	public String getSrcFirstName() {
