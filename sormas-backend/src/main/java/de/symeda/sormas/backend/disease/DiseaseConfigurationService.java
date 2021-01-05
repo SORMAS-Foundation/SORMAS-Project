@@ -10,11 +10,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
 @Stateless
 @LocalBean
-public class DiseaseConfigurationService extends AbstractAdoService<DiseaseConfiguration> {
+public class DiseaseConfigurationService extends AdoServiceWithUserFilter<DiseaseConfiguration> {
 
 	public DiseaseConfigurationService() {
 		super(DiseaseConfiguration.class);

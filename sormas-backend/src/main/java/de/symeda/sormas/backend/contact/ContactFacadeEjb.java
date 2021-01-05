@@ -121,7 +121,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -643,7 +643,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
 		cq.where(
-			AbstractAdoService.and(
+			BaseAdoService.and(
 				cb,
 				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, contactJoins),
 				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
@@ -837,7 +837,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 			visitsCq.where(
-				AbstractAdoService.and(
+				BaseAdoService.and(
 					cb,
 					contact.get(AbstractDomainObject.UUID).in(contactUuids),
 					cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)),
@@ -1506,12 +1506,12 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		final Date reportDate = criteria.getReportDate();
 		final Date lastContactDate = criteria.getLastContactDate();
-		final Predicate recentContactsFilter = AbstractAdoService.and(
+		final Predicate recentContactsFilter = BaseAdoService.and(
 			cb,
 			contactService.recentDateFilter(cb, reportDate, contactRoot.get(Contact.REPORT_DATE_TIME), 30),
 			contactService.recentDateFilter(cb, lastContactDate, contactRoot.get(Contact.LAST_CONTACT_DATE), 30));
 
-		cq.where(AbstractAdoService.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, recentContactsFilter));
+		cq.where(BaseAdoService.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, recentContactsFilter));
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 

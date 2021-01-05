@@ -73,7 +73,7 @@ import de.symeda.sormas.backend.campaign.CampaignService;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb;
 import de.symeda.sormas.backend.region.Area;
@@ -250,7 +250,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 
-		Predicate filter = AbstractAdoService
+		Predicate filter = BaseAdoService
 			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
@@ -294,7 +294,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			communityJoin.get(Community.NAME),
 			root.get(CampaignFormData.FORM_DATE));
 
-		Predicate filter = AbstractAdoService
+		Predicate filter = BaseAdoService
 			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
@@ -705,7 +705,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 
-		Predicate filter = AbstractAdoService
+		Predicate filter = BaseAdoService
 			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
 		if (filter != null) {
 			cq.where(filter);
