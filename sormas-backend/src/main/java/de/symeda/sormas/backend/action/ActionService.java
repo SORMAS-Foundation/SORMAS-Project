@@ -41,7 +41,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractUserAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventService;
@@ -53,7 +53,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class ActionService extends AbstractUserAdoService<Action> {
+public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 	@EJB
 	private EventService eventService;

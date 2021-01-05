@@ -16,12 +16,12 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractUserAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class AdditionalTestService extends AbstractUserAdoService<AdditionalTest> {
+public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTest> {
 
 	@EJB
 	private SampleService sampleService;

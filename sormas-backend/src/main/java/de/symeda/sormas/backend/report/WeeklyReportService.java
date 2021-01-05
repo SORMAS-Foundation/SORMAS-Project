@@ -38,7 +38,7 @@ import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.backend.common.AbstractUserAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
@@ -48,7 +48,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class WeeklyReportService extends AbstractUserAdoService<WeeklyReport> {
+public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> {
 
 	@EJB
 	private RegionService regionService;

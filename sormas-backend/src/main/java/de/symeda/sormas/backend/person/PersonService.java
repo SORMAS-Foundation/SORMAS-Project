@@ -43,7 +43,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.common.AbstractUserAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -68,7 +68,7 @@ import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
-public class PersonService extends AbstractUserAdoService<Person> {
+public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@EJB
 	private CaseService caseService;

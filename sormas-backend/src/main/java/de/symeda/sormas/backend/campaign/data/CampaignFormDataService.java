@@ -40,7 +40,7 @@ import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AbstractUserAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -48,7 +48,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class CampaignFormDataService extends AbstractUserAdoService<CampaignFormData> {
+public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFormData> {
 
 	public CampaignFormDataService() {
 		super(CampaignFormData.class);

@@ -15,7 +15,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.common.AbstractUserAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -26,7 +26,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class PrescriptionService extends AbstractUserAdoService<Prescription> {
+public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> {
 
 	@EJB
 	private CaseService caseService;

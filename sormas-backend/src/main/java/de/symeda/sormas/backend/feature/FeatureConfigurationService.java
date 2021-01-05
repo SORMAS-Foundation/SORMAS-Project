@@ -15,12 +15,11 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.common.AbstractUserAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -28,7 +27,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class FeatureConfigurationService extends AbstractUserAdoService<FeatureConfiguration> {
+public class FeatureConfigurationService extends AdoServiceWithUserFilter<FeatureConfiguration> {
 
 	public FeatureConfigurationService() {
 		super(FeatureConfiguration.class);
