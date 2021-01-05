@@ -820,6 +820,7 @@ public interface Strings {
 	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
 	String promptActionEpiWeekTo = "promptActionEpiWeekTo";
 	String promptAllAreas = "promptAllAreas";
+	String promptAllCommunities = "promptAllCommunities";
 	String promptAllDistricts = "promptAllDistricts";
 	String promptAllRegions = "promptAllRegions";
 	String promptArea = "promptArea";
