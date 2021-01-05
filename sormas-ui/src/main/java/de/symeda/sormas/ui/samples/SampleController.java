@@ -406,7 +406,7 @@ public class SampleController {
 				sample.getAssociatedCase() != null ? sample.getAssociatedCase().getUuid() : null,
 				sample.getAssociatedContact() != null ? sample.getAssociatedContact().getUuid() : null,
 				sample.getAssociatedEventParticipant() != null ? sample.getAssociatedEventParticipant().getUuid() : null));
-		sampleCaptionLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		sampleCaptionLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponents(sampleCaptionLabel);
 
 		return titleLayout;

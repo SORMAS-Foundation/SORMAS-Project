@@ -409,6 +409,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.NOSOCOMIAL),
+			event.get(Event.MEANS_OF_TRANSPORT),
+			event.get(Event.MEANS_OF_TRANSPORT_DETAILS),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			district.get(District.UUID),
@@ -584,6 +586,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
@@ -665,6 +669,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());

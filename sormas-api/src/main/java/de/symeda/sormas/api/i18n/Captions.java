@@ -10,9 +10,11 @@ public interface Captions {
 	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
 	 */
 
+	String about = "about";
 	String aboutCaseClassificationRules = "aboutCaseClassificationRules";
 	String aboutChangelog = "aboutChangelog";
 	String aboutDataDictionary = "aboutDataDictionary";
+	String aboutDocuments = "aboutDocuments";
 	String aboutSormasVersion = "aboutSormasVersion";
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
@@ -402,6 +404,7 @@ public interface Captions {
 	String caseSelect = "caseSelect";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
+	String changeUserEmail = "changeUserEmail";
 	String city = "city";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
@@ -780,6 +783,8 @@ public interface Captions {
 	String Event_eventType = "Event.eventType";
 	String Event_externalId = "Event.externalId";
 	String Event_informationSource = "Event.informationSource";
+	String Event_meansOfTransport = "Event.meansOfTransport";
+	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
 	String Event_multiDayEvent = "Event.multiDayEvent";
 	String Event_nosocomial = "Event.nosocomial";
 	String Event_numberOfPendingTasks = "Event.numberOfPendingTasks";
@@ -812,6 +817,7 @@ public interface Captions {
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
 	String EventAction_eventUuid = "EventAction.eventUuid";
+	String EventActionExport_eventDate = "EventActionExport.eventDate";
 	String eventActionsView = "eventActionsView";
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
@@ -1276,6 +1282,8 @@ public interface Captions {
 	String Prescription_prescriptionDate = "Prescription.prescriptionDate";
 	String Prescription_prescriptionDetails = "Prescription.prescriptionDetails";
 	String Prescription_prescriptionEnd = "Prescription.prescriptionEnd";
+	String Prescription_prescriptionPeriod = "Prescription.prescriptionPeriod";
+	String Prescription_prescriptionRoute = "Prescription.prescriptionRoute";
 	String Prescription_prescriptionStart = "Prescription.prescriptionStart";
 	String Prescription_prescriptionType = "Prescription.prescriptionType";
 	String Prescription_route = "Prescription.route";
@@ -1298,7 +1306,10 @@ public interface Captions {
 	String reportingUser = "reportingUser";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
+	String Sample_additionalTestingStatus = "Sample.additionalTestingStatus";
 	String Sample_associatedCase = "Sample.associatedCase";
+	String Sample_associatedContact = "Sample.associatedContact";
+	String Sample_associatedEventParticipant = "Sample.associatedEventParticipant";
 	String Sample_caseClassification = "Sample.caseClassification";
 	String Sample_caseDistrict = "Sample.caseDistrict";
 	String Sample_casePersonName = "Sample.casePersonName";
@@ -1667,6 +1678,11 @@ public interface Captions {
 	String symptomsMaxTemperature = "symptomsMaxTemperature";
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";
 	String symptomsSetClearedToUnknown = "symptomsSetClearedToUnknown";
+	String sync = "sync";
+	String syncErrors = "syncErrors";
+	String syncProcessed = "syncProcessed";
+	String syncSuccessful = "syncSuccessful";
+	String syncUsers = "syncUsers";
 	String system = "system";
 	String Task = "Task";
 	String Task_assigneeReply = "Task.assigneeReply";
@@ -1704,6 +1720,7 @@ public interface Captions {
 	String Treatment_textFilter = "Treatment.textFilter";
 	String Treatment_treatmentDateTime = "Treatment.treatmentDateTime";
 	String Treatment_treatmentDetails = "Treatment.treatmentDetails";
+	String Treatment_treatmentRoute = "Treatment.treatmentRoute";
 	String Treatment_treatmentType = "Treatment.treatmentType";
 	String Treatment_typeOfDrug = "Treatment.typeOfDrug";
 	String treatmentCreateTreatment = "treatmentCreateTreatment";
@@ -1724,6 +1741,7 @@ public interface Captions {
 	String User_userEmail = "User.userEmail";
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
+	String User_uuid = "User.uuid";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";

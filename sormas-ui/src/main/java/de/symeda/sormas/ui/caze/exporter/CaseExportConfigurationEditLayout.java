@@ -26,7 +26,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
-import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -38,6 +37,7 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -135,7 +135,10 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 								I18nProperties.getPrefixCaption(
 									HospitalizationDto.I18N_PREFIX,
 									property,
-									I18nProperties.getPrefixCaption(HealthConditionsDto.I18N_PREFIX, property)))))));
+									I18nProperties.getPrefixCaption(
+										LocationDto.I18N_PREFIX,
+										property,
+										I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, property))))))));
 
 			CheckBox cb = new CheckBox(caption);
 

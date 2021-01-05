@@ -285,6 +285,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		validate(dto);
 
+		if (existingContact != null) {
+			handleExternalJournalPerson(dto);
+		}
 		// taking this out because it may lead to server problems
 		// case disease can change over time and there is currently no mechanism that would delete all related contacts
 		// in this case the best solution is to only keep this hidden from the UI and still allow it in the backend
@@ -299,19 +302,17 @@ public class ContactFacadeEjb implements ContactFacade {
 			createInvestigationTask(entity);
 
 		}
-		if (existingContact != null) {
-			handleExternalJournalPerson(dto);
-		}
 
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);
 
 			final boolean convertedToCase =
 				(existingContactDto == null || existingContactDto.getResultingCase() == null) && entity.getResultingCase() != null;
-			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED;
+			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
+				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
 			if (dropped || convertedToCase) {
-				entity.setFollowUpStatus(FollowUpStatus.CANCELED);
-				entity.setFollowUpComment(
+				contactService.cancelFollowUp(
+					entity,
 					I18nProperties
 						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
 			} else {

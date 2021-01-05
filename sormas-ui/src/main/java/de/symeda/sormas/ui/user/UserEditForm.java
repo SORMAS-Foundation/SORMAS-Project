@@ -174,7 +174,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
         setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
-        setRequired(ControllerProvider.getUserController().isEmailRequired(), UserDto.USER_EMAIL);
         addValidators(UserDto.USER_NAME, new UserNameValidator());
 
         addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());

@@ -803,7 +803,7 @@ public class ContactController {
 		titleLayout.addComponent(classificationLabel);
 
 		Label contactLabel = new Label(contact.toReference().getCaptionAlwaysWithUuid());
-		contactLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		contactLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponent(contactLabel);
 
 		return titleLayout;

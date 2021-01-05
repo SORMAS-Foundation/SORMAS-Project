@@ -26,6 +26,7 @@
 
     <data>
         <import type="de.symeda.sormas.api.event.EventStatus" />
+        <import type="de.symeda.sormas.api.event.MeansOfTransport" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.event.EventSourceType" />
         <import type="de.symeda.sormas.api.event.InstitutionalPartnerType" />
@@ -220,6 +221,22 @@
                     app:value="@={data.typeOfPlaceText}" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_meansOfTransport"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                app:softRequired="true"
+                app:value="@={data.meansOfTransport}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_meansOfTransportDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventMeansOfTransport}"
+                app:dependencyParentValue="@{MeansOfTransport.OTHER}"
+                app:softRequired="true"
+                app:value="@={data.meansOfTransportDetails}" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
