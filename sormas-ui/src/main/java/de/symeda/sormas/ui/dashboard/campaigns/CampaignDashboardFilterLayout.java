@@ -65,7 +65,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		final CampaignJurisdictionLevel campaignJurisdictionLevel =
 				CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
-		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(campaignJurisdictionLevel);
+		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
 
 		createCampaignFilter();
 		createJurisdictionFilters(campaignJurisdictionLevel);
@@ -169,22 +169,19 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		switch (campaignJurisdictionLevel) {
 			case AREA:
 				campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
-				campaignJurisdictionGroupByFilter.setValue(REGION);
 				break;
 			case REGION:
 				campaignJurisdictionGroupByFilter.addItems(REGION, DISTRICT, COMMUNITY);
-				campaignJurisdictionGroupByFilter.setValue(DISTRICT);
 				break;
 			case DISTRICT:
 				campaignJurisdictionGroupByFilter.addItems(DISTRICT, COMMUNITY);
-				campaignJurisdictionGroupByFilter.setValue(COMMUNITY);
 				break;
 			case COMMUNITY:
 				campaignJurisdictionGroupByFilter.addItems(COMMUNITY);
-				campaignJurisdictionGroupByFilter.setValue(COMMUNITY);
 				break;
 		}
 
+		campaignJurisdictionGroupByFilter.setValue(getJurisdictionBelow(campaignJurisdictionLevel));
 		campaignJurisdictionGroupByFilter.setNullSelectionAllowed(false);
 		campaignJurisdictionGroupByFilter.addValueChangeListener(e -> {
 			final CampaignJurisdictionLevel currentValue = (CampaignJurisdictionLevel) campaignJurisdictionGroupByFilter.getValue();
@@ -192,6 +189,20 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignJurisdictionGroupByFilter);
+	}
+
+	private CampaignJurisdictionLevel getJurisdictionBelow(CampaignJurisdictionLevel campaignJurisdictionLevel){
+
+		switch (campaignJurisdictionLevel) {
+			case AREA:
+				return REGION;
+			case REGION:
+				return DISTRICT;
+			case DISTRICT:
+			case COMMUNITY:
+				return COMMUNITY;
+		}
+		return campaignJurisdictionLevel;
 	}
 
 	private void updateFiltersBasedOnRegion(Object value) {
