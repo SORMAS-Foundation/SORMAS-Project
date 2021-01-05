@@ -16,26 +16,35 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.user.event;
+package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.backend.user.User;
+import java.io.Serializable;
 
 /**
- * Event used for hard coded created users.
- *
  * @author Alex Vidrean
- * @since 15-Aug-20
+ * @since 12-Dec-20
  */
-public class MockUserCreateEvent extends UserCreateEvent {
+public class UserSyncResult implements Serializable {
 
-	private final String password;
+	private static final long serialVersionUID = 6280244664797129634L;
 
-	public MockUserCreateEvent(User user, String password) {
-		super(user);
-		this.password = password;
+	private boolean success;
+
+	private String errorMessage;
+
+	public boolean isSuccess() {
+		return success;
 	}
 
-	public String getPassword() {
-		return password;
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 }
