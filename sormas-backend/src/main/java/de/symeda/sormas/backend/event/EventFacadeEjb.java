@@ -44,7 +44,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -334,37 +333,21 @@ public class EventFacadeEjb implements EventFacade {
 			List<Object[]> objectQueryList = null;
 
 			CriteriaQuery<Object[]> objectCQ = cb.createQuery(Object[].class);
-			Root<Event> eventRoot = objectCQ.from(Event.class);
+			Root<EventParticipant> epRoot = objectCQ.from(EventParticipant.class);
 
-			// number of Participants
-			Subquery<Long> participantCount = objectCQ.subquery(Long.class);
-			Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
-			Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			participantCount.select(cb.count(eventParticipantRoot));
-			participantCount.where(assignedToEvent, notDeleted);
+			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 
-			// number of cases among event participants
-			Subquery<Long> caseCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = caseCount.from(EventParticipant.class);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			Predicate isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
-			caseCount.select(cb.count(eventParticipantRoot));
-			caseCount.where(assignedToEvent, notDeleted, isCase);
+			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 
-			// number of fatalities among event participant cases
-			Subquery<Long> deathsCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = deathsCount.from(EventParticipant.class);
-			Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
-			Predicate isDead = cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED);
-			deathsCount.select(cb.count(eventParticipantRoot));
-			deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
+			objectCQ.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
 
-			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount);
+			objectCQ.where(notDeleted);
+			objectCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+
 			objectQueryList = em.createQuery(objectCQ).getResultList();
 			objectQueryList.forEach(r -> {
 				participantCounts.put((String) r[0], (Long) r[1]);
@@ -458,37 +441,21 @@ public class EventFacadeEjb implements EventFacade {
 			List<Object[]> objectQueryList = null;
 
 			CriteriaQuery<Object[]> objectCQ = cb.createQuery(Object[].class);
-			Root<Event> eventRoot = objectCQ.from(Event.class);
+			Root<EventParticipant> epRoot = objectCQ.from(EventParticipant.class);
 
-			// number of Participants
-			Subquery<Long> participantCount = objectCQ.subquery(Long.class);
-			Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
-			Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			participantCount.select(cb.count(eventParticipantRoot));
-			participantCount.where(assignedToEvent, notDeleted);
+			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 
-			// number of cases among event participants
-			Subquery<Long> caseCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = caseCount.from(EventParticipant.class);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			Predicate isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
-			caseCount.select(cb.count(eventParticipantRoot));
-			caseCount.where(assignedToEvent, notDeleted, isCase);
+			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
 
-			// number of fatalities among event participant cases
-			Subquery<Long> deathsCount = objectCQ.subquery(Long.class);
-			eventParticipantRoot = deathsCount.from(EventParticipant.class);
-			Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
-			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-			isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
-			Predicate isDead = cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED);
-			deathsCount.select(cb.count(eventParticipantRoot));
-			deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
+			objectCQ.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
 
-			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount);
+			objectCQ.where(notDeleted);
+			objectCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+
 			objectQueryList = em.createQuery(objectCQ).getResultList();
 			objectQueryList.forEach(r -> {
 				participantCounts.put((String) r[0], (Long) r[1]);
