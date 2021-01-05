@@ -38,7 +38,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.region.Community;
@@ -137,7 +137,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
+			filter = BaseAdoService.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
 		}
 
 		cq.where(filter);
@@ -155,7 +155,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
+			filter = BaseAdoService.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
 		}
 
 		if (date != null) {

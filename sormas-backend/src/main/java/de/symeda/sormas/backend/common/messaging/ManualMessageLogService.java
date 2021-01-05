@@ -6,18 +6,17 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.person.Person;
 
 @Stateless
 @LocalBean
-public class ManualMessageLogService extends AbstractAdoService<ManualMessageLog> {
+public class ManualMessageLogService extends BaseAdoService<ManualMessageLog> {
 
 	public static final int MANUAL_MESSAGE_LOG_LIMIT = 5;
 

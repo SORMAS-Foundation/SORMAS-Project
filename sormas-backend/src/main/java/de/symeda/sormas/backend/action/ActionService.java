@@ -40,7 +40,7 @@ import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -69,11 +69,11 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Predicate filter = null;
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = AbstractAdoService.and(cb, filter, dateFilter);
+			filter = BaseAdoService.and(cb, filter, dateFilter);
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -151,7 +151,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		if (actionCriteria != null) {
 			Predicate criteriaFilter = buildCriteriaFilter(actionCriteria, cb, action);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -176,7 +176,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		if (actionCriteria != null) {
 			Predicate criteriaFilter = buildCriteriaFilter(actionCriteria, cb, action);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {

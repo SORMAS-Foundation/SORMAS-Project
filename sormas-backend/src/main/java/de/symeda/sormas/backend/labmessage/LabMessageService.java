@@ -1,8 +1,8 @@
 package de.symeda.sormas.backend.labmessage;
 
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 
-public class LabMessageService extends AbstractAdoService<LabMessage> {
+public class LabMessageService extends BaseAdoService<LabMessage> {
 
 	public LabMessageService() {
 		super(LabMessage.class);

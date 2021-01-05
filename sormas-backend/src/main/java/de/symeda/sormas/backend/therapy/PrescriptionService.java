@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -64,12 +64,12 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = AbstractAdoService.and(cb, filter, dateFilter);
+			filter = BaseAdoService.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -109,7 +109,7 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);

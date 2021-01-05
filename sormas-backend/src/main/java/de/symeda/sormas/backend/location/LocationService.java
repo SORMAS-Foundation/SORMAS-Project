@@ -17,14 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class LocationService extends AbstractAdoService<Location> {
+public class LocationService extends BaseAdoService<Location> {
 
 	public LocationService() {
 		super(Location.class);

@@ -59,7 +59,7 @@ import de.symeda.sormas.backend.user.CurrentUserQualifier;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-public class AbstractAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
+public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
 	// protected to be used by implementations
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -77,7 +77,7 @@ public class AbstractAdoService<ADO extends AbstractDomainObject> implements Ado
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
-	public AbstractAdoService(Class<ADO> elementClass) {
+	public BaseAdoService(Class<ADO> elementClass) {
 		this.elementClass = elementClass;
 	}
 

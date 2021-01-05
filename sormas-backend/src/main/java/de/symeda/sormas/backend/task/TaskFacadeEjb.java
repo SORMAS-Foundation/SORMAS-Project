@@ -72,7 +72,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
@@ -350,12 +350,12 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task);
 		} else {
-			filter = AbstractAdoService.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
+			filter = BaseAdoService.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (taskCriteria != null) {
 			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -413,12 +413,12 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task);
 		} else {
-			filter = AbstractAdoService.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
+			filter = BaseAdoService.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (taskCriteria != null) {
 			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {

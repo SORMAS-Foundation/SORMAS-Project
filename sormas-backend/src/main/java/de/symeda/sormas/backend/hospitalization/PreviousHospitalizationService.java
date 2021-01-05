@@ -24,17 +24,16 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 
 @Stateless
 @LocalBean
-public class PreviousHospitalizationService extends AbstractAdoService<PreviousHospitalization> {
+public class PreviousHospitalizationService extends BaseAdoService<PreviousHospitalization> {
 
 	public PreviousHospitalizationService() {
 		super(PreviousHospitalization.class);

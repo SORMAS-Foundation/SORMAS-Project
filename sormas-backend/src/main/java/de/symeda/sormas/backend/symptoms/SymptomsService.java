@@ -17,14 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.symptoms;
 
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class SymptomsService extends AbstractAdoService<Symptoms> {
+public class SymptomsService extends BaseAdoService<Symptoms> {
 
 	public SymptomsService() {
 		super(Symptoms.class);

@@ -6,7 +6,7 @@ import javax.persistence.criteria.*;
 import java.util.Date;
 import java.util.List;
 
-public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject> extends AbstractAdoService<ADO> {
+public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
     public AdoServiceWithUserFilter(Class<ADO> elementClass) {
         super(elementClass);
     }
