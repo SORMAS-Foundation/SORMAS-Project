@@ -6052,7 +6052,6 @@ CREATE TABLE labmessage (
         uuid varchar(36) not null unique,
         changedate timestamp not null,
         creationdate timestamp not null,
-        messagedatetime timestamp,
         sampledatetime timestamp,
         samplereceiveddate timestamp,
         labsampleid text,
@@ -6082,11 +6081,6 @@ CREATE TABLE labmessage (
         primary key(id)
 );
 
-ALTER TABLE labmessage OWNER TO sormas_user;
-CREATE TABLE labmessage_history (LIKE labmessage);
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
-ALTER TABLE labmessage_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
 
