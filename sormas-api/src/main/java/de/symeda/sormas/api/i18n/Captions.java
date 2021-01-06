@@ -141,6 +141,7 @@ public interface Captions {
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String Campaign = "Campaign";
 	String Campaign_area = "Campaign.area";
+	String Campaign_community = "Campaign.community";
 	String Campaign_creatingUser = "Campaign.creatingUser";
 	String Campaign_description = "Campaign.description";
 	String Campaign_district = "Campaign.district";
@@ -164,6 +165,7 @@ public interface Captions {
 	String campaignDashboardOrder = "campaignDashboardOrder";
 	String campaignDashboardSubTabName = "campaignDashboardSubTabName";
 	String campaignDashboardTabName = "campaignDashboardTabName";
+	String campaignDiagramGroupBy = "campaignDiagramGroupBy";
 	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";

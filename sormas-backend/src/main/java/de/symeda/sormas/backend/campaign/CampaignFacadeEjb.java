@@ -44,7 +44,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -83,7 +83,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		if (campaignCriteria != null) {
 			Predicate criteriaFilter = campaignService.buildCriteriaFilter(campaignCriteria, cb, campaign);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -152,7 +152,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		if (campaignCriteria != null) {
 			Predicate criteriaFilter = campaignService.buildCriteriaFilter(campaignCriteria, cb, campaign);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);

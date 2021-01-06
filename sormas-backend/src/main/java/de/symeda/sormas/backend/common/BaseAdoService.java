@@ -59,7 +59,7 @@ import de.symeda.sormas.backend.user.CurrentUserQualifier;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-public abstract class AbstractAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
+public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
 	// protected to be used by implementations
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -77,7 +77,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
-	public AbstractAdoService(Class<ADO> elementClass) {
+	protected BaseAdoService(Class<ADO> elementClass) {
 		this.elementClass = elementClass;
 	}
 
@@ -169,62 +169,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public List<ADO> getAllAfter(Date since, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
-		Root<ADO> root = cq.from(getElementClass());
-
-		Predicate filter = createUserFilter(cb, cq, root);
-		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
-		cq.distinct(true);
-
-		List<ADO> resultList = em.createQuery(cq).getResultList();
-		return resultList;
-	}
-
-	public List<String> getAllUuids() {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<ADO> from = cq.from(getElementClass());
-
-		Predicate filter = createUserFilter(cb, cq, from);
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(from.get(AbstractDomainObject.UUID));
-		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Long> getAllIds(User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<ADO> from = cq.from(getElementClass());
-
-		if (user != null) {
-			Predicate filter = createUserFilter(cb, cq, from);
-			if (filter != null) {
-				cq.where(filter);
-			}
-		}
-
-		cq.select(from.get(AbstractDomainObject.ID));
-		return em.createQuery(cq).getResultList();
-	}
 
 	public List<ADO> getByUuids(List<String> uuids) {
 
@@ -239,12 +183,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 		return em.createQuery(cq).getResultList();
 	}
-
-	/**
-	 * Used by most getAll* and getAllUuids methods to filter by user
-	 */
-	@SuppressWarnings("rawtypes")
-	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
