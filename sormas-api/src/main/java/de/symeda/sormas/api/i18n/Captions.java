@@ -165,6 +165,7 @@ public interface Captions {
 	String campaignDashboardOrder = "campaignDashboardOrder";
 	String campaignDashboardSubTabName = "campaignDashboardSubTabName";
 	String campaignDashboardTabName = "campaignDashboardTabName";
+	String campaignDiagramGroupBy = "campaignDiagramGroupBy";
 	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
