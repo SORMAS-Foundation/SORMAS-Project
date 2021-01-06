@@ -41,6 +41,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -156,7 +157,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		if (regionUuid != null) {
 			Predicate regionFilter = cb.equal(facility.get(Facility.REGION), regionService.getByUuid(regionUuid));
-			filter = BaseAdoService.and(cb, filter, regionFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 		}
 
 		if (filter != null) {
@@ -178,7 +179,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Predicate filter = facilityService.createChangeDateFilter(cb, facility, date);
 
 		Predicate regionFilter = cb.isNull(facility.get(Facility.REGION));
-		filter = BaseAdoService.and(cb, filter, regionFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -401,7 +402,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
 			cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
 		if (filter != null) {
-			filter = BaseAdoService.and(cb, filter, excludeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}
@@ -473,7 +474,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
 			cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
 		if (filter != null) {
-			filter = BaseAdoService.and(cb, filter, excludeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}
