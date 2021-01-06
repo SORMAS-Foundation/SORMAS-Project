@@ -34,12 +34,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
 @Stateless
 @LocalBean
-public class UserRoleConfigService extends AbstractAdoService<UserRoleConfig> {
+public class UserRoleConfigService extends AdoServiceWithUserFilter<UserRoleConfig> {
 
 	@Resource
 	private SessionContext sessionContext;
