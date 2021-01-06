@@ -25,6 +25,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -136,7 +137,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			getFieldGroup(),
 			LocationDto.ADDRESS_TYPE_DETAILS,
 			addressType,
-			Arrays.asList(personAddressTypeValues).subList(1, personAddressTypeValues.length),
+			Arrays.stream(personAddressTypeValues).filter(pat -> !pat.equals(PersonAddressType.HOME)).collect(Collectors.toList()),
 			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
