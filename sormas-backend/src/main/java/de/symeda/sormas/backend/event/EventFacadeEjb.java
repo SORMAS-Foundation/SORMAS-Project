@@ -642,8 +642,7 @@ public class EventFacadeEjb implements EventFacade {
 			return null;
 		}
 
-		EventReferenceDto dto = new EventReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		return new EventReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	public static EventDto toDto(Event source) {
@@ -706,7 +705,7 @@ public class EventFacadeEjb implements EventFacade {
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
-	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, LocalDate referenceDate) {
+	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
 
