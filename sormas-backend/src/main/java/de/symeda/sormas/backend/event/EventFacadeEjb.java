@@ -166,7 +166,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto saveEvent(EventDto dto) {
+	public EventDto saveEvent(@NotNull EventDto dto) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -199,11 +199,11 @@ public class EventFacadeEjb implements EventFacade {
 
 		Predicate filter = null;
 
-		if (eventCriteria.getUserFilterIncluded()) {
-			eventService.createUserFilter(cb, cq, event);
-		}
-
 		if (eventCriteria != null) {
+			if (eventCriteria.getUserFilterIncluded()) {
+				eventService.createUserFilter(cb, cq, event);
+			}
+
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
 			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
@@ -255,11 +255,11 @@ public class EventFacadeEjb implements EventFacade {
 
 		Predicate filter = null;
 
-		if (eventCriteria.getUserFilterIncluded()) {
-			eventService.createUserFilter(cb, cq, event);
-		}
-
 		if (eventCriteria != null) {
+			if (eventCriteria.getUserFilterIncluded()) {
+				eventService.createUserFilter(cb, cq, event);
+			}
+
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
 			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
