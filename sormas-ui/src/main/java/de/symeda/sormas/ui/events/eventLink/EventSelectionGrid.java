@@ -62,7 +62,7 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 		setColumns(
 			EventIndexDto.EVENT_LOCATION,
 			EventIndexDto.EVENT_TITLE,
-			EventGrid.createEventDateColumn(this, userLanguage),
+			EventGrid.createEventDateColumn(this),
 			EventIndexDto.EVENT_STATUS,
 			EventIndexDto.REPORT_DATE_TIME);
 

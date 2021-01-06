@@ -17,14 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -35,9 +40,6 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.util.Date;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCriteria> {
@@ -61,7 +63,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 		setColumns(
 			EventActionIndexDto.EVENT_UUID,
 			EventActionIndexDto.EVENT_TITLE,
-			createEventDateColumn(this, userLanguage),
+			createEventDateColumn(this),
 			EventActionIndexDto.EVENT_STATUS,
 			EventActionIndexDto.EVENT_INVESTIGATION_STATUS,
 			EventActionIndexDto.ACTION_TITLE,
@@ -86,20 +88,9 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			new ShowDetailsListener<>(EventActionIndexDto.EVENT_UUID, e -> ControllerProvider.getEventController().navigateToData(e.getEventUuid())));
 	}
 
-	private String createEventDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid, Language userLanguage) {
-		Column<EventActionIndexDto, String> eventDateColumn = grid.addColumn(event -> {
-			Date startDate = event.getEventStartDate();
-			Date endDate = event.getEventEndDate();
-
-			if (startDate == null) {
-				return "";
-			} else if (endDate == null) {
-				return DateHelper.formatLocalDate(startDate, userLanguage);
-			} else {
-				return String
-					.format("%s - %s", DateHelper.formatLocalDate(startDate, userLanguage), DateHelper.formatLocalDate(endDate, userLanguage));
-			}
-		});
+	private String createEventDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
+		Column<EventActionIndexDto, String> eventDateColumn =
+			grid.addColumn(event -> EventHelper.buildEventDateString(event.getEventStartDate(), event.getEventEndDate()));
 		eventDateColumn.setId(EVENT_DATE);
 		eventDateColumn.setSortProperty(EventActionIndexDto.EVENT_START_DATE);
 		eventDateColumn.setSortable(true);
