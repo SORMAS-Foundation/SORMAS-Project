@@ -280,6 +280,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Collections.singletonList(TypeOfPlace.OTHER), true);
 		setTypeOfPlaceTextRequirement();
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
+		locationForm.setFacilityFieldsVisible(getField(EventDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		typeOfPlace.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 
 		districtField.addValueChangeListener(e -> {
