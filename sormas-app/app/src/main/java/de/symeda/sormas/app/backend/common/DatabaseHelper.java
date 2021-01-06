@@ -1826,12 +1826,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 256:
 				currentVersion = 256;
 				getDao(Location.class).executeRaw(
-					"UPDATE location " + "SET facilityType = 'HOSPITAL' " + "FROM location AS l"
-						+ "INNER JOIN events ON events.eventLocation_id = l.id " + "WHERE events.typeOfPlace = 'HOSPITAL' "
-						+ "AND l.facilityType IS NULL;");
+					"UPDATE location SET facilitytype = 'HOSPITAL' " + "WHERE facilitytype IS NULL "
+						+ "AND (SELECT typeofplace from events WHERE eventlocation_id = location.id) = 'HOSPITAL';");
 				getDao(Event.class).executeRaw(
-					"UPDATE events " + "SET typeOfPlace = 'FACILITY' " + "FROM events AS e"
-						+ "INNER JOIN location ON location.id = e.eventLocation_id " + "WHERE location.facilityType IS NOT NULL;");
+					"UPDATE events SET typeofplace = 'FACILITY' "
+						+ "WHERE (SELECT facilitytype FROM location WHERE id = events.eventlocation_id) IS NOT NULL;");
 
 				// ATTENTION: break should only be done after last version
 				break;
