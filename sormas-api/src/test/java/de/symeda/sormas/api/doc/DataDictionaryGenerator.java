@@ -168,6 +168,7 @@ public class DataDictionaryGenerator {
 		defaultCellStyle.setWrapText(true);
 
 		List<Class<Enum<?>>> usedEnums = new ArrayList<Class<Enum<?>>>();
+		boolean usesFacilityReference = false;
 
 		for (Field field : entityClass.getDeclaredFields()) {
 			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
@@ -200,6 +201,9 @@ public class DataDictionaryGenerator {
 				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
 			} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
+				if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
+					usesFacilityReference = true;
+				}
 			} else if (String.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(I18nProperties.getCaption("text"));
 			} else if (Date.class.isAssignableFrom(fieldType)) {
@@ -252,7 +256,7 @@ public class DataDictionaryGenerator {
 		table.getCTTable().addNewAutoFilter();
 
 		// constant facilities
-		if (CaseDataDto.class.equals(entityClass) || PersonDto.class.equals(entityClass)) {
+		if (usesFacilityReference) {
 			rowNumber = createFacilityTable(sheet, rowNumber + 1, defaultCellStyle);
 		}
 
