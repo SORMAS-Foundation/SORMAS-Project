@@ -84,9 +84,12 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, AggregateReport> from) {
 
 		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (currentUser == null
-			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return null;
 		}
@@ -119,7 +122,6 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 			cq.where(filter);
 		}
 
-		List<AggregateReport> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		return em.createQuery(cq).getResultList();
 	}
 }
