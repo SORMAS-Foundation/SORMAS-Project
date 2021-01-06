@@ -32,7 +32,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -79,17 +78,22 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			});
 		}
 
-		regionFilter = addField(FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
+		regionFilter = addField(
+			FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
 		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		districtFilter = addField(FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.DISTRICT, I18nProperties.getCaption(Captions.Campaign_district), 200));
+		districtFilter = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(CampaignFormDataCriteria.DISTRICT, I18nProperties.getCaption(Captions.Campaign_district), 200));
 		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 
-		communityFilter = addField(FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.COMMUNITY, I18nProperties.getCaption(Captions.Campaign_community), 200));
+		communityFilter = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(CampaignFormDataCriteria.COMMUNITY, I18nProperties.getCaption(Captions.Campaign_community), 200));
 		communityFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllCommunities));
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = currentUserDto();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 		final CommunityReferenceDto userCommunity = user.getCommunity();

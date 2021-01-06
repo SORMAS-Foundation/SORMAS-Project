@@ -27,7 +27,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -86,7 +85,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE),
 				140));
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = currentUserDto();
 		if (user.getRegion() == null) {
 			ComboBox regionField = addField(
 				FieldConfiguration.withCaptionAndPixelSized(
@@ -122,8 +121,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 
 	private HorizontalLayout buildWeekAndDateFilter() {
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter =
-			new EpiWeekAndDateFilterComponent<>(false, false, null, this);
+		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, this);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekTo));
@@ -199,7 +197,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 	@Override
 	protected void applyDependenciesOnNewValue(SampleCriteria criteria) {
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = currentUserDto();
 
 		ComboBox districtField = (ComboBox) getField(SampleCriteria.DISTRICT);
 		if (user.getRegion() != null) {
