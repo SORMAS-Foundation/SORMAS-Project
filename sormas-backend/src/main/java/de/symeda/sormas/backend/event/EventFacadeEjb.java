@@ -588,6 +588,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setSeatNumber(source.getSeatNumber());
+		target.setTravelDate(source.getTravelDate());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
@@ -671,6 +674,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setSeatNumber(source.getSeatNumber());
+		target.setTravelDate(source.getTravelDate());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
