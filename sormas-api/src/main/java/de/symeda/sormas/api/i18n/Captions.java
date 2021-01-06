@@ -795,7 +795,6 @@ public interface Captions {
 	String Event_reportingUser = "Event.reportingUser";
 	String Event_riskLevel = "Event.riskLevel";
 	String Event_seatNumber = "Event.seatNumber";
-	String Event_travelDate = "Event.travelDate";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
 	String Event_srcInstitutionalPartnerType = "Event.srcInstitutionalPartnerType";
@@ -808,6 +807,7 @@ public interface Captions {
 	String Event_srcType = "Event.srcType";
 	String Event_startDate = "Event.startDate";
 	String Event_surveillanceOfficer = "Event.surveillanceOfficer";
+	String Event_travelDate = "Event.travelDate";
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
