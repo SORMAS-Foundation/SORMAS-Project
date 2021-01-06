@@ -215,10 +215,10 @@ public class UserController {
 
 	private void showPasswordResetExternalSuccessPopup() {
 		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordReset)));
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordResetEmailLink)));
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
-		popupWindow.setWidth(350, Unit.PIXELS);
+		popupWindow.setWidth(450, Unit.PIXELS);
 		layout.setMargin(true);
 	}
 
@@ -283,7 +283,7 @@ public class UserController {
 		form.setValue(user);
 
 		final CommitDiscardWrapperComponent<UserSettingsForm> component =
-			new CommitDiscardWrapperComponent<UserSettingsForm>(form, form.getFieldGroup());
+				new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();
@@ -293,9 +293,7 @@ public class UserController {
 				commitOrDiscardCallback.run();
 			}
 		});
-		component.addDiscardListener(() -> {
-			commitOrDiscardCallback.run();
-		});
+		component.addDiscardListener(commitOrDiscardCallback::run);
 
 		return component;
 	}
@@ -304,5 +302,10 @@ public class UserController {
 		for (Language language : Language.values()) {
 			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
 		}
+	}
+
+	public void sync() {
+		Window window = VaadinUiUtil.showPopupWindow(new UsersSyncLayout());
+		window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
 	}
 }

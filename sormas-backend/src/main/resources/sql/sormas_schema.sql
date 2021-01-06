@@ -6130,6 +6130,14 @@ ALTER TABLE person_history RENAME COLUMN namesofotherguardians TO namesofguardia
 
 INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesOfOtherGuardians to namesOfGuardians #3413');
 
+-- 2020-12-7 Add a means of transports field to events #3618
+ALTER TABLE events ADD COLUMN meansOfTransport varchar(255);
+ALTER TABLE events_history ADD COLUMN meansOfTransport varchar(255);
+ALTER TABLE events ADD COLUMN meansOfTransportDetails text;
+ALTER TABLE events_history ADD COLUMN meansOfTransportDetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (297, 'Add a means of transports field to events #3618');
+
 -- 2020-12-03 Remove hospital from event's type of place #3617
 UPDATE location
 SET facilitytype = 'HOSPITAL'
@@ -6144,6 +6152,6 @@ FROM events as e
 INNER JOIN location ON location.id = e.eventlocation_id
 WHERE location.facilitytype IS NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (297, 'Remove hospital from event''s type of place #3617');
+INSERT INTO schema_version (version_number, comment) VALUES (298, 'Remove hospital from event''s type of place #3617');
 
 -- *** Insert new sql commands BEFORE this line ***

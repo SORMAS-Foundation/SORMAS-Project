@@ -29,7 +29,9 @@ $valo-menu-background-color: $s-default-color !default;
     }
     
     .valo-menu-logo {
-      height: 32px !important;
+      display: inline-block;
+      height: auto !important;
+      max-height: 64px !important;
       width: auto !important;
       background: none;
       box-shadow: none;

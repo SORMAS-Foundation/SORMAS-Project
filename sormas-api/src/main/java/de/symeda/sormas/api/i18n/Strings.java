@@ -422,6 +422,7 @@ public interface Strings {
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
+	String headingSyncUsers = "headingSyncUsers";
 	String headingTasksDeleted = "headingTasksDeleted";
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
 	String headingTests = "headingTests";
@@ -534,10 +535,12 @@ public interface Strings {
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
+	String infoSyncUsers = "infoSyncUsers";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
+	String infoUserSyncProcess = "infoUserSyncProcess";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
@@ -706,6 +709,7 @@ public interface Strings {
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
 	String messageOutbreakSaved = "messageOutbreakSaved";
 	String messagePasswordReset = "messagePasswordReset";
+	String messagePasswordResetEmailLink = "messagePasswordResetEmailLink";
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";
@@ -751,6 +755,11 @@ public interface Strings {
 	String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
 	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRoleCombination = "messageUserRoleCombination";
+	String messageUserSyncCanceled = "messageUserSyncCanceled";
+	String messageUserSyncCanceledErrors = "messageUserSyncCanceledErrors";
+	String messageUserSyncFailedFull = "messageUserSyncFailedFull";
+	String messageUserSyncPartiallySuccessful = "messageUserSyncPartiallySuccessful";
+	String messageUserSyncSuccessful = "messageUserSyncSuccessful";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
 	String min = "min";
@@ -811,6 +820,7 @@ public interface Strings {
 	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
 	String promptActionEpiWeekTo = "promptActionEpiWeekTo";
 	String promptAllAreas = "promptAllAreas";
+	String promptAllCommunities = "promptAllCommunities";
 	String promptAllDistricts = "promptAllDistricts";
 	String promptAllRegions = "promptAllRegions";
 	String promptArea = "promptArea";

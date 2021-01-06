@@ -20,14 +20,15 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
+public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit> {
 
 	@EJB
 	CaseService caseService;
@@ -87,12 +88,12 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
-			filter = AbstractAdoService.and(cb, filter, dateFilter);
+			filter = BaseAdoService.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -114,7 +115,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);

@@ -5,6 +5,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,11 +38,11 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -105,10 +106,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
 		ComboBox officerField = addField(FieldConfiguration.pixelSized(EventCriteria.SURVEILLANCE_OFFICER, 140));
-		RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
-		if (userRegion != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(userRegion, UserRole.SURVEILLANCE_OFFICER));
-		}
+		officerField.addItems(fetchSurveillanceOfficersByRegion(currentUserDto().getRegion()));
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
 		searchField.setNullRepresentation("");
@@ -313,20 +311,22 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		switch (propertyId) {
 		case LocationDto.REGION:
 			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
-			if (region == null) {
-				clearAndDisableFields(LocationDto.DISTRICT, LocationDto.COMMUNITY);
-			} else {
+			if (region != null) {
 				applyRegionFilterDependency(region, LocationDto.DISTRICT);
 				clearAndDisableFields(LocationDto.COMMUNITY);
+			} else {
+				clearAndDisableFields(LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			}
+			populateSurveillanceOfficersForRegion(region);
 			break;
 		case LocationDto.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
-			if (district == null) {
-				clearAndDisableFields(LocationDto.COMMUNITY);
-			} else {
+			if (district != null) {
 				applyDistrictDependency(district, LocationDto.COMMUNITY);
+			} else {
+				clearAndDisableFields(LocationDto.COMMUNITY);
 			}
+			populateSurveillanceOfficersForDistrict(district);
 			break;
 		}
 	}
@@ -387,6 +387,33 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
 			weekAndDateFilter.getDateToFilter().setValue(dateTo);
 		}
+	}
+
+	private void populateSurveillanceOfficersForRegion(RegionReferenceDto regionReferenceDto) {
+		List<UserReferenceDto> items =
+			fetchSurveillanceOfficersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
+		populateSurveillanceOfficers(items);
+	}
+
+	private void populateSurveillanceOfficersForDistrict(DistrictReferenceDto districtReferenceDto) {
+		if (districtReferenceDto != null) {
+			List<UserReferenceDto> items =
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.SURVEILLANCE_OFFICER);
+			populateSurveillanceOfficers(items);
+		} else {
+			final ComboBox regionField = getField(EventCriteria.REGION);
+			populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+		}
+	}
+
+	private void populateSurveillanceOfficers(List<UserReferenceDto> items) {
+		final ComboBox officerField = getField(EventCriteria.SURVEILLANCE_OFFICER);
+		officerField.removeAllItems();
+		officerField.addItems(items);
+	}
+
+	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
+		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER);
 	}
 
 	@Override

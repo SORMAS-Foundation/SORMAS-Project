@@ -26,12 +26,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
 @Stateless
 @LocalBean
-public class DocumentService extends AbstractAdoService<Document> {
+public class DocumentService extends AdoServiceWithUserFilter<Document> {
 
 	public DocumentService() {
 		super(Document.class);

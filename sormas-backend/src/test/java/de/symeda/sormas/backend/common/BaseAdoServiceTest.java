@@ -17,23 +17,23 @@ import javax.persistence.criteria.Selection;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-public class AbstractAdoServiceTest {
+public class BaseAdoServiceTest {
 
 	@Test
 	public void testReduce() {
 
 		//all null
-		assertThat(AbstractAdoService.reduce(null), nullValue());
-		assertThat(AbstractAdoService.reduce(null, (Predicate) null), nullValue());
-		assertThat(AbstractAdoService.reduce(null, null, null), nullValue());
+		assertThat(BaseAdoService.reduce(null), nullValue());
+		assertThat(BaseAdoService.reduce(null, (Predicate) null), nullValue());
+		assertThat(BaseAdoService.reduce(null, null, null), nullValue());
 
 		DummyPredicate p0 = new DummyPredicate();
 
 		//one non-null
-		assertThat(AbstractAdoService.reduce(null, p0), sameInstance(p0));
-		assertThat(AbstractAdoService.reduce(null, p0, null), sameInstance(p0));
-		assertThat(AbstractAdoService.reduce(null, null, p0), sameInstance(p0));
-		assertThat(AbstractAdoService.reduce(null, null, null, null, null, p0, null, null, null), sameInstance(p0));
+		assertThat(BaseAdoService.reduce(null, p0), sameInstance(p0));
+		assertThat(BaseAdoService.reduce(null, p0, null), sameInstance(p0));
+		assertThat(BaseAdoService.reduce(null, null, p0), sameInstance(p0));
+		assertThat(BaseAdoService.reduce(null, null, null, null, null, p0, null, null, null), sameInstance(p0));
 
 		DummyPredicate p1 = new DummyPredicate();
 		DummyPredicate p2 = new DummyPredicate();
@@ -49,14 +49,14 @@ public class AbstractAdoServiceTest {
 		};
 
 		//two Arguments
-		assertThat(AbstractAdoService.reduce(op, p0, p1), sameInstance(pr));
+		assertThat(BaseAdoService.reduce(op, p0, p1), sameInstance(pr));
 		assertThat(restrictions, Matchers.contains(p0, p1));
 
-		assertThat(AbstractAdoService.reduce(op, null, null, p0, null, p1, null, null), sameInstance(pr));
+		assertThat(BaseAdoService.reduce(op, null, null, p0, null, p1, null, null), sameInstance(pr));
 		assertThat(restrictions, Matchers.contains(p0, p1));
 
 		//4 Arguments
-		assertThat(AbstractAdoService.reduce(op, null, null, p0, null, p1, null, p2, p3, null), sameInstance(pr));
+		assertThat(BaseAdoService.reduce(op, null, null, p0, null, p1, null, p2, p3, null), sameInstance(pr));
 		assertThat(restrictions, Matchers.contains(p0, p1, p2, p3));
 	}
 

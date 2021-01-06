@@ -46,7 +46,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -56,7 +56,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class VisitService extends AbstractAdoService<Visit> {
+public class VisitService extends BaseAdoService<Visit> {
 
 	@EJB
 	private ContactService contactService;
@@ -250,13 +250,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 		}
 
 		return filter;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Visit> from) {
-		// getAllUuids and getAllAfter have custom implementations
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

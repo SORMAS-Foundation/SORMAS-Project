@@ -141,6 +141,7 @@ public interface Captions {
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String Campaign = "Campaign";
 	String Campaign_area = "Campaign.area";
+	String Campaign_community = "Campaign.community";
 	String Campaign_creatingUser = "Campaign.creatingUser";
 	String Campaign_description = "Campaign.description";
 	String Campaign_district = "Campaign.district";
@@ -164,6 +165,7 @@ public interface Captions {
 	String campaignDashboardOrder = "campaignDashboardOrder";
 	String campaignDashboardSubTabName = "campaignDashboardSubTabName";
 	String campaignDashboardTabName = "campaignDashboardTabName";
+	String campaignDiagramGroupBy = "campaignDiagramGroupBy";
 	String CampaignFormData_area = "CampaignFormData.area";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
@@ -403,6 +405,7 @@ public interface Captions {
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
+	String changeUserEmail = "changeUserEmail";
 	String city = "city";
 	String ClinicalVisit = "ClinicalVisit";
 	String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
@@ -781,6 +784,8 @@ public interface Captions {
 	String Event_eventType = "Event.eventType";
 	String Event_externalId = "Event.externalId";
 	String Event_informationSource = "Event.informationSource";
+	String Event_meansOfTransport = "Event.meansOfTransport";
+	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
 	String Event_multiDayEvent = "Event.multiDayEvent";
 	String Event_nosocomial = "Event.nosocomial";
 	String Event_numberOfPendingTasks = "Event.numberOfPendingTasks";
@@ -813,6 +818,7 @@ public interface Captions {
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
 	String EventAction_eventUuid = "EventAction.eventUuid";
+	String EventActionExport_eventDate = "EventActionExport.eventDate";
 	String eventActionsView = "eventActionsView";
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
@@ -1667,6 +1673,11 @@ public interface Captions {
 	String symptomsMaxTemperature = "symptomsMaxTemperature";
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";
 	String symptomsSetClearedToUnknown = "symptomsSetClearedToUnknown";
+	String sync = "sync";
+	String syncErrors = "syncErrors";
+	String syncProcessed = "syncProcessed";
+	String syncSuccessful = "syncSuccessful";
+	String syncUsers = "syncUsers";
 	String system = "system";
 	String Task = "Task";
 	String Task_assigneeReply = "Task.assigneeReply";
@@ -1725,6 +1736,7 @@ public interface Captions {
 	String User_userEmail = "User.userEmail";
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
+	String User_uuid = "User.uuid";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";

@@ -55,7 +55,7 @@ import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.action.ActionService;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -108,7 +108,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventUserFilterCriteria.forceRegionJurisdiction(true);
 
 			Predicate userFilter = createUserFilter(cb, cq, from, eventUserFilterCriteria);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
@@ -138,7 +138,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventUserFilterCriteria.forceRegionJurisdiction(true);
 
 			Predicate userFilter = createUserFilter(cb, cq, from, eventUserFilterCriteria);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);

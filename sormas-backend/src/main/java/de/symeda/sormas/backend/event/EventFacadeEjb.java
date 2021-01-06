@@ -60,7 +60,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
@@ -205,7 +205,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -261,7 +261,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -409,6 +409,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.NOSOCOMIAL),
+			event.get(Event.MEANS_OF_TRANSPORT),
+			event.get(Event.MEANS_OF_TRANSPORT_DETAILS),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			district.get(District.UUID),
@@ -437,7 +439,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -584,6 +586,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
@@ -665,6 +669,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
