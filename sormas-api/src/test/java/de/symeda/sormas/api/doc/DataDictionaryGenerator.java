@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.doc;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -80,7 +79,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 public class DataDictionaryGenerator {
 
 	@Test
-	public void generateDataDictionary() throws FileNotFoundException, IOException {
+	public void generateDataDictionary() throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -150,7 +149,7 @@ public class DataDictionaryGenerator {
 		for (EntityColumn column : EntityColumn.values()) {
 			table.addColumn();
 			String columnCaption = column.toString();
-			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase().replaceAll("_", " ");
+			columnCaption = columnCaption.charAt(0) + columnCaption.substring(1).toLowerCase().replaceAll("_", " ");
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 
@@ -167,7 +166,7 @@ public class DataDictionaryGenerator {
 		CellStyle defaultCellStyle = workbook.createCellStyle();
 		defaultCellStyle.setWrapText(true);
 
-		List<Class<Enum<?>>> usedEnums = new ArrayList<Class<Enum<?>>>();
+		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
 		boolean usesFacilityReference = false;
 
 		for (Field field : entityClass.getDeclaredFields()) {
@@ -185,14 +184,6 @@ public class DataDictionaryGenerator {
 			Class<?> fieldType = field.getType();
 			if (fieldType.isEnum()) {
 				// use enum type name - values are added below
-//				Object[] enumValues = fieldType.getEnumConstants();
-//				StringBuilder valuesString = new StringBuilder();
-//				for (Object enumValue : enumValues) {
-//					if (valuesString.length() > 0)
-//						valuesString.append(", ");
-//					valuesString.append(((Enum) enumValue).name());
-//				}
-//				fieldValueCell.setCellValue(valuesString.toString());
 				fieldValueCell.setCellValue(fieldType.getSimpleName());
 				if (!usedEnums.contains(fieldType)) {
 					usedEnums.add((Class<Enum<?>>) fieldType);
@@ -288,7 +279,7 @@ public class DataDictionaryGenerator {
 			}
 			table.addColumn();
 			String columnCaption = column.toString();
-			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
+			columnCaption = columnCaption.charAt(0) + columnCaption.substring(1).toLowerCase();
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 
@@ -298,7 +289,7 @@ public class DataDictionaryGenerator {
 			XSSFCell cell;
 
 			cell = row.createCell(EnumColumn.TYPE.ordinal());
-			if (constantFacility == constantFacilities.get(0)) {
+			if (constantFacility.equals(constantFacilities.get(0))) {
 				cell.setCellValue(FacilityReferenceDto.class.getSimpleName().replaceAll("Dto", ""));
 			}
 
@@ -348,7 +339,7 @@ public class DataDictionaryGenerator {
 		for (EnumColumn column : EnumColumn.values()) {
 			table.addColumn();
 			String columnCaption = column.toString();
-			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
+			columnCaption = columnCaption.charAt(0) + columnCaption.substring(1).toLowerCase();
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 
