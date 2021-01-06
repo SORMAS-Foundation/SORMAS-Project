@@ -195,7 +195,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		switch (campaignJurisdictionLevel) {
 			case AREA:
-				return REGION;
+				return AREA;
 			case REGION:
 				return DISTRICT;
 			case DISTRICT:
@@ -209,15 +209,15 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		if (value != null) {
 			districtFilter.removeAllItems();
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(((RegionReferenceDto) value).getUuid()));
+			campaignJurisdictionGroupByFilter.setValue(DISTRICT);
 			campaignJurisdictionGroupByFilter.removeItem(AREA);
 			campaignJurisdictionGroupByFilter.addItems(REGION, DISTRICT, COMMUNITY);
-			campaignJurisdictionGroupByFilter.setValue(DISTRICT);
 		} else {
 			districtFilter.clear();
 			districtFilter.removeAllItems();
+			campaignJurisdictionGroupByFilter.setValue(REGION);
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
 			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
-			campaignJurisdictionGroupByFilter.setValue(REGION);
 		}
 	}
 
@@ -226,18 +226,18 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			regionFilter.removeAllItems();
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
 			regionFilter.setEnabled(true);
+			campaignJurisdictionGroupByFilter.setValue(REGION);
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
 			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
-			campaignJurisdictionGroupByFilter.setValue(REGION);
 		} else {
 			regionFilter.clear();
 			regionFilter.removeAllItems();
 			districtFilter.clear();
 			districtFilter.removeAllItems();
+			campaignJurisdictionGroupByFilter.setValue(AREA);
 			campaignJurisdictionGroupByFilter.removeItem(DISTRICT);
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
 			campaignJurisdictionGroupByFilter.addItems(AREA, REGION);
-			campaignJurisdictionGroupByFilter.setValue(AREA);
 		}
 	}
 
