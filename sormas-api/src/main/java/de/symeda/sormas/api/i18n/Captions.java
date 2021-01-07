@@ -281,6 +281,7 @@ public interface Captions {
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reportDate = "CaseData.reportDate";
+	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
 	String CaseData_reportingType = "CaseData.reportingType";
 	String CaseData_reportingUser = "CaseData.reportingUser";
 	String CaseData_reportLat = "CaseData.reportLat";
@@ -507,6 +508,7 @@ public interface Captions {
 	String Contact_relationDescription = "Contact.relationDescription";
 	String Contact_relationToCase = "Contact.relationToCase";
 	String Contact_reportDateTime = "Contact.reportDateTime";
+	String Contact_reportingDistrict = "Contact.reportingDistrict";
 	String Contact_reportingUser = "Contact.reportingUser";
 	String Contact_reportLat = "Contact.reportLat";
 	String Contact_reportLatLonAccuracy = "Contact.reportLatLonAccuracy";

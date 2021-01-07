@@ -145,6 +145,7 @@ public class Contact extends CoreAdo {
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
 	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -227,6 +228,8 @@ public class Contact extends CoreAdo {
 	private YesNoUnknown prohibitionToWork;
 	private Date prohibitionToWorkFrom;
 	private Date prohibitionToWorkUntil;
+
+	private District reportingDistrict;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -903,6 +906,15 @@ public class Contact extends CoreAdo {
 
 	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	@ManyToOne
+	public District getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(District reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -6138,6 +6138,30 @@ ALTER TABLE events_history ADD COLUMN meansOfTransportDetails text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (297, 'Add a means of transports field to events #3618');
 
+-- 2021-01-05 Add reporting district to cases & contacts #3410
+ALTER TABLE cases ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE cases
+    ADD CONSTRAINT fk_cases_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE cases_history ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE cases_history
+    ADD CONSTRAINT fk_cases_history_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE contact ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE contact
+    ADD CONSTRAINT fk_contact_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE contact_history ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE contact_history
+    ADD CONSTRAINT fk_contact_history_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (298, 'Add reporting district to cases & contacts #3410');
+
+-- 2021-01-07 Add index for resulting cases of contacts #3926
+CREATE INDEX IF NOT EXISTS idx_contact_resultingcase_id ON contact USING hash (resultingcase_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (299, 'Add index for resulting cases of contacts #3926');
+
 -- 2021-01-05 Type of place details in events entities #2947
 ALTER TABLE events ADD COLUMN connectionNumber varchar(512);
 ALTER TABLE events_history ADD COLUMN connectionNumber varchar(512);
