@@ -37,6 +37,7 @@ import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.POE_NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.SORMAS_TO_SORMAS_CLIENT;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
@@ -1110,8 +1111,9 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			HOSPITAL_INFORMANT,
 			COMMUNITY_INFORMANT,
-			POE_INFORMANT),
-	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(),
+			POE_INFORMANT,
+			SORMAS_TO_SORMAS_CLIENT),
+	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(SORMAS_TO_SORMAS_CLIENT),
 	SEE_SENSITIVE_DATA_IN_JURISDICTION(
 			SURVEILLANCE_SUPERVISOR,
 			ADMIN_SUPERVISOR,
@@ -1127,8 +1129,9 @@ public enum UserRight {
 			HOSPITAL_INFORMANT,
 			COMMUNITY_INFORMANT,
 			POE_INFORMANT,
-			LAB_USER),
-	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(),
+			LAB_USER,
+			SORMAS_TO_SORMAS_CLIENT),
+	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(SORMAS_TO_SORMAS_CLIENT),
 	CAMPAIGN_VIEW(
       		ADMIN,
       		NATIONAL_USER,

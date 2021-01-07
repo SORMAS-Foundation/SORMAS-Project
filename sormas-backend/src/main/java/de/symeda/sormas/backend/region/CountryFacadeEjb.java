@@ -62,6 +62,11 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
+	public CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities) {
+		return countryService.getByIsoCode(isoCode, includeArchivedEntities).map(this::toDto).orElse(null);
+	}
+
+	@Override
 	public List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
@@ -167,7 +172,20 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new CountryReferenceDto(entity.getUuid(), I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()));
+		return new CountryReferenceDto(
+			entity.getUuid(),
+			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
+			entity.getIsoCode());
+	}
+
+	public static CountryReferenceDto toReferenceDto(CountryDto entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new CountryReferenceDto(
+			entity.getUuid(),
+			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
+			entity.getIsoCode());
 	}
 
 	public CountryDto toDto(Country entity) {

@@ -172,6 +172,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
+
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
@@ -421,6 +423,7 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
+	@HideForCountriesExcept
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
@@ -461,6 +464,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	private Date prohibitionToWorkFrom;
 	@HideForCountriesExcept
 	private Date prohibitionToWorkUntil;
+
+	@HideForCountriesExcept
+	private DistrictReferenceDto reportingDistrict;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1358,6 +1364,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	public DistrictReferenceDto getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(DistrictReferenceDto reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	public boolean isOwnershipHandedOver() {
