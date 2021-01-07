@@ -157,6 +157,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						+ String
 							.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(", ", noPopulationDataLocations))
 						+ "' },");
+			} else {
+				hcjs.append("title: {" + "text:'" + campaignJurisdictionLevelGroupBy.toString() + "' },");
 			}
 		} else {
 			hcjs.append("title: {" + "text:'" + campaignJurisdictionLevelGroupBy.toString() + "' },");
@@ -174,9 +176,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("yAxis: { min: 0, title: { text: '"+ (showPercentages
 				? I18nProperties.getCaption(Captions.dashboardProportion)
 				: I18nProperties.getCaption(Captions.dashboardAggregatedNumber)) +"'}");
-		if (showPercentages && totalValuesMap != null) {
-			hcjs.append(", max: 100 ");
-		}
 		if (stackMap.size() > 1) {
 			hcjs.append(
 					", stackLabels: {enabled: true,verticalAlign: 'bottom', allowOverlap: true, crop: false, rotation: 45, x:20,y: 20, overflow: 'none',y: 24,formatter: function() {  return this.stack;},style: {  color: 'grey'}}");
@@ -234,11 +233,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 								ERROR_MESSAGE);
 						}
 					} else if (totalValue > 0) {
-						hcjs.append(
-							BigDecimal.valueOf(seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100)
-								.setScale(0, RoundingMode.HALF_UP)
-								.intValue())
-							.append(",");
+						final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
+						final double scaledValue =
+							BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
+						hcjs.append(scaledValue).append(",");
 					} else {
 						hcjs.append("0,");
 					}
@@ -260,7 +258,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			}
 			if (showPercentages && totalValuesMap != null) {
 				hcjs.append(stackMap.size() > 0 ? ", " : "")
-					.append("series: { dataLabels: { enabled: true, format: '{y} %', style: { fontSize: 14 + 'px' }}}");
+					.append("series: { dataLabels: { enabled: true, format: '{y}%', style: { fontSize: 14 + 'px' }}}");
 			}
 
 			hcjs.append("},");
