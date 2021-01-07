@@ -43,7 +43,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.*;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

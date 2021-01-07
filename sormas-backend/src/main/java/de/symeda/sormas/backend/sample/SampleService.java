@@ -39,7 +39,9 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.common.*;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;

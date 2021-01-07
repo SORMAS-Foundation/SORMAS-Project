@@ -34,7 +34,9 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.*;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless

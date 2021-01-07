@@ -47,7 +47,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.common.*;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
