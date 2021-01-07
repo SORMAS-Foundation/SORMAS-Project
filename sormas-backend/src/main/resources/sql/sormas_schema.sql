@@ -6162,4 +6162,14 @@ CREATE INDEX IF NOT EXISTS idx_contact_resultingcase_id ON contact USING hash (r
 
 INSERT INTO schema_version (version_number, comment) VALUES (299, 'Add index for resulting cases of contacts #3926');
 
+-- 2021-01-05 Type of place details in events entities #2947
+ALTER TABLE events ADD COLUMN connectionNumber varchar(512);
+ALTER TABLE events_history ADD COLUMN connectionNumber varchar(512);
+ALTER TABLE events ADD COLUMN seatNumber varchar(512);
+ALTER TABLE events_history ADD COLUMN seatNumber varchar(512);
+ALTER TABLE events ADD COLUMN travelDate timestamp without time zone;
+ALTER TABLE events_history ADD COLUMN travelDate timestamp without time zone;
+
+INSERT INTO schema_version (version_number, comment) VALUES (300, 'Type of place details in events entities #2947');
+
 -- *** Insert new sql commands BEFORE this line ***
