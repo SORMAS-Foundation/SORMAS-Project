@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,8 +38,9 @@ public class CurrentUserService {
 	 */
 	@Produces
 	@CurrentUserQualifier
-	@TransactionScoped
 	@Transactional
+	@RequestScoped
+// FIXME @TransactionScoped would be better for performance, but is not support by novatec.bean-test (see their github #4)
 	public CurrentUser getCurrentUser() {
 
 		final String userName = context.getCallerPrincipal().getName();
