@@ -776,6 +776,7 @@ public interface Strings {
 	String notificationContactSymptomatic = "notificationContactSymptomatic";
 	String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
+	String notificationEventParticipantCaseClassificationConfirmed = "notificationEventParticipantCaseClassificationConfirmed";
 	String notificationLabResultArrived = "notificationLabResultArrived";
 	String notificationLabResultArrivedContact = "notificationLabResultArrivedContact";
 	String notificationLabResultArrivedEventParticipant = "notificationLabResultArrivedEventParticipant";
