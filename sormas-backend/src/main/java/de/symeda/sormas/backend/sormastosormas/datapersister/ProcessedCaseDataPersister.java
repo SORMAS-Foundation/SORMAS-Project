@@ -56,12 +56,9 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistSharedData(ProcessedCaseData caseData) throws SormasToSormasValidationException {
-		persistSharedDataInTransaction(caseData);
-	}
-
-	@Transactional
-	private void persistSharedDataInTransaction(ProcessedCaseData caseData) throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getCaze();
 
 		handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
@@ -88,21 +85,17 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 		}
 	}
 
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistReturnedData(ProcessedCaseData caseData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException {
-		persistReturnedDataInTransaction(caseData, originInfo);
-	}
-
-	@Transactional
-	private void persistReturnedDataInTransaction(ProcessedCaseData caseData, SormasToSormasOriginInfoDto originInfo)
-		throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getCaze();
 
-		handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
 		CaseDataDto savedCase = handleValidationError(() -> caseFacade.saveCase(caze), Captions.CaseData, buildCaseValidationGroupName(caze));
-
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(savedCase.getUuid(), originInfo.getOrganizationId());
 		shareInfo.setOwnershipHandedOver(false);
 		shareInfoService.persist(shareInfo);
+
+		handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
 
 		SormasToSormasOriginInfoDto savedOriginInfo = null;
 
