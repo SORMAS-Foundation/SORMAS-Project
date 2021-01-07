@@ -6170,6 +6170,6 @@ ALTER TABLE events_history ADD COLUMN seatNumber varchar(512);
 ALTER TABLE events ADD COLUMN travelDate timestamp without time zone;
 ALTER TABLE events_history ADD COLUMN travelDate timestamp without time zone;
 
-INSERT INTO schema_version (version_number, comment) VALUES (298, 'Type of place details in events entities #2947');
+INSERT INTO schema_version (version_number, comment) VALUES (300, 'Type of place details in events entities #2947');
 
 -- *** Insert new sql commands BEFORE this line ***
