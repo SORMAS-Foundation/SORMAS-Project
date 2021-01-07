@@ -310,7 +310,7 @@ public class Event extends CoreAdo {
 		this.meansOfTransportDetails = meansOfTransportDetails;
 	}
 
-	@Column(columnDefinition = "text")
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getConnectionNumber() {
 		return connectionNumber;
 	}
@@ -319,7 +319,7 @@ public class Event extends CoreAdo {
 		this.connectionNumber = connectionNumber;
 	}
 
-	@Column(columnDefinition = "text")
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSeatNumber() {
 		return seatNumber;
 	}
