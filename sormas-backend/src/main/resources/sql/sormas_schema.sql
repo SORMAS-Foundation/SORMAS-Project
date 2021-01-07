@@ -6138,4 +6138,9 @@ ALTER TABLE events_history ADD COLUMN meansOfTransportDetails text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (297, 'Add a means of transports field to events #3618');
 
+-- 2021-01-07 Add index for resulting cases of contacts #3926
+CREATE INDEX IF NOT EXISTS idx_contact_resultingcase_id ON contact USING hash (resultingcase_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (298, 'Add index for resulting cases of contacts #3926');
+
 -- *** Insert new sql commands BEFORE this line ***
