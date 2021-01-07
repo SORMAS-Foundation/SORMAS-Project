@@ -9,14 +9,14 @@ ext.keystoreProperties = loadKeystoreProperties()
 android {
     // https://medium.com/google-developers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
-    compileSdkVersion 29
+    compileSdkVersion 30
     // always use the latest
-    buildToolsVersion '28.0.3'
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
         applicationId "de.symeda.sormas.app"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode buildVersionCode()
         versionName "$sormasVersion"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -45,9 +45,6 @@ android {
         exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.properties'
         exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.xml'
     }
-    dataBinding {
-        enabled = true
-    }
     productFlavors {
     }
 
@@ -61,7 +58,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+    buildFeatures {
+        dataBinding true
+    }
     // needed for pre androidx testing. This will not make it's way into the apk
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
@@ -151,10 +150,10 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) 
         dir: "$buildDir/intermediates/javac/debug/classes/de/symeda/sormas/app",
         excludes: fileFilter
     )
-    classDirectories = files([ javaClasses ])
-    additionalSourceDirs = files(coverageSourceDirs)
-    sourceDirectories = files(coverageSourceDirs)
-    executionData = fileTree(dir: "$buildDir", includes: [
+    classDirectories.from = files([ javaClasses ])
+    additionalSourceDirs.from = files(coverageSourceDirs)
+    sourceDirectories.from = files(coverageSourceDirs)
+    executionData.from = fileTree(dir: "$buildDir", includes: [
             "jacoco/testDebugUnitTest.exec"
     ])
     reports {
