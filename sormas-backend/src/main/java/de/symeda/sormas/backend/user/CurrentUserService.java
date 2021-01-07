@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
+import javax.transaction.TransactionScoped;
 import javax.transaction.Transactional;
 
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -37,8 +38,9 @@ public class CurrentUserService {
 	 */
 	@Produces
 	@CurrentUserQualifier
-	@RequestScoped
 	@Transactional
+	@RequestScoped
+// FIXME @TransactionScoped would be better for performance, but is not support by novatec.bean-test (see their github #4)
 	public CurrentUser getCurrentUser() {
 
 		final String userName = context.getCallerPrincipal().getName();
