@@ -74,9 +74,9 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -1092,7 +1092,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else {
 			int followUpDuration = diseaseConfigurationFacade.getCaseFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
-			LocalDate untilDate = beginDate.plusDays(followUpDuration);
+			LocalDate untilDate =
+				caze.isOverwriteFollowUpUntil() ? DateHelper8.toLocalDate(caze.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
 
 			Visit lastVisit;
 			boolean additionalVisitNeeded;
