@@ -117,18 +117,12 @@ public class CasesView extends AbstractView {
 	private final boolean caseFollowUpEnabled;
 	private final ExportConfigurationDto detailedExportConfiguration;
 
-	private CaseCriteria criteria;
-	private CasesViewConfiguration viewConfiguration;
+	private final CaseCriteria criteria;
+	private final CasesViewConfiguration viewConfiguration;
 
-	private FilteredGrid<?, CaseCriteria> grid;
-	private Button createButton;
-	private Button lineListingButton;
+	private final FilteredGrid<?, CaseCriteria> grid;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
-	private PopupButton moreButton;
-	private VerticalLayout moreLayout;
-
-	private VerticalLayout gridLayout;
 
 	private CaseFilterForm filterForm;
 
@@ -167,7 +161,7 @@ public class CasesView extends AbstractView {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
 		}
-		gridLayout = new VerticalLayout();
+		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
@@ -228,10 +222,10 @@ public class CasesView extends AbstractView {
 	}
 
 	private void addCommonCasesOverviewToolbar() {
-		moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
+		final PopupButton moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
 		moreButton.setId("more");
 		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
-		moreLayout = new VerticalLayout();
+		final VerticalLayout moreLayout = new VerticalLayout();
 		moreLayout.setSpacing(true);
 		moreLayout.setMargin(true);
 		moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
@@ -348,9 +342,9 @@ public class CasesView extends AbstractView {
 				Button btnCustomCaseExport = ButtonHelper.createIconButton(Captions.exportCaseCustom, VaadinIcons.FILE_TEXT, e -> {
 					Window customExportWindow = VaadinUiUtil.createPopupWindow();
 					CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(customExportWindow::close);
-					customExportsLayout.setExportCallback((exportConfig) -> {
-						Page.getCurrent().open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true);
-					});
+					customExportsLayout.setExportCallback(
+						(exportConfig) -> Page.getCurrent()
+							.open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true));
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
 					customExportWindow.setContent(customExportsLayout);
@@ -382,7 +376,7 @@ public class CasesView extends AbstractView {
 						I18nProperties.getString(Strings.no),
 						640,
 						(result) -> {
-							if (result.booleanValue() == true) {
+							if (result == true) {
 								enterBulkEditMode();
 							}
 						});
@@ -427,7 +421,7 @@ public class CasesView extends AbstractView {
 		moreLayout.addComponent(searchSpecificCaseButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
-			lineListingButton = ButtonHelper.createIconButton(
+			final Button lineListingButton = ButtonHelper.createIconButton(
 				Captions.caseLineListing,
 				VaadinIcons.PLUS_CIRCLE,
 				e -> ControllerProvider.getCaseController().openLineListingWindow(),
@@ -435,7 +429,7 @@ public class CasesView extends AbstractView {
 
 			addHeaderComponent(lineListingButton);
 
-			createButton = ButtonHelper.createIconButton(
+			final Button createButton = ButtonHelper.createIconButton(
 				Captions.caseNewCase,
 				VaadinIcons.PLUS_CIRCLE,
 				e -> ControllerProvider.getCaseController().create(),
@@ -496,7 +490,7 @@ public class CasesView extends AbstractView {
 			}
 		};
 
-		return new SearchSpecificLayout(confirmCallback, () -> window.close(), searchField, description, confirmCaption);
+		return new SearchSpecificLayout(confirmCallback, window::close, searchField, description, confirmCaption);
 	}
 
 	private void enterBulkEditMode() {
