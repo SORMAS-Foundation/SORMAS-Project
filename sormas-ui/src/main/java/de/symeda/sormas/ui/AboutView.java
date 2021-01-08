@@ -36,6 +36,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
@@ -84,6 +85,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		Label versionLabel =
 			new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
+		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
 		infoLayout.addComponent(versionLabel);
 
 		Link whatsNewLink = new Link(
@@ -111,7 +113,7 @@ public class AboutView extends VerticalLayout implements View {
 		if (shouldShowDocumentsSection()) {
 			VerticalLayout documentsLayout = new VerticalLayout();
 			documentsLayout.setSpacing(false);
-			documentsLayout.setMargin(false);
+			documentsLayout.setMargin(new MarginInfo(true, false, false, false));
 			aboutContent.addComponent(documentsLayout, "documents");
 
 			Label documentsLabel = new Label(I18nProperties.getCaption(Captions.aboutDocuments), ContentMode.HTML);
