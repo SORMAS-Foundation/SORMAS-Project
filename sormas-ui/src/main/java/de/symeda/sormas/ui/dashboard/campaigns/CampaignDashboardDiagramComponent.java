@@ -4,7 +4,15 @@ import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,6 +22,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
@@ -40,7 +49,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		List<CampaignDiagramDataDto> diagramDataList,
 		Map<CampaignDashboardTotalsReference, Double> totalValuesMap,
 		boolean showPercentages,
-		boolean isCommunityGrouping) {
+		CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
 		this.diagramDefinition = diagramDefinition;
 		this.showPercentages = showPercentages;
 		this.totalValuesMap = totalValuesMap;
@@ -74,10 +83,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			objectCampaignDiagramDataDtoMap.put(diagramData.getGroupingKey(), diagramData);
 		}
 
-		buildDiagramChart(diagramDefinition.getDiagramCaption(), isCommunityGrouping);
+		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
 
-	public void buildDiagramChart(String title, boolean isCommunityGrouping) {
+	public void buildDiagramChart(String title, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
 		final StringBuilder hcjs = new StringBuilder();
 
 		//@formatter:off
@@ -128,15 +137,15 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ "title:{ text: '" + StringEscapeUtils.escapeEcmaScript(title) + "', style: { fontSize: '15px' } },");
 		//@formatter:on
 
-		appendAxisInformation(hcjs, stackMap);
+		appendAxisInformation(hcjs, stackMap, campaignJurisdictionLevelGroupBy);
 		appendPlotOptions(hcjs, stackMap);
-		appendSeries(isCommunityGrouping, hcjs);
+		appendSeries(campaignJurisdictionLevelGroupBy, hcjs);
 
 		hcjs.append("}");
 		campaignColumnChart.setHcjs(hcjs.toString());
 	}
 
-	private void appendAxisInformation(StringBuilder hcjs, Map<String, Long> stackMap) {
+	private void appendAxisInformation(StringBuilder hcjs, Map<String, Long> stackMap, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
 		final List noPopulationDataLocations = new LinkedList<>();
 		if (Objects.nonNull(totalValuesMap)) {
 			for (Object key : axisCaptions.keySet()) {
@@ -156,7 +165,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						+ String
 							.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(", ", noPopulationDataLocations))
 						+ "' },");
+			} else {
+				hcjs.append("title: {" + "text:'" + campaignJurisdictionLevelGroupBy.toString() + "' },");
 			}
+		} else {
+			hcjs.append("title: {" + "text:'" + campaignJurisdictionLevelGroupBy.toString() + "' },");
 		}
 		if (stackMap.size() > 1) {
 			hcjs.append("opposite: true,");
@@ -168,10 +181,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("]},");
 
 		//@formatter:off
-		hcjs.append("yAxis: { min: 0, title: { text: ''}");
-		if (showPercentages && totalValuesMap != null) {
-			hcjs.append(", max: 100 ");
-		}
+		hcjs.append("yAxis: { min: 0, title: { text: '"+ (showPercentages
+				? I18nProperties.getCaption(Captions.dashboardProportion)
+				: I18nProperties.getCaption(Captions.dashboardAggregatedNumber)) +"'}");
 		if (stackMap.size() > 1) {
 			hcjs.append(
 					", stackLabels: {enabled: true,verticalAlign: 'bottom', allowOverlap: true, crop: false, rotation: 45, x:20,y: 20, overflow: 'none',y: 24,formatter: function() {  return this.stack;},style: {  color: 'grey'}}");
@@ -180,7 +192,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		//@formatter:on
 	}
 
-	private void appendSeries(boolean isCommunityGrouping, StringBuilder hcjs) {
+	private void appendSeries(CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy, StringBuilder hcjs) {
 		hcjs.append("series: [");
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
 			String seriesKey = series.getFormId() + series.getFieldId();
@@ -192,13 +204,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
 			String fieldName = (iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey);
 			if (showPercentages) {
-				if (isCommunityGrouping) {
+				if (campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY) {
 					fieldName = I18nProperties.getString(Strings.populationDataByCommunity);
 				}
 			}
 
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
-			appendData(isCommunityGrouping, hcjs, series, seriesData);
+			appendData(campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY, hcjs, series, seriesData);
 			if (series.getStack() != null) {
 				hcjs.append("],stack:'").append(StringEscapeUtils.escapeEcmaScript(series.getStack())).append("'},");
 			} else {
@@ -229,11 +241,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 								ERROR_MESSAGE);
 						}
 					} else if (totalValue > 0) {
-						hcjs.append(
-							BigDecimal.valueOf(seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100)
-								.setScale(2, RoundingMode.HALF_UP)
-								.doubleValue())
-							.append(",");
+						final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
+						final double scaledValue =
+							BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
+						hcjs.append(scaledValue).append(",");
 					} else {
 						hcjs.append("0,");
 					}
@@ -255,7 +266,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			}
 			if (showPercentages && totalValuesMap != null) {
 				hcjs.append(stackMap.size() > 0 ? ", " : "")
-					.append("series: { dataLabels: { enabled: true, format: '{y} %', style: { fontSize: 14 + 'px' }}}");
+					.append("series: { dataLabels: { enabled: true, format: '{y}%', style: { fontSize: 14 + 'px' }}}");
 			}
 
 			hcjs.append("},");
