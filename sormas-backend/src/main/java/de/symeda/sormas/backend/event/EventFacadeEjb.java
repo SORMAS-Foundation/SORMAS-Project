@@ -22,8 +22,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -46,6 +48,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
@@ -56,8 +59,9 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -67,8 +71,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -162,7 +166,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto saveEvent(EventDto dto) {
+	public EventDto saveEvent(@NotNull EventDto dto) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -195,13 +199,13 @@ public class EventFacadeEjb implements EventFacade {
 
 		Predicate filter = null;
 
-		if (eventCriteria.getUserFilterIncluded()) {
-			eventService.createUserFilter(cb, cq, event);
-		}
-
 		if (eventCriteria != null) {
+			if (eventCriteria.getUserFilterIncluded()) {
+				eventService.createUserFilter(cb, cq, event);
+			}
+
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -220,18 +224,10 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
-		Subquery<Long> participantCount = cq.subquery(Long.class);
-		Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
-		Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
-		Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-		participantCount.select(cb.count(eventParticipantRoot));
-		participantCount.where(assignedToEvent, notDeleted);
-
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
-			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -259,13 +255,13 @@ public class EventFacadeEjb implements EventFacade {
 
 		Predicate filter = null;
 
-		if (eventCriteria.getUserFilterIncluded()) {
-			eventService.createUserFilter(cb, cq, event);
-		}
-
 		if (eventCriteria != null) {
+			if (eventCriteria.getUserFilterIncluded()) {
+				eventService.createUserFilter(cb, cq, event);
+			}
+
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -296,6 +292,24 @@ public class EventFacadeEjb implements EventFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = community.get(Community.NAME);
 					break;
+				case EventIndexDto.REGION:
+					expression = region.get(Region.NAME);
+					break;
+				case EventIndexDto.DISTRICT:
+					expression = district.get(District.NAME);
+					break;
+				case EventIndexDto.COMMUNITY:
+					expression = community.get(Community.NAME);
+					break;
+				case EventIndexDto.ADDRESS:
+					expression = location.get(Location.CITY);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.STREET);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.HOUSE_NUMBER);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = location.get(Location.ADDITIONAL_INFORMATION);
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
@@ -313,7 +327,63 @@ public class EventFacadeEjb implements EventFacade {
 			indexList = em.createQuery(cq).getResultList();
 		}
 
+		Map<String, Long> participantCounts = new HashMap<>();
+		Map<String, Long> caseCounts = new HashMap<>();;
+		Map<String, Long> deathCounts = new HashMap<>();
+		if (indexList != null) {
+			List<Object[]> objectQueryList = null;
+
+			CriteriaQuery<Object[]> objectCQ = cb.createQuery(Object[].class);
+			Root<Event> eventRoot = objectCQ.from(Event.class);
+
+			// number of Participants
+			Subquery<Long> participantCount = objectCQ.subquery(Long.class);
+			Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
+			Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
+			Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+			participantCount.select(cb.count(eventParticipantRoot));
+			participantCount.where(assignedToEvent, notDeleted);
+
+			// number of cases among event participants
+			Subquery<Long> caseCount = objectCQ.subquery(Long.class);
+			eventParticipantRoot = caseCount.from(EventParticipant.class);
+			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
+			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+			Predicate isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
+			caseCount.select(cb.count(eventParticipantRoot));
+			caseCount.where(assignedToEvent, notDeleted, isCase);
+
+			// number of fatalities among event participant cases
+			Subquery<Long> deathsCount = objectCQ.subquery(Long.class);
+			eventParticipantRoot = deathsCount.from(EventParticipant.class);
+			Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
+			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+			isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
+			Predicate isDead = cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED);
+			deathsCount.select(cb.count(eventParticipantRoot));
+			deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
+
+			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount);
+			objectQueryList = em.createQuery(objectCQ).getResultList();
+			objectQueryList.forEach(r -> {
+				participantCounts.put((String) r[0], (Long) r[1]);
+				caseCounts.put((String) r[0], (Long) r[2]);
+				deathCounts.put((String) r[0], (Long) r[3]);
+			});
+
+		}
+
+		if (indexList != null) {
+			for (EventIndexDto eventDto : indexList) {
+				Optional.ofNullable(participantCounts.get(eventDto.getUuid())).ifPresent(eventDto::setParticipantCount);
+				Optional.ofNullable(caseCounts.get(eventDto.getUuid())).ifPresent(eventDto::setCaseCount);
+				Optional.ofNullable(deathCounts.get(eventDto.getUuid())).ifPresent(eventDto::setDeathCount);
+			}
+		}
+
 		return indexList;
+
 	}
 
 	@Override
@@ -326,19 +396,12 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
-		Subquery<Long> participantCount = cq.subquery(Long.class);
-		Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
-		Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), event.get(AbstractDomainObject.ID));
-		Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
-		participantCount.select(cb.count(eventParticipantRoot));
-		participantCount.where(assignedToEvent, notDeleted);
-
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
+			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
-			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -346,6 +409,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.NOSOCOMIAL),
+			event.get(Event.MEANS_OF_TRANSPORT),
+			event.get(Event.MEANS_OF_TRANSPORT_DETAILS),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			district.get(District.UUID),
@@ -357,6 +422,8 @@ public class EventFacadeEjb implements EventFacade {
 			location.get(Location.HOUSE_NUMBER),
 			location.get(Location.ADDITIONAL_INFORMATION),
 			event.get(Event.SRC_TYPE),
+			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE),
+			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
@@ -372,7 +439,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -384,6 +451,61 @@ public class EventFacadeEjb implements EventFacade {
 
 		} else {
 			exportList = em.createQuery(cq).getResultList();
+		}
+
+		Map<String, Long> participantCounts = new HashMap<>();
+		Map<String, Long> caseCounts = new HashMap<>();;
+		Map<String, Long> deathCounts = new HashMap<>();
+		if (exportList != null) {
+			List<Object[]> objectQueryList = null;
+
+			CriteriaQuery<Object[]> objectCQ = cb.createQuery(Object[].class);
+			Root<Event> eventRoot = objectCQ.from(Event.class);
+
+			// number of Participants
+			Subquery<Long> participantCount = objectCQ.subquery(Long.class);
+			Root<EventParticipant> eventParticipantRoot = participantCount.from(EventParticipant.class);
+			Predicate assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
+			Predicate notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+			participantCount.select(cb.count(eventParticipantRoot));
+			participantCount.where(assignedToEvent, notDeleted);
+
+			// number of cases among event participants
+			Subquery<Long> caseCount = objectCQ.subquery(Long.class);
+			eventParticipantRoot = caseCount.from(EventParticipant.class);
+			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
+			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+			Predicate isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
+			caseCount.select(cb.count(eventParticipantRoot));
+			caseCount.where(assignedToEvent, notDeleted, isCase);
+
+			// number of fatalities among event participant cases
+			Subquery<Long> deathsCount = objectCQ.subquery(Long.class);
+			eventParticipantRoot = deathsCount.from(EventParticipant.class);
+			Join<EventParticipant, Case> caseJoin = eventParticipantRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+			assignedToEvent = cb.equal(eventParticipantRoot.get(EventParticipant.EVENT), eventRoot.get(AbstractDomainObject.ID));
+			notDeleted = cb.isFalse(eventParticipantRoot.get(EventParticipant.DELETED));
+			isCase = cb.isNotNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE));
+			Predicate isDead = cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED);
+			deathsCount.select(cb.count(eventParticipantRoot));
+			deathsCount.where(assignedToEvent, notDeleted, isCase, isDead);
+
+			objectCQ.multiselect(eventRoot.get(Event.UUID), participantCount, caseCount, deathsCount);
+			objectQueryList = em.createQuery(objectCQ).getResultList();
+			objectQueryList.forEach(r -> {
+				participantCounts.put((String) r[0], (Long) r[1]);
+				caseCounts.put((String) r[0], (Long) r[2]);
+				deathCounts.put((String) r[0], (Long) r[3]);
+			});
+
+		}
+
+		if (exportList != null) {
+			for (EventExportDto exportDto : exportList) {
+				Optional.ofNullable(participantCounts.get(exportDto.getUuid())).ifPresent(exportDto::setParticipantCount);
+				Optional.ofNullable(caseCounts.get(exportDto.getUuid())).ifPresent(exportDto::setCaseCount);
+				Optional.ofNullable(deathCounts.get(exportDto.getUuid())).ifPresent(exportDto::setDeathCount);
+			}
 		}
 
 		return exportList;
@@ -450,6 +572,7 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -463,7 +586,14 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setSeatNumber(source.getSeatNumber());
+		target.setTravelDate(source.getTravelDate());
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
@@ -515,8 +645,7 @@ public class EventFacadeEjb implements EventFacade {
 			return null;
 		}
 
-		EventReferenceDto dto = new EventReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		return new EventReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	public static EventDto toDto(Event source) {
@@ -528,6 +657,7 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -541,7 +671,14 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setSeatNumber(source.getSeatNumber());
+		target.setTravelDate(source.getTravelDate());
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
@@ -574,7 +711,7 @@ public class EventFacadeEjb implements EventFacade {
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
-	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, LocalDate referenceDate) {
+	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
 

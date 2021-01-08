@@ -33,8 +33,10 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
@@ -63,6 +65,10 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	private Join<ClinicalCourse, HealthConditions> healthConditions;
 	private Join<Case, EventParticipant> eventParticipants;
 	private Join<Person, List<Location>> personAddresses;
+	private Join<Case, Sample> samples;
+	private Join<Person, Country> personBirthCountry;
+	private Join<Person, Country> personCitizenship;
+	private Join<Case, District> reportingDistrict;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -234,5 +240,37 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 
 	private void setPersonAddresses(Join<Person, List<Location>> personAddresses) {
 		this.personAddresses = personAddresses;
+	}
+
+	public Join<Case, Sample> getSamples() {
+		return getOrCreate(samples, Case.SAMPLES, JoinType.LEFT, this::setSamples);
+	}
+
+	private void setSamples(Join<Case, Sample> samples) {
+		this.samples = samples;
+	}
+
+	public Join<Person, Country> getPersonBirthCountry() {
+		return getOrCreate(personBirthCountry, Person.BIRTH_COUNTRY, JoinType.LEFT, getPerson(), this::setPersonBirthCountry);
+	}
+
+	private void setPersonBirthCountry(Join<Person, Country> personBirthCountry) {
+		this.personBirthCountry = personBirthCountry;
+	}
+
+	public Join<Person, Country> getPersonCitizenship() {
+		return getOrCreate(personCitizenship, Person.CITIZENSHIP, JoinType.LEFT, getPerson(), this::setPersonCitizenship);
+	}
+
+	public void setPersonCitizenship(Join<Person, Country> personCitizenship) {
+		this.personCitizenship = personCitizenship;
+	}
+
+	public Join<Case, District> getReportingDistrict() {
+		return getOrCreate(reportingDistrict, Case.REPORTING_DISTRICT, JoinType.LEFT, this::setReportingDistrict);
+	}
+
+	private void setReportingDistrict(Join<Case, District> reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 }

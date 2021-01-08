@@ -15,12 +15,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
+public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTest> {
 
 	@EJB
 	private SampleService sampleService;
@@ -41,7 +43,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
@@ -68,7 +70,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);

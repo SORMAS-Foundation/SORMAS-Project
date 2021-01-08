@@ -20,12 +20,14 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import java.util.List;
 
 import android.view.View;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
+import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -54,6 +56,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> diseaseList;
 	private List<Item> typeOfPlaceList;
 	private List<Item> srcTypeList;
+	private List<Item> srcInstitutionalPartnerTypeList;
+	private List<Item> meansOfTransportList;
 	private boolean isMultiDayEvent;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
@@ -120,6 +124,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		}
 		typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true);
 		srcTypeList = DataUtils.getEnumItems(EventSourceType.class, true);
+		srcInstitutionalPartnerTypeList = DataUtils.getEnumItems(InstitutionalPartnerType.class, true);
+		meansOfTransportList = DataUtils.getEnumItems(MeansOfTransport.class, true);
 	}
 
 	@Override
@@ -129,6 +135,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.setData(record);
 		contentBinding.setEventStatusClass(EventStatus.class);
 		contentBinding.setEventInvestigationStatusClass(EventInvestigationStatus.class);
+		contentBinding.setRiskLevelClass(RiskLevel.class);
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
 	}
@@ -139,6 +146,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventDisease.initializeSpinner(diseaseList);
 		contentBinding.eventTypeOfPlace.initializeSpinner(typeOfPlaceList);
 		contentBinding.eventSrcType.initializeSpinner(srcTypeList);
+		contentBinding.eventSrcInstitutionalPartnerType.initializeSpinner(srcInstitutionalPartnerTypeList);
+		contentBinding.eventMeansOfTransport.initializeSpinner(meansOfTransportList);
 
 		// Initialize ControlDateFields
 		contentBinding.eventStartDate.initializeDateField(getFragmentManager());

@@ -41,6 +41,9 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
+import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -58,6 +61,7 @@ public class Event extends CoreAdo {
 
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -71,7 +75,14 @@ public class Event extends CoreAdo {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
+	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
+	public static final String CONNECTION_NUMBER = "connectionNumber";
+	public static final String SEAT_NUMBER = "seatNumber";
+	public static final String TRAVEL_DATE = "travelDate";
 	public static final String SRC_TYPE = "srcType";
+	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
+	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
@@ -89,6 +100,7 @@ public class Event extends CoreAdo {
 	public static final String ARCHIVED = "archived";
 
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
@@ -103,7 +115,14 @@ public class Event extends CoreAdo {
 	private User reportingUser;
 	private Location eventLocation;
 	private TypeOfPlace typeOfPlace;
+	private MeansOfTransport meansOfTransport;
+	private String meansOfTransportDetails;
+	private String connectionNumber;
+	private String seatNumber;
+	private Date travelDate;
 	private EventSourceType srcType;
+	private InstitutionalPartnerType srcInstitutionalPartnerType;
+	private String srcInstitutionalPartnerTypeDetails;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
@@ -131,6 +150,15 @@ public class Event extends CoreAdo {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -265,12 +293,74 @@ public class Event extends CoreAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
+	public MeansOfTransport getMeansOfTransport() {
+		return meansOfTransport;
+	}
+
+	public void setMeansOfTransport(MeansOfTransport meansOfTransport) {
+		this.meansOfTransport = meansOfTransport;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getMeansOfTransportDetails() {
+		return meansOfTransportDetails;
+	}
+
+	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
+		this.meansOfTransportDetails = meansOfTransportDetails;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getConnectionNumber() {
+		return connectionNumber;
+	}
+
+	public void setConnectionNumber(String connectionNumber) {
+		this.connectionNumber = connectionNumber;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSeatNumber() {
+		return seatNumber;
+	}
+
+	public void setSeatNumber(String seatNumber) {
+		this.seatNumber = seatNumber;
+	}
+
+	public Date getTravelDate() {
+		return travelDate;
+	}
+
+	public void setTravelDate(Date travelDate) {
+		this.travelDate = travelDate;
+	}
+
+	@Enumerated(EnumType.STRING)
 	public EventSourceType getSrcType() {
 		return srcType;
 	}
 
 	public void setSrcType(EventSourceType srcType) {
 		this.srcType = srcType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InstitutionalPartnerType getSrcInstitutionalPartnerType() {
+		return srcInstitutionalPartnerType;
+	}
+
+	public void setSrcInstitutionalPartnerType(InstitutionalPartnerType srcInstitutionalPartnerType) {
+		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSrcInstitutionalPartnerTypeDetails() {
+		return srcInstitutionalPartnerTypeDetails;
+	}
+
+	public void setSrcInstitutionalPartnerTypeDetails(String srcInstitutionalPartnerTypeDetails) {
+		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

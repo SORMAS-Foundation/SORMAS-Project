@@ -26,8 +26,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import elemental.json.JsonValue;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class CaseUuidRenderer extends HtmlRenderer {
@@ -48,7 +48,7 @@ public class CaseUuidRenderer extends HtmlRenderer {
 		}
 
 		if (value != null && !value.isEmpty()) {
-			value = "<a title='" + value + "'>" + StringEscapeUtils.escapeHtml4(DataHelper.getShortUuid(value)) + "</a>";
+			value = "<a title='" + value + "'>" + HtmlHelper.cleanHtml(DataHelper.getShortUuid(value)) + "</a>";
 			return super.encode(value);
 		} else {
 			return null;

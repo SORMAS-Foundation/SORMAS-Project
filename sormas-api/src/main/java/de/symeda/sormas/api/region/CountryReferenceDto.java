@@ -7,17 +7,29 @@ public class CountryReferenceDto extends ReferenceDto implements StatisticsGroup
 
 	private static final long serialVersionUID = -7477992903590074568L;
 
+	private String isoCode;
+
 	public CountryReferenceDto() {
 	}
 
-    public CountryReferenceDto(String uuid) {
-        setUuid(uuid);
-    }
+	public CountryReferenceDto(String uuid, String isoCode) {
+		super(uuid);
+		this.isoCode = isoCode;
+	}
 
-    public CountryReferenceDto(String uuid, String caption) {
-        setUuid(uuid);
-        setCaption(caption);
-    }
+	public CountryReferenceDto(String uuid, String caption, String isoCode) {
+		setUuid(uuid);
+		setCaption(caption);
+		this.isoCode = isoCode;
+	}
+
+	public String getIsoCode() {
+		return isoCode;
+	}
+
+	public void setIsoCode(String isoCode) {
+		this.isoCode = isoCode;
+	}
 
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {

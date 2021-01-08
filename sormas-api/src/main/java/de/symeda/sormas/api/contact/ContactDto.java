@@ -116,6 +116,12 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 
+	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
+	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
+	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
+
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
+
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
 	@SensitiveData
@@ -251,6 +257,16 @@ public class ContactDto extends PseudonymizableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	@SensitiveData
 	private String endOfQuarantineReasonDetails;
+
+	@HideForCountriesExcept
+	private YesNoUnknown prohibitionToWork;
+	@HideForCountriesExcept
+	private Date prohibitionToWorkFrom;
+	@HideForCountriesExcept
+	private Date prohibitionToWorkUntil;
+
+	@HideForCountriesExcept
+	private DistrictReferenceDto reportingDistrict;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -494,7 +510,12 @@ public class ContactDto extends PseudonymizableDto {
 	}
 
 	public ContactReferenceDto toReference() {
-		return new ContactReferenceDto(getUuid());
+		return new ContactReferenceDto(
+			getUuid(),
+			getPerson().getFirstName(),
+			getPerson().getLastName(),
+			getCaze() != null ? getCaze().getFirstName() : null,
+			getCaze() != null ? getCaze().getLastName() : null);
 	}
 
 	public UserReferenceDto getResultingCaseUser() {
@@ -815,6 +836,38 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setEndOfQuarantineReasonDetails(String endOfQuarantineReasonDetails) {
 		this.endOfQuarantineReasonDetails = endOfQuarantineReasonDetails;
+	}
+
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	public DistrictReferenceDto getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(DistrictReferenceDto reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	public YesNoUnknown getReturningTraveler() {

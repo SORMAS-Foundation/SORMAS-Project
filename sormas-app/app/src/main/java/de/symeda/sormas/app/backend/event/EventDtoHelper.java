@@ -67,6 +67,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	public void fillInnerFromDto(Event target, EventDto source) {
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -83,8 +84,12 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEventLocation(locationHelper.fillOrCreateFromDto(target.getEventLocation(), source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
@@ -107,6 +112,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	public void fillInnerFromAdo(EventDto target, Event source) {
 
 		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -134,8 +140,12 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		}
 
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 
 		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());

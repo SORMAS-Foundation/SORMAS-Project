@@ -19,17 +19,13 @@ package de.symeda.sormas.backend.hospitalization;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 
 @Stateless
 @LocalBean
-public class HospitalizationService extends AbstractAdoService<Hospitalization> {
+public class HospitalizationService extends BaseAdoService<Hospitalization> {
 
 	public HospitalizationService() {
 		super(Hospitalization.class);
@@ -42,10 +38,4 @@ public class HospitalizationService extends AbstractAdoService<Hospitalization> 
 		return hospitalization;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Hospitalization> from) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
-	}
 }

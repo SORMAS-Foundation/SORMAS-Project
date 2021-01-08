@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.messaging.MessageType;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -147,6 +148,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertEquals(null, contact.getFollowUpUntil());
+	}
+
+	@Test
+	public void testCountCasesWithMisingContactInformation() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
+
+		cazePerson.setPhone("40742140797");
+		getPersonFacade().savePerson(cazePerson);
+
+		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 	}
 
 	@Test
@@ -475,16 +500,19 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.getEpiData().getExposures().add(exposure);
 		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
-
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
 		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		creator.createSample(caze.toReference(), cal.getTime(), cal.getTime(), user.toReference(), SampleMaterial.CRUST, rdcf.facility);
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_MANAGEMENT, 0, 100, null, Language.EN);
+		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 
 		// List should have one entry
 		assertEquals(1, results.size());
 
+		assertEquals(true, results.get(0).getSampleDateTime2().after(results.get(0).getSampleDateTime3()));
 		// Make sure that everything that is added retrospectively (symptoms, sample
 		// dates, lab results, address, travel history) is present
 		CaseExportDto exportDto = results.get(0);

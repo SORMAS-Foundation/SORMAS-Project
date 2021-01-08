@@ -15,12 +15,8 @@
 
 package de.symeda.sormas.ui.campaign;
 
-import java.util.Optional;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SubMenu;
@@ -40,7 +36,7 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
 		menu.removeAllViews();
 
 		menu.addView(
@@ -51,7 +47,6 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 			CampaignsView.VIEW_NAME,
 			I18nProperties.getPrefixCaption("View", CampaignsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 			params);
-
 	}
 
 	public static void registerViews(Navigator navigator) {
@@ -59,12 +54,6 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView<Com
 		navigator.addView(CampaignFormDataView.VIEW_NAME, CampaignFormDataView.class);
 		navigator.addView(CampaignsView.VIEW_NAME, CampaignsView.class);
 		navigator.addView(CampaignView.VIEW_NAME, CampaignView.class);
-
-	}
-
-	@Override
-	protected Optional<VerticalLayout> createInfoLayout() {
-		return Optional.empty();
 	}
 
 }

@@ -22,13 +22,14 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.backend.util.ClientHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -110,7 +111,7 @@ public class ExternalJournalService {
 			throw new IllegalArgumentException("Property interface.symptomjournal.secret is not defined");
 		}
 		try {
-			Client client = ClientBuilder.newClient();
+			Client client = ClientHelper.newBuilderWithProxy().build();
 			HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(clientId, secret);
 			client.register(feature);
 			WebTarget webTarget = client.target(authenticationUrl);
@@ -157,7 +158,7 @@ public class ExternalJournalService {
 		}
 
 		try {
-			Client client = ClientBuilder.newClient();
+			Client client = ClientHelper.newBuilderWithProxy().build();
 			WebTarget webTarget = client.target(authenticationUrl);
 			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 			Response response = invocationBuilder.post(Entity.json(ImmutableMap.of("email", email, "password", pass)));
@@ -201,21 +202,19 @@ public class ExternalJournalService {
 	/**
 	 * Notify external journals that a person has been updated
 	 * 
-	 * @param existingPerson
+	 * @param existingJournalPerson
 	 *            the person already available in the external journal
-	 * @param updatedPerson
-	 *            the updated person in SORMAS
 	 * @return true if the person data change was considered relevant for external journals, false otherwise.
 	 *
 	 */
-	public boolean notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-		boolean shouldNotify = shouldNotify(existingPerson, updatedPerson);
-		if (shouldNotify) {
+	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
+		boolean shouldNotify = shouldNotify(existingJournalPerson);
+		if (shouldNotify(existingJournalPerson)) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
-				notifySymptomJournal(existingPerson.getUuid());
+				notifySymptomJournal(existingJournalPerson.getUuid());
 			}
 			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
-				notifyPatientDiary(existingPerson.getUuid());
+				notifyPatientDiary(existingJournalPerson.getUuid());
 			}
 		}
 		return shouldNotify;
@@ -225,19 +224,12 @@ public class ExternalJournalService {
 	 * Note: This method just checks for changes in the Person data.
 	 * It can not check for Contact related data such as FollowUpUntil dates.
 	 */
-	private boolean shouldNotify(PersonDto existingPerson, PersonDto updatedPerson) {
-		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(existingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(existingPerson.getSymptomJournalStatus());
-		boolean relevantFieldsUpdated = Comparator.comparing(PersonDto::getFirstName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getLastName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getEmailAddress, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getPhone, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateDD, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateMM, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateYYYY, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getSex, Comparator.nullsLast(Comparator.naturalOrder()))
-			.compare(existingPerson, updatedPerson)
-			!= 0;
+	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
+		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
+		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
+			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus());
+		JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
+		boolean relevantFieldsUpdated = !existingJournalPerson.equals(updatedJournalPerson);
 		return relevantPerson && relevantFieldsUpdated;
 	}
 
@@ -296,7 +288,7 @@ public class ExternalJournalService {
 	/**
 	 * Attempts to register a new patient in the CLIMEDO patient diary.
 	 * Sets the person symptom journal status to REGISTERED if successful.
-	 * 
+	 *
 	 * @param person
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
@@ -326,7 +318,7 @@ public class ExternalJournalService {
 
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
 		String externalDataUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/external-data/" + personUuid;
-		Client client = ClientBuilder.newClient();
+		Client client = ClientHelper.newBuilderWithProxy().build();
 		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken());
 	}
 
@@ -395,7 +387,17 @@ public class ExternalJournalService {
 			.map(PatientDiaryIdatId::getIdat)
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
-		return notUsed || samePerson;
+		boolean sameFamily = response.getResults()
+				.stream()
+				.map(PatientDiaryPersonData::getIdatId)
+				.map(PatientDiaryIdatId::getIdat)
+				.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
+		return notUsed || samePerson || sameFamily;
+	}
+
+	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
+		return patientDiaryPerson.getLastName().equals(person.getLastName()) &&
+				!patientDiaryPerson.getFirstName().equals(person.getFirstName());
 	}
 
 	private boolean isPhoneAvailable(PersonDto person, String phone) {
@@ -413,7 +415,7 @@ public class ExternalJournalService {
 
 	/**
 	 * Queries the CLIMEDO patients for ones matching the given property
-	 * 
+	 *
 	 * @param key
 	 *            the name of the property to match
 	 * @param value
@@ -426,7 +428,7 @@ public class ExternalJournalService {
 			String queryParam = "\"" + key + "\" = \"" + value + "\"";
 			String encodedParams = URLEncoder.encode(queryParam, StandardCharsets.UTF_8.toString());
 			String fullUrl = probandsUrl + "?q=" + encodedParams;
-			Client client = ClientBuilder.newClient();
+			Client client = ClientHelper.newBuilderWithProxy().build();
 			Response response = client.target(fullUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken()).get();
 			if (response.getStatus() == NOT_FOUND_STATUS) {
 				return Optional.empty();

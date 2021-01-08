@@ -29,8 +29,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
@@ -85,7 +83,9 @@ import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -113,7 +113,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.DISEASE)) +
                     fluidRowLocs(ContactDto.DISEASE_DETAILS) +
                     fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
-                    fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
+                    fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.REPORTING_DISTRICT) +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
 					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
@@ -125,6 +125,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
                     fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
                     fluidRowLocs(ContactDto.DESCRIPTION) +
+					fluidRowLocs(6, CaseDataDto.PROHIBITION_TO_WORK, 3, CaseDataDto.PROHIBITION_TO_WORK_FROM, 3, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
                     fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
@@ -203,6 +204,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
 
 		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+		((ComboBox) addField(ContactDto.REPORTING_DISTRICT)).addItems(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
 		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
 		contactIdentificationSourceDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -245,6 +247,30 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		cbDisease = addDiseaseField(ContactDto.DISEASE, false);
 		cbDisease.setNullSelectionAllowed(false);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
+
+		addField(ContactDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		DateField prohibitionToWorkFrom = addField(ContactDto.PROHIBITION_TO_WORK_FROM);
+		DateField prohibitionToWorkUntil = addDateField(ContactDto.PROHIBITION_TO_WORK_UNTIL, DateField.class, -1);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(ContactDto.PROHIBITION_TO_WORK_FROM, ContactDto.PROHIBITION_TO_WORK_UNTIL),
+			ContactDto.PROHIBITION_TO_WORK,
+			YesNoUnknown.YES,
+			true);
+		prohibitionToWorkFrom.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkFrom,
+				prohibitionToWorkUntil,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, prohibitionToWorkFrom.getCaption(), prohibitionToWorkUntil.getCaption())));
+		prohibitionToWorkUntil.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkUntil,
+				prohibitionToWorkFrom,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		quarantine = addField(ContactDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> onValueChange());

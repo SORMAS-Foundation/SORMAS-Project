@@ -26,6 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -65,6 +66,7 @@ public class UsersView extends AbstractView {
 
 	private UserGrid grid;
 	private Button createButton;
+	private Button syncButton;
 
 	private VerticalLayout gridLayout;
 
@@ -108,6 +110,16 @@ public class UsersView extends AbstractView {
 
 			addHeaderComponent(createButton);
 		}
+
+		if (AuthProvider.getProvider().isUserSyncSupported()) {
+			syncButton = ButtonHelper.createIconButton(
+				Captions.syncUsers,
+				VaadinIcons.REFRESH,
+				e -> ControllerProvider.getUserController().sync()
+			);
+
+			addHeaderComponent(syncButton);
+		}
 	}
 
 	public HorizontalLayout createFilterBar() {
@@ -136,7 +148,7 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles()));
+		userRolesFilter.addItems(UserUiHelper.getAssignableRoles());
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRole) e.getProperty().getValue());
 			navigateTo(criteria);

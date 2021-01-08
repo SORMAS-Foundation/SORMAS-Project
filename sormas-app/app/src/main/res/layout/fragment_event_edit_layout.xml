@@ -26,14 +26,17 @@
 
     <data>
         <import type="de.symeda.sormas.api.event.EventStatus" />
+        <import type="de.symeda.sormas.api.event.MeansOfTransport" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.event.EventSourceType" />
+        <import type="de.symeda.sormas.api.event.InstitutionalPartnerType" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="eventStatusClass" type="Class" />
         <variable name="eventInvestigationStatusClass" type="Class" />
+        <variable name="riskLevelClass" type="Class" />
         <variable name="isMultiDayEvent" type="Boolean" />
     </data>
 
@@ -90,6 +93,14 @@
                 app:enumClass="@{eventStatusClass}"
                 app:required="true"
                 app:value="@={data.eventStatus}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/event_riskLevel"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventEventStatus}"
+                app:dependencyParentValue="@{EventStatus.CLUSTER}"
+                app:enumClass="@{riskLevelClass}"
+                app:value="@={data.riskLevel}"/>
 
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/event_multiDayEvent"
@@ -211,6 +222,22 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_meansOfTransport"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                app:softRequired="true"
+                app:value="@={data.meansOfTransport}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_meansOfTransportDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventMeansOfTransport}"
+                app:dependencyParentValue="@{MeansOfTransport.OTHER}"
+                app:softRequired="true"
+                app:value="@={data.meansOfTransportDetails}" />
+
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <TextView
@@ -224,6 +251,29 @@
                 style="@style/ControlSingleColumnStyle"
                 app:softRequired="true"
                 app:value="@={data.srcType}" />
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/event_srcInstitutionalPartnerType"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:dependencyParentField="@{eventSrcType}"
+                        app:dependencyParentValue="@{EventSourceType.INSTITUTIONAL_PARTNER}"
+                        app:softRequired="true"
+                        app:value="@={data.srcInstitutionalPartnerType}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/event_srcInstitutionalPartnerTypeDetails"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:dependencyParentField="@{eventSrcInstitutionalPartnerType}"
+                        app:dependencyParentValue="@{InstitutionalPartnerType.OTHER}"
+                        app:softRequired="true"
+                        app:value="@={data.srcInstitutionalPartnerTypeDetails}" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

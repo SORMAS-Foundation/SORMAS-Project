@@ -21,7 +21,9 @@ import static de.symeda.sormas.app.util.DataUtils.toItems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -49,11 +51,26 @@ import de.symeda.sormas.app.component.controls.ControlTextEditField;
 public final class InfrastructureHelper {
 
 	public static List<Item> loadCountries() {
-		return toItems(DatabaseHelper.getCountryDao().queryActiveForAll(Country.NAME, true));
+		List<Item> items = new ArrayList<>();
+
+		items.add(new Item<>("", null));
+		items.addAll(
+			DatabaseHelper.getCountryDao()
+				.queryActiveForAll(Country.ISO_CODE, true)
+				.stream()
+				.map(c -> new Item<>(I18nProperties.getCountryName(c.getIsoCode(), c.getName()), c))
+				.sorted(Comparator.comparing(Item::getKey))
+				.collect(Collectors.toList()));
+
+		return items;
 	}
 
 	public static List<Item> loadRegions() {
 		return toItems(DatabaseHelper.getRegionDao().queryActiveForAll(Region.NAME, true));
+	}
+
+	public static List<Item> loadAllDistricts() {
+		return toItems(DatabaseHelper.getDistrictDao().queryActiveForAll());
 	}
 
 	public static List<Item> loadDistricts(Region region) {

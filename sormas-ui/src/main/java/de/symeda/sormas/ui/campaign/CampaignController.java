@@ -17,17 +17,13 @@ package de.symeda.sormas.ui.campaign;
 
 import static com.vaadin.v7.data.Validator.InvalidValueException;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -91,15 +87,16 @@ public class CampaignController {
 		VaadinUiUtil.showModalPopupWindow(campaignComponent, heading);
 	}
 
-	public void createCampaignDataForm(CampaignFormMetaReferenceDto campaignForm) {
+	public void createCampaignDataForm(CampaignReferenceDto campaign, CampaignFormMetaReferenceDto campaignForm) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaignForm, false, false, () -> {
-			window.close();
-			SormasUI.refreshView();
-			Notification
-				.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
-		}, window::close);
+		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
+			getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
+				window.close();
+				SormasUI.refreshView();
+				Notification
+					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
+			}, window::close);
 
 		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
 		window.setContent(component);
@@ -201,6 +198,7 @@ public class CampaignController {
 
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 		CampaignFormDataDto campaignFormData,
+		CampaignReferenceDto campaign,
 		CampaignFormMetaReferenceDto campaignForm,
 		boolean revertFormOnDiscard,
 		boolean showDeleteButton,
@@ -212,7 +210,7 @@ public class CampaignController {
 
 			final UserDto currentUser = UserProvider.getCurrent().getUser();
 			campaignFormData =
-				CampaignFormDataDto.build(null, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
+				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		form.setValue(campaignFormData);
@@ -232,9 +230,12 @@ public class CampaignController {
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
 				if (commitCallback != null) {
 					commitCallback.run();
+					UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME);
 				}
 			}
 		});
+
+		component.addDiscardListener(() -> UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME));
 
 		if (revertFormOnDiscard) {
 			component.addDiscardListener(form::resetFormValues);

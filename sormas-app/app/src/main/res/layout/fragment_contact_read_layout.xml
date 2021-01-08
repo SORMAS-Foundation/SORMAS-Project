@@ -164,6 +164,31 @@
                     app:value="@{data.caseOrEventInformation}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_prohibitionToWork"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.prohibitionToWork}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_prohibitionToWorkFrom"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:dependencyParentField="@{contactProhibitionToWork}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.prohibitionToWorkFrom}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_prohibitionToWorkUntil"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:dependencyParentField="@{contactProhibitionToWork}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.prohibitionToWorkUntil}" />
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -356,6 +381,11 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_reportingDistrict"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.reportingDistrict}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

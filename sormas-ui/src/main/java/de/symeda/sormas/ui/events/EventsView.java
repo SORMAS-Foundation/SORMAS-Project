@@ -41,8 +41,11 @@ import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.event.EventActionExportDto;
+import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
@@ -182,6 +185,33 @@ public class EventsView extends AbstractView {
 							return caption;
 						},
 						createFileNameWithCurrentDate("sormas_events_", ".csv"),
+						null);
+					addExportButton(
+						exportStreamResource,
+						exportPopupButton,
+						exportLayout,
+						VaadinIcons.FILE_TEXT,
+						Captions.exportDetailed,
+						Strings.infoDetailedExport);
+				} else {
+					StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
+						EventActionExportDto.class,
+						null,
+						(Integer start, Integer max) -> FacadeProvider.getActionFacade()
+							.getEventActionExportList((EventCriteria) grid.getCriteria(), start, max),
+						(propertyId, type) -> {
+							String caption = I18nProperties.findPrefixCaption(
+								propertyId,
+								EventActionExportDto.I18N_PREFIX,
+								EventActionIndexDto.I18N_PREFIX,
+								ActionDto.I18N_PREFIX,
+								EventDto.I18N_PREFIX);
+							if (Date.class.isAssignableFrom(type)) {
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+							}
+							return caption;
+						},
+						createFileNameWithCurrentDate("sormas_events_actions", ".csv"),
 						null);
 					addExportButton(
 						exportStreamResource,

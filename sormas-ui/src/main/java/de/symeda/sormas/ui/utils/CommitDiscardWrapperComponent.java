@@ -47,6 +47,7 @@ import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 
@@ -273,6 +274,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					discard();
 				}
 			});
+			discardButton.setDescription(I18nProperties.getDescription(Descriptions.discardDescription));
 		}
 
 		return discardButton;

@@ -43,6 +43,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -71,13 +73,11 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CronService;
-import de.symeda.sormas.backend.common.MessageSubject;
-import de.symeda.sormas.backend.common.MessageType;
-import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
+import de.symeda.sormas.backend.common.messaging.MessageSubject;
+import de.symeda.sormas.backend.common.messaging.MessagingService;
+import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
@@ -350,12 +350,12 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task);
 		} else {
-			filter = AbstractAdoService.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
+			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (taskCriteria != null) {
 			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -413,12 +413,12 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task);
 		} else {
-			filter = AbstractAdoService.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
+			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (taskCriteria != null) {
 			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -428,7 +428,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
 
-		List<Order> order = new ArrayList<Order>();
+		List<Order> order = new ArrayList<>();
 		if (sortProperties != null && sortProperties.size() > 0) {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;

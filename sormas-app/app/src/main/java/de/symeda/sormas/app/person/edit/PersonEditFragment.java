@@ -30,12 +30,14 @@ import android.view.ViewGroup;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -43,11 +45,13 @@ import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -62,7 +66,6 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -85,7 +88,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			PersonEditFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
@@ -108,6 +112,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 		fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
 
+		List<Item> salutationList = DataUtils.getEnumItems(Salutation.class, true);
 		List<Item> monthList = DataUtils.getMonthItems(true);
 		List<Item> yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
 		List<Item> approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
@@ -130,6 +135,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
 		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
+		List<Item> countryList = InfrastructureHelper.loadCountries();
 
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.personPlaceOfBirthFacility,
@@ -164,6 +170,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			false);
 
 		// Initialize ControlSpinnerFields
+		contentBinding.personSalutation.initializeSpinner(salutationList);
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
 		contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
 			updateApproximateAgeField(contentBinding);
@@ -189,6 +196,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.personDeathPlaceType.initializeSpinner(deathPlaceTypeList);
 		contentBinding.personBurialConductor.initializeSpinner(burialConductorList);
 		contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true, countryVisibilityChecker));
+		contentBinding.personArmedForcesRelationType.initializeSpinner(DataUtils.getEnumItems(ArmedForcesRelationType.class, true));
 		contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
 		contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
 
@@ -210,6 +218,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 				contentBinding.personApproximateAgeType.setValue(ApproximateAgeType.YEARS);
 			}
 		}
+
+		contentBinding.personBirthCountry.initializeSpinner(countryList);
+		contentBinding.personCitizenship.initializeSpinner(countryList);
 
 		// Initialize ControlDateFields
 		contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
@@ -463,6 +474,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 	@Override
 	public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
 		PersonEditFragment.setUpLayoutBinding(this, record, contentBinding, rootData);
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
+		}
 	}
 
 	@Override

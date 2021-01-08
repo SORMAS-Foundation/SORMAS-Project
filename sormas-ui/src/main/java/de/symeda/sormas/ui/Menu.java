@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import com.vaadin.event.ContextClickEvent;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
@@ -77,7 +78,7 @@ public class Menu extends CssLayout {
 
 		// header of the menu
 		final HorizontalLayout top = new HorizontalLayout();
-		top.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
 		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
@@ -92,9 +93,9 @@ public class Menu extends CssLayout {
 			image = new Image(null, new ThemeResource("img/sormas-logo.png"));
 		}
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
-		image.addClickListener((MouseEvents.ClickListener) event -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		top.addComponent(image);
 		top.addComponent(title);
+		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		menuPart.addComponent(top);
 
 		// button for toggling the visibility of the menu when on a small screen

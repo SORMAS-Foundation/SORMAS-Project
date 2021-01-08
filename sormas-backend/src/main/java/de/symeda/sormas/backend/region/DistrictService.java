@@ -32,6 +32,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
@@ -95,7 +96,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 
 		Predicate filter = null;
 		if (criteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(from.join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getNameEpidLike() != null) {
 			String[] textFilters = criteria.getNameEpidLike().split("\\s+");
@@ -104,15 +105,15 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters =
 						cb.or(cb.like(cb.lower(from.get(District.NAME)), textFilter), cb.like(cb.lower(from.get(District.EPID_CODE)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = and(cb, filter, cb.or(cb.equal(from.get(District.ARCHIVED), false), cb.isNull(from.get(District.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(District.ARCHIVED), false), cb.isNull(from.get(District.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = and(cb, filter, cb.equal(from.get(District.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(District.ARCHIVED), true));
 			}
 		}
 		return filter;

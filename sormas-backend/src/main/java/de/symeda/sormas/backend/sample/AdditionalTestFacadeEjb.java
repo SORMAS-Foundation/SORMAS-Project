@@ -146,7 +146,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		return target;
 	}
 
-	public AdditionalTestDto toDto(AdditionalTest source) {
+	public static AdditionalTestDto toDto(AdditionalTest source) {
 
 		if (source == null) {
 			return null;

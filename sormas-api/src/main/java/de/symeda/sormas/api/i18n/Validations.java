@@ -26,6 +26,7 @@ public interface Validations {
 	String campaignFormElementNotExisting = "campaignFormElementNotExisting";
 	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
 	String campaignFormInvalidIdInListElements = "campaignFormInvalidIdInListElements";
+	String campaignFormMetaValidationUnexpectedError = "campaignFormMetaValidationUnexpectedError";
 	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
 	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
 	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";
@@ -112,6 +113,7 @@ public interface Validations {
 	String userNameNotUnique = "userNameNotUnique";
 	String validCaseContactOrEventParticipant = "validCaseContactOrEventParticipant";
 	String validCommunity = "validCommunity";
+	String validDateRange = "validDateRange";
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validEmailAddress = "validEmailAddress";

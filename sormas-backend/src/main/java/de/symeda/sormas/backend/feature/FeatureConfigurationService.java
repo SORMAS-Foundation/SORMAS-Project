@@ -1,9 +1,10 @@
 package de.symeda.sormas.backend.feature;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -14,11 +15,12 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -26,7 +28,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class FeatureConfigurationService extends AbstractAdoService<FeatureConfiguration> {
+public class FeatureConfigurationService extends AdoServiceWithUserFilter<FeatureConfiguration> {
 
 	public FeatureConfigurationService() {
 		super(FeatureConfiguration.class);
@@ -71,23 +73,23 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 
 		Predicate filter = null;
 		if (ArrayUtils.isNotEmpty(criteria.getFeatureTypes())) {
-			filter = and(cb, filter, from.get(FeatureConfiguration.FEATURE_TYPE).in(criteria.getFeatureTypes()));
+			filter = CriteriaBuilderHelper.and(cb, filter, from.get(FeatureConfiguration.FEATURE_TYPE).in(criteria.getFeatureTypes()));
 		}
 		if (criteria.getRegion() != null) {
 			filter =
-				and(cb, filter, cb.equal(from.join(FeatureConfiguration.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(FeatureConfiguration.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(from.join(FeatureConfiguration.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getDisease() != null) {
-			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.DISEASE), criteria.getDisease()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(FeatureConfiguration.DISEASE), criteria.getDisease()));
 		}
 		if (criteria.getEnabled() != null) {
-			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.ENABLED), criteria.getEnabled()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(FeatureConfiguration.ENABLED), criteria.getEnabled()));
 		}
 		return filter;
 	}
@@ -103,13 +105,13 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 
 		Predicate filter = null;
 		if (currentUser.getRegion() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.or(cb.isNull(from.get(FeatureConfiguration.REGION)), cb.equal(from.get(FeatureConfiguration.REGION), currentUser.getRegion())));
 		}
 		if (currentUser.getDistrict() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.or(
@@ -123,28 +125,47 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 	public void createMissingFeatureConfigurations() {
 
 		List<FeatureConfiguration> featureConfigurations = getAll();
-		Map<FeatureType, FeatureConfiguration> existingListOfConfigurations = new HashMap<>();
-
-		for (FeatureConfiguration singleFeatureConfiguration : featureConfigurations) {
-			existingListOfConfigurations.put(singleFeatureConfiguration.getFeatureType(), singleFeatureConfiguration);
-		}
+		Map<FeatureType, FeatureConfiguration> existingListOfConfigurations =
+			featureConfigurations.stream().collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity()));
 
 		FeatureType.getAllServerFeatures().forEach(featureType -> {
 			FeatureConfiguration savedConfiguration = existingListOfConfigurations.get(featureType);
-			if (savedConfiguration != null) {
-				if (featureType.isDependent() && featureType.dependencyTriggered()) {
-					savedConfiguration.setEnabled(false);
-					ensurePersisted(savedConfiguration);
-				}
-			} else {
-				FeatureConfiguration configuration;
-				if (featureType.isDependent() && featureType.dependencyTriggered()) {
-					configuration = FeatureConfiguration.build(featureType, false);
-				} else {
-					configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
-				}
+			if (savedConfiguration == null) {
+				FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
 				ensurePersisted(configuration);
 			}
 		});
+	}
+
+	public void updateFeatureConfigurations() {
+
+		List<FeatureConfiguration> featureConfigurations = getAll();
+		Map<FeatureType, FeatureConfiguration> featureConfigurationMap =
+			featureConfigurations.stream().collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity()));
+
+		FeatureType.getAllServerFeatures().forEach(featureType -> {
+			if (featureType.isDependent()) {
+				boolean hasEnabledDependentFeature = hasEnabledDependentFeature(featureType, featureConfigurationMap);
+
+				if (!hasEnabledDependentFeature) {
+					FeatureConfiguration configuration = featureConfigurationMap.get(featureType);
+					configuration.setEnabled(false);
+					ensurePersisted(configuration);
+				}
+			}
+		});
+	}
+
+	private boolean hasEnabledDependentFeature(FeatureType featureType, Map<FeatureType, FeatureConfiguration> featureConfigurationMap) {
+
+		for (FeatureType dependentFeatureType : featureType.getDependentFeatures()) {
+			if (dependentFeatureType.isDependent()) {
+				return hasEnabledDependentFeature(dependentFeatureType, featureConfigurationMap);
+			} else if (featureConfigurationMap.get(dependentFeatureType).isEnabled()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
