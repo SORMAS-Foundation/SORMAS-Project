@@ -19,11 +19,13 @@ public class ExportConfigurationDto extends EntityDto {
 	private UserReferenceDto user;
 	private Set<String> properties;
 
-	public static ExportConfigurationDto build(UserReferenceDto user) {
+	public static ExportConfigurationDto build(UserReferenceDto user, ExportType exportType) {
 
 		ExportConfigurationDto config = new ExportConfigurationDto();
 		config.setUuid(DataHelper.createUuid());
 		config.setUser(user);
+		config.setExportType(exportType);
+
 		return config;
 	}
 

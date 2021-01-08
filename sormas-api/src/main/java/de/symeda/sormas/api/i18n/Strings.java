@@ -467,7 +467,7 @@ public interface Strings {
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
-	String infoCustomCaseExport = "infoCustomCaseExport";
+	String infoCustomExport = "infoCustomExport";
 	String infoDashboardIncidence = "infoDashboardIncidence";
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
 	String infoDefineOutbreaks = "infoDefineOutbreaks";

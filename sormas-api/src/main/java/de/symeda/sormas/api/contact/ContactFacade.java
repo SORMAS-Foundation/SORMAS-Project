@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -70,7 +71,12 @@ public interface ContactFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
+	List<ContactExportDto> getExportList(
+		ContactCriteria contactCriteria,
+		int first,
+		int max,
+		ExportConfigurationDto exportConfiguration,
+		Language userLanguage);
 
 	List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 

@@ -955,7 +955,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getVisitFacade().saveVisit(visit);
 
 		List<ContactExportDto> results;
-		results = getContactFacade().getExportList(null, 0, 100, Language.EN);
+		results = getContactFacade().getExportList(null, 0, 100, null, Language.EN);
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, results.size());
@@ -994,7 +994,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(new EventReferenceDto(event2.getUuid()), contactPerson, reportingUser);
 		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
 
-		results = getContactFacade().getExportList(null, 0, 100, Language.EN);
+		results = getContactFacade().getExportList(null, 0, 100, null, Language.EN);
 		assertThat(results, hasSize(1));
 		{
 			ContactExportDto dto = results.get(0);

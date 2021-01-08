@@ -27,6 +27,7 @@ public class ExportConfiguration extends AbstractDomainObject {
 	private static final long serialVersionUID = 8901097581909494666L;
 
 	public static final String NAME = "name";
+	public static final String EXPORT_TYPE = "exportType";
 	public static final String TARGET = "target";
 	public static final String USER = "user";
 	public static final String PROPERTIES_STRING = "propertiesString";
