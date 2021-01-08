@@ -26,7 +26,7 @@ import de.symeda.sormas.api.HasUuid;
  * @author Oliver Milke
  * @since 13.01.2016
  */
-public class EntityId {
+public final class EntityId {
 
 	private final Class<?> entityClass;
 	private final String entityUuid;

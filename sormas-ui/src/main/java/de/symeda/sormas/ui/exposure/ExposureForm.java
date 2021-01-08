@@ -45,6 +45,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -255,7 +256,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.GATHERING_DETAILS, ExposureDto.GATHERING_TYPE, GatheringType.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.HABITATION_DETAILS, ExposureDto.HABITATION_TYPE, HabitationType.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL_DETAILS, ExposureDto.TYPE_OF_ANIMAL, AnimalContactType.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL_DETAILS, ExposureDto.TYPE_OF_ANIMAL, TypeOfAnimal.OTHER, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(

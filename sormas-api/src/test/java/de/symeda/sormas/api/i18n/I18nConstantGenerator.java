@@ -167,6 +167,7 @@ public class I18nConstantGenerator {
 		config.add(new I18nConstantGenerator("strings.properties", "Strings", false));
 		config.add(new I18nConstantGenerator("validations.properties", "Validations", false));
 		config.add(new I18nConstantGenerator("countriess.properties", "Countries", false));
+		config.add(new I18nConstantGenerator("descriptions.properties", "Descriptions", false));
 
 		return config;
 	}
