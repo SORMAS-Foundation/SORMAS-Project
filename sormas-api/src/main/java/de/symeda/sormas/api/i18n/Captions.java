@@ -1484,6 +1484,7 @@ public interface Captions {
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
+	String singleDayEventEvolutionDate = "singleDayEventEvolutionDate";
 	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
 	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
