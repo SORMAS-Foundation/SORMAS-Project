@@ -48,7 +48,9 @@ public enum TaskType {
 	OTHER(true, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL),
 	DAILY_REPORT_GENERATION(TaskContext.GENERAL),
 	SURVEILLANCE_REPORT_GENERATION(TaskContext.GENERAL),
-	WEEKLY_REPORT_GENERATION(TaskContext.GENERAL);
+	WEEKLY_REPORT_GENERATION(TaskContext.GENERAL),
+	CONTINUE_INVESTIGATION(TaskContext.EVENT),
+	REQUEST_OR_ADDITIONAL_INFORMATION(TaskContext.EVENT);
 
 	private final boolean creatorCommentRequired;
 	private final TaskContext[] taskContexts;
