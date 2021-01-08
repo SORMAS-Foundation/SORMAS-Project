@@ -161,6 +161,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setProhibitionToWork(source.getProhibitionToWork());
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
+		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
 	}
 
 	@Override
@@ -296,6 +298,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setProhibitionToWork(source.getProhibitionToWork());
 		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
+		if (source.getReportingDistrict() != null) {
+			District district = DatabaseHelper.getDistrictDao().queryForId(source.getReportingDistrict().getId());
+			target.setReportingDistrict(DistrictDtoHelper.toReferenceDto(district));
+		} else {
+			target.setReportingDistrict(null);
+		}
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {

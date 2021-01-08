@@ -192,6 +192,7 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS = "quarantineReasonBeforeIsolationDetails";
 	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
 	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
 
 	private Person person;
 	private String description;
@@ -332,6 +333,8 @@ public class Case extends CoreAdo {
 	private YesNoUnknown prohibitionToWork;
 	private Date prohibitionToWorkFrom;
 	private Date prohibitionToWorkUntil;
+
+	private District reportingDistrict;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -1398,6 +1401,15 @@ public class Case extends CoreAdo {
 
 	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	@ManyToOne
+	public District getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(District reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	@ManyToOne(cascade = CascadeType.ALL)

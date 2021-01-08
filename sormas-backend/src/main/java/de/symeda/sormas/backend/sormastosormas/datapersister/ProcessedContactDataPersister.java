@@ -47,12 +47,9 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistSharedData(ProcessedContactData contactData) throws SormasToSormasValidationException {
-		persistSharedDataInTransaction(contactData);
-	}
-
-	@Transactional
-	private void persistSharedDataInTransaction(ProcessedContactData contactData) throws SormasToSormasValidationException {
 		handleValidationError(
 			() -> personFacade.savePerson(contactData.getPerson()),
 			Captions.Person,
@@ -68,27 +65,23 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	}
 
 	@Override
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistReturnedData(ProcessedContactData contactData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
-		persistReturnedDataInTransaction(contactData, originInfo);
-	}
-
-	@Transactional
-	private void persistReturnedDataInTransaction(ProcessedContactData contactData, SormasToSormasOriginInfoDto originInfo)
-		throws SormasToSormasValidationException {
-		handleValidationError(
-			() -> personFacade.savePerson(contactData.getPerson()),
-			Captions.Person,
-			buildContactValidationGroupName(contactData.getContact()));
 		ContactDto savedContact = handleValidationError(
 			() -> contactFacade.saveContact(contactData.getContact()),
 			Captions.Contact,
 			buildContactValidationGroupName(contactData.getContact()));
-
 		SormasToSormasShareInfo contactShareInfo =
 			shareInfoService.getByContactAndOrganization(savedContact.getUuid(), originInfo.getOrganizationId());
 		contactShareInfo.setOwnershipHandedOver(false);
 		shareInfoService.persist(contactShareInfo);
+
+		handleValidationError(
+			() -> personFacade.savePerson(contactData.getPerson()),
+			Captions.Person,
+			buildContactValidationGroupName(contactData.getContact()));
 
 		if (contactData.getSamples() != null) {
 			dataPersisterHelper.persistReturnedSamples(contactData.getSamples(), originInfo);

@@ -37,6 +37,7 @@ public class FacilityDto extends EntityDto {
 	public static final List<String> CONSTANT_FACILITY_UUIDS = Arrays.asList(OTHER_FACILITY_UUID, NONE_FACILITY_UUID);
 	public static final String OTHER_FACILITY = "OTHER_FACILITY";
 	public static final String NO_FACILITY = "NO_FACILITY";
+	public static final String CONFIGURED_FACILITY = "CONFIGURED_FACILITY";
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";

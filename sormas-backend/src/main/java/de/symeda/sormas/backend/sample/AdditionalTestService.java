@@ -17,6 +17,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -42,7 +43,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
@@ -69,7 +70,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);

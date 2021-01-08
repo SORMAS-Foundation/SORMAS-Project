@@ -41,8 +41,8 @@ import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventService;
@@ -70,11 +70,11 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Predicate filter = null;
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = BaseAdoService.and(cb, filter, dateFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -152,7 +152,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		if (actionCriteria != null) {
 			Predicate criteriaFilter = buildCriteriaFilter(actionCriteria, cb, action);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -177,7 +177,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		if (actionCriteria != null) {
 			Predicate criteriaFilter = buildCriteriaFilter(actionCriteria, cb, action);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -208,10 +208,10 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Predicate filter = null;
 
 		if (actionCriteria.getActionStatus() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Action.ACTION_STATUS), actionCriteria.getActionStatus()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Action.ACTION_STATUS), actionCriteria.getActionStatus()));
 		}
 		if (actionCriteria.getEvent() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Action.EVENT, JoinType.LEFT).get(Event.UUID), actionCriteria.getEvent().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(Action.EVENT, JoinType.LEFT).get(Event.UUID), actionCriteria.getEvent().getUuid()));
 		}
 		return filter;
 	}
@@ -224,16 +224,16 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Predicate filter = eventService.buildCriteriaFilter(criteria, cb, event);
 
 		if (criteria.getActionChangeDateFrom() != null && criteria.getActionChangeDateTo() != null) {
-			filter =
+			filter = CriteriaBuilderHelper.
 				and(cb, filter, cb.between(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateFrom(), criteria.getActionChangeDateTo()));
 		} else if (criteria.getActionChangeDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateFrom()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateFrom()));
 		} else if (criteria.getActionChangeDateTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(event.get(Event.START_DATE), criteria.getActionChangeDateTo()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(event.get(Event.START_DATE), criteria.getActionChangeDateTo()));
 		}
 
 		if (criteria.getActionStatus() != null) {
-			filter = and(cb, filter, cb.equal(action.get(Action.ACTION_STATUS), criteria.getActionStatus()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(action.get(Action.ACTION_STATUS), criteria.getActionStatus()));
 		}
 
 		return filter;
@@ -253,7 +253,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		if (criteria != null) {
 			Predicate criteriaFilter = buildEventCriteriaFilter(criteria, cb, actionJoins);
-			filter = and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -353,7 +353,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		if (criteria != null) {
 			Predicate criteriaFilter = buildEventCriteriaFilter(criteria, cb, actionJoins);
-			filter = and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -405,7 +405,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		if (criteria != null) {
 			Predicate criteriaFilter = buildEventCriteriaFilter(criteria, cb, actionJoins);
-			filter = and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {

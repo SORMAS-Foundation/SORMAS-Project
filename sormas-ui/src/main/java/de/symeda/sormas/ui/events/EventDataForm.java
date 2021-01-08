@@ -100,7 +100,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			loc(LOCATION_HEADING_LOC) +
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
-			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) +
+			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) + 
+			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.SEAT_NUMBER, 4, EventDto.TRAVEL_DATE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
@@ -194,6 +195,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
 
 		ComboBox meansOfTransport = addField(EventDto.MEANS_OF_TRANSPORT);
+		TextField connectionNumber = addField(EventDto.CONNECTION_NUMBER);
+		TextField seatNumber = addField(EventDto.SEAT_NUMBER);
+		DateField travelDate = addField(EventDto.TRAVEL_DATE);
+
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Collections.singletonList(EventDto.MEANS_OF_TRANSPORT),
@@ -208,6 +213,21 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			EventDto.MEANS_OF_TRANSPORT,
 			Collections.singletonList(MeansOfTransport.OTHER),
 			true);
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(EventDto.CONNECTION_NUMBER, EventDto.SEAT_NUMBER, EventDto.TRAVEL_DATE),
+			EventDto.TYPE_OF_PLACE,
+			Collections.singletonList(TypeOfPlace.MEANS_OF_TRANSPORT),
+			true);
+
+		getField(EventDto.MEANS_OF_TRANSPORT).addValueChangeListener(e -> {
+			if (e.getProperty().getValue() == MeansOfTransport.PLANE) {
+				getField(EventDto.CONNECTION_NUMBER).setCaption(I18nProperties.getCaption(Captions.exposureFlightNumber));
+			} else {
+				getField(EventDto.CONNECTION_NUMBER).setCaption(I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.CONNECTION_NUMBER));
+			}
+		});
 
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
@@ -314,6 +334,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			typeOfPlace,
 			meansOfTransport,
 			meansOfTransportDetails,
+			connectionNumber,
+			seatNumber,
+			travelDate,
 			surveillanceOfficerField,
 			srcType,
 			srcInstitutionalPartnerType,
