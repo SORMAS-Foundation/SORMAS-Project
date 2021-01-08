@@ -93,6 +93,17 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_evolutionDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.evolutionDate}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_evolutionComment"
+                style="@style/ControlSingleColumnStyle"
+                android:visibility="@{data.evolutionDate != null ? View.VISIBLE : View.GONE}"
+                app:value="@{data.evolutionComment}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_eventInvestigationStatus"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.eventInvestigationStatus}" />

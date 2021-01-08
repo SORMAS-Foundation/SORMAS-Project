@@ -25,6 +25,7 @@
     tools:ignore="contentDescription">
 
     <data>
+        <import type="android.view.View" />
         <import type="de.symeda.sormas.api.event.EventStatus" />
         <import type="de.symeda.sormas.api.event.MeansOfTransport" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
@@ -125,6 +126,19 @@
                 app:softRequired="true"
                 app:value="@={data.endDate}" />
         </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/event_evolutionDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.evolutionDate}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_evolutionComment"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.evolutionComment}"
+                app:dependencyParentField="@{eventEvolutionDate}"
+                app:dependencyParentValue="@{null}"
+                app:dependencyParentVisibility="@{false}" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/event_eventInvestigationStatus"

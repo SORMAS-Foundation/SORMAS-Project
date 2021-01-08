@@ -801,6 +801,8 @@ public interface Captions {
 	String Event_eventStatus = "Event.eventStatus";
 	String Event_eventTitle = "Event.eventTitle";
 	String Event_eventType = "Event.eventType";
+	String Event_evolutionComment = "Event.evolutionComment";
+	String Event_evolutionDate = "Event.evolutionDate";
 	String Event_externalId = "Event.externalId";
 	String Event_externalToken = "Event.externalToken";
 	String Event_informationSource = "Event.informationSource";
@@ -836,6 +838,8 @@ public interface Captions {
 	String EventAction_actionPriority = "EventAction.actionPriority";
 	String EventAction_actionStatus = "EventAction.actionStatus";
 	String EventAction_actionTitle = "EventAction.actionTitle";
+	String EventAction_eventEvolutionComment = "EventAction.eventEvolutionComment";
+	String EventAction_eventEvolutionDate = "EventAction.eventEvolutionDate";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
@@ -850,6 +854,8 @@ public interface Captions {
 	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
+	String eventEvolutionCommentWithStatus = "eventEvolutionCommentWithStatus";
+	String eventEvolutionDateWithStatus = "eventEvolutionDateWithStatus";
 	String eventLinkToCases = "eventLinkToCases";
 	String eventLinkToContacts = "eventLinkToContacts";
 	String eventNewEvent = "eventNewEvent";
