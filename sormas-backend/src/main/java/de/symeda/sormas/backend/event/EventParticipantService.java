@@ -38,6 +38,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.user.User;
@@ -68,7 +69,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
@@ -97,7 +98,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -145,10 +146,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Join<Case, Person> person = from.join(EventParticipant.PERSON, JoinType.LEFT);
 		Predicate filter = null;
 		if (criteria.getEvent() != null) {
-			filter = and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
 		}
 		if (criteria.getPerson() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
 		}
 
 		if (criteria.getFreeText() != null) {
@@ -160,22 +161,22 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
 						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
 
 		if (criteria.getBirthdateYYYY() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY()));
 		}
 		if (criteria.getBirthdateMM() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM()));
 		}
 		if (criteria.getBirthdateDD() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD()));
 		}
 
-		filter = and(cb, filter, createDefaultFilter(cb, from));
+		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 
 		return filter;
 	}
@@ -221,7 +222,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		Predicate userFilter = eventService.createUserFilter(cb, cq, from.join(EventParticipant.EVENT, JoinType.INNER));
 
-		Predicate filter = and(cb, cb.equal(from.get(EventParticipant.PERSON), person), userFilter);
+		Predicate filter = CriteriaBuilderHelper.and(cb, cb.equal(from.get(EventParticipant.PERSON), person), userFilter);
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));

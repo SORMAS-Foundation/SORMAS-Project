@@ -586,6 +586,7 @@ public interface Captions {
 	String countryAllCountries = "countryAllCountries";
 	String countryArchivedCountries = "countryArchivedCountries";
 	String creationDate = "creationDate";
+	String dashboardAggregatedNumber = "dashboardAggregatedNumber";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
 	String dashboardCanceledFollowUp = "dashboardCanceledFollowUp";
@@ -667,6 +668,7 @@ public interface Captions {
 	String dashboardPositive = "dashboardPositive";
 	String dashboardPossible = "dashboardPossible";
 	String dashboardProbable = "dashboardProbable";
+	String dashboardProportion = "dashboardProportion";
 	String dashboardReceived = "dashboardReceived";
 	String dashboardRemoved = "dashboardRemoved";
 	String dashboardRumor = "dashboardRumor";
@@ -948,6 +950,7 @@ public interface Captions {
 	String Facility_archived = "Facility.archived";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
+	String Facility_CONFIGURED_FACILITY = "Facility.CONFIGURED_FACILITY";
 	String Facility_district = "Facility.district";
 	String Facility_externalID = "Facility.externalID";
 	String Facility_latitude = "Facility.latitude";

@@ -16,6 +16,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -64,12 +65,12 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = BaseAdoService.and(cb, filter, dateFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -109,7 +110,7 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -124,10 +125,10 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		Join<Prescription, Therapy> therapy = prescription.join(Prescription.THERAPY, JoinType.LEFT);
 
 		if (criteria.getTherapy() != null) {
-			filter = and(cb, filter, cb.equal(therapy.get(Therapy.UUID), criteria.getTherapy().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(therapy.get(Therapy.UUID), criteria.getTherapy().getUuid()));
 		}
 		if (criteria.getPrescriptionType() != null) {
-			filter = and(cb, filter, cb.equal(prescription.get(Prescription.PRESCRIPTION_TYPE), criteria.getPrescriptionType()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(prescription.get(Prescription.PRESCRIPTION_TYPE), criteria.getPrescriptionType()));
 		}
 		if (!StringUtils.isEmpty(criteria.getTextFilter())) {
 			String[] textFilters = criteria.getTextFilter().split("\\s+");
@@ -141,7 +142,7 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 						cb.like(cb.lower(prescription.get(Prescription.PRESCRIPTION_DETAILS)), textFilter),
 //							cb.like(cb.lower(prescription.get(Prescription.TYPE_OF_DRUG)), textFilter),
 						cb.like(cb.lower(prescription.get(Prescription.PRESCRIBING_CLINICIAN)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
