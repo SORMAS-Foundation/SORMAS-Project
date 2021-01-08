@@ -27,13 +27,13 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
 @LocalBean
-public class SormasToSormasShareInfoService extends AbstractAdoService<SormasToSormasShareInfo> {
+public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<SormasToSormasShareInfo> {
 
 	public SormasToSormasShareInfoService() {
 		super(SormasToSormasShareInfo.class);

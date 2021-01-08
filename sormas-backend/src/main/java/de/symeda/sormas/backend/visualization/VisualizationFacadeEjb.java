@@ -68,7 +68,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
@@ -168,7 +168,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		Collection<Disease> diseases) {
 		Join<Contact, Case> caze = root.join(Contact.CAZE, JoinType.LEFT);
 
-		return AbstractAdoService.and(
+		return BaseAdoService.and(
 			cb,
 			contactService.createUserFilter(cb, cq, root),
 			contactService.createActiveContactsFilter(cb, root),

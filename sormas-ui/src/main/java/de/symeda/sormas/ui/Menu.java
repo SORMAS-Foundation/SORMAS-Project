@@ -78,7 +78,7 @@ public class Menu extends CssLayout {
 
 		// header of the menu
 		final HorizontalLayout top = new HorizontalLayout();
-		top.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
 		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());

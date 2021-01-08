@@ -53,8 +53,7 @@ public class CountryDtoHelper extends AdoDtoHelper<Country, CountryDto> {
 		if (ado == null) {
 			return null;
 		}
-		CountryReferenceDto dto = new CountryReferenceDto(ado.getUuid());
 
-		return dto;
+		return new CountryReferenceDto(ado.getUuid(), ado.getIsoCode());
 	}
 }

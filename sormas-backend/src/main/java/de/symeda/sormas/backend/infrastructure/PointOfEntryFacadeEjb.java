@@ -33,7 +33,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -209,7 +209,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			cb.notEqual(pointOfEntry.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
 
 		if (filter != null) {
-			filter = AbstractAdoService.and(cb, filter, excludeFilter);
+			filter = BaseAdoService.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}
@@ -277,7 +277,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
 
 		if (filter != null) {
-			filter = AbstractAdoService.and(cb, filter, excludeFilter);
+			filter = BaseAdoService.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}

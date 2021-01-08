@@ -382,6 +382,11 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_reportingDistrict"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.reportingDistrict}" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

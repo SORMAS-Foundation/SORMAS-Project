@@ -74,7 +74,7 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -229,7 +229,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -307,8 +307,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Date from,
 		Date to) {
 		Predicate filter = createActiveCasesFilter(cb, root);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
-		filter = AbstractAdoService.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
+		filter = BaseAdoService.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
+		filter = BaseAdoService.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
 
 		if (region != null) {
 			Predicate regionFilter = cb.equal(root.get(Case.REGION), region);
