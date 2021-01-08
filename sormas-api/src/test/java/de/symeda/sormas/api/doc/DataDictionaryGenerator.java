@@ -48,6 +48,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -89,6 +90,7 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, HospitalizationDto.class, HospitalizationDto.I18N_PREFIX);
 		createEntitySheet(workbook, SymptomsDto.class, SymptomsDto.I18N_PREFIX);
 		createEntitySheet(workbook, EpiDataDto.class, EpiDataDto.I18N_PREFIX);
+		createEntitySheet(workbook, ExposureDto.class, ExposureDto.I18N_PREFIX);
 		createEntitySheet(workbook, HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX);
 		createEntitySheet(workbook, PrescriptionDto.class, PrescriptionDto.I18N_PREFIX);
 		createEntitySheet(workbook, TreatmentDto.class, TreatmentDto.I18N_PREFIX);
