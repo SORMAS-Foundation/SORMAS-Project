@@ -35,6 +35,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -59,8 +60,8 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -327,33 +328,53 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Map<String, Long> participantCounts = new HashMap<>();
-		Map<String, Long> caseCounts = new HashMap<>();;
+		Map<String, Long> caseCounts = new HashMap<>();
 		Map<String, Long> deathCounts = new HashMap<>();
 		if (indexList != null) {
 			List<Object[]> objectQueryList = null;
 
+			// Participant, Case and Death Count
 			CriteriaQuery<Object[]> objectCQ = cb.createQuery(Object[].class);
 			Root<EventParticipant> epRoot = objectCQ.from(EventParticipant.class);
-
 			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-
 			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-
 			objectCQ.multiselect(
 				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
 				cb.count(epRoot),
 				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
 				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
-
 			objectCQ.where(notDeleted);
 			objectCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			objectQueryList = em.createQuery(objectCQ).getResultList();
-			objectQueryList.forEach(r -> {
-				participantCounts.put((String) r[0], (Long) r[1]);
-				caseCounts.put((String) r[0], (Long) r[2]);
-				deathCounts.put((String) r[0], (Long) r[3]);
-			});
+
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					participantCounts.put((String) r[0], (Long) r[1]);
+					caseCounts.put((String) r[0], (Long) r[2]);
+					deathCounts.put((String) r[0], (Long) r[3]);
+				});
+			}
+
+			// Contact Count (with and without sourcecase in event)
+			// because custom joins are seemingly not yet fully supported, a Native Query needs to be used
+			String query = "SELECT events.uuid, " + "COUNT(*), "
+				+ "sum(case when EXISTS ( SELECT eventparticipant.person_id FROM eventparticipant WHERE eventparticipant.resultingcase_id = contact.caze_id AND eventparticipant.event_id = participantcontacts.event_id ) then 1 else 0 end) "
+				+ "FROM eventparticipant participantcontacts " + "JOIN contact " + "ON contact.person_id=participantcontacts.person_id "
+				+ "JOIN events " + "ON events.id = participantcontacts.event_id " + "WHERE contact.deleted=false "
+				+ "AND participantcontacts.deleted=false " + "GROUP BY events.uuid";
+			Query nativeQuery = em.createNativeQuery(query);
+
+			/*
+			 * objectQueryList = nativeQuery.getResultList();
+			 * if (objectQueryList != null) {
+			 * objectQueryList.forEach(r -> {
+			 * participantCounts.put((String) r[0], ((BigInteger) r[1]).longValue());
+			 * caseCounts.put((String) r[0], ((BigInteger) r[2]).longValue());
+			 * deathCounts.put((String) r[0], ((BigInteger) r[2]).longValue());
+			 * });
+			 * }
+			 */
 
 		}
 
