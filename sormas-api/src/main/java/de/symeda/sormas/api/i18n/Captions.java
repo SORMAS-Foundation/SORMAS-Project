@@ -281,6 +281,7 @@ public interface Captions {
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reportDate = "CaseData.reportDate";
+	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
 	String CaseData_reportingType = "CaseData.reportingType";
 	String CaseData_reportingUser = "CaseData.reportingUser";
 	String CaseData_reportLat = "CaseData.reportLat";
@@ -507,6 +508,7 @@ public interface Captions {
 	String Contact_relationDescription = "Contact.relationDescription";
 	String Contact_relationToCase = "Contact.relationToCase";
 	String Contact_reportDateTime = "Contact.reportDateTime";
+	String Contact_reportingDistrict = "Contact.reportingDistrict";
 	String Contact_reportingUser = "Contact.reportingUser";
 	String Contact_reportLat = "Contact.reportLat";
 	String Contact_reportLatLonAccuracy = "Contact.reportLatLonAccuracy";
@@ -584,6 +586,7 @@ public interface Captions {
 	String countryAllCountries = "countryAllCountries";
 	String countryArchivedCountries = "countryArchivedCountries";
 	String creationDate = "creationDate";
+	String dashboardAggregatedNumber = "dashboardAggregatedNumber";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
 	String dashboardCanceledFollowUp = "dashboardCanceledFollowUp";
@@ -665,6 +668,7 @@ public interface Captions {
 	String dashboardPositive = "dashboardPositive";
 	String dashboardPossible = "dashboardPossible";
 	String dashboardProbable = "dashboardProbable";
+	String dashboardProportion = "dashboardProportion";
 	String dashboardReceived = "dashboardReceived";
 	String dashboardRemoved = "dashboardRemoved";
 	String dashboardRumor = "dashboardRumor";
@@ -767,6 +771,7 @@ public interface Captions {
 	String epiWeekTo = "epiWeekTo";
 	String Event = "Event";
 	String Event_caseCount = "Event.caseCount";
+	String Event_connectionNumber = "Event.connectionNumber";
 	String Event_deathCount = "Event.deathCount";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
@@ -793,6 +798,7 @@ public interface Captions {
 	String Event_reportDateTime = "Event.reportDateTime";
 	String Event_reportingUser = "Event.reportingUser";
 	String Event_riskLevel = "Event.riskLevel";
+	String Event_seatNumber = "Event.seatNumber";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
 	String Event_srcInstitutionalPartnerType = "Event.srcInstitutionalPartnerType";
@@ -805,6 +811,7 @@ public interface Captions {
 	String Event_srcType = "Event.srcType";
 	String Event_startDate = "Event.startDate";
 	String Event_surveillanceOfficer = "Event.surveillanceOfficer";
+	String Event_travelDate = "Event.travelDate";
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
@@ -943,6 +950,7 @@ public interface Captions {
 	String Facility_archived = "Facility.archived";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
+	String Facility_CONFIGURED_FACILITY = "Facility.CONFIGURED_FACILITY";
 	String Facility_district = "Facility.district";
 	String Facility_externalID = "Facility.externalID";
 	String Facility_latitude = "Facility.latitude";

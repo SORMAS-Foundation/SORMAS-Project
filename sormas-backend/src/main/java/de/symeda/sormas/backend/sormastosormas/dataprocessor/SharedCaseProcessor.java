@@ -40,7 +40,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedCaseData;
@@ -97,15 +96,6 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 		}
 
 		return new ProcessedCaseData(person, caze, associatedContacts, samples, originInfo);
-	}
-
-	private ValidationErrors validateCase(CaseDataDto caze) throws ValidationRuntimeException {
-		ValidationErrors errors = new ValidationErrors();
-		if (caseFacade.exists(caze.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasCaseExists));
-		}
-
-		return errors;
 	}
 
 	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person) {
@@ -189,11 +179,12 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 				});
 		}
 
+		dataProcessorHelper.processEpiData(caze.getEpiData(), validationErrors);
+
 		return validationErrors;
 	}
 
-	private Map<String, ValidationErrors> processAssociatedContacts(
-		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
+	private Map<String, ValidationErrors> processAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : associatedContacts) {

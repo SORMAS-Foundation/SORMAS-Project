@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.io.Closeable;
+
 /**
  * Sets the app id on the server side if it has not yet been set in this request.
  * I would have liked to use CDI instead of ThreadLocal, but the ServiceLocator works static.
@@ -36,13 +38,14 @@ public class BaseControllerProvider {
 	 * Must be called if a new request was started by Vaadin.
 	 * Could be controlled via the Vaadin session, for example.
 	 */
-	public static void requestStart(BaseControllerProvider controllerProvider) {
+	public static Closeable requestStart(BaseControllerProvider controllerProvider) {
 		controllerProviderThreadLocal.set(controllerProvider);
 		controllerProvider.onRequestStart();
+		return BaseControllerProvider::requestEnd;
 	}
 
 	protected void onRequestStart() {
-
+		//NOOP
 	}
 
 	public static void requestEnd() {
