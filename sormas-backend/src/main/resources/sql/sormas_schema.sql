@@ -6172,4 +6172,12 @@ ALTER TABLE events_history ADD COLUMN travelDate timestamp without time zone;
 
 INSERT INTO schema_version (version_number, comment) VALUES (300, 'Type of place details in events entities #2947');
 
+-- 2020-01-04 Change action's columns description and reply type from varchar to text #3848
+ALTER TABLE action ALTER COLUMN description TYPE text;
+ALTER TABLE action_history ALTER COLUMN description TYPE text;
+ALTER TABLE action ALTER COLUMN reply TYPE text;
+ALTER TABLE action_history ALTER COLUMN reply TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (301, 'Change action''s columns description and reply type from varchar to text #3848');
+
 -- *** Insert new sql commands BEFORE this line ***
