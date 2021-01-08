@@ -94,14 +94,10 @@ public class ContactsView extends AbstractView {
 
 	public static final String VIEW_NAME = "contacts";
 
-	private ContactCriteria criteria;
-	private ContactsViewConfiguration viewConfiguration;
+	private final ContactCriteria criteria;
+	private final ContactsViewConfiguration viewConfiguration;
 
-	private FilteredGrid<?, ContactCriteria> grid;
-	private VerticalLayout gridLayout;
-
-	private PopupButton moreButton;
-	private VerticalLayout moreLayout;
+	private final FilteredGrid<?, ContactCriteria> grid;
 
 	private MenuBar bulkOperationsDropdown;
 	private HashMap<Button, String> statusButtons;
@@ -137,7 +133,7 @@ public class ContactsView extends AbstractView {
 				? new ContactGridDetailed(criteria, getClass())
 				: new ContactGrid(criteria, getClass());
 		}
-		gridLayout = new VerticalLayout();
+		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
@@ -177,10 +173,10 @@ public class ContactsView extends AbstractView {
 		});
 		addHeaderComponent(contactsViewSwitcher);
 
-		moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
+		final PopupButton moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
 		moreButton.setId("more");
 		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
-		moreLayout = new VerticalLayout();
+		final VerticalLayout moreLayout = new VerticalLayout();
 		moreLayout.setSpacing(true);
 		moreLayout.setMargin(true);
 		moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
