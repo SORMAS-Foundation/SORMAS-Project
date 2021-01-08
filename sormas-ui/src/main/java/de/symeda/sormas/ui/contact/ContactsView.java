@@ -56,6 +56,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -586,13 +587,19 @@ public class ContactsView extends AbstractView {
 		fromReferenceDate.setId("fromReferenceDateField");
 
 		Button minusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.contactMinusDays), e -> {
+			final LocalDate fromReferenceDateValue = fromReferenceDate.getValue();
+			final LocalDate toReferenceDateValue = toReferenceDate.getValue();
+			if (fromReferenceDateValue == null || toReferenceDateValue == null) {
+				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
 			int newFollowUpRangeInterval =
-				DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+				DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDateValue), DateHelper8.toDate(toReferenceDateValue));
 			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
 				followUpRangeInterval = newFollowUpRangeInterval;
 				buttonPreviousOrNextClick = true;
-				toReferenceDate.setValue(toReferenceDate.getValue().minusDays(followUpRangeInterval));
-				fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(followUpRangeInterval));
+				toReferenceDate.setValue(toReferenceDateValue.minusDays(followUpRangeInterval));
+				fromReferenceDate.setValue(fromReferenceDateValue.minusDays(followUpRangeInterval));
 			} else {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
@@ -607,7 +614,13 @@ public class ContactsView extends AbstractView {
 				return;
 			}
 
-			int newFollowUpRangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDate.getValue()));
+			final LocalDate toReferenceDateValue = toReferenceDate.getValue();
+			if (toReferenceDateValue == null) {
+				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+
+			int newFollowUpRangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDateValue));
 
 			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
 				applyingCriteria = true;
@@ -630,7 +643,13 @@ public class ContactsView extends AbstractView {
 				return;
 			}
 
-			int newFollowUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), newFollowUpToDate);
+			final LocalDate fromReferenceDateValue = fromReferenceDate.getValue();
+			if (fromReferenceDateValue == null) {
+				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+
+			int newFollowUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDateValue), newFollowUpToDate);
 
 			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
 				followUpToDate = newFollowUpToDate;
@@ -651,14 +670,20 @@ public class ContactsView extends AbstractView {
 		scrollLayout.addComponent(toReferenceDate);
 
 		Button plusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.contactPlusDays), e -> {
+			final LocalDate fromReferenceDateValue = fromReferenceDate.getValue();
+			final LocalDate toReferenceDateValue = toReferenceDate.getValue();
+			if (fromReferenceDateValue == null || toReferenceDateValue == null) {
+				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
 			int newFollowUpRangeInterval =
-				DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+				DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDateValue), DateHelper8.toDate(toReferenceDateValue));
 
 			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
 				followUpRangeInterval = newFollowUpRangeInterval;
 				buttonPreviousOrNextClick = true;
-				toReferenceDate.setValue(toReferenceDate.getValue().plusDays(followUpRangeInterval));
-				fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(followUpRangeInterval));
+				toReferenceDate.setValue(toReferenceDateValue.plusDays(followUpRangeInterval));
+				fromReferenceDate.setValue(fromReferenceDateValue.plusDays(followUpRangeInterval));
 			} else {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
