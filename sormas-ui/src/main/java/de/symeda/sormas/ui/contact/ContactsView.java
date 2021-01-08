@@ -165,11 +165,7 @@ public class ContactsView extends AbstractView {
 			ContactsViewType viewType = (ContactsViewType) e.getProperty().getValue();
 
 			viewConfiguration.setViewType(viewType);
-			if (viewType.isContactOverview()) {
-				SormasUI.get().getNavigator().navigateTo(ContactsView.VIEW_NAME);
-			} else {
-				SormasUI.get().getNavigator().navigateTo(ContactsView.VIEW_NAME);
-			}
+			SormasUI.get().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 		});
 		addHeaderComponent(contactsViewSwitcher);
 
