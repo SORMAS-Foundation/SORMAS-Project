@@ -32,7 +32,7 @@ public class I18nConstantsUpdatedTest {
 
 			String diff = getDifference(generator, writer.toString());
 			if (!DataHelper.isNullOrEmpty(diff)) {
-				invalid.add(generator.getOutputClassFilePath() + ": " + diff);
+				invalid.add(generator.getOutputClassFilePath() + " expected: " + diff);
 			}
 		}
 		if (!invalid.isEmpty()) {
@@ -56,7 +56,7 @@ public class I18nConstantsUpdatedTest {
 
 			boolean equal = expectedContent.equals(fileContent);
 			if (!equal) {
-				return StringUtils.difference(expectedContent, fileContent);
+				return StringUtils.difference(fileContent, expectedContent);
 			}
 			return null;
 		}
