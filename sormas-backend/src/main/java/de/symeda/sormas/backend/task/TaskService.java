@@ -44,8 +44,8 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -84,12 +84,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = BaseAdoService.and(cb, filter, dateFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -109,7 +109,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -155,11 +155,11 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = cb.or(filter, eventFilter);
 		}
 
-		return and(cb, filter, assigneeFilter);
+		return CriteriaBuilderHelper.and(cb, filter, assigneeFilter);
 	}
 
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
-		return or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUserJoin));
+		return CriteriaBuilderHelper.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUserJoin));
 	}
 
 	public long getCount(TaskCriteria taskCriteria) {
@@ -175,8 +175,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		cq.select(cb.countDistinct(from));
 
-		long count = em.createQuery(cq).getSingleResult();
-		return count;
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public List<Task> findBy(TaskCriteria taskCriteria, boolean ignoreUserFilter) {
@@ -187,7 +186,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
 		if (!ignoreUserFilter) {
-			filter = and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
 
 		if (filter != null) {
@@ -195,8 +194,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 		cq.orderBy(cb.asc(from.get(Task.CREATION_DATE)));
 
-		List<Task> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		return em.createQuery(cq).getResultList();
 	}
 
 	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
@@ -208,28 +206,28 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Predicate filter = null;
 
 		if (taskCriteria.getTaskStatus() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Task.TASK_STATUS), taskCriteria.getTaskStatus()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Task.TASK_STATUS), taskCriteria.getTaskStatus()));
 		}
 		if (taskCriteria.getTaskType() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), taskCriteria.getTaskType()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), taskCriteria.getTaskType()));
 		}
 		if (taskCriteria.getAssigneeUser() != null) {
-			filter = and(cb, filter, cb.equal(joins.getAssignee().get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getAssignee().get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getExcludeAssigneeUser() != null) {
-			filter = and(cb, filter, cb.notEqual(joins.getAssignee().get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(joins.getAssignee().get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
-			filter = and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), taskCriteria.getCaze().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), taskCriteria.getCaze().getUuid()));
 		}
 		if (taskCriteria.getContact() != null) {
-			filter = and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), taskCriteria.getContact().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), taskCriteria.getContact().getUuid()));
 		}
 		if (taskCriteria.getContactPerson() != null) {
-			filter = and(cb, filter, cb.equal(joins.getContactPerson().get(User.UUID), taskCriteria.getContactPerson().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContactPerson().get(User.UUID), taskCriteria.getContactPerson().getUuid()));
 		}
 		if (taskCriteria.getEvent() != null) {
-			filter = and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), taskCriteria.getEvent().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), taskCriteria.getEvent().getUuid()));
 		}
 		if (taskCriteria.getDueDateFrom() != null && taskCriteria.getDueDateTo() != null) {
 			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));
@@ -245,9 +243,9 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 		if (taskCriteria.getRelevanceStatus() != null) {
 			if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = and(cb, filter, buildActiveTasksFilter(cb, from));
+				filter = CriteriaBuilderHelper.and(cb, filter, buildActiveTasksFilter(cb, from));
 			} else if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = and(
+				filter = CriteriaBuilderHelper.and(
 					cb,
 					filter,
 					cb.or(
@@ -257,7 +255,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			}
 		}
 		if (taskCriteria.getTaskContext() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Task.TASK_CONTEXT), taskCriteria.getTaskContext()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Task.TASK_CONTEXT), taskCriteria.getTaskContext()));
 		}
 		if (taskCriteria.getRegion() != null) {
 			Expression<Object> region = cb.selectCase()
@@ -266,7 +264,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
 						.otherwise(joins.getEventRegion().get(Region.UUID)));
-			filter = and(cb, filter, cb.equal(region, taskCriteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region, taskCriteria.getRegion().getUuid()));
 		}
 		if (taskCriteria.getDistrict() != null) {
 			Expression<Object> district = cb.selectCase()
@@ -275,7 +273,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
 						.otherwise(joins.getEventDistrict().get(District.UUID)));
-			filter = and(cb, filter, cb.equal(district, taskCriteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district, taskCriteria.getDistrict().getUuid()));
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
@@ -291,7 +289,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 						cb.like(cb.lower(joins.getContactPerson().get(Person.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(joins.getEvent().get(Event.UUID)), textFilter),
 						cb.like(cb.lower(joins.getEvent().get(Event.EVENT_TITLE)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
@@ -304,7 +302,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 						cb.like(cb.lower(joins.getAssignee().get(User.LAST_NAME)), textFilter),
 						cb.like(cb.lower(joins.getAssignee().get(User.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(joins.getAssignee().get(User.USER_NAME)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
@@ -317,7 +315,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 						cb.like(cb.lower(joins.getCreator().get(User.LAST_NAME)), textFilter),
 						cb.like(cb.lower(joins.getCreator().get(User.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(joins.getCreator().get(User.USER_NAME)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
@@ -332,7 +330,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
 
-		Predicate filter = cb.or(
+		return cb.or(
 			cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
 			cb.and(
 				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
@@ -343,8 +341,6 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			cb.and(
 				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
 				cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)))));
-
-		return filter;
 	}
 
 	public Task buildTask(User creatorUser) {
