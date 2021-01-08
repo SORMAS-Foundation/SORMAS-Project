@@ -30,6 +30,8 @@
         <import type="de.symeda.sormas.api.event.EventSourceType" />
         <import type="de.symeda.sormas.api.event.EventDto" />
         <import type="de.symeda.sormas.api.event.InstitutionalPartnerType" />
+        <import type="de.symeda.sormas.api.event.MeansOfTransport" />
+        <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
@@ -203,6 +205,20 @@
                 app:appendValue="@{data.typeOfPlaceText}"
                 app:value="@{data.typeOfPlace}"
                 app:valueFormat="@{@string/two_strings_with_hyphen_format}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_meansOfTransport"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.meansOfTransport}"
+                    app:dependencyParentField="@{eventTypeOfPlace}"
+                    app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_meansOfTransportDetails"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.meansOfTransportDetails}"
+                    app:dependencyParentField="@{eventMeansOfTransport}"
+                    app:dependencyParentValue="@{MeansOfTransport.OTHER}" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 

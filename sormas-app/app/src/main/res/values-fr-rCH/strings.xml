@@ -101,6 +101,7 @@
     <string name="action_select">Sélectionner</string>
     <string name="action_send">Envoyer</string>
     <string name="action_set_cleared_to_no">Définir effacé au Non</string>
+    <string name="action_set_cleared_to_unknown">Set Cleared to Unknown</string>
     <string name="action_show_classification_rules">Voir les règles de classification</string>
     <string name="action_submit_report">Soumettre le rapport hebdomadaire</string>
     <string name="action_sync">Sync</string>

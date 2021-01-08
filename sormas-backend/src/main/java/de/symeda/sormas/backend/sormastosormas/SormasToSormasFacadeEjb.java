@@ -46,6 +46,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
@@ -295,6 +296,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
+	@Transactional
 	public void returnCase(String caseUuid, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		options.setHandOverOwnership(true);
 		User currentUser = userService.getCurrentUser();

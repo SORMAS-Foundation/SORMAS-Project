@@ -120,6 +120,8 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
+
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
 	@SensitiveData
@@ -262,6 +264,9 @@ public class ContactDto extends PseudonymizableDto {
 	private Date prohibitionToWorkFrom;
 	@HideForCountriesExcept
 	private Date prohibitionToWorkUntil;
+
+	@HideForCountriesExcept
+	private DistrictReferenceDto reportingDistrict;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -855,6 +860,14 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	public DistrictReferenceDto getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(DistrictReferenceDto reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	public YesNoUnknown getReturningTraveler() {

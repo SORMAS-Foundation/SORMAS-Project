@@ -1159,6 +1159,17 @@
 		</profile>
 
 		<profile>
+			<!-- Profile to build the keycloak hash provider -->
+			<id>with-keycloak</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>../sormas-keycloak-service-provider</module>
+			</modules>
+		</profile>
+
+		<profile>
 			<id>generate-reports</id>
 			<!-- Create reports of used dependencies, plugins etc. and available newer versions -->
 			<properties>
