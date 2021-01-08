@@ -215,20 +215,7 @@ public class CampaignController {
 		}
 		form.setValue(campaignFormData);
 
-		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent(form, form.getFieldGroup()) {
-
-			@Override
-			public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
-				super.commit();
-				UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME);
-			}
-
-			@Override
-			public void discard() {
-				super.discard();
-				UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME);
-			}
-		};
+		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -243,9 +230,12 @@ public class CampaignController {
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
 				if (commitCallback != null) {
 					commitCallback.run();
+					UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME);
 				}
 			}
 		});
+
+		component.addDiscardListener(() -> UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME));
 
 		if (revertFormOnDiscard) {
 			component.addDiscardListener(form::resetFormValues);
