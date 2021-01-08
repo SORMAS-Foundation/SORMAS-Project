@@ -93,6 +93,7 @@ public interface Descriptions {
 	String Event_srcTelNo = "Event.srcTelNo";
 	String Event_startDate = "Event.startDate";
 	String Event_typeOfPlace = "Event.typeOfPlace";
+	String Facility_CONFIGURED_FACILITY = "Facility.CONFIGURED_FACILITY";
 	String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
 	String Hospitalization_admissionDate = "Hospitalization.admissionDate";
