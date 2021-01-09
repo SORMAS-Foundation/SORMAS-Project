@@ -7,10 +7,9 @@ import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionContext;

@@ -9,11 +9,10 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.auth0.jwt.internal.org.apache.commons.io.FileUtils;
-import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.backend.MockProducer;

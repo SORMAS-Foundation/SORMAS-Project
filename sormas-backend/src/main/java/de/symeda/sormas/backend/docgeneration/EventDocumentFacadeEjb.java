@@ -10,7 +10,7 @@ import java.util.Properties;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
+import org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
