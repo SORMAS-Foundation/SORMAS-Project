@@ -18,14 +18,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -38,7 +39,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private LabMessageService labMessageService;
 	@EJB
-	private ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target) {
 
@@ -141,7 +142,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		if (criteria != null) {
 			Predicate statusFilter = labMessageService.createStatusFilter(cb, labMessage, criteria);
-			filter = AbstractAdoService.and(cb, filter, statusFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
 		}
 
 		if (filter != null) {
@@ -170,7 +171,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		Predicate filter = null;
 		if (criteria != null) {
 			Predicate statusFilter = labMessageService.createStatusFilter(cb, labMessage, criteria);
-			filter = AbstractAdoService.and(cb, filter, statusFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
 		}
 
 		if (filter != null) {
