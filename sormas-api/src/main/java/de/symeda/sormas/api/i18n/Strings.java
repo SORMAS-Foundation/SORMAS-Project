@@ -464,6 +464,7 @@ public interface Strings {
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
+	String infoCreateEntity = "infoCreateEntity";
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";

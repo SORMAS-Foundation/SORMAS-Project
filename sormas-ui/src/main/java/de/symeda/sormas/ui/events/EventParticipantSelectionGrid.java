@@ -22,8 +22,10 @@ public class EventParticipantSelectionGrid extends Grid {
 
 	private void setContainerData(List<SimilarEventParticipantDto> similarEventParticipants) {
 		getContainer().removeAllItems();
-		getContainer().addAll(similarEventParticipants);
-		setHeightByRows(similarEventParticipants.size() > 0 ? (similarEventParticipants.size() <= 10 ? similarEventParticipants.size() : 10) : 1);
+		if (similarEventParticipants != null) {
+			getContainer().addAll(similarEventParticipants);
+			setHeightByRows(similarEventParticipants.size() > 0 ? (similarEventParticipants.size() <= 10 ? similarEventParticipants.size() : 10) : 1);
+		}
 	}
 
 	private void buildGrid() {

@@ -69,12 +69,18 @@ public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
 
 		addInfoComponent();
 		addLabMessageComponent();
-		addSelectCaseRadioGroup();
-		addCaseGrid();
-		addSelectContactRadioGroup();
-		addContactGrid();
-		addSelectEventParticipantRadioGroup();
-		addEventParticipantGrid();
+		if (cases != null && !cases.isEmpty()) {
+			addSelectCaseRadioGroup();
+			addCaseGrid();
+		}
+		if (contacts != null && !contacts.isEmpty()) {
+			addSelectContactRadioGroup();
+			addContactGrid();
+		}
+		if (eventParticipants != null && !eventParticipants.isEmpty()) {
+			addSelectEventParticipantRadioGroup();
+			addEventParticipantGrid();
+		}
 		addCreateEntityRadioGroup();
 
 		return mainLayout;
@@ -84,7 +90,14 @@ public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
 		rbCreateEntity = new RadioButtonGroup<>();
 		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT, CREATE_EVENT_PARTICIPANT);
 		rbCreateEntity.setItemCaptionGenerator((item) -> {
-			return I18nProperties.getCaption(Captions.personCreateNew);
+			if (item == CREATE_CASE) {
+				return I18nProperties.getCaption(Captions.caseCreateNew);
+			} else if (item == CREATE_CONTACT) {
+				return I18nProperties.getCaption(Captions.contactCreateNew);
+			} else if (item == CREATE_EVENT_PARTICIPANT) {
+				return I18nProperties.getCaption(Captions.eventParticipantCreateNew);
+			}
+			throw new IllegalArgumentException((String) item);
 		});
 		rbCreateEntity.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
@@ -102,6 +115,7 @@ public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
 				}
 			}
 		});
+		CssStyles.style(rbCreateEntity, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 
 		mainLayout.addComponent(rbCreateEntity);
 	}
@@ -216,21 +230,35 @@ public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
 		labMessageLayout.setSpacing(true);
 
 		createAndAddLabel(labMessageDto.getMessageDateTime(), LabMessageDto.MESSAGE_DATE_TIME, labMessageLayout);
-
 		createAndAddLabel(labMessageDto.getSampleDateTime(), LabMessageDto.SAMPLE_DATE_TIME, labMessageLayout);
+		createAndAddLabel(labMessageDto.getPersonFirstName(), LabMessageDto.PERSON_FIRST_NAME, labMessageLayout);
+		createAndAddLabel(labMessageDto.getPersonLastName(), LabMessageDto.PERSON_LAST_NAME, labMessageLayout);
+		createAndAddLabel(labMessageDto.getPersonBirthDateDD(), LabMessageDto.PERSON_BIRTH_DATE_DD, labMessageLayout);
+		createAndAddLabel(labMessageDto.getPersonBirthDateMM(), LabMessageDto.PERSON_BIRTH_DATE_MM, labMessageLayout);
+		createAndAddLabel(labMessageDto.getPersonBirthDateYYYY(), LabMessageDto.PERSON_BIRTH_DATE_YYYY, labMessageLayout);
+		createAndAddLabel(labMessageDto.getPersonSex(), LabMessageDto.PERSON_SEX, labMessageLayout);
 
 		mainLayout.addComponent(labMessageLayout);
 	}
 
 	private void createAndAddLabel(Object value, String property, HorizontalLayout layout) {
-		Label label = new Label(value.toString());
+		Label label = new Label();
+		if (value != null) {
+			label.setValue(value.toString());
+		}
 		label.setCaption(I18nProperties.getPrefixCaption(LabMessageDto.I18N_PREFIX, property));
 		label.setWidthUndefined();
 		layout.addComponent(label);
 	}
 
 	private void addInfoComponent() {
-		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoSelectOrCreateEntity)));
+		if (cases != null && !cases.isEmpty()
+			|| contacts != null && !contacts.isEmpty()
+			|| eventParticipants != null && !eventParticipants.isEmpty()) {
+			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoSelectOrCreateEntity)));
+		} else {
+			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoCreateEntity)));
+		}
 	}
 
 	@Override

@@ -52,11 +52,12 @@ public class LabMessageController {
 			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
 				if (selectedPerson != null) {
 					if (selectedPerson.getUuid().equals(personDto.getUuid())) {
-						personDto.getAddress().setStreet(labMessageDto.getPersonStreet());
-						personDto.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
-						personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
-						personDto.getAddress().setCity(labMessageDto.getPersonCity());
-						FacadeProvider.getPersonFacade().savePerson(personDto);
+						PersonDto savedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
+						savedPerson.getAddress().setStreet(labMessageDto.getPersonStreet());
+						savedPerson.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
+						savedPerson.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
+						savedPerson.getAddress().setCity(labMessageDto.getPersonCity());
+						FacadeProvider.getPersonFacade().savePerson(savedPerson);
 					}
 
 					CaseCriteria caseCriteria = new CaseCriteria();

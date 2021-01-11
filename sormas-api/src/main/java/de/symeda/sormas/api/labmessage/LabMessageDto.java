@@ -13,7 +13,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class LabMessageDto extends EntityDto {
 
-	public static final String I18N_PREFIX = "Location";
+	public static final String I18N_PREFIX = "LabMessage";
 
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";

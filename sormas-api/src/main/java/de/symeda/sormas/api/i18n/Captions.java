@@ -180,6 +180,7 @@ public interface Captions {
 	String caseConfirmCase = "caseConfirmCase";
 	String caseContacts = "caseContacts";
 	String caseCreateCase = "caseCreateCase";
+	String caseCreateNew = "caseCreateNew";
 	String CaseData = "CaseData";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_caseClassification = "CaseData.caseClassification";
@@ -841,6 +842,7 @@ public interface Captions {
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
 	String eventParticipantContactCountOnlyWithSourceCaseInEvent = "eventParticipantContactCountOnlyWithSourceCaseInEvent";
+	String eventParticipantCreateNew = "eventParticipantCreateNew";
 	String EventParticipantExport_addressCommunity = "EventParticipantExport.addressCommunity";
 	String EventParticipantExport_addressDistrict = "EventParticipantExport.addressDistrict";
 	String EventParticipantExport_addressGpsCoordinates = "EventParticipantExport.addressGpsCoordinates";

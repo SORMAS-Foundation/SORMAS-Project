@@ -6082,11 +6082,7 @@ CREATE TABLE labmessage (
         primary key(id)
 );
 
-ALTER TABLE labmessage OWNER TO sormas_user;
 CREATE TABLE labmessage_history (LIKE labmessage);
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
-ALTER TABLE labmessage_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (291, 'Add LabMessage #3486');
 
@@ -6135,4 +6131,11 @@ ALTER TABLE person_history RENAME COLUMN namesofotherguardians TO namesofguardia
 
 INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesOfOtherGuardians to namesOfGuardians #3413');
 
+-- 2020-12-21 Fix labmessage table #3486
+ALTER TABLE labmessage OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
+ALTER TABLE labmessage_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (297, 'Fix labmessage table #3486');
 -- *** Insert new sql commands BEFORE this line ***
