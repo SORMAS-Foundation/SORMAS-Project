@@ -151,6 +151,9 @@ public class Contact extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalID;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalToken;
+
 	@DatabaseField
 	private String resultingCaseUuid;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -496,6 +499,12 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public Region getRegion() {

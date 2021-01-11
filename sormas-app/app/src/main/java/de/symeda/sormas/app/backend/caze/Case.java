@@ -273,6 +273,9 @@ public class Case extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalID;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalToken;
+
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -867,6 +870,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public QuarantineType getQuarantine() {

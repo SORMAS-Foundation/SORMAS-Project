@@ -150,6 +150,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
 		} else {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
+			getColumn(CaseIndexDto.EXTERNAL_TOKEN).setHidden(true);
 		}
 
 		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
@@ -181,6 +182,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.UUID,
 				CaseIndexDto.EPID_NUMBER,
 				CaseIndexDto.EXTERNAL_ID,
+				CaseIndexDto.EXTERNAL_TOKEN,
 				DISEASE_SHORT,
 				CaseIndexDto.CASE_CLASSIFICATION,
 				CaseIndexDto.OUTCOME,

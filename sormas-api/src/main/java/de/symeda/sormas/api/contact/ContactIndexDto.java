@@ -51,6 +51,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 
 	private String uuid;
 	@PersonalData
@@ -73,6 +74,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private CaseClassification caseClassification;
 	private int visitCount;
 	private String externalID;
+	private String externalToken;
 	private String regionName;
 	private String districtName;
 	private String caseRegionName;
@@ -90,7 +92,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   CaseClassification caseClassification, String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, 
 						   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   String externalID,
+						   String externalID, String externalToken,
 						   int visitCount) {
 	//@formatter:on
 
@@ -124,6 +126,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.caseClassification = caseClassification;
 		this.visitCount = visitCount;
 		this.externalID = externalID;
+		this.externalToken = externalToken;
 		this.regionName = regionName;
 		this.districtName = districtName;
 		this.caseRegionName = caseRegionName;
@@ -287,6 +290,10 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
 	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
 
 	public String getRegionName() {
 		return regionName;
