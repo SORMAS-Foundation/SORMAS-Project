@@ -41,7 +41,7 @@ public class EventActionIndexDto implements Serializable {
 	public static final String ACTION_CHANGE_DATE = "actionChangeDate";
 	public static final String ACTION_STATUS = "actionStatus";
 	public static final String ACTION_PRIORITY = "actionPriority";
-	public static final String ACTION_LAST_MODIFIED_BY_USER = "actionLastModifiedByUser";
+	public static final String ACTION_LAST_MODIFIED_BY = "actionLastModifiedBy";
 	public static final String ACTION_CREATOR_USER = "actionCreatorUser";
 
 	private String eventUuid;
@@ -55,7 +55,7 @@ public class EventActionIndexDto implements Serializable {
 	private Date actionChangeDate;
 	private ActionStatus actionStatus;
 	private ActionPriority actionPriority;
-	private UserReferenceDto actionLastModifiedByUser;
+	private UserReferenceDto actionLastModifiedBy;
 	private UserReferenceDto actionCreatorUser;
 
 	public EventActionIndexDto(
@@ -70,9 +70,9 @@ public class EventActionIndexDto implements Serializable {
 		Date actionChangeDate,
 		ActionStatus actionStatus,
 		ActionPriority actionPriority,
-		String actionLastModifiedByUserUuid,
-		String actionLastModifiedByUserFirstName,
-		String actionLastModifiedByUserLastName,
+		String actionLastModifiedByUuid,
+		String actionLastModifiedByFirstName,
+		String actionLastModifiedByLastName,
 		String actionCreatorUserUuid,
 		String actionCreatorUserFirstName,
 		String actionCreatorUserLastName) {
@@ -88,7 +88,7 @@ public class EventActionIndexDto implements Serializable {
 		this.actionChangeDate = actionChangeDate;
 		this.actionStatus = actionStatus;
 		this.actionPriority = actionPriority;
-		this.actionLastModifiedByUser = new UserReferenceDto(actionLastModifiedByUserUuid, actionLastModifiedByUserFirstName, actionLastModifiedByUserLastName, null);
+		this.actionLastModifiedBy = new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName, null);
 		this.actionCreatorUser = new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName, null);
 	}
 
@@ -180,12 +180,12 @@ public class EventActionIndexDto implements Serializable {
 		this.actionPriority = actionPriority;
 	}
 
-	public UserReferenceDto getActionLastModifiedByUser() {
-		return actionLastModifiedByUser;
+	public UserReferenceDto getActionLastModifiedBy() {
+		return actionLastModifiedBy;
 	}
 
-	public void setActionLastModifiedByUser(UserReferenceDto actionLastModifiedByUser) {
-		this.actionLastModifiedByUser = actionLastModifiedByUser;
+	public void setActionLastModifiedBy(UserReferenceDto actionLastModifiedBy) {
+		this.actionLastModifiedBy = actionLastModifiedBy;
 	}
 
 	public UserReferenceDto getActionCreatorUser() {

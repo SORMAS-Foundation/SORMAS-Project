@@ -3974,7 +3974,7 @@
           "reply" : {
             "type" : "string"
           },
-          "lastModifiedByUser" : {
+          "lastModifiedBy" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           },
           "contextReference" : {

@@ -85,7 +85,7 @@ public class ActionController {
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				ActionDto dto1 = form.getValue();
-				dto1.setLastModifiedByUser(FacadeProvider.getUserFacade().getCurrentUser().toReference());
+				dto1.setLastModifiedBy(FacadeProvider.getUserFacade().getCurrentUser().toReference());
 				FacadeProvider.getActionFacade().saveAction(dto1);
 				popupWindow.close();
 				callback.run();

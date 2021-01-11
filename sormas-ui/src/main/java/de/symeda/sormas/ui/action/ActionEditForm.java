@@ -109,12 +109,12 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 	}
 
 	private void updateLastModifiedByInfo() {
-		if (getValue().getLastModifiedByUser() != null && getValue().getChangeDate() != null) {
+		if (getValue().getLastModifiedBy() != null && getValue().getChangeDate() != null) {
 			Label replyLabel = new Label(
 				String.format(
 					I18nProperties.getCaption(Captions.actionLastModifiedByLabel),
 					DateFormatHelper.formatDate(getValue().getChangeDate()),
-					getValue().getLastModifiedByUser().getCaption()));
+					getValue().getLastModifiedBy().getCaption()));
 			replyLabel.addStyleNames(CssStyles.LABEL_ITALIC);
 			getContent().addComponent(replyLabel, LAST_MODIFIED_BY_LABEL_LOC);
 		}

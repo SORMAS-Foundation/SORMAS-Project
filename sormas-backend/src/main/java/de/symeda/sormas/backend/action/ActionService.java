@@ -247,7 +247,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		CriteriaQuery<EventActionIndexDto> cq = cb.createQuery(EventActionIndexDto.class);
 		Root<Action> action = cq.from(getElementClass());
 		ActionJoins actionJoins = new ActionJoins(action);
-		Join<Action, User> lastModifiedByUser = actionJoins.getLastModifiedByUser();
+		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, User> creatorUser = actionJoins.getCreator();
 		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
 
@@ -275,9 +275,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			action.get(Action.CHANGE_DATE),
 			action.get(Action.ACTION_STATUS),
 			action.get(Action.PRIORITY),
-			lastModifiedByUser.get(User.UUID),
-			lastModifiedByUser.get(User.FIRST_NAME),
-			lastModifiedByUser.get(User.LAST_NAME),
+			lastModifiedBy.get(User.UUID),
+			lastModifiedBy.get(User.FIRST_NAME),
+			lastModifiedBy.get(User.LAST_NAME),
 			creatorUser.get(User.UUID),
 			creatorUser.get(User.FIRST_NAME),
 			creatorUser.get(User.LAST_NAME));
@@ -320,11 +320,11 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 				case EventActionIndexDto.ACTION_TITLE:
 					expression = cb.lower(action.get(Action.TITLE));
 					break;
-				case EventActionIndexDto.ACTION_LAST_MODIFIED_BY_USER:
+				case EventActionIndexDto.ACTION_LAST_MODIFIED_BY:
 					expression = cb.selectCase()
 						.when(
-							cb.isNotNull(action.get(Action.LAST_MODIFIED_BY_USER)),
-							cb.lower(action.get(Action.LAST_MODIFIED_BY_USER).get(User.LAST_NAME)))
+							cb.isNotNull(action.get(Action.LAST_MODIFIED_BY)),
+							cb.lower(action.get(Action.LAST_MODIFIED_BY).get(User.LAST_NAME)))
 						.otherwise(cb.lower(action.get(Action.CREATOR_USER).get(User.LAST_NAME)));
 					break;
 				default:
@@ -353,7 +353,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		CriteriaQuery<EventActionExportDto> cq = cb.createQuery(EventActionExportDto.class);
 		Root<Action> action = cq.from(getElementClass());
 		ActionJoins actionJoins = new ActionJoins(action);
-		Join<Action, User> lastModifiedByUser = actionJoins.getLastModifiedByUser();
+		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
 
 		// Add filters
@@ -381,9 +381,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			action.get(Action.CHANGE_DATE),
 			action.get(Action.ACTION_STATUS),
 			action.get(Action.PRIORITY),
-			lastModifiedByUser.get(User.UUID),
-			lastModifiedByUser.get(User.FIRST_NAME),
-			lastModifiedByUser.get(User.LAST_NAME));
+			lastModifiedBy.get(User.UUID),
+			lastModifiedBy.get(User.FIRST_NAME),
+			lastModifiedBy.get(User.LAST_NAME));
 
 		cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 

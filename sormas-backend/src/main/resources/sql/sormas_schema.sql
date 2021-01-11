@@ -6180,10 +6180,10 @@ ALTER TABLE action_history ALTER COLUMN reply TYPE text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (301, 'Change action''s columns description and reply type from varchar to text #3848');
 
--- 2020-12-17 Change action's replyingUser to lastModifiedByUser #3719
-ALTER TABLE action RENAME COLUMN replyinguser_id TO lastmodifiedbyuser_id;
-ALTER TABLE action_history RENAME COLUMN replyinguser_id TO lastmodifiedbyuser_id;
+-- 2020-12-17 Change action's replyingUser to lastModifiedBy #3719
+ALTER TABLE action RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+ALTER TABLE action_history RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
 
-INSERT INTO schema_version (version_number, comment) VALUES (302, 'Change action''s replyingUser to lastModifiedByUser #3719');
+INSERT INTO schema_version (version_number, comment) VALUES (302, 'Change action''s replyingUser to lastModifiedBy #3719');
 
 -- *** Insert new sql commands BEFORE this line ***

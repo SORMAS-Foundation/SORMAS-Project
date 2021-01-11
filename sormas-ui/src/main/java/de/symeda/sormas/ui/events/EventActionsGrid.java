@@ -102,15 +102,15 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 	private String createLastModifiedByOrCreatorColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
 
 		grid.addColumn(event -> {
-			if (event.getActionLastModifiedByUser() != null && event.getActionLastModifiedByUser().getUuid() != null) {
-				return event.getActionLastModifiedByUser();
+			if (event.getActionLastModifiedBy() != null && event.getActionLastModifiedBy().getUuid() != null) {
+				return event.getActionLastModifiedBy();
 			} else {
 				return event.getActionCreatorUser();
 			}
 		})
 			.setId(ACTION_LAST_MODIFIED_BY_OR_CREATOR)
-			.setSortProperty(EventActionIndexDto.ACTION_LAST_MODIFIED_BY_USER)
-			.setCaption(I18nProperties.getPrefixCaption(EventActionIndexDto.I18N_PREFIX, EventActionIndexDto.ACTION_LAST_MODIFIED_BY_USER));
+			.setSortProperty(EventActionIndexDto.ACTION_LAST_MODIFIED_BY)
+			.setCaption(I18nProperties.getPrefixCaption(EventActionIndexDto.I18N_PREFIX, EventActionIndexDto.ACTION_LAST_MODIFIED_BY));
 
 		return ACTION_LAST_MODIFIED_BY_OR_CREATOR;
 	}
