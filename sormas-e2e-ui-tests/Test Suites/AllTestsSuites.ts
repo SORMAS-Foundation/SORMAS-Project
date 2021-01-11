@@ -10,7 +10,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Contacts/ContactInformation</testSuiteEntity>
@@ -19,7 +19,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Contacts/CreateNewContact</testSuiteEntity>
@@ -28,7 +28,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Contacts/Others</testSuiteEntity>
@@ -37,7 +37,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Contacts/TableFilter</testSuiteEntity>
@@ -46,7 +46,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/SuveillanceSupervisor Test Suite/Case CRU(D)</testSuiteEntity>
@@ -55,7 +55,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/SuveillanceSupervisor Test Suite/Filter View</testSuiteEntity>
@@ -64,7 +64,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Samples/Filter</testSuiteEntity>
@@ -73,7 +73,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Events/Events_CRUD</testSuiteEntity>
@@ -82,7 +82,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Samples/Sample CRUD</testSuiteEntity>
@@ -91,7 +91,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Events/Events_CRUD</testSuiteEntity>
@@ -100,7 +100,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Login/LoginRoles</testSuiteEntity>
@@ -109,7 +109,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/Tasks/AllTasks</testSuiteEntity>
@@ -118,7 +118,7 @@
          <configuration>
             <groupName>Web Desktop</groupName>
             <profileName>test</profileName>
-            <runConfigurationId>Firefox</runConfigurationId>
+            <runConfigurationId>Chrome (headless)</runConfigurationId>
          </configuration>
          <runEnabled>true</runEnabled>
          <testSuiteEntity>Test Suites/JenkinsSuite</testSuiteEntity>

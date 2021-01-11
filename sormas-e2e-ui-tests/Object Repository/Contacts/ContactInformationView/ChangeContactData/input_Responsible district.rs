@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>input_Responsible district_gwt-uid-203</name>
+   <name>input_Responsible district</name>
    <tag></tag>
    <elementGuidId>6cc2afbc-435a-4803-8c30-5b1829395bf2</elementGuidId>
    <selectorCollection>
