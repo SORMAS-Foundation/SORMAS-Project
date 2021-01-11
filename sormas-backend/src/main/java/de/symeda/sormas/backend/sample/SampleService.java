@@ -52,7 +52,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -66,7 +66,6 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -127,12 +126,12 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = AbstractAdoService.and(cb, filter, dateFilter);
+			filter = BaseAdoService.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -152,7 +151,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = BaseAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -284,18 +283,22 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(cq, cb, new SampleJoins<>(samplePath));
+		return createUserFilter(cq, cb, new SampleJoins<>(samplePath), new SampleCriteria());
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins) {
+	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleCriteria criteria) {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, joins.getCaze(), null);
-		Predicate contactFilter = contactService.createUserFilterForJoin(cb, cq, joins.getContact());
-		Predicate eventParticipantFilter = eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant());
-		filter = or(cb, filter, caseFilter, contactFilter, eventParticipantFilter);
+		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
+		if (sampleAssociationType == SampleAssociationType.CASE) {
+			filter = or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
+		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
+			filter = or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
+		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
+			filter = or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+		}
 
 		return filter;
 	}

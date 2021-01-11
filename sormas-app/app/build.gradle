@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 ext.sormasVersion = getVersionName()
@@ -86,11 +88,12 @@ dependencies {
     implementation 'com.j256.ormlite:ormlite-core:5.1'
     implementation 'com.j256.ormlite:ormlite-android:5.1'
     implementation 'javax.persistence:persistence-api:1.0.2'
-    implementation 'com.google.firebase:firebase-core:17.2.2'
-    implementation 'com.google.firebase:firebase-perf:19.0.5'
-    implementation 'com.google.firebase:firebase-config:19.1.1'
-    implementation 'com.google.firebase:firebase-analytics:17.2.2'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+    implementation 'com.google.firebase:firebase-analytics:18.0.0'
+
+    implementation 'com.google.firebase:firebase-core:18.0.0'
+    implementation 'com.google.firebase:firebase-perf:19.0.10'
+    implementation 'com.google.firebase:firebase-config:20.0.1'
     implementation("de.symeda.sormas:sormas-api:$sormasVersion") { changing = true }
     implementation 'com.github.mpkorstanje:simmetrics-core:4.1.1'
     implementation 'com.google.guava:guava:19.0'
@@ -125,9 +128,6 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
 }
-
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'io.fabric'
 
 apply plugin: "jacoco"
 

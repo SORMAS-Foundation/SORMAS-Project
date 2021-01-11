@@ -605,7 +605,7 @@ public class EventController {
 		String shortUuid = DataHelper.getShortUuid(event.getUuid());
 		String eventTitle = event.getEventTitle();
 		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + shortUuid + ")" : shortUuid);
-		eventLabel.addStyleNames(CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		eventLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponent(eventLabel);
 
 		return titleLayout;

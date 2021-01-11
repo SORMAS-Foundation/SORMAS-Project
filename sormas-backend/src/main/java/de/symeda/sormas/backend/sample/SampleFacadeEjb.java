@@ -75,7 +75,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.api.messaging.MessageType;
@@ -341,11 +341,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.multiselect(selections);
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -607,12 +607,12 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
 			CaseJoins<Sample> caseJoins = new CaseJoins<>(joins.getCaze());
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, joins.getCaze(), caseJoins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-			filter = AbstractAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
 		}
 
 		if (filter != null) {
@@ -699,10 +699,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		SampleJoins<Sample> joins = new SampleJoins<>(root);
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = BaseAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {

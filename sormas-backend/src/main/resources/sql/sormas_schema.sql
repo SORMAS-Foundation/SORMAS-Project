@@ -6052,7 +6052,6 @@ CREATE TABLE labmessage (
         uuid varchar(36) not null unique,
         changedate timestamp not null,
         creationdate timestamp not null,
-        messagedatetime timestamp,
         sampledatetime timestamp,
         samplereceiveddate timestamp,
         labsampleid text,
@@ -6131,11 +6130,55 @@ ALTER TABLE person_history RENAME COLUMN namesofotherguardians TO namesofguardia
 
 INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesOfOtherGuardians to namesOfGuardians #3413');
 
+-- 2020-12-7 Add a means of transports field to events #3618
+ALTER TABLE events ADD COLUMN meansOfTransport varchar(255);
+ALTER TABLE events_history ADD COLUMN meansOfTransport varchar(255);
+ALTER TABLE events ADD COLUMN meansOfTransportDetails text;
+ALTER TABLE events_history ADD COLUMN meansOfTransportDetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (297, 'Add a means of transports field to events #3618');
+
+-- 2021-01-05 Add reporting district to cases & contacts #3410
+ALTER TABLE cases ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE cases
+    ADD CONSTRAINT fk_cases_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE cases_history ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE cases_history
+    ADD CONSTRAINT fk_cases_history_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE contact ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE contact
+    ADD CONSTRAINT fk_contact_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE contact_history ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE contact_history
+    ADD CONSTRAINT fk_contact_history_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (298, 'Add reporting district to cases & contacts #3410');
+
+-- 2021-01-07 Add index for resulting cases of contacts #3926
+CREATE INDEX IF NOT EXISTS idx_contact_resultingcase_id ON contact USING hash (resultingcase_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (299, 'Add index for resulting cases of contacts #3926');
+
+-- 2021-01-05 Type of place details in events entities #2947
+ALTER TABLE events ADD COLUMN connectionNumber varchar(512);
+ALTER TABLE events_history ADD COLUMN connectionNumber varchar(512);
+ALTER TABLE events ADD COLUMN seatNumber varchar(512);
+ALTER TABLE events_history ADD COLUMN seatNumber varchar(512);
+ALTER TABLE events ADD COLUMN travelDate timestamp without time zone;
+ALTER TABLE events_history ADD COLUMN travelDate timestamp without time zone;
+
+INSERT INTO schema_version (version_number, comment) VALUES (300, 'Type of place details in events entities #2947');
+
 -- 2020-12-21 Fix labmessage table #3486
 ALTER TABLE labmessage OWNER TO sormas_user;
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
 ALTER TABLE labmessage_history OWNER TO sormas_user;
+ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
+ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (297, 'Fix labmessage table #3486');
+INSERT INTO schema_version (version_number, comment) VALUES (301, 'Fix labmessage table #3486');
 -- *** Insert new sql commands BEFORE this line ***

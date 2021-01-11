@@ -8,9 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,16 +33,16 @@ public class ExternalVisitsResourceTest {
 		//load released and new swagger docu information
 		Map<String, Object> releasedSwaggerDocuMap = loadJson("./src/test/resources/swagger.json");
 
-		Map<String, Object> newSwaggerDocuMap = loadJson("./target/test-classes/swagger.json");
+		Map<String, Object> newSwaggerDocuMap = loadJson("./target/swagger.json");
 
 		// Check whether path information is equal in new and released swagger docu
-		ArrayList<Object> releasedControllerList = new ArrayList<>();
-		extractPathsOfController(releasedSwaggerDocuMap, "External Visits Controller", releasedControllerList);
+		Map<String, Object> releasedControllerMap = new HashMap<String, Object>();
+		extractPathsOfController(releasedSwaggerDocuMap, "External Visits Controller", releasedControllerMap);
 
-		ArrayList<Object> newControllerList = new ArrayList<>();
-		extractPathsOfController(newSwaggerDocuMap, "External Visits Controller", newControllerList);
+		Map<String, Object> newControllerMap = new HashMap<String, Object>();
+		extractPathsOfController(newSwaggerDocuMap, "External Visits Controller", newControllerMap);
 
-		assertEquals(releasedControllerList, newControllerList);
+		assertEquals(releasedControllerMap, newControllerMap);
 
 		// Check whether related enum information is equal
 		List<String> enumNames = Arrays.asList(
@@ -56,15 +56,14 @@ public class ExternalVisitsResourceTest {
 			"SymptomState",
 			"YesNoUnknown",
 			"TemperatureSource");
+		Map<String, Object> releasedDetailMap = new HashMap<String, Object>();
+		Map<String, Object> newDetailMap = new HashMap<String, Object>();
 
 		for (String name : enumNames) {
-			ArrayList<Object> releasedDetailList = new ArrayList<>();
-			ArrayList<Object> newDetailList = new ArrayList<>();
-			extractDetail(releasedSwaggerDocuMap, name, releasedDetailList);
-			extractDetail(newSwaggerDocuMap, name, newDetailList);
-
-			assertEquals("", releasedDetailList, newDetailList);
+			extractDetail(releasedSwaggerDocuMap, name, releasedDetailMap);
+			extractDetail(newSwaggerDocuMap, name, newDetailMap);
 		}
+		assertEquals(releasedDetailMap, newDetailMap);
 	}
 
 	/**
@@ -73,22 +72,19 @@ public class ExternalVisitsResourceTest {
 	 *            Nested Map from which to extract the information. It's supposed to be a mapped swagger.json
 	 * @param controller
 	 *            The name of the controller, e.g. External Visits Controller
-	 * @param list
-	 *            Extracted information is stored in this list
+	 * @param resultMap
+	 *            Extracted information is stored in this map
 	 * @return Documentation about any path found for the specified controller (e.g. /visits-external/person/{personUuid} for the External
 	 *         Visits Controller). This includes parameter names for that path, but not information about related enums.
 	 */
-	private static void extractPathsOfController(Map<String, Object> level1, String controller, ArrayList<Object> list) {
-		level1.entrySet().forEach(e1 -> {
-			String key1 = e1.getKey();
-			Object value1 = e1.getValue();
+	private static void extractPathsOfController(Map<String, Object> level1, String controller, Map resultMap) {
+		level1.forEach((key1, value1) -> {
 			if (isInnerNode(value1)) {
 				Map<String, Object> level2 = innerNode(value1);
 				if (hasTag(level2, controller)) {
-					list.add(key1);
-					list.add(value1);
+					resultMap.put(key1, value1);
 				}
-				extractPathsOfController(level2, controller, list);
+				extractPathsOfController(level2, controller, resultMap);
 			}
 		});
 	}
@@ -100,9 +96,7 @@ public class ExternalVisitsResourceTest {
 			.map(ExternalVisitsResourceTest::innerNode)
 			// tags are always represented in the third layer and as ArrayLists
 			.map(ExternalVisitsResourceTest::tags)
-			.filter(t -> t.contains(controller))
-			.findFirst()
-			.isPresent();
+			.anyMatch(t -> t.contains(controller));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,20 +115,18 @@ public class ExternalVisitsResourceTest {
 	 *            Nested Map from which to extract the information. It's supposed to be a mapped swagger.json
 	 * @param detailName
 	 *            The name of the detail, e.g. JournalPersonDto.
-	 * @param list
-	 *            Extracted information is stored in this list
+	 * @param resultMap
+	 *            Extracted information is stored in this map
 	 * @return
 	 *         Documentation found about the detail. The Map is searched for a key equal to detailName, an it, plus the according value is
 	 *         added to the list.
 	 */
-	private static void extractDetail(Map<String, Object> level1, String detailName, ArrayList<Object> list) {
-		level1.entrySet().stream().forEach(e1 -> {
-			Object value1 = e1.getValue();
-			if (detailName.equals(e1.getKey())) {
-				list.add(detailName);
-				list.add(value1);
+	private static void extractDetail(Map<String, Object> level1, String detailName, Map resultMap) {
+		level1.forEach((key, value1) -> {
+			if (detailName.equals(key)) {
+				resultMap.put(detailName, value1);
 			} else if (isInnerNode(value1)) {
-				extractDetail(innerNode(value1), detailName, list);
+				extractDetail(innerNode(value1), detailName, resultMap);
 			}
 		});
 	}

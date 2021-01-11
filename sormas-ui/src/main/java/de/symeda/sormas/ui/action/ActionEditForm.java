@@ -25,6 +25,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -87,7 +88,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		DateTimeField date = addDateField(ActionDto.DATE, DateTimeField.class, -1);
 		date.setImmediate(true);
 		addField(ActionDto.PRIORITY, ComboBox.class);
-		addField(ActionDto.ACTION_STATUS, NullableOptionGroup.class);
+		addField(ActionDto.ACTION_STATUS, OptionGroup.class);
 		NullableOptionGroup actionContext = addField(ActionDto.ACTION_CONTEXT, NullableOptionGroup.class);
 		actionContext.setImmediate(true);
 		actionContext.addValueChangeListener(event -> updateByActionContext());
@@ -103,7 +104,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		reply.setNullRepresentation("");
 		reply.setImmediate(true);
 
-		setRequired(true, ActionDto.ACTION_CONTEXT, ActionDto.DATE);
+		setRequired(true, ActionDto.ACTION_CONTEXT, ActionDto.DATE, ActionDto.ACTION_STATUS);
 		setReadOnly(true, ActionDto.ACTION_CONTEXT, ActionDto.EVENT);
 	}
 
