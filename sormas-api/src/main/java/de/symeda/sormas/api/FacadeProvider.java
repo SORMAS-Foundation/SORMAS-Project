@@ -67,6 +67,7 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
@@ -326,6 +327,10 @@ public class FacadeProvider {
 
 	public static LabMessageFacade getLabMessageFacade() {
 		return get().lookupEjbRemote(LabMessageFacade.class);
+	}
+
+	public static SystemEventFacade getSystemEventFacade() {
+		return get().lookupEjbRemote(SystemEventFacade.class);
 	}
 
 	public static ExternalLabResultsFacade getExternalLabResultsFacade() {
