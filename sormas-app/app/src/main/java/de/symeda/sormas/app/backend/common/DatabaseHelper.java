@@ -1835,7 +1835,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportingDistrict_id REFERENCES district (id);");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportingDistrict_id REFERENCES district (id);");
 			
-			case 257:
+			case 258:
 				currentVersion = 258;
 				getDao(Location.class).executeRaw(
 					"UPDATE location SET facilitytype = 'HOSPITAL' " + "WHERE facilitytype IS NULL "
