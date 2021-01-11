@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -91,6 +93,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		statusChangeLayout.setSpacing(false);
 		statusChangeLayout.setMargin(false);
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
+
+		getContent().setEnabled(UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT));
 
 		addFields();
 	}
