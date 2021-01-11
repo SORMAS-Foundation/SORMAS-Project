@@ -66,6 +66,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -82,6 +83,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.systemevents.SystemEventDto;
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -1272,6 +1276,20 @@ public class TestDataCreator {
 		document.setRelatedEntityUuid(relatedEntityUuid);
 
 		return beanTest.getDocumentFacade().saveDocument(document, content);
+	}
+
+	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, SystemEventStatus status) {
+		return createSystemEvent(type, startDate, new Date(startDate.getTime() + 1000), status, "Generated for test purposes");
+	};
+
+	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, Date endDate, SystemEventStatus status, String additionalInfo) {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		systemEvent.setType(type);
+		systemEvent.setStartDate(startDate);
+		systemEvent.setEndDate(endDate);
+		systemEvent.setStatus(status);
+		systemEvent.setAdditionalInfo(additionalInfo);
+		return systemEvent;
 	}
 
 	/**

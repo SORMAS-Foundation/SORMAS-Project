@@ -79,4 +79,10 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	}
 
+	@LocalBean
+	@Stateless
+	public static class SystemEventFacadeEjbLocal extends SystemEventFacadeEjb {
+
+	}
+
 }
