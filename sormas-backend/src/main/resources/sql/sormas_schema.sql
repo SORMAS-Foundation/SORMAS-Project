@@ -6242,4 +6242,10 @@ ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
 ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (305, 'Fix labmessage table #3486');
+-- 2021-01-11 Add testresulttext to labmessage #3820
+ALTER TABLE labmessage ADD COLUMN testresulttext TEXT;
+ALTER TABLE labmessage_history ADD COLUMN testresulttext TEXT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (301, 'Add testresulttext to labmessage #3820');
+
 -- *** Insert new sql commands BEFORE this line ***
