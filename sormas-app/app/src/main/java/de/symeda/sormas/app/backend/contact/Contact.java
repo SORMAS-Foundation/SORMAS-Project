@@ -241,6 +241,8 @@ public class Contact extends PseudonymizableAdo {
 	@DatabaseField
 	private Date prohibitionToWorkUntil;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private District reportingDistrict;
 
 	public Person getPerson() {
 		return person;
@@ -816,5 +818,13 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	public District getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(District reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 }

@@ -15,14 +15,11 @@
 
 package de.symeda.sormas.app.symptoms;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
+import android.content.res.Resources;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import android.content.res.Resources;
-import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -59,6 +56,9 @@ import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditLayoutBinding, Symptoms, AbstractDomainObject> {
 
 	private Symptoms record;
@@ -73,6 +73,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
 	private IEntryItemOnClickListener clearAllCallback;
 	private IEntryItemOnClickListener setClearedToNoCallback;
+	private IEntryItemOnClickListener setClearedToUnknownCallback;
 
 	private List<ControlSwitchField> symptomFields;
 
@@ -156,6 +157,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 		contentBinding.setSymptomStateClass(SymptomState.class);
 		contentBinding.setClearAllCallback(clearAllCallback);
 		contentBinding.setSetClearedToNoCallback(setClearedToNoCallback);
+		contentBinding.setSetClearedToUnknownCallback(setClearedToUnknownCallback);
 
 		SymptomsValidator.initializeSymptomsValidation(contentBinding, ado);
 	}
@@ -315,6 +317,18 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 				for (ControlSwitchField symptomField : symptomFields) {
 					if (symptomField.getVisibility() == VISIBLE && symptomField.getValue() == null) {
 						symptomField.setValue(SymptomState.NO);
+					}
+				}
+			}
+		};
+
+		setClearedToUnknownCallback = new IEntryItemOnClickListener() {
+
+			@Override
+			public void onClick(View v, Object item) {
+				for (ControlSwitchField symptomField : symptomFields) {
+					if (symptomField.getVisibility() == VISIBLE && symptomField.getValue() == null) {
+						symptomField.setValue(SymptomState.UNKNOWN);
 					}
 				}
 			}

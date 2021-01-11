@@ -113,6 +113,7 @@ public interface Validations {
 	String userNameNotUnique = "userNameNotUnique";
 	String validCaseContactOrEventParticipant = "validCaseContactOrEventParticipant";
 	String validCommunity = "validCommunity";
+	String validDateRange = "validDateRange";
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validEmailAddress = "validEmailAddress";

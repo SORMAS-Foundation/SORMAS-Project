@@ -78,7 +78,7 @@ public class Menu extends CssLayout {
 
 		// header of the menu
 		final HorizontalLayout top = new HorizontalLayout();
-		top.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
 		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
@@ -95,7 +95,6 @@ public class Menu extends CssLayout {
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
 		top.addComponent(title);
-		top.addStyleName("leaflet-interactive");
 		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		menuPart.addComponent(top);
 

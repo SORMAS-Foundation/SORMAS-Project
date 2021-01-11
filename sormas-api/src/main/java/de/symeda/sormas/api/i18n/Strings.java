@@ -191,6 +191,7 @@ public interface Strings {
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasCountry = "errorSormasToSormasCountry";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
@@ -489,6 +490,7 @@ public interface Strings {
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
+	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportCsvFile = "infoImportCsvFile";
@@ -824,6 +826,7 @@ public interface Strings {
 	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
 	String promptActionEpiWeekTo = "promptActionEpiWeekTo";
 	String promptAllAreas = "promptAllAreas";
+	String promptAllCommunities = "promptAllCommunities";
 	String promptAllDistricts = "promptAllDistricts";
 	String promptAllRegions = "promptAllRegions";
 	String promptArea = "promptArea";

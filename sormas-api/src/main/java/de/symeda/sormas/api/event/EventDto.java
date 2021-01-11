@@ -55,6 +55,9 @@ public class EventDto extends PseudonymizableDto {
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
+	public static final String CONNECTION_NUMBER = "connectionNumber";
+	public static final String SEAT_NUMBER = "seatNumber";
+	public static final String TRAVEL_DATE = "travelDate";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
@@ -93,6 +96,12 @@ public class EventDto extends PseudonymizableDto {
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
 	private String meansOfTransportDetails;
+	@SensitiveData
+	private String connectionNumber;
+	@SensitiveData
+	private String seatNumber;
+	private Date travelDate;
+
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 	private String srcInstitutionalPartnerTypeDetails;
@@ -258,6 +267,30 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
 		this.meansOfTransportDetails = meansOfTransportDetails;
+	}
+
+	public String getConnectionNumber() {
+		return connectionNumber;
+	}
+
+	public void setConnectionNumber(String connectionNumber) {
+		this.connectionNumber = connectionNumber;
+	}
+
+	public String getSeatNumber() {
+		return seatNumber;
+	}
+
+	public void setSeatNumber(String seatNumber) {
+		this.seatNumber = seatNumber;
+	}
+
+	public Date getTravelDate() {
+		return travelDate;
+	}
+
+	public void setTravelDate(Date travelDate) {
+		this.travelDate = travelDate;
 	}
 
 	public EventSourceType getSrcType() {

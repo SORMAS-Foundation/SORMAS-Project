@@ -113,7 +113,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.DISEASE)) +
                     fluidRowLocs(ContactDto.DISEASE_DETAILS) +
                     fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
-                    fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
+                    fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.REPORTING_DISTRICT) +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
 					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
@@ -205,6 +205,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
 
 		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+		((ComboBox) addField(ContactDto.REPORTING_DISTRICT)).addItems(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
 		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
 		contactIdentificationSourceDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));

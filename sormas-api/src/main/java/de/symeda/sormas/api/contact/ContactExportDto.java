@@ -154,6 +154,8 @@ public class ContactExportDto implements Serializable {
 	private String birthCountry;
 	private String citizenship;
 
+	private String reportingDistrict;
+
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName,
@@ -172,6 +174,7 @@ public class ContactExportDto implements Serializable {
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, String externalID,
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
+							String reportingDistrict,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
@@ -239,6 +242,7 @@ public class ContactExportDto implements Serializable {
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
+		this.reportingDistrict = reportingDistrict;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -660,6 +664,12 @@ public class ContactExportDto implements Serializable {
 	@HideForCountriesExcept
 	public String getCitizenship() {
 		return citizenship;
+	}
+
+	@Order(83)
+	@HideForCountriesExcept
+	public String getReportingDistrict() {
+		return reportingDistrict;
 	}
 
 	public void setEventCount(Long eventCount) {

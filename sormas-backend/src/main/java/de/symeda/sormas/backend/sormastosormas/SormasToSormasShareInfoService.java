@@ -27,13 +27,14 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
 @LocalBean
-public class SormasToSormasShareInfoService extends AbstractAdoService<SormasToSormasShareInfo> {
+public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<SormasToSormasShareInfo> {
 
 	public SormasToSormasShareInfoService() {
 		super(SormasToSormasShareInfo.class);
@@ -49,18 +50,18 @@ public class SormasToSormasShareInfoService extends AbstractAdoService<SormasToS
 		Predicate filter = null;
 
 		if (criteria.getCaze() != null) {
-			filter = and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.CAZE, JoinType.LEFT).get(Case.UUID), criteria.getCaze().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.CAZE, JoinType.LEFT).get(Case.UUID), criteria.getCaze().getUuid()));
 		}
 
 		if (criteria.getContact() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(from.join(SormasToSormasShareInfo.CONTACT, JoinType.LEFT).get(Contact.UUID), criteria.getContact().getUuid()));
 		}
 
 		if (criteria.getSample() != null) {
-			filter =
+			filter = CriteriaBuilderHelper.
 				and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.SAMPLE, JoinType.LEFT).get(Sample.UUID), criteria.getSample().getUuid()));
 		}
 
