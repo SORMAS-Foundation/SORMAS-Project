@@ -72,6 +72,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -218,8 +219,12 @@ public class DataDictionaryGenerator {
 
 			//sensitive data
 			XSSFCell dataProtectionCell = row.createCell(EntityColumn.DATA_PROTECTION.ordinal());
-			if (field.getAnnotation(SensitiveData.class) != null)
+			if (field.getAnnotation(PersonalData.class) != null) {
 				dataProtectionCell.setCellValue("personal");
+			} else {
+				if (field.getAnnotation(SensitiveData.class) != null)
+					dataProtectionCell.setCellValue("sensitive");
+			}
 
 			// caption
 			XSSFCell captionCell = row.createCell(EntityColumn.CAPTION.ordinal());
@@ -267,8 +272,6 @@ public class DataDictionaryGenerator {
 					hideForCountriesString.append(country);
 				}
 				ignoreForCountriesCell.setCellValue(hideForCountriesString.toString());
-			} else {
-				ignoreForCountriesCell.setCellValue("None");
 			}
 
 			//exclusive countries
@@ -282,8 +285,6 @@ public class DataDictionaryGenerator {
 					hideForCountriesExceptString.append(exceptCountry);
 				}
 				exclusiveCountriesCell.setCellValue(hideForCountriesExceptString.toString());
-			} else {
-				exclusiveCountriesCell.setCellValue("None");
 			}
 		}
 
