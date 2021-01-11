@@ -175,8 +175,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("opposite: true,");
 		}
 		hcjs.append("categories: [");
-		for (Object axisKey : axisKeys) {
-			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(axisCaptions.get(axisKey))).append("',");
+		List<String> sortedCaptions = axisCaptions.values().stream().collect(Collectors.toList());
+		sortedCaptions.sort(String::compareTo);
+		for (String caption : sortedCaptions) {
+			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(caption)).append("',");
 		}
 		hcjs.append("]},");
 
