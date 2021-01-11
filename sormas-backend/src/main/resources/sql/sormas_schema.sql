@@ -6196,4 +6196,22 @@ WHERE location.facilitytype IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617');
 
+-- 2021-01-07 Add system events #3927
+CREATE TABLE systemevent (
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    type varchar(255) not null,
+    startdate timestamp,
+    enddate timestamp,
+    status varchar(255),
+    additionalInfo varchar(512),
+    primary key(id)
+);
+
+ALTER TABLE systemevent OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (303, 'Add system events #3927');
+
 -- *** Insert new sql commands BEFORE this line ***

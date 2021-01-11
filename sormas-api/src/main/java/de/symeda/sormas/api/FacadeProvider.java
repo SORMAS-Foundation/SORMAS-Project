@@ -160,6 +160,7 @@ public class FacadeProvider {
 	public static CountryFacade getCountryFacade() {
 		return get().lookupEjbRemote(CountryFacade.class);
 	}
+
 	public static RegionFacade getRegionFacade() {
 		return get().lookupEjbRemote(RegionFacade.class);
 	}
