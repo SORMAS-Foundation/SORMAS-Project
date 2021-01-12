@@ -6180,22 +6180,6 @@ ALTER TABLE action_history ALTER COLUMN reply TYPE text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (301, 'Change action''s columns description and reply type from varchar to text #3848');
 
--- 2020-12-03 Remove hospital from event's type of place #3617
-UPDATE location
-SET facilitytype = 'HOSPITAL'
-FROM location AS l
-INNER JOIN events ON events.eventlocation_id = l.id
-WHERE events.typeofplace = 'HOSPITAL'
-  AND l.facilitytype IS NULL;
-
-UPDATE events
-SET typeofplace = 'FACILITY'
-FROM events as e
-INNER JOIN location ON location.id = e.eventlocation_id
-WHERE location.facilitytype IS NOT NULL;
-
-INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617');
-
 -- 2020-01-11 SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524
 ALTER TABLE cases ADD COLUMN externaltoken varchar(512);
 ALTER TABLE cases_history ADD COLUMN externaltoken varchar(512);
@@ -6212,6 +6196,22 @@ ALTER TABLE person_history ADD COLUMN externaltoken varchar(512);
 ALTER TABLE events ADD COLUMN externaltoken varchar(512);
 ALTER TABLE events_history ADD COLUMN externaltoken varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (303, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
+INSERT INTO schema_version (version_number, comment) VALUES (302, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
+
+-- 2020-12-03 Remove hospital from event's type of place #3617
+UPDATE location
+SET facilitytype = 'HOSPITAL'
+FROM location AS l
+INNER JOIN events ON events.eventlocation_id = l.id
+WHERE events.typeofplace = 'HOSPITAL'
+  AND l.facilitytype IS NULL;
+
+UPDATE events
+SET typeofplace = 'FACILITY'
+FROM events as e
+INNER JOIN location ON location.id = e.eventlocation_id
+WHERE location.facilitytype IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (303, 'Remove hospital from event''s type of place #3617');
 
 -- *** Insert new sql commands BEFORE this line ***
