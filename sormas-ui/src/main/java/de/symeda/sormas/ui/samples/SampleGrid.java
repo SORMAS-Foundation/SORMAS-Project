@@ -17,10 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -39,10 +43,9 @@ import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.util.Date;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
@@ -86,7 +89,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		pathogenTestResultColumn.setSortProperty(SampleIndexDto.PATHOGEN_TEST_RESULT);
 
 		setColumns(
-			EDIT_BTN_ID,
+			SampleIndexDto.UUID,
 			SampleIndexDto.LAB_SAMPLE_ID,
 			SampleIndexDto.EPID_NUMBER,
 			SampleIndexDto.ASSOCIATED_CASE,
@@ -110,6 +113,9 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.RECEIVED)).setRenderer(new BooleanRenderer());
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.LAB)).setMaximumWidth(200);
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS)).setSortable(false);
+
+		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.UUID)).setRenderer(new UuidRenderer());
+		addItemClickListener(new ShowDetailsListener<>(SampleIndexDto.UUID, e -> ControllerProvider.getSampleController().navigateToData(e.getUuid())));
 
 		if (UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);

@@ -43,9 +43,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -74,6 +71,9 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
@@ -284,8 +284,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
 		Root<Contact> contactRoot = cq.from(Contact.class);
 
-		Predicate filter =
-			CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, contactRoot), buildRelevantContactsFilter(person, disease, referenceDate, cb, contactRoot));
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, createDefaultFilter(cb, contactRoot), buildRelevantContactsFilter(person, disease, referenceDate, cb, contactRoot));
 		cq.where(filter);
 
 		return new HashSet<>(em.createQuery(cq).getResultList());
@@ -308,8 +308,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
-				CriteriaBuilderHelper.or(
-				cb, CriteriaBuilderHelper.and(
+			CriteriaBuilderHelper.or(
+				cb,
+				CriteriaBuilderHelper.and(
 					cb,
 					cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
 					cb.lessThanOrEqualTo(
@@ -319,14 +320,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		filter = CriteriaBuilderHelper.and(
 			cb,
-			filter, CriteriaBuilderHelper.or(
+			filter,
+			CriteriaBuilderHelper.or(
 				cb,
 				// If the contact does not have a follow-up until date, use the last
 				// contact/contact report date as a fallback
-					CriteriaBuilderHelper.and(
+				CriteriaBuilderHelper.and(
 					cb,
 					cb.isNull(from.get(Contact.FOLLOW_UP_UNTIL)),
-						CriteriaBuilderHelper.or(
+					CriteriaBuilderHelper.or(
 						cb,
 						CriteriaBuilderHelper.and(
 							cb,
@@ -522,8 +524,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
 				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-				visitsCq
-					.where(CriteriaBuilderHelper.and(cb, contact.get(AbstractDomainObject.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+				visitsCq.where(
+					CriteriaBuilderHelper
+						.and(cb, contact.get(AbstractDomainObject.ID).in(dashboardContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
 				visitsCq.multiselect(
 					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
@@ -947,7 +950,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		case DISTRICT:
 			final District district = currentUser.getDistrict();
 			if (district != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactPath.get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
+				filter = CriteriaBuilderHelper
+					.or(cb, filter, cb.equal(contactPath.get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
 			}
 			break;
 		case COMMUNITY:
@@ -969,7 +973,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Join<Contact, Case> resultingCase = joins.getResultingCase();
 
 		if (contactCriteria.getReportingUserRole() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isMember(contactCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.isMember(contactCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
 		}
 		if (contactCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.DISEASE), contactCriteria.getDisease()));
@@ -1011,10 +1016,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						cb.equal(caze.join(Case.COMMUNITY, JoinType.LEFT).get(Community.UUID), contactCriteria.getCommunity().getUuid()))));
 		}
 		if (contactCriteria.getContactOfficer() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContactOfficer().get(User.UUID), contactCriteria.getContactOfficer().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getContactOfficer().get(User.UUID), contactCriteria.getContactOfficer().getUuid()));
 		}
 		if (contactCriteria.getContactClassification() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.CONTACT_CLASSIFICATION), contactCriteria.getContactClassification()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.CONTACT_CLASSIFICATION), contactCriteria.getContactClassification()));
 		}
 		if (contactCriteria.getContactStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.CONTACT_STATUS), contactCriteria.getContactStatus()));
@@ -1028,9 +1035,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				filter,
 				cb.between(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateFrom(), contactCriteria.getReportDateTo()));
 		} else if (contactCriteria.getReportDateFrom() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateFrom()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateFrom()));
 		} else if (contactCriteria.getReportDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateTo()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateTo()));
 		}
 		if (contactCriteria.getLastContactDateFrom() != null && contactCriteria.getLastContactDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -1044,10 +1053,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				filter,
 				cb.between(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom(), contactCriteria.getFollowUpUntilTo()));
 		} else if (contactCriteria.getFollowUpUntilFrom() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom()));
 		} else if (contactCriteria.getFollowUpUntilTo() != null) {
 			if (!Boolean.TRUE.equals(contactCriteria.getFollowUpUntilToPrecise())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
 			} else {
 				filter = CriteriaBuilderHelper.and(
 					cb,
@@ -1144,7 +1155,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.UUID), contactCriteria.getPerson().getUuid()));
 		}
 		if (contactCriteria.getBirthdateYYYY() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_YYYY), contactCriteria.getBirthdateYYYY()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_YYYY), contactCriteria.getBirthdateYYYY()));
 		}
 		if (contactCriteria.getBirthdateMM() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_MM), contactCriteria.getBirthdateMM()));
@@ -1189,8 +1201,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), contactCriteria.getEventUuid()));
 		}
 		if (contactCriteria.getEventParticipant() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEventParticipants().get(EventParticipant.UUID), contactCriteria.getEventParticipant().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getEventParticipants().get(EventParticipant.UUID), contactCriteria.getEventParticipant().getUuid()));
 		}
 		if (contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent() != null) {
 			filter = CriteriaBuilderHelper.and(
