@@ -89,6 +89,7 @@ TEMP_DIR=${ROOT_PREFIX}/opt/sormas/temp
 DOCUMENTS_DIR=${ROOT_PREFIX}/opt/sormas/documents
 GENERATED_DIR=${ROOT_PREFIX}/opt/sormas/generated
 CUSTOM_DIR=${ROOT_PREFIX}/opt/sormas/custom
+ABOUT_FILES_DIR=${CUSTOM_DIR}/aboutfiles
 PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
 DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
 SORMAS2SORMAS_DIR=${ROOT_PREFIX}/opt/sormas/sormas2sormas
@@ -127,6 +128,7 @@ echo "Temp directory: ${TEMP_DIR}"
 echo "Directory for documents: ${DOCUMENTS_DIR}"
 echo "Directory for generated files: ${GENERATED_DIR}"
 echo "Directory for custom files: ${CUSTOM_DIR}"
+echo "Directory for custom documents: ${ABOUT_FILES_DIR}"
 echo "Payara home: ${PAYARA_HOME}"
 echo "Domain directory: ${DOMAIN_DIR}"
 echo "SORMAS to SORMAS directory:" ${SORMAS2SORMAS_DIR}
@@ -150,6 +152,7 @@ mkdir -p "${TEMP_DIR}"
 mkdir -p "${DOCUMENTS_DIR}"
 mkdir -p "${GENERATED_DIR}"
 mkdir -p "${CUSTOM_DIR}"
+mkdir -p "${ABOUT_FILES_DIR}"
 mkdir -p "${SORMAS2SORMAS_DIR}"
 
 if [[ ${LINUX} = true ]]; then
@@ -161,12 +164,14 @@ if [[ ${LINUX} = true ]]; then
 	setfacl -m u:${USER_NAME}:rwx "${DOCUMENTS_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${GENERATED_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${CUSTOM_DIR}"
+	setfacl -m u:${USER_NAME}:rwx "${ABOUT_FILES_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${SORMAS2SORMAS_DIR}"
 
 	setfacl -m u:postgres:rwx "${TEMP_DIR}"
 	setfacl -m u:postgres:rwx "${DOCUMENTS_DIR}"
 	setfacl -m u:postgres:rwx "${GENERATED_DIR}"
 	setfacl -m u:postgres:rwx "${CUSTOM_DIR}"
+	setfacl -m u:postgres:rwx "${ABOUT_FILES_DIR}"
 fi
 
 # Download and unzip payara

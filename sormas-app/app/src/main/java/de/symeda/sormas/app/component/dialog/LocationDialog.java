@@ -16,6 +16,7 @@
 package de.symeda.sormas.app.component.dialog;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.Arrays;
@@ -171,6 +172,21 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationRegion.setRequired(required);
 		contentBinding.locationDistrict.setRequired(required);
 	}
+
+    public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+        final int visibility = visible ? VISIBLE : GONE;
+        contentBinding.facilityTypeGroup.setVisibility(visibility);
+        contentBinding.locationFacility.setVisibility(visibility);
+        contentBinding.locationFacilityDetails.setVisibility(visibility);
+        contentBinding.locationFacilityType.setVisibility(visibility);
+
+        if (!visible && clearOnHidden) {
+			contentBinding.facilityTypeGroup.setValue(null);
+            contentBinding.locationFacility.setValue(null);
+            contentBinding.locationFacilityDetails.setValue(null);
+            contentBinding.locationFacilityType.setValue(null);
+        }
+    }
 
 	public DialogLocationLayoutBinding getContentBinding() {
 		return contentBinding;
