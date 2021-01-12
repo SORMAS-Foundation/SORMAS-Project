@@ -57,6 +57,10 @@ public class TherapyFacadeEjb implements TherapyFacade {
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
+
+			if (source.getChangeDate() != null) {
+				target.setChangeDate(new Timestamp(source.getChangeDate().getTime()));
+			}
 		}
 
 		DtoHelper.validateDto(source, target);

@@ -18,6 +18,9 @@ package de.symeda.sormas.backend.sormastosormas.datapersister;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -25,6 +28,7 @@ import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -50,18 +54,7 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistSharedData(ProcessedContactData contactData) throws SormasToSormasValidationException {
-		handleValidationError(
-			() -> personFacade.savePerson(contactData.getPerson()),
-			Captions.Person,
-			buildContactValidationGroupName(contactData.getContact()));
-		ContactDto savedContact = handleValidationError(
-			() -> contactFacade.saveContact(contactData.getContact()),
-			Captions.Contact,
-			buildContactValidationGroupName(contactData.getContact()));
-
-		if (contactData.getSamples() != null) {
-			dataPersisterHelper.persistSharedSamples(contactData.getSamples(), savedContact.getSormasToSormasOriginInfo());
-		}
+		persistProcessedData(contactData, null, null, true);
 	}
 
 	@Override
@@ -69,22 +62,70 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 		Exception.class })
 	public void persistReturnedData(ProcessedContactData contactData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
-		ContactDto savedContact = handleValidationError(
-			() -> contactFacade.saveContact(contactData.getContact()),
-			Captions.Contact,
-			buildContactValidationGroupName(contactData.getContact()));
-		SormasToSormasShareInfo contactShareInfo =
-			shareInfoService.getByContactAndOrganization(savedContact.getUuid(), originInfo.getOrganizationId());
-		contactShareInfo.setOwnershipHandedOver(false);
-		shareInfoService.persist(contactShareInfo);
 
-		handleValidationError(
-			() -> personFacade.savePerson(contactData.getPerson()),
-			Captions.Person,
-			buildContactValidationGroupName(contactData.getContact()));
+		persistProcessedData(contactData, contact -> {
+			SormasToSormasShareInfo contactShareInfo =
+				shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
+			contactShareInfo.setOwnershipHandedOver(false);
+			shareInfoService.persist(contactShareInfo);
+		}, (contact, sample) -> {
+			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
+			if (sampleShareInfo == null) {
+				sample.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());
+			} else {
+				sampleShareInfo.setOwnershipHandedOver(false);
+				shareInfoService.persist(sampleShareInfo);
+			}
+		}, false);
+	}
 
-		if (contactData.getSamples() != null) {
-			dataPersisterHelper.persistReturnedSamples(contactData.getSamples(), originInfo);
+	@Override
+	public void persistSyncData(ProcessedContactData processedData) throws SormasToSormasValidationException {
+		persistProcessedData(processedData, null, (contact, sample) -> {
+			if (sample.getSormasToSormasOriginInfo() == null) {
+				sample.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());
+			}
+		}, false);
+	}
+
+	private void persistProcessedData(
+		ProcessedContactData processedData,
+		Consumer<ContactDto> afterSaveContact,
+		BiConsumer<ContactDto, SampleDto> beforeSaveContact,
+		boolean isCreate)
+		throws SormasToSormasValidationException {
+
+		final ContactDto savedContact;
+		if (isCreate) {
+			// save person first during creation
+			handleValidationError(
+				() -> personFacade.savePerson(processedData.getPerson()),
+				Captions.Person,
+				buildContactValidationGroupName(processedData.getContact()));
+			savedContact = handleValidationError(
+				() -> contactFacade.saveContact(processedData.getContact()),
+				Captions.Contact,
+				buildContactValidationGroupName(processedData.getContact()));
+		} else {
+			//save contact first during update
+			savedContact = handleValidationError(
+				() -> contactFacade.saveContact(processedData.getContact()),
+				Captions.Contact,
+				buildContactValidationGroupName(processedData.getContact()));
+			handleValidationError(
+				() -> personFacade.savePerson(processedData.getPerson()),
+				Captions.Person,
+				buildContactValidationGroupName(processedData.getContact()));
+		}
+
+		if (afterSaveContact != null) {
+			afterSaveContact.accept(savedContact);
+		}
+
+		if (processedData.getSamples() != null) {
+			dataPersisterHelper.persistSamples(
+				processedData.getSamples(),
+				beforeSaveContact != null ? (sample) -> beforeSaveContact.accept(savedContact, sample) : null);
 		}
 	}
 }

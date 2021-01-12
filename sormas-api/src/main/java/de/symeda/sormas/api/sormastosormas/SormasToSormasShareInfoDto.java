@@ -31,6 +31,10 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private ServerAccessDataReferenceDto target;
 	private UserReferenceDto sender;
 	private boolean ownershipHandedOver;
+	private boolean withAssociatedContacts;
+	private boolean withSamples;
+	private boolean pseudonymizedPersonalData;
+	private boolean pseudonymizedSensitiveData;
 	private String comment;
 
 	public CaseReferenceDto getCaze() {
@@ -79,6 +83,38 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
+	}
+
+	public void setWithAssociatedContacts(boolean withAssociatedContacts) {
+		this.withAssociatedContacts = withAssociatedContacts;
+	}
+
+	public boolean isWithSamples() {
+		return withSamples;
+	}
+
+	public void setWithSamples(boolean withSamples) {
+		this.withSamples = withSamples;
+	}
+
+	public boolean isPseudonymizedPersonalData() {
+		return pseudonymizedPersonalData;
+	}
+
+	public void setPseudonymizedPersonalData(boolean pseudonymizedPersonalData) {
+		this.pseudonymizedPersonalData = pseudonymizedPersonalData;
+	}
+
+	public boolean isPseudonymizedSensitiveData() {
+		return pseudonymizedSensitiveData;
+	}
+
+	public void setPseudonymizedSensitiveData(boolean pseudonymizedSensitiveData) {
+		this.pseudonymizedSensitiveData = pseudonymizedSensitiveData;
 	}
 
 	public String getComment() {

@@ -86,8 +86,12 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		comment.setRows(3);
 	}
 
-	public void disableOrganizationAndOwnership() {
+	public void disableOrganization() {
 		getField(SormasToSormasOptionsDto.ORGANIZATION).setEnabled(false);
+	}
+
+	public void disableOrganizationAndOwnership() {
+		disableOrganization();
 		getField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP).setEnabled(false);
 	}
 }

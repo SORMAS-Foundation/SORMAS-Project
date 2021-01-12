@@ -102,6 +102,12 @@ public class SormasToSormasController {
 		}, caze.getSormasToSormasOriginInfo());
 	}
 
+	public void syncCase(CaseDataDto caze, SormasToSormasShareInfoDto shareInfo) {
+		handleSync(options -> {
+			FacadeProvider.getSormasToSormasFacade().syncCase(caze.getUuid(), options);
+		}, shareInfo);
+	}
+
 	public void returnContact(ContactDto contact) {
 		handleReturn((options) -> {
 			FacadeProvider.getSormasToSormasFacade().returnContact(contact.getUuid(), options);
@@ -162,6 +168,27 @@ public class SormasToSormasController {
 
 		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(true, null);
 		optionsForm.disableOrganizationAndOwnership();
+
+		shareHandleShare(options -> {
+			handleShareWithOptions.handle(options);
+
+			if (options.isHandOverOwnership()) {
+				SormasUI.refreshView();
+			}
+		}, optionsForm, defaultOptions);
+	}
+
+	private void handleSync(HandleShareWithOptions handleShareWithOptions, SormasToSormasShareInfoDto shareInfoDto) {
+		SormasToSormasOptionsDto defaultOptions = new SormasToSormasOptionsDto();
+		defaultOptions.setOrganization(new ServerAccessDataReferenceDto(shareInfoDto.getTarget().getUuid()));
+		defaultOptions.setWithAssociatedContacts(shareInfoDto.isWithAssociatedContacts());
+		defaultOptions.setWithSamples(shareInfoDto.isWithSamples());
+		defaultOptions.setPseudonymizePersonalData(shareInfoDto.isPseudonymizedPersonalData());
+		defaultOptions.setPseudonymizeSensitiveData(shareInfoDto.isPseudonymizedSensitiveData());
+		defaultOptions.setPseudonymizeSensitiveData(shareInfoDto.isPseudonymizedSensitiveData());
+
+		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(true, null);
+		optionsForm.disableOrganization();
 
 		shareHandleShare(options -> {
 			handleShareWithOptions.handle(options);

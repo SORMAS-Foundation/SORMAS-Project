@@ -1468,6 +1468,7 @@ public interface Captions {
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";
 	String sormasToSormasSharedDate = "sormasToSormasSharedDate";
 	String sormasToSormasSharedWith = "sormasToSormasSharedWith";
+	String sormasToSormasSync = "sormasToSormasSync";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";

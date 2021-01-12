@@ -6196,4 +6196,13 @@ WHERE location.facilitytype IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617');
 
+-- 2020-01-12 Store sormas to sormas share options #3763
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN withassociatedcontacts boolean DEFAULT false,
+    ADD COLUMN withsamples boolean DEFAULT false,
+    ADD COLUMN pseudonymizedpersonaldata boolean DEFAULT false,
+    ADD COLUMN pseudonymizedsensitivedata boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (302, 'Store sormas to sormas share options #3763');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -19,6 +19,9 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCase
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -27,6 +30,7 @@ import javax.transaction.Transactional;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
@@ -35,7 +39,6 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedCaseData;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
@@ -53,80 +56,99 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 	private ProcessedDataPersisterHelper dataPersisterHelper;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
-	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistSharedData(ProcessedCaseData caseData) throws SormasToSormasValidationException {
-		CaseDataDto caze = caseData.getCaze();
-
-		handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
-		CaseDataDto savedCase = handleValidationError(() -> caseFacade.saveCase(caze), Captions.CaseData, buildCaseValidationGroupName(caze));
-
-		if (caseData.getAssociatedContacts() != null) {
-			for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : caseData.getAssociatedContacts()) {
-				ContactDto contact = associatedContact.getContact();
-
-				handleValidationError(
-					() -> personFacade.savePerson(associatedContact.getPerson()),
-					Captions.Person,
-					buildContactValidationGroupName(contact));
-
-				// set the persisted origin info to avoid outdated entity issue
-				contact.setSormasToSormasOriginInfo(savedCase.getSormasToSormasOriginInfo());
-
-				handleValidationError(() -> contactFacade.saveContact(contact), Captions.Contact, buildContactValidationGroupName(contact));
-			}
-		}
-
-		if (caseData.getSamples() != null) {
-			dataPersisterHelper.persistSharedSamples(caseData.getSamples(), savedCase.getSormasToSormasOriginInfo());
-		}
+		persistProcessedData(caseData, null, null, null, true);
 	}
 
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistReturnedData(ProcessedCaseData caseData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException {
+
+		persistProcessedData(caseData, (caze) -> {
+			SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
+			shareInfo.setOwnershipHandedOver(false);
+			shareInfoService.persist(shareInfo);
+		}, (caze, contact) -> {
+			SormasToSormasShareInfo contactShareInfo =
+				shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
+			if (contactShareInfo == null) {
+				contact.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
+			} else {
+				contactShareInfo.setOwnershipHandedOver(false);
+				shareInfoService.persist(contactShareInfo);
+			}
+		}, (caze, sample) -> {
+			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
+			if (sampleShareInfo == null) {
+				sample.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
+			} else {
+				sampleShareInfo.setOwnershipHandedOver(false);
+				shareInfoService.persist(sampleShareInfo);
+			}
+		}, false);
+	}
+
+	@Transactional(rollbackOn = {
+		Exception.class })
+	public void persistSyncData(ProcessedCaseData caseData) throws SormasToSormasValidationException {
+		persistProcessedData(caseData, (caze) -> {
+		}, (caze, contact) -> {
+			if (contact.getSormasToSormasOriginInfo() == null) {
+				contact.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
+			}
+		}, (caze, sample) -> {
+			if (sample.getSormasToSormasOriginInfo() == null) {
+				sample.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
+			}
+		}, false);
+	}
+
+	private void persistProcessedData(
+		ProcessedCaseData caseData,
+		Consumer<CaseDataDto> afterSaveCase,
+		BiConsumer<CaseDataDto, ContactDto> beforeSaveContact,
+		BiConsumer<CaseDataDto, SampleDto> beforeSaveSample,
+		boolean isCreate)
+		throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getCaze();
 
-		CaseDataDto savedCase = handleValidationError(() -> caseFacade.saveCase(caze), Captions.CaseData, buildCaseValidationGroupName(caze));
-		SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(savedCase.getUuid(), originInfo.getOrganizationId());
-		shareInfo.setOwnershipHandedOver(false);
-		shareInfoService.persist(shareInfo);
+		final CaseDataDto savedCase;
+		if (isCreate) {
+			// save person first during creation
+			handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
+			savedCase = handleValidationError(() -> caseFacade.saveCase(caze), Captions.CaseData, buildCaseValidationGroupName(caze));
 
-		handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
+		} else {
+			//save case first during update
+			savedCase = handleValidationError(() -> caseFacade.saveCase(caze), Captions.CaseData, buildCaseValidationGroupName(caze));
+			handleValidationError(() -> personFacade.savePerson(caseData.getPerson()), Captions.Person, buildCaseValidationGroupName(caze));
+		}
 
-		SormasToSormasOriginInfoDto savedOriginInfo = null;
+		if (afterSaveCase != null) {
+			afterSaveCase.accept(savedCase);
+		}
 
 		if (caseData.getAssociatedContacts() != null) {
 			for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : caseData.getAssociatedContacts()) {
 				ContactDto contact = associatedContact.getContact();
 
+				if (beforeSaveContact != null) {
+					beforeSaveContact.accept(savedCase, contact);
+				}
+				handleValidationError(() -> contactFacade.saveContact(contact), Captions.Contact, buildContactValidationGroupName(contact));
+
 				handleValidationError(
 					() -> personFacade.savePerson(associatedContact.getPerson()),
 					Captions.Person,
 					buildContactValidationGroupName(contact));
-
-				SormasToSormasShareInfo contactShareInfo =
-					shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
-				if (contactShareInfo == null) {
-					if (savedOriginInfo == null) {
-						savedOriginInfo = originInfoFacade.saveOriginInfo(originInfo);
-					}
-
-					contact.setSormasToSormasOriginInfo(savedOriginInfo);
-				} else {
-					contactShareInfo.setOwnershipHandedOver(false);
-					shareInfoService.persist(contactShareInfo);
-				}
-
-				handleValidationError(() -> contactFacade.saveContact(contact), Captions.Contact, buildContactValidationGroupName(contact));
 			}
 		}
 
 		if (caseData.getSamples() != null) {
-			dataPersisterHelper.persistReturnedSamples(caseData.getSamples(), savedOriginInfo == null ? originInfo : savedOriginInfo);
+			dataPersisterHelper.persistSamples(caseData.getSamples(), beforeSaveSample != null ? (s) -> beforeSaveSample.accept(savedCase, s) : null);
 		}
 	}
 }

@@ -23,6 +23,8 @@ public class SormasToSormasApiConstants {
 
 	public static final String CASE_ENDPOINT = "/cases";
 
+	public static final String CASE_SYNC_ENDPOINT = "/cases/syncss";
+
 	public static final String CONTACT_ENDPOINT = "/contacts";
 
 }

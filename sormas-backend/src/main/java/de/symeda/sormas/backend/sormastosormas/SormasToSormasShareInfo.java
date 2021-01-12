@@ -49,9 +49,17 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private String organizationId;
 
+	private User sender;
+
 	private boolean ownershipHandedOver;
 
-	private User sender;
+	private boolean withAssociatedContacts;
+
+	private boolean withSamples;
+
+	private boolean pseudonymizedPersonalData;
+
+	private boolean pseudonymizedSensitiveData;
 
 	private String comment;
 
@@ -94,6 +102,16 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.organizationId = organizationId;
 	}
 
+	@ManyToOne
+	@JoinColumn(nullable = false)
+	public User getSender() {
+		return sender;
+	}
+
+	public void setSender(User sender) {
+		this.sender = sender;
+	}
+
 	@Column
 	public boolean isOwnershipHandedOver() {
 		return ownershipHandedOver;
@@ -103,14 +121,40 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
-	@ManyToOne
-	@JoinColumn(nullable = false)
-	public User getSender() {
-		return sender;
+	@Column
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
 	}
 
-	public void setSender(User sender) {
-		this.sender = sender;
+	public void setWithAssociatedContacts(boolean withAssociatedContacts) {
+		this.withAssociatedContacts = withAssociatedContacts;
+	}
+
+	@Column
+	public boolean isWithSamples() {
+		return withSamples;
+	}
+
+	public void setWithSamples(boolean withSamples) {
+		this.withSamples = withSamples;
+	}
+
+	@Column
+	public boolean isPseudonymizedPersonalData() {
+		return pseudonymizedPersonalData;
+	}
+
+	public void setPseudonymizedPersonalData(boolean pseudonymizedPersonalData) {
+		this.pseudonymizedPersonalData = pseudonymizedPersonalData;
+	}
+
+	@Column
+	public boolean isPseudonymizedSensitiveData() {
+		return pseudonymizedSensitiveData;
+	}
+
+	public void setPseudonymizedSensitiveData(boolean pseudonymizedSensitiveData) {
+		this.pseudonymizedSensitiveData = pseudonymizedSensitiveData;
 	}
 
 	public String getComment() {

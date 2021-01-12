@@ -67,6 +67,20 @@ public class SormasToSormasResource {
 	}
 
 	@POST
+	@Path(SormasToSormasApiConstants.CASE_SYNC_ENDPOINT)
+	public Response syncSharedCases(SormasToSormasEncryptedDataDto sharedCases) {
+		try {
+			FacadeProvider.getSormasToSormasFacade().syncSharedCases(sharedCases);
+		} catch (SormasToSormasValidationException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
+		} catch (SormasToSormasException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
+
+		return Response.noContent().build();
+	}
+
+	@POST
 	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
 	public Response saveSharedContact(SormasToSormasEncryptedDataDto sharedContacts) {
 		try {
