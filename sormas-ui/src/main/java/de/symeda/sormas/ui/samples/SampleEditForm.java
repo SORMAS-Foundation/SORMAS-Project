@@ -36,7 +36,7 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	private static final String LABORATORY_SAMPLE_HEADING_LOC = "laboratorySampleHeadingLoc";
 
-	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC) + loc(REPORT_INFORMATION_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
+	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
 
 	public SampleEditForm(boolean isPseudonymized) {
 		super(

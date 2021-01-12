@@ -351,6 +351,9 @@ public interface Captions {
 	String CaseExport_sampleResult2 = "CaseExport.sampleResult2";
 	String CaseExport_sampleResult3 = "CaseExport.sampleResult3";
 	String CaseExport_sampleTaken = "CaseExport.sampleTaken";
+	String CaseExport_sampleUuid1 = "CaseExport.sampleUuid1";
+	String CaseExport_sampleUuid2 = "CaseExport.sampleUuid2";
+	String CaseExport_sampleUuid3 = "CaseExport.sampleUuid3";
 	String CaseExport_traveled = "CaseExport.traveled";
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
