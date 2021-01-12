@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -54,16 +55,17 @@ public class TemplateEngineTest {
 
 	private void genericTestCases(TestCaseRunner testCaseRunner) throws IOException, XDocReportException, ParseException, ClassNotFoundException {
 		File testCasesDir = new File(testCaseRunner.getTestCasesDirPath());
-		File[] testCasesDocx = testCasesDir.listFiles((d, name) -> name.endsWith(testCaseRunner.getTestCaseExtension()));
+		File[] testCases = testCasesDir.listFiles((d, name) -> name.endsWith(testCaseRunner.getTestCaseExtension()));
+		assertNotNull(testCases);
 
-		for (File testCaseDocx : testCasesDocx) {
-			String testcaseBasename = FilenameUtils.getBaseName(testCaseDocx.getName());
+		for (File testCase : testCases) {
+			String testcaseBasename = FilenameUtils.getBaseName(testCase.getName());
 			File testcaseProperties = new File(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".properties");
 			File testcaseVariables = new File(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".vars");
 			File testcaseCmpText = new File(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".cmp");
 
 			if (testcaseProperties.exists() || testcaseVariables.exists()) {
-				Set<String> variables = testCaseRunner.extractTemplateVariables(testCaseDocx);
+				Set<String> variables = testCaseRunner.extractTemplateVariables(testCase);
 
 				Properties variablesExpected = new Properties();
 				variablesExpected.load(new FileInputStream(testcaseVariables.exists() ? testcaseVariables : testcaseProperties));
@@ -81,10 +83,10 @@ public class TemplateEngineTest {
 					Properties properties = new Properties();
 					properties.load(new FileInputStream(testcaseProperties));
 					deserializeObjects(properties);
-					String docxText = testCaseRunner.getGeneratedText(testCaseDocx, properties);
+					String testCaseText = testCaseRunner.getGeneratedText(testCase, properties);
 
 					String expected = getComparisonText(testcaseCmpText);
-					assertEquals(testcaseBasename + ": generated text does not match.", expected, docxText);
+					assertEquals(testcaseBasename + ": generated text does not match.", expected, testCaseText);
 				}
 			}
 		}

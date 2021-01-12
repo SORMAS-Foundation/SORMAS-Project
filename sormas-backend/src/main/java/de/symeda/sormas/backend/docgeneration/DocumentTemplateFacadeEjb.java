@@ -54,7 +54,7 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	private static final String DEFAULT_NULL_REPLACEMENT = "./.";
-	private static final Pattern BASENAME_PATTERN = Pattern.compile("^([^.]+)([.].*)?");
+	private static final Pattern BASENAME_PATTERN = Pattern.compile("^([^_.]+)([_.].*)?");
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
@@ -148,22 +148,26 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
 
-		if (documentWorkflow.isDocx()) {
-			for (String propertyKey : propertyKeys) {
-				if (isEntityVariable(documentWorkflow, propertyKey)) {
-					String variableBaseName = getVariableBaseName(propertyKey);
-					Object entity = entities.get(variableBaseName);
-					if (entity != null) {
-						String propertyPath = propertyKey.replaceFirst(variableBaseName + ".", "");
+		String propertySeparator = documentWorkflow.isDocx() ? "." : "_";
+		for (String propertyKey : propertyKeys) {
+			if (isEntityVariable(documentWorkflow, propertyKey)) {
+				String variableBaseName = getVariableBaseName(propertyKey);
+				Object entity = entities.get(variableBaseName);
+				if (entity != null) {
+					if (documentWorkflow.isDocx() || propertyKey.contains(propertySeparator)) {
+						String propertyPath = propertyKey.replaceFirst(variableBaseName + propertySeparator, "");
+						if (!".".equals(propertySeparator)) {
+							propertyPath = propertyPath.replaceAll(propertySeparator, ".");
+						}
 						Object propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entity, propertyPath, referenceDtoResolver);
-						System.out.println(propertyKey + ": " + propertyValue);
 						if (propertyValue != null) {
 							properties.put(propertyKey, propertyValue);
 						}
 					}
 				}
 			}
-		} else {
+		}
+		if (!documentWorkflow.isDocx()) {
 			for (String entityKey : entities.keySet()) {
 				Object entity = entities.get(entityKey);
 				if (ReferenceDto.class.isAssignableFrom(entity.getClass())) {

@@ -1,12 +1,15 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.Properties;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -116,14 +119,25 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void generateEventHandout() throws IOException {
-		String htmlText = eventDocumentFacade.getGeneratedDocument("EventHandout.html", eventDto.toReference(), new Properties());
+	public void generateEventHandoutTest() throws IOException {
+		String testCasesDirPath = "/docgeneration/eventHandout";
+		File testCasesDir = new File(getClass().getResource(testCasesDirPath).getPath());
+		File[] testCasesHtml = testCasesDir.listFiles((d, name) -> name.endsWith(".html"));
+		assertNotNull(testCasesHtml);
 
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/eventHandout/EventHandout.cmp"), writer, "UTF-8");
+		for (File testCaseHtml : testCasesHtml) {
+			String testcaseBasename = FilenameUtils.getBaseName(testCaseHtml.getName());
 
-		String expected = writer.toString().replaceAll("\\r\\n?", "\n");
-		assertEquals(expected, htmlText.replaceAll("<p>Event-ID: <b>.*</b></p>", "<p>Event-ID: <b>STN3WX-5JTGYV-IU2LRM-4UHCSOEE</b></p>"));
-		System.out.println("  document generated.");
+			String htmlText = eventDocumentFacade.getGeneratedDocument(testcaseBasename + ".html", eventDto.toReference(), new Properties());
+
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/eventHandout/" + testcaseBasename + ".cmp"), writer, "UTF-8");
+
+			String expected = writer.toString().replaceAll("\\r\\n?", "\n");
+			assertEquals(
+				expected,
+				htmlText.replaceAll("<p>Event-ID: <b>[A-Z0-9-]*</b></p>", "<p>Event-ID: <b>STN3WX-5JTGYV-IU2LRM-4UHCSOEE</b></p>"));
+			System.out.println("Document generated: " + testcaseBasename);
+		}
 	}
 }
