@@ -79,7 +79,7 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+	private List<Selection<?>> getContactIndexCommonSelections(Root<Contact> contact, ContactJoins joins) {
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
@@ -117,19 +117,17 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
 			contact.get(Contact.EXTERNAL_TOKEN),
 			contact.get(Contact.CHANGE_DATE),
-			contact.get(Contact.EXTERNAL_ID),
-			contact.get(AbstractDomainObject.ID),
-			contact.get(AbstractDomainObject.CREATION_DATE),
-			contact.get(Contact.COMPLETENESS));
+			contact.get(Contact.EXTERNAL_ID));
 	}
 
-//	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
-//
-//		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexMergeSelections(contact, joins));
-//		indexSelection.addAll(Arrays.asList(contact.get(Contact.CHANGE_DATE), contact.get(Contact.EXTERNAL_ID)));
-//
-//		return indexSelection;
-//	}
+	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+
+		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexCommonSelections(contact, joins));
+		indexSelection.addAll(
+			Arrays.asList(contact.get(AbstractDomainObject.ID), contact.get(AbstractDomainObject.CREATION_DATE), contact.get(Contact.COMPLETENESS)));
+
+		return indexSelection;
+	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
 
@@ -177,7 +175,7 @@ public class ContactListCriteriaBuilder {
 
 	private List<Selection<?>> getContactIndexDetailedSelections(Root<Contact> contact, ContactJoins joins) {
 
-		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexSelections(contact, joins));
+		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexCommonSelections(contact, joins));
 		indexSelection.addAll(
 			Arrays.asList(
 				joins.getPerson().get(Person.SEX),
@@ -190,7 +188,10 @@ public class ContactListCriteriaBuilder {
 				joins.getAddress().get(Location.POSTAL_CODE),
 				joins.getPerson().get(Person.PHONE),
 				joins.getReportingUser().get(User.FIRST_NAME),
-				joins.getReportingUser().get(User.LAST_NAME)));
+				joins.getReportingUser().get(User.LAST_NAME),
+				contact.get(AbstractDomainObject.ID),
+				contact.get(AbstractDomainObject.CREATION_DATE),
+				contact.get(Contact.COMPLETENESS)));
 
 		return indexSelection;
 	}
