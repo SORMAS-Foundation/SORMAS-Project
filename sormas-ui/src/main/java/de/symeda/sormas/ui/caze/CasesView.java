@@ -62,6 +62,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
@@ -116,18 +117,12 @@ public class CasesView extends AbstractView {
 	private final boolean caseFollowUpEnabled;
 	private final ExportConfigurationDto detailedExportConfiguration;
 
-	private CaseCriteria criteria;
-	private CasesViewConfiguration viewConfiguration;
+	private final CaseCriteria criteria;
+	private final CasesViewConfiguration viewConfiguration;
 
-	private FilteredGrid<?, CaseCriteria> grid;
-	private Button createButton;
-	private Button lineListingButton;
+	private final FilteredGrid<?, CaseCriteria> grid;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
-	private PopupButton moreButton;
-	private VerticalLayout moreLayout;
-
-	private VerticalLayout gridLayout;
 
 	private CaseFilterForm filterForm;
 
@@ -166,7 +161,7 @@ public class CasesView extends AbstractView {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
 		}
-		gridLayout = new VerticalLayout();
+		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
@@ -227,10 +222,10 @@ public class CasesView extends AbstractView {
 	}
 
 	private void addCommonCasesOverviewToolbar() {
-		moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
+		final PopupButton moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
 		moreButton.setId("more");
 		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
-		moreLayout = new VerticalLayout();
+		final VerticalLayout moreLayout = new VerticalLayout();
 		moreLayout.setSpacing(true);
 		moreLayout.setMargin(true);
 		moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
@@ -347,9 +342,9 @@ public class CasesView extends AbstractView {
 				Button btnCustomCaseExport = ButtonHelper.createIconButton(Captions.exportCaseCustom, VaadinIcons.FILE_TEXT, e -> {
 					Window customExportWindow = VaadinUiUtil.createPopupWindow();
 					CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(customExportWindow::close);
-					customExportsLayout.setExportCallback((exportConfig) -> {
-						Page.getCurrent().open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true);
-					});
+					customExportsLayout.setExportCallback(
+						(exportConfig) -> Page.getCurrent()
+							.open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true));
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
 					customExportWindow.setContent(customExportsLayout);
@@ -381,7 +376,7 @@ public class CasesView extends AbstractView {
 						I18nProperties.getString(Strings.no),
 						640,
 						(result) -> {
-							if (result.booleanValue() == true) {
+							if (result == true) {
 								enterBulkEditMode();
 							}
 						});
@@ -426,7 +421,7 @@ public class CasesView extends AbstractView {
 		moreLayout.addComponent(searchSpecificCaseButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
-			lineListingButton = ButtonHelper.createIconButton(
+			final Button lineListingButton = ButtonHelper.createIconButton(
 				Captions.caseLineListing,
 				VaadinIcons.PLUS_CIRCLE,
 				e -> ControllerProvider.getCaseController().openLineListingWindow(),
@@ -434,7 +429,7 @@ public class CasesView extends AbstractView {
 
 			addHeaderComponent(lineListingButton);
 
-			createButton = ButtonHelper.createIconButton(
+			final Button createButton = ButtonHelper.createIconButton(
 				Captions.caseNewCase,
 				VaadinIcons.PLUS_CIRCLE,
 				e -> ControllerProvider.getCaseController().create(),
@@ -495,7 +490,7 @@ public class CasesView extends AbstractView {
 			}
 		};
 
-		return new SearchSpecificLayout(confirmCallback, () -> window.close(), searchField, description, confirmCaption);
+		return new SearchSpecificLayout(confirmCallback, window::close, searchField, description, confirmCaption);
 	}
 
 	private void enterBulkEditMode() {
@@ -542,99 +537,7 @@ public class CasesView extends AbstractView {
 			// Follow-up overview scrolling
 			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 				filterLayout.setWidth(100, Unit.PERCENTAGE);
-
-				HorizontalLayout scrollLayout = new HorizontalLayout();
-				scrollLayout.setMargin(false);
-
-				DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now());
-				toReferenceDate.setId("toReferenceDateField");
-				LocalDate fromReferenceLocal =
-					DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1));
-				DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
-				fromReferenceDate.setId("fromReferenceDateField");
-
-				Button minusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.caseMinusDays), e -> {
-					int newFollowUpRangeInterval =
-						DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
-					if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
-						followUpRangeInterval = newFollowUpRangeInterval;
-						buttonPreviousOrNextClick = true;
-						toReferenceDate.setValue(toReferenceDate.getValue().minusDays(followUpRangeInterval));
-						fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(followUpRangeInterval));
-					} else {
-						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
-							Notification.Type.WARNING_MESSAGE);
-					}
-				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-				scrollLayout.addComponent(minusDaysButton);
-
-				fromReferenceDate.addValueChangeListener(e -> {
-					Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
-					if (newFromDate.equals(criteria.getFollowUpUntilFrom())) {
-						return;
-					}
-
-					int newFollowUpRangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDate.getValue()));
-
-					if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
-						applyingCriteria = true;
-						criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
-						applyingCriteria = false;
-						followUpRangeInterval = newFollowUpRangeInterval;
-						reloadGrid();
-					} else {
-						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
-							Notification.Type.WARNING_MESSAGE);
-						fromReferenceDate.setValue(DateHelper8.toLocalDate(criteria.getFollowUpUntilFrom()));
-					}
-				});
-				scrollLayout.addComponent(fromReferenceDate);
-
-				toReferenceDate.addValueChangeListener(e -> {
-					Date newFollowUpToDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
-					if (newFollowUpToDate.equals(criteria.getFollowUpUntilTo())) {
-						return;
-					}
-
-					int newFollowUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), newFollowUpToDate);
-
-					if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
-						followUpToDate = newFollowUpToDate;
-						applyingCriteria = true;
-						criteria.reportDateTo(DateHelper.getEndOfDay(followUpToDate));
-						applyingCriteria = false;
-						if (!buttonPreviousOrNextClick) {
-							followUpRangeInterval = newFollowUpRangeInterval;
-							reloadGrid();
-						}
-					} else {
-						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
-							Notification.Type.WARNING_MESSAGE);
-						toReferenceDate.setValue(DateHelper8.toLocalDate(followUpToDate));
-					}
-				});
-				scrollLayout.addComponent(toReferenceDate);
-
-				Button plusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.casePlusDays), e -> {
-					int newFollowUpRangeInterval =
-						DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
-
-					if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
-						followUpRangeInterval = newFollowUpRangeInterval;
-						buttonPreviousOrNextClick = true;
-						toReferenceDate.setValue(toReferenceDate.getValue().plusDays(followUpRangeInterval));
-						fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(followUpRangeInterval));
-					} else {
-						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
-							Notification.Type.WARNING_MESSAGE);
-					}
-				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-				scrollLayout.addComponent(plusDaysButton);
-
+				HorizontalLayout scrollLayout = buildScrollLayout();
 				actionButtonsLayout.addComponent(scrollLayout);
 
 			}
@@ -836,5 +739,124 @@ public class CasesView extends AbstractView {
 	private boolean isBulkEditAllowed() {
 		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
 			|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+	}
+
+	private HorizontalLayout buildScrollLayout() {
+		HorizontalLayout scrollLayout = new HorizontalLayout();
+		scrollLayout.setMargin(false);
+
+		DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now());
+		toReferenceDate.setId("toReferenceDateField");
+		LocalDate fromReferenceLocal =
+			DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1));
+		DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
+		fromReferenceDate.setId("fromReferenceDateField");
+
+		Button minusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.caseMinusDays), e -> {
+			final LocalDate fromReferenceDateValue = fromReferenceDate.getValue();
+			final LocalDate toReferenceDateValue = toReferenceDate.getValue();
+			if (fromReferenceDateValue == null || toReferenceDateValue == null) {
+				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+			int newFollowUpRangeInterval =
+				DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDateValue), DateHelper8.toDate(toReferenceDateValue));
+			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
+				followUpRangeInterval = newFollowUpRangeInterval;
+				buttonPreviousOrNextClick = true;
+				toReferenceDate.setValue(toReferenceDateValue.minusDays(followUpRangeInterval));
+				fromReferenceDate.setValue(fromReferenceDateValue.minusDays(followUpRangeInterval));
+			} else {
+				Notification.show(
+					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
+					Notification.Type.WARNING_MESSAGE);
+			}
+		}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+		scrollLayout.addComponent(minusDaysButton);
+
+		fromReferenceDate.addValueChangeListener(e -> {
+			Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+			if (newFromDate.equals(criteria.getFollowUpUntilFrom())) {
+				return;
+			}
+
+			final LocalDate toReferenceDateValue = toReferenceDate.getValue();
+			if (toReferenceDateValue == null) {
+				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+
+			int newFollowUpRangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDateValue));
+
+			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
+				applyingCriteria = true;
+				criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
+				applyingCriteria = false;
+				followUpRangeInterval = newFollowUpRangeInterval;
+				reloadGrid();
+			} else {
+				Notification.show(
+					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
+					Notification.Type.WARNING_MESSAGE);
+				fromReferenceDate.setValue(DateHelper8.toLocalDate(criteria.getFollowUpUntilFrom()));
+			}
+		});
+		scrollLayout.addComponent(fromReferenceDate);
+
+		toReferenceDate.addValueChangeListener(e -> {
+			Date newFollowUpToDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+			if (newFollowUpToDate.equals(criteria.getFollowUpUntilTo())) {
+				return;
+			}
+
+			final LocalDate fromReferenceDateValue = fromReferenceDate.getValue();
+			if (fromReferenceDateValue == null) {
+				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+
+			int newFollowUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDateValue), newFollowUpToDate);
+
+			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
+				followUpToDate = newFollowUpToDate;
+				applyingCriteria = true;
+				criteria.reportDateTo(DateHelper.getEndOfDay(followUpToDate));
+				applyingCriteria = false;
+				if (!buttonPreviousOrNextClick) {
+					followUpRangeInterval = newFollowUpRangeInterval;
+					reloadGrid();
+				}
+			} else {
+				Notification.show(
+					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
+					Notification.Type.WARNING_MESSAGE);
+				toReferenceDate.setValue(DateHelper8.toLocalDate(followUpToDate));
+			}
+		});
+		scrollLayout.addComponent(toReferenceDate);
+
+		Button plusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.casePlusDays), e -> {
+			final LocalDate fromReferenceDateValue = fromReferenceDate.getValue();
+			final LocalDate toReferenceDateValue = toReferenceDate.getValue();
+			if (fromReferenceDateValue == null || toReferenceDateValue == null) {
+				Notification.show(I18nProperties.getValidationError(Validations.validDateRange), Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+			int newFollowUpRangeInterval =
+				DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDateValue), DateHelper8.toDate(toReferenceDateValue));
+
+			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
+				followUpRangeInterval = newFollowUpRangeInterval;
+				buttonPreviousOrNextClick = true;
+				toReferenceDate.setValue(toReferenceDateValue.plusDays(followUpRangeInterval));
+				fromReferenceDate.setValue(fromReferenceDateValue.plusDays(followUpRangeInterval));
+			} else {
+				Notification.show(
+					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
+					Notification.Type.WARNING_MESSAGE);
+			}
+		}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+		scrollLayout.addComponent(plusDaysButton);
+		return scrollLayout;
 	}
 }

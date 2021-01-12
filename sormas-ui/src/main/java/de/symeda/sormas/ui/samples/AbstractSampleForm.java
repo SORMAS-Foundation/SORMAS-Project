@@ -61,7 +61,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	private static final long serialVersionUID = -2323128076462668517L;
 
-	protected static final String REPORT_INFORMATION_LOC = "reportInformationLoc";
 	protected static final String PATHOGEN_TESTING_INFO_LOC = "pathogenTestingInfoLoc";
 	protected static final String ADDITIONAL_TESTING_INFO_LOC = "additionalTestingInfoLoc";
 	protected static final String PATHOGEN_TESTING_READ_HEADLINE_LOC = "pathogenTestingReadHeadlineLoc";
@@ -71,6 +70,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	//@formatter:off
    protected static final String SAMPLE_COMMON_HTML_LAYOUT =
+                    fluidRowLocs(SampleDto.UUID, SampleDto.REPORTING_USER) +
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
@@ -114,6 +114,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	protected void addCommonFields() {
 
 		final NullableOptionGroup samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, NullableOptionGroup.class);
+		addField(SampleDto.UUID).setReadOnly(true);
+		addField(SampleDto.REPORTING_USER).setReadOnly(true);
 		samplePurpose.addValueChangeListener(e -> updateRequestedTestFields());
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		final DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
@@ -218,8 +220,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			getField(SampleDto.SAMPLE_SOURCE).setEnabled(false);
 		}
 
-		// Initialize referral and report information
-		VerticalLayout reportInfoLayout = new VerticalLayout();
 		StringBuilder reportInfoText = new StringBuilder().append(I18nProperties.getString(Strings.reportedOn))
 			.append(" ")
 			.append(DateFormatHelper.formatLocalDateTime(getValue().getReportDateTime()));
@@ -228,7 +228,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}
 		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
-		reportInfoLayout.addComponent(reportInfoLabel);
+		getContent().addComponent(reportInfoLabel);
 
 		SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(getValue().getUuid());
 		if (referredFromRef != null) {
@@ -245,10 +245,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 				ValoTheme.BUTTON_LINK,
 				VSPACE_NONE);
 
-			reportInfoLayout.addComponent(referredButton);
+			getContent().addComponent(referredButton);
 		}
-
-		getContent().addComponent(reportInfoLayout, REPORT_INFORMATION_LOC);
 	}
 
 	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event) {

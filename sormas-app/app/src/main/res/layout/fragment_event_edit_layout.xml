@@ -194,13 +194,6 @@
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
-            <de.symeda.sormas.app.component.controls.ControlTextPopupField
-                android:id="@+id/event_eventLocation"
-                style="@style/ControlSingleColumnStyle"
-                app:hint="@string/hint_enter_location"
-                app:iconStart="@drawable/ic_edit_location_black_24dp"
-                app:locationValue="@={data.eventLocation}" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -221,6 +214,13 @@
                     app:value="@={data.typeOfPlaceText}" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                android:id="@+id/event_eventLocation"
+                style="@style/ControlSingleColumnStyle"
+                app:hint="@string/hint_enter_location"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:locationValue="@={data.eventLocation}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/event_meansOfTransport"
