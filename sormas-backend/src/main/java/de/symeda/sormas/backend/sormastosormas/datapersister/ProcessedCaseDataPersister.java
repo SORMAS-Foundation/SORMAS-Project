@@ -60,7 +60,11 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistSharedData(ProcessedCaseData caseData) throws SormasToSormasValidationException {
-		persistProcessedData(caseData, null, null, null, true);
+		persistProcessedData(caseData, null, (caze, contact) -> {
+			contact.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
+		}, (caze, sample) -> {
+			sample.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
+		}, true);
 	}
 
 	@Transactional(rollbackOn = {
@@ -138,12 +142,23 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 				if (beforeSaveContact != null) {
 					beforeSaveContact.accept(savedCase, contact);
 				}
-				handleValidationError(() -> contactFacade.saveContact(contact), Captions.Contact, buildContactValidationGroupName(contact));
 
-				handleValidationError(
-					() -> personFacade.savePerson(associatedContact.getPerson()),
-					Captions.Person,
-					buildContactValidationGroupName(contact));
+				if (isCreate || !contactFacade.exists(contact.getUuid())) {
+					// save person first during creation
+					handleValidationError(
+						() -> personFacade.savePerson(associatedContact.getPerson()),
+						Captions.Person,
+						buildContactValidationGroupName(contact));
+					handleValidationError(() -> contactFacade.saveContact(contact), Captions.Contact, buildContactValidationGroupName(contact));
+				} else {
+					//save contact first during update
+					handleValidationError(() -> contactFacade.saveContact(contact), Captions.Contact, buildContactValidationGroupName(contact));
+					handleValidationError(
+						() -> personFacade.savePerson(associatedContact.getPerson()),
+						Captions.Person,
+						buildContactValidationGroupName(contact));
+
+				}
 			}
 		}
 

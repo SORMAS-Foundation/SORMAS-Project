@@ -6203,6 +6203,6 @@ ALTER TABLE sormastosormasshareinfo
     ADD COLUMN pseudonymizedpersonaldata boolean DEFAULT false,
     ADD COLUMN pseudonymizedsensitivedata boolean DEFAULT false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (302, 'Store sormas to sormas share options #3763');
+INSERT INTO schema_version (version_number, comment) VALUES (303, 'Store sormas to sormas share options #3763');
 
 -- *** Insert new sql commands BEFORE this line ***

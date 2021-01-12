@@ -77,7 +77,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			new SormasToSormasShareInfoCriteria().contact(contactRef),
 			contact.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared,
-			null,
+			(i) -> ControllerProvider.getSormasToSormasController().syncContact(contact, i),
 			contact.getChangeDate());
 
 		initLayout(

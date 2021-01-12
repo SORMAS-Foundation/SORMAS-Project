@@ -54,7 +54,9 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistSharedData(ProcessedContactData contactData) throws SormasToSormasValidationException {
-		persistProcessedData(contactData, null, null, true);
+		persistProcessedData(contactData, null, (contact, sample) -> {
+			sample.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());
+		}, true);
 	}
 
 	@Override

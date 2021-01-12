@@ -105,7 +105,13 @@ public class SormasToSormasController {
 	public void syncCase(CaseDataDto caze, SormasToSormasShareInfoDto shareInfo) {
 		handleSync(options -> {
 			FacadeProvider.getSormasToSormasFacade().syncCase(caze.getUuid(), options);
-		}, shareInfo);
+		}, shareInfo, true);
+	}
+
+	public void syncContact(ContactDto contact, SormasToSormasShareInfoDto shareInfo) {
+		handleSync(options -> {
+			FacadeProvider.getSormasToSormasFacade().syncContact(contact.getUuid(), options);
+		}, shareInfo, false);
 	}
 
 	public void returnContact(ContactDto contact) {
@@ -178,7 +184,7 @@ public class SormasToSormasController {
 		}, optionsForm, defaultOptions);
 	}
 
-	private void handleSync(HandleShareWithOptions handleShareWithOptions, SormasToSormasShareInfoDto shareInfoDto) {
+	private void handleSync(HandleShareWithOptions handleShareWithOptions, SormasToSormasShareInfoDto shareInfoDto, boolean isForCase) {
 		SormasToSormasOptionsDto defaultOptions = new SormasToSormasOptionsDto();
 		defaultOptions.setOrganization(new ServerAccessDataReferenceDto(shareInfoDto.getTarget().getUuid()));
 		defaultOptions.setWithAssociatedContacts(shareInfoDto.isWithAssociatedContacts());
@@ -187,7 +193,7 @@ public class SormasToSormasController {
 		defaultOptions.setPseudonymizeSensitiveData(shareInfoDto.isPseudonymizedSensitiveData());
 		defaultOptions.setPseudonymizeSensitiveData(shareInfoDto.isPseudonymizedSensitiveData());
 
-		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(true, null);
+		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(isForCase, null);
 		optionsForm.disableOrganization();
 
 		shareHandleShare(options -> {
