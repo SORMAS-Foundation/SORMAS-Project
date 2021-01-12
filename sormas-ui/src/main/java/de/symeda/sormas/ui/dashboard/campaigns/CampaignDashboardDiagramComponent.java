@@ -75,6 +75,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey)) {
 				diagramDataBySeriesAndXAxis.put(seriesKey, new HashMap<>());
 			}
+			Map<Object, CampaignDiagramDataDto> objectCampaignDiagramDataDtoMap = diagramDataBySeriesAndXAxis.get(seriesKey);
+			if (objectCampaignDiagramDataDtoMap.containsKey(groupingKey)) {
+				throw new RuntimeException("Campaign diagram data map already contains grouping");
+			}
+			objectCampaignDiagramDataDtoMap.put(groupingKey, diagramData);
 		}
 
 		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
