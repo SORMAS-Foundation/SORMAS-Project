@@ -28,6 +28,7 @@ public class EventExportDto implements Serializable {
 
 	private String uuid;
 	private String externalId;
+	private String externalToken;
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
@@ -65,6 +66,7 @@ public class EventExportDto implements Serializable {
 	public EventExportDto(
 		String uuid,
 		String externalId,
+		String externalToken,
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
@@ -102,6 +104,7 @@ public class EventExportDto implements Serializable {
 		String surveillanceOfficerUuid) {
 		this.uuid = uuid;
 		this.externalId = externalId;
+		this.externalToken = externalToken;
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
@@ -385,6 +388,11 @@ public class EventExportDto implements Serializable {
 	@Order(32)
 	public long getDeathCount() {
 		return deathCount;
+	}
+
+	@Order(33)
+	public String getExternalToken() {
+		return externalToken;
 	}
 
 	public void setDeathCount(long deathCount) {

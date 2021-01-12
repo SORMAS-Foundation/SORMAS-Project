@@ -110,6 +110,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
+			contentBinding.caseDataExternalToken.setVisibility(GONE);
 		} else {
 			contentBinding.caseDataEpidNumber.setVisibility(GONE);
 		}

@@ -125,6 +125,7 @@ public class Person extends AbstractDomainObject {
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
 	public static final String PERSON_CASES = "personCases";
@@ -194,6 +195,7 @@ public class Person extends AbstractDomainObject {
 	private boolean hasCovidApp;
 	private boolean covidCodeDelivered;
 	private String externalId;
+	private String externalToken;
 
 	private Country birthCountry;
 	private Country citizenship;
@@ -679,6 +681,13 @@ public class Person extends AbstractDomainObject {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
+
+	@Column
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
 
 	@ManyToOne
 	public Country getBirthCountry() {

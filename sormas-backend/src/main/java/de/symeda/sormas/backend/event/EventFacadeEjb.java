@@ -399,6 +399,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
+			event.get(Event.EXTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -577,6 +578,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
@@ -662,6 +664,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());

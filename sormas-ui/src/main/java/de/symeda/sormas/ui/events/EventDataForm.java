@@ -84,7 +84,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS) +
 			fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
-			fluidRowLocs(EventDto.EXTERNAL_ID, "") +
+			fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
 			fluidRowLocs(EventDto.EVENT_TITLE) +
 			fluidRowLocs(EventDto.EVENT_DESC) +
 			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
@@ -156,6 +156,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addDiseaseField(EventDto.DISEASE, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		addFields(EventDto.EXTERNAL_ID);
+		addFields(EventDto.EXTERNAL_TOKEN);
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
 		DateField endDate = addField(EventDto.END_DATE, DateField.class);

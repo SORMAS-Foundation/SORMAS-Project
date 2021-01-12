@@ -249,6 +249,7 @@ public class CaseExportDto implements Serializable {
 	private String latestEventTitle;
 	private EventStatus latestEventStatus;
 	private String externalID;
+	private String externalToken;
 
 	@PersonalData
 	@SensitiveData
@@ -284,7 +285,7 @@ public class CaseExportDto implements Serializable {
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
 						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
-						 long eventCount, String externalID,
+						 long eventCount, String externalID, String externalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 						 String reportingDistrict) {
 		//@formatter:on
@@ -366,6 +367,7 @@ public class CaseExportDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.eventCount = eventCount;
 		this.externalID = externalID;
+		this.externalToken = externalToken;
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
@@ -457,6 +459,16 @@ public class CaseExportDto implements Serializable {
 	}
 
 	@Order(5)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.EXTERNAL_ID)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	@Order(6)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1184,7 +1196,7 @@ public class CaseExportDto implements Serializable {
 //	@Order(97)
 //	public String getSymptoms() {
 //		return symptoms;
-//	}	
+//	}
 
 	@Order(110)
 	@ExportTarget(caseExportTypes = {
@@ -1781,4 +1793,7 @@ public class CaseExportDto implements Serializable {
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
 	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken; }
 }

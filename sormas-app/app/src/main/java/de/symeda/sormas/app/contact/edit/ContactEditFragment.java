@@ -126,6 +126,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
 			contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
 			contentBinding.contactExternalID.setVisibility(GONE);
+			contentBinding.contactExternalToken.setVisibility(GONE);
 		} else {
 			contentBinding.contactImmunosuppressiveTherapyBasicDisease.addValueChangedListener(e -> {
 				if (YesNoUnknown.YES.equals(e.getValue())) {

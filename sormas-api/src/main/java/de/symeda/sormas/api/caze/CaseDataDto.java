@@ -127,6 +127,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
@@ -375,6 +376,10 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
+	@HideForCountriesExcept(countries = {
+			COUNTRY_CODE_GERMANY,
+			COUNTRY_CODE_SWITZERLAND })
+	private String externalToken;
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
 	private boolean nosocomialOutbreak;
@@ -1028,6 +1033,12 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public boolean isSharedToCountry() {
