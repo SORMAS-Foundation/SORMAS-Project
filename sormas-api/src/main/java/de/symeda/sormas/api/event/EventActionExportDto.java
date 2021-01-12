@@ -59,7 +59,10 @@ public class EventActionExportDto implements Serializable {
 		ActionPriority actionPriority,
 		String actionLastModifiedByUuid,
 		String actionLastModifiedByFirstName,
-		String actionLastModifiedByLastName) {
+		String actionLastModifiedByLastName,
+		String actionCreatorUserUuid,
+		String actionCreatorUserFirstName,
+		String actionCreatorUserLastName) {
 
 		this.eventUuid = eventUuid;
 		this.eventTitle = eventTitle;
@@ -72,7 +75,9 @@ public class EventActionExportDto implements Serializable {
 		this.actionChangeDate = actionChangeDate;
 		this.actionStatus = actionStatus;
 		this.actionPriority = actionPriority;
-		this.actionLastModifiedBy = new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName, null);
+		this.actionLastModifiedBy = actionLastModifiedByUuid != null
+			? new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName, null)
+			: new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName, null);
 	}
 
 	@Order(0)

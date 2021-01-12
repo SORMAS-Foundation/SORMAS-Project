@@ -322,9 +322,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case EventActionIndexDto.ACTION_LAST_MODIFIED_BY:
 					expression = cb.selectCase()
-						.when(
-							cb.isNotNull(action.get(Action.LAST_MODIFIED_BY)),
-							cb.lower(action.get(Action.LAST_MODIFIED_BY).get(User.LAST_NAME)))
+						.when(cb.isNotNull(action.get(Action.LAST_MODIFIED_BY)), cb.lower(action.get(Action.LAST_MODIFIED_BY).get(User.LAST_NAME)))
 						.otherwise(cb.lower(action.get(Action.CREATOR_USER).get(User.LAST_NAME)));
 					break;
 				default:
@@ -354,6 +352,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Root<Action> action = cq.from(getElementClass());
 		ActionJoins actionJoins = new ActionJoins(action);
 		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
+		Join<Action, User> creator = actionJoins.getCreator();
 		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
 
 		// Add filters
@@ -383,7 +382,10 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			action.get(Action.PRIORITY),
 			lastModifiedBy.get(User.UUID),
 			lastModifiedBy.get(User.FIRST_NAME),
-			lastModifiedBy.get(User.LAST_NAME));
+			lastModifiedBy.get(User.LAST_NAME),
+			creator.get(User.UUID),
+			creator.get(User.FIRST_NAME),
+			creator.get(User.LAST_NAME));
 
 		cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 
