@@ -1249,11 +1249,20 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getSampleUuid1() {
+		return sample1.getUuid();
+	}
+
+	@Order(121)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getSampleDateTime1() {
 		return sample1.getDateTime();
 	}
 
-	@Order(121)
+	@Order(122)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1262,7 +1271,7 @@ public class CaseExportDto implements Serializable {
 		return sample1.getLab();
 	}
 
-	@Order(122)
+	@Order(123)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1271,7 +1280,16 @@ public class CaseExportDto implements Serializable {
 		return sample1.getResult();
 	}
 
-	@Order(123)
+	@Order(124)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getSampleUuid2() {
+		return sample2.getUuid();
+	}
+
+	@Order(125)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1280,7 +1298,7 @@ public class CaseExportDto implements Serializable {
 		return sample2.getDateTime();
 	}
 
-	@Order(124)
+	@Order(126)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1289,7 +1307,7 @@ public class CaseExportDto implements Serializable {
 		return sample2.getLab();
 	}
 
-	@Order(125)
+	@Order(127)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1298,7 +1316,16 @@ public class CaseExportDto implements Serializable {
 		return sample2.getResult();
 	}
 
-	@Order(126)
+	@Order(128)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getSampleUuid3() {
+		return sample3.getUuid();
+	}
+
+	@Order(129)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1307,7 +1334,7 @@ public class CaseExportDto implements Serializable {
 		return sample3.getDateTime();
 	}
 
-	@Order(127)
+	@Order(130)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1316,7 +1343,7 @@ public class CaseExportDto implements Serializable {
 		return sample3.getLab();
 	}
 
-	@Order(128)
+	@Order(131)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1325,7 +1352,7 @@ public class CaseExportDto implements Serializable {
 		return sample3.getResult();
 	}
 
-	@Order(130)
+	@Order(132)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
@@ -1341,7 +1368,7 @@ public class CaseExportDto implements Serializable {
 		return samples.length() > 0 ? samples.substring(0, samples.length() - separator.length()) : "";
 	}
 
-	@Order(131)
+	@Order(133)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseDataDto.FOLLOW_UP_STATUS)
@@ -1350,7 +1377,7 @@ public class CaseExportDto implements Serializable {
 		return followUpStatus;
 	}
 
-	@Order(132)
+	@Order(134)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseDataDto.FOLLOW_UP_UNTIL)
@@ -1359,7 +1386,7 @@ public class CaseExportDto implements Serializable {
 		return followUpUntil;
 	}
 
-	@Order(133)
+	@Order(135)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseExportDto.NUMBER_OF_VISITS)
@@ -1368,7 +1395,7 @@ public class CaseExportDto implements Serializable {
 		return numberOfVisits;
 	}
 
-	@Order(134)
+	@Order(136)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
@@ -1377,7 +1404,7 @@ public class CaseExportDto implements Serializable {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(135)
+	@Order(137)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
@@ -1386,7 +1413,7 @@ public class CaseExportDto implements Serializable {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(136)
+	@Order(138)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)
@@ -1395,7 +1422,7 @@ public class CaseExportDto implements Serializable {
 		return lastCooperativeVisitSymptoms;
 	}
 
-	@Order(137)
+	@Order(139)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseExportDto.EVENT_COUNT)
@@ -1404,7 +1431,7 @@ public class CaseExportDto implements Serializable {
 		return eventCount;
 	}
 
-	@Order(138)
+	@Order(140)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseExportDto.LATEST_EVENT_ID)
@@ -1413,7 +1440,7 @@ public class CaseExportDto implements Serializable {
 		return latestEventId;
 	}
 
-	@Order(139)
+	@Order(141)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseExportDto.LATEST_EVENT_STATUS)
@@ -1422,7 +1449,7 @@ public class CaseExportDto implements Serializable {
 		return latestEventStatus;
 	}
 
-	@Order(140)
+	@Order(142)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseExportDto.LATEST_EVENT_TITLE)

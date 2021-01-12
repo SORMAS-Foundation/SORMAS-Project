@@ -149,9 +149,9 @@ public interface Captions {
 	String Campaign_edit = "Campaign.edit";
 	String Campaign_endDate = "Campaign.endDate";
 	String Campaign_name = "Campaign.name";
+	String Campaign_open = "Campaign.open";
 	String Campaign_region = "Campaign.region";
 	String Campaign_startDate = "Campaign.startDate";
-	String Campaign_viewForms = "Campaign.viewForms";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
 	String campaignAdditionalChart = "campaignAdditionalChart";
 	String campaignAdditionalForm = "campaignAdditionalForm";
@@ -352,6 +352,9 @@ public interface Captions {
 	String CaseExport_sampleResult2 = "CaseExport.sampleResult2";
 	String CaseExport_sampleResult3 = "CaseExport.sampleResult3";
 	String CaseExport_sampleTaken = "CaseExport.sampleTaken";
+	String CaseExport_sampleUuid1 = "CaseExport.sampleUuid1";
+	String CaseExport_sampleUuid2 = "CaseExport.sampleUuid2";
+	String CaseExport_sampleUuid3 = "CaseExport.sampleUuid3";
 	String CaseExport_traveled = "CaseExport.traveled";
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";

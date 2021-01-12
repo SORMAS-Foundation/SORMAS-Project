@@ -27,7 +27,6 @@ public enum TypeOfPlace {
 	FACILITY(true),
 	FESTIVITIES(false),
 	HOME(true),
-	HOSPITAL(false),
 	MEANS_OF_TRANSPORT(false),
 	PUBLIC_PLACE(false),
 	UNKNOWN(false),
