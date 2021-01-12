@@ -23,6 +23,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
@@ -50,8 +51,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		}
 		cq.orderBy(cb.asc(from.get(ClinicalVisit.CREATION_DATE)));
 
-		List<ClinicalVisit> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<Object[]> getClinicalVisitCountByCases(List<Long> caseIds) {
@@ -88,12 +88,12 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
-			filter = BaseAdoService.and(cb, filter, dateFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -115,7 +115,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -130,7 +130,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = visit.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 
 		if (criteria.getClinicalCourse() != null) {
-			filter = and(cb, filter, cb.equal(clinicalCourse.get(ClinicalCourse.UUID), criteria.getClinicalCourse().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(clinicalCourse.get(ClinicalCourse.UUID), criteria.getClinicalCourse().getUuid()));
 		}
 
 		return filter;
@@ -142,9 +142,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		Predicate dateFilter = cb.greaterThan(path.get(ClinicalVisit.CHANGE_DATE), date);
 
 		Join<ClinicalVisit, Symptoms> symptoms = path.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
-
-		return dateFilter;
+		return  cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.doc;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,7 +26,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.region.CountryDto;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.AreaReference;
@@ -50,6 +48,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -57,6 +56,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -69,8 +69,12 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.visit.VisitDto;
 
 /**
@@ -80,7 +84,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 public class DataDictionaryGenerator {
 
 	@Test
-	public void generateDataDictionary() throws FileNotFoundException, IOException {
+	public void generateDataDictionary() throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -90,6 +94,7 @@ public class DataDictionaryGenerator {
 		createEntitySheet(workbook, HospitalizationDto.class, HospitalizationDto.I18N_PREFIX);
 		createEntitySheet(workbook, SymptomsDto.class, SymptomsDto.I18N_PREFIX);
 		createEntitySheet(workbook, EpiDataDto.class, EpiDataDto.I18N_PREFIX);
+		createEntitySheet(workbook, ExposureDto.class, ExposureDto.I18N_PREFIX);
 		createEntitySheet(workbook, HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX);
 		createEntitySheet(workbook, PrescriptionDto.class, PrescriptionDto.I18N_PREFIX);
 		createEntitySheet(workbook, TreatmentDto.class, TreatmentDto.I18N_PREFIX);
@@ -121,12 +126,15 @@ public class DataDictionaryGenerator {
 	private enum EntityColumn {
 		FIELD,
 		TYPE,
+		DATA_PROTECTION,
 		CAPTION,
 		DESCRIPTION,
 		REQUIRED,
 		NEW_DISEASE,
 		DISEASES,
 		OUTBREAKS,
+		IGNORED_COUNTRIES,
+		EXCLUSIVE_COUNTRIES,
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,24 +158,28 @@ public class DataDictionaryGenerator {
 		for (EntityColumn column : EntityColumn.values()) {
 			table.addColumn();
 			String columnCaption = column.toString();
-			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase().replaceAll("_", " ");
+			columnCaption = columnCaption.charAt(0) + columnCaption.substring(1).toLowerCase().replaceAll("_", " ");
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 
 		// column width
 		sheet.setColumnWidth(EntityColumn.FIELD.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.TYPE.ordinal(), 256 * 30);
+		sheet.setColumnWidth(EntityColumn.DATA_PROTECTION.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.CAPTION.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.DESCRIPTION.ordinal(), 256 * 60);
 		sheet.setColumnWidth(EntityColumn.REQUIRED.ordinal(), 256 * 10);
 		sheet.setColumnWidth(EntityColumn.NEW_DISEASE.ordinal(), 256 * 8);
 		sheet.setColumnWidth(EntityColumn.DISEASES.ordinal(), 256 * 45);
 		sheet.setColumnWidth(EntityColumn.OUTBREAKS.ordinal(), 256 * 10);
+		sheet.setColumnWidth(EntityColumn.IGNORED_COUNTRIES.ordinal(), 256 * 20);
+		sheet.setColumnWidth(EntityColumn.EXCLUSIVE_COUNTRIES.ordinal(), 256 * 20);
 
 		CellStyle defaultCellStyle = workbook.createCellStyle();
 		defaultCellStyle.setWrapText(true);
 
-		List<Class<Enum<?>>> usedEnums = new ArrayList<Class<Enum<?>>>();
+		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
+		boolean usesFacilityReference = false;
 
 		for (Field field : entityClass.getDeclaredFields()) {
 			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
@@ -184,14 +196,6 @@ public class DataDictionaryGenerator {
 			Class<?> fieldType = field.getType();
 			if (fieldType.isEnum()) {
 				// use enum type name - values are added below
-//				Object[] enumValues = fieldType.getEnumConstants();
-//				StringBuilder valuesString = new StringBuilder();
-//				for (Object enumValue : enumValues) {
-//					if (valuesString.length() > 0)
-//						valuesString.append(", ");
-//					valuesString.append(((Enum) enumValue).name());
-//				}
-//				fieldValueCell.setCellValue(valuesString.toString());
 				fieldValueCell.setCellValue(fieldType.getSimpleName());
 				if (!usedEnums.contains(fieldType)) {
 					usedEnums.add((Class<Enum<?>>) fieldType);
@@ -200,6 +204,9 @@ public class DataDictionaryGenerator {
 				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
 			} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
+				if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
+					usesFacilityReference = true;
+				}
 			} else if (String.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(I18nProperties.getCaption("text"));
 			} else if (Date.class.isAssignableFrom(fieldType)) {
@@ -208,6 +215,15 @@ public class DataDictionaryGenerator {
 				fieldValueCell.setCellValue(I18nProperties.getCaption("number"));
 			} else if (Boolean.class.isAssignableFrom(fieldType) || boolean.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(Boolean.TRUE.toString() + ", " + Boolean.FALSE.toString());
+			}
+
+			//sensitive data
+			XSSFCell dataProtectionCell = row.createCell(EntityColumn.DATA_PROTECTION.ordinal());
+			if (field.getAnnotation(PersonalData.class) != null) {
+				dataProtectionCell.setCellValue("personal");
+			} else {
+				if (field.getAnnotation(SensitiveData.class) != null)
+					dataProtectionCell.setCellValue("sensitive");
 			}
 
 			// caption
@@ -244,6 +260,32 @@ public class DataDictionaryGenerator {
 			XSSFCell outbreakCell = row.createCell(EntityColumn.OUTBREAKS.ordinal());
 			if (field.getAnnotation(Outbreaks.class) != null)
 				outbreakCell.setCellValue(true);
+
+			//ignored countries
+			XSSFCell ignoreForCountriesCell = row.createCell(EntityColumn.IGNORED_COUNTRIES.ordinal());
+			HideForCountries hideForCountries = field.getAnnotation(HideForCountries.class);
+			if (hideForCountries != null) {
+				StringBuilder hideForCountriesString = new StringBuilder();
+				for (String country : hideForCountries.countries()) {
+					if (hideForCountriesString.length() > 0)
+						hideForCountriesString.append(", ");
+					hideForCountriesString.append(country);
+				}
+				ignoreForCountriesCell.setCellValue(hideForCountriesString.toString());
+			}
+
+			//exclusive countries
+			XSSFCell exclusiveCountriesCell = row.createCell(EntityColumn.EXCLUSIVE_COUNTRIES.ordinal());
+			HideForCountriesExcept hideForCountriesExcept = field.getAnnotation(HideForCountriesExcept.class);
+			if (hideForCountriesExcept != null) {
+				StringBuilder hideForCountriesExceptString = new StringBuilder();
+				for (String exceptCountry : hideForCountriesExcept.countries()) {
+					if (hideForCountriesExceptString.length() > 0)
+						hideForCountriesExceptString.append(", ");
+					hideForCountriesExceptString.append(exceptCountry);
+				}
+				exclusiveCountriesCell.setCellValue(hideForCountriesExceptString.toString());
+			}
 		}
 
 		AreaReference reference =
@@ -252,7 +294,7 @@ public class DataDictionaryGenerator {
 		table.getCTTable().addNewAutoFilter();
 
 		// constant facilities
-		if (CaseDataDto.class.equals(entityClass) || PersonDto.class.equals(entityClass)) {
+		if (usesFacilityReference) {
 			rowNumber = createFacilityTable(sheet, rowNumber + 1, defaultCellStyle);
 		}
 
@@ -284,22 +326,22 @@ public class DataDictionaryGenerator {
 			}
 			table.addColumn();
 			String columnCaption = column.toString();
-			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
+			columnCaption = columnCaption.charAt(0) + columnCaption.substring(1).toLowerCase();
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 
-		List<String> constantFacilities = Arrays.asList(FacilityDto.OTHER_FACILITY, FacilityDto.NO_FACILITY);
+		List<String> constantFacilities = Arrays.asList(FacilityDto.OTHER_FACILITY, FacilityDto.NO_FACILITY, FacilityDto.CONFIGURED_FACILITY);
 		for (String constantFacility : constantFacilities) {
 			XSSFRow row = sheet.createRow(rowNumber++);
 			XSSFCell cell;
 
 			cell = row.createCell(EnumColumn.TYPE.ordinal());
-			if (constantFacility == constantFacilities.get(0)) {
+			if (constantFacility.equals(constantFacilities.get(0))) {
 				cell.setCellValue(FacilityReferenceDto.class.getSimpleName().replaceAll("Dto", ""));
 			}
 
 			cell = row.createCell(EnumColumn.VALUE.ordinal());
-			cell.setCellValue(constantFacility);
+			cell.setCellValue(FacilityDto.CONFIGURED_FACILITY.equals(constantFacility) ? "<text>" : constantFacility);
 
 			cell = row.createCell(EnumColumn.CAPTION.ordinal());
 			String caption = I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, constantFacility);
@@ -344,7 +386,7 @@ public class DataDictionaryGenerator {
 		for (EnumColumn column : EnumColumn.values()) {
 			table.addColumn();
 			String columnCaption = column.toString();
-			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
+			columnCaption = columnCaption.charAt(0) + columnCaption.substring(1).toLowerCase();
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 

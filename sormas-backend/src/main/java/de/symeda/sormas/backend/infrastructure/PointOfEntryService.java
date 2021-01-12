@@ -17,6 +17,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
@@ -78,19 +79,19 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		Predicate filter = null;
 		if (criteria.getRegion() != null) {
 			filter =
-				and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(pointOfEntry.join(PointOfEntry.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getType() != null) {
-			filter = and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.POINT_OF_ENTRY_TYPE), criteria.getType()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.POINT_OF_ENTRY_TYPE), criteria.getType()));
 		}
 		if (criteria.getActive() != null) {
-			filter = and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ACTIVE), criteria.getActive()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ACTIVE), criteria.getActive()));
 		}
 		if (criteria.getNameLike() != null) {
 			String[] textFilters = criteria.getNameLike().split("\\s+");
@@ -98,18 +99,18 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.like(cb.lower(pointOfEntry.get(PointOfEntry.NAME)), textFilter);
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = and(
+				filter = CriteriaBuilderHelper.and(
 					cb,
 					filter,
 					cb.or(cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), false), cb.isNull(pointOfEntry.get(PointOfEntry.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), true));
 			}
 		}
 

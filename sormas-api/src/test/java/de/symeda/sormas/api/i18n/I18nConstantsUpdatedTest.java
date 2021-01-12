@@ -12,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 public class I18nConstantsUpdatedTest {
@@ -28,8 +30,9 @@ public class I18nConstantsUpdatedTest {
 			StringWriter writer = new StringWriter();
 			generator.writeI18nConstantClass(writer, "\n");
 
-			if (!isValidContent(generator, writer.toString())) {
-				invalid.add(generator.getOutputClassFilePath());
+			String diff = getDifference(generator, writer.toString());
+			if (!DataHelper.isNullOrEmpty(diff)) {
+				invalid.add(generator.getOutputClassFilePath() + " expected: " + diff);
 			}
 		}
 		if (!invalid.isEmpty()) {
@@ -37,7 +40,7 @@ public class I18nConstantsUpdatedTest {
 		}
 	}
 
-	private boolean isValidContent(I18nConstantGenerator generator, String expectedContent) throws IOException {
+	private String getDifference(I18nConstantGenerator generator, String expectedContent) throws IOException {
 
 		try (BufferedReader reader =
 			new BufferedReader(new InputStreamReader(new FileInputStream(new File(generator.getOutputClassFilePath())), StandardCharsets.UTF_8))) {
@@ -51,9 +54,11 @@ public class I18nConstantsUpdatedTest {
 
 			String fileContent = sb.toString();
 
-			// For debugging to check where the difference is if needed
-//			assertEquals(generator.getOutputClassName(), expectedContent, fileContent);
-			return expectedContent.equals(fileContent);
+			boolean equal = expectedContent.equals(fileContent);
+			if (!equal) {
+				return StringUtils.difference(fileContent, expectedContent);
+			}
+			return null;
 		}
 	}
 }
