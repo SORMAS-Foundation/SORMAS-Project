@@ -89,6 +89,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
 		locationDialog.setRegionAndDistrictRequired(true);
+        locationDialog.setFacilityFieldsVisible(record.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
 		locationDialog.setPositiveCallback(() -> {
 			try {
 				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
