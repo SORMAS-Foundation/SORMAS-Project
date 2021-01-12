@@ -31,7 +31,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>11.0.3</keycloak.version>
+		<keycloak.version>12.0.1</keycloak.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
