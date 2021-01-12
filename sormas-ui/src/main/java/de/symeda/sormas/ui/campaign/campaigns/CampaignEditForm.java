@@ -94,8 +94,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		statusChangeLayout.setMargin(false);
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
 
-		getContent().setEnabled(UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT));
-
 		addFields();
 	}
 
