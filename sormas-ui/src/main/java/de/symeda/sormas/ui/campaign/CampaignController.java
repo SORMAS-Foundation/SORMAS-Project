@@ -154,7 +154,7 @@ public class CampaignController {
 		campaignEditForm.setValue(campaignDto);
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent =
-			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
+			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT), campaignEditForm.getFieldGroup()) {
 
 				@Override
 				public void discard() {
