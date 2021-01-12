@@ -9,4 +9,7 @@ public interface SystemEventFacade {
 	Date getLatestSuccessByType(SystemEventType type);
 
 	void saveSystemEvent(SystemEventDto dto);
+
+	void deleteAllDeletableSystemEvents(int daysAfterSystemEventGetsDeleted);
+
 }

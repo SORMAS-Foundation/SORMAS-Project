@@ -85,6 +85,8 @@ public interface ConfigFacade {
 
 	int getDaysAfterEventGetsArchived();
 
+	int getDaysAfterSystemEventGetsDeleted();
+
 	GeoLatLon getCountryCenter();
 
 	int getMapZoom();

@@ -4,11 +4,11 @@ import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
-import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.labmessage.LabMessage;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -20,6 +20,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +33,8 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	@EJB
 	private SystemEventService systemEventService;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public Date getLatestSuccessByType(SystemEventType type) {
@@ -60,7 +64,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	}
 
-	private SystemEvent fromDto(@NotNull SystemEventDto source, SystemEvent target) {
+	public SystemEvent fromDto(@NotNull SystemEventDto source, SystemEvent target) {
 
 		if (target == null) {
 			target = new SystemEvent();
@@ -77,6 +81,33 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 		return target;
 
+	}
+
+	@Override
+	public void deleteAllDeletableSystemEvents(int daysAfterSystemEventGetsDeleted) {
+		deleteAllDeletableSystemEvents(LocalDateTime.now().minusDays(daysAfterSystemEventGetsDeleted));
+	}
+
+	public void deleteAllDeletableSystemEvents(LocalDateTime notChangedUntil) {
+
+		long startTime = DateHelper.startTime();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SystemEvent> cq = cb.createQuery(SystemEvent.class);
+		Root<SystemEvent> systemEvent = cq.from(SystemEvent.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedUntil);
+		cq.where(cb.not(systemEventService.createChangeDateFilter(cb, systemEvent, notChangedTimestamp)));
+
+		List<SystemEvent> resultList = em.createQuery(cq).getResultList();
+		for (SystemEvent event : resultList) {
+			em.remove(event);
+		}
+
+		logger.debug(
+			"deleteAllDeletableSystemEvents() finished. systemEvent count = {}, {}ms",
+			resultList.size(),
+			DateHelper.durationMillies(startTime));
 	}
 
 	@LocalBean
