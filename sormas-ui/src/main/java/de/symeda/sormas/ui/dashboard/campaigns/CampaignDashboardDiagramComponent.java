@@ -4,10 +4,10 @@ import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
 	private final Map<String, Map<Object, CampaignDiagramDataDto>> diagramDataBySeriesAndXAxis = new HashMap<>();
-	private final Map<Object, String> xAxisInfo = new HashMap<>();
+	private final Map<Object, String> xAxisInfo;
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
 	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
@@ -65,10 +65,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		setMargin(false);
 		addComponent(campaignColumnChart);
 
+		final Map<Object, String> axisInfo = new HashMap<>();
 		for (CampaignDiagramDataDto diagramData : diagramDataList) {
 			final Object groupingKey = diagramData.getGroupingKey();
-			if (!xAxisInfo.containsKey(groupingKey)) {
-				xAxisInfo.put(groupingKey, diagramData.getGroupingCaption());
+			if (!axisInfo.containsKey(groupingKey)) {
+				axisInfo.put(groupingKey, diagramData.getGroupingCaption());
 			}
 
 			String seriesKey = diagramData.getFormId() + diagramData.getFieldId();
@@ -81,6 +82,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			}
 			objectCampaignDiagramDataDtoMap.put(groupingKey, diagramData);
 		}
+
+		xAxisInfo = axisInfo.entrySet()
+			.stream()
+			.sorted(Map.Entry.comparingByValue())
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
 		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
@@ -174,9 +180,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("opposite: true,");
 		}
 		hcjs.append("categories: [");
-		List<String> sortedCaptions = new ArrayList<>(xAxisInfo.values());
-		sortedCaptions.sort(String::compareTo);
-		for (String caption : sortedCaptions) {
+		for (String caption : xAxisInfo.values()) {
 			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(caption)).append("',");
 		}
 		hcjs.append("]},");
