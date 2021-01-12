@@ -36,6 +36,11 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	/**
+	 * 
+	 * @param type
+	 * @return The date of the latest SystemEvent of the specified type with SystemEventStatus == SUCCESS.
+	 */
 	@Override
 	public Date getLatestSuccessByType(SystemEventType type) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -83,6 +88,12 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	}
 
+	/**
+	 * Deletes all SystemEvents unchanged since the specified number of days.
+	 * Does not vacuum the db, so deleted SystemEvents may still take space and be recoverable.
+	 * 
+	 * @param daysAfterSystemEventGetsDeleted
+	 */
 	@Override
 	public void deleteAllDeletableSystemEvents(int daysAfterSystemEventGetsDeleted) {
 		deleteAllDeletableSystemEvents(LocalDateTime.now().minusDays(daysAfterSystemEventGetsDeleted));
