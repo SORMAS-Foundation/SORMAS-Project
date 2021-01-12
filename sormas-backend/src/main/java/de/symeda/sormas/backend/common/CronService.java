@@ -25,6 +25,7 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
+import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +66,8 @@ public class CronService {
 	private EventFacadeEjbLocal eventFacade;
 	@EJB
 	private DocumentFacadeEjbLocal documentFacade;
+	@EJB
+	private SystemEventFacadeEjbLocal systemEventFacade;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
@@ -138,4 +141,13 @@ public class CronService {
 	public void cleanupDeletedDocuments() {
 		documentFacade.cleanupDeletedDocuments();
 	}
+
+	@Schedule(hour = "1", minute = "30", second = "0", persistent = false)
+	public void deleteSystemEvents() {
+		int daysAfterSystemEventGetsDeleted = configFacade.getDaysAfterSystemEventGetsDeleted();
+		if (daysAfterSystemEventGetsDeleted >= 1) {
+			systemEventFacade.deleteAllDeletableSystemEvents(daysAfterSystemEventGetsDeleted);
+		}
+	}
+
 }

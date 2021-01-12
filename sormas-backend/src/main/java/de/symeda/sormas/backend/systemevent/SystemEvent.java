@@ -12,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.Objects;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
@@ -78,4 +79,24 @@ public class SystemEvent extends AbstractDomainObject {
 		this.additionalInfo = additionalInfo;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		SystemEvent that = (SystemEvent) o;
+		return type == that.type
+			&& Objects.equals(startDate, that.startDate)
+			&& Objects.equals(endDate, that.endDate)
+			&& status == that.status
+			&& Objects.equals(additionalInfo, that.additionalInfo);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), type, startDate, endDate, status, additionalInfo);
+	}
 }
