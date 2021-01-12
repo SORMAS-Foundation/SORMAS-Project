@@ -11,6 +11,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Objects;
 
@@ -35,6 +36,7 @@ public class SystemEvent extends AbstractDomainObject {
 	private String additionalInfo;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	public SystemEventType getType() {
 		return type;
 	}
@@ -44,6 +46,7 @@ public class SystemEvent extends AbstractDomainObject {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -62,6 +65,7 @@ public class SystemEvent extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	public SystemEventStatus getStatus() {
 		return status;
 	}

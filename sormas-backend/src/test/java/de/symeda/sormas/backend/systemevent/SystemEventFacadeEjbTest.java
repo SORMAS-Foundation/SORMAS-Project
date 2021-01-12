@@ -6,6 +6,7 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
+import static org.hamcrest.Matchers.hasSize;
 import org.junit.Test;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class SystemEventFacadeEjbTest extends AbstractBeanTest {
@@ -42,25 +44,26 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDeleteAllDeletableSystemEvents() throws InterruptedException {
 
-		LocalDateTime earliest = LocalDateTime.now();
+		LocalDateTime start = LocalDateTime.now();
+		// Small delay for the timesteps to have different milliseconds
+		Thread.sleep(5L);
 		SystemEventDto systemEvent1 = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, new Date(), SystemEventStatus.ERROR);
 		getSystemEventFacade().saveSystemEvent(systemEvent1);
-		// Small delay for the persistence
-		Thread.sleep(100L);
+		Thread.sleep(5L);
 
 		LocalDateTime inBetween = LocalDateTime.now();
+		Thread.sleep(5L);
+
 		SystemEventDto systemEvent2 = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, new Date(), SystemEventStatus.SUCCESS);
 		getSystemEventFacade().saveSystemEvent(systemEvent2);
-		// Small delay for the persistence
-		Thread.sleep(100L);
 
 		SystemEventFacadeEjb systemEventFacadeEjb = (SystemEventFacadeEjb) getSystemEventFacade();
 
-		systemEventFacadeEjb.deleteAllDeletableSystemEvents(earliest);
-		assertTrue(getAllSystemEvents().size() == 2);
+		systemEventFacadeEjb.deleteAllDeletableSystemEvents(start);
+		assertThat(getAllSystemEvents(), hasSize(2));
 
 		getSystemEventFacade().deleteAllDeletableSystemEvents(1);
-		assertTrue(getAllSystemEvents().size() == 2);
+		assertThat(getAllSystemEvents(), hasSize(2));
 
 		systemEventFacadeEjb.deleteAllDeletableSystemEvents(inBetween);
 		assertEquals(systemEventFacadeEjb.fromDto(systemEvent2, null), getAllSystemEvents().get(0));
