@@ -119,7 +119,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				NUMBER_OF_PENDING_TASKS,
 				EventIndexDto.PARTICIPANT_COUNT,
 				EventIndexDto.CASE_COUNT,
-				EventIndexDto.DEATH_COUNT));
+				EventIndexDto.DEATH_COUNT,
+				EventIndexDto.CONTACT_COUNT,
+				EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
 
 		if (!tasksFeatureEnabled) {
 			columnIds.remove(NUMBER_OF_PENDING_TASKS);
@@ -130,6 +132,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CASE_COUNT).setSortable(false);
 		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))

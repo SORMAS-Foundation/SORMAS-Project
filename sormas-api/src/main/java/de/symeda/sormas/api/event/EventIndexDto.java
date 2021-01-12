@@ -36,6 +36,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String CASE_COUNT = "caseCount";
 	public static final String DEATH_COUNT = "deathCount";
+	public static final String CONTACT_COUNT = "contactCount"; // number of contacts whose person is involved in this event
+	public static final String CONTACT_COUNT_SOURCE_IN_EVENT = "contactCountSourceInEvent"; // number of contacts whose person is involved in this event, and whjere the source case is also part of the event
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
@@ -58,6 +60,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private long participantCount;
 	private long caseCount;
 	private long deathCount;
+	private long contactCount;
+	private long contactCountSourceInEvent;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -267,6 +271,22 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setDeathCount(long deathCount) {
 		this.deathCount = deathCount;
+	}
+
+	public long getContactCount() {
+		return contactCount;
+	}
+
+	public void setContactCount(long contactCount) {
+		this.contactCount = contactCount;
+	}
+
+	public long getContactCountSourceInEvent() {
+		return contactCountSourceInEvent;
+	}
+
+	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
+		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
 	public String getRegion() {
