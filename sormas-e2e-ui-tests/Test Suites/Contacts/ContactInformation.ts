@@ -29,18 +29,6 @@
       <testCaseId>Test Cases/Contacts/CreateCancelNewCall</testCaseId>
    </testCaseLink>
    <testCaseLink>
-      <guid>f4dd10c1-efc0-4272-8373-10bb3f80e48e</guid>
-      <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
-      <testCaseId>Test Cases/Contacts/CreateNewTaskForContact</testCaseId>
-   </testCaseLink>
-   <testCaseLink>
-      <guid>dd02951c-deb0-485b-a057-748f4f4358d4</guid>
-      <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
-      <testCaseId>Test Cases/Contacts/CancelNewTaskForContact</testCaseId>
-   </testCaseLink>
-   <testCaseLink>
       <guid>a499b915-7484-4c13-a9fd-9b3ca05d80f8</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
@@ -51,5 +39,11 @@
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
       <testCaseId>Test Cases/Contacts/ChangeContactPersonData</testCaseId>
+   </testCaseLink>
+   <testCaseLink>
+      <guid>e86f02bc-493b-4590-9af3-999237350fc1</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Contacts/NewContactViaContactsView</testCaseId>
    </testCaseLink>
 </TestSuiteEntity>
