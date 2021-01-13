@@ -129,6 +129,15 @@ public class ContactListCriteriaBuilder {
 		return indexSelection;
 	}
 
+	public List<Selection<?>> getContactIndexSelectionsForFusion(Root<Contact> contact, ContactJoins joins) {
+
+		List<Selection<?>> selections = getContactIndexSelections(contact, new ContactJoins(contact));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		selections.add(cb.size(contact.get(Contact.VISITS)));
+
+		return selections;
+	}
+
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
 
 		List<Expression<?>> expressions = new ArrayList<>();

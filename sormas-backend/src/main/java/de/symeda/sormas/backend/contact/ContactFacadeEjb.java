@@ -48,6 +48,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -1702,6 +1703,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		cq.where(filter);
 		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID));
 		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
+		TypedQuery<Object[]> test = em.createQuery(cq);
 
 		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
 		List<ContactIndexDto[]> resultList = new ArrayList<>();
@@ -1743,9 +1745,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<ContactIndexDto> cq, Root<Contact> root) {
-		List<Selection<?>> selections = listCriteriaBuilder.getContactIndexSelections(root, new ContactJoins(root));
+		List<Selection<?>> selections = listCriteriaBuilder.getContactIndexSelectionsForFusion(root, new ContactJoins(root));
 		cq.multiselect(selections);
-
 	}
 
 	public void updateCompleteness(String contactUuid) {
