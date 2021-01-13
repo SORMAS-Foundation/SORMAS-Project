@@ -6232,6 +6232,6 @@ CREATE TABLE systemevent (
 
 ALTER TABLE systemevent OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (303, 'Add system events #3927');
+INSERT INTO schema_version (version_number, comment) VALUES (304, 'Add system events #3927');
 
 -- *** Insert new sql commands BEFORE this line ***
