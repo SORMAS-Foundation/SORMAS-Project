@@ -152,10 +152,21 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.eventDesc}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_externalId"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@{data.externalId}" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_externalId"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.externalId}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_externalToken"
+                    app:value="@{data.externalToken}"
+                    style="@style/ControlSecondOfTwoColumnsStyle"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -194,17 +205,17 @@
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_eventLocation"
-                style="@style/ControlSingleColumnStyle"
-                app:maxLines="5"
-                app:value="@{data.eventLocation}" />
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_typeOfPlace"
                 style="@style/ControlSingleColumnStyle"
                 app:appendValue="@{data.typeOfPlaceText}"
                 app:value="@{data.typeOfPlace}"
                 app:valueFormat="@{@string/two_strings_with_hyphen_format}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_eventLocation"
+                style="@style/ControlSingleColumnStyle"
+                app:maxLines="5"
+                app:value="@{data.eventLocation}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_meansOfTransport"

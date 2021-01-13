@@ -143,7 +143,7 @@ public class Action extends AbstractDomainObject {
 		this.title = title;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	public String getDescription() {
 		return description;
 	}
@@ -152,7 +152,7 @@ public class Action extends AbstractDomainObject {
 		this.description = description;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	public String getReply() {
 		return reply;
 	}

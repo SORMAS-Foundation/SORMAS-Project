@@ -491,6 +491,7 @@ public interface Strings {
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
+	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportCsvFile = "infoImportCsvFile";

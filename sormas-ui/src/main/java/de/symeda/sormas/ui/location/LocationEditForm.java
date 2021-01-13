@@ -265,7 +265,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		});
 		facility.addValueChangeListener(e -> {
 			if (facility.getValue() != null) {
-				boolean visibleAndRequired = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+				boolean visibleAndRequired = areFacilityDetailsRequired();
 
 				facilityDetails.setVisible(visibleAndRequired);
 				facilityDetails.setRequired(visibleAndRequired);
@@ -433,5 +433,23 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		field.addValueChangeListener(e -> fireValueChange(false));
 
 		return super.addFieldToLayout(layout, propertyId, field);
+	}
+
+	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+		facility.setVisible(visible);
+		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
+		facilityType.setVisible(visible);
+		facilityTypeGroup.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
+			facility.clear();
+			facilityDetails.clear();
+			facilityType.clear();
+			facilityTypeGroup.clear();
+		}
+	}
+
+	private boolean areFacilityDetailsRequired() {
+		return facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 	}
 }

@@ -58,6 +58,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -500,6 +501,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 					contact.get(Contact.RETURNING_TRAVELER),
 					contact.get(Contact.EXTERNAL_ID),
+					contact.get(Contact.EXTERNAL_TOKEN),
 					joins.getPerson().get(Person.BIRTH_NAME),
 					joins.getPersonBirthCountry().get(Country.ISO_CODE),
 					joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -529,7 +531,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			ContactJoins visitContactJoins = new ContactJoins(visitsCqRoot);
 
 			visitsCq.where(
-				ContactService.and(cb, contact.get(AbstractDomainObject.ID).in(exportContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+				CriteriaBuilderHelper.and(cb, contact.get(AbstractDomainObject.ID).in(exportContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
 			visitsCq.multiselect(
 				Stream
 					.concat(
@@ -644,7 +646,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
 		cq.where(
-			BaseAdoService.and(
+			CriteriaBuilderHelper.and(
 				cb,
 				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq, contactJoins),
 				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
@@ -660,7 +662,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			ContactJoins joins = new ContactJoins(visitsCqRoot);
 
 			visitsCq.where(
-				ContactService
+				CriteriaBuilderHelper
 					.and(cb, contactRoot.get(AbstractDomainObject.UUID).in(visitSummaryUuids), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
 			visitsCq.multiselect(
 				Stream
@@ -838,7 +840,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 			visitsCq.where(
-				BaseAdoService.and(
+				CriteriaBuilderHelper.and(
 					cb,
 					contact.get(AbstractDomainObject.UUID).in(contactUuids),
 					cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)),
@@ -1081,6 +1083,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1325,6 +1328,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -1511,12 +1515,12 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		final Date reportDate = criteria.getReportDate();
 		final Date lastContactDate = criteria.getLastContactDate();
-		final Predicate recentContactsFilter = BaseAdoService.and(
+		final Predicate recentContactsFilter = CriteriaBuilderHelper.and(
 			cb,
 			contactService.recentDateFilter(cb, reportDate, contactRoot.get(Contact.REPORT_DATE_TIME), 30),
 			contactService.recentDateFilter(cb, lastContactDate, contactRoot.get(Contact.LAST_CONTACT_DATE), 30));
 
-		cq.where(BaseAdoService.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, recentContactsFilter));
+		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, recentContactsFilter));
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 

@@ -25,6 +25,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,7 +84,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		if (campaignCriteria != null) {
 			Predicate criteriaFilter = campaignService.buildCriteriaFilter(campaignCriteria, cb, campaign);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -152,7 +153,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		if (campaignCriteria != null) {
 			Predicate criteriaFilter = campaignService.buildCriteriaFilter(campaignCriteria, cb, campaign);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);

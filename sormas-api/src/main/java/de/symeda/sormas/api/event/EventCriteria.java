@@ -25,6 +25,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -67,6 +69,8 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Boolean userFilterIncluded = true;
 	private TypeOfPlace typeOfPlace;
 	private PersonReferenceDto person;
+	private FacilityType facilityType;
+	private FacilityReferenceDto facility;
 
 	// Actions criterias
 	private ActionStatus actionStatus;
@@ -392,4 +396,29 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public EventCriteria facilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+		return this;
+	}
+
+	public FacilityReferenceDto getFacility() {
+		return facility;
+	}
+
+	public void setFacility(FacilityReferenceDto facility) {
+		this.facility = facility;
+	}
+
+	public EventCriteria facility(FacilityReferenceDto facility) {
+		this.facility = facility;
+		return this;
+	}
 }

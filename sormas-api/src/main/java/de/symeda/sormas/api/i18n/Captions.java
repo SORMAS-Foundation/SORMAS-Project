@@ -11,6 +11,7 @@ public interface Captions {
 	 */
 
 	String about = "about";
+	String aboutBrandedSormasVersion = "aboutBrandedSormasVersion";
 	String aboutCaseClassificationRules = "aboutCaseClassificationRules";
 	String aboutChangelog = "aboutChangelog";
 	String aboutDataDictionary = "aboutDataDictionary";
@@ -148,9 +149,9 @@ public interface Captions {
 	String Campaign_edit = "Campaign.edit";
 	String Campaign_endDate = "Campaign.endDate";
 	String Campaign_name = "Campaign.name";
+	String Campaign_open = "Campaign.open";
 	String Campaign_region = "Campaign.region";
 	String Campaign_startDate = "Campaign.startDate";
-	String Campaign_viewForms = "Campaign.viewForms";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
 	String campaignAdditionalChart = "campaignAdditionalChart";
 	String campaignAdditionalForm = "campaignAdditionalForm";
@@ -219,6 +220,7 @@ public interface Captions {
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_eventCount = "CaseData.eventCount";
 	String CaseData_externalID = "CaseData.externalID";
+	String CaseData_externalToken = "CaseData.externalToken";
 	String CaseData_facilityType = "CaseData.facilityType";
 	String CaseData_followUpComment = "CaseData.followUpComment";
 	String CaseData_followUpStatus = "CaseData.followUpStatus";
@@ -351,6 +353,9 @@ public interface Captions {
 	String CaseExport_sampleResult2 = "CaseExport.sampleResult2";
 	String CaseExport_sampleResult3 = "CaseExport.sampleResult3";
 	String CaseExport_sampleTaken = "CaseExport.sampleTaken";
+	String CaseExport_sampleUuid1 = "CaseExport.sampleUuid1";
+	String CaseExport_sampleUuid2 = "CaseExport.sampleUuid2";
+	String CaseExport_sampleUuid3 = "CaseExport.sampleUuid3";
 	String CaseExport_traveled = "CaseExport.traveled";
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
 	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
@@ -469,6 +474,7 @@ public interface Captions {
 	String Contact_endOfQuarantineReasonDetails = "Contact.endOfQuarantineReasonDetails";
 	String Contact_epiData = "Contact.epiData";
 	String Contact_externalID = "Contact.externalID";
+	String Contact_externalToken = "Contact.externalToken";
 	String Contact_firstContactDate = "Contact.firstContactDate";
 	String Contact_firstName = "Contact.firstName";
 	String Contact_followUpComment = "Contact.followUpComment";
@@ -588,6 +594,7 @@ public interface Captions {
 	String countryAllCountries = "countryAllCountries";
 	String countryArchivedCountries = "countryArchivedCountries";
 	String creationDate = "creationDate";
+	String dashboardAggregatedNumber = "dashboardAggregatedNumber";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
 	String dashboardCanceledFollowUp = "dashboardCanceledFollowUp";
@@ -669,6 +676,7 @@ public interface Captions {
 	String dashboardPositive = "dashboardPositive";
 	String dashboardPossible = "dashboardPossible";
 	String dashboardProbable = "dashboardProbable";
+	String dashboardProportion = "dashboardProportion";
 	String dashboardReceived = "dashboardReceived";
 	String dashboardRemoved = "dashboardRemoved";
 	String dashboardRumor = "dashboardRumor";
@@ -788,6 +796,7 @@ public interface Captions {
 	String Event_eventTitle = "Event.eventTitle";
 	String Event_eventType = "Event.eventType";
 	String Event_externalId = "Event.externalId";
+	String Event_externalToken = "Event.externalToken";
 	String Event_informationSource = "Event.informationSource";
 	String Event_meansOfTransport = "Event.meansOfTransport";
 	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
@@ -952,6 +961,7 @@ public interface Captions {
 	String Facility_archived = "Facility.archived";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
+	String Facility_CONFIGURED_FACILITY = "Facility.CONFIGURED_FACILITY";
 	String Facility_district = "Facility.district";
 	String Facility_externalID = "Facility.externalID";
 	String Facility_latitude = "Facility.latitude";
@@ -1203,6 +1213,7 @@ public interface Captions {
 	String Person_educationType = "Person.educationType";
 	String Person_emailAddress = "Person.emailAddress";
 	String Person_externalId = "Person.externalId";
+	String Person_externalToken = "Person.externalToken";
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";

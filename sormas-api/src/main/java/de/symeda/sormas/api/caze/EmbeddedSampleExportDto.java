@@ -29,6 +29,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 
 public class EmbeddedSampleExportDto implements Serializable {
 
+	private String uuid;
 	private Date dateTime;
 	@SensitiveData
 	private String lab;
@@ -37,7 +38,8 @@ public class EmbeddedSampleExportDto implements Serializable {
 	public EmbeddedSampleExportDto() {
 	}
 
-	public EmbeddedSampleExportDto(Date dateTime, String lab, PathogenTestResultType result) {
+	public EmbeddedSampleExportDto(String uuid, Date dateTime, String lab, PathogenTestResultType result) {
+		this.uuid = uuid;
 		this.dateTime = dateTime;
 		this.lab = lab;
 		this.result = result;
@@ -77,5 +79,13 @@ public class EmbeddedSampleExportDto implements Serializable {
 
 	public void setResult(PathogenTestResultType result) {
 		this.result = result;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 }

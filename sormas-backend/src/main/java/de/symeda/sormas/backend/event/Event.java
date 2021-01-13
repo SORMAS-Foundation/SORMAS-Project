@@ -60,6 +60,7 @@ public class Event extends CoreAdo {
 	public static final String TABLE_NAME = "events";
 
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
@@ -106,6 +107,7 @@ public class Event extends CoreAdo {
 	private Date eventInvestigationEndDate;
 	private List<EventParticipant> eventPersons;
 	private String externalId;
+	private String externalToken;
 	private String eventTitle;
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
@@ -205,6 +207,13 @@ public class Event extends CoreAdo {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getEventTitle() {

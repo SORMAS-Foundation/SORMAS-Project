@@ -60,8 +60,8 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -166,7 +166,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto saveEvent(EventDto dto) {
+	public EventDto saveEvent(@NotNull EventDto dto) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -199,13 +199,13 @@ public class EventFacadeEjb implements EventFacade {
 
 		Predicate filter = null;
 
-		if (eventCriteria.getUserFilterIncluded()) {
-			eventService.createUserFilter(cb, cq, event);
-		}
-
 		if (eventCriteria != null) {
+			if (eventCriteria.getUserFilterIncluded()) {
+				eventService.createUserFilter(cb, cq, event);
+			}
+
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -255,13 +255,13 @@ public class EventFacadeEjb implements EventFacade {
 
 		Predicate filter = null;
 
-		if (eventCriteria.getUserFilterIncluded()) {
-			eventService.createUserFilter(cb, cq, event);
-		}
-
 		if (eventCriteria != null) {
+			if (eventCriteria.getUserFilterIncluded()) {
+				eventService.createUserFilter(cb, cq, event);
+			}
+
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -399,6 +399,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
+			event.get(Event.EXTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -439,7 +440,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -577,6 +578,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
@@ -645,8 +647,7 @@ public class EventFacadeEjb implements EventFacade {
 			return null;
 		}
 
-		EventReferenceDto dto = new EventReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		return new EventReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	public static EventDto toDto(Event source) {
@@ -663,6 +664,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
@@ -712,7 +714,7 @@ public class EventFacadeEjb implements EventFacade {
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
-	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, LocalDate referenceDate) {
+	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
 

@@ -101,7 +101,7 @@
     <string name="action_select">Auswählen</string>
     <string name="action_send">Senden</string>
     <string name="action_set_cleared_to_no">Leer auf Nein setzen</string>
-    <string name="action_set_cleared_to_unknown">Set Cleared to Unknown</string>
+    <string name="action_set_cleared_to_unknown">Leer auf Unbekannt setzen</string>
     <string name="action_show_classification_rules">Definitionskategorien ansehen</string>
     <string name="action_submit_report">Wöchentlichen Bericht absenden</string>
     <string name="action_sync">Synchronisiere</string>

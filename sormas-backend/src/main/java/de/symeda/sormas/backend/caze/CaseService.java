@@ -47,6 +47,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -74,9 +77,9 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -170,7 +173,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate filter = createCriteriaFilter(caseCriteria, cb, cq, from, joins);
 		if (!ignoreUserFilter) {
-			filter = and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
 
 		if (filter != null) {
@@ -178,8 +181,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		cq.orderBy(cb.asc(from.get(Case.CREATION_DATE)));
 
-		List<Case> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<Case> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters) {
@@ -229,7 +231,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = BaseAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -307,8 +309,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Date from,
 		Date to) {
 		Predicate filter = createActiveCasesFilter(cb, root);
-		filter = BaseAdoService.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
-		filter = BaseAdoService.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
+		filter = CriteriaBuilderHelper.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
 
 		if (region != null) {
 			Predicate regionFilter = cb.equal(root.get(Case.REGION), region);
@@ -391,6 +393,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filter = cb.or(
 			cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
+			cb.equal(cb.lower(root.get(Case.EXTERNAL_TOKEN)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase()));
 
 		cq.where(filter);
@@ -506,70 +509,70 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
-			filter =
+			filter = CriteriaBuilderHelper.
 				and(cb, filter, cb.isMember(caseCriteria.getReportingUserRole(), from.join(Case.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
 		}
 		if (caseCriteria.getDisease() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
 		}
 		if (caseCriteria.getOutcome() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
 		}
 		if (caseCriteria.getCommunity() != null) {
-			filter = and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
 		}
 		if (caseCriteria.getFollowUpStatus() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
 		}
 		if (caseCriteria.getFollowUpUntilFrom() != null && caseCriteria.getFollowUpUntilTo() != null) {
-			filter =
+			filter = CriteriaBuilderHelper.
 				and(cb, filter, cb.between(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom(), caseCriteria.getFollowUpUntilTo()));
 		} else if (caseCriteria.getFollowUpUntilFrom() != null) {
-			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom()));
 		} else if (caseCriteria.getFollowUpUntilTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilTo()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilTo()));
 		}
 		if (caseCriteria.getReportDateTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
 		}
 		if (caseCriteria.getCaseOrigin() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
 		}
 		if (caseCriteria.getHealthFacility() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(from.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
 		}
 		if (caseCriteria.getPointOfEntry() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(from.join(Case.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), caseCriteria.getPointOfEntry().getUuid()));
 		}
 		if (caseCriteria.getSurveillanceOfficer() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(from.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
 		}
 		if (caseCriteria.getCaseClassification() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.CASE_CLASSIFICATION), caseCriteria.getCaseClassification()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_CLASSIFICATION), caseCriteria.getCaseClassification()));
 		}
 		if (caseCriteria.getInvestigationStatus() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.INVESTIGATION_STATUS), caseCriteria.getInvestigationStatus()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.INVESTIGATION_STATUS), caseCriteria.getInvestigationStatus()));
 		}
 		if (caseCriteria.getPresentCondition() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				createNewCaseFilter(
@@ -580,13 +583,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					caseCriteria.getNewCaseDateType()));
 		}
 		if (caseCriteria.getCreationDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThan(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(caseCriteria.getCreationDateFrom())));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThan(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(caseCriteria.getCreationDateFrom())));
 		}
 		if (caseCriteria.getCreationDateTo() != null) {
-			filter = and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(caseCriteria.getCreationDateTo())));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(caseCriteria.getCreationDateTo())));
 		}
 		if (caseCriteria.getQuarantineTo() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.between(
@@ -595,11 +598,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					DateHelper.getEndOfDay(caseCriteria.getQuarantineTo())));
 		}
 		if (caseCriteria.getPerson() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.UUID), caseCriteria.getPerson().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
 		if (caseCriteria.getMustHaveNoGeoCoordinates() != null && caseCriteria.getMustHaveNoGeoCoordinates() == true) {
 			Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.and(
@@ -607,7 +610,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					cb.or(cb.isNull(personAddress.get(Location.LATITUDE)), cb.isNull(personAddress.get(Location.LONGITUDE)))));
 		}
 		if (caseCriteria.getMustBePortHealthCaseWithoutFacility() != null && caseCriteria.getMustBePortHealthCaseWithoutFacility() == true) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.and(cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY), cb.isNull(from.join(Case.HEALTH_FACILITY, JoinType.LEFT))));
@@ -623,26 +626,26 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitSubquery.from(ClinicalVisit.class);
 			clinicalVisitSubquery.select(clinicalVisitRoot)
 				.where(cb.equal(clinicalVisitRoot.get(ClinicalVisit.CLINICAL_COURSE), from.get(Case.CLINICAL_COURSE)));
-			filter = and(cb, filter, cb.or(cb.exists(prescriptionSubquery), cb.exists(treatmentSubquery), cb.exists(clinicalVisitSubquery)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.exists(prescriptionSubquery), cb.exists(treatmentSubquery), cb.exists(clinicalVisitSubquery)));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())) {
-			filter = and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getWithExtendedQuarantine())) {
-			filter = and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_EXTENDED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_EXTENDED)));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getWithReducedQuarantine())) {
-			filter = and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_REDUCED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_REDUCED)));
 		}
 		if (caseCriteria.getRelevanceStatus() != null) {
 			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
 			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
 			}
 		}
 		if (caseCriteria.getDeleted() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
 		}
 		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
 			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
@@ -659,7 +662,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter),
 						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
 						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
@@ -669,7 +672,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.isFalse(event.get(Event.DELETED)),
@@ -685,12 +688,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.like(cb.lower(event.get(Event.EVENT_DESC)), textFilter),
 							cb.like(cb.lower(event.get(Event.EVENT_TITLE)), textFilter),
 							cb.like(cb.lower(event.get(Event.UUID)), textFilter));
-						filter = and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+						filter = CriteriaBuilderHelper.and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 					}
 				}
 			}
 			if (hasOnlyCasesWithEventsCriteria) {
-				filter = and(cb, filter, cb.isNotNull(event.get(Event.ID)));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(event.get(Event.ID)));
 			}
 		}
 		if (caseCriteria.getReportingUserLike() != null) {
@@ -702,7 +705,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
 						cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
@@ -717,18 +720,18 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(from.get(Case.UUID)), textFilter),
 						cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
 						cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
 		if (caseCriteria.getBirthdateYYYY() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), caseCriteria.getBirthdateYYYY()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), caseCriteria.getBirthdateYYYY()));
 		}
 		if (caseCriteria.getBirthdateMM() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), caseCriteria.getBirthdateMM()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), caseCriteria.getBirthdateMM()));
 		}
 		if (caseCriteria.getBirthdateDD() != null) {
-			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), caseCriteria.getBirthdateDD()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), caseCriteria.getBirthdateDD()));
 		}
 
 		return filter;
@@ -874,31 +877,31 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()));
 				}
 				break;
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()));
 				}
 				break;
 			case HEALTH_FACILITY:
 				final Facility healthFacility = currentUser.getHealthFacility();
 				if (healthFacility != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY).get(Facility.ID), healthFacility.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY).get(Facility.ID), healthFacility.getId()));
 				}
 				break;
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()));
 				}
 				break;
 			case POINT_OF_ENTRY:
 				final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
 				if (pointOfEntry != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY).get(PointOfEntry.ID), pointOfEntry.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY).get(PointOfEntry.ID), pointOfEntry.getId()));
 				}
 				break;
 			case LABORATORY:
@@ -906,7 +909,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
 				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
-				filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 				break;
 			default:
 			}
@@ -919,7 +922,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
 				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot));
 				contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
-				filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
 			}
 
 			// users can only be assigned to a task when they have also access to the case
@@ -929,21 +932,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			// all users (without specific restrictions) get access to cases that have been made available to the whole country
 			if ((userFilterCriteria == null || userFilterCriteria.getIncludeCasesFromOtherJurisdictions())
 				&& !featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
-				filter = or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
 			}
 		}
 
 		// only show cases of a specific disease if a limited disease is set
 		if (currentUser.getLimitedDisease() != null) {
-			filter = and(cb, filter, cb.equal(casePath.get(Case.DISEASE), currentUser.getLimitedDisease()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.DISEASE), currentUser.getLimitedDisease()));
 		}
 
 		// port health users can only see port health cases
 		if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
-			filter = and(cb, filter, cb.equal(casePath.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY));
 		}
 
-		filter = or(cb, filter, filterResponsible);
+		filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
 
 		return filter;
 	}
@@ -1023,7 +1026,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
 		Root<Case> caseRoot = cq.from(Case.class);
 
-		Predicate filter =
+		Predicate filter = CriteriaBuilderHelper.
 			and(cb, createDefaultFilter(cb, caseRoot), buildRelevantCasesFilterForFollowUp(person, disease, referenceDate, cb, caseRoot));
 		cq.where(filter);
 
@@ -1041,20 +1044,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Date referenceDateStart = DateHelper.getStartOfDay(referenceDate);
 		Date referenceDateEnd = DateHelper.getEndOfDay(referenceDate);
 
-		Predicate filter = and(cb, cb.equal(from.get(Case.PERSON), person), cb.equal(from.get(Case.DISEASE), disease));
+		Predicate filter = CriteriaBuilderHelper.and(cb, cb.equal(from.get(Case.PERSON), person), cb.equal(from.get(Case.DISEASE), disease));
 
-		filter = and(
+		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
 			cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), DateHelper.addDays(referenceDateEnd, FollowUpLogic.ALLOWED_DATE_OFFSET)));
 
-		filter = and(
+		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
-			or(
+			CriteriaBuilderHelper.or(
 				cb,
 				// If the case does not have a follow-up until date, use the case report date as a fallback
-				and(
+				CriteriaBuilderHelper.and(
 					cb,
 					cb.isNull(from.get(Case.FOLLOW_UP_UNTIL)),
 					cb.greaterThanOrEqualTo(
@@ -1092,10 +1095,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else {
 			int followUpDuration = diseaseConfigurationFacade.getCaseFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
-			LocalDate untilDate = caze.isOverwriteFollowUpUntil()
-				|| (caze.getFollowUpUntil() != null && DateHelper8.toLocalDate(caze.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration)))
-					? DateHelper8.toLocalDate(caze.getFollowUpUntil())
-					: beginDate.plusDays(followUpDuration);
+			LocalDate untilDate =
+				caze.isOverwriteFollowUpUntil() ? DateHelper8.toLocalDate(caze.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
 
 			Visit lastVisit;
 			boolean additionalVisitNeeded;

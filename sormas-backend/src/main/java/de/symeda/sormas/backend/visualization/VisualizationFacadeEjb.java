@@ -50,6 +50,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
@@ -168,7 +169,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		Collection<Disease> diseases) {
 		Join<Contact, Case> caze = root.join(Contact.CAZE, JoinType.LEFT);
 
-		return BaseAdoService.and(
+		return CriteriaBuilderHelper.and(
 			cb,
 			contactService.createUserFilter(cb, cq, root),
 			contactService.createActiveContactsFilter(cb, root),
@@ -402,10 +403,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 
 		String poolName = doc.selectFirst("jdbc-resource[jndi-name=\"" + jndiName + "\"]").attr("pool-name");
 
-		Map<String, String> dbProperties = doc.select("jdbc-connection-pool[name=\"" + poolName + "\"] > property")
+		return doc.select("jdbc-connection-pool[name=\"" + poolName + "\"] > property")
 			.stream()
 			.collect(Collectors.toMap(e -> e.attr("name"), e -> e.attr("value")));
-		return dbProperties;
 	}
 
 	@LocalBean

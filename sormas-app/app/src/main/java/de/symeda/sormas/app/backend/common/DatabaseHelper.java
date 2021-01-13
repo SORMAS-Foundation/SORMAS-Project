@@ -151,7 +151,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 258;
+	public static final int DATABASE_VERSION = 259;
 
 	private static DatabaseHelper instance = null;
 
@@ -1828,14 +1828,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN meansOfTransport varchar(255);");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN meansOfTransportDetails text;");
 
-				break;
-
 			case 257:
 				currentVersion = 257;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportingDistrict_id REFERENCES district (id);");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportingDistrict_id REFERENCES district (id);");
+			
+			case 258:
+				currentVersion = 258;
+				getDao(Location.class).executeRaw(
+					"UPDATE location SET facilitytype = 'HOSPITAL' " + "WHERE facilitytype IS NULL "
+						+ "AND (SELECT typeofplace from events WHERE eventlocation_id = location.id) = 'HOSPITAL';");
+				getDao(Event.class).executeRaw(
+					"UPDATE events SET typeofplace = 'FACILITY' "
+						+ "WHERE (SELECT facilitytype FROM location WHERE id = events.eventlocation_id) IS NOT NULL;");
 
-				// ATTENTION: break should only be done after last version
+			case 258:
+				currentVersion = 258;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN externalToken text;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN externalToken text;");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN externalToken text;");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN externalToken text;");
+
+					// ATTENTION: break should only be done after last version
 				break;
 
 			default:

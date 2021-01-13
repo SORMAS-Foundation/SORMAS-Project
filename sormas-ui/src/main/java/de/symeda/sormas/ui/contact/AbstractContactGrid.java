@@ -129,6 +129,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
+			getColumn(CaseIndexDto.EXTERNAL_TOKEN).setHidden(true);
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
@@ -159,6 +160,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			Stream.of(
 				ContactIndexDto.UUID,
 				ContactIndexDto.EXTERNAL_ID,
+				ContactIndexDto.EXTERNAL_TOKEN,
 				DISEASE_SHORT,
 				ContactIndexDto.CONTACT_CLASSIFICATION,
 				ContactIndexDto.CONTACT_STATUS),
