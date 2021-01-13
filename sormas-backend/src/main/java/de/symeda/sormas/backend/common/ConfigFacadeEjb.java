@@ -108,6 +108,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
+	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
+
 	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
@@ -371,6 +373,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public int getDaysAfterEventGetsArchived() {
 		return getInt(DAYS_AFTER_EVENT_GETS_ARCHIVED, 90);
+	}
+
+	@Override
+	public int getDaysAfterSystemEventGetsDeleted() {
+		return getInt(DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED, 90);
 	}
 
 	@Override

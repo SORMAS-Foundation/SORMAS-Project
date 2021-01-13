@@ -500,6 +500,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 					contact.get(Contact.RETURNING_TRAVELER),
 					contact.get(Contact.EXTERNAL_ID),
+					contact.get(Contact.EXTERNAL_TOKEN),
 					joins.getPerson().get(Person.BIRTH_NAME),
 					joins.getPersonBirthCountry().get(Country.ISO_CODE),
 					joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1082,6 +1083,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1326,6 +1328,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
