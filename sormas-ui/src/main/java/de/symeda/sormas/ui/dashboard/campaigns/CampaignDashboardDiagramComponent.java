@@ -85,7 +85,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		xAxisInfo = axisInfo.entrySet()
 			.stream()
-			.sorted(Map.Entry.comparingByValue())
+			.sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getValue(), o2.getValue()))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
 		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
@@ -230,12 +230,12 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		StringBuilder hcjs,
 		CampaignDiagramSeries series,
 		Map<Object, CampaignDiagramDataDto> seriesData) {
-		for (Object axisInfo : xAxisInfo.keySet()) {
-			if (seriesData.containsKey(axisInfo)) {
+		for (Object axisKey : xAxisInfo.keySet()) {
+			if (seriesData.containsKey(axisKey)) {
 				if (showPercentages && totalValuesMap != null) {
 					Double totalValue = totalValuesMap.get(
 						new CampaignDashboardTotalsReference(
-							seriesData.get(axisInfo).getGroupingKey(),
+							seriesData.get(axisKey).getGroupingKey(),
 							totalValuesWithoutStacks ? null : series.getStack()));
 					if (totalValue == null) {
 						if (!isCommunityGrouping) {
@@ -246,7 +246,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 								ERROR_MESSAGE);
 						}
 					} else if (totalValue > 0) {
-						final double originalValue = seriesData.get(axisInfo).getValueSum().doubleValue() / totalValue * 100;
+						final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
 						final double scaledValue =
 							BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
 						hcjs.append(scaledValue).append(",");
@@ -254,7 +254,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						hcjs.append("0,");
 					}
 				} else {
-					hcjs.append(seriesData.get(axisInfo).getValueSum().toString()).append(",");
+					hcjs.append(seriesData.get(axisKey).getValueSum().toString()).append(",");
 				}
 			} else {
 				hcjs.append("0,");
