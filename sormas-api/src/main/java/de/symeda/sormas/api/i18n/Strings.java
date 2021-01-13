@@ -200,6 +200,8 @@ public interface Strings {
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
+	String errorSurvNetCaseNotOwned = "errorSurvNetCaseNotOwned";
+	String errorSurvNetNonCoronavirusCase = "errorSurvNetNonCoronavirusCase";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String fileName = "fileName";
@@ -773,6 +775,7 @@ public interface Strings {
 	String notAnswered = "notAnswered";
 	String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	String notificationCaseInvestigationDone = "notificationCaseInvestigationDone";
+	String notificationCasesSentToSurvNet = "notificationCasesSentToSurvNet";
 	String notificationContactSymptomatic = "notificationContactSymptomatic";
 	String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	String notificationDiseaseChanged = "notificationDiseaseChanged";

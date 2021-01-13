@@ -675,6 +675,13 @@ public class CasesView extends AbstractView {
 							mi -> ControllerProvider.getSormasToSormasController()
 								.shareSelectedCases(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
 							FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()));
+					menuBarItems.add(
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.SurvnetGateway_sendShort),
+							VaadinIcons.SHARE,
+							mi -> ControllerProvider.getCaseController()
+								.sendCasesToSurvnet(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()));
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 
@@ -859,4 +866,5 @@ public class CasesView extends AbstractView {
 		scrollLayout.addComponent(plusDaysButton);
 		return scrollLayout;
 	}
+
 }
