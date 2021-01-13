@@ -6238,6 +6238,6 @@ CREATE INDEX IF NOT EXISTS idx_eventparticpant_person_id ON eventparticipant USI
 CREATE INDEX IF NOT EXISTS idx_eventparticpant_event_id ON eventparticipant USING hash (event_id);
 CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING hash (person_id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (298, 'Add indexes to optimize event directory performance #3276');
+INSERT INTO schema_version (version_number, comment) VALUES (305, 'Add indexes to optimize event directory performance #3276');
 
 -- *** Insert new sql commands BEFORE this line ***
