@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.JavaScriptFunction;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -41,6 +43,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
 	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
+	private boolean showDataLabels = false;
 	private final HighChart campaignColumnChart;
 
 	public CampaignDashboardDiagramComponent(
@@ -88,6 +91,19 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			.sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getValue(), o2.getValue()))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
+		// TODO would be cleaner to extend the HighChart class to provide customizable toggle options
+		JavaScript.getCurrent()
+				.addFunction("changeDiagramPercentage_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
+					setShowPercentages(!isShowPercentages());
+					buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+				});
+
+		JavaScript.getCurrent()
+				.addFunction("changeDiagramLabels_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
+					setShowDataLabels(!isShowDataLabels());
+					buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+				});
+
 		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
 
@@ -108,22 +124,31 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ " enabled: true,");
 		//@formatter:on
 
+		hcjs.append(
+				" menuItemDefinitions: { toggleLabels: { onclick: function() { window.changeDiagramLabels_" + diagramDefinition.getDiagramId()
+						+ "(); }, text: '"
+						+ (showDataLabels
+						? I18nProperties.getCaption(Captions.dashboardHideDataLabels)
+						: I18nProperties.getCaption(Captions.dashboardShowDataLabels))
+						+ "' } ");
 		if (totalValuesMap != null) {
 			hcjs.append(
-				" menuItemDefinitions: { togglePercentages: { onclick: function() { window.changeDiagramState_" + diagramDefinition.getDiagramId()
+				", togglePercentages: { onclick: function() { window.changeDiagramPercentage_" + diagramDefinition.getDiagramId()
 					+ "(); }, text: '"
 					+ (showPercentages
 						? I18nProperties.getCaption(Captions.dashboardShowTotalValues)
 						: I18nProperties.getCaption(Captions.dashboardShowPercentageValues))
-					+ "' } }, ");
+					+ "' } ");
 		}
+		hcjs.append(" }, ");
 
 		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }, ")
 			.append(
 				"menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS'");
 
+		hcjs.append(", 'separator', 'toggleLabels'");
 		if (totalValuesMap != null) {
-			hcjs.append(", 'separator', 'togglePercentages'");
+			hcjs.append(", 'togglePercentages'");
 		}
 
 		hcjs.append("]");
@@ -263,18 +288,26 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	private void appendPlotOptions(StringBuilder hcjs, Map<String, Long> stackMap) {
-		if (stackMap.size() > 0 || (showPercentages && totalValuesMap != null)) {
+		if (stackMap.size() > 0 || showDataLabels) {
 			hcjs.append("plotOptions: {");
 
 			if (stackMap.size() > 0) {
 				hcjs.append("column: { stacking: 'normal', borderWidth: 0}");
 			}
-			if (showPercentages && totalValuesMap != null) {
+			if (showDataLabels) {
 				hcjs.append(stackMap.size() > 0 ? ", " : "")
-					.append("series: { dataLabels: { enabled: true, format: '{y}%', style: { fontSize: 14 + 'px' }}}");
+					.append("series: { dataLabels: { enabled: true, formatter:function() { if (this.y != 0) return this.y; }, style: { fontSize: 14 + 'px' }");
+				if (showPercentages && totalValuesMap != null) {
+					hcjs.append(", format: '{y}%'");
+				}
+				hcjs.append("}}");
 			}
 
 			hcjs.append("},");
+		}
+
+		if (showPercentages && totalValuesMap != null) {
+			hcjs.append("tooltip:{ valueSuffix: ' %' }, ");
 		}
 	}
 
@@ -284,5 +317,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	public void setShowPercentages(boolean showPercentages) {
 		this.showPercentages = showPercentages;
+	}
+
+	public boolean isShowDataLabels() {
+		return showDataLabels;
+	}
+
+	public void setShowDataLabels(boolean showDataLabels) {
+		this.showDataLabels = showDataLabels;
 	}
 }
