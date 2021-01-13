@@ -67,8 +67,8 @@ public class EntityDtoAccessHelper {
 				if (isResolvable) {
 					try {
 						currentEntity = getPropertyValue(referenceDtoResolver.resolve((ReferenceDto) currentEntity), propertyKeys[i]);
-					} catch (InvocationTargetException | IllegalAccessException e) {
-						throw new IllegalArgumentException(e);
+					} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+						throwIllegalArgumentException(e, entity, propertyKeys, i);
 					}
 				} else {
 					currentEntity = null;
@@ -79,9 +79,10 @@ public class EntityDtoAccessHelper {
 	}
 
 	private static void throwIllegalArgumentException(Exception e, Object entity, String[] propertyKeys, int i) {
-		String errorPropertyPath =
-			entity.getClass().getSimpleName() + (i > 0 ? "." : "") + StringUtils.join(Arrays.copyOfRange(propertyKeys, 0, i), ".");
-		throw new IllegalArgumentException("In " + errorPropertyPath + ": " + e.getMessage(), e);
+		String errorPropertyPath = cleanDictionaryClassNames(entity.getClass().getSimpleName())
+			+ (i > 0 ? "." : "")
+			+ StringUtils.join(Arrays.copyOfRange(propertyKeys, 0, i), ".");
+		throw new IllegalArgumentException("In " + errorPropertyPath + ": " + cleanDictionaryClassNames(e.getMessage()), e);
 	}
 
 	public static Object getPropertyPathValueString(Object entity, String propertyPath, IReferenceDtoResolver referenceDtoResolver) {
@@ -100,6 +101,10 @@ public class EntityDtoAccessHelper {
 		} else {
 			return value;
 		}
+	}
+
+	public static String cleanDictionaryClassNames(String className) {
+		return className.replaceAll("(Reference)?Dto", "");
 	}
 
 	public interface IReferenceDtoResolver {

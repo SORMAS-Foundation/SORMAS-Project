@@ -159,7 +159,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 						if (!".".equals(propertySeparator)) {
 							propertyPath = propertyPath.replaceAll(propertySeparator, ".");
 						}
-						Object propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entity, propertyPath, referenceDtoResolver);
+						Object propertyValue;
+						try {
+							propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entity, propertyPath, referenceDtoResolver);
+						} catch (Exception e) {
+							propertyValue = "*** " + e.getMessage().replaceAll("(Reference)?Dto$", "") + " ***";
+						}
 						if (propertyValue != null) {
 							properties.put(propertyKey, propertyValue);
 						}

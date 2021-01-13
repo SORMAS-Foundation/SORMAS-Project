@@ -90,33 +90,36 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void generateQuarantineOrderCaseTest() throws IOException {
 		ReferenceDto rootEntityReference = caseDataDto.toReference();
-		generateQuarantineOrderTest(rootEntityReference);
+		generateQuarantineOrderTest(rootEntityReference, "QuarantineCase.cmp");
 	}
 
 	@Test
 	public void generateQuarantineOrderContactTest() throws IOException {
-		generateQuarantineOrderTest(contactDto.toReference());
+		generateQuarantineOrderTest(contactDto.toReference(), "QuarantineContact.cmp");
 	}
 
 	@Test
 	public void generateQuarantineOrderWrongReferenceTypeTest() throws IOException {
 		try {
 			generateQuarantineOrderTest(new ReferenceDto() {
-			});
+			}, "Anything");
 			fail("Wrong ReferenceDto not recognized");
 		} catch (IllegalArgumentException e) {
 			assertEquals("Quarantine can only be issued for cases or contacts.", e.getMessage());
 		}
 	}
 
-	private void generateQuarantineOrderTest(ReferenceDto rootEntityReference) throws IOException {
+	private void generateQuarantineOrderTest(ReferenceDto rootEntityReference, String comparisonFile) throws IOException {
 		List<String> additionalVariables = quarantineOrderFacadeEjb.getAdditionalVariables("Quarantine.docx");
-		assertEquals(Arrays.asList("other", "supervisor.name", "supervisor.phone", "supervisor.roomNumber"), additionalVariables);
+		List<String> expectedVariables = Arrays.asList("extraremark1", "extra.remark2", "extra.remark.no3");
+		for (String additionaVariable : additionalVariables) {
+			assertTrue(additionalVariables.contains(additionaVariable));
+		}
+		assertEquals(expectedVariables.size(), additionalVariables.size());
 
 		Properties properties = new Properties();
-		properties.setProperty("supervisor.name", "Marcel Mariën");
-		properties.setProperty("supervisor.phone", "+49 681 56789");
-		properties.setProperty("supervisor.roomNumber", "17");
+		properties.setProperty("extraremark1", "the first remark");
+		properties.setProperty("extra.remark.no3", "the third remark");
 
 		ByteArrayInputStream generatedDocument =
 			new ByteArrayInputStream(quarantineOrderFacadeEjb.getGeneratedDocument("Quarantine.docx", rootEntityReference, properties));
@@ -126,7 +129,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		String docxText = xwpfWordExtractor.getText();
 
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/quarantine/Quarantine.cmp"), writer, "UTF-8");
+		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/quarantine/" + comparisonFile), writer, "UTF-8");
 
 		String expected = writer.toString().replaceAll("\\r\\n?", "\n");
 		assertEquals(expected, docxText);

@@ -18,6 +18,7 @@ import de.symeda.sormas.api.EntityDtoAccessHelper.CachedReferenceDtoResolver;
 import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -52,6 +53,10 @@ public class EntityDtoAccessHelperTest {
 		personDto.setBirthdateYYYY(1973);
 		personDto.setPhone("+49 681 1234");
 
+		LocationDto address = new LocationDto();
+		address.setStreet("Elm Street");
+		personDto.setAddress(address);
+
 		referenceDtoResolver = new IReferenceDtoResolver() {
 
 			@Override
@@ -81,17 +86,36 @@ public class EntityDtoAccessHelperTest {
 	@Test
 	public void failOnImplausibleProperty() {
 		try {
-			assertNull(EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "blubber.blubber"));
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "blubber.blubber");
 			fail("expected: IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			assertEquals("In CaseDataDto: No property blubber in class CaseDataDto", e.getMessage());
+			assertEquals("In CaseData: No property blubber in class CaseData", e.getMessage());
 		}
 
 		try {
-			assertNull(EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "disease.blubber"));
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "disease.blubber");
 			fail("expected: IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			assertEquals("In CaseDataDto.disease: No property blubber in class Disease", e.getMessage());
+			assertEquals("In CaseData.disease: No property blubber in class Disease", e.getMessage());
+		}
+
+		IReferenceDtoResolver mockResolver = mock(IReferenceDtoResolver.class);
+		CachedReferenceDtoResolver cachedReferenceDtoResolver = new CachedReferenceDtoResolver(mockResolver);
+		when(mockResolver.resolve(personReferenceDto)).thenReturn(personDto);
+		caseDataDto.setPerson(personReferenceDto);
+
+		try {
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.blubber", cachedReferenceDtoResolver);
+			fail("expected: IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			assertEquals("In CaseData.person: No property blubber in class Person", e.getMessage());
+		}
+
+		try {
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName.blubber", cachedReferenceDtoResolver);
+			fail("expected: IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			assertEquals("In CaseData.person.firstName: No property blubber in class String", e.getMessage());
 		}
 	}
 
@@ -122,8 +146,8 @@ public class EntityDtoAccessHelperTest {
 	public void readCachedReferencedEntityDto() {
 		IReferenceDtoResolver mockResolver = mock(IReferenceDtoResolver.class);
 		CachedReferenceDtoResolver cachedReferenceDtoResolver = new CachedReferenceDtoResolver(mockResolver);
-		caseDataDto.setPerson(personReferenceDto);
 		when(mockResolver.resolve(personReferenceDto)).thenReturn(personDto);
+		caseDataDto.setPerson(personReferenceDto);
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName", cachedReferenceDtoResolver));
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName", cachedReferenceDtoResolver));
 		verify(mockResolver, times(1)).resolve(personReferenceDto);
