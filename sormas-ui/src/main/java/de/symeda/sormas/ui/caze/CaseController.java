@@ -72,6 +72,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
@@ -1359,8 +1360,25 @@ public class CaseController {
 		titleLayout.addComponent(classificationLabel);
 
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
-		String person = caseData.getPerson().getCaption();
-		Label caseLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
+		String casePersonFullName = caseData.getPerson().getCaption();
+		StringBuilder caseLabelSb = new StringBuilder();
+		if (StringUtils.isNotBlank(casePersonFullName)) {
+			caseLabelSb.append(casePersonFullName);
+
+			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+			if (casePerson.getBirthdateDD() != null && casePerson.getBirthdateMM() != null && casePerson.getBirthdateYYYY() != null) {
+				caseLabelSb.append(" (* ")
+					.append(
+						PersonHelper.formatBirthdate(
+							casePerson.getBirthdateDD(),
+							casePerson.getBirthdateDD(),
+							casePerson.getBirthdateDD(),
+							I18nProperties.getUserLanguage()))
+					.append(")");
+			}
+		}
+		caseLabelSb.append(caseLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		Label caseLabel = new Label(caseLabelSb.toString());
 		caseLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponent(caseLabel);
 

@@ -45,6 +45,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -299,8 +300,27 @@ public class EventParticipantsController {
 		}
 
 		String shortUuid = DataHelper.getShortUuid(eventParticipant.getUuid());
-		String person = eventParticipant.getPerson().toReference().getCaption();
-		Label eventParticipantLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
+		String personFullName = eventParticipant.getPerson().toReference().getCaption();
+		StringBuilder eventLabelSb = new StringBuilder();
+		if (StringUtils.isNotBlank(personFullName)) {
+			eventLabelSb.append(personFullName);
+
+			if (eventParticipant.getPerson().getBirthdateDD() != null
+				&& eventParticipant.getPerson().getBirthdateMM() != null
+				&& eventParticipant.getPerson().getBirthdateYYYY() != null) {
+
+				eventLabelSb.append(" (* ")
+					.append(
+						PersonHelper.formatBirthdate(
+							eventParticipant.getPerson().getBirthdateDD(),
+							eventParticipant.getPerson().getBirthdateDD(),
+							eventParticipant.getPerson().getBirthdateDD(),
+							I18nProperties.getUserLanguage()))
+					.append(")");
+			}
+		}
+		eventLabelSb.append(eventLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		Label eventParticipantLabel = new Label(eventLabelSb.toString());
 		eventParticipantLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponents(eventParticipantLabel);
 
