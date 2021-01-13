@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.util;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
@@ -50,6 +49,6 @@ public class IterableHelperTest {
 
 	@After
 	public void validate() {
-		validateMockitoUsage();
+//		validateMockitoUsage();
 	}
 }
