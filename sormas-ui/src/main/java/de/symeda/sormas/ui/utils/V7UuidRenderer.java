@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -29,16 +31,10 @@ public class V7UuidRenderer extends HtmlRenderer {
 	@Override
 	public JsonValue encode(String value) {
 
-		if (value != null && !value.isEmpty()) {
-			value = sanitizeInput(value);
-			return super.encode(value);
+		if (StringUtils.isNotBlank(value)) {
+			return super.encode(HtmlHelper.buildHyperlinkTitle(value, DataHelper.getShortUuid(value)));
 		} else {
 			return null;
 		}
-	}
-
-	public String sanitizeInput(String value) {
-		value = "<a title='" + HtmlHelper.cleanHtml(value) + "'>" + HtmlHelper.cleanHtml(DataHelper.getShortUuid(value)) + "</a>";
-		return value;
 	}
 }
