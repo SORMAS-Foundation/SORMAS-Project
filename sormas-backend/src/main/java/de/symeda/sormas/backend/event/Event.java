@@ -60,6 +60,7 @@ public class Event extends CoreAdo {
 	public static final String TABLE_NAME = "events";
 
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
@@ -77,6 +78,9 @@ public class Event extends CoreAdo {
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
+	public static final String CONNECTION_NUMBER = "connectionNumber";
+	public static final String SEAT_NUMBER = "seatNumber";
+	public static final String TRAVEL_DATE = "travelDate";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
@@ -103,6 +107,7 @@ public class Event extends CoreAdo {
 	private Date eventInvestigationEndDate;
 	private List<EventParticipant> eventPersons;
 	private String externalId;
+	private String externalToken;
 	private String eventTitle;
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
@@ -114,6 +119,9 @@ public class Event extends CoreAdo {
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
 	private String meansOfTransportDetails;
+	private String connectionNumber;
+	private String seatNumber;
+	private Date travelDate;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 	private String srcInstitutionalPartnerTypeDetails;
@@ -199,6 +207,13 @@ public class Event extends CoreAdo {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getEventTitle() {
@@ -302,6 +317,32 @@ public class Event extends CoreAdo {
 
 	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
 		this.meansOfTransportDetails = meansOfTransportDetails;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getConnectionNumber() {
+		return connectionNumber;
+	}
+
+	public void setConnectionNumber(String connectionNumber) {
+		this.connectionNumber = connectionNumber;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSeatNumber() {
+		return seatNumber;
+	}
+
+	public void setSeatNumber(String seatNumber) {
+		this.seatNumber = seatNumber;
+	}
+
+	public Date getTravelDate() {
+		return travelDate;
+	}
+
+	public void setTravelDate(Date travelDate) {
+		this.travelDate = travelDate;
 	}
 
 	@Enumerated(EnumType.STRING)

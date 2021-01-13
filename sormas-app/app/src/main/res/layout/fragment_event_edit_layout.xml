@@ -187,19 +187,24 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/event_externalId"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@={data.externalId}" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/event_externalId"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@={data.externalId}" />
+
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_externalToken"
+                    app:value="@={data.externalToken}"
+                    style="@style/ControlSecondOfTwoColumnsStyle"/>
+            </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
-
-            <de.symeda.sormas.app.component.controls.ControlTextPopupField
-                android:id="@+id/event_eventLocation"
-                style="@style/ControlSingleColumnStyle"
-                app:hint="@string/hint_enter_location"
-                app:iconStart="@drawable/ic_edit_location_black_24dp"
-                app:locationValue="@={data.eventLocation}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -221,6 +226,13 @@
                     app:value="@={data.typeOfPlaceText}" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                android:id="@+id/event_eventLocation"
+                style="@style/ControlSingleColumnStyle"
+                app:hint="@string/hint_enter_location"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:locationValue="@={data.eventLocation}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/event_meansOfTransport"

@@ -48,7 +48,9 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	private ComboBox communityFilter;
 
 	protected CampaignFormDataFilterForm() {
+
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
+		CssStyles.style(CssStyles.FORCE_CAPTION, applyButton, resetButton);
 	}
 
 	@Override

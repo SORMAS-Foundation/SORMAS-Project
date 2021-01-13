@@ -147,12 +147,15 @@ public class ContactExportDto implements Serializable {
 	private String latestEventId;
 	private String latestEventTitle;
 	private String externalID;
+	private String externalToken;
 
 	@PersonalData
 	@SensitiveData
 	private String birthName;
 	private String birthCountry;
 	private String citizenship;
+
+	private String reportingDistrict;
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
@@ -170,8 +173,9 @@ public class ContactExportDto implements Serializable {
 							String facility, String facilityUuid, String facilityDetails,
 							String phone, String phoneOwner, String emailAddress, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
-							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, String externalID,
+							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler, String externalID, String externalToken,
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
+							String reportingDistrict,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
@@ -236,9 +240,11 @@ public class ContactExportDto implements Serializable {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
 		this.externalID = externalID;
+		this.externalToken = externalToken;
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
+		this.reportingDistrict = reportingDistrict;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -660,6 +666,17 @@ public class ContactExportDto implements Serializable {
 	@HideForCountriesExcept
 	public String getCitizenship() {
 		return citizenship;
+	}
+
+	@Order(83)
+	@HideForCountriesExcept
+	public String getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	@Order(84)
+	public String getExternalToken() {
+		return externalToken;
 	}
 
 	public void setEventCount(Long eventCount) {

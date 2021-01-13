@@ -36,6 +36,13 @@ The following properties are currently configurable:
   * `geocodingServiceUrlTemplate` is the url for searching for address details, `${street}`, `${houseNumber}`, `${postalCode}`, and `${city}` placeholders will be replaced with the actual address fields when searching;
   * `geocodingLongitudeJsonPath` and `geocodingLatitudeJsonPath` are used to obtain the longitude and latitude of the address in the result of the geocoding service request
 * **Authentication Provider**: Allows the user to choose the way of authentication for SORMAS and all it's third party clients. Supported values `SORMAS` (default) and `KEYCLOAK`
+
+### Custom login page
+When setting up the server a custom file directory is created (most likely `/opt/sormas/custom`). You can adjust the `login*.html` files in that directory to customize the login page.
+
+### Custom download files in about section
+You can create a sub-folder `aboutfiles` in the custom directory mentioned above (e.g. `/opt/sormas/custom/aboutfiles`). Any file in that directory will be made available in the about section of the frontend.
+
 ## Importing Infrastructure Data
 When you start a SORMAS server for the first time, some default infrastructure data is generated to ensure that the server is usable and the default users can be created. It is recommended (and, unless you're working on a demo server, necessary) to archive this default data and import the official infrastructure data of the country or part of the country that you intend to use SORMAS in instead.
 

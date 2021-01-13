@@ -1,9 +1,15 @@
 package de.symeda.sormas.backend.user;
 
+import java.io.Serializable;
+
 import javax.enterprise.context.RequestScoped;
+import javax.transaction.TransactionScoped;
 
 @RequestScoped
-public class CurrentUser {
+// FIXME @TransactionScoped would be better for performance, but is not support by novatec.bean-test (see their github #4)
+public class CurrentUser implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private User user;
 

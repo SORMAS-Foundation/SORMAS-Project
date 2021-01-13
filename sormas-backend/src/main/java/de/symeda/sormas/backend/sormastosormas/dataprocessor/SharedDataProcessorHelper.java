@@ -30,6 +30,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -42,6 +43,8 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -52,9 +55,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -74,7 +78,7 @@ public class SharedDataProcessorHelper {
 	@EJB
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@EJB
-	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
+	private CountryFacadeEjbLocal countryFacade;
 
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
@@ -106,16 +110,14 @@ public class SharedDataProcessorHelper {
 	public ValidationErrors processPerson(PersonDto person) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		LocationDto address = person.getAddress();
+		processLocation(person.getAddress(), Captions.Person, validationErrors);
 
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
-			loadLocalInfrastructure(address.getRegion(), address.getDistrict(), address.getCommunity(), null, null, null);
+		person.getAddresses().forEach(address -> {
+			processLocation(address, Captions.Person, validationErrors);
+		});
 
-		handleInfraStructure(infrastructureAndErrors, Captions.Person, validationErrors, (infrastructure -> {
-			address.setRegion(infrastructure.region);
-			address.setDistrict(infrastructure.district);
-			address.setCommunity(infrastructure.community);
-		}));
+		person.setBirthCountry(loadLocalCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors));
+		person.setCitizenship(loadLocalCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors));
 
 		return validationErrors;
 	}
@@ -223,6 +225,22 @@ public class SharedDataProcessorHelper {
 		}
 	}
 
+	private CountryReferenceDto loadLocalCountry(CountryReferenceDto country, String validationGroupTag, ValidationErrors validationErrors) {
+		if (country == null) {
+			return null;
+		}
+
+		CountryDto localCountry = countryFacade.getByIsoCode(country.getIsoCode(), true);
+
+		if (localCountry == null) {
+			validationErrors.add(
+				I18nProperties.getCaption(validationGroupTag),
+				String.format(I18nProperties.getString(Strings.errorSormasToSormasCountry), country.getCaption() + "(" + country.getIsoCode() + ")"));
+		}
+
+		return CountryFacadeEjb.toReferenceDto(localCountry);
+	}
+
 	public Map<String, ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
@@ -278,7 +296,37 @@ public class SharedDataProcessorHelper {
 			contact.setCommunity(infrastructure.community);
 		}));
 
+		processEpiData(contact.getEpiData(), validationErrors);
+
 		return validationErrors;
+	}
+
+	public void processEpiData(EpiDataDto epiData, ValidationErrors validationErrors) {
+		if (epiData != null) {
+			epiData.getExposures().forEach(exposure -> {
+				LocationDto exposureLocation = exposure.getLocation();
+				if (exposureLocation != null) {
+					processLocation(exposureLocation, Captions.EpiData_exposures, validationErrors);
+				}
+			});
+		}
+	}
+
+	private void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
+		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
+			address.getRegion(),
+			address.getDistrict(),
+			address.getCommunity(),
+			address.getFacilityType(),
+			address.getFacility(),
+			null);
+
+		handleInfraStructure(infrastructureAndErrors, groupNameTag, validationErrors, (infrastructure -> {
+			address.setRegion(infrastructure.region);
+			address.setDistrict(infrastructure.district);
+			address.setCommunity(infrastructure.community);
+			address.setFacility(infrastructure.facility);
+		}));
 	}
 
 	public static class InfrastructureData {

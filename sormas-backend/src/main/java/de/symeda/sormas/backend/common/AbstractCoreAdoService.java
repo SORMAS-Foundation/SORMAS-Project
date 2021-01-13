@@ -56,6 +56,6 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AdoSer
 		for (int i = 0; i < joinFields.length; i++) {
 			parent = parent.join(joinFields[i], JoinType.LEFT);
 		}
-		return greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
+		return CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
 }

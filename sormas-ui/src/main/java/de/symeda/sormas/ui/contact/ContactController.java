@@ -74,7 +74,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -197,8 +197,7 @@ public class ContactController {
 			contact.setPerson(caze.getPerson());
 		}
 
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		contact.setReportingUser(userReference);
+		setDefaults(contact);
 
 		return contact;
 	}
@@ -206,10 +205,15 @@ public class ContactController {
 	private ContactDto createNewContact(EventParticipantDto eventParticipant) {
 		ContactDto contact = ContactDto.build(eventParticipant);
 
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		contact.setReportingUser(userReference);
+		setDefaults(contact);
 
 		return contact;
+	}
+
+	private void setDefaults(ContactDto contact) {
+		UserDto user = UserProvider.getCurrent().getUser();
+		contact.setReportingUser(user.toReference());
+		contact.setReportingDistrict(user.getDistrict());
 	}
 
 	private ContactDto createNewContact(EventParticipantDto eventParticipant, Disease disease) {

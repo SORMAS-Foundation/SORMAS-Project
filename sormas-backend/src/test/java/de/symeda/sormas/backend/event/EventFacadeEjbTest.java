@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.hamcrest.Matchers;
-import org.jboss.weld.bean.builtin.FacadeInjectionPoint;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -192,7 +191,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"First",
 			"Name",
 			"12345",
-			TypeOfPlace.HOSPITAL,
+			TypeOfPlace.FACILITY,
 			DateHelper.subtractDays(new Date(), 1),
 			new Date(),
 			user.toReference(),
@@ -210,7 +209,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("TitleEv1", results.get(0).getEventTitle());
 
 		eventCriteria.eventStatus(null);
-		eventCriteria.setTypeOfPlace(TypeOfPlace.HOSPITAL);
+		eventCriteria.setTypeOfPlace(TypeOfPlace.FACILITY);
 		results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		assertEquals(1, results.size());
 		assertEquals("TitleEv2", results.get(0).getEventTitle());
@@ -334,7 +333,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"",
 			"",
 			"",
-			TypeOfPlace.HOSPITAL,
+			TypeOfPlace.FACILITY,
 			new Date(),
 			new Date(),
 			user,

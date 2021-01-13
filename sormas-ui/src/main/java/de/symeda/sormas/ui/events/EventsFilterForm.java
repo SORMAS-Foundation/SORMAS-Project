@@ -3,9 +3,11 @@ package de.symeda.sormas.ui.events;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Sets;
@@ -14,6 +16,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -23,18 +26,26 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -45,6 +56,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private static final String EVENT_WEEK_AND_DATE_FILTER = "eventWeekDateFilter";
 	private static final String ACTION_WEEK_AND_DATE_FILTER = "actionWeekDateFilter";
+	private static final String FACILITY_TYPE_GROUP_FILTER = "facilityTypeGroupFilter";
 
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(
 		EventDto.SRC_TYPE,
@@ -52,6 +64,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		LocationDto.DISTRICT,
 		LocationDto.COMMUNITY,
 		EventDto.TYPE_OF_PLACE,
+		FACILITY_TYPE_GROUP_FILTER,
+		LocationDto.FACILITY_TYPE,
+		LocationDto.FACILITY,
 		EventDto.EVENT_INVESTIGATION_STATUS) + loc(EVENT_WEEK_AND_DATE_FILTER) + loc(ACTION_WEEK_AND_DATE_FILTER);
 
 	private final boolean hideEventStatusFilter;
@@ -128,6 +143,85 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT), EVENT_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION), ACTION_WEEK_AND_DATE_FILTER);
+
+		ComboBox facilityTypeGroupField = new ComboBox();
+		facilityTypeGroupField.setId(FACILITY_TYPE_GROUP_FILTER);
+		facilityTypeGroupField.setInputPrompt(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE_GROUP));
+		facilityTypeGroupField
+			.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE, CssStyles.OPTIONGROUP_GRID_LAYOUT);
+		facilityTypeGroupField.setWidth(140, Unit.PIXELS);
+		facilityTypeGroupField.addItems((Object[]) FacilityTypeGroup.values());
+		facilityTypeGroupField.setVisible(false);
+		moreFiltersContainer.addComponent(facilityTypeGroupField, FACILITY_TYPE_GROUP_FILTER);
+
+		ComboBox facilityTypeField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				LocationDto.FACILITY_TYPE,
+				I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.FACILITY_TYPE),
+				140));
+		facilityTypeField.setVisible(false);
+
+		ComboBox facilityField = addField(
+			moreFiltersContainer,
+			FieldConfiguration
+				.withCaptionAndPixelSized(LocationDto.FACILITY, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.FACILITY), 140));
+		facilityField.setEnabled(false);
+		facilityField.setVisible(false);
+
+		ComboBox typeOfPlaceField = getField(EventDto.TYPE_OF_PLACE);
+
+		Arrays.asList(districtField, communityField, typeOfPlaceField).forEach(field -> field.addValueChangeListener(e -> {
+			final UserDto user = UserProvider.getCurrent().getUser();
+			final CommunityReferenceDto community =
+				user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
+			final DistrictReferenceDto district = user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
+			boolean visible = (community != null || district != null) && typeOfPlaceField.getValue() == TypeOfPlace.FACILITY;
+			if (!visible) {
+				facilityField.clear();
+				facilityTypeField.clear();
+				facilityTypeGroupField.clear();
+			}
+			facilityField.setVisible(visible);
+			facilityTypeField.setVisible(visible);
+			facilityTypeGroupField.setVisible(visible);
+		}));
+
+		facilityTypeGroupField.addValueChangeListener(e -> {
+			FieldHelper.updateEnumData(
+				facilityTypeField,
+				facilityTypeGroupField.getValue() != null
+					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroupField.getValue())
+					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
+		});
+
+		facilityTypeField.addValueChangeListener(e -> {
+			if (facilityTypeField.getValue() != null) {
+				final UserDto user = UserProvider.getCurrent().getUser();
+				final CommunityReferenceDto community =
+					user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
+				final FacilityType facilityType = (FacilityType) facilityTypeField.getValue();
+
+				facilityField.setEnabled(true);
+				if (community != null) {
+					FieldHelper.updateItems(
+						facilityField,
+						FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false));
+				} else {
+					FieldHelper.updateItems(
+						facilityField,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(
+								user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue(),
+								facilityType,
+								true,
+								false));
+				}
+			} else {
+				facilityField.removeAllItems();
+				facilityField.setEnabled(false);
+			}
+		});
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter(EventCriteria.DateType dateType) {

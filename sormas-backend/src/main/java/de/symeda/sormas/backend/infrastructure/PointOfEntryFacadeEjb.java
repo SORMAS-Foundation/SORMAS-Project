@@ -22,6 +22,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -209,7 +210,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			cb.notEqual(pointOfEntry.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
 
 		if (filter != null) {
-			filter = BaseAdoService.and(cb, filter, excludeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}
@@ -277,7 +278,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
 
 		if (filter != null) {
-			filter = BaseAdoService.and(cb, filter, excludeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, excludeFilter);
 		} else {
 			filter = excludeFilter;
 		}

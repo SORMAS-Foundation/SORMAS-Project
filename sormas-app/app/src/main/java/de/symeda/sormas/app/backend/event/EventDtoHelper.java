@@ -72,6 +72,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
@@ -117,6 +118,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());

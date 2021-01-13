@@ -76,10 +76,21 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/contact_externalID"
-                    app:value="@={data.externalID}"
-                    style="@style/ControlSingleColumnStyle" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/contact_externalID"
+                        app:value="@={data.externalID}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/contact_externalToken"
+                        app:value="@={data.externalToken}"
+                        style="@style/ControlSecondOfTwoColumnsStyle"/>
+                </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/contact_disease"
@@ -362,6 +373,11 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
                     
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_reportingDistrict"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.reportingDistrict}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/contact_contactIdentificationSource"

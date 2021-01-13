@@ -1,9 +1,7 @@
 package de.symeda.sormas.backend.util;
 
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,12 +36,22 @@ public class IterableHelperTest {
 		assertExecuteCount(5, 2, 1, 2, 3, 4, 5, 6);
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void assertExecuteCount(int batchSize, int executions, Integer... entries) {
 
-		Consumer<List<Integer>> batchFunction = mock(Consumer.class);
+		// Workaround instead of mocking because the mocked instance resulted in an NPE on Github CI.
+		CountCalls<Integer> batchFunction = new CountCalls<>();
 
 		IterableHelper.executeBatched(Arrays.asList(entries), batchSize, batchFunction);
-		verify(batchFunction, times(executions)).accept(anyList());
+		assertThat(batchFunction.counter, equalTo(executions));
+	}
+
+	private static class CountCalls<E> implements Consumer<List<E>> {
+
+		private int counter;
+
+		@Override
+		public void accept(List<E> t) {
+			counter++;
+		}
 	}
 }

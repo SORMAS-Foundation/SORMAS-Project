@@ -17,13 +17,8 @@ package de.symeda.sormas.ui.campaign;
 
 import static com.vaadin.v7.data.Validator.InvalidValueException;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -95,12 +90,13 @@ public class CampaignController {
 	public void createCampaignDataForm(CampaignReferenceDto campaign, CampaignFormMetaReferenceDto campaignForm) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
-			window.close();
-			SormasUI.refreshView();
-			Notification
-				.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
-		}, window::close);
+		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
+			getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
+				window.close();
+				SormasUI.refreshView();
+				Notification
+					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
+			}, window::close);
 
 		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
 		window.setContent(component);
@@ -158,7 +154,7 @@ public class CampaignController {
 		campaignEditForm.setValue(campaignDto);
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent =
-			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
+			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT), campaignEditForm.getFieldGroup()) {
 
 				@Override
 				public void discard() {
@@ -234,9 +230,12 @@ public class CampaignController {
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
 				if (commitCallback != null) {
 					commitCallback.run();
+					UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME);
 				}
 			}
 		});
+
+		component.addDiscardListener(() -> UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME));
 
 		if (revertFormOnDiscard) {
 			component.addDiscardListener(form::resetFormValues);

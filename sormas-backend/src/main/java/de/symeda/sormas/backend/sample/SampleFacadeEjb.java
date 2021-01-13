@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -345,7 +346,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -607,12 +608,12 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
 			CaseJoins<Sample> caseJoins = new CaseJoins<>(joins.getCaze());
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, joins.getCaze(), caseJoins);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
-			filter = BaseAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
 		}
 
 		if (filter != null) {
@@ -702,7 +703,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = BaseAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
