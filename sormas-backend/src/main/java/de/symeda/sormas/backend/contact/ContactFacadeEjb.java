@@ -448,6 +448,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.DISEASE),
 					contact.get(Contact.DISEASE_DETAILS),
 					contact.get(Contact.CONTACT_CLASSIFICATION),
+					contact.get(Contact.MULTI_DAY_CONTACT),
+					contact.get(Contact.FIRST_CONTACT_DATE),
 					contact.get(Contact.LAST_CONTACT_DATE),
 					joins.getPerson().get(Person.FIRST_NAME),
 					joins.getPerson().get(Person.LAST_NAME),

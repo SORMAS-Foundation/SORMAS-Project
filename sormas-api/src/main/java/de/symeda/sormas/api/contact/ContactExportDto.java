@@ -81,6 +81,8 @@ public class ContactExportDto implements Serializable {
 	private Disease internalDisease;
 	private String disease;
 	private ContactClassification contactClassification;
+	private Boolean multiDayContact;
+	private Date firstContactDate;
 	private Date lastContactDate;
 	@PersonalData
 	private String firstName;
@@ -181,7 +183,8 @@ public class ContactExportDto implements Serializable {
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
-							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName,
+							ContactClassification contactClassification, Boolean multiDayContact, Date firstContactDate, Date lastContactDate,
+							String firstName, String lastName,
 							Salutation salutation, String otherSalutation, Sex sex,
 							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactIdentificationSource contactIdentificationSource,
@@ -211,6 +214,8 @@ public class ContactExportDto implements Serializable {
 		this.internalDisease = disease;
 		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
 		this.contactClassification = contactClassification;
+		this.multiDayContact = multiDayContact;
+		this.firstContactDate = firstContactDate;
 		this.lastContactDate = lastContactDate;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -342,6 +347,20 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(6)
+	@ExportProperty(ContactDto.MULTI_DAY_CONTACT)
+	@ExportGroup(ExportGroupType.CORE)
+	public Boolean getMultiDayContact() {
+		return multiDayContact;
+	}
+
+	@Order(7)
+	@ExportProperty(ContactDto.FIRST_CONTACT_DATE)
+	@ExportGroup(ExportGroupType.CORE)
+	public Date getFirstContactDate() {
+		return firstContactDate;
+	}
+
+	@Order(8)
 	@ExportProperty(ContactDto.LAST_CONTACT_DATE)
 	@ExportGroup(ExportGroupType.CORE)
 	public Date getLastContactDate() {
@@ -826,6 +845,8 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(83)
+	@ExportProperty(ContactDto.REPORTING_DISTRICT)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept
 	public String getReportingDistrict() {
 		return reportingDistrict;
