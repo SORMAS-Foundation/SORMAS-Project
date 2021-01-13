@@ -6214,4 +6214,5 @@ ALTER TABLE events_history ADD COLUMN externaltoken varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (303, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
 
+
 -- *** Insert new sql commands BEFORE this line ***
