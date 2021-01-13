@@ -6206,7 +6206,7 @@ CREATE TABLE systemevent (
     startdate timestamp not null,
     enddate timestamp,
     status varchar(255) not null,
-    additionalInfo varchar(512),
+    additionalInfo text,
     primary key(id)
 );
 

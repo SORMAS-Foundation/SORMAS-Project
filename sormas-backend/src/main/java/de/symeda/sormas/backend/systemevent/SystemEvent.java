@@ -74,7 +74,7 @@ public class SystemEvent extends AbstractDomainObject {
 		this.status = status;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getAdditionalInfo() {
 		return additionalInfo;
 	}

@@ -14,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -45,17 +46,15 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 	public Date getLatestSuccessByType(SystemEventType type) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SystemEvent> cq = cb.createQuery(SystemEvent.class);
-		Root<SystemEvent> systemEvent = cq.from(SystemEvent.class);
+		Root<SystemEvent> systemEventRoot = cq.from(SystemEvent.class);
 
-		Predicate filter = cb.equal(systemEvent.get(SystemEvent.STATUS), SystemEventStatus.SUCCESS);
-		cq.where(filter);
-		cq.orderBy(cb.desc(systemEvent.get(SystemEvent.START_DATE)));
+		cq.where(cb.equal(systemEventRoot.get(SystemEvent.STATUS), SystemEventStatus.SUCCESS));
+		cq.orderBy(cb.desc(systemEventRoot.get(SystemEvent.START_DATE)));
 
-		List<SystemEvent> resultList = em.createQuery(cq).getResultList();
-
-		if (resultList != null) {
-			return resultList.get(0).getStartDate();
-		} else {
+		try {
+			SystemEvent systemEvent = em.createQuery(cq).setMaxResults(1).getSingleResult();
+			return systemEvent.getStartDate();
+		} catch (NoResultException e) {
 			return null;
 		}
 	}
