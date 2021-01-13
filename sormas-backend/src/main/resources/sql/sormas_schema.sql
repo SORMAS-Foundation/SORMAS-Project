@@ -6187,7 +6187,7 @@ ALTER TABLE cases_history ADD COLUMN externaltoken varchar(512);
 
 ALTER TABLE contact ADD COLUMN externaltoken varchar(512);
 ALTER TABLE contact_history ADD COLUMN externaltoken varchar(512);
---increasing person and person_history externalid size without loosing data.
+-- increasing person and person_history externalid size without loosing data.
 ALTER TABLE person ALTER COLUMN externalid type character varying (512);
 ALTER TABLE person_history ALTER COLUMN externalid type character varying (512);
 
