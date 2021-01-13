@@ -62,7 +62,7 @@ In case the system relies on users activating their own accounts it's required t
 The configuration provided by default is the minimum required configuration for Keycloak to work together with SORMAS.
 
 The Keycloak configuration can be adjusted by any user with admin rights, however **beware** that any change to the default 
-configuration might rend the system unusable.
+configuration might render the system unusable.
 
 The following configurations are most likely to be environment specific:
 
