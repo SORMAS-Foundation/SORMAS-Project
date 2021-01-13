@@ -19,6 +19,9 @@ package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
 public enum CaseClassification
 	implements
@@ -70,5 +73,14 @@ public enum CaseClassification
 
 	public int getSeverity() {
 		return severity;
+	}
+
+	public static Set<CaseClassification> getConfirmedClassifications() {
+		return Collections
+				.unmodifiableSet(EnumSet.of(
+						CaseClassification.CONFIRMED,
+						CaseClassification.CONFIRMED_NO_SYMPTOMS,
+						CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS
+				));
 	}
 }
