@@ -111,7 +111,7 @@ public final class DownloadUtil {
 			Map<CheckBox, DatabaseTable> databaseToggles = databaseExportView.getDatabaseTableToggles();
 			List<DatabaseTable> tablesToExport = new ArrayList<>();
 			for (CheckBox checkBox : databaseToggles.keySet()) {
-				if (checkBox.getValue() == true) {
+				if (checkBox.getValue()) {
 					tablesToExport.add(databaseToggles.get(checkBox));
 				}
 			}
