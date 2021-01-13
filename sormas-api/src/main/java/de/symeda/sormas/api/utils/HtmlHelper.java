@@ -34,6 +34,18 @@ public class HtmlHelper {
 		return (string == null) ? "" : Jsoup.clean(string, whitelist);
 	}
 
+	/**
+	 * @param attributeKey
+	 *            For example {@code title}.
+	 * @param attributeValue
+	 *            The value for the given {@code attributeKey}.
+	 * @return Built syntax for a HTML tag attribute with possible html tags in {@code attributeValue} escaped to prevent HTML injection.
+	 */
+	public static String cleanHtmlAttribute(String attributeKey, String attributeValue) {
+
+		return String.format("%s='%s'", attributeKey, HtmlHelper.cleanHtml(attributeValue));
+	}
+
 	// this method should be used for i18n-strings and captions so that custom whitelist rules can be added when needed
 	public static String cleanI18nString(String string) {
 		return (string == null) ? "" : Jsoup.clean(string, Whitelist.basic());
@@ -41,5 +53,18 @@ public class HtmlHelper {
 
 	public static String cleanHtmlRelaxed(String string) {
 		return (string == null) ? "" : Jsoup.clean(string, Whitelist.relaxed());
+	}
+
+	/**
+	 * @param title
+	 *            Title for {@code a} tag (hover text).
+	 * @param caption
+	 *            Caption of the {@code a} tag (visual text).
+	 * @return Generated hyperlink with possible html tags escaped to prevent HTML injection.
+	 */
+	public static String buildHyperlinkTitle(String title, String caption) {
+
+		String result = String.format("<a %s>%s</a>", cleanHtmlAttribute("title", title), HtmlHelper.cleanHtml(caption));
+		return result;
 	}
 }

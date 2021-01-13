@@ -29,11 +29,12 @@ public class ReferenceDtoHtmlProvider implements ValueProvider<ReferenceDto, Str
 	@Override
 	public String apply(ReferenceDto source) {
 
-		String html;
+		final String html;
 		if (source != null) {
-			String uuid = source.getUuid();
-			html = "<a title='" + HtmlHelper.cleanHtml(uuid) + "'>" + HtmlHelper.cleanHtml(DataHelper.getShortUuid(uuid)) + "</a> ("
-				+ HtmlHelper.cleanHtml(source.getCaption()) + ")";
+			html = String.format(
+				"%s (%s)",
+				HtmlHelper.buildHyperlinkTitle(source.getUuid(), DataHelper.getShortUuid(source.getUuid())),
+				HtmlHelper.cleanHtml(source.getCaption()));
 		} else {
 			html = "";
 		}
