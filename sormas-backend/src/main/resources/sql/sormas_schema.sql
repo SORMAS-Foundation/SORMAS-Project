@@ -6246,6 +6246,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (305, 'Fix labmessag
 ALTER TABLE labmessage ADD COLUMN testresulttext TEXT;
 ALTER TABLE labmessage_history ADD COLUMN testresulttext TEXT;
 
-INSERT INTO schema_version (version_number, comment) VALUES (301, 'Add testresulttext to labmessage #3820');
+INSERT INTO schema_version (version_number, comment) VALUES (306, 'Add testresulttext to labmessage #3820');
 
 -- *** Insert new sql commands BEFORE this line ***

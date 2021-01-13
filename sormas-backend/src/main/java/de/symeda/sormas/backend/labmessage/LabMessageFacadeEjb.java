@@ -85,6 +85,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestResult(source.getTestResult());
 		target.setTestType(source.getTestType());
+		target.setTestResultText(source.getTestResultText());
 
 		return target;
 	}
@@ -132,6 +133,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestResult(source.getTestResult());
 		target.setTestType(source.getTestType());
+		target.setTestResultText(source.getTestResultText());
 
 		return target;
 	}
@@ -245,7 +247,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
 			newMessages = labResultsFacade.getExternalLabMessages(since);
 			if (newMessages != null) {
-				newMessages.stream().forEach(labMessageDto -> save(labMessageDto));
+				newMessages.forEach(this::save);
 			}
 		} catch (Exception e) {
 			systemEvent.setStatus(SystemEventStatus.ERROR);
