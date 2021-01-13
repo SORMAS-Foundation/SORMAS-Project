@@ -160,7 +160,8 @@ public class CountriesView extends AbstractConfigurationView {
 		searchField = new SearchField();
 		searchField.addTextChangeListener(e -> {
 			criteria.nameCodeLike(e.getText());
-			navigateTo(criteria);
+			grid.setCriteria(criteria);
+			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
 
