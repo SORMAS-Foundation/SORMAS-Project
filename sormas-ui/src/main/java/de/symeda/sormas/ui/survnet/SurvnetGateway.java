@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.survnet;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -19,8 +20,12 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * Provides UI components to integrate with the SurvNet gateway
@@ -33,7 +38,7 @@ public class SurvnetGateway {
 		//NOOP
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, Supplier<List<String>> caseUuids) {
+	public static void addComponentToLayout(CustomLayout targetLayout, DirtyStateComponent editComponent, Supplier<List<String>> caseUuids) {
 		if (!FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
 			return;
 		}
@@ -42,7 +47,7 @@ public class SurvnetGateway {
 		header.addStyleName(CssStyles.H3);
 
 		Button button = ButtonHelper
-			.createIconButton(Captions.SurvnetGateway_send, VaadinIcons.OUTBOX, e -> sendToSurvnet(caseUuids.get()), ValoTheme.BUTTON_PRIMARY);
+			.createIconButton(Captions.SurvnetGateway_send, VaadinIcons.OUTBOX, e -> onSendButtonClick(editComponent, caseUuids), ValoTheme.BUTTON_PRIMARY);
 
 		HorizontalLayout layout = new HorizontalLayout(header, button);
 		layout.setExpandRatio(button, 1);
@@ -52,6 +57,28 @@ public class SurvnetGateway {
 
 		layout.addStyleNames(CssStyles.SIDE_COMPONENT);
 		targetLayout.addComponent(layout, SURVNET_GATEWAY_LOC);
+	}
+
+	private static void onSendButtonClick(DirtyStateComponent editComponent, Supplier<List<String>> caseUuids) {
+		if (editComponent.isDirty()) {
+			VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getCaption(Captions.SurvnetGateway_unableToSend),
+					I18nProperties.getString(Strings.SurvnetGateway_unableToSend)
+					);
+		} else {
+			VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.SurvnetGateway_confirmSend),
+					new Label(I18nProperties.getString(Strings.SurvnetGateway_confirmSend)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					640,
+					confirmed -> {
+						if (confirmed) {
+							sendToSurvnet(caseUuids.get());
+							SormasUI.refreshView();
+						}
+					});
+		}
 	}
 
 	private static void sendToSurvnet(List<String> caseUuids) {
