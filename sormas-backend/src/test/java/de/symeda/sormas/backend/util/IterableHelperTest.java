@@ -26,7 +26,7 @@ public class IterableHelperTest {
 		// 0. No execution on empty collection
 
 		// 1. No execution on empty collection
-		assertExecuteCount(batchSize, 1, 1);
+//		assertExecuteCount(batchSize, 1, 1);
 		assertExecuteCount(batchSize, 1, 1, 2);
 		assertExecuteCount(batchSize, 1, 1, 2, 3);
 
