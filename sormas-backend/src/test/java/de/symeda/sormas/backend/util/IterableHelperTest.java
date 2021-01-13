@@ -39,7 +39,7 @@ public class IterableHelperTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void assertExecuteCount(int batchSize, int executions, Integer... entries) {
+	private void assertExecuteCount(int batchSize, int executions, Integer... entries) {
 
 		Consumer<List<Integer>> batchFunction = mock(Consumer.class);
 
