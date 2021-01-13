@@ -43,7 +43,11 @@ public class IterableHelperTest {
 
 		Consumer<List<Integer>> batchFunction = mock(Consumer.class);
 
-		IterableHelper.executeBatched(Arrays.asList(entries), batchSize, batchFunction);
+		List<Integer> asList = Arrays.asList(entries);
+		System.out.println("entries: " + entries);
+		System.out.println("asList:" + asList);
+		System.out.println("batchFunction:" + batchFunction);
+		IterableHelper.executeBatched(asList, batchSize, batchFunction);
 		verify(batchFunction, times(executions)).accept(anyList());
 	}
 
