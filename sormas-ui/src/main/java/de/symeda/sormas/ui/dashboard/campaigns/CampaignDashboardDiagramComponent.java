@@ -4,10 +4,10 @@ import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +37,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
 	private final Map<String, Map<Object, CampaignDiagramDataDto>> diagramDataBySeriesAndXAxis = new HashMap<>();
-	private final List<Object> axisKeys = new ArrayList<>();
-	private final Map<Object, String> axisCaptions = new HashMap<>();
+	private final Map<Object, String> xAxisInfo;
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
 	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
@@ -66,10 +65,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		setMargin(false);
 		addComponent(campaignColumnChart);
 
+		final Map<Object, String> axisInfo = new HashMap<>();
 		for (CampaignDiagramDataDto diagramData : diagramDataList) {
-			if (!axisKeys.contains(diagramData.getGroupingKey())) {
-				axisKeys.add(diagramData.getGroupingKey());
-				axisCaptions.put(diagramData.getGroupingKey(), diagramData.getGroupingCaption());
+			final Object groupingKey = diagramData.getGroupingKey();
+			if (!axisInfo.containsKey(groupingKey)) {
+				axisInfo.put(groupingKey, diagramData.getGroupingCaption());
 			}
 
 			String seriesKey = diagramData.getFormId() + diagramData.getFieldId();
@@ -77,11 +77,16 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				diagramDataBySeriesAndXAxis.put(seriesKey, new HashMap<>());
 			}
 			Map<Object, CampaignDiagramDataDto> objectCampaignDiagramDataDtoMap = diagramDataBySeriesAndXAxis.get(seriesKey);
-			if (objectCampaignDiagramDataDtoMap.containsKey(diagramData.getGroupingKey())) {
+			if (objectCampaignDiagramDataDtoMap.containsKey(groupingKey)) {
 				throw new RuntimeException("Campaign diagram data map already contains grouping");
 			}
-			objectCampaignDiagramDataDtoMap.put(diagramData.getGroupingKey(), diagramData);
+			objectCampaignDiagramDataDtoMap.put(groupingKey, diagramData);
 		}
+
+		xAxisInfo = axisInfo.entrySet()
+			.stream()
+			.sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getValue(), o2.getValue()))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
 		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
@@ -148,9 +153,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private void appendAxisInformation(StringBuilder hcjs, Map<String, Long> stackMap, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
 		final List noPopulationDataLocations = new LinkedList<>();
 		if (Objects.nonNull(totalValuesMap)) {
-			for (Object key : axisCaptions.keySet()) {
+			for (Object key : xAxisInfo.keySet()) {
 				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
-					noPopulationDataLocations.add(axisCaptions.get(key));
+					noPopulationDataLocations.add(xAxisInfo.get(key));
 				}
 			}
 		}
@@ -175,8 +180,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("opposite: true,");
 		}
 		hcjs.append("categories: [");
-		for (Object axisKey : axisKeys) {
-			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(axisCaptions.get(axisKey))).append("',");
+		for (String caption : xAxisInfo.values()) {
+			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(caption)).append("',");
 		}
 		hcjs.append("]},");
 
@@ -225,7 +230,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		StringBuilder hcjs,
 		CampaignDiagramSeries series,
 		Map<Object, CampaignDiagramDataDto> seriesData) {
-		for (Object axisKey : axisKeys) {
+		for (Object axisKey : xAxisInfo.keySet()) {
 			if (seriesData.containsKey(axisKey)) {
 				if (showPercentages && totalValuesMap != null) {
 					Double totalValue = totalValuesMap.get(
