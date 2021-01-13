@@ -14,7 +14,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
@@ -48,7 +47,7 @@ public class CountriesView extends AbstractConfigurationView {
 	private ViewConfiguration viewConfiguration;
 
 	// Filter
-	private TextField searchField;
+	private SearchField searchField;
 	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
 
@@ -160,7 +159,6 @@ public class CountriesView extends AbstractConfigurationView {
 		searchField = new SearchField();
 		searchField.addTextChangeListener(e -> {
 			criteria.nameCodeLike(e.getText());
-			grid.setCriteria(criteria);
 			grid.reload();
 		});
 		filterLayout.addComponent(searchField);
