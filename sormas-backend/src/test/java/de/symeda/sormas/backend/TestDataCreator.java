@@ -66,7 +66,6 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
