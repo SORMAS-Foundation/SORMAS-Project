@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -502,38 +501,33 @@ public class EventFacadeEjb implements EventFacade {
 				});
 			}
 
-			// Contact Count (with and without sourcecase in event)
-			// because custom joins are seemingly not yet fully supported, a Native Query needs to be used
-			/*
-			 * String query = "SELECT events.uuid, " + "COUNT(*), "
-			 * +
-			 * "sum(case when EXISTS ( SELECT eventparticipant.person_id FROM eventparticipant WHERE eventparticipant.resultingcase_id = contact.caze_id AND eventparticipant.event_id = participantcontacts.event_id ) then 1 else 0 end) "
-			 * + "FROM eventparticipant participantcontacts " + "JOIN contact " + "ON contact.person_id=participantcontacts.person_id "
-			 * + "JOIN events " + "ON events.id = participantcontacts.event_id " + "WHERE contact.deleted=false "
-			 * + "AND participantcontacts.deleted=false " + "GROUP BY events.uuid";
-			 * Query nativeQuery = em.createNativeQuery(query);
-			 * // generated query:
-			 * // SELECT events.uuid, COUNT(*), sum(case when EXISTS ( SELECT eventparticipant.person_id FROM eventparticipant WHERE
-			 * eventparticipant.resultingcase_id = contact.caze_id AND eventparticipant.event_id = participantcontacts.event_id ) then 1
-			 * else 0 end) FROM eventparticipant participantcontacts JOIN contact ON contact.person_id=participantcontacts.person_id JOIN
-			 * events ON events.id = participantcontacts.event_id WHERE contact.deleted=false AND participantcontacts.deleted=false GROUP BY
-			 * events.uuid
-			 * objectQueryList = nativeQuery.getResultList();
-			 */
-
+			// Contact Count (with and without sourcecase in event) using theta join
 			CriteriaQuery<Object[]> objectCQ2 = cb.createQuery(Object[].class);
-			Root<EventParticipant> epRoot2 = objectCQ2.from(EventParticipant.class);
+			epRoot = objectCQ2.from(EventParticipant.class);
 			Root<Contact> contactRoot = objectCQ2.from(Contact.class);
-			Predicate conn = cb.equal(epRoot2.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
-			objectCQ2.multiselect(epRoot2.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), cb.count(epRoot2));
-			objectCQ2.where(conn);
-			objectCQ2.groupBy(epRoot2.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
+			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
+
+			Subquery<EventParticipant> sourceCaseSubquery = objectCQ2.subquery(EventParticipant.class);
+			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
+			sourceCaseSubquery.select(epr2);
+			sourceCaseSubquery.where(
+				cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
+				cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
+
+			objectCQ2.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
+			objectCQ2.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted);
+			objectCQ2.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
 			objectQueryList = em.createQuery(objectCQ2).getResultList();
 			if (objectQueryList != null) {
 				objectQueryList.forEach(r -> {
-					contactCounts.put((String) r[0], ((BigInteger) r[1]).longValue());
-					contactCountsSourceInEvent.put((String) r[0], ((BigInteger) r[1]).longValue());
+					contactCounts.put((String) r[0], ((Long) r[1]));
+					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
 				});
 			}
 		}

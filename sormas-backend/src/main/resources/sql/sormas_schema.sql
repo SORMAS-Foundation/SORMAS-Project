@@ -6138,4 +6138,11 @@ ALTER TABLE events_history ADD COLUMN meansOfTransportDetails text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (297, 'Add a means of transports field to events #3618');
 
+-- 2020-01-13 Add indexes to optimize event directory performance #3276
+CREATE INDEX IF NOT EXISTS idx_eventparticpant_person_id ON eventparticipant USING hash (person_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticpant_event_id ON eventparticipant USING hash (event_id);
+CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING hash (person_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (298, 'Add indexes to optimize event directory performance #3276');
+
 -- *** Insert new sql commands BEFORE this line ***
