@@ -179,10 +179,10 @@ public class Person extends PseudonymizableAdo {
 
 	private List<Location> addresses = new ArrayList<>();
 
-	@Column
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalId;
 
-	@Column
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalToken;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)

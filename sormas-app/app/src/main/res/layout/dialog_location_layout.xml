@@ -55,9 +55,7 @@
                 android:id="@+id/location_addressTypeDetails"
                 style="@style/ControlSingleColumnStyle"
                 android:visibility="gone"
-                app:value="@={data.addressTypeDetails}"
-                app:dependencyParentField="@{locationAddressType}"
-                app:dependencyParentValue="@{PersonAddressType.OTHER_ADDRESS}" />
+                app:value="@={data.addressTypeDetails}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/location_region"
