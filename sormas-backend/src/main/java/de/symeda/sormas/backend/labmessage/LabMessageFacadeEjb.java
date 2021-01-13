@@ -26,6 +26,7 @@ import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -141,7 +142,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		if (criteria != null) {
 			Predicate statusFilter = labMessageService.createStatusFilter(cb, labMessage, criteria);
-			filter = BaseAdoService.and(cb, filter, statusFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
 		}
 
 		if (filter != null) {
@@ -170,7 +171,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		Predicate filter = null;
 		if (criteria != null) {
 			Predicate statusFilter = labMessageService.createStatusFilter(cb, labMessage, criteria);
-			filter = BaseAdoService.and(cb, filter, statusFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
 		}
 
 		if (filter != null) {
