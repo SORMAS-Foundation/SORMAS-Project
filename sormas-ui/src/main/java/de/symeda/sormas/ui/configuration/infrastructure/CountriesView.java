@@ -29,6 +29,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -156,16 +157,11 @@ public class CountriesView extends AbstractConfigurationView {
 		filterLayout.setSpacing(true);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
-		searchField = new TextField();
-		searchField.setId("search");
-		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSearch));
-		searchField.setNullRepresentation("");
+		searchField = new SearchField();
 		searchField.addTextChangeListener(e -> {
 			criteria.nameCodeLike(e.getText());
 			navigateTo(criteria);
 		});
-		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
