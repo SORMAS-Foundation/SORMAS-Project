@@ -101,6 +101,11 @@ public class SampleController {
 	}
 
 	private void createSample(Runnable callback, SampleDto sampleDto) {
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, callback);
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
+	}
+
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
 		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
@@ -115,7 +120,7 @@ public class SampleController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
+		return editView;
 	}
 
 	public void createReferral(SampleDto sample) {

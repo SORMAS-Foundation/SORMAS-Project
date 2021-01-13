@@ -17,14 +17,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.SimilarEntitiesDto;
+import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.ui.caze.CaseSelectionGrid;
 import de.symeda.sormas.ui.contact.ContactSelectionGrid;
 import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
+public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 
 	private static final Object CREATE_CASE = "createCase";
 	private static final Object CREATE_CONTACT = "createContact";
@@ -46,7 +46,7 @@ public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
 	protected ContactSelectionGrid contactGrid;
 	protected EventParticipantSelectionGrid eventParticipantGrid;
 
-	public EntitySelectionField(
+	public EntrySelectionField(
 		LabMessageDto labMessageDto,
 		List<CaseIndexDto> cases,
 		List<SimilarContactDto> contacts,
@@ -101,15 +101,27 @@ public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
 		});
 		rbCreateEntity.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
-				rbSelectCase.setValue(null);
-				rbSelectContact.setValue(null);
-				rbSelectEventParticipant.setValue(null);
-				caseGrid.deselectAll();
-				caseGrid.setEnabled(false);
-				contactGrid.deselectAll();
-				contactGrid.setEnabled(false);
-				eventParticipantGrid.deselectAll();
-				eventParticipantGrid.setEnabled(false);
+				if (rbSelectCase != null) {
+					rbSelectCase.setValue(null);
+				}
+				if (rbSelectContact != null) {
+					rbSelectContact.setValue(null);
+				}
+				if (rbSelectEventParticipant != null) {
+					rbSelectEventParticipant.setValue(null);
+				}
+				if (caseGrid != null) {
+					caseGrid.deselectAll();
+					caseGrid.setEnabled(false);
+				}
+				if (contactGrid != null) {
+					contactGrid.deselectAll();
+					contactGrid.setEnabled(false);
+				}
+				if (eventParticipantGrid != null) {
+					eventParticipantGrid.deselectAll();
+					eventParticipantGrid.setEnabled(false);
+				}
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
 				}
@@ -257,41 +269,53 @@ public class EntitySelectionField extends CustomField<SimilarEntitiesDto> {
 			|| eventParticipants != null && !eventParticipants.isEmpty()) {
 			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoSelectOrCreateEntity)));
 		} else {
-			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoCreateEntity)));
+			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoCreateEntry)));
 		}
 	}
 
 	@Override
-	protected void doSetValue(SimilarEntitiesDto similarEntitiesDto) {
-		if (similarEntitiesDto == null) {
+	protected void doSetValue(SimilarEntriesDto similarEntriesDto) {
+		if (similarEntriesDto == null) {
 			throw new IllegalArgumentException();
 		}
 
-		if (similarEntitiesDto.getCaze() != null) {
+		if (similarEntriesDto.getCaze() != null) {
 			rbSelectCase.setValue(SELECT_CASE);
-			caseGrid.select(similarEntitiesDto.getCaze());
-		} else if (similarEntitiesDto.getContact() != null) {
+			caseGrid.select(similarEntriesDto.getCaze());
+		} else if (similarEntriesDto.getContact() != null) {
 			rbSelectContact.setValue(SELECT_CONTACT);
-			contactGrid.select(similarEntitiesDto.getContact());
-		} else if (similarEntitiesDto.getEventParticipant() != null) {
+			contactGrid.select(similarEntriesDto.getContact());
+		} else if (similarEntriesDto.getEventParticipant() != null) {
 			rbSelectEventParticipant.setValue(SELECT_EVENT_PARTICIPANT);
-			eventParticipantGrid.select(similarEntitiesDto.getEventParticipant());
+			eventParticipantGrid.select(similarEntriesDto.getEventParticipant());
 		}
 	}
 
 	@Override
-	public SimilarEntitiesDto getValue() {
+	public SimilarEntriesDto getValue() {
 		if (caseGrid != null && rbSelectCase.getValue() != null) {
-			SimilarEntitiesDto value = new SimilarEntitiesDto();
+			SimilarEntriesDto value = new SimilarEntriesDto();
 			value.setCaze((CaseIndexDto) caseGrid.getSelectedRow());
 			return value;
 		} else if (contactGrid != null && rbSelectContact.getValue() != null) {
-			SimilarEntitiesDto value = new SimilarEntitiesDto();
+			SimilarEntriesDto value = new SimilarEntriesDto();
 			value.setContact((SimilarContactDto) contactGrid.getSelectedRow());
 			return value;
 		} else if (eventParticipantGrid != null && rbSelectEventParticipant.getValue() != null) {
-			SimilarEntitiesDto value = new SimilarEntitiesDto();
+			SimilarEntriesDto value = new SimilarEntriesDto();
 			value.setEventParticipant((SimilarEventParticipantDto) eventParticipantGrid.getSelectedRow());
+			return value;
+		} else if (CREATE_CASE.equals(rbCreateEntity.getValue())) {
+			SimilarEntriesDto value = new SimilarEntriesDto();
+			value.setNewCase(true);
+			return value;
+		} else if (CREATE_CONTACT.equals(rbCreateEntity.getValue())) {
+			SimilarEntriesDto value = new SimilarEntriesDto();
+			value.setNewContact(true);
+			return value;
+		} else if (CREATE_EVENT_PARTICIPANT.equals(rbCreateEntity.getValue())) {
+			SimilarEntriesDto value = new SimilarEntriesDto();
+			value.setNewEventParticipant(true);
 			return value;
 		}
 		return null;

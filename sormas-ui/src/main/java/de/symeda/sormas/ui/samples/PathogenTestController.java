@@ -68,7 +68,17 @@ public class PathogenTestController {
 	}
 
 	public void create(
+		SampleReferenceDto sampleRef,
+		int caseSampleCount,
+		Runnable callback,
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
+			getPathogenTestCreateComponent(sampleRef, caseSampleCount, callback, onSavedPathogenTest);
 
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
+	}
+
+	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(
 		SampleReferenceDto sampleRef,
 		int caseSampleCount,
 		Runnable callback,
@@ -87,8 +97,7 @@ public class PathogenTestController {
 				callback.run();
 			}
 		});
-
-		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
+		return editView;
 	}
 
 	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable doneCallback, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
@@ -209,7 +218,7 @@ public class PathogenTestController {
 			: new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCase));
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.convertEventParticipantToCase),
-				dialogContent,
+			dialogContent,
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			800,
