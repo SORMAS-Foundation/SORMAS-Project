@@ -58,7 +58,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +122,7 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -275,11 +274,11 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
-		return saveContact(dto, true);
+		return saveContact(dto, true, true);
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
+	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);
 		restorePseudonymizedDto(dto, existingContact, existingContactDto);
@@ -321,7 +320,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 			contactService.udpateContactStatus(entity);
 
-			if (entity.getCaze() != null) {
+			if (handleCaseChanges && entity.getCaze() != null) {
 				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
 			}
 		}
@@ -531,7 +530,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			ContactJoins visitContactJoins = new ContactJoins(visitsCqRoot);
 
 			visitsCq.where(
-				CriteriaBuilderHelper.and(cb, contact.get(AbstractDomainObject.ID).in(exportContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+				CriteriaBuilderHelper
+					.and(cb, contact.get(AbstractDomainObject.ID).in(exportContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
 			visitsCq.multiselect(
 				Stream
 					.concat(

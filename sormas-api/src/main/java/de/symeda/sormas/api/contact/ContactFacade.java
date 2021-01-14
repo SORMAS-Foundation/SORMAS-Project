@@ -42,7 +42,7 @@ public interface ContactFacade {
 
 	ContactDto saveContact(ContactDto dto);
 
-	ContactDto saveContact(ContactDto dto, boolean handleChanges);
+	ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
 
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
