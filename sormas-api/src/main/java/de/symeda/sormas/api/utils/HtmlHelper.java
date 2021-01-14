@@ -26,6 +26,9 @@ public class HtmlHelper {
 	public static final Whitelist EVENTACTION_WHITELIST =
 		Whitelist.relaxed().addTags("hr", "font").addAttributes("font", "size", "face", "color").addAttributes("div", "align");
 
+	private static final String HYPERLINK_TAG = "a";
+	private static final String TITLE_ATTRIBUTE = "title";
+
 	public static String cleanHtml(String string) {
 		return (string == null) ? "" : Jsoup.clean(string, Whitelist.none());
 	}
@@ -64,7 +67,11 @@ public class HtmlHelper {
 	 */
 	public static String buildHyperlinkTitle(String title, String caption) {
 
-		String result = String.format("<a %s>%s</a>", cleanHtmlAttribute("title", title), HtmlHelper.cleanHtml(caption));
+		// Build hyperlink with title tag
+		String result = String.format("<a %s>%s</a>", cleanHtmlAttribute(TITLE_ATTRIBUTE, title), HtmlHelper.cleanHtml(caption));
+
+		// Prevent breakout in tag attributes: only allow the intended tag attribute
+		result = Jsoup.clean(result, Whitelist.none().addTags(HYPERLINK_TAG).addAttributes(HYPERLINK_TAG, TITLE_ATTRIBUTE));
 		return result;
 	}
 }
