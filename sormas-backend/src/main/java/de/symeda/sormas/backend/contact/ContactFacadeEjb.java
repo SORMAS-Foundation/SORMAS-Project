@@ -278,11 +278,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
-		return saveContact(dto, handleChanges, true);
+	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
+		return saveContact(dto, handleChanges, handleCaseChanges, true);
 	}
 
-	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean checkChangeDate) {
+	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);
 		restorePseudonymizedDto(dto, existingContact, existingContactDto);
@@ -324,7 +324,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 			contactService.udpateContactStatus(entity);
 
-			if (entity.getCaze() != null) {
+			if (handleCaseChanges && entity.getCaze() != null) {
 				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
 			}
 		}
@@ -504,6 +504,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 					contact.get(Contact.RETURNING_TRAVELER),
 					contact.get(Contact.EXTERNAL_ID),
+					contact.get(Contact.EXTERNAL_TOKEN),
 					joins.getPerson().get(Person.BIRTH_NAME),
 					joins.getPersonBirthCountry().get(Country.ISO_CODE),
 					joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -533,7 +534,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			ContactJoins visitContactJoins = new ContactJoins(visitsCqRoot);
 
 			visitsCq.where(
-				CriteriaBuilderHelper.and(cb, contact.get(AbstractDomainObject.ID).in(exportContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+				CriteriaBuilderHelper
+					.and(cb, contact.get(AbstractDomainObject.ID).in(exportContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
 			visitsCq.multiselect(
 				Stream
 					.concat(
@@ -1085,6 +1087,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1329,6 +1332,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));

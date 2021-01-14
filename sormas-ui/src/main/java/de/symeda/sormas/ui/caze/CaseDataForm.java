@@ -150,7 +150,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE) +
 					fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, ASSIGN_NEW_EPID_NUMBER_LOC) +
 					loc(EPID_NUMBER_WARNING_LOC) +
-					fluidRowLocs(6, CaseDataDto.EXTERNAL_ID, 6, null) +
+					fluidRowLocs(6, CaseDataDto.EXTERNAL_ID, 6, CaseDataDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(6, CaseDataDto.CASE_ID_ISM, 6, null) +
 					fluidRow(
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
@@ -303,6 +303,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label epidNumberWarningLabel = new Label(I18nProperties.getString(Strings.messageEpidNumberWarning));
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
 		addField(CaseDataDto.EXTERNAL_ID, TextField.class);
+		addField(CaseDataDto.EXTERNAL_TOKEN, TextField.class);
 
 		addField(CaseDataDto.INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(CaseDataDto.OUTCOME, NullableOptionGroup.class);

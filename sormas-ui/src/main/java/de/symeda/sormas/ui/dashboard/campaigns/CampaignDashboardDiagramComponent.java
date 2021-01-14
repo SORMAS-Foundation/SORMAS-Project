@@ -4,10 +4,10 @@ import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.JavaScriptFunction;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -37,11 +39,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
 	private final Map<String, Map<Object, CampaignDiagramDataDto>> diagramDataBySeriesAndXAxis = new HashMap<>();
-	private final List<Object> axisKeys = new ArrayList<>();
-	private final Map<Object, String> axisCaptions = new HashMap<>();
+	private final Map<Object, String> xAxisInfo;
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
 	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
+	private boolean showDataLabels = false;
 	private final HighChart campaignColumnChart;
 
 	public CampaignDashboardDiagramComponent(
@@ -66,10 +68,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		setMargin(false);
 		addComponent(campaignColumnChart);
 
+		final Map<Object, String> axisInfo = new HashMap<>();
 		for (CampaignDiagramDataDto diagramData : diagramDataList) {
-			if (!axisKeys.contains(diagramData.getGroupingKey())) {
-				axisKeys.add(diagramData.getGroupingKey());
-				axisCaptions.put(diagramData.getGroupingKey(), diagramData.getGroupingCaption());
+			final Object groupingKey = diagramData.getGroupingKey();
+			if (!axisInfo.containsKey(groupingKey)) {
+				axisInfo.put(groupingKey, diagramData.getGroupingCaption());
 			}
 
 			String seriesKey = diagramData.getFormId() + diagramData.getFieldId();
@@ -77,11 +80,29 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				diagramDataBySeriesAndXAxis.put(seriesKey, new HashMap<>());
 			}
 			Map<Object, CampaignDiagramDataDto> objectCampaignDiagramDataDtoMap = diagramDataBySeriesAndXAxis.get(seriesKey);
-			if (objectCampaignDiagramDataDtoMap.containsKey(diagramData.getGroupingKey())) {
+			if (objectCampaignDiagramDataDtoMap.containsKey(groupingKey)) {
 				throw new RuntimeException("Campaign diagram data map already contains grouping");
 			}
-			objectCampaignDiagramDataDtoMap.put(diagramData.getGroupingKey(), diagramData);
+			objectCampaignDiagramDataDtoMap.put(groupingKey, diagramData);
 		}
+
+		xAxisInfo = axisInfo.entrySet()
+			.stream()
+			.sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getValue(), o2.getValue()))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+		// TODO would be cleaner to extend the HighChart class to provide customizable toggle options
+		JavaScript.getCurrent()
+				.addFunction("changeDiagramPercentage_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
+					setShowPercentages(!isShowPercentages());
+					buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+				});
+
+		JavaScript.getCurrent()
+				.addFunction("changeDiagramLabels_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
+					setShowDataLabels(!isShowDataLabels());
+					buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+				});
 
 		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
@@ -103,22 +124,31 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ " enabled: true,");
 		//@formatter:on
 
+		hcjs.append(
+				" menuItemDefinitions: { toggleLabels: { onclick: function() { window.changeDiagramLabels_" + diagramDefinition.getDiagramId()
+						+ "(); }, text: '"
+						+ (showDataLabels
+						? I18nProperties.getCaption(Captions.dashboardHideDataLabels)
+						: I18nProperties.getCaption(Captions.dashboardShowDataLabels))
+						+ "' } ");
 		if (totalValuesMap != null) {
 			hcjs.append(
-				" menuItemDefinitions: { togglePercentages: { onclick: function() { window.changeDiagramState_" + diagramDefinition.getDiagramId()
+				", togglePercentages: { onclick: function() { window.changeDiagramPercentage_" + diagramDefinition.getDiagramId()
 					+ "(); }, text: '"
 					+ (showPercentages
 						? I18nProperties.getCaption(Captions.dashboardShowTotalValues)
 						: I18nProperties.getCaption(Captions.dashboardShowPercentageValues))
-					+ "' } }, ");
+					+ "' } ");
 		}
+		hcjs.append(" }, ");
 
 		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }, ")
 			.append(
 				"menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS'");
 
+		hcjs.append(", 'separator', 'toggleLabels'");
 		if (totalValuesMap != null) {
-			hcjs.append(", 'separator', 'togglePercentages'");
+			hcjs.append(", 'togglePercentages'");
 		}
 
 		hcjs.append("]");
@@ -148,9 +178,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private void appendAxisInformation(StringBuilder hcjs, Map<String, Long> stackMap, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
 		final List noPopulationDataLocations = new LinkedList<>();
 		if (Objects.nonNull(totalValuesMap)) {
-			for (Object key : axisCaptions.keySet()) {
+			for (Object key : xAxisInfo.keySet()) {
 				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
-					noPopulationDataLocations.add(axisCaptions.get(key));
+					noPopulationDataLocations.add(xAxisInfo.get(key));
 				}
 			}
 		}
@@ -175,8 +205,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("opposite: true,");
 		}
 		hcjs.append("categories: [");
-		for (Object axisKey : axisKeys) {
-			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(axisCaptions.get(axisKey))).append("',");
+		for (String caption : xAxisInfo.values()) {
+			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(caption)).append("',");
 		}
 		hcjs.append("]},");
 
@@ -225,7 +255,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		StringBuilder hcjs,
 		CampaignDiagramSeries series,
 		Map<Object, CampaignDiagramDataDto> seriesData) {
-		for (Object axisKey : axisKeys) {
+		for (Object axisKey : xAxisInfo.keySet()) {
 			if (seriesData.containsKey(axisKey)) {
 				if (showPercentages && totalValuesMap != null) {
 					Double totalValue = totalValuesMap.get(
@@ -258,18 +288,26 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	private void appendPlotOptions(StringBuilder hcjs, Map<String, Long> stackMap) {
-		if (stackMap.size() > 0 || (showPercentages && totalValuesMap != null)) {
+		if (stackMap.size() > 0 || showDataLabels) {
 			hcjs.append("plotOptions: {");
 
 			if (stackMap.size() > 0) {
 				hcjs.append("column: { stacking: 'normal', borderWidth: 0}");
 			}
-			if (showPercentages && totalValuesMap != null) {
+			if (showDataLabels) {
 				hcjs.append(stackMap.size() > 0 ? ", " : "")
-					.append("series: { dataLabels: { enabled: true, format: '{y}%', style: { fontSize: 14 + 'px' }}}");
+					.append("series: { dataLabels: { enabled: true, formatter:function() { if (this.y != 0) return this.y; }, style: { fontSize: 14 + 'px' }");
+				if (showPercentages && totalValuesMap != null) {
+					hcjs.append(", format: '{y}%'");
+				}
+				hcjs.append("}}");
 			}
 
 			hcjs.append("},");
+		}
+
+		if (showPercentages && totalValuesMap != null) {
+			hcjs.append("tooltip:{ valueSuffix: ' %' }, ");
 		}
 	}
 
@@ -279,5 +317,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	public void setShowPercentages(boolean showPercentages) {
 		this.showPercentages = showPercentages;
+	}
+
+	public boolean isShowDataLabels() {
+		return showDataLabels;
+	}
+
+	public void setShowDataLabels(boolean showDataLabels) {
+		this.showDataLabels = showDataLabels;
 	}
 }

@@ -6183,18 +6183,55 @@ INSERT INTO schema_version (version_number, comment) VALUES (301, 'Change action
 -- 2020-12-03 Remove hospital from event's type of place #3617
 UPDATE location
 SET facilitytype = 'HOSPITAL'
-FROM location AS l
+    FROM location AS l
 INNER JOIN events ON events.eventlocation_id = l.id
 WHERE events.typeofplace = 'HOSPITAL'
   AND l.facilitytype IS NULL;
 
 UPDATE events
 SET typeofplace = 'FACILITY'
-FROM events as e
+    FROM events as e
 INNER JOIN location ON location.id = e.eventlocation_id
 WHERE location.facilitytype IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617');
+
+-- 2020-01-11 SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524
+ALTER TABLE cases ADD COLUMN externaltoken varchar(512);
+ALTER TABLE cases_history ADD COLUMN externaltoken varchar(512);
+
+ALTER TABLE contact ADD COLUMN externaltoken varchar(512);
+ALTER TABLE contact_history ADD COLUMN externaltoken varchar(512);
+-- increasing person and person_history externalid size without loosing data.
+ALTER TABLE person ALTER COLUMN externalid type character varying (512);
+ALTER TABLE person_history ALTER COLUMN externalid type character varying (512);
+
+ALTER TABLE person ADD COLUMN externaltoken varchar(512);
+ALTER TABLE person_history ADD COLUMN externaltoken varchar(512);
+
+ALTER TABLE events ADD COLUMN externaltoken varchar(512);
+ALTER TABLE events_history ADD COLUMN externaltoken varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (303, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
+
+
+-- 2021-01-07 Add system events #3927
+CREATE TABLE systemevent (
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    type varchar(255) not null,
+    startdate timestamp not null,
+    enddate timestamp,
+    status varchar(255) not null,
+    additionalInfo text,
+    primary key(id)
+);
+
+ALTER TABLE systemevent OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (304, 'Add system events #3927');
 
 -- 2020-01-12 Store sormas to sormas share options #3763
 ALTER TABLE sormastosormasshareinfo
@@ -6203,6 +6240,6 @@ ALTER TABLE sormastosormasshareinfo
     ADD COLUMN pseudonymizedpersonaldata boolean DEFAULT false,
     ADD COLUMN pseudonymizedsensitivedata boolean DEFAULT false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (303, 'Store sormas to sormas share options #3763');
+INSERT INTO schema_version (version_number, comment) VALUES (305, 'Store sormas to sormas share options #3763');
 
 -- *** Insert new sql commands BEFORE this line ***
