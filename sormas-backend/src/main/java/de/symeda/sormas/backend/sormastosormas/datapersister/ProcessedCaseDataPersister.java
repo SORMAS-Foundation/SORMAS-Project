@@ -172,13 +172,13 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 						Captions.Person,
 						buildContactValidationGroupName(contact));
 					handleValidationError(
-						() -> contactFacade.saveContact(contact, true, false),
+						() -> contactFacade.saveContact(contact, true, true, false),
 						Captions.Contact,
 						buildContactValidationGroupName(contact));
 				} else {
 					//save contact first during update
 					handleValidationError(
-						() -> contactFacade.saveContact(contact, true, false),
+						() -> contactFacade.saveContact(contact, true, true, false),
 						Captions.Contact,
 						buildContactValidationGroupName(contact));
 					handleValidationError(

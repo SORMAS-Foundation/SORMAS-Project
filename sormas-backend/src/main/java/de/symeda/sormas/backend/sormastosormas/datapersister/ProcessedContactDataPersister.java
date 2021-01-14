@@ -116,13 +116,13 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 				Captions.Person,
 				buildContactValidationGroupName(processedData.getContact()));
 			savedContact = handleValidationError(
-				() -> contactFacade.saveContact(processedData.getContact(), true, false),
+				() -> contactFacade.saveContact(processedData.getContact(), true, true, false),
 				Captions.Contact,
 				buildContactValidationGroupName(processedData.getContact()));
 		} else {
 			//save contact first during update
 			savedContact = handleValidationError(
-				() -> contactFacade.saveContact(processedData.getContact(), true, false),
+				() -> contactFacade.saveContact(processedData.getContact(), true, true, false),
 				Captions.Contact,
 				buildContactValidationGroupName(processedData.getContact()));
 			handleValidationError(
