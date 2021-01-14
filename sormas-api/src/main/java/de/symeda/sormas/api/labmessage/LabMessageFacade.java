@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.labmessage;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -17,5 +18,5 @@ public interface LabMessageFacade {
 
 	List<LabMessageIndexDto> getIndexList(LabMessageCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	void fetchExternalLabMessages(boolean onlyNew);
+	void fetchExternalLabMessages();
 }

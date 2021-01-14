@@ -17,6 +17,8 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
+import java.util.Date;
+
 public class LabMessagesView extends AbstractView {
 
 	public static final String VIEW_NAME = "labMessages";
@@ -51,7 +53,7 @@ public class LabMessagesView extends AbstractView {
 		addHeaderComponent(samplesViewSwitcher);
 
 		addHeaderComponent(ButtonHelper.createIconButton(Captions.labMessageFetch, VaadinIcons.REFRESH, e -> {
-			FacadeProvider.getLabMessageFacade().fetchExternalLabMessages(true);
+			FacadeProvider.getLabMessageFacade().fetchExternalLabMessages();
 			listComponent.getGrid().reload();
 		}, ValoTheme.BUTTON_PRIMARY));
 	}

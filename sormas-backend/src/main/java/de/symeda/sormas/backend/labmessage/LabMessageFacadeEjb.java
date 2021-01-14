@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.labmessage;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -23,10 +25,15 @@ import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.systemevents.SystemEventDto;
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -40,6 +47,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	private LabMessageService labMessageService;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
 	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target) {
 
@@ -214,21 +223,45 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public void fetchExternalLabMessages(boolean onlyNew) {
+	public void fetchExternalLabMessages() {
+		Date now = new Date(DateHelper.now());
+		SystemEventDto systemEvent = SystemEventDto.build();
+		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setStatus(SystemEventStatus.STARTED);
+		systemEvent.setStartDate(now);
+		systemEventFacade.saveSystemEvent(systemEvent);
+
+		Date since = null;
+		since = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
+
+		if (since == null) {
+			since = new Date(0);
+		}
+
 		List<LabMessageDto> newMessages = null;
 		try {
 			InitialContext ic = new InitialContext();
 			String jndiName = configFacade.getDemisJndiName();
-			// Maybe catch that jndiName can be null
 			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
-			newMessages = labResultsFacade.getExternalLabMessages(onlyNew);
-		} catch (NamingException e) {
-			// That should be handled properly
+			newMessages = labResultsFacade.getExternalLabMessages(since);
+			if (newMessages != null) {
+				newMessages.stream().forEach(labMessageDto -> save(labMessageDto));
+			}
+		} catch (Exception e) {
+			systemEvent.setStatus(SystemEventStatus.ERROR);
+			systemEvent.setAdditionalInfo(e.getMessage());
+			now.setTime(DateHelper.now());
+			systemEvent.setEndDate(now);
+			systemEvent.setChangeDate(now);
+			systemEventFacade.saveSystemEvent(systemEvent);
 			e.printStackTrace();
+			return;
 		}
-		if (newMessages != null) {
-			newMessages.stream().forEach(labMessageDto -> save(labMessageDto));
-		}
+		systemEvent.setStatus(SystemEventStatus.SUCCESS);
+		now.setTime(DateHelper.now());
+		systemEvent.setEndDate(now);
+		systemEvent.setChangeDate(now);
+		systemEventFacade.saveSystemEvent(systemEvent);
 	}
 
 	@LocalBean
