@@ -140,6 +140,10 @@ In case Keycloak is set up alongside an already running instance of SORMAS, thes
 2. Login to SORMAS and trigger the **Sync Users** button from the **Users** page
 3. This will sync users to Keycloak keeping their original password - see [SORMAS Keycloak Service Provider](sormas-keycloak-service-provider/README.md) for more information about this
 
+### Keycloak configuration
+
+More about the default configuration and how to customize can be found here [Keycloak](sormas-base/doc/keycloak.md)
+
 ## Web Server Setup
 
 ### Apache Web Server

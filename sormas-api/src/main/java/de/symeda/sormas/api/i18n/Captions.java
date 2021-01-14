@@ -633,6 +633,7 @@ public interface Captions {
 	String dashboardGt1ProbableCases = "dashboardGt1ProbableCases";
 	String dashboardGt1SuspectCases = "dashboardGt1SuspectCases";
 	String dashboardGtThreeDays = "dashboardGtThreeDays";
+	String dashboardHideDataLabels = "dashboardHideDataLabels";
 	String dashboardHideOtherCountries = "dashboardHideOtherCountries";
 	String dashboardHideOverview = "dashboardHideOverview";
 	String dashboardHigh = "dashboardHigh";
@@ -689,6 +690,7 @@ public interface Captions {
 	String dashboardShowCases = "dashboardShowCases";
 	String dashboardShowConfirmedContacts = "dashboardShowConfirmedContacts";
 	String dashboardShowContacts = "dashboardShowContacts";
+	String dashboardShowDataLabels = "dashboardShowDataLabels";
 	String dashboardShowEvents = "dashboardShowEvents";
 	String dashboardShowFirstDiseases = "dashboardShowFirstDiseases";
 	String dashboardShowMinimumEntries = "dashboardShowMinimumEntries";

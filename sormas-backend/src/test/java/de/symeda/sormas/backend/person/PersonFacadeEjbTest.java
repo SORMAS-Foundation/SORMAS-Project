@@ -238,4 +238,34 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(person.getBirthdateDD(), exportPerson.getBirthdateDD());
 		assertEquals(contact2.getFollowUpUntil(), exportPerson.getLatestFollowUpEndDate());
 	}
+
+	@Test
+	public void testGetPersonsAfter() {
+		UserDto natUser = useNationalUserLogin();
+
+		Date t1 = new Date();
+
+		PersonDto person1 = creator.createPerson();
+		person1 = getPersonFacade().savePerson(person1);
+		final ContactDto contact1 = creator.createContact(natUser.toReference(), person1.toReference());
+		getContactFacade().saveContact(contact1);
+
+		List<PersonDto> personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
+		assertEquals(1, personsAfterT1.size());
+		assertEquals(person1.getUuid(), personsAfterT1.get(0).getUuid());
+
+		Date t2 = new Date();
+
+		PersonDto person2 = creator.createPerson();
+		person2 = getPersonFacade().savePerson(person2);
+		final ContactDto contact2 = creator.createContact(natUser.toReference(), person2.toReference());
+		getContactFacade().saveContact(contact2);
+
+		List<PersonDto> personsAfterT2 = getPersonFacade().getPersonsAfter(t2);
+		assertEquals(1, personsAfterT2.size());
+		assertEquals(person2.getUuid(), personsAfterT2.get(0).getUuid());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
+		assertEquals(2, personsAfterT1.size());
+	}
 }

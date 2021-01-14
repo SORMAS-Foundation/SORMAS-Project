@@ -209,16 +209,6 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
 
-				JavaScript.getCurrent()
-					.addFunction("changeDiagramState_" + campaignDiagramDefinitionDto.getDiagramId(), (JavaScriptFunction) jsonArray -> {
-						int index = diagramsLayout.getComponentIndex(diagramComponent);
-						diagramsLayout.removeComponent(diagramComponent);
-						diagramComponent.setShowPercentages(!diagramComponent.isShowPercentages());
-						diagramComponent
-							.buildDiagramChart(campaignDiagramDefinitionDto.getDiagramCaption(), dataProvider.getCampaignJurisdictionLevelGroupBy());
-						diagramsLayout.addComponent(diagramComponent, index);
-					});
-
 				diagramsLayout.addComponent(diagramComponent);
 			});
 			diagramsWrapper.addComponent(diagramsLayout);

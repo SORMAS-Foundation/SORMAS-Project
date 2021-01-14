@@ -51,6 +51,7 @@ public class MessagingService {
 	// Message contents (via properties file)
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChanged";
 	public static final String CONTENT_CASE_INVESTIGATION_DONE = "notificationCaseInvestigationDone";
+	public static final String CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED = "notificationEventParticipantCaseClassificationConfirmed";
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "notificationLabResultArrived";
 	public static final String CONTENT_LAB_RESULT_ARRIVED_CONTACT = "notificationLabResultArrivedContact";
 	public static final String CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT = "notificationLabResultArrivedEventParticipant";
@@ -92,10 +93,6 @@ public class MessagingService {
 	public void sendMessage(User recipient, MessageSubject subject, String messageContent, MessageType... messageTypes)
 		throws NotificationDeliveryFailedException {
 
-		// Don't send notifications to users that initiated an action
-		if (recipient.equals(userService.getCurrentUser()) || !recipient.isActive()) {
-			return;
-		}
 		// Don't send notifications if the feature is disabled for the current MessageSubject
 		if ((MessageSubject.TASK_DUE.equals(subject) || MessageSubject.TASK_START.equals(subject))
 			&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.TASK_NOTIFICATIONS)
@@ -108,8 +105,42 @@ public class MessagingService {
 		sendMessage(recipient, I18nProperties.getEnumCaption(subject), messageContent, messageTypes);
 	}
 
+
+	/**
+	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
+	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
+	 */
+	public void sendMessage(
+			User recipient,
+			MessageSubject subject,
+			Object[] subjectParameters,
+			String messageContent,
+			MessageType... messageTypes)
+			throws NotificationDeliveryFailedException {
+
+		// Don't send notifications if the feature is disabled for the current MessageSubject
+		if ((MessageSubject.TASK_DUE.equals(subject) || MessageSubject.TASK_START.equals(subject))
+				&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.TASK_NOTIFICATIONS)
+				|| !MessageSubject.TASK_DUE.equals(subject)
+				&& !MessageSubject.TASK_START.equals(subject)
+				&& !featureConfigurationFacade.isFeatureEnabled(FeatureType.OTHER_NOTIFICATIONS)) {
+			return;
+		}
+
+		sendMessage(
+				recipient,
+				String.format(I18nProperties.getEnumCaption(subject), subjectParameters),
+				messageContent,
+				messageTypes);
+	}
+
 	private void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes)
 		throws NotificationDeliveryFailedException {
+		// Don't send notifications to users that initiated an action
+		if (recipient.equals(userService.getCurrentUser()) || !recipient.isActive()) {
+			return;
+		}
+
 		final String emailAddress = recipient.getUserEmail();
 		final String phoneNumber = recipient.getPhone();
 		final String recipientUuid = recipient.getUuid();

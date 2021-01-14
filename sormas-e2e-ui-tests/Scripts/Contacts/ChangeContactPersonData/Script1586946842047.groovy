@@ -21,7 +21,7 @@ WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/Ch
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/span_Male'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Present condition of person_v-filtersel_844814'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_Present condition of person_v-filterselect'))
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_Alive'))
 
@@ -67,7 +67,7 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPerso
 
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Owner of phone'), 'myself')
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Email address'), 'somemail')
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_Email address'), 'somemail@gmail.com')
 
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact'), 
     'practitioner')
@@ -205,7 +205,7 @@ WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/Ch
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Present condition of person_v-filtersel_844814'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_Present condition of person_v-filterselect'))
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_'))
 
