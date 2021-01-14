@@ -27,6 +27,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -73,6 +75,7 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 	@Transactional(rollbackOn = {
 		Exception.class })
 	public void persistReturnedData(ProcessedCaseData caseData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException {
+		final MutableBoolean originInfoSaved = new MutableBoolean();
 
 		persistProcessedData(caseData, (caze) -> {
 			SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
@@ -82,6 +85,11 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 			SormasToSormasShareInfo contactShareInfo =
 				shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
 			if (contactShareInfo == null) {
+				if (!originInfoSaved.booleanValue()) {
+					oriInfoFacade.saveOriginInfo(originInfo);
+					originInfoSaved.setValue(true);
+				}
+
 				contact.setSormasToSormasOriginInfo(originInfo);
 			} else {
 				contactShareInfo.setOwnershipHandedOver(false);
@@ -90,6 +98,11 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 		}, (caze, sample) -> {
 			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
 			if (sampleShareInfo == null) {
+				if (!originInfoSaved.booleanValue()) {
+					oriInfoFacade.saveOriginInfo(originInfo);
+					originInfoSaved.setValue(true);
+				}
+
 				sample.setSormasToSormasOriginInfo(originInfo);
 			} else {
 				sampleShareInfo.setOwnershipHandedOver(false);

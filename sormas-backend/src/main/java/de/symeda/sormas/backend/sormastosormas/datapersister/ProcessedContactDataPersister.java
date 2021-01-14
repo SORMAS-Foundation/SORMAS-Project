@@ -76,7 +76,7 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 		}, (contact, sample) -> {
 			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
 			if (sampleShareInfo == null) {
-				sample.setSormasToSormasOriginInfo(originInfo);
+				sample.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());
 			} else {
 				sampleShareInfo.setOwnershipHandedOver(false);
 				shareInfoService.persist(sampleShareInfo);
