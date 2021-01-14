@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.labmessage;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +8,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -30,7 +28,6 @@ import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
@@ -150,7 +147,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		Predicate filter = null;
 
 		if (criteria != null) {
-			Predicate statusFilter = labMessageService.createStatusFilter(cb, labMessage, criteria);
+			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
 		}
 
@@ -179,7 +176,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		Predicate filter = null;
 		if (criteria != null) {
-			Predicate statusFilter = labMessageService.createStatusFilter(cb, labMessage, criteria);
+			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
 		}
 
