@@ -35,7 +35,7 @@ import fr.opensagres.xdocreport.template.velocity.internal.ExtractVariablesVeloc
 
 public class TemplateEngine {
 
-	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *([A-Za-z0-9._]+) *[}]| *([A-Za-z0-9._]+) *)");
+	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *!? *([A-Za-z0-9._]+) *[}]| *!? *([A-Za-z0-9._]+) *)");
 
 	public Set<String> extractTemplateVariablesDocx(File templateFile) throws IOException, XDocReportException {
 		FileInputStream templateInputStream = new FileInputStream(templateFile);

@@ -93,6 +93,8 @@ public class TemplateEngineTest {
 					String expected = getComparisonText(new File(testcaseCmpText.toURI()));
 					assertEquals(testcaseBasename + ": generated text does not match.", expected, testCaseText);
 				}
+			} else {
+				System.out.println("No file " + testcaseBasename + ".vars or " + testcaseBasename + ".properties found");
 			}
 			System.out.println("Testcase completed: " + testcaseBasename + testCaseRunner.getTestCaseExtension());
 		}

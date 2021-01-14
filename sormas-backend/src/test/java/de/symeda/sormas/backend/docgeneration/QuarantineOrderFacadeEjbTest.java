@@ -43,7 +43,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	@Before
 	public void setup() throws ParseException, URISyntaxException {
 		quarantineOrderFacadeEjb = getQuarantineOrderFacade();
-		resetCustomPath();
+		reset();
 
 		LocationDto locationDto = new LocationDto();
 		locationDto.setStreet("Nauwieserstraße");
@@ -97,6 +97,17 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void generateQuarantineOrderContactTest() throws IOException {
 		generateQuarantineOrderTest(contactDto.toReference(), "QuarantineContact.cmp");
+	}
+
+	@Test
+	public void generateQuarantineOrderCustomNullReplacementTest() throws IOException {
+		ReferenceDto rootEntityReference = caseDataDto.toReference();
+
+		setNullReplacement("");
+		generateQuarantineOrderTest(rootEntityReference, "QuarantineCaseEmptyNullReplacement.cmp");
+
+		setNullReplacement("xxx");
+		generateQuarantineOrderTest(rootEntityReference, "QuarantineCaseCustomNullReplacement.cmp");
 	}
 
 	@Test

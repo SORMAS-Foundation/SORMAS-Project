@@ -26,7 +26,7 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 	@Before
 	public void setup() throws URISyntaxException {
 		documentTemplateFacade = getDocumentTemplateFacade();
-		resetCustomPath();
+		reset();
 	}
 
 	@Test

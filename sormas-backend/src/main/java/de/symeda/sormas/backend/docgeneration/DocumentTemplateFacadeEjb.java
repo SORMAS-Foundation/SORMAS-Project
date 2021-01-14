@@ -21,7 +21,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.FacadeProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,7 +54,6 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 @Stateless(name = "DocumentTemplateFacade")
 public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
-	private static final String DEFAULT_NULL_REPLACEMENT = "./.";
 	private static final Pattern BASENAME_PATTERN = Pattern.compile("^([^_.]+)([_.].*)?");
 
 	@EJB
@@ -194,10 +192,15 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		// 3. fill null properties
+		String nullReplacement = configFacade.getDocgenerationNullReplacement();
+		if (nullReplacement.isEmpty()) {
+			nullReplacement = " ";
+		}
+
 		for (String propertyKey : propertyKeys) {
 			Object property = properties.get(propertyKey);
 			if (property == null || StringUtils.isBlank(property.toString())) {
-				properties.setProperty(propertyKey, DEFAULT_NULL_REPLACEMENT);
+				properties.setProperty(propertyKey, nullReplacement);
 			}
 		}
 		properties.put("F", new ObjectFormatter());

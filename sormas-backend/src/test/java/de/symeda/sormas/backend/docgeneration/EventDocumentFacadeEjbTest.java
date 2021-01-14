@@ -42,7 +42,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 	@Before
 	public void setup() throws ParseException, URISyntaxException {
 		eventDocumentFacade = getEventDocumentFacade();
-		resetCustomPath();
+		reset();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
@@ -122,8 +122,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void generateEventHandoutTest() throws IOException, URISyntaxException {
 		String testCasesDirPath = "/docgeneration/eventHandout";
-		File testCasesDir = new File(getClass().getResource(testCasesDirPath).toURI()
-		);
+		File testCasesDir = new File(getClass().getResource(testCasesDirPath).toURI());
 		File[] testCasesHtml = testCasesDir.listFiles((d, name) -> name.endsWith(".html"));
 		assertNotNull(testCasesHtml);
 
