@@ -47,7 +47,7 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		return target;
 	}
 
-	public Therapy fromDto(@NotNull TherapyDto source) {
+	public Therapy fromDto(@NotNull TherapyDto source, boolean checkChangeDate) {
 
 		Therapy target = service.getByUuid(source.getUuid());
 
@@ -63,7 +63,7 @@ public class TherapyFacadeEjb implements TherapyFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		return target;
 	}

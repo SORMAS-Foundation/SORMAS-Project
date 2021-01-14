@@ -650,8 +650,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		shareInfo.setPseudonymizedPersonalData(options.isPseudonymizePersonalData());
 		shareInfo.setPseudonymizedSensitiveData(options.isPseudonymizeSensitiveData());
 		shareInfo.setComment(options.getComment());
-
-		shareInfoService.ensurePersisted(shareInfo);
 	}
 
 	private void sendEntitiesToSormas(List<?> entities, SormasToSormasOptionsDto options, RestCall restCall) throws SormasToSormasException {

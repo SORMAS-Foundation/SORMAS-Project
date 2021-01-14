@@ -35,6 +35,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedContactData;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
@@ -50,6 +51,8 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	private ProcessedDataPersisterHelper dataPersisterHelper;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal oriInfoFacade;
 
 	@Transactional(rollbackOn = {
 		Exception.class })
@@ -73,7 +76,7 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 		}, (contact, sample) -> {
 			SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
 			if (sampleShareInfo == null) {
-				sample.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());
+				sample.setSormasToSormasOriginInfo(originInfo);
 			} else {
 				sampleShareInfo.setOwnershipHandedOver(false);
 				shareInfoService.persist(sampleShareInfo);
@@ -83,7 +86,15 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 
 	@Override
 	public void persistSyncData(ProcessedContactData processedData) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, null, (contact, sample) -> {
+		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
+
+		persistProcessedData(processedData, (contact) -> {
+			SormasToSormasOriginInfoDto contactOriginInfo = contact.getSormasToSormasOriginInfo();
+			contactOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
+			contactOriginInfo.setComment(originInfo.getComment());
+
+			oriInfoFacade.saveOriginInfo(contactOriginInfo);
+		}, (contact, sample) -> {
 			if (sample.getSormasToSormasOriginInfo() == null) {
 				sample.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());
 			}
@@ -101,21 +112,21 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 		if (isCreate) {
 			// save person first during creation
 			handleValidationError(
-				() -> personFacade.savePerson(processedData.getPerson()),
+				() -> personFacade.savePerson(processedData.getPerson(), false),
 				Captions.Person,
 				buildContactValidationGroupName(processedData.getContact()));
 			savedContact = handleValidationError(
-				() -> contactFacade.saveContact(processedData.getContact()),
+				() -> contactFacade.saveContact(processedData.getContact(), true, false),
 				Captions.Contact,
 				buildContactValidationGroupName(processedData.getContact()));
 		} else {
 			//save contact first during update
 			savedContact = handleValidationError(
-				() -> contactFacade.saveContact(processedData.getContact()),
+				() -> contactFacade.saveContact(processedData.getContact(), true, false),
 				Captions.Contact,
 				buildContactValidationGroupName(processedData.getContact()));
 			handleValidationError(
-				() -> personFacade.savePerson(processedData.getPerson()),
+				() -> personFacade.savePerson(processedData.getPerson(), false),
 				Captions.Person,
 				buildContactValidationGroupName(processedData.getContact()));
 		}

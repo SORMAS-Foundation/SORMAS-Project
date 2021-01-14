@@ -57,18 +57,18 @@ public class ProcessedDataPersisterHelper {
 				beforeSaveSample.accept(sample);
 			}
 
-			handleValidationError(() -> sampleFacade.saveSample(sample), Captions.Sample, buildSampleValidationGroupName(sample));
+			handleValidationError(() -> sampleFacade.saveSample(sample, true, false), Captions.Sample, buildSampleValidationGroupName(sample));
 
 			for (PathogenTestDto pathogenTest : sormasToSormasSample.getPathogenTests()) {
 				handleValidationError(
-					() -> pathogenTestFacade.savePathogenTest(pathogenTest),
+					() -> pathogenTestFacade.savePathogenTest(pathogenTest, false),
 					Captions.PathogenTest,
 					buildPathogenTestValidationGroupName(pathogenTest));
 			}
 
 			for (AdditionalTestDto additionalTest : sormasToSormasSample.getAdditionalTests()) {
 				handleValidationError(
-					() -> additionalTestFacade.saveAdditionalTest(additionalTest),
+					() -> additionalTestFacade.saveAdditionalTest(additionalTest, false),
 					Captions.AdditionalTest,
 					buildValidationGroupName(Captions.AdditionalTest, additionalTest));
 			}

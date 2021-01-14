@@ -177,7 +177,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	@Override
 	public void saveExportConfiguration(ExportConfigurationDto exportConfiguration) {
 
-		ExportConfiguration entity = fromExportConfigurationDto(exportConfiguration);
+		ExportConfiguration entity = fromExportConfigurationDto(exportConfiguration, true);
 		exportConfigurationService.ensurePersisted(entity);
 	}
 
@@ -188,7 +188,7 @@ public class ExportFacadeEjb implements ExportFacade {
 		exportConfigurationService.delete(exportConfiguration);
 	}
 
-	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source) {
+	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source, boolean checkChangeDate) {
 
 		ExportConfiguration target = exportConfigurationService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -199,7 +199,7 @@ public class ExportFacadeEjb implements ExportFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setUser(userService.getByReferenceDto(source.getUser()));

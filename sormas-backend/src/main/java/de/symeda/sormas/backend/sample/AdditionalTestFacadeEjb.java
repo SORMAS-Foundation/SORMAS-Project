@@ -55,8 +55,12 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 
 	@Override
 	public AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest) {
+		return saveAdditionalTest(additionalTest, true);
+	}
 
-		AdditionalTest entity = fromDto(additionalTest);
+	public AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest, boolean checkChangeDate) {
+
+		AdditionalTest entity = fromDto(additionalTest, checkChangeDate);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -107,7 +111,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		return dto;
 	}
 
-	public AdditionalTest fromDto(@NotNull AdditionalTestDto source) {
+	public AdditionalTest fromDto(@NotNull AdditionalTestDto source, boolean checkChangeDate) {
 
 		AdditionalTest target = service.getByUuid(source.getUuid());
 		if (target == null) {
@@ -118,7 +122,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestDateTime(source.getTestDateTime());

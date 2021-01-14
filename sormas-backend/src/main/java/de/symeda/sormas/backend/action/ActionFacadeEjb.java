@@ -59,7 +59,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	@EJB
 	private EventService eventService;
 
-	public Action fromDto(ActionDto source) {
+	public Action fromDto(ActionDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -75,7 +75,8 @@ public class ActionFacadeEjb implements ActionFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setReplyingUser(userService.getByReferenceDto(source.getReplyingUser()));
 		target.setReply(source.getReply());
@@ -138,7 +139,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public ActionDto saveAction(ActionDto dto) {
 
-		Action ado = fromDto(dto);
+		Action ado = fromDto(dto, true);
 		actionService.ensurePersisted(ado);
 		return toDto(ado);
 	}
