@@ -12,12 +12,10 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
-import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.labmessage.EventParticipantSimilarityCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -78,18 +76,20 @@ public class LabMessageController {
 					caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
 					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
 
-					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
-					contactSimilarityCriteria.setPerson(selectedPerson);
-					contactSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
-					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
-
-					EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria = new EventParticipantSimilarityCriteria();
-					eventParticipantSimilarityCriteria.setPerson(selectedPerson);
-					eventParticipantSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
-					List<SimilarEventParticipantDto> similarEventParticipants =
-						FacadeProvider.getEventParticipantFacade().getSimilarEventParticipants(eventParticipantSimilarityCriteria);
-
-					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants);
+//					TODO: Add picking of contacts and event participants
+//					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
+//					contactSimilarityCriteria.setPerson(selectedPerson);
+//					contactSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
+//					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
+//
+//					EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria = new EventParticipantSimilarityCriteria();
+//					eventParticipantSimilarityCriteria.setPerson(selectedPerson);
+//					eventParticipantSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
+//					List<SimilarEventParticipantDto> similarEventParticipants =
+//						FacadeProvider.getEventParticipantFacade().getSimilarEventParticipants(eventParticipantSimilarityCriteria);
+//
+//					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants);
+					pickOrCreateEntry(labMessageDto, similarCases, null, null);
 				}
 			});
 	}
@@ -106,6 +106,8 @@ public class LabMessageController {
 			SimilarEntriesDto similarEntriesDto = selectField.getValue();
 			if (similarEntriesDto.isNewCase()) {
 				createCase(labMessageDto);
+			} else if (similarEntriesDto.getCaze() != null) {
+				createSample(FacadeProvider.getCaseFacade().getCaseDataByUuid(similarEntriesDto.getCaze().getUuid()), labMessageDto);
 			}
 		});
 
@@ -126,6 +128,7 @@ public class LabMessageController {
 			createSample(caseCreateComponent.getWrappedComponent().getValue(), labMessageDto);
 			window.close();
 		});
+		caseCreateComponent.addDiscardListener(() -> window.close());
 
 		PersonDto personDto = PersonDto.build();
 		personDto.setFirstName(labMessageDto.getPersonFirstName());
@@ -172,6 +175,7 @@ public class LabMessageController {
 		sampleCreateComponent.addCommitListener(() -> {
 			createPathogenTest(sampleCreateComponent.getWrappedComponent().getValue(), labMessageDto);
 		});
+		sampleCreateComponent.addDiscardListener(() -> window.close());
 
 		LabMessageEditForm form = new LabMessageEditForm(true);
 		form.setValue(labMessageDto);
@@ -197,6 +201,7 @@ public class LabMessageController {
 				window.close();
 			}, null);
 
+		pathogenTestCreateComponent.addDiscardListener(() -> window.close());
 		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
 
 		LabMessageEditForm form = new LabMessageEditForm(true);

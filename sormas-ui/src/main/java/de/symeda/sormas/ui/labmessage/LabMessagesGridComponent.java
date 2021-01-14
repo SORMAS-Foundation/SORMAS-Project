@@ -48,7 +48,7 @@ public class LabMessagesGridComponent extends VerticalLayout {
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createProcessStatusFilterBar());
 		gridLayout.addComponent(grid);
-		grid.getDataProvider().addDataProviderListener(e -> updateProcessedButtons());
+		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		gridLayout.setMargin(true);
 		styleGridLayout(gridLayout);
@@ -87,7 +87,7 @@ public class LabMessagesGridComponent extends VerticalLayout {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
-		updateProcessedButtons();
+		updateStatusButtons();
 		grid.reload();
 	}
 
@@ -105,7 +105,7 @@ public class LabMessagesGridComponent extends VerticalLayout {
 		return button;
 	}
 
-	private void updateProcessedButtons() {
+	private void updateStatusButtons() {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
@@ -119,13 +119,18 @@ public class LabMessagesGridComponent extends VerticalLayout {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
+		if (Boolean.TRUE.equals(activeStatusButton.getData())) {
+			grid.getColumn(LabMessageGrid.COLUMN_PROCESS).setHidden(true);
+		} else {
+			grid.getColumn(LabMessageGrid.COLUMN_PROCESS).setHidden(false);
+		}
 	}
 
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		labMessagesView.setApplyingCriteria(true);
 
-		updateProcessedButtons();
+		updateStatusButtons();
 
 		labMessagesView.setApplyingCriteria(false);
 	}

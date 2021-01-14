@@ -88,7 +88,9 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 
 	private void addCreateEntityRadioGroup() {
 		rbCreateEntity = new RadioButtonGroup<>();
-		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT, CREATE_EVENT_PARTICIPANT);
+// 		TODO: Add creation of contacts and event participants
+//		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT, CREATE_EVENT_PARTICIPANT);
+		rbCreateEntity.setItems(CREATE_CASE);
 		rbCreateEntity.setItemCaptionGenerator((item) -> {
 			if (item == CREATE_CASE) {
 				return I18nProperties.getCaption(Captions.caseCreateNew);
@@ -137,13 +139,18 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		eventParticipantGrid.addSelectionListener(e -> {
 			if (e.getSelected().size() > 0) {
 				rbCreateEntity.setValue(null);
-				rbSelectCase.setValue(null);
-				rbSelectContact.setValue(null);
+				if (rbSelectCase != null) {
+					rbSelectCase.setValue(null);
+				}
+				if (rbSelectContact != null) {
+					rbSelectContact.setValue(null);
+				}
 			}
 			if (selectionChangeCallback != null) {
 				selectionChangeCallback.accept(!e.getSelected().isEmpty());
 			}
 		});
+		eventParticipantGrid.setEnabled(false);
 		mainLayout.addComponent(eventParticipantGrid);
 	}
 
@@ -158,6 +165,12 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 				rbSelectCase.setValue(null);
 				rbSelectContact.setValue(null);
 				eventParticipantGrid.setEnabled(true);
+				if (caseGrid != null) {
+					caseGrid.setEnabled(false);
+				}
+				if (contactGrid != null) {
+					contactGrid.setEnabled(false);
+				}
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(eventParticipantGrid.getSelectedRow() != null);
 				}
@@ -172,13 +185,18 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		contactGrid.addSelectionListener(e -> {
 			if (e.getSelected().size() > 0) {
 				rbCreateEntity.setValue(null);
-				rbSelectCase.setValue(null);
-				rbSelectEventParticipant.setValue(null);
+				if (rbSelectCase != null) {
+					rbSelectCase.setValue(null);
+				}
+				if (rbSelectEventParticipant != null) {
+					rbSelectEventParticipant.setValue(null);
+				}
 			}
 			if (selectionChangeCallback != null) {
 				selectionChangeCallback.accept(!e.getSelected().isEmpty());
 			}
 		});
+		contactGrid.setEnabled(false);
 		mainLayout.addComponent(contactGrid);
 	}
 
@@ -193,6 +211,12 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 				rbSelectCase.setValue(null);
 				rbSelectEventParticipant.setValue(null);
 				contactGrid.setEnabled(true);
+				if (caseGrid != null) {
+					caseGrid.setEnabled(false);
+				}
+				if (eventParticipantGrid != null) {
+					eventParticipantGrid.setEnabled(false);
+				}
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(contactGrid.getSelectedRow() != null);
 				}
@@ -207,13 +231,18 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		caseGrid.addSelectionListener(e -> {
 			if (e.getSelected().size() > 0) {
 				rbCreateEntity.setValue(null);
-				rbSelectContact.setValue(null);
-				rbSelectEventParticipant.setValue(null);
+				if (rbSelectContact != null) {
+					rbSelectContact.setValue(null);
+				}
+				if (rbSelectEventParticipant != null) {
+					rbSelectEventParticipant.setValue(null);
+				}
 			}
 			if (selectionChangeCallback != null) {
 				selectionChangeCallback.accept(!e.getSelected().isEmpty());
 			}
 		});
+		caseGrid.setEnabled(false);
 		mainLayout.addComponent(caseGrid);
 	}
 
@@ -225,9 +254,19 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		rbSelectCase.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
 				rbCreateEntity.setValue(null);
-				rbSelectContact.setValue(null);
-				rbSelectEventParticipant.setValue(null);
+				if (rbSelectContact != null) {
+					rbSelectContact.setValue(null);
+				}
+				if (rbSelectEventParticipant != null) {
+					rbSelectEventParticipant.setValue(null);
+				}
 				caseGrid.setEnabled(true);
+				if (contactGrid != null) {
+					contactGrid.setEnabled(false);
+				}
+				if (eventParticipantGrid != null) {
+					eventParticipantGrid.setEnabled(false);
+				}
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(caseGrid.getSelectedRow() != null);
 				}
