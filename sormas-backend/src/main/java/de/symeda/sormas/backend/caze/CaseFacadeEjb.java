@@ -3232,6 +3232,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caseRoot = cq.from(Case.class);
 		Join<Case, SormasToSormasShareInfo> sormasToSormasJoin = caseRoot.join(Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
 
+		cq.select(caseRoot.get(Case.UUID));
 		cq.where(cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
