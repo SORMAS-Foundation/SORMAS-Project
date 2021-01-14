@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.FacadeProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -216,8 +218,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	@Override
 	public List<String> getAvailableTemplates(DocumentWorkflow documentWorkflow) {
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
-		File workflowTemplateDir = new File(workflowTemplateDirPath);
+		File workflowTemplateDir = new File(getWorkflowTemplateDirPath(documentWorkflow).toUri());
 		if (!workflowTemplateDir.exists() || !workflowTemplateDir.isDirectory()) {
 			return Collections.emptyList();
 		}
@@ -231,9 +232,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	@Override
 	public boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName) {
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
-		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
-		File templateFile = new File(templateFileName);
+		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(templateName).toUri());
 		return templateFile.exists();
 	}
 
@@ -254,7 +253,6 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), templateName));
 		}
 
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
 		ByteArrayInputStream templateInputStream = new ByteArrayInputStream(document);
 		if (documentWorkflow.isDocx()) {
 			templateEngine.validateTemplateDocx(templateInputStream);
@@ -262,17 +260,17 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			templateEngine.validateTemplateTxt(templateInputStream);
 		}
 
-		Files.createDirectories(Paths.get(workflowTemplateDirPath));
+		Path workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
+		Files.createDirectories(workflowTemplateDirPath);
 		try (FileOutputStream fileOutputStream =
-			new FileOutputStream(workflowTemplateDirPath + File.separator + FilenameUtils.getName(templateName))) {
+			new FileOutputStream(new File(workflowTemplateDirPath.resolve(FilenameUtils.getName(templateName)).toUri()))) {
 			fileOutputStream.write(document);
 		}
 	}
 
 	@Override
 	public boolean deleteDocumentTemplate(DocumentWorkflow documentWorkflow, String fileName) {
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
-		File templateFile = new File(workflowTemplateDirPath + File.separator + fileName);
+		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(fileName).toUri());
 		if (templateFile.exists() && templateFile.isFile()) {
 			return templateFile.delete();
 		} else {
@@ -286,9 +284,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	private File getTemplateFile(DocumentWorkflow documentWorkflow, String templateName) {
-		String workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
-		String templateFileName = workflowTemplateDirPath + File.separator + templateName;
-		File templateFile = new File(templateFileName);
+		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(templateName).toString());
 
 		if (!templateFile.exists()) {
 			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorFileNotFound), templateName));
@@ -326,8 +322,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return matcher.matches() ? matcher.group(1) : "";
 	}
 
-	private String getWorkflowTemplateDirPath(DocumentWorkflow documentWorkflow) {
-		return configFacade.getCustomFilesPath() + File.separator + "docgeneration" + File.separator + documentWorkflow.getTemplateDirectory();
+	private Path getWorkflowTemplateDirPath(DocumentWorkflow documentWorkflow) {
+		return Paths.get(configFacade.getCustomFilesPath()).resolve("docgeneration").resolve(documentWorkflow.getTemplateDirectory());
 	}
 
 	private EntityDtoAccessHelper.IReferenceDtoResolver getReferenceDtoResolver() {

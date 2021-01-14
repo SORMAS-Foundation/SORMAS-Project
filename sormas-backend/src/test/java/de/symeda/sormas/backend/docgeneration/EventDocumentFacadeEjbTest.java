@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Properties;
 
@@ -39,7 +40,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 	private EventDto eventDto;
 
 	@Before
-	public void setup() throws ParseException {
+	public void setup() throws ParseException, URISyntaxException {
 		eventDocumentFacade = getEventDocumentFacade();
 		resetCustomPath();
 
@@ -119,9 +120,10 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void generateEventHandoutTest() throws IOException {
+	public void generateEventHandoutTest() throws IOException, URISyntaxException {
 		String testCasesDirPath = "/docgeneration/eventHandout";
-		File testCasesDir = new File(getClass().getResource(testCasesDirPath).getPath());
+		File testCasesDir = new File(getClass().getResource(testCasesDirPath).toURI()
+		);
 		File[] testCasesHtml = testCasesDir.listFiles((d, name) -> name.endsWith(".html"));
 		assertNotNull(testCasesHtml);
 

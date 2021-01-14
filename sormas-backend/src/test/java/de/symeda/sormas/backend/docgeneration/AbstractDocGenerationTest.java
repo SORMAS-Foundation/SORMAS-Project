@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.docgeneration;
 
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -10,7 +12,7 @@ public class AbstractDocGenerationTest extends AbstractBeanTest {
 
 	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
-	protected void resetCustomPath() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, getClass().getResource("/").getPath());
+	protected void resetCustomPath() throws URISyntaxException {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, Paths.get(getClass().getResource("/").toURI()).toAbsolutePath().toString());
 	}
 }

@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -23,13 +24,13 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 	private DocumentTemplateFacade documentTemplateFacade;
 
 	@Before
-	public void setup() {
+	public void setup() throws URISyntaxException {
 		documentTemplateFacade = getDocumentTemplateFacade();
 		resetCustomPath();
 	}
 
 	@Test
-	public void writeAndDeleteTemplateTest() throws IOException {
+	public void writeAndDeleteTemplateTest() throws IOException, URISyntaxException {
 		String testDirectory = "target" + File.separator + "doctest";
 		byte[] document = IOUtils.toByteArray(getClass().getResourceAsStream("/docgeneration/quarantine/Quarantine.docx"));
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, testDirectory);

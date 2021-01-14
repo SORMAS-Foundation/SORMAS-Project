@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +41,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	private PersonDto personDto;
 
 	@Before
-	public void setup() throws ParseException {
+	public void setup() throws ParseException, URISyntaxException {
 		quarantineOrderFacadeEjb = getQuarantineOrderFacade();
 		resetCustomPath();
 
@@ -137,7 +138,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void getAvailableTemplatesTest() {
+	public void getAvailableTemplatesTest() throws URISyntaxException {
 		List<String> availableTemplates = quarantineOrderFacadeEjb.getAvailableTemplates();
 		assertEquals(2, availableTemplates.size());
 		assertTrue(availableTemplates.contains("Quarantine.docx"));
