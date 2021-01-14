@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.Set;
@@ -44,31 +46,33 @@ public class TemplateEngineTest {
 	}
 
 	@Test
-	public void genericTestCasesDocxTest() throws IOException, XDocReportException, ClassNotFoundException, ParseException {
+	public void genericTestCasesDocxTest() throws IOException, XDocReportException, ClassNotFoundException, ParseException, URISyntaxException {
 		genericTestCases(getTestCaseRunnerDocx());
 	}
 
 	@Test
-	public void genericTestCasesTxtTest() throws IOException, XDocReportException, ClassNotFoundException, ParseException {
+	public void genericTestCasesTxtTest() throws IOException, XDocReportException, ClassNotFoundException, ParseException, URISyntaxException {
 		genericTestCases(getTestCaseRunnerTxt());
 	}
 
-	private void genericTestCases(TestCaseRunner testCaseRunner) throws IOException, XDocReportException, ParseException, ClassNotFoundException {
-		File testCasesDir = new File(testCaseRunner.getTestCasesDirPath());
+	private void genericTestCases(TestCaseRunner testCaseRunner)
+		throws IOException, XDocReportException, ParseException, ClassNotFoundException, URISyntaxException {
+		File testCasesDir = new File(getClass().getResource(testCaseRunner.getTestCasesDirPath()).toURI());
 		File[] testCases = testCasesDir.listFiles((d, name) -> name.endsWith(testCaseRunner.getTestCaseExtension()));
 		assertNotNull(testCases);
 
 		for (File testCase : testCases) {
 			String testcaseBasename = FilenameUtils.getBaseName(testCase.getName());
-			File testcaseProperties = new File(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".properties");
-			File testcaseVariables = new File(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".vars");
-			File testcaseCmpText = new File(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".cmp");
+			URL testcaseProperties = getClass().getResource(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".properties");
+			URL testcaseVariables = getClass().getResource(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".vars");
+			URL testcaseCmpText = getClass().getResource(testCaseRunner.getTestCasesDirPath() + File.separator + testcaseBasename + ".cmp");
 
-			if (testcaseProperties.exists() || testcaseVariables.exists()) {
+			if (testcaseProperties != null || testcaseVariables != null) {
 				Set<String> variables = testCaseRunner.extractTemplateVariables(testCase);
 
 				Properties variablesExpected = new Properties();
-				variablesExpected.load(new FileInputStream(testcaseVariables.exists() ? testcaseVariables : testcaseProperties));
+				variablesExpected
+					.load(new FileInputStream(new File(testcaseVariables != null ? testcaseVariables.toURI() : testcaseProperties.toURI())));
 
 				assertEquals(
 					testcaseBasename + ": extracted [" + String.join(", ", variables) + "]",
@@ -79,16 +83,18 @@ public class TemplateEngineTest {
 						testcaseBasename + ": Variable " + key + " not extracted. Found: [" + String.join(", ", variables) + "]",
 						variables.contains(key));
 				}
-				if (testcaseProperties.exists() && testcaseCmpText.exists()) {
+
+				if (testcaseProperties != null && testcaseCmpText != null) {
 					Properties properties = new Properties();
-					properties.load(new FileInputStream(testcaseProperties));
+					properties.load(new FileInputStream(new File(testcaseProperties.toURI())));
 					deserializeObjects(properties);
 					String testCaseText = testCaseRunner.getGeneratedText(testCase, properties);
 
-					String expected = getComparisonText(testcaseCmpText);
+					String expected = getComparisonText(new File(testcaseCmpText.toURI()));
 					assertEquals(testcaseBasename + ": generated text does not match.", expected, testCaseText);
 				}
 			}
+			System.out.println("Testcase completed: " + testcaseBasename + testCaseRunner.getTestCaseExtension());
 		}
 	}
 
@@ -123,7 +129,7 @@ public class TemplateEngineTest {
 
 			@Override
 			public String getTestCasesDirPath() {
-				return getClass().getResource("/docgeneration/testcasesDocx").getPath();
+				return "/docgeneration/testcasesDocx";
 			}
 
 			@Override
@@ -139,10 +145,11 @@ public class TemplateEngineTest {
 			@Override
 			public String getGeneratedText(File testCase, Properties properties) throws IOException, XDocReportException {
 				InputStream generatedFile = new ByteArrayInputStream(templateEngine.generateDocumentDocx(properties, testCase));
-
 				XWPFDocument generatedDocument = new XWPFDocument(generatedFile);
 				XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(generatedDocument);
-				return xwpfWordExtractor.getText();
+				String generatedText = xwpfWordExtractor.getText();
+				xwpfWordExtractor.close();
+				return generatedText;
 			}
 		};
 	}
@@ -152,7 +159,7 @@ public class TemplateEngineTest {
 
 			@Override
 			public String getTestCasesDirPath() {
-				return getClass().getResource("/docgeneration/testcasesTxt").getPath();
+				return "/docgeneration/testcasesTxt";
 			}
 
 			@Override

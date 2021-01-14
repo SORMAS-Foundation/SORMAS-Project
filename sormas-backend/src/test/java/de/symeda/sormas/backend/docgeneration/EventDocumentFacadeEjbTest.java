@@ -137,7 +137,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 			assertEquals(
 				expected,
 				htmlText.replaceAll("<p>Event-ID: <b>[A-Z0-9-]*</b></p>", "<p>Event-ID: <b>STN3WX-5JTGYV-IU2LRM-4UHCSOEE</b></p>"));
-			System.out.println("Document generated: " + testcaseBasename);
+			System.out.println("Testcase completed: " + testcaseBasename);
 		}
 	}
 }

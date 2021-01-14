@@ -59,8 +59,8 @@ public class TemplateEngine {
 	public byte[] generateDocumentDocx(Properties properties, File templateFile) throws IOException, XDocReportException {
 		FileInputStream templateInputStream = new FileInputStream(templateFile);
 		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateInputStream, TemplateEngineKind.Velocity);
-
 		IContext context = report.createContext();
+
 		for (Object key : properties.keySet()) {
 			if (key instanceof String) {
 				Object property = properties.get(key);
@@ -81,6 +81,7 @@ public class TemplateEngine {
 		velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, FilenameUtils.getFullPathNoEndSeparator(templateFile.getPath()));
 		Template template = velocityEngine.getTemplate(templateFile.getName());
 		VelocityContext velocityContext = new VelocityContext();
+
 		for (Object key : properties.keySet()) {
 			if (key instanceof String) {
 				Object property = properties.get(key);
@@ -89,6 +90,7 @@ public class TemplateEngine {
 				}
 			}
 		}
+
 		StringWriter stringWriter = new StringWriter();
 		template.merge(velocityContext, stringWriter);
 		return stringWriter.toString();

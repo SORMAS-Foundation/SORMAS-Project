@@ -127,13 +127,13 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		XWPFDocument xwpfDocument = new XWPFDocument(generatedDocument);
 		XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(xwpfDocument);
 		String docxText = xwpfWordExtractor.getText();
+		xwpfWordExtractor.close();
 
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/quarantine/" + comparisonFile), writer, "UTF-8");
 
 		String expected = writer.toString().replaceAll("\\r\\n?", "\n");
 		assertEquals(expected, docxText);
-		System.out.println("  document generated.");
 	}
 
 	@Test
