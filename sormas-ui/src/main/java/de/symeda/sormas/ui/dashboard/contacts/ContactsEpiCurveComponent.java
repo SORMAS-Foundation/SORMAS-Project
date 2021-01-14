@@ -193,7 +193,7 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 					+ "', color: '#005A9C', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < confirmedNumbers.length; i++) {
 				if (i == confirmedNumbers.length - 1) {
-					hcjs.append(confirmedNumbers[i] + "]}]};");
+					hcjs.append(confirmedNumbers[i] + "]}],");
 				} else {
 					hcjs.append(confirmedNumbers[i] + ", ");
 				}
