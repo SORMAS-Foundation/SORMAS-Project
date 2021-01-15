@@ -31,10 +31,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -78,6 +78,7 @@ import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
+import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -132,6 +133,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -1478,11 +1480,119 @@ public class CaseFacadeEjb implements CaseFacade {
 		return saveCase(dto, true);
 	}
 
+	public void saveBulkCase(
+		List<String> caseUuidList,
+		CaseBulkEditData updatedCaseBulkEditData,
+		boolean diseaseChange,
+		boolean classificationChange,
+		boolean investigationStatusChange,
+		boolean outcomeChange,
+		boolean surveillanceOfficerChange)
+		throws ValidationRuntimeException {
+
+		for (String caseUuid : caseUuidList) {
+			Case caze = caseService.getByUuid(caseUuid);
+			CaseDataDto existingCaseDto = toDto(caze);
+
+			updateCaseWithBulkData(
+				updatedCaseBulkEditData,
+				caze,
+				diseaseChange,
+				classificationChange,
+				investigationStatusChange,
+				outcomeChange,
+				surveillanceOfficerChange);
+			doSave(caze, true, existingCaseDto);
+		}
+	}
+
+	public void saveBulkEditWithFacilities(
+		List<String> caseUuidList,
+		CaseBulkEditData updatedCaseBulkEditData,
+		boolean diseaseChange,
+		boolean classificationChange,
+		boolean investigationStatusChange,
+		boolean outcomeChange,
+		boolean surveillanceOfficerChange,
+		Boolean doTransfer) {
+
+		Region newRegion = regionService.getByUuid(updatedCaseBulkEditData.getRegion().getUuid());
+		District newDistrict = districtService.getByUuid(updatedCaseBulkEditData.getDistrict().getUuid());
+		CommunityReferenceDto communityDto = updatedCaseBulkEditData.getCommunity();
+		Community newCommunity = null;
+		if (communityDto != null) {
+			newCommunity = communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid());
+		}
+
+		for (String caseUuid : caseUuidList) {
+			Case caze = caseService.getByUuid(caseUuid);
+			CaseDataDto existingCaseDto = toDto(caze);
+
+			updateCaseWithBulkData(
+				updatedCaseBulkEditData,
+				caze,
+				diseaseChange,
+				classificationChange,
+				investigationStatusChange,
+				outcomeChange,
+				surveillanceOfficerChange);
+
+			caze.setRegion(newRegion);
+			caze.setDistrict(newDistrict);
+			caze.setCommunity(newCommunity);
+			caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
+			caze.setHealthFacility(facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid()));
+			caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
+			CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
+			doSave(caze, true, existingCaseDto);
+		}
+	}
+
+	private void updateCaseWithBulkData(
+		CaseBulkEditData updatedCaseBulkEditData,
+		Case existingCase,
+		boolean diseaseChange,
+		boolean classificationChange,
+		boolean investigationStatusChange,
+		boolean outcomeChange,
+		boolean surveillanceOfficerChange) {
+
+		if (diseaseChange) {
+			existingCase.setDisease(updatedCaseBulkEditData.getDisease());
+			existingCase.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
+			existingCase.setPlagueType(updatedCaseBulkEditData.getPlagueType());
+			existingCase.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());
+			existingCase.setRabiesType(updatedCaseBulkEditData.getRabiesType());
+		}
+		if (classificationChange) {
+			existingCase.setCaseClassification(updatedCaseBulkEditData.getCaseClassification());
+		}
+		if (investigationStatusChange) {
+			existingCase.setInvestigationStatus(updatedCaseBulkEditData.getInvestigationStatus());
+		}
+		if (outcomeChange) {
+			existingCase.setOutcome(updatedCaseBulkEditData.getOutcome());
+		}
+		// Setting the surveillance officer is only allowed if all selected cases are in
+		// the same district
+		if (surveillanceOfficerChange) {
+			existingCase.setSurveillanceOfficer(userService.getByUuid(updatedCaseBulkEditData.getSurveillanceOfficer().getUuid()));
+		}
+
+		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
+			existingCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
+		}
+	}
+
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges) throws ValidationRuntimeException {
 
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
 
+		return caseSave(dto, handleChanges, caze, existingCaseDto);
+	}
+
+	private CaseDataDto caseSave(CaseDataDto dto, boolean handleChanges, Case caze, CaseDataDto existingCaseDto) {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
 		restorePseudonymizedDto(dto, caze, existingCaseDto);
@@ -1496,6 +1606,12 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
+		doSave(caze, handleChanges, existingCaseDto);
+
+		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
+	}
+
+	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto) {
 		caseService.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
@@ -1503,8 +1619,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			onCaseChanged(existingCaseDto, caze);
 		}
-
-		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
@@ -1817,33 +1931,36 @@ public class CaseFacadeEjb implements CaseFacade {
 		// If the case is a newly created case or if it was not in a CONFIRMED status
 		// and now the case is in a CONFIRMED status, notify related surveillance officers
 		Set<CaseClassification> confirmedClassifications = CaseClassification.getConfirmedClassifications();
-		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification())) && confirmedClassifications.contains(newCase.getCaseClassification())) {
+		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification()))
+			&& confirmedClassifications.contains(newCase.getCaseClassification())) {
 			sendConfirmedCaseNotificationsForEvents(newCase);
 		}
 	}
 
 	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> surveillanceOfficerByEventByEventUuid = eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
+		Map<String, User> surveillanceOfficerByEventByEventUuid =
+			eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
 		for (Map.Entry<String, User> entry : surveillanceOfficerByEventByEventUuid.entrySet()) {
 			try {
 				messagingService.sendMessage(
-						entry.getValue(),
-						MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-						new Object[] { caze.getDisease().getName() },
-						String.format(
-								I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
-								DataHelper.getShortUuid(entry.getKey()),
-								caze.getDisease().getName(),
-								DataHelper.getShortUuid(caze.getUuid())),
-						MessageType.EMAIL,
-						MessageType.SMS);
+					entry.getValue(),
+					MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+					new Object[] {
+						caze.getDisease().getName() },
+					String.format(
+						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
+						DataHelper.getShortUuid(entry.getKey()),
+						caze.getDisease().getName(),
+						DataHelper.getShortUuid(caze.getUuid())),
+					MessageType.EMAIL,
+					MessageType.SMS);
 			} catch (NotificationDeliveryFailedException e) {
 				logger.error(
-						String.format(
-								"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
-										+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								entry.getValue().getUuid()));
+					String.format(
+						"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+						entry.getValue().getUuid()));
 			}
 		}
 	}
@@ -3221,6 +3338,24 @@ public class CaseFacadeEjb implements CaseFacade {
 					mml.getSendingUser().toReference(),
 					mml.getRecipientPerson().toReference()))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+		Join<Case, SormasToSormasShareInfo> sormasToSormasJoin = caseRoot.join(Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
+
+		cq.select(caseRoot.get(Case.UUID));
+		cq.where(cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)));
+		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	@LocalBean
