@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -77,6 +78,7 @@ import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
+import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -131,6 +133,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -1477,11 +1480,119 @@ public class CaseFacadeEjb implements CaseFacade {
 		return saveCase(dto, true);
 	}
 
+	public void saveBulkCase(
+		List<String> caseUuidList,
+		CaseBulkEditData updatedCaseBulkEditData,
+		boolean diseaseChange,
+		boolean classificationChange,
+		boolean investigationStatusChange,
+		boolean outcomeChange,
+		boolean surveillanceOfficerChange)
+		throws ValidationRuntimeException {
+
+		for (String caseUuid : caseUuidList) {
+			Case caze = caseService.getByUuid(caseUuid);
+			CaseDataDto existingCaseDto = toDto(caze);
+
+			updateCaseWithBulkData(
+				updatedCaseBulkEditData,
+				caze,
+				diseaseChange,
+				classificationChange,
+				investigationStatusChange,
+				outcomeChange,
+				surveillanceOfficerChange);
+			doSave(caze, true, existingCaseDto);
+		}
+	}
+
+	public void saveBulkEditWithFacilities(
+		List<String> caseUuidList,
+		CaseBulkEditData updatedCaseBulkEditData,
+		boolean diseaseChange,
+		boolean classificationChange,
+		boolean investigationStatusChange,
+		boolean outcomeChange,
+		boolean surveillanceOfficerChange,
+		Boolean doTransfer) {
+
+		Region newRegion = regionService.getByUuid(updatedCaseBulkEditData.getRegion().getUuid());
+		District newDistrict = districtService.getByUuid(updatedCaseBulkEditData.getDistrict().getUuid());
+		CommunityReferenceDto communityDto = updatedCaseBulkEditData.getCommunity();
+		Community newCommunity = null;
+		if (communityDto != null) {
+			newCommunity = communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid());
+		}
+
+		for (String caseUuid : caseUuidList) {
+			Case caze = caseService.getByUuid(caseUuid);
+			CaseDataDto existingCaseDto = toDto(caze);
+
+			updateCaseWithBulkData(
+				updatedCaseBulkEditData,
+				caze,
+				diseaseChange,
+				classificationChange,
+				investigationStatusChange,
+				outcomeChange,
+				surveillanceOfficerChange);
+
+			caze.setRegion(newRegion);
+			caze.setDistrict(newDistrict);
+			caze.setCommunity(newCommunity);
+			caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
+			caze.setHealthFacility(facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid()));
+			caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
+			CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
+			doSave(caze, true, existingCaseDto);
+		}
+	}
+
+	private void updateCaseWithBulkData(
+		CaseBulkEditData updatedCaseBulkEditData,
+		Case existingCase,
+		boolean diseaseChange,
+		boolean classificationChange,
+		boolean investigationStatusChange,
+		boolean outcomeChange,
+		boolean surveillanceOfficerChange) {
+
+		if (diseaseChange) {
+			existingCase.setDisease(updatedCaseBulkEditData.getDisease());
+			existingCase.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
+			existingCase.setPlagueType(updatedCaseBulkEditData.getPlagueType());
+			existingCase.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());
+			existingCase.setRabiesType(updatedCaseBulkEditData.getRabiesType());
+		}
+		if (classificationChange) {
+			existingCase.setCaseClassification(updatedCaseBulkEditData.getCaseClassification());
+		}
+		if (investigationStatusChange) {
+			existingCase.setInvestigationStatus(updatedCaseBulkEditData.getInvestigationStatus());
+		}
+		if (outcomeChange) {
+			existingCase.setOutcome(updatedCaseBulkEditData.getOutcome());
+		}
+		// Setting the surveillance officer is only allowed if all selected cases are in
+		// the same district
+		if (surveillanceOfficerChange) {
+			existingCase.setSurveillanceOfficer(userService.getByUuid(updatedCaseBulkEditData.getSurveillanceOfficer().getUuid()));
+		}
+
+		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
+			existingCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
+		}
+	}
+
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges) throws ValidationRuntimeException {
 
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
 
+		return caseSave(dto, handleChanges, caze, existingCaseDto);
+	}
+
+	private CaseDataDto caseSave(CaseDataDto dto, boolean handleChanges, Case caze, CaseDataDto existingCaseDto) {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
 		restorePseudonymizedDto(dto, caze, existingCaseDto);
@@ -1495,6 +1606,12 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
+		doSave(caze, handleChanges, existingCaseDto);
+
+		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
+	}
+
+	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto) {
 		caseService.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
@@ -1502,8 +1619,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			onCaseChanged(existingCaseDto, caze);
 		}
-
-		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
