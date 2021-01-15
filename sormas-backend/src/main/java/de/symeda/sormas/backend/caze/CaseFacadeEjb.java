@@ -1588,10 +1588,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
 
-		return caseSavePreparations(dto, handleChanges, caze, existingCaseDto);
+		return caseSave(dto, handleChanges, caze, existingCaseDto);
 	}
 
-	private CaseDataDto caseSavePreparations(CaseDataDto dto, boolean handleChanges, Case caze, CaseDataDto existingCaseDto) {
+	private CaseDataDto caseSave(CaseDataDto dto, boolean handleChanges, Case caze, CaseDataDto existingCaseDto) {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
 		restorePseudonymizedDto(dto, caze, existingCaseDto);
