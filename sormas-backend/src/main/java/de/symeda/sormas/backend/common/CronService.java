@@ -25,6 +25,8 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,8 @@ public class CronService {
 	private DocumentFacadeEjbLocal documentFacade;
 	@EJB
 	private SystemEventFacadeEjbLocal systemEventFacade;
+	@EJB
+	private LabMessageFacadeEjbLocal labMessageFacade;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
@@ -147,6 +151,13 @@ public class CronService {
 		int daysAfterSystemEventGetsDeleted = configFacade.getDaysAfterSystemEventGetsDeleted();
 		if (daysAfterSystemEventGetsDeleted >= 1) {
 			systemEventFacade.deleteAllDeletableSystemEvents(daysAfterSystemEventGetsDeleted);
+		}
+	}
+
+	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
+	public void fetchLabMessages() {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
+			labMessageFacade.fetchExternalLabMessages();
 		}
 	}
 
