@@ -106,6 +106,9 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
@@ -171,6 +174,9 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

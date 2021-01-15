@@ -90,33 +90,33 @@ public class EventActionExportDto implements Serializable {
 	}
 
 	@Order(1)
-	public ActionMeasure getActionMeasure() {
-		return actionMeasure;
-	}
-
-	@Order(2)
 	public String getEventTitle() {
 		return eventTitle;
 	}
 
-	@Order(3)
+	@Order(2)
 	public String getEventDesc() {
 		return eventDesc;
 	}
 
-	@Order(4)
+	@Order(3)
 	public String getEventDate() {
 		return eventDate;
 	}
 
-	@Order(5)
+	@Order(4)
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
 
-	@Order(6)
+	@Order(5)
 	public EventInvestigationStatus getEventInvestigationStatus() {
 		return eventInvestigationStatus;
+	}
+
+	@Order(6)
+	public ActionMeasure getActionMeasure() {
+		return actionMeasure;
 	}
 
 	@Order(7)

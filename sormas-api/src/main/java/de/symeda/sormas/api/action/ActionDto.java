@@ -61,7 +61,7 @@ public class ActionDto extends EntityDto {
 	private UserReferenceDto lastModifiedBy;
 
 	public static ActionDto build(ActionContext context, ReferenceDto entityRef) {
-		return build(context, ActionMeasure.OTHER, entityRef);
+		return build(context, null, entityRef);
 	}
 
 	public static ActionDto build(ActionContext context, ActionMeasure actionMeasure, ReferenceDto entityRef) {

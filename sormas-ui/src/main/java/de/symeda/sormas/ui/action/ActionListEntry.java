@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.action;
 
 import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.vaadin.icons.VaadinIcons;
@@ -71,7 +73,7 @@ public class ActionListEntry extends HorizontalLayout {
 		measureOrTitle.addStyleName(CssStyles.H3);
 		withContentLayout.addComponent(measureOrTitle);
 
-		if (action.getActionMeasure() != null && action.getActionMeasure() != ActionMeasure.OTHER) {
+		if (action.getActionMeasure() != null && action.getActionMeasure() != ActionMeasure.OTHER && StringUtils.isNotBlank(action.getTitle())) {
 			Label title = new Label(MoreObjects.firstNonNull(Strings.emptyToNull(action.getTitle()), "-"));
 			title.addStyleName(CssStyles.H4);
 			withContentLayout.addComponent(title);
