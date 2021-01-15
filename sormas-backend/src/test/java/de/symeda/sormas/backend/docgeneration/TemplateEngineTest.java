@@ -141,7 +141,7 @@ public class TemplateEngineTest {
 
 			@Override
 			public Set<String> extractTemplateVariables(File testCase) throws IOException, XDocReportException {
-				return templateEngine.extractTemplateVariablesDocx(testCase);
+				return templateEngine.extractTemplateVariablesDocx(testCase).getVariables();
 			}
 
 			@Override
@@ -171,7 +171,7 @@ public class TemplateEngineTest {
 
 			@Override
 			public Set<String> extractTemplateVariables(File testCase) throws IOException, ParseException {
-				return templateEngine.extractTemplateVariablesTxt(testCase);
+				return templateEngine.extractTemplateVariablesTxt(testCase).getVariables();
 			}
 
 			@Override

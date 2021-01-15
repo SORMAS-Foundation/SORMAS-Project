@@ -24,6 +24,7 @@ import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
@@ -35,9 +36,9 @@ import fr.opensagres.xdocreport.template.velocity.internal.ExtractVariablesVeloc
 
 public class TemplateEngine {
 
-	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *!? *([A-Za-z0-9._]+) *[}]| *!? *([A-Za-z0-9._]+) *)");
+	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *(!)? *([A-Za-z0-9._]+) *[}]| *(!)? *([A-Za-z0-9._]+) *)");
 
-	public Set<String> extractTemplateVariablesDocx(File templateFile) throws IOException, XDocReportException {
+	public DocumentVariables extractTemplateVariablesDocx(File templateFile) throws IOException, XDocReportException {
 		FileInputStream templateInputStream = new FileInputStream(templateFile);
 		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateInputStream, TemplateEngineKind.Velocity);
 
@@ -47,7 +48,7 @@ public class TemplateEngine {
 		return filterExtractedVariables(extractor);
 	}
 
-	public Set<String> extractTemplateVariablesTxt(File templateFile) throws IOException, ParseException {
+	public DocumentVariables extractTemplateVariablesTxt(File templateFile) throws IOException, ParseException {
 		FileReader templateFileReader = new FileReader(templateFile);
 		String templateName = templateFile.getName();
 
@@ -122,21 +123,26 @@ public class TemplateEngine {
 		return extractor;
 	}
 
-	private Set<String> filterExtractedVariables(FieldsExtractor<FieldExtractor> extractor) {
+	private DocumentVariables filterExtractedVariables(FieldsExtractor<FieldExtractor> extractor) {
 		Set<String> variables = new HashSet<>();
+		Set<String> nullablVariables = new HashSet<>();
 		for (FieldExtractor field : extractor.getFields()) {
 			String fieldName = field.getName();
 			Matcher matcher = VARIABLE_PATTERN.matcher(fieldName);
 			if (matcher.matches()) {
-				String withBrackets = matcher.group(2);
-				String withoutBrackets = matcher.group(3);
-				if (withBrackets != null) {
-					variables.add(withBrackets);
-				} else if (withoutBrackets != null) {
-					variables.add(withoutBrackets);
+				String withBrackets = matcher.group(3);
+				String withoutBrackets = matcher.group(5);
+				String variable = withBrackets != null ? withBrackets : withoutBrackets;
+				if (variable != null) {
+					variables.add(variable);
+				}
+				if (matcher.group(2) != null || matcher.group(4) != null) {
+					nullablVariables.add(variable);
+				} else {
+					nullablVariables.remove(variable);
 				}
 			}
 		}
-		return variables;
+		return new DocumentVariables(variables, nullablVariables);
 	}
 }

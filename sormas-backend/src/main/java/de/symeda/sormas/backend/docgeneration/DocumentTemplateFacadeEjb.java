@@ -29,6 +29,7 @@ import org.apache.velocity.runtime.parser.ParseException;
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -100,10 +101,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
 
 		// 2. Extract document variables
-		Set<String> propertyKeys = getTemplateVariablesDocx(templateFile);
+		DocumentVariables documentVariables = getTemplateVariablesDocx(templateFile);
 
 		// 3. prepare properties
-		Properties properties = prepareProperties(documentWorkflow, entities, extraProperties, propertyKeys);
+		Properties properties = prepareProperties(documentWorkflow, entities, extraProperties, documentVariables);
 
 		// 4. generate document
 		return generateDocumentDocx(templateFile, properties);
@@ -124,10 +125,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
 
 		// 2. Extract document variables
-		Set<String> propertyKeys = getTemplateVariablesTxt(templateFile);
+		DocumentVariables documentVariables = getTemplateVariablesTxt(templateFile);
 
 		// 3. prepare properties
-		Properties properties = prepareProperties(documentWorkflow, entities, extraProperties, propertyKeys);
+		Properties properties = prepareProperties(documentWorkflow, entities, extraProperties, documentVariables);
 
 		// 4. generate document
 		return generateDocumentTxt(templateFile, properties);
@@ -137,7 +138,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		DocumentWorkflow documentWorkflow,
 		Map<String, Object> entities,
 		Properties extraProperties,
-		Set<String> propertyKeys) {
+		DocumentVariables documentVariables) {
 		Properties properties = new Properties();
 
 		// 1. Map template variables to entity data if possible
@@ -149,7 +150,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver = getReferenceDtoResolver();
 
 		String propertySeparator = documentWorkflow.isDocx() ? "." : "_";
-		for (String propertyKey : propertyKeys) {
+		for (String propertyKey : documentVariables.getVariables()) {
 			if (isEntityVariable(documentWorkflow, propertyKey)) {
 				String variableBaseName = getVariableBaseName(propertyKey);
 				Object entity = entities.get(variableBaseName);
@@ -197,10 +198,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			nullReplacement = " ";
 		}
 
-		for (String propertyKey : propertyKeys) {
-			Object property = properties.get(propertyKey);
-			if (property == null || StringUtils.isBlank(property.toString())) {
-				properties.setProperty(propertyKey, nullReplacement);
+		for (String variable : documentVariables.getVariables()) {
+			Object property = properties.get(variable);
+			if ((property == null || StringUtils.isBlank(property.toString())) && !documentVariables.isNullableVariable(variable)) {
+				properties.setProperty(variable, nullReplacement);
 			}
 		}
 		properties.put("F", new ObjectFormatter());
@@ -242,7 +243,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	@Override
 	public List<String> getAdditionalVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
-		Set<String> propertyKeys = documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile);
+		Set<String> propertyKeys =
+			(documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile)).getVariables();
 		return propertyKeys.stream().filter(e -> !isEntityVariable(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList());
 	}
 
@@ -295,7 +297,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return templateFile;
 	}
 
-	private Set<String> getTemplateVariablesDocx(File templateFile) throws IOException {
+	private DocumentVariables getTemplateVariablesDocx(File templateFile) throws IOException {
 		try {
 			return templateEngine.extractTemplateVariablesDocx(templateFile);
 		} catch (XDocReportException e) {
@@ -303,7 +305,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 	}
 
-	private Set<String> getTemplateVariablesTxt(File templateFile) throws IOException {
+	private DocumentVariables getTemplateVariablesTxt(File templateFile) throws IOException {
 		try {
 			return templateEngine.extractTemplateVariablesTxt(templateFile);
 		} catch (ParseException e) {
