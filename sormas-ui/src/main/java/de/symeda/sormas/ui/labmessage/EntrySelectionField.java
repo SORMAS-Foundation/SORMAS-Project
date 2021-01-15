@@ -306,7 +306,7 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		if (cases != null && !cases.isEmpty()
 			|| contacts != null && !contacts.isEmpty()
 			|| eventParticipants != null && !eventParticipants.isEmpty()) {
-			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoSelectOrCreateEntity)));
+			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoSelectOrCreateEntry)));
 		} else {
 			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoCreateEntry)));
 		}
