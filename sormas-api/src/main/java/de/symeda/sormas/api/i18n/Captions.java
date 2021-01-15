@@ -22,6 +22,7 @@ public interface Captions {
 	String aboutWhatsNew = "aboutWhatsNew";
 	String Action = "Action";
 	String Action_actionContext = "Action.actionContext";
+	String Action_actionMeasure = "Action.actionMeasure";
 	String Action_actionStatus = "Action.actionStatus";
 	String Action_creatorUser = "Action.creatorUser";
 	String Action_date = "Action.date";

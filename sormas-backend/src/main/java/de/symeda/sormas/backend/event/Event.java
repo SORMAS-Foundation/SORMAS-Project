@@ -37,6 +37,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
@@ -99,6 +100,8 @@ public class Event extends CoreAdo {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String ARCHIVED = "archived";
+	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
+	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -139,6 +142,8 @@ public class Event extends CoreAdo {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private YesNoUnknown transregionalOutbreak;
+	private DiseaseTransmissionMode diseaseTransmissionMode;
 
 	private boolean archived;
 
@@ -213,7 +218,9 @@ public class Event extends CoreAdo {
 		return externalToken;
 	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getEventTitle() {
@@ -494,6 +501,24 @@ public class Event extends CoreAdo {
 
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTransregionalOutbreak() {
+		return transregionalOutbreak;
+	}
+
+	public void setTransregionalOutbreak(YesNoUnknown transregionalOutbreak) {
+		this.transregionalOutbreak = transregionalOutbreak;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
+		return diseaseTransmissionMode;
+	}
+
+	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
+		this.diseaseTransmissionMode = diseaseTransmissionMode;
 	}
 
 	@Column

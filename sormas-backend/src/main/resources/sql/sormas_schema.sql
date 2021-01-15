@@ -6214,7 +6214,6 @@ ALTER TABLE events_history ADD COLUMN externaltoken varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (303, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
 
-
 -- 2021-01-07 Add system events #3927
 CREATE TABLE systemevent (
     id bigint not null,
@@ -6232,5 +6231,15 @@ CREATE TABLE systemevent (
 ALTER TABLE systemevent OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (304, 'Add system events #3927');
+
+-- 2021-01-14 - Add new fields to outbreak events needed for SurvNet #4013
+--ALTER TABLE action ADD COLUMN actionmeasure varchar(255);
+--ALTER TABLE action_history ADD COLUMN actionmeasure varchar(255);
+--ALTER TABLE events ADD COLUMN transregionaloutbreak varchar(255);
+--ALTER TABLE events_history ADD COLUMN transregionaloutbreak varchar(255);
+--ALTER TABLE events ADD COLUMN diseasetransmissionmode varchar(255);
+--ALTER TABLE events_history ADD COLUMN diseasetransmissionmode varchar(255);
+
+--INSERT INTO schema_version (version_number, comment) VALUES (305, 'Add new fields to outbreak events needed for SurvNet #4013');
 
 -- *** Insert new sql commands BEFORE this line ***

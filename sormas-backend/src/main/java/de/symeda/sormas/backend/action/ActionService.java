@@ -211,7 +211,8 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Action.ACTION_STATUS), actionCriteria.getActionStatus()));
 		}
 		if (actionCriteria.getEvent() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(Action.EVENT, JoinType.LEFT).get(Event.UUID), actionCriteria.getEvent().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(Action.EVENT, JoinType.LEFT).get(Event.UUID), actionCriteria.getEvent().getUuid()));
 		}
 		return filter;
 	}
@@ -224,10 +225,11 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Predicate filter = eventService.buildCriteriaFilter(criteria, cb, event);
 
 		if (criteria.getActionChangeDateFrom() != null && criteria.getActionChangeDateTo() != null) {
-			filter = CriteriaBuilderHelper.
-				and(cb, filter, cb.between(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateFrom(), criteria.getActionChangeDateTo()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateFrom(), criteria.getActionChangeDateTo()));
 		} else if (criteria.getActionChangeDateFrom() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateFrom()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateFrom()));
 		} else if (criteria.getActionChangeDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(event.get(Event.START_DATE), criteria.getActionChangeDateTo()));
 		}
@@ -267,6 +269,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			action.get(Action.ACTION_MEASURE),
 			action.get(Action.TITLE),
 			action.get(Action.CREATION_DATE),
 			action.get(Action.CHANGE_DATE),
@@ -368,6 +371,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			action.get(Action.ACTION_MEASURE),
 			action.get(Action.TITLE),
 			action.get(Action.CREATION_DATE),
 			action.get(Action.CHANGE_DATE),
