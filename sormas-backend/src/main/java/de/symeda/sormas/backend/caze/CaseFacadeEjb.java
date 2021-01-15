@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1817,33 +1816,36 @@ public class CaseFacadeEjb implements CaseFacade {
 		// If the case is a newly created case or if it was not in a CONFIRMED status
 		// and now the case is in a CONFIRMED status, notify related surveillance officers
 		Set<CaseClassification> confirmedClassifications = CaseClassification.getConfirmedClassifications();
-		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification())) && confirmedClassifications.contains(newCase.getCaseClassification())) {
+		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification()))
+			&& confirmedClassifications.contains(newCase.getCaseClassification())) {
 			sendConfirmedCaseNotificationsForEvents(newCase);
 		}
 	}
 
 	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> surveillanceOfficerByEventByEventUuid = eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
+		Map<String, User> surveillanceOfficerByEventByEventUuid =
+			eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
 		for (Map.Entry<String, User> entry : surveillanceOfficerByEventByEventUuid.entrySet()) {
 			try {
 				messagingService.sendMessage(
-						entry.getValue(),
-						MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-						new Object[] { caze.getDisease().getName() },
-						String.format(
-								I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
-								DataHelper.getShortUuid(entry.getKey()),
-								caze.getDisease().getName(),
-								DataHelper.getShortUuid(caze.getUuid())),
-						MessageType.EMAIL,
-						MessageType.SMS);
+					entry.getValue(),
+					MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+					new Object[] {
+						caze.getDisease().getName() },
+					String.format(
+						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
+						DataHelper.getShortUuid(entry.getKey()),
+						caze.getDisease().getName(),
+						DataHelper.getShortUuid(caze.getUuid())),
+					MessageType.EMAIL,
+					MessageType.SMS);
 			} catch (NotificationDeliveryFailedException e) {
 				logger.error(
-						String.format(
-								"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
-										+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								entry.getValue().getUuid()));
+					String.format(
+						"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+						entry.getValue().getUuid()));
 			}
 		}
 	}
@@ -3221,6 +3223,24 @@ public class CaseFacadeEjb implements CaseFacade {
 					mml.getSendingUser().toReference(),
 					mml.getRecipientPerson().toReference()))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+		Join<Case, SormasToSormasShareInfo> sormasToSormasJoin = caseRoot.join(Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
+
+		cq.select(caseRoot.get(Case.UUID));
+		cq.where(cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)));
+		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	@LocalBean

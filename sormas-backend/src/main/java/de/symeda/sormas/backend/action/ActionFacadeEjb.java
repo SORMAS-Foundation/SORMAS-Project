@@ -77,7 +77,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
-		target.setReplyingUser(userService.getByReferenceDto(source.getReplyingUser()));
+		target.setLastModifiedBy(userService.getByReferenceDto(source.getLastModifiedBy()));
 		target.setReply(source.getReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setTitle(source.getTitle());
@@ -125,7 +125,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setReply(source.getReply());
-		target.setReplyingUser(UserFacadeEjb.toReferenceDto(source.getReplyingUser()));
+		target.setLastModifiedBy(UserFacadeEjb.toReferenceDto(source.getLastModifiedBy()));
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
 		target.setStatusChangeDate(source.getStatusChangeDate());
