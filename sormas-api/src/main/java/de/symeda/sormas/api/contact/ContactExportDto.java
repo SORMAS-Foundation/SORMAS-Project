@@ -855,6 +855,8 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(84)
+	@ExportProperty(ContactDto.EXTERNAL_TOKEN)
+	@ExportGroup(ExportGroupType.CORE)
 	public String getExternalToken() {
 		return externalToken;
 	}
