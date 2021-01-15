@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -144,6 +146,52 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.select(from.get(Event.UUID));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public Map<String, User> getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(Case caze, Date date) {
+		if (caze == null || date == null) {
+			return Collections.emptyMap();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<EventParticipant> from = cq.from(EventParticipant.class);
+		Join<EventParticipant, Event> eventJoin = from.join(EventParticipant.EVENT, JoinType.INNER);
+
+		Predicate diseaseFilter = cb.equal(eventJoin.get(Event.DISEASE), caze.getDisease());
+		Predicate personFilter = cb.equal(from.get(EventParticipant.PERSON), caze.getPerson());
+
+		Timestamp timestamp = DateHelper.toTimestampUpper(date);
+		Predicate dateFilter = cb.or(
+				CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventJoin.get(Event.START_DATE), timestamp),
+				CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventJoin.get(Event.END_DATE), timestamp));
+
+		Predicate surveillanceOfficerFilter = cb.and(
+				cb.isNotNull(eventJoin.get(Event.SURVEILLANCE_OFFICER)),
+				cb.not(cb.equal(eventJoin.get(Event.SURVEILLANCE_OFFICER), caze.getReportingUser())));
+
+		Predicate activeEventsFilter = createActiveEventsFilter(cb, eventJoin);
+
+		cq.where(
+				cb.and(
+						diseaseFilter,
+						personFilter,
+						dateFilter,
+						surveillanceOfficerFilter,
+						activeEventsFilter));
+		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
+		cq.multiselect(Arrays.asList(
+				eventJoin.get(Event.UUID),
+				eventJoin.get(Event.SURVEILLANCE_OFFICER)
+		));
+
+		return em.createQuery(cq)
+				.getResultList()
+				.stream()
+				.collect(Collectors.toMap(
+						objects -> (String) objects[0],
+						objects -> (User) objects[1]
+				));
 	}
 
 	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
@@ -575,6 +623,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	 * Creates a filter that excludes all events that are either {@link Event#archived} or {@link CoreAdo#deleted}.
 	 */
 	public Predicate createActiveEventsFilter(CriteriaBuilder cb, Root<Event> root) {
+		return cb.and(cb.isFalse(root.get(Event.ARCHIVED)), cb.isFalse(root.get(Event.DELETED)));
+	}
+
+	/**
+	 * Creates a filter that excludes all events that are either {@link Event#archived} or {@link CoreAdo#deleted}.
+	 */
+	public Predicate createActiveEventsFilter(CriteriaBuilder cb, Path<Event> root) {
 		return cb.and(cb.isFalse(root.get(Event.ARCHIVED)), cb.isFalse(root.get(Event.DELETED)));
 	}
 

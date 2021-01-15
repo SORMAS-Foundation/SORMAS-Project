@@ -149,6 +149,7 @@ public class Case extends CoreAdo {
 	public static final String COMPLETENESS = "completeness";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
@@ -280,6 +281,7 @@ public class Case extends CoreAdo {
 	private Float completeness;
 	private String additionalDetails;
 	private String externalID;
+	private String externalToken;
 	private boolean sharedToCountry;
 
 	private QuarantineType quarantine;
@@ -1033,6 +1035,13 @@ public class Case extends CoreAdo {
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
 	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
 
 	@Column
 	public boolean isSharedToCountry() {

@@ -220,6 +220,7 @@ public interface Captions {
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_eventCount = "CaseData.eventCount";
 	String CaseData_externalID = "CaseData.externalID";
+	String CaseData_externalToken = "CaseData.externalToken";
 	String CaseData_facilityType = "CaseData.facilityType";
 	String CaseData_followUpComment = "CaseData.followUpComment";
 	String CaseData_followUpStatus = "CaseData.followUpStatus";
@@ -472,6 +473,7 @@ public interface Captions {
 	String Contact_endOfQuarantineReasonDetails = "Contact.endOfQuarantineReasonDetails";
 	String Contact_epiData = "Contact.epiData";
 	String Contact_externalID = "Contact.externalID";
+	String Contact_externalToken = "Contact.externalToken";
 	String Contact_firstContactDate = "Contact.firstContactDate";
 	String Contact_firstName = "Contact.firstName";
 	String Contact_followUpComment = "Contact.followUpComment";
@@ -630,6 +632,7 @@ public interface Captions {
 	String dashboardGt1ProbableCases = "dashboardGt1ProbableCases";
 	String dashboardGt1SuspectCases = "dashboardGt1SuspectCases";
 	String dashboardGtThreeDays = "dashboardGtThreeDays";
+	String dashboardHideDataLabels = "dashboardHideDataLabels";
 	String dashboardHideOtherCountries = "dashboardHideOtherCountries";
 	String dashboardHideOverview = "dashboardHideOverview";
 	String dashboardHigh = "dashboardHigh";
@@ -686,6 +689,7 @@ public interface Captions {
 	String dashboardShowCases = "dashboardShowCases";
 	String dashboardShowConfirmedContacts = "dashboardShowConfirmedContacts";
 	String dashboardShowContacts = "dashboardShowContacts";
+	String dashboardShowDataLabels = "dashboardShowDataLabels";
 	String dashboardShowEvents = "dashboardShowEvents";
 	String dashboardShowFirstDiseases = "dashboardShowFirstDiseases";
 	String dashboardShowMinimumEntries = "dashboardShowMinimumEntries";
@@ -793,6 +797,7 @@ public interface Captions {
 	String Event_eventTitle = "Event.eventTitle";
 	String Event_eventType = "Event.eventType";
 	String Event_externalId = "Event.externalId";
+	String Event_externalToken = "Event.externalToken";
 	String Event_informationSource = "Event.informationSource";
 	String Event_meansOfTransport = "Event.meansOfTransport";
 	String Event_meansOfTransportDetails = "Event.meansOfTransportDetails";
@@ -1202,6 +1207,7 @@ public interface Captions {
 	String Person_educationType = "Person.educationType";
 	String Person_emailAddress = "Person.emailAddress";
 	String Person_externalId = "Person.externalId";
+	String Person_externalToken = "Person.externalToken";
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
