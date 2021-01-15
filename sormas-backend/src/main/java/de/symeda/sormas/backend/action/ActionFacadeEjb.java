@@ -90,6 +90,7 @@ public class ActionFacadeEjb implements ActionFacade {
 			target.setStatusChangeDate(source.getStatusChangeDate());
 		}
 		target.setActionStatus(source.getActionStatus());
+		target.setActionMeasure(source.getActionMeasure());
 
 		target.setActionContext(source.getActionContext());
 		if (source.getActionContext() != null) {
@@ -131,6 +132,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setActionContext(source.getActionContext());
 		target.setActionStatus(source.getActionStatus());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setActionMeasure(source.getActionMeasure());
 
 		return target;
 	}
