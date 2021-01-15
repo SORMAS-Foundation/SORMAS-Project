@@ -73,6 +73,7 @@ import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
@@ -1031,10 +1032,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), contactCriteria.getFollowUpStatus()));
 		}
 		if (contactCriteria.getCreationDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThan(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(contactCriteria.getCreationDateFrom())));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThan(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(contactCriteria.getCreationDateFrom())));
 		}
 		if (contactCriteria.getCreationDateTo() != null) {
-			filter = and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(contactCriteria.getCreationDateTo())));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(contactCriteria.getCreationDateTo())));
 		}
 		if (contactCriteria.getReportDateFrom() != null && contactCriteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -1077,7 +1080,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 		if (contactCriteria.getSymptomJournalStatus() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), contactCriteria.getSymptomJournalStatus()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), contactCriteria.getSymptomJournalStatus()));
 		}
 		if (contactCriteria.getQuarantineTo() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -1226,7 +1230,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
 						cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
