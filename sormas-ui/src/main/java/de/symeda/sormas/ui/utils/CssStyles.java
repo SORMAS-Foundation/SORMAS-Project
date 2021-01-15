@@ -17,13 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-
 import de.symeda.sormas.api.Disease;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public final class CssStyles {
 
@@ -79,6 +78,8 @@ public final class CssStyles {
 	public static final String INDENT_LEFT_3 = "indent-left-3";
 
 	public static final String VAADIN_LABEL = "v-label";
+	public static final String FIELD_WRAPPER = "fieldwrapper";
+	public static final String FIELD_EXTRA_INFO = "fieldextrainfo";
 
 	// Font colors
 	public static final String LABEL_PRIMARY = "primary";
@@ -108,6 +109,7 @@ public final class CssStyles {
 	// Font styles
 	public static final String LABEL_BOLD = "bold";
 	public static final String LABEL_UPPERCASE = "uppercase";
+	public static final String LABEL_ITALIC = "italic";
 
 	// Label styles
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
@@ -187,6 +189,7 @@ public final class CssStyles {
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
 	public static final String OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL = "horizontal-switch-critical";
 	public static final String OPTIONGROUP_CHECKBOXES_HORIZONTAL = "checkboxes-horizontal";
+	public static final String OPTIONGROUP_GRID_LAYOUT = "grid-layout";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 	public static final String OPTIONGROUP_CAPTION_AREA_INLINE = "caption-area-inline";
 
@@ -239,8 +242,22 @@ public final class CssStyles {
 	public static final String LOGINSCREEN = "login-screen";
 	public static final String LOGINSCREEN_BACK = "login-screen-back";
 	public static final String LOGINSIDEBAR = "login-sidebar";
+	public static final String LOGINSIDEBAR_CUSTOM_HEADER = "login-sidebar-custom-header";
 	public static final String LOGIN_HEADLINELABEL = "headline-label";
 	public static final String LOGIN_LOGOCONTAINER = "logo-container";
+
+	// MISC
+	public static final String RESIZABLE = "resizable";
+
+	// Grid layout
+	public static final String GRID_LAYOUT_EVEN = "even";
+	public static final String GRID_LAYOUT_ODD = "odd";
+	public static final String GRID_LAYOUT_SECTION = "section";
+
+	public static final String TEXTFIELD_ROW = "row";
+	public static final String TEXTFIELD_CAPTION_INLINE = "caption-inline";
+
+	public static final String FLOAT_RIGHT = "float-right";
 
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>

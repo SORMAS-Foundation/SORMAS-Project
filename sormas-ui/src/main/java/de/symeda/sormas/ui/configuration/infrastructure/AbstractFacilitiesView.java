@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -95,6 +96,10 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout = new VerticalLayout();
 		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(
+			new RowCount(
+				FacilityType.LABORATORY.equals(criteria.getType()) ? Strings.labelNumberOfLaboratories : Strings.labelNumberOfFacilities,
+				grid.getItemCount()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -160,6 +165,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		}
 
 		addComponent(gridLayout);
+
 	}
 
 	//	TODO additional filter bar (active, archived and other)
@@ -245,6 +251,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
+
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(
 					EntityRelevanceStatus.ACTIVE,
@@ -258,6 +265,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 						FacilityType.LABORATORY.equals(criteria.getType())
 							? Captions.facilityArchivedLaboratories
 							: Captions.facilityArchivedFacilities));
+
 				relevanceStatusFilter.setItemCaption(
 					EntityRelevanceStatus.ALL,
 					I18nProperties.getCaption(

@@ -45,6 +45,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -78,11 +79,8 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 
 		initColumns();
 
-		addItemClickListener(e -> {
-			if ((e.getColumn() != null && ContactIndexDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
-				ControllerProvider.getContactController().navigateToData(e.getItem().getUuid());
-			}
-		});
+		addItemClickListener(
+			new ShowDetailsListener<>(ContactIndexDto.UUID, e -> ControllerProvider.getContactController().navigateToData(e.getUuid())));
 	}
 
 	@SuppressWarnings("unchecked")

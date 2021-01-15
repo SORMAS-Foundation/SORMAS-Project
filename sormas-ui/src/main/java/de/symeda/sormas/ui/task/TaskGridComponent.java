@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
@@ -30,7 +27,6 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -45,6 +41,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class TaskGridComponent extends VerticalLayout {
@@ -177,8 +176,9 @@ public class TaskGridComponent extends VerticalLayout {
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 						ControllerProvider.getTaskController()
 							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria));
-					}, tasksView.getViewConfiguration().isInEagerMode()));
+					}, UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)));
 
+				bulkOperationsDropdown.setVisible(tasksView.getViewConfiguration().isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 		}

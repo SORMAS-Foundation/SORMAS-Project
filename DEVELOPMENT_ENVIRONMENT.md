@@ -2,7 +2,7 @@
 # SORMAS Development Environment
 
 ## Server
-- [Install your local server](SERVER_SETUP.md)
+- Install [your local server](SERVER_SETUP.md) or [a more dev specific one](SERVER_DEV_SETUP.md) (Docker is needed to run Postgresql image)
 
 ## Git
 - Install [Git for your OS](https://git-scm.com/downloads)
@@ -53,6 +53,8 @@
 	- under Startup/Connection tab make sure you do not pass environment variables (it's a currently open bug in intellij) - ignore warning about debug config not being correct
 	- edit your domain config ..\payara5\glassfish\domains\sormas\config\domain.xml and make sure the java-config node contains:
 	 ``<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...``
+- Open the Ant window, click on the "+" icon and select the build.xml file from the sormas-base project
+- Execute the "install" and "deploy-serverlibs" scripts in this order
 - Configure code formatting:
 	- install Eclipse Code Formatter for IntelliJ (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
 	- open the plugin settings (Other Settings -> Eclipse Code Formatter) and select "Use the Eclipse Code Formatter"

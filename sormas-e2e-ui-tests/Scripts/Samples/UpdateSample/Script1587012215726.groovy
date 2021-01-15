@@ -1,26 +1,14 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-import com.hzi.Table as Table
-import com.hzi.TableContent as TableContent
+
+import org.openqa.selenium.Keys
+
 import com.hzi.TestDataConnector as TestDataConnector
 import com.kms.katalon.core.exception.StepFailedException as StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+
 import internal.GlobalVariable as GlobalVariable
-import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords as Mobile
-import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW
-import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
-import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
-import static com.kms.katalon.core.testobject.ObjectRepository.findWindowsObject
-
-import org.openqa.selenium.Keys
-
-import static com.kms.katalon.core.testdata.TestDataFactory.findTestData
-import static com.kms.katalon.core.checkpoint.CheckpointFactory.findCheckpoint
-import com.kms.katalon.core.testcase.TestCase as TestCase
-import com.kms.katalon.core.testdata.TestData as TestData
-import com.kms.katalon.core.testobject.TestObject as TestObject
-import com.kms.katalon.core.checkpoint.Checkpoint as Checkpoint
 
 // PREPARE
 WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
@@ -57,7 +45,7 @@ WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/typeOfSa
 
 WebUI.setText(findTestObject('Object Repository/Samples/SampleInformation/input_TypeOfSample'), futureTypeOfSample)
 
-WebUI.sendKeys(findTestObject('Samples/SampleInformation/input_TypeOfSample'), Keys.chord(Keys.TAB))
+WebUI.sendKeys(findTestObject('Samples/SampleInformation/input_TypeOfSample'), Keys.chord(Keys.ENTER))
 
 // the sendKeys-Tab adds some strange characters to the comment field - this cleans it up
 WebUI.click(findTestObject('Samples/SampleInformation/textarea_Comment_comment'))

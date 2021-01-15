@@ -17,6 +17,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -70,6 +71,9 @@ public class InfrastructureImporter extends DataImporter {
 		case REGION:
 			newEntityDto = RegionDto.build();
 			break;
+		case AREA:
+			newEntityDto = AreaDto.build();
+			break;
 		default:
 			throw new IllegalArgumentException(type.toString());
 		}
@@ -106,6 +110,9 @@ public class InfrastructureImporter extends DataImporter {
 					break;
 				case REGION:
 					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto);
+					break;
+				case AREA:
+					FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto);
 					break;
 				default:
 					throw new IllegalArgumentException(type.toString());

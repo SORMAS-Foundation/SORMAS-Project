@@ -76,6 +76,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/datefield.scss";
 @import "components/exttokenfield.scss";
 @import "components/grid.scss";
+@import "components/gridlayout.scss";
 @import "components/label.scss";
 @import "components/leaflet.scss";
 @import "components/list.scss";
@@ -138,6 +139,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-datefield;
   @include sormas-exttokenfield;
   @include sormas-grid;
+  @include sormas-gridlayout;
   @include sormas-label;
   @include sormas-leaflet;
   @include sormas-list;

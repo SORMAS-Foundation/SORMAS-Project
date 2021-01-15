@@ -17,35 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.security.RunAs;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -84,6 +55,33 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.security.RunAs;
+import javax.ejb.EJB;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Singleton(name = "StartupShutdownService")
 @Startup
@@ -176,6 +174,7 @@ public class StartupShutdownService {
 		featureConfigurationService.createMissingFeatureConfigurations();
 
 		configFacade.validateAppUrls();
+		configFacade.validateExternalUrls();
 	}
 
 	private void createDefaultInfrastructureData() {
@@ -581,6 +580,12 @@ public class StartupShutdownService {
 			importFacade.generatePopulationDataImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create population data import template .csv file.");
+		}
+
+		try {
+			importFacade.generateAreaImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create area import template .csv file.");
 		}
 
 		try {

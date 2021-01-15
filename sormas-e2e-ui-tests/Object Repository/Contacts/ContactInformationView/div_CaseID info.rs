@@ -6,8 +6,12 @@
    <elementGuidId>d55b4e1d-3bc5-425f-8bce-6a306b422e63</elementGuidId>
    <selectorCollection>
       <entry>
+         <key>BASIC</key>
+         <value>//*[@id = 'caseIdLabel' and (text() = 'TTZEQU' or . = 'TTZEQU')]</value>
+      </entry>
+      <entry>
          <key>XPATH</key>
-         <value>//div[@id='gwt-uid-14']</value>
+         <value>//div[@id='caseIdLabel']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -31,7 +35,7 @@
       <matchCondition>equals</matchCondition>
       <name>id</name>
       <type>Main</type>
-      <value>gwt-uid-14</value>
+      <value>caseIdLabel</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -52,14 +56,14 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;gwt-uid-14&quot;)</value>
+      <value>id(&quot;caseIdLabel&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>//div[@id='gwt-uid-14']</value>
+      <value>//div[@id='caseIdLabel']</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>

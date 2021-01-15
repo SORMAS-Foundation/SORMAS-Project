@@ -364,6 +364,17 @@ public class PersonService extends AbstractAdoService<Person> {
 				filter,
 				cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
 		}
+		if (criteria.getNationalHealthId() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.or(
+					cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)),
+					cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId())));
+		}
+		if (criteria.getPassportNumber() != null) {
+			filter = or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));
+		}
 
 		return filter;
 	}

@@ -70,7 +70,7 @@
     <string name="action_new_case">Nouveau Cas</string>
     <string name="action_new_contact">Nouveau Contact</string>
     <string name="action_new_event">Nouvel événement</string>
-    <string name="action_new_sample">Nouveau échantillon</string>
+    <string name="action_new_sample">Nouvel échantillon</string>
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>
@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Événements confirmés</string>
     <string name="caption_contact_information">Informations de contact</string>
     <string name="caption_contact_tasks">Tâches de contact</string>
+    <string name="caption_contact_epidemiological_data">Informations épidémiologiques</string>
     <string name="caption_contact_visits">Informations de suivi</string>
     <string name="caption_converted_to_case">Converti en cas</string>
     <string name="caption_date_of_birth">Date de naissance (année / mois / jour)</string>
@@ -504,6 +505,7 @@
     <string name="validation_error_required">Une valeur est requise pour ce champ. Veuillez vous assurer de saisir ou de sélectionner une valeur avant de continuer.</string>
     <string name="validation_soft_add_list_entry">Veuillez ajouter une entrée à la liste si vous disposez de données.</string>
     <string name="validation_soft_case_classification">Ce cas devrait être classé dès que les renseignements requis seront disponibles.</string>
+    <string name="validation_case_classification">La classification du cas ne correspond pas aux résultats de laboratoire et aux symptômes du cas.</string>
     <string name="validation_soft_case_epid_number">Le numéro EPID ne correspond pas au modèle requis. Vous pouvez toujours enregistrer le cas et entrer le numéro correct plus tard.</string>
     <string name="validation_soft_case_epid_number_empty">Un numéro EPID doit être fourni. Vous pouvez encore enregistrer le cas et entrer le numéro correct plus tard.</string>
     <string name="validation_symptoms_fever">La température se situe dans la marge de la fièvre. La fièvre doit être réglée sur \"Oui\".</string>

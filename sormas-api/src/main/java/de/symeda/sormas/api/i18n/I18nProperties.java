@@ -263,13 +263,17 @@ public final class I18nProperties {
 	}
 
 	public static String getString(String property) {
-		return getInstance(userLanguage.get()).stringProperties.getString(property);
+		return getString(userLanguage.get(), property);
 	}
 
 	public static String getString(String property, String defaultValue) {
 
-		String result = getInstance(userLanguage.get()).stringProperties.getString(property);
+		String result = getString(userLanguage.get(), property);
 		return StringUtils.isEmpty(result) ? defaultValue : result;
+	}
+
+	public static String getString(Language language, String property) {
+		return getInstance(language).stringProperties.getString(property);
 	}
 
 	private I18nProperties() {
@@ -315,7 +319,7 @@ public final class I18nProperties {
 		 * ClassLoader, boolean) newBundle} and {@link #needsReload(String,
 		 * Locale, String, ClassLoader, ResourceBundle, long) needsReload}
 		 * methods.
-		 * 
+		 *
 		 * <p>
 		 * In contrast to <code>ResourceBundle.Control::toBundleName</code>
 		 * '-' instead of '_' is used to separate the Locale components:
@@ -323,11 +327,11 @@ public final class I18nProperties {
 		 *
 		 * <p>
 		 * This implementation returns the following value:
-		 * 
+		 *
 		 * <pre>
 		 * baseName + "_" + language + "-" + script + "-" + country + "-" + variant
 		 * </pre>
-		 * 
+		 *
 		 * where <code>language</code>, <code>script</code>, <code>country</code>,
 		 * and <code>variant</code> are the language, script, country, and variant
 		 * values of <code>locale</code>, respectively. Final component values that

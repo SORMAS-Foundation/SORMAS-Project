@@ -27,6 +27,7 @@ import com.j256.ormlite.stmt.Where;
 
 import android.util.Log;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -120,6 +121,26 @@ public class SampleDao extends AbstractAdoDao<Sample> {
 			return (Sample) qb.queryForFirst();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getReferredFrom on Sample");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Boolean hasPositiveTestResult(Case caze) {
+		if (caze.isSnapshot()) {
+			throw new IllegalArgumentException("Does not support snapshot entities");
+		}
+
+		try {
+			return queryBuilder().orderBy(Sample.SAMPLE_DATE_TIME, true)
+					.where()
+					.eq(Sample.PATHOGEN_TEST_RESULT, PathogenTestResultType.POSITIVE)
+					.and()
+					.eq(Sample.ASSOCIATED_CASE + "_id", caze)
+					.and()
+					.eq(AbstractDomainObject.SNAPSHOT, false)
+					.query().size() > 0;
+		} catch (SQLException e) {
+			android.util.Log.e(getTableName(), "Could not perform hasPositiveTestResult on Samples");
 			throw new RuntimeException(e);
 		}
 	}

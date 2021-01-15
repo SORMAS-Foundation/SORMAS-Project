@@ -14,6 +14,7 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import de.symeda.sormas.api.FacadeProvider;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
@@ -215,6 +216,35 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
+	protected <T extends Field<?>> T addCustomField(FieldConfiguration fieldConfiguration, Class<?> dataType, Class<T> fieldType) {
+		T field = addCustomField(fieldConfiguration.getPropertyId(), dataType, fieldType);
+
+		field.setCaption(fieldConfiguration.getCaption());
+		field.setStyleName(fieldConfiguration.getStyle());
+
+		return field;
+	}
+
+	@SuppressWarnings({
+			"rawtypes",
+			"hiding" })
+	protected <T extends Field> T addField(String propertyId, Class<T> fieldType, FieldWrapper<T> fieldWrapper) {
+		return addField(getContent(), propertyId, fieldType, fieldWrapper);
+	}
+
+	@SuppressWarnings({
+			"rawtypes",
+			"hiding" })
+	protected <T extends Field> T addField(CustomLayout layout, String propertyId, Class<T> fieldType, FieldWrapper<T> fieldWrapper) {
+		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
+		formatField(field, propertyId);
+		field.setId(propertyId);
+		// Add validators before wrapping field, so the wrapper can access validators
+		addDefaultAdditionalValidators(field);
+		layout.addComponent(fieldWrapper.wrap(field), propertyId);
+		return field;
+	}
+
 	@SuppressWarnings({
 		"rawtypes",
 		"hiding" })
@@ -319,5 +349,9 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
+	}
+
+	protected boolean isGermanServer() {
+		return FacadeProvider.getConfigFacade().isGermanServer();
 	}
 }

@@ -38,8 +38,10 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.task.Task;
@@ -53,18 +55,25 @@ public class Event extends CoreAdo {
 
 	public static final String TABLE_NAME = "events";
 
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_DESC = "eventDesc";
-	public static final String EVENT_DATE = "eventDate";
+	public static final String NOSOCOMIAL = "nosocomial";
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String SRC_MEDIA_WEBSITE = "srcMediaWebsite";
+	public static final String SRC_MEDIA_NAME = "srcMediaName";
+	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
@@ -76,16 +85,23 @@ public class Event extends CoreAdo {
 
 	private EventStatus eventStatus;
 	private List<EventParticipant> eventPersons;
+	private String externalId;
 	private String eventDesc;
-	private Date eventDate;
+	private YesNoUnknown nosocomial;
+	private Date startDate;
+	private Date endDate;
 	private Date reportDateTime;
 	private User reportingUser;
 	private Location eventLocation;
 	private TypeOfPlace typeOfPlace;
+	private EventSourceType srcType;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
 	private String srcEmail;
+	private String srcMediaWebsite;
+	private String srcMediaName;
+	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;
 	private User surveillanceOfficer;
@@ -117,6 +133,15 @@ public class Event extends CoreAdo {
 		this.eventPersons = eventPersons;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
 	@Column(length = COLUMN_LENGTH_BIG, nullable = false)
 	public String getEventDesc() {
 		return eventDesc;
@@ -126,13 +151,31 @@ public class Event extends CoreAdo {
 		this.eventDesc = eventDesc;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getEventDate() {
-		return eventDate;
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getNosocomial() {
+		return nosocomial;
 	}
 
-	public void setEventDate(Date eventDate) {
-		this.eventDate = eventDate;
+	public void setNosocomial(YesNoUnknown nosocomial) {
+		this.nosocomial = nosocomial;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -176,6 +219,15 @@ public class Event extends CoreAdo {
 		this.typeOfPlace = typeOfPlace;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public EventSourceType getSrcType() {
+		return srcType;
+	}
+
+	public void setSrcType(EventSourceType srcType) {
+		this.srcType = srcType;
+	}
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSrcFirstName() {
 		return srcFirstName;
@@ -210,6 +262,33 @@ public class Event extends CoreAdo {
 
 	public void setSrcEmail(String srcEmail) {
 		this.srcEmail = srcEmail;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSrcMediaWebsite() {
+		return srcMediaWebsite;
+	}
+
+	public void setSrcMediaWebsite(String srcMediaWebsite) {
+		this.srcMediaWebsite = srcMediaWebsite;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSrcMediaName() {
+		return srcMediaName;
+	}
+
+	public void setSrcMediaName(String srcMediaName) {
+		this.srcMediaName = srcMediaName;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getSrcMediaDetails() {
+		return srcMediaDetails;
+	}
+
+	public void setSrcMediaDetails(String srcMediaDetails) {
+		this.srcMediaDetails = srcMediaDetails;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -284,7 +363,7 @@ public class Event extends CoreAdo {
 
 	@Override
 	public String toString() {
-		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
+		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getStartDate());
 	}
 
 	public Float getReportLatLonAccuracy() {

@@ -378,9 +378,9 @@
     <color name="indicatorConfirmedContact">@color/red</color>
     <color name="indicatorNoContact">@color/green</color>
 
-    <color name="indicatorPossibleEvent">@color/orange</color>
-    <color name="indicatorConfirmedEvent">@color/watchOut</color>
-    <color name="indicatorNoEvent">@color/gray</color>
+    <color name="indicatorSignal">@color/orange</color>
+    <color name="indicatorEvent">@color/watchOut</color>
+    <color name="indicatorDroppedEvent">@color/gray</color>
 
     <color name="indicatorContactFollowUp">@color/blue</color>
     <color name="indicatorContactCompletedFollowUp">@color/green</color>

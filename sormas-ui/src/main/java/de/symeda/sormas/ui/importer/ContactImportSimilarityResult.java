@@ -2,15 +2,16 @@ package de.symeda.sormas.ui.importer;
 
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 
 public class ContactImportSimilarityResult {
 
-	private final PersonIndexDto matchingPerson;
+	private final SimilarPersonDto matchingPerson;
 	private final SimilarContactDto matchingContact;
 	private final ImportSimilarityResultOption resultOption;
 
 	public ContactImportSimilarityResult(
-		PersonIndexDto matchingPerson,
+		SimilarPersonDto matchingPerson,
 		SimilarContactDto matchingContact,
 		ImportSimilarityResultOption resultOption) {
 		this.matchingPerson = matchingPerson;
@@ -22,7 +23,7 @@ public class ContactImportSimilarityResult {
 		return matchingContact;
 	}
 
-	public PersonIndexDto getMatchingPerson() {
+	public SimilarPersonDto getMatchingPerson() {
 		return matchingPerson;
 	}
 

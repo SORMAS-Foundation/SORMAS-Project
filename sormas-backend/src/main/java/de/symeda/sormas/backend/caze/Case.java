@@ -83,6 +83,9 @@ public class Case extends CoreAdo {
 	public static final String TABLE_NAME = "cases";
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String CLINICAL_CONFIRMATION = "clinicalConfirmation";
+	public static final String EPIDEMIOLOGICAL_CONFIRMATION = "epidemiologicalConfirmation";
+	public static final String LABORATORY_DIAGNOSTIC_CONFIRMATION = "laboratoryDiagnosticConfirmation";
 	public static final String SYSTEM_CASE_CLASSIFICATION = "systemCaseClassification";
 	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
@@ -135,6 +138,7 @@ public class Case extends CoreAdo {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
@@ -164,6 +168,10 @@ public class Case extends CoreAdo {
 	private User classificationUser;
 	private Date classificationDate;
 	private String classificationComment;
+
+	private YesNoUnknown clinicalConfirmation;
+	private YesNoUnknown epidemiologicalConfirmation;
+	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
@@ -235,6 +243,7 @@ public class Case extends CoreAdo {
 	private boolean sharedToCountry;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	private String quarantineHelpNeeded;
@@ -354,6 +363,33 @@ public class Case extends CoreAdo {
 
 	public void setClassificationComment(String classificationComment) {
 		this.classificationComment = classificationComment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getClinicalConfirmation() {
+		return clinicalConfirmation;
+	}
+
+	public void setClinicalConfirmation(YesNoUnknown clinicalConfirmation) {
+		this.clinicalConfirmation = clinicalConfirmation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getEpidemiologicalConfirmation() {
+		return epidemiologicalConfirmation;
+	}
+
+	public void setEpidemiologicalConfirmation(YesNoUnknown epidemiologicalConfirmation) {
+		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getLaboratoryDiagnosticConfirmation() {
+		return laboratoryDiagnosticConfirmation;
+	}
+
+	public void setLaboratoryDiagnosticConfirmation(YesNoUnknown laboratoryDiagnosticConfirmation) {
+		this.laboratoryDiagnosticConfirmation = laboratoryDiagnosticConfirmation;
 	}
 
 	@ManyToOne(cascade = {})
@@ -910,6 +946,15 @@ public class Case extends CoreAdo {
 
 	public void setQuarantine(QuarantineType quarantine) {
 		this.quarantine = quarantine;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

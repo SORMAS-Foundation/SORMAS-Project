@@ -41,12 +41,12 @@ public class SampleReferenceDto extends ReferenceDto {
 		setCaption(caption);
 	}
 
-	public SampleReferenceDto(String uuid, SampleMaterial sampleMaterial, String caseUuid, String contactUuid) {
+	public SampleReferenceDto(String uuid, SampleMaterial sampleMaterial, String caseUuid, String contactUuid, String eventParticipantUuid) {
 		setUuid(uuid);
-		setCaption(buildCaption(sampleMaterial, caseUuid, contactUuid));
+		setCaption(buildCaption(sampleMaterial, caseUuid, contactUuid, eventParticipantUuid));
 	}
 
-	public static String buildCaption(SampleMaterial sampleMaterial, String caseUuid, String contactUuid) {
+	public static String buildCaption(SampleMaterial sampleMaterial, String caseUuid, String contactUuid, String eventParticipantUuid) {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(DataHelper.toStringNullable(sampleMaterial));
@@ -59,6 +59,10 @@ public class SampleReferenceDto extends ReferenceDto {
 		}
 		if (contactUuid != null) {
 			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forContact), " ")).append(DataHelper.getShortUuid(contactUuid));
+		}
+		if (eventParticipantUuid != null) {
+			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forEventParticipant), " "))
+				.append(DataHelper.getShortUuid(eventParticipantUuid));
 		}
 		return stringBuilder.toString();
 	}

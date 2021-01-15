@@ -20,6 +20,7 @@ package de.symeda.sormas.api.statistics;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -237,11 +238,7 @@ public final class StatisticsHelper {
 			}
 			return quarters;
 		case MONTH:
-			List<StatisticsGroupingKey> months = new ArrayList<>();
-			for (Month month : Month.values()) {
-				months.add(month);
-			}
-			return months;
+			return toGroupingKeys(Month.values());
 		case EPI_WEEK:
 			List<StatisticsGroupingKey> epiWeeks = new ArrayList<>();
 			for (int i = 1; i <= DateHelper.getMaximumEpiWeekNumber(); i++) {
@@ -304,29 +301,13 @@ public final class StatisticsHelper {
 		} else {
 			switch (attribute) {
 			case SEX:
-				ArrayList<StatisticsGroupingKey> sexList = new ArrayList<>();
-				for (Sex sex : Sex.values()) {
-					sexList.add(sex);
-				}
-				return sexList;
+				return toGroupingKeys(Sex.values());
 			case DISEASE:
-				ArrayList<StatisticsGroupingKey> diseaseList = new ArrayList<>();
-				for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true)) {
-					diseaseList.add(disease);
-				}
-				return diseaseList;
+				return toGroupingKeys(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 			case CLASSIFICATION:
-				ArrayList<StatisticsGroupingKey> classificationList = new ArrayList<>();
-				for (CaseClassification classification : CaseClassification.values()) {
-					classificationList.add(classification);
-				}
-				return classificationList;
+				return toGroupingKeys(CaseClassification.values());
 			case OUTCOME:
-				ArrayList<StatisticsGroupingKey> outcomeList = new ArrayList<>();
-				for (CaseOutcome outcome : CaseOutcome.values()) {
-					outcomeList.add(outcome);
-				}
-				return outcomeList;
+				return toGroupingKeys(CaseOutcome.values());
 			case AGE_INTERVAL_1_YEAR:
 			case AGE_INTERVAL_5_YEARS:
 			case AGE_INTERVAL_CHILDREN_COARSE:
@@ -334,10 +315,34 @@ public final class StatisticsHelper {
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
 			case AGE_INTERVAL_BASIC:
 				return StatisticsHelper.getAgeIntervalGroupingKeys(attribute);
+			case REPORTING_USER_ROLE:
+				return toGroupingKeys(UserRole.values());
 			default:
 				throw new IllegalArgumentException(attribute.toString());
 			}
 		}
+	}
+
+	/**
+	 * Converts the given values to a {@link List} of {@link StatisticsGroupingKey}s.
+	 */
+	private static <K extends StatisticsGroupingKey> List<StatisticsGroupingKey> toGroupingKeys(K[] keys) {
+
+		List<StatisticsGroupingKey> keyList = new ArrayList<>();
+		for (K ur : keys) {
+			keyList.add(ur);
+		}
+		return keyList;
+	}
+
+	/**
+	 * Converts the given values to a {@link List} of {@link StatisticsGroupingKey}s.
+	 */
+	private static <K extends StatisticsGroupingKey> List<StatisticsGroupingKey> toGroupingKeys(Collection<K> keys) {
+
+		List<StatisticsGroupingKey> keyList = new ArrayList<>();
+		keyList.addAll(keys);
+		return keyList;
 	}
 
 	public static boolean isNullOrUnknown(Object value) {

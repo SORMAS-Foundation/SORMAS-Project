@@ -20,13 +20,14 @@ package de.symeda.sormas.ui.contact;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.Arrays;
 import java.util.Date;
 
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
+import de.symeda.sormas.api.contact.TracingApp;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
@@ -82,45 +83,50 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String CONTACT_DATA_HEADING_LOC = "contactDataHeadingLoc";
+	private static final String FOLLOW_UP_STATUS_HEADING_LOC = "followUpStatusHeadingLoc";
 	private static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingContactData)) +
-					fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
-					locCss(VSPACE_3, TO_CASE_BTN_LOC) +
-					fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.DISEASE) +
-					fluidRowLocs(ContactDto.DISEASE_DETAILS) +
-					fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
-					fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
-					fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
-					fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
-					loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
+    private static final String HTML_LAYOUT =
+            loc(CONTACT_DATA_HEADING_LOC) +
+                    fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
+                    locCss(VSPACE_3, TO_CASE_BTN_LOC) +
+                    fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.DISEASE) +
+                    fluidRowLocs(ContactDto.DISEASE_DETAILS) +
+                    fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
+                    fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
+                    fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+                    fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
+                    loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
+					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE, 6, ContactDto.TRACING_APP) +
+					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, 6, ContactDto.TRACING_APP_DETAILS) +
 					fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
-					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
-					fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
-					fluidRowLocs(ContactDto.RELATION_TO_CASE) +
-					fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-					fluidRowLocs(ContactDto.DESCRIPTION) +
-					fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
-					fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
-					fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
-					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
-					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
-					fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
-					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
-					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
-					loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
-					h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
-					fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-					fluidRowLocs(4, ContactDto.FOLLOW_UP_UNTIL, 8, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
-					fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
-					fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
-					+ fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
-	//@formatter:on
+                    fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
+                    fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
+                    fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+                    fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+                    fluidRowLocs(ContactDto.DESCRIPTION) +
+                    fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
+                    fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
+                    fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+					fluidRowLocs(ContactDto.QUARANTINE_TYPE_DETAILS) +
+                    fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
+                    fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
+                    fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
+                    locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
+                    fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
+                    loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
+					loc(FOLLOW_UP_STATUS_HEADING_LOC) +
+                    fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
+                    fluidRowLocs(4, ContactDto.FOLLOW_UP_UNTIL, 8, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
+                    fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
+                    fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
+                    + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
+    //@formatter:on
 
 	private final ViewMode viewMode;
 	private final Disease disease;
@@ -151,6 +157,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		if (viewMode == null) {
 			return;
 		}
+
+		Label contactDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactData));
+		contactDataHeadingLabel.addStyleName(H3);
+		getContent().addComponent(contactDataHeadingLabel, CONTACT_DATA_HEADING_LOC);
+
+		Label followUpStausHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
+		followUpStausHeadingLabel.addStyleName(H3);
+		getContent().addComponent(followUpStausHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
+
 		addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
 		addField(ContactDto.CONTACT_STATUS, OptionGroup.class);
 		addField(ContactDto.UUID, TextField.class);
@@ -158,6 +173,31 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
+		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
+		contactIdentificationSourceDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+//		contactIdentificationSourceDetails.setVisible(false);
+		ComboBox tracingApp = addField(ContactDto.TRACING_APP, ComboBox.class);
+		TextField tracingAppDetails = addField(ContactDto.TRACING_APP_DETAILS, TextField.class);
+		tracingAppDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+//		tracingApp.setVisible(false);
+//		tracingAppDetails.setVisible(false);
+		if (isGermanServer()) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS,
+				ContactDto.CONTACT_IDENTIFICATION_SOURCE,
+				Arrays.asList(ContactIdentificationSource.OTHER),
+				true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				ContactDto.TRACING_APP,
+				ContactDto.CONTACT_IDENTIFICATION_SOURCE,
+				Arrays.asList(ContactIdentificationSource.TRACING_APP),
+				true);
+			FieldHelper
+				.setVisibleWhen(getFieldGroup(), ContactDto.TRACING_APP_DETAILS, ContactDto.TRACING_APP, Arrays.asList(TracingApp.OTHER), true);
+		}
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isGermanServer()) {
@@ -192,7 +232,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
-		setVisible(false, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
+		TextField quarantineTypeDetails = addField(ContactDto.QUARANTINE_TYPE_DETAILS, TextField.class);
+		quarantineTypeDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+		setVisible(
+			false,
+			ContactDto.QUARANTINE_FROM,
+			ContactDto.QUARANTINE_TO,
+			ContactDto.QUARANTINE_HELP_NEEDED,
+			ContactDto.QUARANTINE_TYPE_DETAILS);
 
 		addField(ContactDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
 		addField(ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
@@ -217,6 +264,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED,
 			Arrays.asList(YesNoUnknown.NO),
 			true);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_TYPE_DETAILS, ContactDto.QUARANTINE, Arrays.asList(QuarantineType.OTHER), true);
 		if (isGermanServer()) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),

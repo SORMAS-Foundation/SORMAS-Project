@@ -4628,4 +4628,170 @@ ALTER TABLE samples_history ADD COLUMN forretest varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (216, 'Mark samples that are for retest');
 
+-- 2020-06-18 Add campaign forms #2268
+CREATE TABLE campaignforms(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	formid varchar(255),
+	languagecode varchar(255),
+	campaignformelements text,
+	campaignformtranslations text,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE campaignforms OWNER TO sormas_user;
+
+CREATE TABLE campaignforms_history (LIKE campaigns);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignforms
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignforms_history', true);
+ALTER TABLE campaignforms_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (217, 'Add campaign forms #2268');
+
+-- 2020-06-19 Add Area as new infrastructure type #1983
+CREATE TABLE areas(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(512),
+	externalid varchar(512),
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE areas OWNER TO sormas_user;
+
+CREATE TABLE areas_history (LIKE areas);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON areas
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
+ALTER TABLE areas_history OWNER TO sormas_user;
+
+ALTER TABLE region ADD COLUMN area_id bigint;
+ALTER TABLE region ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERENCES areas(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (218, 'Add Area as new infrastructure type #1983');
+
+CREATE TABLE campaignformdata(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	formData text,
+	campaign_id bigint NOT NULL,
+	campaignform_id bigint NOT NULL,
+	region_id bigint NOT NULL,
+	district_id bigint NOT NULL,
+	community_id bigint,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE campaignformdata OWNER TO sormas_user;
+CREATE TABLE campaignformdata_history (LIKE campaignformdata);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignformdata
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_history', true);
+ALTER TABLE campaignformdata_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (219, 'Add campaignformdata #1992');
+
+-- 2020-06-30 Add "Other" and a text field to QuarantineType #2219
+ALTER TABLE cases ADD COLUMN quarantinetypedetails varchar(512);
+ALTER TABLE contact ADD COLUMN quarantinetypedetails varchar(512);
+
+ALTER TABLE cases_history ADD COLUMN quarantinetypedetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN quarantinetypedetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add "Other" and a text field to QuarantineType #2219');
+
+-- 2020-06-29 Add samples to event participants #2395
+ALTER TABLE samples
+    ADD COLUMN associatedeventparticipant_id bigint;
+ALTER TABLE samples
+    ADD CONSTRAINT fk_samples_associatedeventparticipant_id FOREIGN KEY (associatedeventparticipant_id) REFERENCES eventparticipant (id);
+ALTER TABLE samples_history
+    ADD COLUMN associatedeventparticipant_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (221, 'Add samples to event participants #2395');
+
+-- 2020-06-29 Extend event details #2391
+UPDATE events set eventstatus='SIGNAL' where eventstatus='POSSIBLE';
+UPDATE events set eventstatus='EVENT' where eventstatus='CONFIRMED';
+UPDATE events set eventstatus='DROPPED' where eventstatus='NO_EVENT';
+
+ALTER TABLE events RENAME COLUMN eventdate TO startdate;
+ALTER TABLE events ADD COLUMN enddate timestamp;
+ALTER TABLE events ADD COLUMN externalId varchar(512);
+ALTER TABLE events ADD COLUMN nosocomial varchar(255);
+ALTER TABLE events ADD COLUMN srcType varchar(255);
+ALTER TABLE events ADD COLUMN srcMediaWebsite varchar(512);
+ALTER TABLE events ADD COLUMN srcMediaName varchar(512);
+ALTER TABLE events ADD COLUMN srcMediaDetails varchar(4096);
+
+UPDATE events set srcType='HOTLINE_PERSON' where LENGTH(CONCAT(srcfirstname, srclastname, srctelno, srcemail)) > 0;
+
+INSERT INTO schema_version (version_number, comment) VALUES (222, 'Extend event details #2391');
+
+-- 2020-06-18 Remove wrongly assigned surveillance officers from cases #2284
+ALTER TABLE contact ADD COLUMN epidata_id bigint;
+ALTER TABLE contact_history ADD COLUMN epidata_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE new_epidata_id INTEGER;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE epidata_id IS NULL
+            LOOP
+                INSERT INTO epidata(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_epidata_id;
+                UPDATE contact SET epidata_id = new_epidata_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add Epidemiological data to contacts');
+
+-- 2020-07-02 Rename formData field #2268
+ALTER TABLE campaignformdata RENAME formData TO formvalues;
+ALTER TABLE campaignformdata_history RENAME formData to formvalues;
+
+INSERT INTO schema_version (version_number, comment) VALUES (224, 'Rename formData field #2268');
+
+-- 2020-07-10 Add archived column to campaign form data #2268
+ALTER TABLE campaignformdata ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE campaignformdata_history ADD COLUMN archived boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (225, 'Add archived column to campaign form data #2268');
+
+-- 2020-07-15 Add form date to campaign form data #1997
+ALTER TABLE campaignformdata ADD COLUMN formdate timestamp;
+ALTER TABLE campaignformdata_history ADD COLUMN formdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (226, 'Add form date to campaign form data #1997');
+
+-- 2020-07-03 Add case classification for Germany #2230
+ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);
+ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation varchar(255);
+ALTER TABLE cases ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN clinicalconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN epidemiologicalconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (227, 'Add case classification for Germany #2230');
+
+-- 2020-07-16 Add source of identification as contact to contacts #2070
+ALTER TABLE contact ADD COLUMN contactidentificationsource varchar(255);
+ALTER TABLE contact ADD COLUMN contactidentificationsourcedetails varchar(512);
+ALTER TABLE contact ADD COLUMN tracingapp varchar(255);
+ALTER TABLE contact ADD COLUMN tracingappdetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN contactidentificationsource varchar(255);
+ALTER TABLE contact_history ADD COLUMN contactidentificationsourcedetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN tracingapp varchar(255);
+ALTER TABLE contact_history ADD COLUMN tracingappdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (228, 'Add source of identification as contact to contacts #2070');
+
 -- *** Insert new sql commands BEFORE this line ***

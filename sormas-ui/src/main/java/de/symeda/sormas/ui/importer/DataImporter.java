@@ -37,6 +37,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -382,6 +383,19 @@ public abstract class DataImporter {
 		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
 			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
 			return true;
+		}
+		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
+			List<AreaReferenceDto> areas = FacadeProvider.getAreaFacade().getByName(entry, false);
+			if (areas.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (areas.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, areas.get(0));
+				return true;
+			}
 		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
 			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry, false);

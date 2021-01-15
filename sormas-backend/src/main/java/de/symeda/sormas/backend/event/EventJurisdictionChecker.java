@@ -17,15 +17,33 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+
+import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless(name = "EventJurisdictionChecker")
 @LocalBean
 public class EventJurisdictionChecker {
 
+	@EJB
+	private UserService userService;
+
 	public boolean isInJurisdiction(Event event) {
-		// as the user can see only events in his jurisdiction, all events are in jurisdiction for now.
-		return true;
+
+		return isInJurisdiction(JurisdictionHelper.createEventJurisdictionDto(event));
+	}
+
+	public boolean isInJurisdiction(EventJurisdictionDto eventJurisdiction) {
+
+		User user = userService.getCurrentUser();
+
+		return EventJurisdictionHelper
+			.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), eventJurisdiction);
 	}
 }

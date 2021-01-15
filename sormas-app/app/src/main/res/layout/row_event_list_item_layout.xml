@@ -201,7 +201,7 @@
                     android:textSize="@dimen/row_entry_date_text_size"
                     android:textColor="@color/listActivityRowDateText"
                     android:fontFamily="sans-serif-medium"
-                    app:timeAgoValue="@{data.eventDate}"
+                    app:timeAgoValue="@{data.startDate}"
                     app:defaultValue='@{@string/value_date_unknown}'
                     />
 

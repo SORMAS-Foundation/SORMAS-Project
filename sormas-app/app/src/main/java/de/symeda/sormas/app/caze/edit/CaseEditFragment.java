@@ -170,6 +170,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		if (!ConfigProvider.isGermanServer()) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
 			contentBinding.caseDataReportingType.setVisibility(GONE);
+			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
+			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
+			contentBinding.caseDataLaboratoryDiagnosticConfirmation.setVisibility(GONE);
 		} else {
 			contentBinding.caseDataEpidNumber.setVisibility(GONE);
 		}
@@ -222,6 +225,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
+		if (!ConfigProvider.isGermanServer()) {
+			caseClassificationList.remove(new Item<>(CaseClassification.CONFIRMED_NO_SYMPTOMS.toString(), CaseClassification.CONFIRMED_NO_SYMPTOMS));
+			caseClassificationList
+				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
+		}
 		caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
 		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
@@ -243,17 +251,16 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		// Case classification warning state
 		if (ConfigProvider.hasUserRight(UserRight.CASE_CLASSIFY)) {
-			contentBinding.caseDataCaseClassification.addValueChangedListener(new ValueChangeListener() {
+			contentBinding.caseDataCaseClassification.addValueChangedListener(field -> {
 
-				@Override
-				public void onChange(ControlPropertyField field) {
-					CaseClassification caseClassification = (CaseClassification) field.getValue();
-					if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
-						getContentBinding().caseDataCaseClassification.enableWarningState(R.string.validation_soft_case_classification);
-					} else {
-						getContentBinding().caseDataCaseClassification.disableWarningState();
-					}
+				final CaseClassification caseClassification = (CaseClassification) field.getValue();
+				if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
+					getContentBinding().caseDataCaseClassification.enableWarningState(R.string.validation_soft_case_classification);
+				} else {
+					getContentBinding().caseDataCaseClassification.disableWarningState();
 				}
+
+				CaseValidator.initializeGermanCaseClassificationValidation(record, caseClassification, getContentBinding());
 			});
 		}
 

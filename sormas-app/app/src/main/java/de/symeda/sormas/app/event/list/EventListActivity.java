@@ -43,9 +43,11 @@ public class EventListActivity extends PagedBaseListActivity {
 
 	private static EventStatus[] statusFilters = new EventStatus[] {
 		null,
-		EventStatus.POSSIBLE,
-		EventStatus.CONFIRMED,
-		EventStatus.NO_EVENT };
+		EventStatus.SIGNAL,
+		EventStatus.EVENT,
+		EventStatus.SCREENING,
+		EventStatus.CLUSTER,
+		EventStatus.DROPPED };
 	private EventListViewModel model;
 
 	public static void startActivity(Context context, EventStatus listFilter) {

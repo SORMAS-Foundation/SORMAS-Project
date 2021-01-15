@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,6 +75,7 @@ import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -101,6 +103,10 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -166,6 +172,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private PseudonymizationService pseudonymizationService;
+	@EJB
+	private EpiDataFacadeEjbLocal epiDataFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -336,50 +344,65 @@ public class ContactFacadeEjb implements ContactFacade {
 		ContactJoins joins = new ContactJoins(contact);
 
 		cq.multiselect(
-			Stream
-				.concat(
-					Stream.of(
-						contact.get(Contact.ID),
-						joins.getPerson().get(Person.ID),
-						contact.get(Contact.UUID),
-						joins.getCaze().get(Case.UUID),
-						joins.getCaze().get(Case.CASE_CLASSIFICATION),
-						contact.get(Contact.DISEASE),
-						contact.get(Contact.DISEASE_DETAILS),
-						contact.get(Contact.CONTACT_CLASSIFICATION),
-						contact.get(Contact.LAST_CONTACT_DATE),
-						joins.getPerson().get(Person.FIRST_NAME),
-						joins.getPerson().get(Person.LAST_NAME),
-						joins.getPerson().get(Person.SEX),
-						joins.getPerson().get(Person.APPROXIMATE_AGE),
-						joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
-						contact.get(Contact.REPORT_DATE_TIME),
-						contact.get(Contact.CONTACT_PROXIMITY),
-						contact.get(Contact.CONTACT_STATUS),
-						contact.get(Contact.FOLLOW_UP_STATUS),
-						contact.get(Contact.FOLLOW_UP_UNTIL),
-						contact.get(Contact.QUARANTINE),
-						contact.get(Contact.QUARANTINE_FROM),
-						contact.get(Contact.QUARANTINE_TO),
-						contact.get(Contact.QUARANTINE_HELP_NEEDED),
-						joins.getPerson().get(Person.PRESENT_CONDITION),
-						joins.getPerson().get(Person.DEATH_DATE),
-						joins.getAddressRegion().get(Region.NAME),
-						joins.getAddressDistrict().get(District.NAME),
-						joins.getAddress().get(Location.CITY),
-						joins.getAddress().get(Location.ADDRESS),
-						joins.getAddress().get(Location.POSTAL_CODE),
-						joins.getPerson().get(Person.PHONE),
-						joins.getPerson().get(Person.PHONE_OWNER),
-						joins.getPerson().get(Person.OCCUPATION_TYPE),
-						joins.getPerson().get(Person.OCCUPATION_DETAILS),
-						joins.getOccupationFacility().get(Facility.NAME),
-						joins.getOccupationFacility().get(Facility.UUID),
-						joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
-						joins.getRegion().get(Region.NAME),
-						joins.getDistrict().get(District.NAME)),
-					listCriteriaBuilder.getJurisdictionSelections(joins))
-				.collect(Collectors.toList()));
+			Stream.concat(
+				Stream.of(
+					contact.get(Contact.ID),
+					joins.getPerson().get(Person.ID),
+					contact.get(Contact.UUID),
+					joins.getCaze().get(Case.UUID),
+					joins.getCaze().get(Case.CASE_CLASSIFICATION),
+					contact.get(Contact.DISEASE),
+					contact.get(Contact.DISEASE_DETAILS),
+					contact.get(Contact.CONTACT_CLASSIFICATION),
+					contact.get(Contact.LAST_CONTACT_DATE),
+					joins.getPerson().get(Person.FIRST_NAME),
+					joins.getPerson().get(Person.LAST_NAME),
+					joins.getPerson().get(Person.SEX),
+					joins.getPerson().get(Person.APPROXIMATE_AGE),
+					joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+					contact.get(Contact.REPORT_DATE_TIME),
+					contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE),
+					contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE_DETAILS),
+					contact.get(Contact.TRACING_APP),
+					contact.get(Contact.TRACING_APP_DETAILS),
+					contact.get(Contact.CONTACT_PROXIMITY),
+					contact.get(Contact.CONTACT_STATUS),
+					contact.get(Contact.FOLLOW_UP_STATUS),
+					contact.get(Contact.FOLLOW_UP_UNTIL),
+					contact.get(Contact.QUARANTINE),
+					contact.get(Contact.QUARANTINE_TYPE_DETAILS),
+					contact.get(Contact.QUARANTINE_FROM),
+					contact.get(Contact.QUARANTINE_TO),
+					contact.get(Contact.QUARANTINE_HELP_NEEDED),
+					contact.get(Contact.QUARANTINE_ORDERED_VERBALLY),
+					contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+					contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
+					contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
+					joins.getPerson().get(Person.PRESENT_CONDITION),
+					joins.getPerson().get(Person.DEATH_DATE),
+					joins.getAddressRegion().get(Region.NAME),
+					joins.getAddressDistrict().get(District.NAME),
+					joins.getAddress().get(Location.CITY),
+					joins.getAddress().get(Location.ADDRESS),
+					joins.getAddress().get(Location.POSTAL_CODE),
+					joins.getPerson().get(Person.PHONE),
+					joins.getPerson().get(Person.PHONE_OWNER),
+					joins.getPerson().get(Person.OCCUPATION_TYPE),
+					joins.getPerson().get(Person.OCCUPATION_DETAILS),
+					joins.getOccupationFacility().get(Facility.NAME),
+					joins.getOccupationFacility().get(Facility.UUID),
+					joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
+					joins.getRegion().get(Region.NAME),
+					joins.getDistrict().get(District.NAME),
+					joins.getEpiData().get(EpiData.ID),
+					joins.getEpiData().get(EpiData.TRAVELED),
+					joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
+					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
+					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
+					joins.getEpiData().get(EpiData.RODENTS)),
+				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
+
+		cq.distinct(true);
 
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
 
@@ -387,7 +410,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)));
+		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
 
 		List<ContactExportDto> exportContacts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
@@ -409,6 +432,17 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
 
+			Map<Long, List<EpiDataTravel>> travels = null;
+			List<EpiDataTravel> travelsList = null;
+			CriteriaQuery<EpiDataTravel> travelsCq = cb.createQuery(EpiDataTravel.class);
+			Root<EpiDataTravel> travelsRoot = travelsCq.from(EpiDataTravel.class);
+			Join<EpiDataTravel, EpiData> travelsEpiDataJoin = travelsRoot.join(EpiDataTravel.EPI_DATA, JoinType.LEFT);
+			Expression<String> epiDataIdsExpr = travelsEpiDataJoin.get(EpiData.ID);
+			travelsCq.where(epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())));
+			travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
+			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
+
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
 			for (ContactExportDto exportContact : exportContacts) {
@@ -426,6 +460,29 @@ public class ContactFacadeEjb implements ContactFacade {
 					exportContact.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
 					exportContact
 						.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+				}
+
+				if (travels != null) {
+					Optional.ofNullable(travels.get(exportContact.getEpiDataId())).ifPresent(caseTravels -> {
+						StringBuilder travelHistoryBuilder = new StringBuilder();
+						caseTravels.forEach(travel -> {
+							travelHistoryBuilder.append(
+								EpiDataTravelHelper.buildTravelString(
+									travel.getTravelType(),
+									travel.getTravelDestination(),
+									travel.getTravelDateFrom(),
+									travel.getTravelDateTo(),
+									userLanguage))
+								.append(", ");
+						});
+						if (travelHistoryBuilder.length() > 0) {
+							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length());
+						}
+						if (travelHistoryBuilder.length() == 0 && exportContact.getTraveled() != null) {
+							travelHistoryBuilder.append(exportContact.getTraveled());
+						}
+						exportContact.setTravelHistory(travelHistoryBuilder.toString());
+					});
 				}
 
 //				pseudonymizationService.pseudonymizeDto(
@@ -816,7 +873,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		// use only date, not time
 		target.setLastContactDate(
 			source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
-
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());
@@ -844,6 +904,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -863,6 +924,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
 
 		return target;
 	}
@@ -987,6 +1050,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportDateTime(source.getReportDateTime());
 
 		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());
@@ -1014,6 +1081,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -1033,6 +1101,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
 
 		return target;
 	}
@@ -1225,6 +1295,11 @@ public class ContactFacadeEjb implements ContactFacade {
 //			});
 
 		return contacts;
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return this.contactService.exists(uuid);
 	}
 
 	@LocalBean

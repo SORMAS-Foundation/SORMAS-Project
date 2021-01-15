@@ -42,7 +42,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
@@ -55,6 +54,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -77,7 +77,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationEditLayout;
@@ -88,8 +90,8 @@ import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoForm;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseForm;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
+import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
-import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
@@ -98,8 +100,14 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class CaseController {
 
@@ -125,7 +133,7 @@ public class CaseController {
 			navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
 		}
 		navigator.addView(HospitalizationView.VIEW_NAME, HospitalizationView.class);
-		navigator.addView(EpiDataView.VIEW_NAME, EpiDataView.class);
+		navigator.addView(CaseEpiDataView.VIEW_NAME, CaseEpiDataView.class);
 		if (userProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
 			navigator.addView(TherapyView.VIEW_NAME, TherapyView.class);
 		}
@@ -135,17 +143,32 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromContact(ContactDto contact) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
+		caseCreateComponent.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+				updatedContact.setContactClassification(ContactClassification.CONFIRMED);
+				FacadeProvider.getContactFacade().saveContact(updatedContact);
+			}
+		});
+
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+	}
+
+	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, disease);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -280,9 +303,11 @@ public class CaseController {
 
 	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(
 		ContactDto convertedContact,
-		EventParticipantDto convertedEventParticipant) {
+		EventParticipantDto convertedEventParticipant,
+		Disease unrelatedDisease) {
 
 		assert (convertedContact == null || convertedEventParticipant == null);
+		assert (unrelatedDisease == null || convertedEventParticipant == null);
 
 		CaseCreateForm createForm = new CaseCreateForm();
 
@@ -297,7 +322,11 @@ public class CaseController {
 				symptoms = null;
 			}
 			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
-			caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
+			if (unrelatedDisease == null) {
+				caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
+			} else {
+				caze = CaseDataDto.buildFromUnrelatedContact(convertedContact, lastVisit, unrelatedDisease);
+			}
 		} else if (convertedEventParticipant != null) {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid());
 			symptoms = null;
@@ -344,44 +373,74 @@ public class CaseController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE),
 			createForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				final CaseDataDto dto = createForm.getValue();
 
-			@Override
-			public void onCommit() {
-				if (!createForm.getFieldGroup().isModified()) {
-					final CaseDataDto dto = createForm.getValue();
+				if (convertedContact != null) {
+					saveCase(dto);
+					// retrieve the contact just in case it has been changed during case saving
+					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
+					// automatically change the contact status to "converted"
+					updatedContact.setContactStatus(ContactStatus.CONVERTED);
+					// set resulting case on contact and save it
+					updatedContact.setResultingCase(dto.toReference());
+					FacadeProvider.getContactFacade().saveContact(updatedContact);
+					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
+					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
+					navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+				} else if (convertedEventParticipant != null) {
+					selectOrCreateCase(dto, convertedEventParticipant.getPerson(), uuid -> {
+						if (uuid == null) {
+							SymptomsDto newSymptoms = SymptomsDto.build();
+							newSymptoms.setOnsetDate(createForm.getOnsetDate());
+							dto.setSymptoms(newSymptoms);
+							saveCase(dto);
+							// retrieve the event participant just in case it has been changed during case saving
+							EventParticipantDto updatedEventParticipant =
+								FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
+							// set resulting case on event participant and save it
+							updatedEventParticipant.setResultingCase(dto.toReference());
+							FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
+							FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), dto.toReference());
+							navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+						} else {
+							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
+							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
+							navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+						}
+					});
+				} else {
+					// look for potential duplicate
+					final PersonDto duplicatePerson = PersonDto.build();
+					duplicatePerson.setFirstName(createForm.getPersonFirstName());
+					duplicatePerson.setLastName(createForm.getPersonLastName());
+					duplicatePerson.setNationalHealthId(createForm.getNationalHealthId());
+					duplicatePerson.setPassportNumber(createForm.getPassportNumber());
+					duplicatePerson.setBirthdateDD(createForm.getBirthdateDD());
+					duplicatePerson.setBirthdateMM(createForm.getBirthdateMM());
+					duplicatePerson.setBirthdateYYYY(createForm.getBirthdateYYYY());
+					duplicatePerson.setSex(createForm.getSex());
+					duplicatePerson.setPresentCondition(createForm.getPresentCondition());
 
-					if (convertedContact != null || convertedEventParticipant != null) {
-						saveConvertedCase(dto, convertedContact, convertedEventParticipant);
-						Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
-					} else {
-						// look for potential duplicate
-						selectOrCreate(dto, createForm.getPersonFirstName(), createForm.getPersonLastName(), uuid -> {
-							if (uuid == null) {
-								PersonDto person = PersonDto.build();
-								person.setFirstName(createForm.getPersonFirstName());
-								person.setLastName(createForm.getPersonLastName());
-								person.setBirthdateDD(createForm.getBirthdateDD());
-								person.setBirthdateMM(createForm.getBirthdateMM());
-								person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-								person.setSex(createForm.getSex());
-								person.setPresentCondition(createForm.getPresentCondition());
-								person = FacadeProvider.getPersonFacade().savePerson(person);
-								dto.setPerson(person.toReference());
-								SymptomsDto symptoms = SymptomsDto.build();
-								symptoms.setOnsetDate(createForm.getOnsetDate());
-								dto.setSymptoms(symptoms);
-								saveCase(dto);
-								Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
-							} else {
-								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+					ControllerProvider.getPersonController()
+						.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+							if (selectedPerson != null) {
+								dto.setPerson(selectedPerson);
+
+								selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+									if (uuid == null) {
+										SymptomsDto newSymptoms = SymptomsDto.build();
+										newSymptoms.setOnsetDate(createForm.getOnsetDate());
+										dto.setSymptoms(newSymptoms);
+										saveCase(dto);
+										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+									} else {
+										navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+									}
+								});
 							}
-
 						});
-
-					}
 				}
 			}
 		});
@@ -389,43 +448,15 @@ public class CaseController {
 		return editView;
 	}
 
-	private void saveConvertedCase(CaseDataDto resultCase, ContactDto convertedContact, EventParticipantDto convertedEventParticipant) {
-
-		saveCase(resultCase);
-
-		if (convertedEventParticipant != null) {
-			// retrieve the event participant just in case it has been changed during case
-			// saving
-			EventParticipantDto updatedEventParticipant =
-				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
-			// set resulting case on event participant and save it
-			updatedEventParticipant.setResultingCase(resultCase.toReference());
-			FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
-		}
-		if (convertedContact != null) {
-			// retrieve the contact just in case it has been changed during case saving
-			ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
-			// automatically change the contact status to "converted"
-			updatedContact.setContactStatus(ContactStatus.CONVERTED);
-			// set resulting case on contact and save it
-			updatedContact.setResultingCase(resultCase.toReference());
-			FacadeProvider.getContactFacade().saveContact(updatedContact);
-			FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), resultCase.toReference());
-		}
-	}
-
-	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName, Consumer<String> selectedCaseUuidConsumer) {
-
+	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
 		CaseCriteria caseCriteria = new CaseCriteria().disease(caseDto.getDisease()).region(caseDto.getRegion());
-		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria().firstName(personFirstName)
-			.lastName(personLastName)
-			.caseCriteria(caseCriteria)
-			.reportDate(caseDto.getReportDate());
+		CaseSimilarityCriteria criteria =
+			new CaseSimilarityCriteria().personUuid(person.getUuid()).caseCriteria(caseCriteria).reportDate(caseDto.getReportDate());
 
 		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
 		if (similarCases.size() > 0) {
-			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(similarCases);
+			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(caseDto, person, similarCases);
 			pickOrCreateField.setWidth(1280, Unit.PIXELS);
 
 			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
@@ -494,6 +525,7 @@ public class CaseController {
 		boolean isInJurisdiction) {
 		CaseDataDto caze = findCase(caseUuid);
 		CaseDataForm caseEditForm = new CaseDataForm(
+			caseUuid,
 			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
 			caze.getDisease(),
 			viewMode,
@@ -1163,11 +1195,12 @@ public class CaseController {
 		UI.getCurrent().addWindow(newExportWindow);
 	}
 
-	public void lineListing() {
+	public void openLineListingWindow() {
 
 		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
 
 		LineListingLayout lineListingForm = new LineListingLayout(window);
+		lineListingForm.setSaveCallback(cases -> saveCasesFromLineListing(lineListingForm, cases));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
 			lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
@@ -1181,5 +1214,58 @@ public class CaseController {
 		window.setResizable(false);
 
 		UI.getCurrent().addWindow(window);
+	}
+
+	private void saveCasesFromLineListing(LineListingLayout lineListingForm, List<LineListingLayout.CaseLineDto> cases) {
+		try {
+			lineListingForm.validate();
+		} catch (ValidationRuntimeException e) {
+			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		for (LineListingLayout.CaseLineDto caseLineDto : cases) {
+			CaseDataDto newCase = CaseDataDto.build(PersonDto.build().toReference(), caseLineDto.getDisease());
+
+			newCase.setDiseaseDetails(caseLineDto.getDiseaseDetails());
+			newCase.setRegion(caseLineDto.getRegion());
+			newCase.setDistrict(caseLineDto.getDistrict());
+			newCase.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
+			newCase.setEpidNumber(caseLineDto.getEpidNumber());
+			newCase.setCommunity(caseLineDto.getCommunity());
+			newCase.setHealthFacility(caseLineDto.getFacility());
+			newCase.setHealthFacilityDetails(caseLineDto.getFacilityDetails());
+
+			if (caseLineDto.getDateOfOnset() != null) {
+				newCase.getSymptoms().setOnsetDate(DateHelper8.toDate(caseLineDto.getDateOfOnset()));
+			}
+
+			newCase.setReportingUser(UserProvider.getCurrent().getUserReference());
+
+			final PersonDto newPerson = PersonDto.build();
+			newPerson.setFirstName(caseLineDto.getFirstName());
+			newPerson.setLastName(caseLineDto.getLastName());
+			newPerson.setBirthdateYYYY(caseLineDto.getDateOfBirthYYYY());
+			newPerson.setBirthdateMM(caseLineDto.getDateOfBirthMM());
+			newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
+			newPerson.setSex(caseLineDto.getSex());
+
+			ControllerProvider.getPersonController()
+				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+					if (selectedPerson != null) {
+						newCase.setPerson(selectedPerson);
+
+						selectOrCreateCase(newCase, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+							if (uuid == null) {
+								FacadeProvider.getCaseFacade().saveCase(newCase);
+								Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
+							}
+						});
+					}
+				});
+		}
+
+		lineListingForm.closeWindow();
+		ControllerProvider.getCaseController().navigateToIndex();
 	}
 }

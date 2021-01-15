@@ -55,9 +55,11 @@ public class EventSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.Vie
 	public static final String TAG = EventSummaryFragment.class.getSimpleName();
 
 	private EventStatus statusFilters[] = new EventStatus[] {
-		EventStatus.POSSIBLE,
-		EventStatus.CONFIRMED,
-		EventStatus.NO_EVENT };
+		EventStatus.SIGNAL,
+		EventStatus.EVENT,
+		EventStatus.SCREENING,
+		EventStatus.CLUSTER,
+		EventStatus.DROPPED };
 
 	private CompositeSubscription mSubscription = new CompositeSubscription();
 

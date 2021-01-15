@@ -29,7 +29,7 @@ WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_Last na
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Disease of source case_v-filterselect-button'))
 
-WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/span_COVID-19'))
+WebUI.click(findTestObject('Events/NewEventView/td_Disease_COVID-19'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Choose Case'))
 

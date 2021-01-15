@@ -45,7 +45,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -55,6 +55,9 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -71,6 +74,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private EventParticipantService eventParticipantService;
 	@EJB
 	private PathogenTestService pathogenTestService;
 	@EJB
@@ -284,7 +289,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, joins.getCaze(), null);
 		Predicate contactFilter = contactService.createUserFilterForJoin(cb, cq, joins.getContact());
-		filter = or(cb, filter, caseFilter, contactFilter);
+		Predicate eventParticipantFilter = eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant());
+		filter = or(cb, filter, caseFilter, contactFilter, eventParticipantFilter);
 
 		return filter;
 	}
@@ -294,9 +300,10 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 
-		// lab users can see samples assigned to their laboratory
 		User currentUser = getCurrentUser();
-		if (currentUser.hasAnyUserRole(UserRole.LAB_USER, UserRole.EXTERNAL_LAB_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		// lab users can see samples assigned to their laboratory
+		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			if (currentUser.getLaboratory() != null) {
 				filter = or(cb, filter, cb.equal(joins.getRoot().get(Sample.LAB), currentUser.getLaboratory()));
 			}
@@ -326,6 +333,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			filter = and(cb, filter, cb.isNotNull(joins.getCaze()));
 		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
 			filter = and(cb, filter, cb.isNotNull(joins.getContact()));
+		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
+			filter = and(cb, filter, cb.isNotNull(joins.getEventParticipant()));
 		}
 
 		if (criteria.getRegion() != null) {
@@ -334,7 +343,10 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 				.otherwise(
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
-						.otherwise(joins.getContactCaseRegion().get(Region.UUID)));
+						.otherwise(
+							cb.selectCase()
+								.when(cb.isNotNull(joins.getContactCaseRegion()), joins.getContactCaseRegion().get(Region.UUID))
+								.otherwise(joins.getEventRegion().get(Region.UUID))));
 			filter = and(cb, filter, cb.equal(regionExpression, criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
@@ -343,7 +355,10 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 				.otherwise(
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
-						.otherwise(joins.getContactCaseDistrict().get(District.UUID)));
+						.otherwise(
+							cb.selectCase()
+								.when(cb.isNotNull(joins.getContactCaseDistrict()), joins.getContactCaseDistrict().get(District.UUID))
+								.otherwise(joins.getEventDistrict().get(District.UUID))));
 			filter = and(cb, filter, cb.equal(districtExpression, criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getCommunity() != null) {
@@ -380,7 +395,10 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		if (criteria.getDisease() != null) {
 			Expression<Object> diseaseExpression = cb.selectCase()
 				.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
-				.otherwise(joins.getContact().get(Contact.DISEASE));
+				.otherwise(
+					cb.selectCase()
+						.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
+						.otherwise(joins.getEvent().get(Event.DISEASE)));
 			filter = and(cb, filter, cb.equal(diseaseExpression, criteria.getDisease()));
 		}
 		if (criteria.getCaze() != null) {
@@ -388,6 +406,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 		if (criteria.getContact() != null) {
 			filter = and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContact().getUuid()));
+		}
+		if (criteria.getEventParticipant() != null) {
+			filter = and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
 		
 		filter = createSampleDateFilter(cb, filter, sample, criteria);

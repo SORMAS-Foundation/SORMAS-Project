@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -168,12 +169,11 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReport, WeeklyReport> from) {
 
 		User currentUser = getCurrentUser();
-		if (currentUser == null) {
-			return null;
-		}
-
 		// National users can access all reports in the system
-		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER, UserRole.REST_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (currentUser == null
+				|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+				|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
@@ -185,8 +185,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 
 		// Supervisors see all reports from users in their region
 		if (currentUser.getRegion() != null
-			&& currentUser
-				.hasAnyUserRole(UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.STATE_OBSERVER)) {
+			&& jurisdictionLevel == JurisdictionLevel.REGION) {
 			filter = cb.or(filter, cb.equal(from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT).get(User.REGION), currentUser.getRegion()));
 		}
 
@@ -209,8 +208,9 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			return usersStream;
 		}
 
+		final JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
 		// National users can access all reports in the system
-		if (user.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER)) {
+		if (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(user.getUserRoles())) {
 			return usersStream;
 		}
 
@@ -220,9 +220,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		// Allow access based on user role
 
 		// Supervisors see all reports from users in their region
-		if (user.getRegion() != null
-			&& user
-				.hasAnyUserRole(UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.STATE_OBSERVER)) {
+		if (user.getRegion() != null && jurisdictionLevel == JurisdictionLevel.REGION) {
 			constraints = constraints.or(u -> user.getRegion().equals(u.getRegion()));
 		}
 

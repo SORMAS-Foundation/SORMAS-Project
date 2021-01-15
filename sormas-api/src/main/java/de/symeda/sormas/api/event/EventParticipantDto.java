@@ -48,6 +48,15 @@ public class EventParticipantDto extends EntityDto {
 		return eventParticipant;
 	}
 
+	public static EventParticipantDto buildFromCase(CaseReferenceDto caseReferenceDto, PersonDto person, EventReferenceDto event) {
+		EventParticipantDto eventParticipantDto = new EventParticipantDto();
+		eventParticipantDto.setUuid(DataHelper.createUuid());
+		eventParticipantDto.setEvent(event);
+		eventParticipantDto.setPerson(person);
+		eventParticipantDto.setResultingCase(caseReferenceDto);
+		return eventParticipantDto;
+	}
+
 	public EventReferenceDto getEvent() {
 		return event;
 	}

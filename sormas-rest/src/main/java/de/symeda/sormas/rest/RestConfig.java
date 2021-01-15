@@ -17,16 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
-import javax.ws.rs.ApplicationPath;
-
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
+import javax.ws.rs.ApplicationPath;
+
+import de.symeda.sormas.rest.swagger.SwaggerConfig;
+
 /**
  * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>
  */
-@ApplicationPath("*")
+@ApplicationPath("/")
 public class RestConfig extends ResourceConfig {
 
 	public RestConfig() {
@@ -40,5 +42,7 @@ public class RestConfig extends ResourceConfig {
 		register(RolesAllowedDynamicFeature.class);
 
 		register(JacksonFeature.class);
+
+		SwaggerConfig.init();
 	}
 }

@@ -51,7 +51,9 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
 public class CaseNewActivity extends BaseEditActivity<Case> {
@@ -202,19 +204,24 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 			return;
 		}
 
-		CasePickOrCreateDialog.pickOrCreateCase(caze, pickedCase -> {
-			if (pickedCase.getUuid().equals(caze.getUuid())) {
-				saveDataInner(caze);
-			} else {
-				if (lineListingDiseases.contains(caze.getDisease())
-					&& Boolean.TRUE.equals(fragment.getContentBinding().rapidCaseEntryCheckBox.getValue())) {
-					setStoredRootEntity(buildRootEntity());
-					fragment.setActivityRootData(getStoredRootEntity());
-					fragment.updateForRapidCaseEntry(caze);
-				} else {
-					finish();
-					CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
-				}
+		SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), person -> {
+			if (person != null) {
+				caze.setPerson(person);
+				CasePickOrCreateDialog.pickOrCreateCase(caze, pickedCase -> {
+					if (pickedCase.getUuid().equals(caze.getUuid())) {
+						saveDataInner(caze);
+					} else {
+						if (lineListingDiseases.contains(caze.getDisease())
+								&& Boolean.TRUE.equals(fragment.getContentBinding().rapidCaseEntryCheckBox.getValue())) {
+							setStoredRootEntity(buildRootEntity());
+							fragment.setActivityRootData(getStoredRootEntity());
+							fragment.updateForRapidCaseEntry(caze);
+						} else {
+							finish();
+							CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
+						}
+					}
+				});
 			}
 		});
 	}

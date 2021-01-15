@@ -31,6 +31,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -51,6 +52,7 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String CASE_LOC = "case";
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
+	public static final String EVENTS_LOC = "events";
 
 	public CaseDataView() {
 		super(VIEW_NAME, false);
@@ -66,7 +68,8 @@ public class CaseDataView extends AbstractCaseView {
 		String htmlLayout = LayoutUtil.fluidRow(
 			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CASE_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -105,19 +108,30 @@ public class CaseDataView extends AbstractCaseView {
 			sampleLocLayout.setSpacing(false);
 
 			SampleListComponent sampleList = new SampleListComponent(getCaseRef());
-			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
+			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-				sampleLocLayout.addComponent(
-					new Label(
-						VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
-						ContentMode.HTML));
+
+				Label infoSample = new Label(
+					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
+					ContentMode.HTML);
+				infoSample.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
+
+				sampleLocLayout.addComponent(infoSample);
 			}
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
-
 		}
+
+		VerticalLayout eventLayout = new VerticalLayout();
+		eventLayout.setMargin(false);
+		eventLayout.setSpacing(false);
+
+		EventListComponent eventList = new EventListComponent(getCaseRef());
+		eventList.addStyleName(CssStyles.SIDE_COMPONENT);
+		eventLayout.addComponent(eventList);
+		layout.addComponent(eventLayout, EVENTS_LOC);
 
 		setCaseEditPermission(container);
 	}

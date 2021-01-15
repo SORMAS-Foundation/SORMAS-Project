@@ -255,6 +255,24 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		return false;
 	}
 
+	@Override
+	public List<FeatureType> getActiveServerFeatureTypes() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FeatureType> cq = cb.createQuery(FeatureType.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+
+		List<FeatureType> serverFeatures = FeatureType.getAllServerFeatures();
+		if (serverFeatures.isEmpty()) {
+			return null;
+		}
+
+		cq.where(cb.and(root.get(FeatureConfiguration.FEATURE_TYPE).in(serverFeatures), cb.isTrue(root.get(FeatureConfiguration.ENABLED))));
+		cq.select(root.get(FeatureConfiguration.FEATURE_TYPE));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public static FeatureConfigurationDto toDto(FeatureConfiguration source) {
 
 		if (source == null) {

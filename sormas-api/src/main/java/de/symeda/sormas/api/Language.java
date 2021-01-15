@@ -14,10 +14,13 @@ public enum Language {
 	EN_NG(new Locale("en", "NG"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
 	EN_GH(new Locale("en", "GH"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
 	FR(new Locale("fr", "FR"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
+	FR_CH(new Locale("fr", "CH"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
 	DE(new Locale("de", "DE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
+	DE_CH(new Locale("de", "CH"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
 	ES_EC(new Locale("es", "EC"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
 	ES_CU(new Locale("es", "CU"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
 	IT(new Locale("it", "IT"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
+	IT_CH(new Locale("it", "CH"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
 	FI(new Locale("fi", "FI"), "dd.MM.yyyy", "dd.MM.yyyy H.mm", "dd.MM");
 
 	/**

@@ -3,7 +3,7 @@
 	
   .v-select-optiongroup-horizontal {	
   
-    padding-right: 2px;
+	  padding-right: 2px;
   
 	  .v-radiobutton {
 	    margin: 0 -2px -2px 0 !important;
@@ -155,6 +155,17 @@
         }
 	  }
     }
+
+	  &.v-select-optiongroup-grid-layout {
+		  .v-radiobutton {
+			  width: 50%;
+
+			  label {
+				  width: 100%;
+				  text-align: center;
+			  }
+		  }
+	  }
    
   }
 

@@ -15,16 +15,6 @@
 
 package de.symeda.sormas.app;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.android.material.navigation.NavigationView;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -49,6 +39,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.navigation.NavigationView;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
@@ -75,6 +73,8 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.NavigationHelper;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public abstract class BaseActivity extends BaseLocalizedActivity implements NotificationContext {
 
@@ -406,7 +406,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 				taskMenu.setVisible(ConfigProvider.hasUserRight(UserRight.TASK_VIEW));
 
 			if (caseMenu != null)
-				caseMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CASE_VIEW));
+				caseMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CASE_SURVEILANCE));
 
 			if (aggregateReportsMenu != null)
 				aggregateReportsMenu.setVisible(
@@ -414,7 +415,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.AGGREGATE_REPORTING));
 
 			if (sampleMenu != null)
-				sampleMenu.setVisible(ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW));
+				sampleMenu.setVisible(ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW)
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
 
 			if (eventMenu != null)
 				eventMenu.setVisible(
@@ -422,7 +424,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE));
 
 			if (contactMenu != null)
-				contactMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW));
+				contactMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CONTACT_TRACING));
 
 			if (reportMenu != null)
 				reportMenu.setVisible(
