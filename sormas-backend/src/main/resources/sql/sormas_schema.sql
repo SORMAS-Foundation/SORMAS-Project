@@ -6233,4 +6233,10 @@ ALTER TABLE systemevent OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (304, 'Add system events #3927');
 
+-- 2020-12-17 Change action's replyingUser to lastModifiedBy #3719
+ALTER TABLE action RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+ALTER TABLE action_history RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (305, 'Change action''s replyingUser to lastModifiedBy #3719');
+
 -- *** Insert new sql commands BEFORE this line ***

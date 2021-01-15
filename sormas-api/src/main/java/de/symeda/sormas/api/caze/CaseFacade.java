@@ -184,6 +184,8 @@ public interface CaseFacade {
 
 	List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType);
 
+	String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids);
+
 	void saveBulkCase(
 		List<String> caseUuidList,
 		CaseBulkEditData updatedCaseBulkEditData,

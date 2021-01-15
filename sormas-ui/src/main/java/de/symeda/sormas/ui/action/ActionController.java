@@ -24,7 +24,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
@@ -86,7 +85,7 @@ public class ActionController {
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				ActionDto dto1 = form.getValue();
-				dto1.setReplyingUser(FacadeProvider.getUserFacade().getCurrentUser().toReference());
+				dto1.setLastModifiedBy(FacadeProvider.getUserFacade().getCurrentUser().toReference());
 				FacadeProvider.getActionFacade().saveAction(dto1);
 				popupWindow.close();
 				callback.run();

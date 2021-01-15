@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.action;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
@@ -48,7 +47,7 @@ public class Action extends AbstractDomainObject {
 	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
 	public static final String REPLY = "reply";
-	public static final String REPLYING_USER = "replyingUser";
+	public static final String LAST_MODIFIED_BY = "lastModifiedBy";
 	public static final String CREATOR_USER = "creatorUser";
 	public static final String PRIORITY = "priority";
 	public static final String DATE = "date";
@@ -69,7 +68,7 @@ public class Action extends AbstractDomainObject {
 	private String title;
 	private String description;
 	private String reply;
-	private User replyingUser;
+	private User lastModifiedBy;
 
 	@Enumerated(EnumType.STRING)
 	public ActionContext getActionContext() {
@@ -162,11 +161,11 @@ public class Action extends AbstractDomainObject {
 	}
 
 	@ManyToOne
-	public User getReplyingUser() {
-		return replyingUser;
+	public User getLastModifiedBy() {
+		return lastModifiedBy;
 	}
 
-	public void setReplyingUser(User replyingUser) {
-		this.replyingUser = replyingUser;
+	public void setLastModifiedBy(User lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
 	}
 }
