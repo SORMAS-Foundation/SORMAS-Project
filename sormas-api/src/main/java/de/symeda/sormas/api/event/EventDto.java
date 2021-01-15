@@ -43,6 +43,7 @@ public class EventDto extends PseudonymizableDto {
 	public static final String PARTICIPANTS_COUNT = "participantCount";
 	public static final String EVENT_ACTIONS = "eventActions";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String NOSOCOMIAL = "nosocomial";
@@ -82,6 +83,7 @@ public class EventDto extends PseudonymizableDto {
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
 	private String externalId;
+	private String externalToken;
 	private String eventTitle;
 	@Required
 	private String eventDesc;
@@ -179,6 +181,12 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public String getEventTitle() {

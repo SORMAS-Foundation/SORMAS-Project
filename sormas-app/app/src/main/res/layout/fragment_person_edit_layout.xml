@@ -579,6 +579,22 @@
                 app:textArea="true"
                 style="@style/ControlSingleColumnStyle" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_externalId"
+                    app:value="@={data.externalId}"
+                    style="@style/ControlFirstOfTwoColumnsStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_externalToken"
+                    app:value="@={data.externalToken}"
+                    style="@style/ControlSecondOfTwoColumnsStyle"/>
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

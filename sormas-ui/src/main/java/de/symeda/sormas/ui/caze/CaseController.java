@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,6 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
@@ -91,8 +91,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationEditLayout;
-import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsGrid;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.messaging.SmsComponent;
@@ -104,6 +102,7 @@ import de.symeda.sormas.ui.epidata.CaseEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
+import de.symeda.sormas.ui.survnet.SurvnetGateway;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -1251,25 +1250,6 @@ public class CaseController {
 		}
 	}
 
-	public void openEditExportConfigurationWindow(CaseExportConfigurationsGrid grid, ExportConfigurationDto config) {
-
-		Window newExportWindow = VaadinUiUtil.createPopupWindow();
-		CaseExportConfigurationEditLayout editLayout = new CaseExportConfigurationEditLayout(config, (exportConfiguration) -> {
-			FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
-			newExportWindow.close();
-			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Type.WARNING_MESSAGE, false)
-				.show(Page.getCurrent());
-			grid.reload();
-		}, () -> {
-			newExportWindow.close();
-			grid.reload();
-		});
-		newExportWindow.setWidth(1024, Unit.PIXELS);
-		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
-		newExportWindow.setContent(editLayout);
-		UI.getCurrent().addWindow(newExportWindow);
-	}
-
 	public void openLineListingWindow() {
 
 		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
@@ -1366,4 +1346,39 @@ public class CaseController {
 
 		return titleLayout;
 	}
+
+	public void sendCasesToSurvnet(Collection<? extends CaseIndexDto> selectedCases, Runnable reloadCallback) {
+		List<String> selectedUuids = selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
+
+		// Show an error when at least one selected case is not a CORONAVIRUS case
+		Optional<? extends CaseIndexDto> nonCoronavirusCase = selectedCases.stream().filter(c -> c.getDisease() != Disease.CORONAVIRUS).findFirst();
+		if (nonCoronavirusCase.isPresent()) {
+			Notification.show(
+				String.format(
+					I18nProperties.getString(Strings.errorSurvNetNonCoronavirusCase),
+					DataHelper.getShortUuid(nonCoronavirusCase.get().getUuid()),
+					I18nProperties.getEnumCaption(Disease.CORONAVIRUS)),
+				"",
+				Type.ERROR_MESSAGE);
+			return;
+		}
+
+		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
+		String ownershipHandedOverUuid = FacadeProvider.getCaseFacade().getFirstCaseUuidWithOwnershipHandedOver(selectedUuids);
+		if (ownershipHandedOverUuid != null) {
+			Notification.show(
+				String.format(I18nProperties.getString(Strings.errorSurvNetCaseNotOwned), DataHelper.getShortUuid(ownershipHandedOverUuid)),
+				"",
+				Type.ERROR_MESSAGE);
+			return;
+		}
+
+		SurvnetGateway.sendToSurvnet(selectedUuids);
+
+		Notification successNotification =
+			new Notification(I18nProperties.getString(Strings.notificationCasesSentToSurvNet), "", Type.HUMANIZED_MESSAGE);
+		successNotification.setDelayMsec(10000);
+		successNotification.show(Page.getCurrent());
+	}
+
 }

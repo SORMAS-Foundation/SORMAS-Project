@@ -47,7 +47,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 	private static final long serialVersionUID = -6759724916847528789L;
 
 	private static final String CREATING_LABEL_LOC = "creatingLabelLoc";
-	private static final String REPLYING_LABEL_LOC = "replyingLabelLoc";
+	private static final String LAST_MODIFIED_BY_LABEL_LOC = "lastModifiedByLabelLoc";
 	private static final String STATUS_CHANGE_LABEL_LOC = "statusChangeLabelLoc";
 
 	//@formatter:off
@@ -59,7 +59,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 			loc(CREATING_LABEL_LOC) +
 			fluidRowLocs(ActionDto.TITLE) +
 			fluidRowLocs(ActionDto.DESCRIPTION) +
-			loc(REPLYING_LABEL_LOC) +
+			loc(LAST_MODIFIED_BY_LABEL_LOC) +
 			fluidRowLocs(ActionDto.REPLY) +
 			fluidRowLocs(4, ActionDto.ACTION_STATUS, 8, STATUS_CHANGE_LABEL_LOC);
 	//@formatter:on
@@ -70,7 +70,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		addValueChangeListener(e -> {
 			updateByActionContext();
 			updateByCreating();
-			updateReplyInfo();
+			updateLastModifiedByInfo();
 			updateStatusChangeInfo();
 		});
 
@@ -108,15 +108,15 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		setReadOnly(true, ActionDto.ACTION_CONTEXT, ActionDto.EVENT);
 	}
 
-	private void updateReplyInfo() {
-		if (getValue().getReplyingUser() != null && getValue().getChangeDate() != null) {
+	private void updateLastModifiedByInfo() {
+		if (getValue().getLastModifiedBy() != null && getValue().getChangeDate() != null) {
 			Label replyLabel = new Label(
 				String.format(
-					I18nProperties.getCaption(Captions.actionReplyingLabel),
+					I18nProperties.getCaption(Captions.actionLastModifiedByLabel),
 					DateFormatHelper.formatDate(getValue().getChangeDate()),
-					getValue().getReplyingUser().getCaption()));
+					getValue().getLastModifiedBy().getCaption()));
 			replyLabel.addStyleNames(CssStyles.LABEL_ITALIC);
-			getContent().addComponent(replyLabel, REPLYING_LABEL_LOC);
+			getContent().addComponent(replyLabel, LAST_MODIFIED_BY_LABEL_LOC);
 		}
 	}
 

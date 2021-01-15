@@ -23,6 +23,7 @@ import com.vaadin.v7.data.util.converter.Converter;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 
 @SuppressWarnings("serial")
 public class V7HtmlReferenceDtoConverter implements Converter<String, ReferenceDto> {
@@ -35,10 +36,12 @@ public class V7HtmlReferenceDtoConverter implements Converter<String, ReferenceD
 	@Override
 	public String convertToPresentation(ReferenceDto value, Class<? extends String> targetType, Locale locale) throws ConversionException {
 
-		String html;
+		final String html;
 		if (value != null) {
-			String uuid = value.getUuid();
-			html = "<a title='" + uuid + "'>" + DataHelper.getShortUuid(uuid) + "</a> (" + value.getCaption() + ")";
+			html = String.format(
+				"%s (%s)",
+				HtmlHelper.buildHyperlinkTitle(value.getUuid(), DataHelper.getShortUuid(value.getUuid())),
+				HtmlHelper.cleanHtml(value.getCaption()));
 		} else {
 			html = "";
 		}

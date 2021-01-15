@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.person;
 
 import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.SIMILARITY_OPERATOR;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -202,7 +203,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date));
 			Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
-			contactPersonsFilter = cb.and(contactPersonsFilter, cb.or(dateFilter, contactDateFilter));
+			contactPersonsFilter = and(cb, contactPersonsFilter, cb.or(dateFilter, contactDateFilter));
 		}
 		if (contactPersonsFilter != null) {
 			contactPersonsQuery.where(contactPersonsFilter);
@@ -222,7 +223,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, DateHelper.toTimestampUpper(date));
 			Predicate eventParticipantDateFilter =
 				eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, DateHelper.toTimestampUpper(date));
-			eventPersonsFilter = cb.and(eventPersonsFilter, cb.or(dateFilter, eventParticipantDateFilter));
+			eventPersonsFilter = and(cb, eventPersonsFilter, cb.or(dateFilter, eventParticipantDateFilter));
 		}
 		if (eventPersonsFilter != null) {
 			eventPersonsQuery.where(eventPersonsFilter);
@@ -311,24 +312,24 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, personCaseJoin);
 		Predicate caseUserFilter = caseService.createUserFilter(cb, personQuery, personCaseJoin);
 		Predicate personCasePredicate =
-				CriteriaBuilderHelper.and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
+				and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
 
 		// Persons of active contacts
 		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, personContactJoin);
 		Predicate contactUserFilter = contactService.createUserFilter(cb, personQuery, personContactJoin);
 		Predicate personContactPredicate =
-				CriteriaBuilderHelper.and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
+				and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
 
 		// Persons of event participants in active events
 		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin);
 		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
 		Predicate personEventParticipantPredicate =
-				CriteriaBuilderHelper.and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
+				and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
 
 		caseContactEventParticipantLinkPredicate =
 				CriteriaBuilderHelper.or(cb, personCasePredicate, personContactPredicate, personEventParticipantPredicate);
 
-		personQuery.where(CriteriaBuilderHelper.and(cb, personSimilarityFilter, caseContactEventParticipantLinkPredicate));
+		personQuery.where(and(cb, personSimilarityFilter, caseContactEventParticipantLinkPredicate));
 		personQuery.distinct(true);
 
 		TypedQuery<PersonNameDto> query = em.createQuery(personQuery);
@@ -410,14 +411,14 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 			String name = criteria.getFirstName() + " " + criteria.getLastName();
 
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, nameExpr, cb.literal(name))));
+			filter = and(cb, filter, cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, nameExpr, cb.literal(name))));
 		}
 
 		if (criteria.getSex() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.SEX)), cb.equal(personFrom.get(Person.SEX), criteria.getSex())));
+			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.SEX)), cb.equal(personFrom.get(Person.SEX), criteria.getSex())));
 		}
 		if (criteria.getBirthdateYYYY() != null) {
-			filter = CriteriaBuilderHelper.and(
+			filter = and(
 				cb,
 				filter,
 				cb.or(
@@ -425,19 +426,19 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 					cb.equal(personFrom.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY())));
 		}
 		if (criteria.getBirthdateMM() != null) {
-			filter = CriteriaBuilderHelper.and(
+			filter = and(
 				cb,
 				filter,
 				cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_MM)), cb.equal(personFrom.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM())));
 		}
 		if (criteria.getBirthdateDD() != null) {
-			filter = CriteriaBuilderHelper.and(
+			filter = and(
 				cb,
 				filter,
 				cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
 		}
 		if (!StringUtils.isBlank(criteria.getNationalHealthId())) {
-			filter = CriteriaBuilderHelper.and(
+			filter = and(
 				cb,
 				filter,
 				cb.or(

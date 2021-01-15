@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -62,6 +63,8 @@ import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
@@ -82,6 +85,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.systemevents.SystemEventDto;
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -1272,6 +1278,30 @@ public class TestDataCreator {
 		document.setRelatedEntityUuid(relatedEntityUuid);
 
 		return beanTest.getDocumentFacade().saveDocument(document, content);
+	}
+
+	public ExportConfigurationDto createExportConfiguration(String name, ExportType exportType, Set<String> properites, UserReferenceDto user) {
+		ExportConfigurationDto exportConfiguration = ExportConfigurationDto.build(user, exportType);
+		exportConfiguration.setName(name);
+		exportConfiguration.setProperties(properites);
+
+		beanTest.getExportFacade().saveExportConfiguration(exportConfiguration);
+
+		return exportConfiguration;
+	}
+
+	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, SystemEventStatus status) {
+		return createSystemEvent(type, startDate, new Date(startDate.getTime() + 1000), status, "Generated for test purposes");
+	};
+
+	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, Date endDate, SystemEventStatus status, String additionalInfo) {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		systemEvent.setType(type);
+		systemEvent.setStartDate(startDate);
+		systemEvent.setEndDate(endDate);
+		systemEvent.setStatus(status);
+		systemEvent.setAdditionalInfo(additionalInfo);
+		return systemEvent;
 	}
 
 	/**

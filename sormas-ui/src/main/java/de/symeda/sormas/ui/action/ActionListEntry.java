@@ -80,11 +80,11 @@ public class ActionListEntry extends HorizontalLayout {
 		descReplyLayout.addStyleName(CssStyles.RICH_TEXT_CONTENT_CONTAINER);
 		withContentLayout.addComponents(descReplyLayout);
 
-		Label description = new Label(cleanHtml(action.getDescription(), HtmlHelper.EventActionWhitelist), ContentMode.HTML);
+		Label description = new Label(cleanHtml(action.getDescription(), HtmlHelper.EVENTACTION_WHITELIST), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		descReplyLayout.addComponent(description);
 		if (!Strings.isNullOrEmpty(action.getReply())) {
-			Label replyLabel = new Label(cleanHtml(action.getReply(), HtmlHelper.EventActionWhitelist), ContentMode.HTML);
+			Label replyLabel = new Label(cleanHtml(action.getReply(), HtmlHelper.EVENTACTION_WHITELIST), ContentMode.HTML);
 			replyLabel.setWidth(100, Unit.PERCENTAGE);
 			replyLabel.addStyleName(CssStyles.REPLY);
 			descReplyLayout.addComponent(replyLabel);
@@ -108,15 +108,15 @@ public class ActionListEntry extends HorizontalLayout {
 		creatorLabel.addStyleName(CssStyles.LABEL_ITALIC);
 		topLeftLayout.addComponent(creatorLabel);
 
-		Label replyingUserLabel = null;
-		if (action.getReplyingUser() != null) {
-			replyingUserLabel = new Label(
+		Label lastModifiedByLabel = null;
+		if (action.getLastModifiedBy() != null) {
+			lastModifiedByLabel = new Label(
 				String.format(
-					I18nProperties.getCaption(Captions.actionReplyingLabel),
+					I18nProperties.getCaption(Captions.actionLastModifiedByLabel),
 					DateFormatHelper.formatDate(action.getChangeDate()),
-					action.getReplyingUser().getCaption()));
-			replyingUserLabel.addStyleName(CssStyles.LABEL_ITALIC);
-			topLeftLayout.addComponent(replyingUserLabel);
+					action.getLastModifiedBy().getCaption()));
+			lastModifiedByLabel.addStyleName(CssStyles.LABEL_ITALIC);
+			topLeftLayout.addComponent(lastModifiedByLabel);
 		}
 
 		topLayout.addComponent(topLeftLayout);
@@ -164,8 +164,8 @@ public class ActionListEntry extends HorizontalLayout {
 				statusChangeLabel.addStyleName(statusStyle);
 			}
 			creatorLabel.addStyleName(statusStyle);
-			if (replyingUserLabel != null) {
-				replyingUserLabel.addStyleName(statusStyle);
+			if (lastModifiedByLabel != null) {
+				lastModifiedByLabel.addStyleName(statusStyle);
 			}
 			priorityLabel.addStyleName(statusStyle);
 		}

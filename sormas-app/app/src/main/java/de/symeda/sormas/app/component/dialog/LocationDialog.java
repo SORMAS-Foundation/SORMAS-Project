@@ -16,6 +16,7 @@
 package de.symeda.sormas.app.component.dialog;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
+import androidx.databinding.Bindable;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
@@ -172,6 +174,21 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationDistrict.setRequired(required);
 	}
 
+    public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+        final int visibility = visible ? VISIBLE : GONE;
+        contentBinding.facilityTypeGroup.setVisibility(visibility);
+        contentBinding.locationFacility.setVisibility(visibility);
+        contentBinding.locationFacilityDetails.setVisibility(visibility);
+        contentBinding.locationFacilityType.setVisibility(visibility);
+
+        if (!visible && clearOnHidden) {
+			contentBinding.facilityTypeGroup.setValue(null);
+            contentBinding.locationFacility.setValue(null);
+            contentBinding.locationFacilityDetails.setValue(null);
+            contentBinding.locationFacilityType.setValue(null);
+        }
+    }
+
 	public DialogLocationLayoutBinding getContentBinding() {
 		return contentBinding;
 	}
@@ -230,12 +247,18 @@ public class LocationDialog extends FormDialog {
 		contentBinding.locationAddressType.setValidationCallback(() -> contentBinding.locationAddressType.getValue() != null);
 
 		contentBinding.locationAddressType.addValueChangedListener(e -> {
+			Object locationAddressTypeValue = contentBinding.locationAddressType.getValue();
+			if (locationAddressTypeValue == null || PersonAddressType.HOME.equals(locationAddressTypeValue)) {
+				contentBinding.locationAddressTypeDetails.setVisibility(GONE);
+			} else {
+				contentBinding.locationAddressTypeDetails.setVisibility(View.VISIBLE);
+			}
 			FacilityTypeGroup oldGroup = (FacilityTypeGroup) contentBinding.facilityTypeGroup.getValue();
 			FacilityType oldType = (FacilityType) contentBinding.locationFacilityType.getValue();
 			Facility oldFacility = (Facility) contentBinding.locationFacility.getValue();
 			String oldDetails = contentBinding.locationFacilityDetails.getValue();
 			contentBinding.facilityTypeGroup.setSpinnerData(null);
-			if (PersonAddressType.HOME.equals(contentBinding.locationAddressType.getValue())) {
+			if (PersonAddressType.HOME.equals(locationAddressTypeValue)) {
 				contentBinding.facilityTypeGroup.setSpinnerData(DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups()));
 			} else {
 				contentBinding.facilityTypeGroup.setSpinnerData(DataUtils.getEnumItems(FacilityTypeGroup.class));
@@ -246,5 +269,4 @@ public class LocationDialog extends FormDialog {
 			contentBinding.locationFacilityDetails.setValue(oldDetails);
 		});
 	}
-
 }

@@ -113,6 +113,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String HAS_COVID_APP = "hasCovidApp";
 	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
@@ -301,6 +302,8 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String externalId;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	private String externalToken;
 
 	@HideForCountriesExcept
 	private CountryReferenceDto birthCountry;
@@ -722,6 +725,12 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public CountryReferenceDto getBirthCountry() {

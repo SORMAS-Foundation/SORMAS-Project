@@ -75,6 +75,11 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 					CaseDataDto.EXTERNAL_ID,
 					caseDto.getExternalID(),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_ID)).setDescription(caseDto.getEpidNumber());
+				addDescLabel(
+						leftColumnLayout,
+						CaseDataDto.EXTERNAL_TOKEN,
+						caseDto.getExternalToken(),
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_TOKEN)).setDescription(caseDto.getExternalToken());
 			} else {
 				addDescLabel(
 					leftColumnLayout,

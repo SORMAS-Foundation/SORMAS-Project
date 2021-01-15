@@ -22,6 +22,8 @@ import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,7 +65,6 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,8 +178,8 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVi
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
@@ -588,6 +590,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID),
+				caseRoot.get(Case.EXTERNAL_TOKEN),
 				joins.getPerson().get(Person.BIRTH_NAME),
 				joins.getPersonBirthCountry().get(Country.ISO_CODE),
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -759,7 +762,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
 
 				visitsCq.where(
-					CriteriaBuilderHelper.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
+					CriteriaBuilderHelper
+						.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
 				visitsCq.multiselect(
 					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
@@ -865,6 +869,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						caseSamples.sort((o1, o2) -> o2.getSampleDateTime().compareTo(o1.getSampleDateTime()));
 						for (Sample sample : caseSamples) {
 							EmbeddedSampleExportDto sampleDto = new EmbeddedSampleExportDto(
+								sample.getUuid(),
 								sample.getSampleDateTime(),
 								sample.getLab() != null
 									? FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails())
@@ -1807,6 +1812,42 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 		}
+
+		// If the case is a newly created case or if it was not in a CONFIRMED status
+		// and now the case is in a CONFIRMED status, notify related surveillance officers
+		Set<CaseClassification> confirmedClassifications = CaseClassification.getConfirmedClassifications();
+		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification()))
+			&& confirmedClassifications.contains(newCase.getCaseClassification())) {
+			sendConfirmedCaseNotificationsForEvents(newCase);
+		}
+	}
+
+	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
+		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+		Map<String, User> surveillanceOfficerByEventByEventUuid =
+			eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
+		for (Map.Entry<String, User> entry : surveillanceOfficerByEventByEventUuid.entrySet()) {
+			try {
+				messagingService.sendMessage(
+					entry.getValue(),
+					MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+					new Object[] {
+						caze.getDisease().getName() },
+					String.format(
+						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
+						DataHelper.getShortUuid(entry.getKey()),
+						caze.getDisease().getName(),
+						DataHelper.getShortUuid(caze.getUuid())),
+					MessageType.EMAIL,
+					MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String.format(
+						"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+						entry.getValue().getUuid()));
+			}
+		}
 	}
 
 	public void setResponsibleSurveillanceOfficer(Case caze) {
@@ -2106,6 +2147,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -2364,6 +2406,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -2831,7 +2874,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
 				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
 				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
-				contactFacade.saveContact(newContact, false);
+				contactFacade.saveContact(newContact, false, false);
 			} else {
 				// simply move existing entities to the merge target
 				contact.setCaze(leadCase);
@@ -3180,6 +3223,24 @@ public class CaseFacadeEjb implements CaseFacade {
 					mml.getSendingUser().toReference(),
 					mml.getRecipientPerson().toReference()))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+		Join<Case, SormasToSormasShareInfo> sormasToSormasJoin = caseRoot.join(Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
+
+		cq.select(caseRoot.get(Case.UUID));
+		cq.where(cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)));
+		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	@LocalBean
