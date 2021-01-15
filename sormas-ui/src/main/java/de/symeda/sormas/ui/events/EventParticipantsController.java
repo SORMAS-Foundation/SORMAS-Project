@@ -313,8 +313,8 @@ public class EventParticipantsController {
 					.append(
 						PersonHelper.formatBirthdate(
 							eventParticipant.getPerson().getBirthdateDD(),
-							eventParticipant.getPerson().getBirthdateDD(),
-							eventParticipant.getPerson().getBirthdateDD(),
+							eventParticipant.getPerson().getBirthdateMM(),
+							eventParticipant.getPerson().getBirthdateYYYY(),
 							I18nProperties.getUserLanguage()))
 					.append(")");
 			}

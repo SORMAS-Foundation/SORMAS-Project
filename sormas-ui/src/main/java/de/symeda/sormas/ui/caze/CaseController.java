@@ -1371,8 +1371,8 @@ public class CaseController {
 					.append(
 						PersonHelper.formatBirthdate(
 							casePerson.getBirthdateDD(),
-							casePerson.getBirthdateDD(),
-							casePerson.getBirthdateDD(),
+							casePerson.getBirthdateMM(),
+							casePerson.getBirthdateYYYY(),
 							I18nProperties.getUserLanguage()))
 					.append(")");
 			}
