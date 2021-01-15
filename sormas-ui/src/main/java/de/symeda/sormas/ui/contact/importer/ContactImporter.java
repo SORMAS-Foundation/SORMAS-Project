@@ -202,7 +202,7 @@ public class ContactImporter extends DataImporter {
 						}
 					}
 
-					FacadeProvider.getContactFacade().saveContact(newContact, false);
+					FacadeProvider.getContactFacade().saveContact(newContact, true, false);
 
 					consumer.result = null;
 					return ImportLineResult.SUCCESS;

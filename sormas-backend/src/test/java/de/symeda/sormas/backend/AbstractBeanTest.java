@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.systemevents.SystemEventFacade;
+import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -362,7 +364,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PointOfEntryService.class);
 	}
 
-	public CountryService getCountryService() { return getBean(CountryService.class); }
+	public CountryService getCountryService() {
+		return getBean(CountryService.class);
+	}
 
 	public RegionService getRegionService() {
 		return getBean(RegionService.class);
@@ -514,4 +518,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public ExportFacade getExportFacade() {
 		return getBean(ExportFacadeEjb.ExportFacadeEjbLocal.class);
 	}
+
+	public SystemEventFacade getSystemEventFacade() {
+		return getBean((SystemEventFacadeEjb.SystemEventFacadeEjbLocal.class));
+	}
+
 }

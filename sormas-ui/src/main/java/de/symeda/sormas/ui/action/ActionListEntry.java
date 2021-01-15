@@ -80,11 +80,11 @@ public class ActionListEntry extends HorizontalLayout {
 		descReplyLayout.addStyleName(CssStyles.RICH_TEXT_CONTENT_CONTAINER);
 		withContentLayout.addComponents(descReplyLayout);
 
-		Label description = new Label(cleanHtml(action.getDescription(), HtmlHelper.EventActionWhitelist), ContentMode.HTML);
+		Label description = new Label(cleanHtml(action.getDescription(), HtmlHelper.EVENTACTION_WHITELIST), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		descReplyLayout.addComponent(description);
 		if (!Strings.isNullOrEmpty(action.getReply())) {
-			Label replyLabel = new Label(cleanHtml(action.getReply(), HtmlHelper.EventActionWhitelist), ContentMode.HTML);
+			Label replyLabel = new Label(cleanHtml(action.getReply(), HtmlHelper.EVENTACTION_WHITELIST), ContentMode.HTML);
 			replyLabel.setWidth(100, Unit.PERCENTAGE);
 			replyLabel.addStyleName(CssStyles.REPLY);
 			descReplyLayout.addComponent(replyLabel);
