@@ -88,4 +88,6 @@ public interface FacilityFacade {
 	Map<String, String> getDistrictUuidsForFacilities(List<FacilityReferenceDto> facilities);
 
 	Map<String, String> getCommunityUuidsForFacilities(List<FacilityReferenceDto> facilities);
+
+	List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities);
 }

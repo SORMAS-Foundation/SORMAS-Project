@@ -1838,12 +1838,12 @@ public interface Captions {
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
-	String View_labMessages = "View.labMessages";
 	String View_reports = "View.reports";
 	String View_reports_sub = "View.reports.sub";
 	String View_samples = "View.samples";
 	String View_samples_archive = "View.samples.archive";
 	String View_samples_data = "View.samples.data";
+	String View_samples_labMessages = "View.samples.labMessages";
 	String View_samples_sub = "View.samples.sub";
 	String View_statistics = "View.statistics";
 	String View_statistics_database_export = "View.statistics.database-export";

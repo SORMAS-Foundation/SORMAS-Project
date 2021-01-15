@@ -65,7 +65,6 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		mainLayout.setSpacing(true);
 		mainLayout.setMargin(false);
 		mainLayout.setSizeUndefined();
-		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
 		addInfoComponent();
 		addLabMessageComponent();

@@ -17,11 +17,9 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-import java.util.Date;
-
 public class LabMessagesView extends AbstractView {
 
-	public static final String VIEW_NAME = "labMessages";
+	public static final String VIEW_NAME = SamplesView.VIEW_NAME + "/labMessages";
 
 	private final LabMessagesGridComponent listComponent;
 

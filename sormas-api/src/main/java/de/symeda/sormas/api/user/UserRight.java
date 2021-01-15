@@ -1217,6 +1217,10 @@ public enum UserRight {
 			NATIONAL_CLINICIAN,
 			POE_SUPERVISOR,
 			POE_NATIONAL_USER
+	),
+	LAB_MESSAGES(
+			NATIONAL_USER,
+			SURVEILLANCE_SUPERVISOR
 	);
 	//@formatter:on
 

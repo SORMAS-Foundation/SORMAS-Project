@@ -70,19 +70,21 @@ public class SamplesView extends AbstractView {
 		setSizeFull();
 		addComponent(sampleListComponent);
 
-		OptionGroup samplesViewSwitcher = new OptionGroup();
-		samplesViewSwitcher.setId("samplesViewSwitcher");
-		CssStyles.style(samplesViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		for (SamplesViewType type : SamplesViewType.values()) {
-			samplesViewSwitcher.addItem(type);
-			samplesViewSwitcher.setItemCaption(type, I18nProperties.getEnumCaption(type));
-		}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+			OptionGroup samplesViewSwitcher = new OptionGroup();
+			samplesViewSwitcher.setId("samplesViewSwitcher");
+			CssStyles.style(samplesViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+			for (SamplesViewType type : SamplesViewType.values()) {
+				samplesViewSwitcher.addItem(type);
+				samplesViewSwitcher.setItemCaption(type, I18nProperties.getEnumCaption(type));
+			}
 
-		samplesViewSwitcher.setValue(SamplesViewType.SAMPLES);
-		samplesViewSwitcher.addValueChangeListener(e -> {
-			SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
-		});
-		addHeaderComponent(samplesViewSwitcher);
+			samplesViewSwitcher.setValue(SamplesViewType.SAMPLES);
+			samplesViewSwitcher.addValueChangeListener(e -> {
+				SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
+			});
+			addHeaderComponent(samplesViewSwitcher);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();

@@ -80,7 +80,9 @@ public class SampleController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(SamplesView.VIEW_NAME, SamplesView.class);
 		navigator.addView(SampleDataView.VIEW_NAME, SampleDataView.class);
-		navigator.addView(LabMessagesView.VIEW_NAME, LabMessagesView.class);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+			navigator.addView(LabMessagesView.VIEW_NAME, LabMessagesView.class);
+		}
 	}
 
 	public void navigateToData(String sampleUuid) {
