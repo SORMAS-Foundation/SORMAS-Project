@@ -1536,6 +1536,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				investigationStatusChange,
 				outcomeChange,
 				surveillanceOfficerChange);
+
 			caze.setRegion(newRegion);
 			caze.setDistrict(newDistrict);
 			caze.setCommunity(newCommunity);
