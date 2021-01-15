@@ -810,10 +810,10 @@ public class ContactController {
 		titleLayout.addComponent(classificationLabel);
 
 		String shortUuid = DataHelper.getShortUuid(contact.getUuid());
-		String contactPersonFullname = contact.getPerson().getCaption();
+		String contactPersonFullName = contact.getPerson().getCaption();
 		StringBuilder contactLabelSb = new StringBuilder();
-		if (StringUtils.isNotBlank(contactPersonFullname)) {
-			contactLabelSb.append(contactPersonFullname);
+		if (StringUtils.isNotBlank(contactPersonFullName)) {
+			contactLabelSb.append(contactPersonFullName);
 
 			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 			if (contactPerson.getBirthdateDD() != null && contactPerson.getBirthdateMM() != null && contactPerson.getBirthdateYYYY() != null) {
