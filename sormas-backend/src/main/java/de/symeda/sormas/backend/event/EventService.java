@@ -559,6 +559,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter,
 				cb.equal(from.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID), eventCriteria.getResponsibleUser().getUuid()));
 		}
+		if (eventCriteria.getResponsibleUserRole() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.isMember(eventCriteria.getResponsibleUserRole(), from.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.USER_ROLES)));
+		}
 		if (eventCriteria.getFreeText() != null) {
 			String[] textFilters = eventCriteria.getFreeText().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {

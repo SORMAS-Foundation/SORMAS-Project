@@ -3,9 +3,11 @@ package de.symeda.sormas.ui.events;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -97,6 +99,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventIndexDto.DISEASE,
 			EventCriteria.REPORTING_USER_ROLE,
 			EventCriteria.RESPONSIBLE_USER,
+			EventCriteria.RESPONSIBLE_USER_ROLE,
 			EventCriteria.FREE_TEXT };
 	}
 
@@ -106,8 +109,15 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addField(FieldConfiguration.pixelSized(EventCriteria.EVENT_STATUS, 140));
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
-		ComboBox responsibleUserField = addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
-		responsibleUserField.addItems(fetchResponsibleUsersByRegion(currentUserDto().getRegion()));
+		addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
+
+		ComboBox responsibleUserRoleField = addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				EventCriteria.RESPONSIBLE_USER_ROLE,
+				I18nProperties.getString(Strings.promptEventResponsibleUserRoleField),
+				170));
+		FieldHelper.updateEnumData(responsibleUserRoleField, Arrays.asList(UserRole.SURVEILLANCE_OFFICER, UserRole.SURVEILLANCE_SUPERVISOR));
+
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
 		searchField.setNullRepresentation("");
@@ -318,7 +328,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			} else {
 				clearAndDisableFields(LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			}
-			populateResponsibleUsersForRegion(region);
+			updateResponsibleUserFieldItems();
 			break;
 		case LocationDto.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
@@ -327,7 +337,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			} else {
 				clearAndDisableFields(LocationDto.COMMUNITY);
 			}
-			populateResponsibleUsersForDistrict(district, region);
+			updateResponsibleUserFieldItems();
+			break;
+		case EventCriteria.RESPONSIBLE_USER_ROLE:
+			updateResponsibleUserFieldItems();
 			break;
 		}
 	}
@@ -372,6 +385,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		RegionReferenceDto region = criteria.getRegion();
 		DistrictReferenceDto district = criteria.getDistrict();
 		applyRegionAndDistrictFilterDependency(region, LocationDto.DISTRICT, district, LocationDto.COMMUNITY);
+
+		updateResponsibleUserFieldItems(criteria.getResponsibleUserRole(), criteria.getDistrict(), criteria.getRegion());
 	}
 
 	private void applyDateDependencyOnNewValue(String componentId, DateFilterOption dateFilterOption, Date dateFrom, Date dateTo) {
@@ -390,32 +405,34 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		}
 	}
 
-	private void populateResponsibleUsersForRegion(RegionReferenceDto regionReferenceDto) {
-		List<UserReferenceDto> items = fetchResponsibleUsersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
-		populateResponsibleUsers(items);
+	private void updateResponsibleUserFieldItems() {
+		updateResponsibleUserFieldItems(
+			(UserRole) getField(EventCriteria.RESPONSIBLE_USER_ROLE).getValue(),
+			(DistrictReferenceDto) getField(EventCriteria.DISTRICT).getValue(),
+			(RegionReferenceDto) getField(EventCriteria.REGION).getValue());
 	}
 
-	private void populateResponsibleUsersForDistrict(DistrictReferenceDto districtReferenceDto, RegionReferenceDto regionReferenceDto) {
-		if (districtReferenceDto != null) {
-			List<UserReferenceDto> items =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.SURVEILLANCE_OFFICER);
-			items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_SUPERVISOR));
-			populateResponsibleUsers(items);
+	private void updateResponsibleUserFieldItems(UserRole responsibleUserRole, DistrictReferenceDto district, RegionReferenceDto region) {
+		final UserRole[] responsibleUserRoles = Optional.ofNullable(responsibleUserRole)
+			.map(
+				userRole -> new UserRole[] {
+					userRole })
+			.orElse(
+				new UserRole[] {
+					UserRole.SURVEILLANCE_OFFICER,
+					UserRole.SURVEILLANCE_SUPERVISOR });
+
+		final List<UserReferenceDto> items = new ArrayList<>();
+		if (district != null) {
+			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, responsibleUserRoles));
+			if (Arrays.asList(responsibleUserRoles).contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+				items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR));
+			}
 		} else {
-			final ComboBox regionField = getField(EventCriteria.REGION);
-			populateResponsibleUsersForRegion((RegionReferenceDto) regionField.getValue());
+			items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, responsibleUserRoles));
 		}
-	}
 
-	private void populateResponsibleUsers(List<UserReferenceDto> items) {
-		final ComboBox officerField = getField(EventCriteria.RESPONSIBLE_USER);
-		officerField.removeAllItems();
-		officerField.addItems(items);
-	}
-
-	private List<UserReferenceDto> fetchResponsibleUsersByRegion(RegionReferenceDto regionReferenceDto) {
-		return FacadeProvider.getUserFacade()
-			.getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER, UserRole.SURVEILLANCE_SUPERVISOR);
+		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), items);
 	}
 
 	@Override
