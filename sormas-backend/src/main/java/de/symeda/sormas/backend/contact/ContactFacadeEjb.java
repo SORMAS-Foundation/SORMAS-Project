@@ -131,8 +131,8 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -1799,7 +1799,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		// 1 Merge Dtos
 		// 1.1 Contact
 		DtoHelper.fillDto(leadContact, otherContact, cloning);
-		saveContact(leadContact, !cloning);
+		saveContact(leadContact, !cloning, false);
 
 		// 1.2 Person
 		if (!cloning) {
