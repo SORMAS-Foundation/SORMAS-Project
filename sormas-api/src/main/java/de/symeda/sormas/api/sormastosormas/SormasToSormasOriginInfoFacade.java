@@ -19,4 +19,5 @@ import javax.ejb.Remote;
 
 @Remote
 public interface SormasToSormasOriginInfoFacade {
+
 }
