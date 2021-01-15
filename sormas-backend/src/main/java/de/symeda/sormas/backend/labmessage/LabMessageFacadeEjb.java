@@ -221,11 +221,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@Override
 	public void fetchExternalLabMessages() {
-		Date now = new Date(DateHelper.now());
+		Date start = new Date(DateHelper.now());
 		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
 		systemEvent.setStatus(SystemEventStatus.STARTED);
-		systemEvent.setStartDate(now);
+		systemEvent.setStartDate(start);
 		systemEventFacade.saveSystemEvent(systemEvent);
 
 		Date since = null;
@@ -247,17 +247,17 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		} catch (Exception e) {
 			systemEvent.setStatus(SystemEventStatus.ERROR);
 			systemEvent.setAdditionalInfo(e.getMessage());
-			now.setTime(DateHelper.now());
-			systemEvent.setEndDate(now);
-			systemEvent.setChangeDate(now);
+			Date end = new Date(DateHelper.now());
+			systemEvent.setEndDate(end);
+			systemEvent.setChangeDate(end);
 			systemEventFacade.saveSystemEvent(systemEvent);
 			e.printStackTrace();
 			return;
 		}
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
-		now.setTime(DateHelper.now());
-		systemEvent.setEndDate(now);
-		systemEvent.setChangeDate(now);
+		Date end = new Date(DateHelper.now());
+		systemEvent.setEndDate(end);
+		systemEvent.setChangeDate(end);
 		systemEventFacade.saveSystemEvent(systemEvent);
 	}
 
