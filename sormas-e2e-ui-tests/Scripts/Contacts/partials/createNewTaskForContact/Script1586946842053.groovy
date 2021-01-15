@@ -1,8 +1,6 @@
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
-import com.hzi.Helper
+import com.hzi.Helper as Helper
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
-
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
@@ -24,14 +22,13 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/newTask_dlg_zugewi
 WebUI.click(findTestObject('Contacts/ContactInformationView/span_Surveillance SUPERVISOR - berwachungsleitung (2)'))
 
 //WebUI.setText(findTestObject('Contacts/ContactInformationView/newTask_dlg_zugewiesen_button'), 'Berlin CONTACT - Surveillance Officer, Contact Officer (41)')
-
-if (create){
-	WebUI.click(findTestObject('ReusableORs/div_Save'))
+if (create) {
+    WebUI.click(findTestObject('ReusableORs/div_Save_modalWindow'))
 } else {
-	WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_cancel_button'))
+    WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_cancel_button'))
 }
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/div_Contacts list'))
-WebUI.delay(1)
 
+WebUI.delay(1)
 

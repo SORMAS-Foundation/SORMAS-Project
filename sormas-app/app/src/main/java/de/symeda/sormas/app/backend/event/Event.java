@@ -101,6 +101,9 @@ public class Event extends PseudonymizableAdo {
 	private String externalId;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalToken;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String eventTitle;
 
 	@Column(length = COLUMN_LENGTH_BIG)
@@ -229,6 +232,10 @@ public class Event extends PseudonymizableAdo {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
 
 	public String getEventTitle() {
 		return eventTitle;

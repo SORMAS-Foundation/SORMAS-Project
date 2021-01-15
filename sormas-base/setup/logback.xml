@@ -82,6 +82,9 @@
     <!-- Log only errors and warnings for document generation -->
     <logger name="fr.opensagres.xdocreport" level="WARN" />
 
+	<!-- Lower this log level to DEBUG or TRACE to have EJB method invocations logged with duration in ms to find performance leaks -->
+	<logger name="de.symeda.sormas.backend.util.PerformanceLoggingInterceptor" level="INFO" />
+
     <root level="debug">
             <appender-ref ref="FILE_DEBUG" />
             <appender-ref ref="FILE_INFO" />

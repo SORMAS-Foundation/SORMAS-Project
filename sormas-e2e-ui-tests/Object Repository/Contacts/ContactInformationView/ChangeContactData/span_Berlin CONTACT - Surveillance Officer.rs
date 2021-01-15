@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>span_Berlin CONTACT - Surveillance Officer _08c6e0</name>
+   <name>span_Berlin CONTACT - Surveillance Officer</name>
    <tag></tag>
    <elementGuidId>0ad64a29-1bfc-4dc6-bbb5-31ec30a42377</elementGuidId>
    <selectorCollection>
