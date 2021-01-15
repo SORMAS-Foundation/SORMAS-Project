@@ -611,6 +611,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -699,6 +700,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

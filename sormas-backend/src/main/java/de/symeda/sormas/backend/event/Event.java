@@ -28,6 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -102,6 +103,11 @@ public class Event extends CoreAdo {
 	public static final String ARCHIVED = "archived";
 	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
+	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
+	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
+
+	private Event superordinateEvent;
+	private List<Event> subordinateEvents;
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -460,7 +466,7 @@ public class Event extends CoreAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public User getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
@@ -478,7 +484,7 @@ public class Event extends CoreAdo {
 		this.typeOfPlaceText = typeOfPlaceText;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Task.EVENT)
+	@OneToMany(mappedBy = Task.EVENT, fetch = FetchType.LAZY)
 	public List<Task> getTasks() {
 		return tasks;
 	}
@@ -543,4 +549,21 @@ public class Event extends CoreAdo {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@ManyToOne
+	public Event getSuperordinateEvent() {
+		return superordinateEvent;
+	}
+
+	public void setSuperordinateEvent(Event superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
+	}
+
+	@OneToMany(mappedBy = Event.SUPERORDINATE_EVENT, fetch = FetchType.LAZY)
+	public List<Event> getSubordinateEvents() {
+		return subordinateEvents;
+	}
+
+	public void setSubordinateEvents(List<Event> subordinateEvents) {
+		this.subordinateEvents = subordinateEvents;
+	}
 }
