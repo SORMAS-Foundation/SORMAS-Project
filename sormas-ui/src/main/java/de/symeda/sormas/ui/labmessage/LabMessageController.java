@@ -22,6 +22,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
@@ -121,7 +122,7 @@ public class LabMessageController {
 
 	private void createCase(LabMessageDto labMessageDto) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, false);
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		caseCreateComponent.addCommitListener(() -> {
@@ -199,6 +200,7 @@ public class LabMessageController {
 				labMessageDto.setProcessed(true);
 				FacadeProvider.getLabMessageFacade().save(labMessageDto);
 				window.close();
+				SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 			}, null);
 
 		pathogenTestCreateComponent.addDiscardListener(() -> window.close());

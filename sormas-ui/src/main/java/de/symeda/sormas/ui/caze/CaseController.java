@@ -152,17 +152,17 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, true);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, true);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, disease);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, disease, true);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -179,7 +179,7 @@ public class CaseController {
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, true);
 				caseCreateComponent.addCommitListener(() -> {
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
@@ -203,7 +203,7 @@ public class CaseController {
 	}
 
 	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, disease);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, disease, true);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -345,7 +345,8 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(
 		ContactDto convertedContact,
 		EventParticipantDto convertedEventParticipant,
-		Disease unrelatedDisease) {
+		Disease unrelatedDisease,
+		boolean forwardToCase) {
 
 		assert (convertedContact == null || convertedEventParticipant == null);
 		assert (unrelatedDisease == null || convertedEventParticipant == null);
@@ -461,7 +462,9 @@ public class CaseController {
 					FacadeProvider.getContactFacade().saveContact(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-					navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+					if (forwardToCase) {
+						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+					}
 				} else if (convertedEventParticipant != null) {
 					selectOrCreateCase(dto, convertedEventParticipant.getPerson(), uuid -> {
 						if (uuid == null) {
@@ -479,11 +482,15 @@ public class CaseController {
 								FacadeProvider.getCaseFacade()
 									.setSampleAssociationsUnrelatedDisease(updatedEventParticipant.toReference(), dto.toReference());
 							}
-							navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+							if (forwardToCase) {
+								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+							}
 						} else {
 							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
 							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
-							navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+							if (forwardToCase) {
+								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+							}
 						}
 					});
 				} else {
@@ -510,8 +517,10 @@ public class CaseController {
 									if (uuid == null) {
 										dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 										saveCase(dto);
-										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
-									} else {
+										if (forwardToCase) {
+											navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+										}
+									} else if (forwardToCase) {
 										navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 									}
 								});
