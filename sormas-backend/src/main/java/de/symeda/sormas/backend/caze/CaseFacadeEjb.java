@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1495,7 +1494,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			Case caze = caseService.getByUuid(caseUuid);
 			CaseDataDto existingCaseDto = toDto(caze);
 
-			changeCaseDto(
+			updateCaseWithBulkData(
 				updatedCaseBulkEditData,
 				caze,
 				diseaseChange,
@@ -1529,7 +1528,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			Case caze = caseService.getByUuid(caseUuid);
 			CaseDataDto existingCaseDto = toDto(caze);
 
-			changeCaseDto(
+			updateCaseWithBulkData(
 				updatedCaseBulkEditData,
 				caze,
 				diseaseChange,
@@ -1548,7 +1547,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	private void changeCaseDto(
+	private void updateCaseWithBulkData(
 		CaseBulkEditData updatedCaseBulkEditData,
 		Case existingCase,
 		boolean diseaseChange,
@@ -1931,33 +1930,36 @@ public class CaseFacadeEjb implements CaseFacade {
 		// If the case is a newly created case or if it was not in a CONFIRMED status
 		// and now the case is in a CONFIRMED status, notify related surveillance officers
 		Set<CaseClassification> confirmedClassifications = CaseClassification.getConfirmedClassifications();
-		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification())) && confirmedClassifications.contains(newCase.getCaseClassification())) {
+		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification()))
+			&& confirmedClassifications.contains(newCase.getCaseClassification())) {
 			sendConfirmedCaseNotificationsForEvents(newCase);
 		}
 	}
 
 	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> surveillanceOfficerByEventByEventUuid = eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
+		Map<String, User> surveillanceOfficerByEventByEventUuid =
+			eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
 		for (Map.Entry<String, User> entry : surveillanceOfficerByEventByEventUuid.entrySet()) {
 			try {
 				messagingService.sendMessage(
-						entry.getValue(),
-						MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-						new Object[] { caze.getDisease().getName() },
-						String.format(
-								I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
-								DataHelper.getShortUuid(entry.getKey()),
-								caze.getDisease().getName(),
-								DataHelper.getShortUuid(caze.getUuid())),
-						MessageType.EMAIL,
-						MessageType.SMS);
+					entry.getValue(),
+					MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+					new Object[] {
+						caze.getDisease().getName() },
+					String.format(
+						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
+						DataHelper.getShortUuid(entry.getKey()),
+						caze.getDisease().getName(),
+						DataHelper.getShortUuid(caze.getUuid())),
+					MessageType.EMAIL,
+					MessageType.SMS);
 			} catch (NotificationDeliveryFailedException e) {
 				logger.error(
-						String.format(
-								"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
-										+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								entry.getValue().getUuid()));
+					String.format(
+						"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
+							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+						entry.getValue().getUuid()));
 			}
 		}
 	}
