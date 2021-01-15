@@ -554,6 +554,7 @@ public interface Captions {
 	String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	String ContactExport_lastName = "ContactExport.lastName";
+	String ContactExport_quarantineInformation = "ContactExport.quarantineInformation";
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String ContactExport_traveled = "ContactExport.traveled";
 	String ContactExport_travelHistory = "ContactExport.travelHistory";
@@ -895,6 +896,7 @@ public interface Captions {
 	String exportCaseCustom = "exportCaseCustom";
 	String exportCaseManagement = "exportCaseManagement";
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
+	String exportCustom = "exportCustom";
 	String exportDetailed = "exportDetailed";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";
 	String exportFollowUp = "exportFollowUp";

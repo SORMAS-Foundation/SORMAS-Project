@@ -67,7 +67,6 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
@@ -91,8 +90,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationEditLayout;
-import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsGrid;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.messaging.SmsComponent;
@@ -1249,25 +1246,6 @@ public class CaseController {
 					}
 				});
 		}
-	}
-
-	public void openEditExportConfigurationWindow(CaseExportConfigurationsGrid grid, ExportConfigurationDto config) {
-
-		Window newExportWindow = VaadinUiUtil.createPopupWindow();
-		CaseExportConfigurationEditLayout editLayout = new CaseExportConfigurationEditLayout(config, (exportConfiguration) -> {
-			FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
-			newExportWindow.close();
-			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Type.WARNING_MESSAGE, false)
-				.show(Page.getCurrent());
-			grid.reload();
-		}, () -> {
-			newExportWindow.close();
-			grid.reload();
-		});
-		newExportWindow.setWidth(1024, Unit.PIXELS);
-		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
-		newExportWindow.setContent(editLayout);
-		UI.getCurrent().addWindow(newExportWindow);
 	}
 
 	public void openLineListingWindow() {

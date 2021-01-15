@@ -78,9 +78,9 @@ import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsLayout;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
+import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CaseDownloadUtil;
@@ -115,6 +115,7 @@ public class CasesView extends AbstractView {
 	public static final int BULK_EDIT_MODE_WARNING_THRESHOLD = 1000;
 
 	private final boolean caseFollowUpEnabled;
+	private final boolean hasCaseManagementRight;
 	private final ExportConfigurationDto detailedExportConfiguration;
 
 	private final CaseCriteria criteria;
@@ -144,6 +145,7 @@ public class CasesView extends AbstractView {
 		super(VIEW_NAME);
 
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		hasCaseManagementRight = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
 		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -209,16 +211,14 @@ public class CasesView extends AbstractView {
 	}
 
 	private ExportConfigurationDto buildDetailedExportConfiguration() {
-		ExportConfigurationDto res = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference());
+		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), ExportType.CASE);
 
-		res.setExportType(ExportType.CASE);
-
-		res.setProperties(
-			ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS))
+		config.setProperties(
+			ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, hasCaseManagementRight)
 				.stream()
 				.map(DataHelper.Pair::getElement0)
 				.collect(Collectors.toSet()));
-		return res;
+		return config;
 	}
 
 	private void addCommonCasesOverviewToolbar() {
@@ -284,7 +284,7 @@ public class CasesView extends AbstractView {
 					Strings.infoDetailedExport);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+			if (hasCaseManagementRight) {
 				StreamResource caseManagementExportStreamResource = DownloadUtil
 					.createCaseManagementExportResource(grid.getCriteria(), createFileNameWithCurrentDate("sormas_case_management_", ".zip"));
 				addExportButton(
@@ -341,7 +341,12 @@ public class CasesView extends AbstractView {
 			{
 				Button btnCustomCaseExport = ButtonHelper.createIconButton(Captions.exportCaseCustom, VaadinIcons.FILE_TEXT, e -> {
 					Window customExportWindow = VaadinUiUtil.createPopupWindow();
-					CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(customExportWindow::close);
+
+					ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
+						ExportType.CASE,
+						ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, hasCaseManagementRight),
+						CaseDownloadUtil::getPropertyCaption,
+						customExportWindow::close);
 					customExportsLayout.setExportCallback(
 						(exportConfig) -> Page.getCurrent()
 							.open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true));
@@ -350,7 +355,7 @@ public class CasesView extends AbstractView {
 					customExportWindow.setContent(customExportsLayout);
 					UI.getCurrent().addWindow(customExportWindow);
 				}, ValoTheme.BUTTON_PRIMARY);
-				btnCustomCaseExport.setDescription(I18nProperties.getString(Strings.infoCustomCaseExport));
+				btnCustomCaseExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 				btnCustomCaseExport.setWidth(100, Unit.PERCENTAGE);
 				exportLayout.addComponent(btnCustomCaseExport);
 			}

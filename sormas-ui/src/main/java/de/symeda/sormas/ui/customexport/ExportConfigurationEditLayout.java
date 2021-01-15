@@ -1,4 +1,19 @@
-package de.symeda.sormas.ui.caze.exporter;
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.ui.customexport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,33 +39,19 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseExportDto;
-import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportGroupType;
-import de.symeda.sormas.api.importexport.ExportType;
-import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class CaseExportConfigurationEditLayout extends VerticalLayout {
+public class ExportConfigurationEditLayout extends VerticalLayout {
 
-	private final boolean caseFollowUpEnabled;
 	private TextField tfName;
 	private Label lblDescription;
 	private Map<ExportGroupType, Label> groupTypeLabels;
@@ -58,16 +60,13 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 
 	private ExportConfigurationDto exportConfiguration;
 
-	public CaseExportConfigurationEditLayout(
+	public ExportConfigurationEditLayout(
 		ExportConfigurationDto exportConfiguration,
+		List<Pair<String, ExportGroupType>> availableProperties,
+		Function<String, String> propertyCaptionProvider,
 		Consumer<ExportConfigurationDto> resultCallback,
 		Runnable discardCallback) {
 
-		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
-		if (exportConfiguration == null) {
-			exportConfiguration = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference());
-			exportConfiguration.setExportType(ExportType.CASE);
-		}
 		this.exportConfiguration = exportConfiguration;
 
 		tfName = new TextField(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, ExportConfigurationDto.NAME));
@@ -84,13 +83,10 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 
 		addComponent(buildSelectionButtonLayout());
 
-		int totalCheckBoxCount = buildCheckBoxGroups();
+		int totalCheckBoxCount = buildCheckBoxGroups(availableProperties, propertyCaptionProvider);
 
 		groupTypeLabels = new HashMap<>();
 		for (ExportGroupType groupType : checkBoxGroups.keySet()) {
-			if (ExportGroupType.CASE_MANAGEMENT == groupType && !UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
-				continue;
-			}
 			Label groupTypeLabel = new Label(I18nProperties.getEnumCaption(groupType));
 			CssStyles.style(groupTypeLabel, CssStyles.H3);
 			groupTypeLabels.put(groupType, groupTypeLabel);
@@ -102,44 +98,20 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 		setComponentAlignment(buttonLayout, Alignment.MIDDLE_RIGHT);
 	}
 
-	private int buildCheckBoxGroups() {
+	private int buildCheckBoxGroups(List<Pair<String, ExportGroupType>> exportExportProperties, Function<String, String> captionProvider) {
 
 		checkBoxGroups = new HashMap<>();
 		checkBoxes = new HashMap<>();
 		int checkBoxCount = 0;
 
-		List<Pair<String, ExportGroupType>> caseExportProperties =
-			ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS));
-		for (Pair<String, ExportGroupType> pair : caseExportProperties) {
+		for (Pair<String, ExportGroupType> pair : exportExportProperties) {
 			ExportGroupType groupType = pair.getElement1();
 			String property = pair.getElement0();
 			if (!checkBoxGroups.containsKey(groupType)) {
 				checkBoxGroups.put(groupType, new ArrayList<>());
 			}
 
-			String caption = I18nProperties.getPrefixCaption(
-				CaseExportDto.I18N_PREFIX,
-				property,
-				I18nProperties.getPrefixCaption(
-					CaseDataDto.I18N_PREFIX,
-					property,
-					I18nProperties.getPrefixCaption(
-						PersonDto.I18N_PREFIX,
-						property,
-						I18nProperties.getPrefixCaption(
-							SymptomsDto.I18N_PREFIX,
-							property,
-							I18nProperties.getPrefixCaption(
-								EpiDataDto.I18N_PREFIX,
-								property,
-								I18nProperties.getPrefixCaption(
-									HospitalizationDto.I18N_PREFIX,
-									property,
-									I18nProperties.getPrefixCaption(
-										LocationDto.I18N_PREFIX,
-										property,
-										I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, property))))))));
-
+			String caption = captionProvider.apply(property);
 			CheckBox cb = new CheckBox(caption);
 
 			if (!CollectionUtils.isEmpty(exportConfiguration.getProperties())) {
@@ -176,33 +148,29 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 
 		int currentCheckBoxCount = 0;
 		for (ExportGroupType groupType : ExportGroupType.values()) {
-			if (ExportGroupType.CASE_MANAGEMENT == groupType && !UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
-				continue;
-			}
-			if (ExportGroupType.FOLLOW_UP == groupType && !caseFollowUpEnabled) {
-				continue;
-			}
-
 			int side = 0;
-			if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 1 / 3) {
-				firstColumnLayout.addComponent(groupTypeLabels.get(groupType));
-			} else if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 2 / 3) {
-				secondColumnLayout.addComponent(groupTypeLabels.get(groupType));
-				side = 1;
-			} else {
-				thirdColumnLayout.addComponent(groupTypeLabels.get(groupType));
-				side = 2;
-			}
-
-			for (CheckBox checkBox : checkBoxGroups.get(groupType)) {
-				if (side == 0) {
-					firstColumnLayout.addComponent(checkBox);
-				} else if (side == 1) {
-					secondColumnLayout.addComponent(checkBox);
+			if (groupTypeLabels.containsKey(groupType)) {
+				Label groupLabel = groupTypeLabels.get(groupType);
+				if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 1 / 3) {
+					firstColumnLayout.addComponent(groupLabel);
+				} else if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 2 / 3) {
+					secondColumnLayout.addComponent(groupLabel);
+					side = 1;
 				} else {
-					thirdColumnLayout.addComponent(checkBox);
+					thirdColumnLayout.addComponent(groupLabel);
+					side = 2;
 				}
-				currentCheckBoxCount++;
+
+				for (CheckBox checkBox : checkBoxGroups.get(groupType)) {
+					if (side == 0) {
+						firstColumnLayout.addComponent(checkBox);
+					} else if (side == 1) {
+						secondColumnLayout.addComponent(checkBox);
+					} else {
+						thirdColumnLayout.addComponent(checkBox);
+					}
+					currentCheckBoxCount++;
+				}
 			}
 		}
 

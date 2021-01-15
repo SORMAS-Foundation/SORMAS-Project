@@ -150,9 +150,15 @@ public class CsvStreamUtils {
 			@Override
 			public boolean evaluate(Object o) {
 				Method m = (Method) o;
+				ExportProperty exportProperty = m.getAnnotation(ExportProperty.class);
+
+				if (exportProperty == null) {
+					throw new RuntimeException("Missing @ExportProperty annotation on method [" + m.getName() + "]");
+				}
+
 				return (countryFieldVisibilityChecker.isVisible(m))
 					&& (redMethodFilter == null || redMethodFilter.evaluate(o))
-					&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value()));
+					&& (exportConfiguration == null || exportConfiguration.getProperties().contains(exportProperty.value()));
 			}
 		});
 	}
