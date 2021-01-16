@@ -19,7 +19,9 @@ package de.symeda.sormas.ui.events;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -84,6 +86,20 @@ public class EventController {
 
 	public EventDto create(ContactDto contact) {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(contact);
+		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
+		return eventDto;
+	}
+
+	public EventDto createSubordinateEvent(EventDto superordinateEvent) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(superordinateEvent, false);
+		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
+		return eventDto;
+	}
+
+	public EventDto createSuperordinateEvent(EventDto subordinateEvent) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(subordinateEvent, true);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
@@ -167,6 +183,71 @@ public class EventController {
 		});
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
+	}
+
+	public void selectOrCreateSubordinateEvent(EventDto superordinateEvent) {
+
+		Set<String> excludedUuids = new HashSet<>();
+		excludedUuids.add(superordinateEvent.getUuid());
+		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSuperordinateEventUuids(superordinateEvent.getUuid()));
+
+		EventSelectionField selectionField = new EventSelectionField(superordinateEvent, excludedUuids, false);
+		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
+		component.addCommitListener(() -> {
+			EventIndexDto selectedIndexEvent = selectionField.getValue();
+			if (selectedIndexEvent != null) {
+				EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(selectedIndexEvent.getUuid());
+				selectedEvent.setSuperordinateEvent(superordinateEvent.toReference());
+				FacadeProvider.getEventFacade().saveEvent(selectedEvent);
+
+				navigateToData(superordinateEvent.getUuid());
+				Notification.show(I18nProperties.getString(Strings.messageEventLinkedAsSubordinate), Type.TRAY_NOTIFICATION);
+			} else {
+				createSubordinateEvent(superordinateEvent);
+			}
+		});
+
+		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
+	}
+
+	public void selectOrCreateSuperordinateEvent(EventDto subordinateEvent) {
+
+		Set<String> excludedUuids = new HashSet<>();
+		excludedUuids.add(subordinateEvent.getUuid());
+		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSubordinateEventUuids(subordinateEvent.getUuid()));
+
+		EventSelectionField selectionField = new EventSelectionField(subordinateEvent, excludedUuids, true);
+		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
+		component.addCommitListener(() -> {
+			EventIndexDto selectedEvent = selectionField.getValue();
+			if (selectedEvent != null) {
+				subordinateEvent.setSuperordinateEvent(selectedEvent.toReference());
+				FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
+
+				navigateToData(subordinateEvent.getUuid());
+				Notification.show(I18nProperties.getString(Strings.messageEventLinkedAsSuperordinate), Type.TRAY_NOTIFICATION);
+			} else {
+				createSuperordinateEvent(subordinateEvent);
+			}
+		});
+
+		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
+	}
+
+	public void removeSuperordinateEvent(EventDto subordinateEvent, boolean reloadPage, String notificationMessage) {
+		subordinateEvent.setSuperordinateEvent(null);
+		FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
+
+		if (reloadPage) {
+			navigateToData(subordinateEvent.getUuid());
+		}
+		Notification.show(notificationMessage, Type.TRAY_NOTIFICATION);
 	}
 
 	/**
@@ -307,6 +388,40 @@ public class EventController {
 		});
 
 		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(EventDto event, boolean createSuperordinateEvent) {
+
+		EventDataForm form = new EventDataForm(true, false);
+		form.setValue(createNewEvent(event.getDisease()));
+		form.getField(EventDto.DISEASE).setReadOnly(true);
+
+		final CommitDiscardWrapperComponent<EventDataForm> component =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRights(UserRight.EVENT_CREATE), form.getFieldGroup());
+
+		component.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				EventDto newEvent = form.getValue();
+
+				if (!createSuperordinateEvent) {
+					newEvent.setSuperordinateEvent(event.toReference());
+				}
+
+				FacadeProvider.getEventFacade().saveEvent(newEvent);
+
+				EventReferenceDto newEventRef = new EventReferenceDto(newEvent.getUuid());
+
+				if (createSuperordinateEvent) {
+					event.setSuperordinateEvent(newEventRef);
+					FacadeProvider.getEventFacade().saveEvent(event);
+				}
+
+				navigateToData(event.getUuid());
+				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.TRAY_NOTIFICATION);
+			}
+		});
+
+		return component;
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {

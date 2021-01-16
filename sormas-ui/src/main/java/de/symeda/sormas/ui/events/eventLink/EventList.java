@@ -20,20 +20,20 @@
 
 package de.symeda.sormas.ui.events.eventLink;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -65,6 +65,23 @@ public class EventList extends PaginationList<EventIndexDto> {
 					i,
 					(ClickListener) clickEvent -> ControllerProvider.getEventParticipantController()
 						.deleteEventParticipant(listEntry.getEvent().getUuid(), personRef.getUuid(), this::reload));
+			}
+		};
+	}
+
+	public EventList(EventDto superordinateEvent) {
+		super(5);
+		eventCriteria.superordinateEvent(superordinateEvent.toReference());
+		eventCriteria.setUserFilterIncluded(false);
+		noEventLabel = new Label(I18nProperties.getString(Strings.infoNoSubordinateEvents));
+		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
+					EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
+					ControllerProvider.getEventController()
+						.removeSuperordinateEvent(selectedEvent, false, I18nProperties.getString(Strings.messageEventSubordinateEventUnlinked));
+					reload();
+				});
 			}
 		};
 	}

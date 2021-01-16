@@ -20,6 +20,7 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.constraints.NotNull;
@@ -75,4 +76,8 @@ public interface EventFacade {
 	boolean exists(String uuid);
 
 	String getUuidByCaseUuidOrPersonUuid(String value);
+
+	Set<String> getAllSubordinateEventUuids(String superordinateEventUuid);
+
+	Set<String> getAllSuperordinateEventUuids(String eventUuid);
 }
