@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,9 +52,27 @@ public class CsvStreamUtils {
 		final Predicate redMethodFilter,
 		ConfigFacade configFacade,
 		OutputStream out) {
+		writeCsvContentToStream(
+			csvRowClass,
+			exportRowsSupplier,
+			propertyIdCaptionSupplier,
+			exportConfiguration,
+			redMethodFilter,
+			configFacade,
+			out,
+			StandardCharsets.UTF_8);
+	}
 
-		try (
-			CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), configFacade.getCsvSeparator())) {
+	public static <T> void writeCsvContentToStream(
+		Class<T> csvRowClass,
+		SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
+		SupplierBiFunction<String, Class<?>, String> propertyIdCaptionSupplier,
+		ExportConfigurationDto exportConfiguration,
+		final Predicate redMethodFilter,
+		ConfigFacade configFacade,
+		OutputStream out,
+		Charset charset) {
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(out, charset.name()), configFacade.getCsvSeparator())) {
 
 			// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
 			List<Method> readMethods =
@@ -124,7 +143,7 @@ public class CsvStreamUtils {
 							fieldValues[i] = DataHelper.valueToString(value);
 						}
 						writer.writeNext(fieldValues);
-					} ;
+					}
 				} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
 					throw new RuntimeException(e);
 				}

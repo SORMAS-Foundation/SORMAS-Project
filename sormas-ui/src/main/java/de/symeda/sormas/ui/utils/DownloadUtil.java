@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -95,6 +96,7 @@ import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
 
 public final class DownloadUtil {
@@ -164,7 +166,7 @@ public final class DownloadUtil {
 
 	public static StreamResource createStringStreamResource(String content, String fileName, String mimeType) {
 
-		StreamResource streamResource = new StreamResource(() -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), fileName);
+		StreamResource streamResource = new StreamResource(() -> new ByteArrayInputStream(getClientCharset().encode(content).array()), fileName);
 		streamResource.setMIMEType(mimeType);
 		return streamResource;
 	}
@@ -540,7 +542,8 @@ public final class DownloadUtil {
 					exportConfiguration,
 					(o) -> exportType == null || hasExportTarget(exportType, (Method) o),
 					FacadeProvider.getConfigFacade(),
-					out);
+					out,
+					getClientCharset());
 			} catch (Exception e) {
 				LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
 
@@ -579,7 +582,7 @@ public final class DownloadUtil {
 				exportTypeSupplier = exportTarget::visitExportTypes;
 
 			}
-			return exportTypeSupplier == null ? false : containsExportType(exportType, exportTypeSupplier);
+			return exportTypeSupplier != null && containsExportType(exportType, exportTypeSupplier);
 		}
 		return false;
 	}
@@ -623,5 +626,9 @@ public final class DownloadUtil {
 
 	public static String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
 		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + fileExtension;
+	}
+
+	public static Charset getClientCharset() {
+		return SormasUI.get().getPage().getWebBrowser().isWindows() ? StandardCharsets.ISO_8859_1 : StandardCharsets.UTF_8;
 	}
 }
