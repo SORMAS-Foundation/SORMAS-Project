@@ -129,6 +129,12 @@ public class SampleController {
 		createView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				saveSample(createForm);
+
+				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getUuid());
+				updatedSample.setReferredTo(referralSample.toReference());
+				FacadeProvider.getSampleFacade().saveSample(updatedSample);
+
+				navigateToData(sample.getUuid());
 			}
 		});
 
