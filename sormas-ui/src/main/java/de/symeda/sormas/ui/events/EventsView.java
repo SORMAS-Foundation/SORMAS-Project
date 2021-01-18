@@ -457,11 +457,11 @@ public class EventsView extends AbstractView {
 			if (isDefaultViewType()) {
 				// Contact Count Method Dropdown
 				contactCountMethod = new ComboBox();
-				contactCountMethod.setCaption("Contact Count Method");
+				contactCountMethod.setCaption(I18nProperties.getCaption(Captions.Event_contactCountMethod));
 				contactCountMethod.addItem(0);
 				contactCountMethod.addItem(1);
-				contactCountMethod.setItemCaption(0, "Count All Contacts");
-				contactCountMethod.setItemCaption(1, "Only Contacts with source in Event");
+				contactCountMethod.setItemCaption(0, I18nProperties.getCaption(Captions.Event_contactCountAll));
+				contactCountMethod.setItemCaption(1, I18nProperties.getCaption(Captions.Event_contactCountSourceInEvent));
 				contactCountMethod.setValue(0);
 				contactCountMethod.setTextInputAllowed(false);
 				contactCountMethod.setNullSelectionAllowed(false);

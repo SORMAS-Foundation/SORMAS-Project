@@ -149,6 +149,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 					.getDefault(getBeanType(), INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId));
 		}
 
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
+			.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
+
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
 	}
 
@@ -191,8 +194,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(false);
 			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(true);
 		} else {
-			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(true);
 			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(false);
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(true);
 		}
 	}
 

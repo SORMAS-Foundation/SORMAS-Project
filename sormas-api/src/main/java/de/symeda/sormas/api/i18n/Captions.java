@@ -783,6 +783,10 @@ public interface Captions {
 	String Event = "Event";
 	String Event_caseCount = "Event.caseCount";
 	String Event_connectionNumber = "Event.connectionNumber";
+	String Event_contactCount = "Event.contactCount";
+	String Event_contactCountMethod = "Event.contactCountMethod";
+	String Event_contactCountAll = "Event.contactCountAll";
+	String Event_contactCountSourceInEvent = "Event.contactCountSourceInEvent";
 	String Event_deathCount = "Event.deathCount";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
