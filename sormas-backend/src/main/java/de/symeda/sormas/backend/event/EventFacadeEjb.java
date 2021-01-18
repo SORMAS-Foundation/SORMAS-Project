@@ -565,10 +565,10 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public Set<String> getAllSubordinateEventUuids(String superordinateEventUuid) {
+	public Set<String> getAllSubordinateEventUuids(String eventUuid) {
 
 		Set<String> uuids = new HashSet<>();
-		Event superordinateEvent = eventService.getByUuid(superordinateEventUuid);
+		Event superordinateEvent = eventService.getByUuid(eventUuid);
 		addAllSubordinateEventsToSet(superordinateEvent, uuids);
 
 		return uuids;

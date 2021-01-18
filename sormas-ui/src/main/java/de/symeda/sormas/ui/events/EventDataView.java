@@ -75,8 +75,8 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 12, 0, DOCUMENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -114,13 +114,13 @@ public class EventDataView extends AbstractEventView {
 			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}
 
-		EventListComponent subordinateEventList = new EventListComponent(event);
-		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
-
 		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
 		superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
+
+		EventListComponent subordinateEventList = new EventListComponent(event.toReference());
+		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 
 		HorizontalLayout shortcutLinksLayout = new HorizontalLayout();
 		shortcutLinksLayout.setMargin(false);

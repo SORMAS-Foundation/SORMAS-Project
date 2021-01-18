@@ -70,14 +70,8 @@ public class UserProvider {
 		return getUserRights().contains(userRight);
 	}
 
-	public boolean hasUserRights(UserRight... userRights) {
-		for (UserRight userRight : userRights) {
-			if (!getUserRights().contains(userRight)) {
-				return false;
-			}
-		}
-
-		return true;
+	public boolean hasAllUserRights(UserRight... userRights) {
+		return getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
 	public UserReferenceDto getUserReference() {

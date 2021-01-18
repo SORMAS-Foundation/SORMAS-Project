@@ -97,7 +97,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 		} else {
 			addComponent(new Label(I18nProperties.getString(Strings.infoNoSuperordinateEvent)));
 
-			if (UserProvider.getCurrent().hasUserRights(UserRight.EVENT_CREATE, UserRight.EVENT_EDIT)) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENT_EDIT)) {
 				Button btnLinkEvent = ButtonHelper.createIconButtonWithCaption(
 					"linkSuperordinateEvent",
 					I18nProperties.getCaption(Captions.linkEvent),
@@ -106,10 +106,10 @@ public class SuperordinateEventComponent extends VerticalLayout {
 						long events = FacadeProvider.getEventFacade().count(new EventCriteria());
 						if (events > 0) {
 							createEventWithConfirmationWindow(
-								() -> ControllerProvider.getEventController().selectOrCreateSuperordinateEvent(subordinateEvent));
+								() -> ControllerProvider.getEventController().selectOrCreateSuperordinateEvent(subordinateEvent.toReference()));
 						} else {
 							createEventWithConfirmationWindow(
-								() -> ControllerProvider.getEventController().createSuperordinateEvent(subordinateEvent));
+								() -> ControllerProvider.getEventController().createSuperordinateEvent(subordinateEvent.toReference()));
 						}
 					},
 					ValoTheme.BUTTON_PRIMARY);

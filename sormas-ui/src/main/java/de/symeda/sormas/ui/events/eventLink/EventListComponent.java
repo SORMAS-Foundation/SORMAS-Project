@@ -34,7 +34,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
-import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -100,7 +100,7 @@ public class EventListComponent extends VerticalLayout {
 		}
 	}
 
-	public EventListComponent(EventDto superordinateEvent) {
+	public EventListComponent(EventReferenceDto superordinateEvent) {
 
 		EventList eventList = new EventList(superordinateEvent);
 		createEventListComponent(eventList, I18nProperties.getCaption(Captions.eventSubordinateEvents), e -> {

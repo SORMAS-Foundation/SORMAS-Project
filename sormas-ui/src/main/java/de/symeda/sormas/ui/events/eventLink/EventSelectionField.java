@@ -35,6 +35,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -57,7 +58,6 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	public static final String SELECT_EVENT = "selectEvent";
 	public static final String CREATE_EVENT = "createEvent";
 
-	private CaseDataDto caseReference;
 	private VerticalLayout mainLayout;
 	private EventSelectionGrid eventGrid;
 	private final String infoPickOrCreateEvent;
@@ -65,17 +65,17 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	private RadioButtonGroup<String> rbSelectEvent;
 	private RadioButtonGroup<String> rbCreateEvent;
 	private Consumer<Boolean> selectionChangeCallback;
-	private TextField searchField;
+	private final TextField searchField;
 	private final EventCriteria criteria;
 
 	public EventSelectionField(CaseDataDto caseReference) {
-		this.caseReference = caseReference;
 		this.searchField = new TextField();
 		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventForCase);
 
 		this.criteria = new EventCriteria();
 		criteria.setDisease(caseReference.getDisease());
 		criteria.setUserFilterIncluded(false);
+		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
 		initializeGrid();
 	}
@@ -87,6 +87,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		this.criteria = new EventCriteria();
 		criteria.setDisease(contact.getDisease());
 		criteria.setUserFilterIncluded(false);
+		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
 		initializeGrid();
 	}
@@ -99,6 +100,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		criteria.setDisease(event.getDisease());
 		criteria.setExcludedUuids(excludedUuids);
 		criteria.setUserFilterIncluded(false);
+		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 
 		if (!selectSuperordinateEvent) {
 			// Users are not allowed to select a subordinate event that already has a superordinate event

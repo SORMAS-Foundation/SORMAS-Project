@@ -91,14 +91,14 @@ public class EventController {
 		return eventDto;
 	}
 
-	public EventDto createSubordinateEvent(EventDto superordinateEvent) {
+	public EventDto createSubordinateEvent(EventReferenceDto superordinateEvent) {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(superordinateEvent, false);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
 	}
 
-	public EventDto createSuperordinateEvent(EventDto subordinateEvent) {
+	public EventDto createSuperordinateEvent(EventReferenceDto subordinateEvent) {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(subordinateEvent, true);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
@@ -185,12 +185,13 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void selectOrCreateSubordinateEvent(EventDto superordinateEvent) {
+	public void selectOrCreateSubordinateEvent(EventReferenceDto superordinateEventRef) {
 
 		Set<String> excludedUuids = new HashSet<>();
-		excludedUuids.add(superordinateEvent.getUuid());
-		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSuperordinateEventUuids(superordinateEvent.getUuid()));
+		excludedUuids.add(superordinateEventRef.getUuid());
+		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSuperordinateEventUuids(superordinateEventRef.getUuid()));
 
+		EventDto superordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superordinateEventRef.getUuid());
 		EventSelectionField selectionField = new EventSelectionField(superordinateEvent, excludedUuids, false);
 		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
 
@@ -199,13 +200,13 @@ public class EventController {
 			EventIndexDto selectedIndexEvent = selectionField.getValue();
 			if (selectedIndexEvent != null) {
 				EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(selectedIndexEvent.getUuid());
-				selectedEvent.setSuperordinateEvent(superordinateEvent.toReference());
+				selectedEvent.setSuperordinateEvent(superordinateEventRef);
 				FacadeProvider.getEventFacade().saveEvent(selectedEvent);
 
-				navigateToData(superordinateEvent.getUuid());
+				navigateToData(superordinateEventRef.getUuid());
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedAsSubordinate), Type.TRAY_NOTIFICATION);
 			} else {
-				createSubordinateEvent(superordinateEvent);
+				createSubordinateEvent(superordinateEventRef);
 			}
 		});
 
@@ -213,12 +214,13 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void selectOrCreateSuperordinateEvent(EventDto subordinateEvent) {
+	public void selectOrCreateSuperordinateEvent(EventReferenceDto subordinateEventRef) {
 
 		Set<String> excludedUuids = new HashSet<>();
-		excludedUuids.add(subordinateEvent.getUuid());
-		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSubordinateEventUuids(subordinateEvent.getUuid()));
+		excludedUuids.add(subordinateEventRef.getUuid());
+		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSubordinateEventUuids(subordinateEventRef.getUuid()));
 
+		EventDto subordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(subordinateEventRef.getUuid());
 		EventSelectionField selectionField = new EventSelectionField(subordinateEvent, excludedUuids, true);
 		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
 
@@ -229,10 +231,10 @@ public class EventController {
 				subordinateEvent.setSuperordinateEvent(selectedEvent.toReference());
 				FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
 
-				navigateToData(subordinateEvent.getUuid());
+				navigateToData(subordinateEventRef.getUuid());
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedAsSuperordinate), Type.TRAY_NOTIFICATION);
 			} else {
-				createSuperordinateEvent(subordinateEvent);
+				createSuperordinateEvent(subordinateEventRef);
 			}
 		});
 
@@ -390,21 +392,24 @@ public class EventController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(EventDto event, boolean createSuperordinateEvent) {
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(
+		EventReferenceDto superOrSubordinateEventRef,
+		boolean createSuperordinateEvent) {
 
+		EventDto superOrSubordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superOrSubordinateEventRef.getUuid());
 		EventDataForm form = new EventDataForm(true, false);
-		form.setValue(createNewEvent(event.getDisease()));
+		form.setValue(createNewEvent(superOrSubordinateEvent.getDisease()));
 		form.getField(EventDto.DISEASE).setReadOnly(true);
 
 		final CommitDiscardWrapperComponent<EventDataForm> component =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRights(UserRight.EVENT_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE), form.getFieldGroup());
 
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				EventDto newEvent = form.getValue();
 
 				if (!createSuperordinateEvent) {
-					newEvent.setSuperordinateEvent(event.toReference());
+					newEvent.setSuperordinateEvent(superOrSubordinateEvent.toReference());
 				}
 
 				FacadeProvider.getEventFacade().saveEvent(newEvent);
@@ -412,11 +417,11 @@ public class EventController {
 				EventReferenceDto newEventRef = new EventReferenceDto(newEvent.getUuid());
 
 				if (createSuperordinateEvent) {
-					event.setSuperordinateEvent(newEventRef);
-					FacadeProvider.getEventFacade().saveEvent(event);
+					superOrSubordinateEvent.setSuperordinateEvent(newEventRef);
+					FacadeProvider.getEventFacade().saveEvent(superOrSubordinateEvent);
 				}
 
-				navigateToData(event.getUuid());
+				navigateToData(superOrSubordinateEvent.getUuid());
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.TRAY_NOTIFICATION);
 			}
 		});

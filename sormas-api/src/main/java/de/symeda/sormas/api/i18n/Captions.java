@@ -845,6 +845,7 @@ public interface Captions {
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";
 	String eventDefaultView = "eventDefaultView";
+	String eventEditEvent = "eventEditEvent";
 	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -69,9 +70,9 @@ public class EventList extends PaginationList<EventIndexDto> {
 		};
 	}
 
-	public EventList(EventDto superordinateEvent) {
+	public EventList(EventReferenceDto superordinateEvent) {
 		super(5);
-		eventCriteria.superordinateEvent(superordinateEvent.toReference());
+		eventCriteria.superordinateEvent(superordinateEvent);
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getString(Strings.infoNoSubordinateEvents));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
