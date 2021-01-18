@@ -1863,7 +1863,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Location.class).executeRaw(
 					"UPDATE location SET facilityType = 'HOSPITAL' " + "WHERE facilityType IS NULL "
 						+ "AND (SELECT typeOfPlace from exposures WHERE location_id = location.id) = 'HOSPITAL';");
-				getDao(Event.class).executeRaw(
+				getDao(Exposure.class).executeRaw(
 					"UPDATE exposures SET typeOfPlace = 'FACILITY' "
 						+ "WHERE (SELECT facilityType FROM location WHERE id = exposures.location_id) IS NOT NULL;");
 
