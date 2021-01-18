@@ -312,7 +312,7 @@ public class ContactController {
 										}
 									});
 							}
-						});
+						}, true);
 				}
 			}
 		});

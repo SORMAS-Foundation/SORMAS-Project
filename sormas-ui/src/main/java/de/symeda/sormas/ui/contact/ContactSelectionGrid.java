@@ -24,6 +24,11 @@ public class ContactSelectionGrid extends Grid {
 		loadData(criteria);
 	}
 
+	public ContactSelectionGrid(List<SimilarContactDto> contacts) {
+		buildGrid();
+		setContainerData(contacts);
+	}
+
 	private void buildGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.SINGLE);
@@ -60,6 +65,10 @@ public class ContactSelectionGrid extends Grid {
 
 	private void loadData(ContactSimilarityCriteria criteria) {
 		final List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(criteria);
+		setContainerData(similarContacts);
+	}
+
+	private void setContainerData(List<SimilarContactDto> similarContacts) {
 		getContainer().removeAllItems();
 		getContainer().addAll(similarContacts);
 		setHeightByRows(similarContacts.size() > 0 ? (similarContacts.size() <= 10 ? similarContacts.size() : 10) : 1);
