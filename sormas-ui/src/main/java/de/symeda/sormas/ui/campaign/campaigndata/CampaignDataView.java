@@ -277,7 +277,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria.setCommunity(user.getCommunity());
 		filterForm = new CampaignFormDataFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
+			if (!filterForm.hasFilter() && campaignCombo == null) {
 				navigateTo(null);
 			}
 		});
