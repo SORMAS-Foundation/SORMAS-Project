@@ -81,7 +81,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
 		}
 
-		Document document = fromDto(dto);
+		Document document = fromDto(dto, true);
 
 		String storageReference = documentStorageService.save(document, content);
 		try {
@@ -133,7 +133,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		}
 	}
 
-	public Document fromDto(DocumentDto source) {
+	public Document fromDto(DocumentDto source, boolean checkChangeDate) {
 		Document target = documentService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Document();
@@ -142,7 +142,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setUploadingUser(userService.getByReferenceDto(source.getUploadingUser()));
 		target.setName(source.getName());

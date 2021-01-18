@@ -75,6 +75,8 @@ public class EventDto extends PseudonymizableDto {
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
+	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
 
 	@Required
 	private EventStatus eventStatus;
@@ -122,6 +124,8 @@ public class EventDto extends PseudonymizableDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private YesNoUnknown transregionalOutbreak;
+	private DiseaseTransmissionMode diseaseTransmissionMode;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -183,7 +187,9 @@ public class EventDto extends PseudonymizableDto {
 		this.externalId = externalId;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
@@ -443,6 +449,22 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	public YesNoUnknown getTransregionalOutbreak() {
+		return transregionalOutbreak;
+	}
+
+	public void setTransregionalOutbreak(YesNoUnknown transregionalOutbreak) {
+		this.transregionalOutbreak = transregionalOutbreak;
+	}
+
+	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
+		return diseaseTransmissionMode;
+	}
+
+	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
+		this.diseaseTransmissionMode = diseaseTransmissionMode;
 	}
 
 	public EventReferenceDto toReference() {

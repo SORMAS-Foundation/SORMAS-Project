@@ -41,11 +41,13 @@ public class ActionDto extends EntityDto {
 	public static final String EVENT = "event";
 	public static final String ACTION_CONTEXT = "actionContext";
 	public static final String ACTION_STATUS = "actionStatus";
+	public static final String ACTION_MEASURE = "actionMeasure";
 
 	@Required
 	private ActionContext actionContext;
 	private EventReferenceDto event;
 
+	private ActionMeasure actionMeasure;
 	private ActionPriority priority;
 	@Required
 	private Date date;
@@ -56,15 +58,20 @@ public class ActionDto extends EntityDto {
 	private String title;
 	private String description;
 	private String reply;
-	private UserReferenceDto replyingUser;
+	private UserReferenceDto lastModifiedBy;
 
 	public static ActionDto build(ActionContext context, ReferenceDto entityRef) {
+		return build(context, null, entityRef);
+	}
+
+	public static ActionDto build(ActionContext context, ActionMeasure actionMeasure, ReferenceDto entityRef) {
 
 		ActionDto action = new ActionDto();
 		action.setUuid(DataHelper.createUuid());
 		action.setDate(ActionHelper.getDefaultDate());
 		action.setActionStatus(ActionStatus.PENDING);
 		action.setPriority(ActionPriority.NORMAL);
+		action.setActionMeasure(actionMeasure);
 		action.setActionContext(context);
 		switch (context) {
 		case EVENT:
@@ -146,12 +153,12 @@ public class ActionDto extends EntityDto {
 		this.reply = reply;
 	}
 
-	public UserReferenceDto getReplyingUser() {
-		return replyingUser;
+	public UserReferenceDto getLastModifiedBy() {
+		return lastModifiedBy;
 	}
 
-	public void setReplyingUser(UserReferenceDto replyingUser) {
-		this.replyingUser = replyingUser;
+	public void setLastModifiedBy(UserReferenceDto lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
 	}
 
 	public ActionPriority getPriority() {
@@ -160,6 +167,14 @@ public class ActionDto extends EntityDto {
 
 	public void setPriority(ActionPriority priority) {
 		this.priority = priority;
+	}
+
+	public ActionMeasure getActionMeasure() {
+		return actionMeasure;
+	}
+
+	public void setActionMeasure(ActionMeasure actionMeasure) {
+		this.actionMeasure = actionMeasure;
 	}
 
 	public ReferenceDto getContextReference() {

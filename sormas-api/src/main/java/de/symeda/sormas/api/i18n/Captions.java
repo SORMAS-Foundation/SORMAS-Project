@@ -22,11 +22,13 @@ public interface Captions {
 	String aboutWhatsNew = "aboutWhatsNew";
 	String Action = "Action";
 	String Action_actionContext = "Action.actionContext";
+	String Action_actionMeasure = "Action.actionMeasure";
 	String Action_actionStatus = "Action.actionStatus";
 	String Action_creatorUser = "Action.creatorUser";
 	String Action_date = "Action.date";
 	String Action_description = "Action.description";
 	String Action_event = "Action.event";
+	String Action_lastModifiedBy = "Action.lastModifiedBy";
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String Action_title = "Action.title";
@@ -55,6 +57,7 @@ public interface Captions {
 	String actionHide = "actionHide";
 	String actionImport = "actionImport";
 	String actionImportAllCountries = "actionImportAllCountries";
+	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
@@ -65,7 +68,6 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
-	String actionReplyingLabel = "actionReplyingLabel";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -554,6 +556,7 @@ public interface Captions {
 	String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	String ContactExport_lastName = "ContactExport.lastName";
+	String ContactExport_quarantineInformation = "ContactExport.quarantineInformation";
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String ContactExport_traveled = "ContactExport.traveled";
 	String ContactExport_travelHistory = "ContactExport.travelHistory";
@@ -783,6 +786,7 @@ public interface Captions {
 	String Event_deathCount = "Event.deathCount";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
+	String Event_diseaseTransmissionMode = "Event.diseaseTransmissionMode";
 	String Event_endDate = "Event.endDate";
 	String Event_eventActions = "Event.eventActions";
 	String Event_eventDesc = "Event.eventDesc";
@@ -820,14 +824,15 @@ public interface Captions {
 	String Event_srcType = "Event.srcType";
 	String Event_startDate = "Event.startDate";
 	String Event_surveillanceOfficer = "Event.surveillanceOfficer";
+	String Event_transregionalOutbreak = "Event.transregionalOutbreak";
 	String Event_travelDate = "Event.travelDate";
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
+	String EventAction_actionLastModifiedBy = "EventAction.actionLastModifiedBy";
 	String EventAction_actionPriority = "EventAction.actionPriority";
-	String EventAction_actionReplyingUser = "EventAction.actionReplyingUser";
 	String EventAction_actionStatus = "EventAction.actionStatus";
 	String EventAction_actionTitle = "EventAction.actionTitle";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
@@ -895,6 +900,7 @@ public interface Captions {
 	String exportCaseCustom = "exportCaseCustom";
 	String exportCaseManagement = "exportCaseManagement";
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
+	String exportCustom = "exportCustom";
 	String exportDetailed = "exportDetailed";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";
 	String exportFollowUp = "exportFollowUp";
@@ -1477,6 +1483,7 @@ public interface Captions {
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";
 	String sormasToSormasSharedDate = "sormasToSormasSharedDate";
 	String sormasToSormasSharedWith = "sormasToSormasSharedWith";
+	String sormasToSormasSync = "sormasToSormasSync";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";
@@ -1499,6 +1506,7 @@ public interface Captions {
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
 	String SurvnetGateway_send = "SurvnetGateway.send";
+	String SurvnetGateway_sendShort = "SurvnetGateway.sendShort";
 	String SurvnetGateway_title = "SurvnetGateway.title";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";

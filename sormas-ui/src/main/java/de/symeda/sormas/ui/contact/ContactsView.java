@@ -45,21 +45,13 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.bagexport.BAGExportContactDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -70,8 +62,8 @@ import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -212,41 +204,7 @@ public class ContactsView extends AbstractView {
 				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
-				StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
-					ContactExportDto.class,
-					null,
-					(Integer start, Integer max) -> FacadeProvider.getContactFacade()
-						.getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
-					(propertyId, type) -> {
-						String caption = I18nProperties.getPrefixCaption(
-							ContactExportDto.I18N_PREFIX,
-							propertyId,
-							I18nProperties.getPrefixCaption(
-								ContactDto.I18N_PREFIX,
-								propertyId,
-								I18nProperties.getPrefixCaption(
-									CaseDataDto.I18N_PREFIX,
-									propertyId,
-									I18nProperties.getPrefixCaption(
-										PersonDto.I18N_PREFIX,
-										propertyId,
-										I18nProperties.getPrefixCaption(
-											LocationDto.I18N_PREFIX,
-											propertyId,
-											I18nProperties.getPrefixCaption(
-												SymptomsDto.I18N_PREFIX,
-												propertyId,
-												I18nProperties.getPrefixCaption(
-													HospitalizationDto.I18N_PREFIX,
-													propertyId,
-													I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId))))))));
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
-					createFileNameWithCurrentDate("sormas_contacts_", ".csv"),
-					null);
+				StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);
 
 				addExportButton(
 					extendedExportStreamResource,
@@ -268,6 +226,15 @@ public class ContactsView extends AbstractView {
 					VaadinIcons.FILE_TEXT,
 					Captions.exportFollowUp,
 					Descriptions.descFollowUpExportButton);
+			}
+
+			{
+				Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
+					ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria());
+				}, ValoTheme.BUTTON_PRIMARY);
+				btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
+				btnCustomExport.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(btnCustomExport);
 			}
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)

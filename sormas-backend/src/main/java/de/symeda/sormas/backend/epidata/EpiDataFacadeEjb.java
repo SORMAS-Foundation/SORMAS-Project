@@ -54,7 +54,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	@EJB
 	private UserService userService;
 
-	public EpiData fromDto(EpiDataDto source) {
+	public EpiData fromDto(EpiDataDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -68,7 +68,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
 		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
@@ -78,7 +78,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 
 		List<Exposure> exposures = new ArrayList<>();
 		for (ExposureDto exposureDto : source.getExposures()) {
-			Exposure exposure = fromExposureDto(exposureDto);
+			Exposure exposure = fromExposureDto(exposureDto, checkChangeDate);
 			exposure.setEpiData(target);
 			exposures.add(exposure);
 		}
@@ -91,7 +91,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		return target;
 	}
 
-	public Exposure fromExposureDto(ExposureDto source) {
+	public Exposure fromExposureDto(ExposureDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -107,7 +107,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		}
 
 		Exposure target = exposure;
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
@@ -133,7 +133,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHandlingAnimals(source.getHandlingAnimals());
 		target.setHandlingSamples(source.getHandlingSamples());
 		target.setIndoors(source.getIndoors());
-		target.setLocation(locationFacade.fromDto(source.getLocation()));
+		target.setLocation(locationFacade.fromDto(source.getLocation(), checkChangeDate));
 		target.setLongFaceToFaceContact(source.getLongFaceToFaceContact());
 		target.setOtherProtectiveMeasures(source.getOtherProtectiveMeasures());
 		target.setProtectiveMeasuresDetails(source.getProtectiveMeasuresDetails());

@@ -25,7 +25,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,8 +44,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -164,12 +163,12 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@Override
 	public CampaignDto saveCampaign(CampaignDto dto) {
 
-		Campaign campaign = fromDto(dto);
+		Campaign campaign = fromDto(dto, true);
 		campaignService.ensurePersisted(campaign);
 		return toDto(campaign);
 	}
 
-	public Campaign fromDto(@NotNull CampaignDto source) {
+	public Campaign fromDto(@NotNull CampaignDto source, boolean checkChangeDate) {
 
 		Campaign target = campaignService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -179,7 +178,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		validate(source);
 

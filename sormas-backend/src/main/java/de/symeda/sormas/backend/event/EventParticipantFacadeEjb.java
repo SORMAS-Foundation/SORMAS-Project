@@ -203,7 +203,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		validate(dto);
 
-		EventParticipant entity = fromDto(dto);
+		EventParticipant entity = fromDto(dto, true);
 		eventParticipantService.ensurePersisted(entity);
 
 		return convertToDto(entity, pseudonymizer);
@@ -577,7 +577,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			.orElse(null);
 	}
 
-	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
+	public EventParticipant fromDto(@NotNull EventParticipantDto source, boolean checkChangeDate) {
 
 		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -587,7 +587,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		if (source.getReportingUser() != null) {
 			target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
