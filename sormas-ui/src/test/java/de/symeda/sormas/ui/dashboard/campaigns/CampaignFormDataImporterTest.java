@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 	@Test
 	@Ignore("Remove ignore once we have replaced H2 - #2526")
-	public void testImportCampaignFormData() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testImportCampaignFormData() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user =
@@ -43,7 +44,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
-		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_success.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_success.csv").toURI());
 		CampaignFormDataImporterExtension campaignFormDataImporter = new CampaignFormDataImporterExtension(
 			csvFile,
 			false,
@@ -58,7 +59,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportCampaignFormDataWithWrongDataType()
-		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+			throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user =
@@ -68,7 +69,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
-		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_wrong_type.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_wrong_type.csv").toURI());
 		CampaignFormDataImporterExtension campaignFormDataImporter = new CampaignFormDataImporterExtension(
 			csvFile,
 			false,
@@ -83,7 +84,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
     @Test
 	public void testImportCampaignFormDataWithNonExistingColumn()
-		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+			throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user =
@@ -93,7 +94,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
-		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_nonexisting_column.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_nonexisting_column.csv").toURI());
 		CampaignFormDataImporterExtension campaignFormDataImporter = new CampaignFormDataImporterExtension(
 			csvFile,
 			false,
@@ -121,7 +122,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 		}
 
 		@Override
-		protected void writeImportError(String[] errorLine, String message) throws IOException {
+		protected void writeImportError(String[] errorLine, String message) {
 			errorMessages.add(message);
 		}
 

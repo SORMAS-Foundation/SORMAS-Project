@@ -19,6 +19,7 @@ package de.symeda.sormas.api.event;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 
@@ -57,5 +58,9 @@ public final class EventHelper {
 		}
 
 		return DataHelper.toStringNullable(meansOfTransport);
+	}
+
+	public static String buildEventActionTitleString(ActionMeasure actionMeasure, String actionTitle) {
+		return actionMeasure == null || actionMeasure == ActionMeasure.OTHER ? actionTitle : actionMeasure.toString();
 	}
 }

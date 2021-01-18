@@ -409,7 +409,9 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
+			event.get(Event.DISEASE_TRANSMISSION_MODE),
 			event.get(Event.NOSOCOMIAL),
+			event.get(Event.TRANSREGIONAL_OUTBREAK),
 			event.get(Event.MEANS_OF_TRANSPORT),
 			event.get(Event.MEANS_OF_TRANSPORT_DETAILS),
 			region.get(Region.UUID),
@@ -607,6 +609,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -693,6 +697,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

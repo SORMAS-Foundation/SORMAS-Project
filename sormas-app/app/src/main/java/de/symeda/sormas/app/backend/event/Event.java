@@ -30,6 +30,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
@@ -185,6 +186,11 @@ public class Event extends PseudonymizableAdo {
 	@DatabaseField
 	private Float reportLatLonAccuracy;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown transregionalOutbreak;
+	@Enumerated(EnumType.STRING)
+	private DiseaseTransmissionMode diseaseTransmissionMode;
+
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
@@ -233,9 +239,13 @@ public class Event extends PseudonymizableAdo {
 		this.externalId = externalId;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	public String getEventTitle() {
 		return eventTitle;
@@ -451,6 +461,22 @@ public class Event extends PseudonymizableAdo {
 
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public YesNoUnknown getTransregionalOutbreak() {
+		return transregionalOutbreak;
+	}
+
+	public void setTransregionalOutbreak(YesNoUnknown transregionalOutbreak) {
+		this.transregionalOutbreak = transregionalOutbreak;
+	}
+
+	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
+		return diseaseTransmissionMode;
+	}
+
+	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
+		this.diseaseTransmissionMode = diseaseTransmissionMode;
 	}
 
 	@Override

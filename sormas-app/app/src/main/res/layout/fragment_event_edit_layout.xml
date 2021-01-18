@@ -159,12 +159,18 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.eventDesc}" />
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_diseaseTransmissionMode"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventEventStatus}"
+                app:dependencyParentValue="@{EventStatus.CLUSTER}"
+                app:value="@={data.diseaseTransmissionMode}" />
+
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/event_nosocomial"
                 style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{eventEventStatus}"
                 app:dependencyParentValue="@{EventStatus.CLUSTER}"
-                app:slim="true"
                 app:value="@={data.nosocomial}" />
 
             <LinearLayout
@@ -205,6 +211,13 @@
             </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/event_transregionalOutbreak"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventEventStatus}"
+                app:dependencyParentValue="@{EventStatus.CLUSTER}"
+                app:value="@={data.transregionalOutbreak}" />
 
             <LinearLayout
                 android:layout_width="match_parent"

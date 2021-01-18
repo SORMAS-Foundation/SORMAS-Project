@@ -68,6 +68,18 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_uuid"
+                        app:shortUuidValue="@{data.uuid}"
+                        style="@style/ControlSingleColumnStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/sample_casePersonName"
                         app:value="@{data.associatedCase.person}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
