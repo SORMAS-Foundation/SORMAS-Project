@@ -6266,5 +6266,20 @@ CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash
 
 INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
 
+-- 2020-12-03 Remove hospital from exposure type of places #3680
+UPDATE location
+SET facilitytype = 'HOSPITAL'
+FROM location AS l
+         INNER JOIN exposures ON exposures.location_id = l.id
+WHERE exposures.typeofplace = 'HOSPITAL'
+  AND l.facilitytype IS NULL;
+
+UPDATE exposures
+SET typeofplace = 'FACILITY'
+FROM exposures as e
+         INNER JOIN location ON location.id = e.location_id
+WHERE location.facilitytype IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680');
 
 -- *** Insert new sql commands BEFORE this line ***
