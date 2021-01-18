@@ -462,7 +462,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 			CaseExportType.CASE_SURVEILLANCE,
 			CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.EXTERNAL_ID)
+	@ExportProperty(CaseDataDto.EXTERNAL_TOKEN)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getExternalToken() {
 		return externalToken;

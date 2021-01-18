@@ -155,7 +155,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		for (PopulationDataDto populationData : populationDataList) {
 			validate(populationData);
-			PopulationData entity = fromDto(populationData);
+			PopulationData entity = fromDto(populationData, true);
 			service.ensurePersisted(entity);
 		}
 	}
@@ -297,7 +297,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		}
 	}
 
-	public PopulationData fromDto(@NotNull PopulationDataDto source) {
+	public PopulationData fromDto(@NotNull PopulationDataDto source, boolean checkChangeDate) {
 
 		PopulationData target = service.getByUuid(source.getUuid());
 		if (target == null) {
@@ -307,7 +307,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));

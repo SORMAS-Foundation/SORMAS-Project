@@ -50,7 +50,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	@EJB
 	private UserService userService;
 
-	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source) {
+	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source, boolean checkChangeDate) {
 		CampaignFormMeta target = service.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new CampaignFormMeta();
@@ -59,7 +59,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());
@@ -91,7 +91,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	public CampaignFormMetaDto saveCampaignFormMeta(CampaignFormMetaDto campaignFormMetaDto) throws ValidationRuntimeException {
 		validateAndClean(campaignFormMetaDto);
 
-		CampaignFormMeta campaignFormMeta = fromDto(campaignFormMetaDto);
+		CampaignFormMeta campaignFormMeta = fromDto(campaignFormMetaDto, true);
 		service.ensurePersisted(campaignFormMeta);
 		return toDto(campaignFormMeta);
 	}

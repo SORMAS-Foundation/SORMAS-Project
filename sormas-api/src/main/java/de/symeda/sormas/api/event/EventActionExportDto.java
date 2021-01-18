@@ -20,6 +20,7 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -37,6 +38,7 @@ public class EventActionExportDto implements Serializable {
 	private String eventDate;
 	private EventStatus eventStatus;
 	private EventInvestigationStatus eventInvestigationStatus;
+	private ActionMeasure actionMeasure;
 	private String actionTitle;
 	private Date actionCreationDate;
 	private Date actionChangeDate;
@@ -52,6 +54,7 @@ public class EventActionExportDto implements Serializable {
 		Date eventEndDate,
 		EventStatus eventStatus,
 		EventInvestigationStatus eventInvestigationStatus,
+		ActionMeasure actionMeasure,
 		String actionTitle,
 		Date actionCreationDate,
 		Date actionChangeDate,
@@ -70,6 +73,7 @@ public class EventActionExportDto implements Serializable {
 		this.eventDate = EventHelper.buildEventDateString(eventStartDate, eventEndDate);
 		this.eventStatus = eventStatus;
 		this.eventInvestigationStatus = eventInvestigationStatus;
+		this.actionMeasure = actionMeasure;
 		this.actionTitle = actionTitle;
 		this.actionCreationDate = actionCreationDate;
 		this.actionChangeDate = actionChangeDate;
@@ -111,31 +115,36 @@ public class EventActionExportDto implements Serializable {
 	}
 
 	@Order(6)
+	public ActionMeasure getActionMeasure() {
+		return actionMeasure;
+	}
+
+	@Order(7)
 	public String getActionTitle() {
 		return actionTitle;
 	}
 
-	@Order(7)
+	@Order(8)
 	public Date getActionCreationDate() {
 		return actionCreationDate;
 	}
 
-	@Order(8)
+	@Order(9)
 	public Date getActionChangeDate() {
 		return actionChangeDate;
 	}
 
-	@Order(9)
+	@Order(10)
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
 
-	@Order(10)
+	@Order(11)
 	public ActionPriority getActionPriority() {
 		return actionPriority;
 	}
 
-	@Order(11)
+	@Order(12)
 	public UserReferenceDto getActionLastModifiedBy() {
 		return actionLastModifiedBy;
 	}

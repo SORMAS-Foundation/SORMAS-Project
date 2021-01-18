@@ -33,7 +33,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 	@EJB
 	private SymptomsService service;
 
-	public Symptoms fromDto(SymptomsDto dto) {
+	public Symptoms fromDto(SymptomsDto dto, boolean checkChangeDate) {
 
 		if (dto == null) {
 			return null;
@@ -51,7 +51,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 
 		Symptoms target = symptoms;
 		SymptomsDto source = dto;
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setAbdominalPain(source.getAbdominalPain());
 		target.setAlteredConsciousness(source.getAlteredConsciousness());

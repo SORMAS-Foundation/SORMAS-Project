@@ -13,16 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-public interface ProcessedDataPersister<P> {
+public enum DiseaseTransmissionMode {
 
-	void persistSharedData(P prcessedData) throws SormasToSormasValidationException;
+	HUMAN_TO_HUMAN,
+	ANIMAL,
+	ENVIRONMENT,
+	FOOD,
+	VECTOR_BORNE,
+	UNKNOWN;
 
-	void persistReturnedData(P prcessedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException;
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 
-	void persistSyncData(P prcessedData) throws SormasToSormasValidationException;
 }

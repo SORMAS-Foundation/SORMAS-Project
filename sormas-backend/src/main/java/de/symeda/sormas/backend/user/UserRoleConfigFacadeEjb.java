@@ -83,7 +83,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	@Override
 	public UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto) {
 
-		UserRoleConfig entity = fromDto(dto);
+		UserRoleConfig entity = fromDto(dto, true);
 		userRoleConfigService.ensurePersisted(entity);
 		resetUserRoleRightsCache();
 		return toDto(entity);
@@ -139,7 +139,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		return userRoleRightsCache;
 	}
 
-	public UserRoleConfig fromDto(UserRoleConfigDto source) {
+	public UserRoleConfig fromDto(UserRoleConfigDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -153,7 +153,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setUserRole(source.getUserRole());
 		target.setUserRights(new HashSet<UserRight>(source.getUserRights()));

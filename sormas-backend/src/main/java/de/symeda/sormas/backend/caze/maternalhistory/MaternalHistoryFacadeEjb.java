@@ -67,7 +67,7 @@ public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
 		return target;
 	}
 
-	public MaternalHistory fromDto(@NotNull MaternalHistoryDto source) {
+	public MaternalHistory fromDto(@NotNull MaternalHistoryDto source, boolean checkChangeDate) {
 		MaternalHistory target = service.getByUuid(source.getUuid());
 
 		if (target == null) {
@@ -78,7 +78,7 @@ public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setAgeAtBirth(source.getAgeAtBirth());
 		target.setArthralgiaArthritis(source.getArthralgiaArthritis());

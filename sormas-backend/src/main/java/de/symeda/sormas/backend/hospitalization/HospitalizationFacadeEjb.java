@@ -59,7 +59,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	@EJB
 	private FacilityService facilityService;
 
-	public Hospitalization fromDto(HospitalizationDto dto) {
+	public Hospitalization fromDto(HospitalizationDto dto, boolean checkChangeDate) {
 
 		if (dto == null) {
 			return null;
@@ -76,7 +76,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 
 		Hospitalization target = hospitalization;
 		HospitalizationDto source = dto;
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
@@ -88,7 +88,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 
 		List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalizationDto prevDto : source.getPreviousHospitalizations()) {
-			PreviousHospitalization prevHosp = fromDto(prevDto);
+			PreviousHospitalization prevHosp = fromDto(prevDto, checkChangeDate);
 			prevHosp.setHospitalization(target);
 			previousHospitalizations.add(prevHosp);
 		}
@@ -104,7 +104,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		return hospitalization;
 	}
 
-	public PreviousHospitalization fromDto(PreviousHospitalizationDto dto) {
+	public PreviousHospitalization fromDto(PreviousHospitalizationDto dto, boolean checkChangeDate) {
 
 		if (dto == null) {
 			return null;
@@ -121,7 +121,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 
 		PreviousHospitalization target = prevHospitalization;
 		PreviousHospitalizationDto source = dto;
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());

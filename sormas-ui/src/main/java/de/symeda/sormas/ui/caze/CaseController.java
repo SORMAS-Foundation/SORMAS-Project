@@ -49,6 +49,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -72,6 +73,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
@@ -681,6 +683,7 @@ public class CaseController {
 			boolean surveillanceOfficerChange = district != null && form.getSurveillanceOfficerCheckBox().getValue();
 			boolean facilityChange = form.getHealthFacilityCheckbox().getValue();
 
+			CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 			if (facilityChange) {
 				VaadinUiUtil.showChooseOptionPopup(
 					I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
@@ -697,7 +700,8 @@ public class CaseController {
 							investigationStatusChange,
 							outcomeChange,
 							surveillanceOfficerChange,
-							e.booleanValue());
+							e.booleanValue(),
+							caseFacade);
 
 						popupWindow.close();
 						navigateToIndex();
@@ -705,7 +709,6 @@ public class CaseController {
 					});
 
 			} else {
-				CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 				bulkEdit(
 					selectedCases,
 					updatedBulkEditData,
@@ -735,18 +738,14 @@ public class CaseController {
 		boolean surveillanceOfficerChange,
 		CaseFacade caseFacade) {
 
-		for (CaseIndexDto indexDto : selectedCases) {
-			CaseDataDto caseDto = changeCaseDto(
-				updatedCaseBulkEditData,
-				caseFacade.getCaseDataByUuid(indexDto.getUuid()),
-				diseaseChange,
-				classificationChange,
-				investigationStatusChange,
-				outcomeChange,
-				surveillanceOfficerChange);
-
-			caseFacade.saveCase(caseDto);
-		}
+		caseFacade.saveBulkCase(
+			selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
+			updatedCaseBulkEditData,
+			diseaseChange,
+			classificationChange,
+			investigationStatusChange,
+			outcomeChange,
+			surveillanceOfficerChange);
 	}
 
 	private void bulkEditWithFacilities(
@@ -757,27 +756,18 @@ public class CaseController {
 		boolean investigationStatusChange,
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange,
-		Boolean doTransfer) {
+		Boolean doTransfer,
+		CaseFacade caseFacade) {
 
-		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-		for (CaseIndexDto indexDto : selectedCases) {
-			CaseDataDto updatedCase = changeCaseDto(
-				updatedCaseBulkEditData,
-				caseFacade.getCaseDataByUuid(indexDto.getUuid()),
-				diseaseChange,
-				classificationChange,
-				investigationStatusChange,
-				outcomeChange,
-				surveillanceOfficerChange);
-			updatedCase.setRegion(updatedCaseBulkEditData.getRegion());
-			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
-			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
-			updatedCase.setFacilityType(updatedCaseBulkEditData.getFacilityType());
-			updatedCase.setHealthFacility(updatedCaseBulkEditData.getHealthFacility());
-			updatedCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
-			CaseLogic.handleHospitalization(updatedCase, caseFacade.getCaseDataByUuid(indexDto.getUuid()), doTransfer);
-			caseFacade.saveCase(updatedCase);
-		}
+		caseFacade.saveBulkEditWithFacilities(
+			selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
+			updatedCaseBulkEditData,
+			diseaseChange,
+			classificationChange,
+			investigationStatusChange,
+			outcomeChange,
+			surveillanceOfficerChange,
+			doTransfer);
 	}
 
 	private CaseDataDto changeCaseDto(
@@ -1339,8 +1329,25 @@ public class CaseController {
 		titleLayout.addComponent(classificationLabel);
 
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
-		String person = caseData.getPerson().getCaption();
-		Label caseLabel = new Label(StringUtils.isNotBlank(person) ? person + " (" + shortUuid + ")" : shortUuid);
+		String casePersonFullName = caseData.getPerson().getCaption();
+		StringBuilder caseLabelSb = new StringBuilder();
+		if (StringUtils.isNotBlank(casePersonFullName)) {
+			caseLabelSb.append(casePersonFullName);
+
+			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+			if (casePerson.getBirthdateDD() != null && casePerson.getBirthdateMM() != null && casePerson.getBirthdateYYYY() != null) {
+				caseLabelSb.append(" (* ")
+					.append(
+						PersonHelper.formatBirthdate(
+							casePerson.getBirthdateDD(),
+							casePerson.getBirthdateMM(),
+							casePerson.getBirthdateYYYY(),
+							I18nProperties.getUserLanguage()))
+					.append(")");
+			}
+		}
+		caseLabelSb.append(caseLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		Label caseLabel = new Label(caseLabelSb.toString());
 		caseLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponent(caseLabel);
 

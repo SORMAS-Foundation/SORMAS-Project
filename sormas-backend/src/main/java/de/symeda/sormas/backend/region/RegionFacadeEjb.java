@@ -312,7 +312,7 @@ public class RegionFacadeEjb implements RegionFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
 		}
 
-		region = fillOrBuildEntity(dto, region);
+		region = fillOrBuildEntity(dto, region, true);
 		regionService.ensurePersisted(region);
 	}
 
@@ -321,14 +321,14 @@ public class RegionFacadeEjb implements RegionFacade {
 		return regionService.getByName(name, includeArchivedEntities).stream().map(r -> toReferenceDto(r)).collect(Collectors.toList());
 	}
 
-	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target) {
+	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new Region();
 			target.setUuid(source.getUuid());
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());
