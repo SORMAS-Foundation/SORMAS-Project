@@ -175,7 +175,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
 
-		Event event = fromDto(dto);
+		Event event = fromDto(dto, true);
 		eventService.ensurePersisted(event);
 
 		return convertToDto(event, pseudonymizer);
@@ -427,7 +427,9 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
+			event.get(Event.DISEASE_TRANSMISSION_MODE),
 			event.get(Event.NOSOCOMIAL),
+			event.get(Event.TRANSREGIONAL_OUTBREAK),
 			event.get(Event.MEANS_OF_TRANSPORT),
 			event.get(Event.MEANS_OF_TRANSPORT_DETAILS),
 			region.get(Region.UUID),
@@ -595,7 +597,7 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getArchivedUuidsSince(since);
 	}
 
-	public Event fromDto(@NotNull EventDto source) {
+	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
 
 		Event target = eventService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -605,7 +607,7 @@ public class EventFacadeEjb implements EventFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
@@ -621,7 +623,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
+		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
@@ -642,6 +644,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -728,6 +732,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

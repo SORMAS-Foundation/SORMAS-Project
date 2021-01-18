@@ -162,6 +162,17 @@
                         app:defaultValue='@{@string/value_sample_result_unknown}'
                         />
 
+                    <TextView
+                        android:id="@+id/txtSampleUuid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                        android:textColor="@color/listActivityRowLeastText"
+                        android:fontFamily="sans-serif-medium"
+                        app:value="@{data.uuid}"
+                        app:shortUuid="@{true}"
+                        app:defaultValue='@{@string/value_uuid_unknown}' />
+
                 </LinearLayout>
 
 

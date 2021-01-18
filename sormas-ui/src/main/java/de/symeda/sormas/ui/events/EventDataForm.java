@@ -87,7 +87,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
 			fluidRowLocs(EventDto.EVENT_TITLE) +
 			fluidRowLocs(EventDto.EVENT_DESC) +
-			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
+			fluidRowLocs(EventDto.DISEASE_TRANSMISSION_MODE, EventDto.NOSOCOMIAL) +
 
 			loc(INFORMATION_SOURCE_HEADING_LOC) +
 			fluidRowLocs(EventDto.SRC_TYPE, "") +
@@ -99,6 +99,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.SRC_MEDIA_DETAILS) +
 
 			loc(LOCATION_HEADING_LOC) +
+			fluidRowLocs(EventDto.TRANSREGIONAL_OUTBREAK, "") +
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
 			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) + 
 			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.SEAT_NUMBER, 4, EventDto.TRAVEL_DATE) +
@@ -189,6 +190,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		descriptionField.setDescription(
 			I18nProperties.getPrefixDescription(EventDto.I18N_PREFIX, EventDto.EVENT_DESC, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
+		addField(EventDto.DISEASE_TRANSMISSION_MODE, ComboBox.class);
 		addField(EventDto.NOSOCOMIAL, NullableOptionGroup.class);
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
@@ -232,6 +234,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
+		addField(EventDto.TRANSREGIONAL_OUTBREAK, NullableOptionGroup.class);
 
 		ComboBox srcType = addField(EventDto.SRC_TYPE);
 
@@ -299,7 +302,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			I18nProperties.getCaption(Captions.Event_startDate));
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Collections.singletonList(EventDto.NOSOCOMIAL),
+			Arrays.asList(EventDto.NOSOCOMIAL, EventDto.TRANSREGIONAL_OUTBREAK, EventDto.DISEASE_TRANSMISSION_MODE),
 			EventDto.EVENT_STATUS,
 			Collections.singletonList(EventStatus.CLUSTER),
 			true);

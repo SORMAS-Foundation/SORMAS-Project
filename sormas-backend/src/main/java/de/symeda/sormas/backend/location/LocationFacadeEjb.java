@@ -52,7 +52,7 @@ public class LocationFacadeEjb implements LocationFacade {
 	@EJB
 	private FacilityService facilityService;
 
-	public Location fromDto(LocationDto source) {
+	public Location fromDto(LocationDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -66,7 +66,7 @@ public class LocationFacadeEjb implements LocationFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());

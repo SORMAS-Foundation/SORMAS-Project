@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -62,6 +63,8 @@ import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
@@ -1275,6 +1278,16 @@ public class TestDataCreator {
 		document.setRelatedEntityUuid(relatedEntityUuid);
 
 		return beanTest.getDocumentFacade().saveDocument(document, content);
+	}
+
+	public ExportConfigurationDto createExportConfiguration(String name, ExportType exportType, Set<String> properites, UserReferenceDto user) {
+		ExportConfigurationDto exportConfiguration = ExportConfigurationDto.build(user, exportType);
+		exportConfiguration.setName(name);
+		exportConfiguration.setProperties(properites);
+
+		beanTest.getExportFacade().saveExportConfiguration(exportConfiguration);
+
+		return exportConfiguration;
 	}
 
 	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, SystemEventStatus status) {
