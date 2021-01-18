@@ -48,10 +48,10 @@ public class LabMessageController {
 		LabMessageDto newDto = FacadeProvider.getLabMessageFacade().getByUuid(uuid);
 
 		LabMessageEditForm form = new LabMessageEditForm(true);
-		form.setValue(newDto);
 		VerticalLayout layout = new VerticalLayout(form);
 		layout.setMargin(true);
 		VaadinUiUtil.showPopupWindow(layout, I18nProperties.getString(Strings.headingShowLabMessage));
+		form.setValue(newDto);
 	}
 
 	public void process(String uuid) {

@@ -19,9 +19,11 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
+import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
+import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
@@ -220,7 +222,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public void fetchExternalLabMessages() {
+	public LabMessageFetchResult fetchAndSaveExternalLabMessages() {
 		Date start = new Date(DateHelper.now());
 		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
@@ -234,13 +236,20 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			since = new Date(0);
 		}
 
+		LabMessageFetchResult fetchResult = new LabMessageFetchResult(true, null);
+
 		try {
 			InitialContext ic = new InitialContext();
 			String jndiName = configFacade.getDemisJndiName();
 			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
-			List<LabMessageDto> newMessages = labResultsFacade.getExternalLabMessages(since);
-			if (newMessages != null) {
-				newMessages.forEach(this::save);
+			ExternalMessageResult<List<LabMessageDto>> externalMessageResult = labResultsFacade.getExternalLabMessages(since);
+			if (externalMessageResult.isSuccess()) {
+				if (externalMessageResult.getValue() != null) {
+					externalMessageResult.getValue().forEach(this::save);
+				}
+			} else {
+				fetchResult.setSuccess(false);
+				fetchResult.setError(externalMessageResult.getError());
 			}
 		} catch (Exception e) {
 			systemEvent.setStatus(SystemEventStatus.ERROR);
@@ -250,13 +259,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			systemEvent.setChangeDate(end);
 			systemEventFacade.saveSystemEvent(systemEvent);
 			e.printStackTrace();
-			return;
+			fetchResult.setSuccess(false);
+			fetchResult.setError(e.getMessage());
+			return fetchResult;
 		}
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
 		Date end = new Date(DateHelper.now());
 		systemEvent.setEndDate(end);
 		systemEvent.setChangeDate(end);
 		systemEventFacade.saveSystemEvent(systemEvent);
+		return fetchResult;
 	}
 
 	@LocalBean
