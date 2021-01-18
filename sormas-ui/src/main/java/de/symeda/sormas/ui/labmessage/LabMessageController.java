@@ -67,17 +67,15 @@ public class LabMessageController {
 		ControllerProvider.getPersonController()
 			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
 				if (selectedPerson != null) {
+					PersonDto selectedPersonDto = null;
 					if (selectedPerson.getUuid().equals(personDto.getUuid())) {
-						PersonDto savedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
-						savedPerson.getAddress().setStreet(labMessageDto.getPersonStreet());
-						savedPerson.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
-						savedPerson.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
-						savedPerson.getAddress().setCity(labMessageDto.getPersonCity());
-						FacadeProvider.getPersonFacade().savePerson(savedPerson);
+						selectedPersonDto = personDto;
+					} else {
+						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
 					}
 
 					CaseCriteria caseCriteria = new CaseCriteria();
-					caseCriteria.person(selectedPerson);
+					caseCriteria.person(selectedPersonDto.toReference());
 					caseCriteria.disease(labMessageDto.getTestedDisease());
 					CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
 					caseSimilarityCriteria.caseCriteria(caseCriteria);
@@ -97,16 +95,17 @@ public class LabMessageController {
 //						FacadeProvider.getEventParticipantFacade().getSimilarEventParticipants(eventParticipantSimilarityCriteria);
 //
 //					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants);
-					pickOrCreateEntry(labMessageDto, similarCases, null, null);
+					pickOrCreateEntry(labMessageDto, similarCases, null, null, selectedPersonDto);
 				}
-			});
+			}, false);
 	}
 
 	private void pickOrCreateEntry(
 		LabMessageDto labMessageDto,
 		List<CaseIndexDto> cases,
 		List<SimilarContactDto> contacts,
-		List<SimilarEventParticipantDto> eventParticipants) {
+		List<SimilarEventParticipantDto> eventParticipants,
+		PersonDto person) {
 		EntrySelectionField selectField = new EntrySelectionField(labMessageDto, cases, contacts, eventParticipants);
 
 		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
@@ -114,9 +113,9 @@ public class LabMessageController {
 		selectionField.addCommitListener(() -> {
 			SimilarEntriesDto similarEntriesDto = selectField.getValue();
 			if (similarEntriesDto.isNewCase()) {
-				createCase(labMessageDto);
+				createCase(labMessageDto, person);
 			} else if (similarEntriesDto.getCaze() != null) {
-				createSample(FacadeProvider.getCaseFacade().getCaseDataByUuid(similarEntriesDto.getCaze().getUuid()), labMessageDto, false);
+				createSample(FacadeProvider.getCaseFacade().getCaseDataByUuid(similarEntriesDto.getCaze().getUuid()), labMessageDto);
 			}
 		});
 
@@ -128,27 +127,32 @@ public class LabMessageController {
 		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry));
 	}
 
-	private void createCase(LabMessageDto labMessageDto) {
+	private void createCase(LabMessageDto labMessageDto, PersonDto person) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, false);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, true);
 
-		PersonDto personDto = PersonDto.build();
-		personDto.setFirstName(labMessageDto.getPersonFirstName());
-		personDto.setLastName(labMessageDto.getPersonLastName());
-		personDto.setSex(labMessageDto.getPersonSex());
-		personDto.setBirthdateDD(labMessageDto.getPersonBirthDateDD());
-		personDto.setBirthdateMM(labMessageDto.getPersonBirthDateMM());
-		personDto.setBirthdateYYYY(labMessageDto.getPersonBirthDateYYYY());
-		CaseDataDto caseDto = CaseDataDto.build(personDto.toReference(), labMessageDto.getTestedDisease());
+		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessageDto.getTestedDisease());
 		caseDto.setReportingUser(UserProvider.getCurrent().getUserReference());
 		Window window = VaadinUiUtil.createPopupWindow();
 		caseCreateComponent.addCommitListener(() -> {
-			createSample(caseCreateComponent.getWrappedComponent().getValue(), labMessageDto, true);
+			PersonDto personDto =
+				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid());
+			if (personDto.getAddress().getCity() == null
+				&& personDto.getAddress().getHouseNumber() == null
+				&& personDto.getAddress().getPostalCode() == null
+				&& personDto.getAddress().getStreet() == null) {
+				personDto.getAddress().setStreet(labMessageDto.getPersonStreet());
+				personDto.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
+				personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
+				personDto.getAddress().setCity(labMessageDto.getPersonCity());
+				FacadeProvider.getPersonFacade().savePerson(personDto);
+			}
+			createSample(caseCreateComponent.getWrappedComponent().getValue(), labMessageDto);
 			window.close();
 		});
 		caseCreateComponent.addDiscardListener(() -> window.close());
 		caseCreateComponent.getWrappedComponent().setValue(caseDto);
-		caseCreateComponent.getWrappedComponent().setPerson(personDto);
+		caseCreateComponent.getWrappedComponent().setPerson(person);
 
 		LabMessageEditForm form = new LabMessageEditForm(true);
 		form.setValue(labMessageDto);
@@ -159,16 +163,7 @@ public class LabMessageController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void createSample(CaseDataDto caseDataDto, LabMessageDto labMessageDto, boolean newPerson) {
-		//TODO: Refactor the following changes of the person
-		if (newPerson) {
-			PersonDto savedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
-			savedPerson.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
-			savedPerson.getAddress().setCity(labMessageDto.getPersonCity());
-			savedPerson.getAddress().setStreet(labMessageDto.getPersonStreet());
-			savedPerson.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
-			FacadeProvider.getPersonFacade().savePerson(savedPerson);
-		}
+	private void createSample(CaseDataDto caseDataDto, LabMessageDto labMessageDto) {
 		SampleDto sampleDto = SampleDto.build(UserProvider.getCurrent().getUserReference(), caseDataDto.toReference());
 		sampleDto.setSampleDateTime(labMessageDto.getSampleDateTime());
 		if (labMessageDto.getSampleReceivedDate() != null) {
@@ -188,7 +183,6 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
 			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, () -> {
-				window.close();
 			});
 
 		CheckBox checkBox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);

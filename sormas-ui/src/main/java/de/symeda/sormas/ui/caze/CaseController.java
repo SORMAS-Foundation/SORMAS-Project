@@ -152,17 +152,17 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, true);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, true);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, disease, true);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -179,7 +179,7 @@ public class CaseController {
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, true);
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
@@ -203,7 +203,7 @@ public class CaseController {
 	}
 
 	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, disease, true);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -346,7 +346,7 @@ public class CaseController {
 		ContactDto convertedContact,
 		EventParticipantDto convertedEventParticipant,
 		Disease unrelatedDisease,
-		boolean forwardToCase) {
+		boolean createdFromLabMesssage) {
 
 		assert (convertedContact == null || convertedEventParticipant == null);
 		assert (unrelatedDisease == null || convertedEventParticipant == null);
@@ -462,7 +462,7 @@ public class CaseController {
 					FacadeProvider.getContactFacade().saveContact(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-					if (forwardToCase) {
+					if (!createdFromLabMesssage) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					}
 				} else if (convertedEventParticipant != null) {
@@ -482,17 +482,52 @@ public class CaseController {
 								FacadeProvider.getCaseFacade()
 									.setSampleAssociationsUnrelatedDisease(updatedEventParticipant.toReference(), dto.toReference());
 							}
-							if (forwardToCase) {
+							if (!createdFromLabMesssage) {
 								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 							}
 						} else {
 							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
 							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
-							if (forwardToCase) {
+							if (!createdFromLabMesssage) {
 								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 							}
 						}
 					});
+				} else if (createdFromLabMesssage) {
+					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+					if (dbPerson == null) {
+						PersonDto personDto = PersonDto.build();
+						personDto.setFirstName(createForm.getPersonFirstName());
+						personDto.setLastName(createForm.getPersonLastName());
+						personDto.setNationalHealthId(createForm.getNationalHealthId());
+						personDto.setPassportNumber(createForm.getPassportNumber());
+						personDto.setBirthdateDD(createForm.getBirthdateDD());
+						personDto.setBirthdateMM(createForm.getBirthdateMM());
+						personDto.setBirthdateYYYY(createForm.getBirthdateYYYY());
+						personDto.setSex(createForm.getSex());
+						personDto.setPresentCondition(createForm.getPresentCondition());
+						personDto.setPhone(createForm.getPhone());
+						personDto.setEmailAddress(createForm.getEmailAddress());
+						FacadeProvider.getPersonFacade().savePerson(personDto);
+						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
+						dto.setPerson(personDto.toReference());
+						saveCase(dto);
+					} else {
+						dbPerson.setFirstName(createForm.getPersonFirstName());
+						dbPerson.setLastName(createForm.getPersonLastName());
+						dbPerson.setNationalHealthId(createForm.getNationalHealthId());
+						dbPerson.setPassportNumber(createForm.getPassportNumber());
+						dbPerson.setBirthdateDD(createForm.getBirthdateDD());
+						dbPerson.setBirthdateMM(createForm.getBirthdateMM());
+						dbPerson.setBirthdateYYYY(createForm.getBirthdateYYYY());
+						dbPerson.setSex(createForm.getSex());
+						dbPerson.setPresentCondition(createForm.getPresentCondition());
+						dbPerson.setPhone(createForm.getPhone());
+						dbPerson.setEmailAddress(createForm.getEmailAddress());
+						FacadeProvider.getPersonFacade().savePerson(dbPerson);
+						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
+						saveCase(dto);
+					}
 				} else {
 					// look for potential duplicate
 					final PersonDto duplicatePerson = PersonDto.build();
@@ -512,25 +547,23 @@ public class CaseController {
 						.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
-
 								selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 									if (uuid == null) {
 										dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 										saveCase(dto);
-										if (forwardToCase) {
-											navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
-										}
-									} else if (forwardToCase) {
+										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+									} else {
 										navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 									}
 								});
 							}
-						});
+						}, true);
 				}
 			}
 		});
 
 		return editView;
+
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
@@ -1347,7 +1380,7 @@ public class CaseController {
 							}
 						});
 					}
-				});
+				}, true);
 		}
 
 		lineListingForm.closeWindow();

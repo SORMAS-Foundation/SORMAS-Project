@@ -104,7 +104,7 @@ public class EventParticipantsController {
 								ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
 							}
 						}
-					});
+					}, true);
 			}
 		});
 
