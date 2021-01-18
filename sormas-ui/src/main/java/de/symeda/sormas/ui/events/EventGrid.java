@@ -135,6 +135,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
 
+		setContactCountMethod(false); // Count all contacts by default
+
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
@@ -182,6 +184,16 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		}
 
 		return (srcMediaWebsite != null ? srcMediaWebsite : "") + " " + (srcMediaName != null ? "(" + srcMediaName + ")" : "");
+	}
+
+	public void setContactCountMethod(boolean SourceInEvent) {
+		if (SourceInEvent) {
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(false);
+			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(true);
+		} else {
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(true);
+			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(false);
+		}
 	}
 
 	public void reload() {
