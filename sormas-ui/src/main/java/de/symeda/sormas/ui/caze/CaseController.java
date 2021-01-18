@@ -498,33 +498,13 @@ public class CaseController {
 					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
-						personDto.setFirstName(createForm.getPersonFirstName());
-						personDto.setLastName(createForm.getPersonLastName());
-						personDto.setNationalHealthId(createForm.getNationalHealthId());
-						personDto.setPassportNumber(createForm.getPassportNumber());
-						personDto.setBirthdateDD(createForm.getBirthdateDD());
-						personDto.setBirthdateMM(createForm.getBirthdateMM());
-						personDto.setBirthdateYYYY(createForm.getBirthdateYYYY());
-						personDto.setSex(createForm.getSex());
-						personDto.setPresentCondition(createForm.getPresentCondition());
-						personDto.setPhone(createForm.getPhone());
-						personDto.setEmailAddress(createForm.getEmailAddress());
+						transferDataToPerson(createForm, personDto);
 						FacadeProvider.getPersonFacade().savePerson(personDto);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						dto.setPerson(personDto.toReference());
 						saveCase(dto);
 					} else {
-						dbPerson.setFirstName(createForm.getPersonFirstName());
-						dbPerson.setLastName(createForm.getPersonLastName());
-						dbPerson.setNationalHealthId(createForm.getNationalHealthId());
-						dbPerson.setPassportNumber(createForm.getPassportNumber());
-						dbPerson.setBirthdateDD(createForm.getBirthdateDD());
-						dbPerson.setBirthdateMM(createForm.getBirthdateMM());
-						dbPerson.setBirthdateYYYY(createForm.getBirthdateYYYY());
-						dbPerson.setSex(createForm.getSex());
-						dbPerson.setPresentCondition(createForm.getPresentCondition());
-						dbPerson.setPhone(createForm.getPhone());
-						dbPerson.setEmailAddress(createForm.getEmailAddress());
+						transferDataToPerson(createForm, dbPerson);
 						FacadeProvider.getPersonFacade().savePerson(dbPerson);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						saveCase(dto);
@@ -532,17 +512,7 @@ public class CaseController {
 				} else {
 					// look for potential duplicate
 					final PersonDto duplicatePerson = PersonDto.build();
-					duplicatePerson.setFirstName(createForm.getPersonFirstName());
-					duplicatePerson.setLastName(createForm.getPersonLastName());
-					duplicatePerson.setNationalHealthId(createForm.getNationalHealthId());
-					duplicatePerson.setPassportNumber(createForm.getPassportNumber());
-					duplicatePerson.setBirthdateDD(createForm.getBirthdateDD());
-					duplicatePerson.setBirthdateMM(createForm.getBirthdateMM());
-					duplicatePerson.setBirthdateYYYY(createForm.getBirthdateYYYY());
-					duplicatePerson.setSex(createForm.getSex());
-					duplicatePerson.setPresentCondition(createForm.getPresentCondition());
-					duplicatePerson.setPhone(createForm.getPhone());
-					duplicatePerson.setEmailAddress(createForm.getEmailAddress());
+					transferDataToPerson(createForm, duplicatePerson);
 
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
@@ -565,6 +535,20 @@ public class CaseController {
 
 		return editView;
 
+	}
+
+	private void transferDataToPerson(CaseCreateForm createForm, PersonDto person) {
+		person.setFirstName(createForm.getPersonFirstName());
+		person.setLastName(createForm.getPersonLastName());
+		person.setBirthdateDD(createForm.getBirthdateDD());
+		person.setBirthdateMM(createForm.getBirthdateMM());
+		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+		person.setSex(createForm.getSex());
+		person.setPresentCondition(createForm.getPresentCondition());
+		person.setPhone(createForm.getPhone());
+		person.setEmailAddress(createForm.getEmailAddress());
+		person.setNationalHealthId(createForm.getNationalHealthId());
+		person.setPassportNumber(createForm.getPassportNumber());
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
