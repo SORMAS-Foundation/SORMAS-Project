@@ -22,7 +22,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -34,7 +33,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -164,7 +163,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 		validate(dto);
 
-		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry);
+		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry, true);
 		service.ensurePersisted(pointOfEntry);
 	}
 
@@ -326,14 +325,14 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
-	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target) {
+	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new PointOfEntry();
 			target.setUuid(source.getUuid());
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setPointOfEntryType(source.getPointOfEntryType());

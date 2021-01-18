@@ -6248,4 +6248,13 @@ ALTER TABLE events_history ADD COLUMN diseasetransmissionmode varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (306, 'Add new fields to outbreak events needed for SurvNet #4013');
 
+-- 2020-01-12 Store sormas to sormas share options #3763
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN withassociatedcontacts boolean DEFAULT false,
+    ADD COLUMN withsamples boolean DEFAULT false,
+    ADD COLUMN pseudonymizedpersonaldata boolean DEFAULT false,
+    ADD COLUMN pseudonymizedsensitivedata boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (307, 'Store sormas to sormas share options #3763');
+
 -- *** Insert new sql commands BEFORE this line ***
