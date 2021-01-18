@@ -12,70 +12,70 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
-    public AdoServiceWithUserFilter(Class<ADO> elementClass) {
-        super(elementClass);
-    }
 
-    /**
-     * Used by most getAll* and getAllUuids methods to filter by user
-     */
-    @SuppressWarnings("rawtypes")
-    public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
+	public AdoServiceWithUserFilter(Class<ADO> elementClass) {
+		super(elementClass);
+	}
 
-    public List<ADO> getAllAfter(Date since, User user) {
+	/**
+	 * Used by most getAll* and getAllUuids methods to filter by user
+	 */
+	@SuppressWarnings("rawtypes")
+	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
-        Root<ADO> root = cq.from(getElementClass());
+	public List<ADO> getAllAfter(Date since, User user) {
 
-        Predicate filter = createUserFilter(cb, cq, root);
-        if (since != null) {
-            Predicate dateFilter = createChangeDateFilter(cb, root, since);
-            if (filter != null) {
-                filter = cb.and(filter, dateFilter);
-            } else {
-                filter = dateFilter;
-            }
-        }
-        if (filter != null) {
-            cq.where(filter);
-        }
-        cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
-        cq.distinct(true);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> root = cq.from(getElementClass());
 
-        return em.createQuery(cq).getResultList();
-    }
+		Predicate filter = createUserFilter(cb, cq, root);
+		if (since != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, root, since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
+		cq.distinct(true);
 
-    public List<String> getAllUuids() {
+		return em.createQuery(cq).getResultList();
+	}
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<String> cq = cb.createQuery(String.class);
-        Root<ADO> from = cq.from(getElementClass());
+	public List<String> getAllUuids() {
 
-        Predicate filter = createUserFilter(cb, cq, from);
-        if (filter != null) {
-            cq.where(filter);
-        }
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<ADO> from = cq.from(getElementClass());
 
-        cq.select(from.get(AbstractDomainObject.UUID));
-        return em.createQuery(cq).getResultList();
-    }
+		Predicate filter = createUserFilter(cb, cq, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
 
-    public List<Long> getAllIds(User user) {
+		cq.select(from.get(AbstractDomainObject.UUID));
+		return em.createQuery(cq).getResultList();
+	}
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<ADO> from = cq.from(getElementClass());
+	public List<Long> getAllIds(User user) {
 
-        if (user != null) {
-            Predicate filter = createUserFilter(cb, cq, from);
-            if (filter != null) {
-                cq.where(filter);
-            }
-        }
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
 
-        cq.select(from.get(AbstractDomainObject.ID));
-        return em.createQuery(cq).getResultList();
-    }
+		if (user != null) {
+			Predicate filter = createUserFilter(cb, cq, from);
+			if (filter != null) {
+				cq.where(filter);
+			}
+		}
 
+		cq.select(from.get(AbstractDomainObject.ID));
+		return em.createQuery(cq).getResultList();
+	}
 }

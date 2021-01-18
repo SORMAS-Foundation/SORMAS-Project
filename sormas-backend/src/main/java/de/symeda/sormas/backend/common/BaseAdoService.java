@@ -162,7 +162,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return em.createQuery(cq).getSingleResult();
 	}
 
-
 	public List<ADO> getByUuids(List<String> uuids) {
 
 		if (uuids == null || uuids.isEmpty()) {
