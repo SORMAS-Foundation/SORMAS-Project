@@ -188,7 +188,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto.setEndDate(DateHelper.getEndOfDay(configuration.getEndDate()));
 		}
 
-		FeatureConfiguration entity = fromDto(configurationDto);
+		FeatureConfiguration entity = fromDto(configurationDto, true);
 		service.ensurePersisted(entity);
 	}
 
@@ -292,7 +292,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		return target;
 	}
 
-	public FeatureConfiguration fromDto(@NotNull FeatureConfigurationDto source) {
+	public FeatureConfiguration fromDto(@NotNull FeatureConfigurationDto source, boolean checkChangeDate) {
 
 		FeatureConfiguration target = service.getByUuid(source.getUuid());
 		if (target == null) {
@@ -302,7 +302,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setFeatureType(source.getFeatureType());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));

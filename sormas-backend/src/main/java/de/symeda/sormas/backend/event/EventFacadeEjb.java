@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -174,7 +176,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
 
-		Event event = fromDto(dto);
+		Event event = fromDto(dto, true);
 		eventService.ensurePersisted(event);
 
 		return convertToDto(event, pseudonymizer);
@@ -562,8 +564,41 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getArchivedUuidsSince(since);
 	}
 
-	public Event fromDto(@NotNull EventDto source) {
+	@Override
+	public Set<String> getAllSubordinateEventUuids(String eventUuid) {
 
+		Set<String> uuids = new HashSet<>();
+		Event superordinateEvent = eventService.getByUuid(eventUuid);
+		addAllSubordinateEventsToSet(superordinateEvent, uuids);
+
+		return uuids;
+	}
+
+	private void addAllSubordinateEventsToSet(Event event, Set<String> uuids) {
+
+		uuids.addAll(event.getSubordinateEvents().stream().map(AbstractDomainObject::getUuid).collect(Collectors.toSet()));
+		event.getSubordinateEvents().forEach(e -> addAllSubordinateEventsToSet(e, uuids));
+	}
+
+	@Override
+	public Set<String> getAllSuperordinateEventUuids(String eventUuid) {
+
+		Set<String> uuids = new HashSet<>();
+		Event event = eventService.getByUuid(eventUuid);
+		addSuperordinateEventToSet(event, uuids);
+
+		return uuids;
+	}
+
+	private void addSuperordinateEventToSet(Event event, Set<String> uuids) {
+
+		if (event.getSuperordinateEvent() != null) {
+			uuids.add(event.getSuperordinateEvent().getUuid());
+			addSuperordinateEventToSet(event.getSuperordinateEvent(), uuids);
+		}
+	}
+
+	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
 		Event target = eventService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Event();
@@ -572,7 +607,7 @@ public class EventFacadeEjb implements EventFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
@@ -588,7 +623,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
+		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
@@ -611,6 +646,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -699,6 +735,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

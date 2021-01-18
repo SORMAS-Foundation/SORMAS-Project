@@ -18,6 +18,10 @@
 
 package de.symeda.sormas.backend.therapy;
 
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -27,10 +31,6 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
-
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 
 public class TreatmentJoins extends AbstractDomainObjectJoins<Treatment, Treatment> {
 	private Join<Treatment, Therapy> therapy;

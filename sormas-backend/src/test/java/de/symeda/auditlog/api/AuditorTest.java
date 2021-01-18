@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.SortedMap;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.symeda.auditlog.api.sample.AnonymizedEntity;
@@ -264,6 +265,7 @@ public class AuditorTest {
 		assertThat(changes.get("someAttribute"), is("someValue"));
 	}
 
+	@Ignore("Deactivated due to instability on github actions. See #3805")
 	@Test
 	public void testDetectAnnotationChangesFast() {
 

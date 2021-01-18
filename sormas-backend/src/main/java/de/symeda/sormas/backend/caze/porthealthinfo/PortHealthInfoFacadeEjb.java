@@ -51,7 +51,7 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		return target;
 	}
 
-	public PortHealthInfo fromDto(@NotNull PortHealthInfoDto source) {
+	public PortHealthInfo fromDto(@NotNull PortHealthInfoDto source, boolean checkChangeDate) {
 		PortHealthInfo target = service.getByUuid(source.getUuid());
 
 		if (target == null) {
@@ -62,7 +62,7 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setAirlineName(source.getAirlineName());
 		target.setFlightNumber(source.getFlightNumber());
