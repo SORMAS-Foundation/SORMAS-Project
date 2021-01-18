@@ -6248,6 +6248,15 @@ ALTER TABLE events_history ADD COLUMN diseasetransmissionmode varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (306, 'Add new fields to outbreak events needed for SurvNet #4013');
 
+-- 2020-01-12 Store sormas to sormas share options #3763
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN withassociatedcontacts boolean DEFAULT false,
+    ADD COLUMN withsamples boolean DEFAULT false,
+    ADD COLUMN pseudonymizedpersonaldata boolean DEFAULT false,
+    ADD COLUMN pseudonymizedsensitivedata boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (307, 'Store sormas to sormas share options #3763');
+
 -- 2021-01-15 - Add superordinate event to events #4020
 ALTER TABLE events ADD COLUMN superordinateevent_id bigint;
 ALTER TABLE events_history ADD COLUMN superordinateevent_id bigint;
@@ -6255,6 +6264,7 @@ ALTER TABLE events_history ADD COLUMN superordinateevent_id bigint;
 ALTER TABLE events ADD CONSTRAINT fk_events_superordinateevent_id FOREIGN KEY (superordinateevent_id) REFERENCES events(id);
 CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash (superordinateevent_id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (307, 'Add superordinate event to events #4020');
+INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
+
 
 -- *** Insert new sql commands BEFORE this line ***

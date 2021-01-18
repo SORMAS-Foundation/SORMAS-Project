@@ -64,48 +64,71 @@ public class EventParticipantsController {
 	private final EventParticipantFacade eventParticipantFacade = FacadeProvider.getEventParticipantFacade();
 	private final PersonFacade personFacade = FacadeProvider.getPersonFacade();
 
-	public void createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
-		EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
+	public EventParticipantDto createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
+		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
+		return createEventParticipant(eventRef, doneConsumer, eventParticipant);
+	}
 
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto eventRef,
+		Consumer<EventParticipantReferenceDto> doneConsumer,
+		EventParticipantDto eventParticipant) {
 		EventParticipantCreateForm createForm = new EventParticipantCreateForm();
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent =
-			new CommitDiscardWrapperComponent<EventParticipantCreateForm>(
-				createForm,
-				UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
-				createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
+			createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				final EventParticipantDto dto = createForm.getValue();
-				final PersonDto person = PersonDto.build();
-				person.setFirstName(createForm.getPersonFirstName());
-				person.setLastName(createForm.getPersonLastName());
 
-				ControllerProvider.getPersonController()
-					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
-						if (selectedPerson != null) {
-							EventParticipantCriteria criteria = new EventParticipantCriteria();
-							criteria.event(eventRef);
-							List<EventParticipantIndexDto> currentEventParticipants =
-								(List<EventParticipantIndexDto>) FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
-							Boolean alreadyParticipant = false;
-							for (EventParticipantIndexDto participant : currentEventParticipants) {
-								if (selectedPerson.getUuid().equals(participant.getPersonUuid())) {
-									alreadyParticipant = true;
-									break;
+				if (dto.getPerson() == null) {
+					final PersonDto person = PersonDto.build();
+					person.setFirstName(createForm.getPersonFirstName());
+					person.setLastName(createForm.getPersonLastName());
+
+					ControllerProvider.getPersonController()
+						.selectOrCreatePerson(
+							person,
+							I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
+							selectedPerson -> {
+								if (selectedPerson != null) {
+									EventParticipantCriteria criteria = new EventParticipantCriteria();
+									criteria.event(eventRef);
+									List<EventParticipantIndexDto> currentEventParticipants =
+										FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
+									Boolean alreadyParticipant = false;
+									for (EventParticipantIndexDto participant : currentEventParticipants) {
+										if (selectedPerson.getUuid().equals(participant.getPersonUuid())) {
+											alreadyParticipant = true;
+											break;
+										}
+									}
+									if (alreadyParticipant) {
+										throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+									} else {
+										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
+										EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+
+										Notification notification = new Notification(
+											I18nProperties.getString(Strings.messagePersonAddedAsEventParticipant),
+											"",
+											Type.HUMANIZED_MESSAGE);
+										notification.show(Page.getCurrent());
+
+										Notification
+											.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
+										ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
+									}
 								}
-							}
-							if (alreadyParticipant) {
-								throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
-							} else {
-								dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
-								EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
-								Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-								ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
-							}
-						}
-					});
+							});
+				} else {
+					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
+					ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
+				}
 			}
 		});
 
@@ -113,6 +136,8 @@ public class EventParticipantsController {
 		window.addCloseListener(e -> {
 			doneConsumer.accept(null);
 		});
+
+		return createComponent.getWrappedComponent().getValue();
 	}
 
 	public void navigateToData(String eventParticipantUuid) {
@@ -265,6 +290,9 @@ public class EventParticipantsController {
 				}
 			}
 		});
+
+		editComponent.addDiscardListener(() -> SormasUI.refreshView());
+
 		return editComponent;
 	}
 

@@ -281,6 +281,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
+		return saveContact(dto, handleChanges, handleCaseChanges, true);
+	}
+
+	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);
 		restorePseudonymizedDto(dto, existingContact, existingContactDto);
@@ -297,7 +301,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		//			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
 		//		}
 
-		Contact entity = fromDto(dto);
+		Contact entity = fromDto(dto, checkChangeDate);
 		contactService.ensurePersisted(entity);
 
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
@@ -1061,7 +1065,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	}
 
-	public Contact fromDto(@NotNull ContactDto source) {
+	public Contact fromDto(@NotNull ContactDto source, boolean checkChangeDate) {
 
 		Contact target = contactService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -1072,7 +1076,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
@@ -1156,8 +1160,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
-		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
-		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
+		target.setEpiData(epiDataFacade.fromDto(source.getEpiData(), checkChangeDate));
+		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions(), checkChangeDate));
 		target.setReturningTraveler(source.getReturningTraveler());
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
@@ -1169,7 +1173,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 
 		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo()));
+			target.setSormasToSormasOriginInfo(originInfoFacade.toDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
 		return target;

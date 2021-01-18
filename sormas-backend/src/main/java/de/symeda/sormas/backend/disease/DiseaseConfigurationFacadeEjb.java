@@ -185,7 +185,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public void saveDiseaseConfiguration(DiseaseConfigurationDto configuration) {
-		service.ensurePersisted(fromDto(configuration));
+		service.ensurePersisted(fromDto(configuration, true));
 	}
 
 	@Override
@@ -222,7 +222,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return target;
 	}
 
-	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source) {
+	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {
 
 		DiseaseConfiguration target = service.getByUuid(source.getUuid());
 		if (target == null) {
@@ -232,7 +232,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setActive(source.getActive());

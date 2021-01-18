@@ -822,8 +822,10 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		ContactDto sharedContact = creator.createContact(officer, sharedContactPerson.toReference(), caze);
 		PersonDto newContactPerson = creator.createPerson();
 		ContactDto newContact = creator.createContact(officer, newContactPerson.toReference(), caze);
+		ContactDto newContact2 = creator.createContact(officer, newContactPerson.toReference(), caze);
 		SampleDto sharedSample = creator.createSample(caze.toReference(), officer, rdcf.localRdcf.facility);
 		SampleDto newSample = creator.createSample(caze.toReference(), officer, rdcf.localRdcf.facility);
+		SampleDto newSample2 = creator.createSample(caze.toReference(), officer, rdcf.localRdcf.facility);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
 		getSormasToSormasShareInfoService()
@@ -840,15 +842,20 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo());
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo();
+		originInfo.setOwnershipHandedOver(true);
+
+		SormasToSormasCaseDto shareData = new SormasToSormasCaseDto(person, caze, originInfo);
 		shareData.setAssociatedContacts(
 			Arrays.asList(
 				new SormasToSormasCaseDto.AssociatedContactDto(sharedContactPerson, sharedContact),
-				new SormasToSormasCaseDto.AssociatedContactDto(newContactPerson, newContact)));
+				new SormasToSormasCaseDto.AssociatedContactDto(newContactPerson, newContact),
+				new SormasToSormasCaseDto.AssociatedContactDto(newContactPerson, newContact2)));
 		shareData.setSamples(
 			Arrays.asList(
 				new SormasToSormasSampleDto(sharedSample, Collections.emptyList(), Collections.emptyList()),
-				new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList())));
+				new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList()),
+				new SormasToSormasSampleDto(newSample2, Collections.emptyList(), Collections.emptyList())));
 
 		byte[] encryptedData = encryptShareData(shareData);
 
@@ -870,14 +877,20 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(contactShares.get(0).isOwnershipHandedOver(), is(false));
 
 		ContactDto returnedNewContact = getContactFacade().getContactByUuid(newContact.getUuid());
-		assertThat(returnedNewContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
+		assertThat(returnedNewContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
+
+		ContactDto returnedNewContact2 = getContactFacade().getContactByUuid(newContact.getUuid());
+		assertThat(returnedNewContact2.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
 
 		List<SormasToSormasShareInfoDto> sampleShares =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().sample(sharedSample.toReference()), 0, 100);
 		assertThat(sampleShares.get(0).isOwnershipHandedOver(), is(false));
 
 		SampleDto returnedNewSample = getSampleFacade().getSampleByUuid(newSample.getUuid());
-		assertThat(returnedNewSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
+		assertThat(returnedNewSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
+
+		SampleDto returnedNewSample2 = getSampleFacade().getSampleByUuid(newSample.getUuid());
+		assertThat(returnedNewSample2.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
 	}
 
 	@Test

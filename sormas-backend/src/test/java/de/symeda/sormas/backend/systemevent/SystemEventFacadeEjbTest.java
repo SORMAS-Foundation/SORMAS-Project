@@ -1,24 +1,24 @@
 package de.symeda.sormas.backend.systemevent;
 
-import de.symeda.sormas.api.systemevents.SystemEventDto;
-import de.symeda.sormas.api.systemevents.SystemEventStatus;
-import de.symeda.sormas.api.systemevents.SystemEventType;
-import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator;
-
 import static org.hamcrest.Matchers.hasSize;
-import org.junit.Test;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+
+import org.junit.Test;
+
+import de.symeda.sormas.api.systemevents.SystemEventDto;
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator;
 
 public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 
@@ -66,7 +66,7 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getAllSystemEvents(), hasSize(2));
 
 		systemEventFacadeEjb.deleteAllDeletableSystemEvents(inBetween);
-		assertEquals(systemEventFacadeEjb.fromDto(systemEvent2, null), getAllSystemEvents().get(0));
+		assertEquals(systemEventFacadeEjb.fromDto(systemEvent2, null, true), getAllSystemEvents().get(0));
 
 		getSystemEventFacade().deleteAllDeletableSystemEvents(-1);
 		assertTrue(getAllSystemEvents().isEmpty());
