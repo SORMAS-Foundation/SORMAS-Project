@@ -42,6 +42,7 @@ UPDATE_LOG_PATH=$DOMAIN_PATH/$DOMAIN_NAME/update-logs
 UPDATE_LOG_FILE_NAME=server_update_`date +"%Y-%m-%d_%H-%M-%S"`.txt
 CUSTOM_DIR=/opt/sormas/custom
 ABOUT_FILES_DIR=$CUSTOM_DIR/aboutfiles
+DOCUMENTS_DIR=/opt/sormas/documents
 USER_NAME=payara
 CONTINUOUS_DELIVERY=no
 
@@ -105,6 +106,12 @@ if [ ! -d ABOUT_FILES_DIR ]; then
 	mkdir -p ${ABOUT_FILES_DIR}
 	setfacl -m u:${USER_NAME}:rwx ${ABOUT_FILES_DIR}
 	setfacl -m u:postgres:rwx ${ABOUT_FILES_DIR}
+fi
+
+if [ ! -d $DOCUMENTS_DIR ]; then
+  mkdir -p ${DOCUMENTS_DIR}
+  setfacl -m u:${USER_NAME}:rwx ${DOCUMENTS_DIR}
+  setfacl -m u:postgres:rwx ${DOCUMENTS_DIR}
 fi
 
 # Create a file to log errors and messages not produced by this script during the update process
