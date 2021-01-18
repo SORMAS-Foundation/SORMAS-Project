@@ -3413,14 +3413,14 @@ public class CaseFacadeEjb implements CaseFacade {
 				personPredicate = and(
 					cb,
 					personPredicate,
-					or(cb, cb.isNotNull(person.get(Person.BIRTHDATE_DD)), cb.equal(person.get(Person.BIRTHDATE_DD), searchPerson.getBirthdateDD())));
+					or(cb, cb.isNull(person.get(Person.BIRTHDATE_DD)), cb.equal(person.get(Person.BIRTHDATE_DD), searchPerson.getBirthdateDD())));
 			}
 
 			if (searchPerson.getBirthdateMM() != null) {
 				personPredicate = and(
 					cb,
 					personPredicate,
-					or(cb, cb.isNotNull(person.get(Person.BIRTHDATE_DD)), cb.equal(person.get(Person.BIRTHDATE_MM), searchPerson.getBirthdateMM())));
+					or(cb, cb.isNull(person.get(Person.BIRTHDATE_DD)), cb.equal(person.get(Person.BIRTHDATE_MM), searchPerson.getBirthdateMM())));
 			}
 
 			if (searchPerson.getBirthdateYYYY() != null) {
@@ -3429,13 +3429,13 @@ public class CaseFacadeEjb implements CaseFacade {
 					personPredicate,
 					or(
 						cb,
-						cb.isNotNull(person.get(Person.BIRTHDATE_YYYY)),
+						cb.isNull(person.get(Person.BIRTHDATE_YYYY)),
 						cb.equal(person.get(Person.BIRTHDATE_YYYY), searchPerson.getBirthdateYYYY())));
 			}
 
 			if (searchPerson.getSex() != null) {
 				personPredicate =
-					and(cb, personPredicate, or(cb, cb.isNotEmpty(person.get(Person.SEX)), cb.equal(person.get(Person.SEX), searchPerson.getSex())));
+					and(cb, personPredicate, or(cb, cb.isNull(person.get(Person.SEX)), cb.equal(person.get(Person.SEX), searchPerson.getSex())));
 			}
 
 			combinedPredicate = and(

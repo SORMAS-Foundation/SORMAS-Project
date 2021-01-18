@@ -1293,12 +1293,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testGetDuplicates() {
 		RDCF rdcf = creator.createRDCF();
 
-		//case and parson matching for asserts
+		//case and person matching for asserts
 		PersonDto person = creator.createPerson("Fname", "Lname", (p) -> {
 			p.setBirthdateDD(12);
 			p.setBirthdateMM(3);
 			p.setBirthdateYYYY(1968);
 		});
+
 		CaseDataDto caze = creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
 			c.setPerson(person.toReference());
 			c.setExternalID("test-ext-id");
@@ -1368,20 +1369,20 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		duplicates = getCaseFacade().getDuplicates(casePerson);
 		MatcherAssert.assertThat(duplicates, hasSize(2));
 
-		// match by name and birth day
+		// match by name and birth day should match also the one with missing birth day
 		duplicatePerson.setBirthdateDD(12);
 		duplicates = getCaseFacade().getDuplicates(casePerson);
-		MatcherAssert.assertThat(duplicates, hasSize(1));
+		MatcherAssert.assertThat(duplicates, hasSize(2));
 
-		// match by name and birth day / month
+		// match by name and birth day / month should match also the one with missing birth day
 		duplicatePerson.setBirthdateMM(3);
 		duplicates = getCaseFacade().getDuplicates(casePerson);
-		MatcherAssert.assertThat(duplicates, hasSize(1));
+		MatcherAssert.assertThat(duplicates, hasSize(2));
 
-		// match by name and birth day / month / year
+		// match by name and birth day / month / year should match also the one with missing birth day
 		duplicatePerson.setBirthdateYYYY(1968);
 		duplicates = getCaseFacade().getDuplicates(casePerson);
-		MatcherAssert.assertThat(duplicates, hasSize(1));
+		MatcherAssert.assertThat(duplicates, hasSize(2));
 
 		// match by name and birth month / year
 		duplicatePerson.setBirthdateDD(null);
