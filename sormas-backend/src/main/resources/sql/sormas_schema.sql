@@ -6289,4 +6289,11 @@ ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
 ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
+
+-- 2021-01-07 Change event's surveillanceOfficer to responsibleUser allow more roles to be it #3827
+ALTER TABLE events RENAME surveillanceofficer_id to responsibleuser_id;
+ALTER TABLE events_history RENAME surveillanceofficer_id to responsibleuser_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (311, 'Change event''s surveillanceOfficer to responsibleUser allow more roles to be it #3827');
+
 -- *** Insert new sql commands BEFORE this line ***

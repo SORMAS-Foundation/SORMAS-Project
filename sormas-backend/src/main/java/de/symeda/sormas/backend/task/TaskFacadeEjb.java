@@ -403,7 +403,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getContactReportingUser().get(User.UUID), joins.getContactRegion().get(Region.UUID), joins.getContactDistrict().get(District.UUID), 
 				joins.getContactCommunity().get(Community.UUID), joins.getContactCaseReportingUser().get(User.UUID), joins.getContactCaseRegion().get(User.UUID), 
 				joins.getContactCaseDistrict().get(User.UUID), joins.getContactCaseCommunity().get(User.UUID), joins.getContactCaseHealthFacility().get(User.UUID), 
-				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventSurveillanceOfficer().get(User.UUID), 
+				joins.getContactCasePointOfEntry().get(User.UUID), joins.getEventReportingUser().get(User.UUID), joins.getEventResponsibleUser().get(User.UUID),
 				joins.getEventRegion().get(Region.UUID), joins.getEventDistrict().get(District.UUID), joins.getEventCommunity().get(Community.UUID),
 				region, district
 		);

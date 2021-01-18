@@ -253,7 +253,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.SRC_MEDIA_NAME),
 			event.get(Event.REPORT_DATE_TIME),
 			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
+			event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = null;
 
@@ -438,7 +438,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.SRC_MEDIA_DETAILS),
 			event.get(Event.REPORT_DATE_TIME),
 			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
+			event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -641,7 +641,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
+		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
@@ -729,7 +729,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
+		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());

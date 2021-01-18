@@ -100,7 +100,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String srcMediaName,
 		Date reportDateTime,
 		String reportingUserUuid,
-		String surveillanceOfficerUuid) {
+		String responsibleUserUuid) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
@@ -118,7 +118,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.srcMediaWebsite = srcMediaWebsite;
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	public String getUuid() {

@@ -105,7 +105,7 @@ public class EventExportDto implements Serializable {
 		String srcMediaDetails,
 		Date reportDateTime,
 		String reportingUserUid,
-		String surveillanceOfficerUuid) {
+		String responsibleUserUuid) {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
@@ -140,7 +140,7 @@ public class EventExportDto implements Serializable {
 		this.srcMediaDetails = srcMediaDetails;
 		this.reportDateTime = reportDateTime;
 
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	@Order(0)

@@ -80,7 +80,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
-		target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
+		target.setResponsibleUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getResponsibleUser()));
 
 		target.setEventLocation(locationHelper.fillOrCreateFromDto(target.getEventLocation(), source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
@@ -173,11 +173,11 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
-		if (source.getSurveillanceOfficer() != null) {
-			User user = DatabaseHelper.getUserDao().queryForId(source.getSurveillanceOfficer().getId());
-			target.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
+		if (source.getResponsibleUser() != null) {
+			User user = DatabaseHelper.getUserDao().queryForId(source.getResponsibleUser().getId());
+			target.setResponsibleUser(UserDtoHelper.toReferenceDto(user));
 		} else {
-			target.setSurveillanceOfficer(null);
+			target.setResponsibleUser(null);
 		}
 
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());

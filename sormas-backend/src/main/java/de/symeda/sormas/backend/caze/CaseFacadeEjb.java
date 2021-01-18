@@ -1948,8 +1948,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> surveillanceOfficerByEventByEventUuid =
-			eventService.getAllEventUuidWithSurveillanceOfficerByCaseAfterDateForNotification(caze, fromDate);
+		Map<String, User> surveillanceOfficerByEventByEventUuid = eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
 		for (Map.Entry<String, User> entry : surveillanceOfficerByEventByEventUuid.entrySet()) {
 			try {
 				messagingService.sendMessage(

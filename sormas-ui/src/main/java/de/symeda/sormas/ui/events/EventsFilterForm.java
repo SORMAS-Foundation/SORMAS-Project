@@ -96,7 +96,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventCriteria.EVENT_STATUS,
 			EventIndexDto.DISEASE,
 			EventCriteria.REPORTING_USER_ROLE,
-			EventCriteria.SURVEILLANCE_OFFICER,
+			EventCriteria.RESPONSIBLE_USER,
 			EventCriteria.FREE_TEXT };
 	}
 
@@ -106,8 +106,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addField(FieldConfiguration.pixelSized(EventCriteria.EVENT_STATUS, 140));
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
-		ComboBox officerField = addField(FieldConfiguration.pixelSized(EventCriteria.SURVEILLANCE_OFFICER, 140));
-		officerField.addItems(fetchSurveillanceOfficersByRegion(currentUserDto().getRegion()));
+		ComboBox responsibleUserField = addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
+		responsibleUserField.addItems(fetchResponsibleUsersByRegion(currentUserDto().getRegion()));
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
 		searchField.setNullRepresentation("");
@@ -318,7 +318,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			} else {
 				clearAndDisableFields(LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			}
-			populateSurveillanceOfficersForRegion(region);
+			populateResponsibleUsersForRegion(region);
 			break;
 		case LocationDto.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
@@ -327,7 +327,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			} else {
 				clearAndDisableFields(LocationDto.COMMUNITY);
 			}
-			populateSurveillanceOfficersForDistrict(district);
+			populateResponsibleUsersForDistrict(district, region);
 			break;
 		}
 	}
@@ -390,31 +390,32 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		}
 	}
 
-	private void populateSurveillanceOfficersForRegion(RegionReferenceDto regionReferenceDto) {
-		List<UserReferenceDto> items =
-			fetchSurveillanceOfficersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
-		populateSurveillanceOfficers(items);
+	private void populateResponsibleUsersForRegion(RegionReferenceDto regionReferenceDto) {
+		List<UserReferenceDto> items = fetchResponsibleUsersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
+		populateResponsibleUsers(items);
 	}
 
-	private void populateSurveillanceOfficersForDistrict(DistrictReferenceDto districtReferenceDto) {
+	private void populateResponsibleUsersForDistrict(DistrictReferenceDto districtReferenceDto, RegionReferenceDto regionReferenceDto) {
 		if (districtReferenceDto != null) {
 			List<UserReferenceDto> items =
 				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.SURVEILLANCE_OFFICER);
-			populateSurveillanceOfficers(items);
+			items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_SUPERVISOR));
+			populateResponsibleUsers(items);
 		} else {
 			final ComboBox regionField = getField(EventCriteria.REGION);
-			populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+			populateResponsibleUsersForRegion((RegionReferenceDto) regionField.getValue());
 		}
 	}
 
-	private void populateSurveillanceOfficers(List<UserReferenceDto> items) {
-		final ComboBox officerField = getField(EventCriteria.SURVEILLANCE_OFFICER);
+	private void populateResponsibleUsers(List<UserReferenceDto> items) {
+		final ComboBox officerField = getField(EventCriteria.RESPONSIBLE_USER);
 		officerField.removeAllItems();
 		officerField.addItems(items);
 	}
 
-	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
-		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER);
+	private List<UserReferenceDto> fetchResponsibleUsersByRegion(RegionReferenceDto regionReferenceDto) {
+		return FacadeProvider.getUserFacade()
+			.getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER, UserRole.SURVEILLANCE_SUPERVISOR);
 	}
 
 	@Override

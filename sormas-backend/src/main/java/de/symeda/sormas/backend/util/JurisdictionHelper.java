@@ -137,8 +137,8 @@ public class JurisdictionHelper {
 			eventJurisdiction.setReportingUserUuid(event.getReportingUser().getUuid());
 		}
 
-		if (event.getSurveillanceOfficer() != null) {
-			eventJurisdiction.setSurveillanceOfficerUuid(event.getSurveillanceOfficer().getUuid());
+		if (event.getResponsibleUser() != null) {
+			eventJurisdiction.setResponsibleUserUuid(event.getResponsibleUser().getUuid());
 		}
 
 		if (eventLocation.getRegion() != null) {

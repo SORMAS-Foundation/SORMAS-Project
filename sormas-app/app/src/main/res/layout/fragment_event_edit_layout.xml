@@ -62,9 +62,9 @@
                     app:shortUuidValue="@{data.uuid}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_surveillanceOfficer"
+                    android:id="@+id/event_responsibleUser"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:value="@{data.surveillanceOfficer}" />
+                    app:value="@{data.responsibleUser}" />
 
             </LinearLayout>
 
