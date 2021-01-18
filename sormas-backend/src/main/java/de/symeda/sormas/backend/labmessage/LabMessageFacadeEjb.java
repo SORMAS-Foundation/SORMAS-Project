@@ -240,7 +240,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
 			List<LabMessageDto> newMessages = labResultsFacade.getExternalLabMessages(since);
 			if (newMessages != null) {
-				newMessages.stream().forEach(labMessageDto -> save(labMessageDto));
+				newMessages.forEach(this::save);
 			}
 		} catch (Exception e) {
 			systemEvent.setStatus(SystemEventStatus.ERROR);
