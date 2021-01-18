@@ -110,6 +110,13 @@ public class EventParticipantsController {
 									} else {
 										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
 										EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+
+										Notification notification = new Notification(
+											I18nProperties.getString(Strings.messagePersonAddedAsEventParticipant),
+											"",
+											Type.HUMANIZED_MESSAGE);
+										notification.show(Page.getCurrent());
+
 										Notification
 											.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 										ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
@@ -282,6 +289,9 @@ public class EventParticipantsController {
 				}
 			}
 		});
+
+		editComponent.addDiscardListener(() -> SormasUI.refreshView());
+
 		return editComponent;
 	}
 
