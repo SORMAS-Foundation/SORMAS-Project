@@ -9,6 +9,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
 
@@ -17,6 +18,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	private final EventReferenceDto eventReferenceDto;
 
 	public EventDocumentLayout(EventReferenceDto eventReferenceDto) {
+		// TODO: i18n
 		super("Ereignis-Formular");
 		this.eventReferenceDto = eventReferenceDto;
 	}
@@ -33,8 +35,8 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected List<String> getAdditionalVariables(String templateFile) throws IOException {
-		return FacadeProvider.getEventDocumentFacade().getAdditionalVariables(templateFile);
+	protected DocumentVariables getDocumentVariables(String templateFile) throws IOException {
+		return FacadeProvider.getEventDocumentFacade().getDocumentVariables(templateFile);
 	}
 
 	@Override

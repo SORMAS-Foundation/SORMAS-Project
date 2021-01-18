@@ -24,6 +24,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -34,13 +35,21 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	protected final Button createButton;
 	protected final Button cancelButton;
 	protected final VerticalLayout additionalVariablesComponent;
+	protected final VerticalLayout additionalParametersComponent;
 	protected FileDownloader fileDownloader;
+	protected DocumentVariables documentVariables;
 
 	public AbstractDocgenerationLayout(String captionTemplateSelector) {
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
 		additionalVariablesComponent.setMargin(new MarginInfo(false, false, true, false));
+
+		additionalParametersComponent = new VerticalLayout();
+		additionalParametersComponent.setSpacing(false);
+		additionalParametersComponent.setMargin(new MarginInfo(false, false, true, false));
+
 		hideTextfields();
+		hideAdditionalParameters();
 
 		createButton = new Button(I18nProperties.getCaption(Captions.actionCreate));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -62,9 +71,11 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 			createButton.setEnabled(isValidTemplateFile);
 			additionalVariablesComponent.removeAllComponents();
 			hideTextfields();
+			documentVariables = null;
 			if (isValidTemplateFile) {
 				try {
-					List<String> additionalVariables = getAdditionalVariables(templateFile);
+					documentVariables = getDocumentVariables(templateFile);
+					List<String> additionalVariables = documentVariables.getAdditionalVariables();
 					if (additionalVariables != null && !additionalVariables.isEmpty()) {
 						for (String variable : additionalVariables) {
 							TextField variableInput = new TextField(variable);
@@ -73,8 +84,9 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 						}
 						showTextfields();
 					}
+					performTemplateUpdates();
 					setStreamResource(templateFile);
-				} catch (IOException ioException) {
+				} catch (IOException | IllegalArgumentException ioException) {
 					ioException.printStackTrace();
 					new Notification(
 						I18nProperties.getString(Strings.errorOccurred),
@@ -87,6 +99,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		templateSelector.addStyleName(CssStyles.SOFT_REQUIRED);
 
 		addComponent(templateSelector);
+		addComponent(additionalParametersComponent);
 		addComponent(additionalVariablesComponent);
 		addComponent(buttonBar);
 		setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
@@ -94,12 +107,26 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 
 	private void showTextfields() {
 		additionalVariablesComponent.setVisible(true);
-		setSpacing(false);
+		adjustSpacing();
 	}
 
 	private void hideTextfields() {
 		additionalVariablesComponent.setVisible(false);
-		setSpacing(true);
+		adjustSpacing();
+	}
+
+	protected void showAdditionalParameters() {
+		additionalParametersComponent.setVisible(true);
+		adjustSpacing();
+	}
+
+	protected void hideAdditionalParameters() {
+		additionalParametersComponent.setVisible(false);
+		adjustSpacing();
+	}
+
+	private void adjustSpacing() {
+		setSpacing(!(additionalVariablesComponent.isVisible() || additionalParametersComponent.isVisible()));
 	}
 
 	private void closeWindow() {
@@ -139,11 +166,15 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		}
 	}
 
+	protected void performTemplateUpdates() {
+		// do nothing
+	}
+
 	protected abstract List<String> getAvailableTemplates();
 
 	protected abstract String generateFilename(String templateFile);
 
-	protected abstract List<String> getAdditionalVariables(String templateFile) throws IOException;
+	protected abstract DocumentVariables getDocumentVariables(String templateFile) throws IOException;
 
 	protected abstract StreamResource createStreamResource(String templateFile, String filename);
 

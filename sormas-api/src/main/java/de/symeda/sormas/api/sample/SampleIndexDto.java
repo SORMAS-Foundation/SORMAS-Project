@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -27,14 +30,12 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
-
-import java.io.Serializable;
-import java.util.Date;
 
 public class SampleIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -389,5 +390,16 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public SampleJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(DateFormatHelper.formatLocalDateTime(sampleDateTime)).append(" - ");
+		sb.append(sampleMaterial);
+		sb.append(" (").append(disease).append(")");
+		if (pathogenTestResult != null) {
+			sb.append(": ").append(pathogenTestResult);
+		}
+		return sb.toString();
 	}
 }

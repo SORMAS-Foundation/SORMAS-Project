@@ -26,7 +26,7 @@ public interface DocumentTemplateFacade {
 
 	List<String> getAvailableTemplates(DocumentWorkflow documentWorkflow);
 
-	List<String> getAdditionalVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException;
+	DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException;
 
 	boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName);
 

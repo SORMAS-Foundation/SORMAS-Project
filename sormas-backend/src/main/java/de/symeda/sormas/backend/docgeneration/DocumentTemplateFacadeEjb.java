@@ -40,6 +40,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -49,6 +50,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import fr.opensagres.xdocreport.core.XDocReportException;
 
@@ -83,6 +85,9 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	@EJB
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+
+	@EJB
+	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 
 	private TemplateEngine templateEngine = new TemplateEngine();
 
@@ -156,7 +161,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				Object entity = entities.get(variableBaseName);
 				if (entity != null) {
 					if (documentWorkflow.isDocx() || propertyKey.contains(propertySeparator)) {
-						String propertyPath = propertyKey.replaceFirst(variableBaseName + propertySeparator, "");
+						String propertyPath = propertyKey.replaceFirst("(?i)" + variableBaseName + "[" + propertySeparator + "]", "");
 						if (!".".equals(propertySeparator)) {
 							propertyPath = propertyPath.replaceAll(propertySeparator, ".");
 						}
@@ -241,11 +246,17 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	public List<String> getAdditionalVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException {
+	public DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
-		Set<String> propertyKeys =
-			(documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile)).getVariables();
-		return propertyKeys.stream().filter(e -> !isEntityVariable(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList());
+		DocumentVariables documentVariables =
+			documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile);
+		Set<String> propertyKeys = documentVariables.getVariables();
+		documentVariables.setAdditionalVariables(
+			propertyKeys.stream().filter(e -> !isEntityVariable(documentWorkflow, e)).sorted(String::compareTo).collect(Collectors.toList()));
+		propertyKeys.stream()
+			.filter(e -> isEntityVariable(documentWorkflow, e))
+			.forEach(e -> documentVariables.addUsedEntity(getVariableBaseName(e)));
+		return documentVariables;
 	}
 
 	@Override
@@ -352,6 +363,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 					return pointOfEntryFacade.getByUuid(uuid);
 				} else if (EventReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return eventFacade.getEventByUuid(uuid);
+				} else if (SampleReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return sampleFacade.getSampleByUuid(uuid);
 				}
 			}
 			return null;

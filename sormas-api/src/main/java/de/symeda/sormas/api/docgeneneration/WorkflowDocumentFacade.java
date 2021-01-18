@@ -7,5 +7,5 @@ public interface WorkflowDocumentFacade {
 
 	List<String> getAvailableTemplates();
 
-	List<String> getAdditionalVariables(String templateName) throws IOException;
+	DocumentVariables getDocumentVariables(String templateName) throws IOException;
 }

@@ -23,11 +23,21 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -39,6 +49,10 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	private CaseDataDto caseDataDto;
 	private ContactDto contactDto;
 	private PersonDto personDto;
+	private UserDto userDto;
+
+	private SampleDto sampleDto;
+	private PathogenTestDto pathogenTestDto;
 
 	@Before
 	public void setup() throws ParseException, URISyntaxException {
@@ -77,26 +91,46 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 			community2.toReference(),
 			creator.createFacility("Facility2", rdcf.region, rdcf.district, community2.toReference()).toReference());
 
-		UserDto user = creator
+		userDto = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
-		contactDto = creator.createContact(user.toReference(), personDto.toReference());
+		contactDto = creator.createContact(userDto.toReference(), personDto.toReference());
 		contactDto.setCaze(caseDataDto.toReference());
 		contactDto.setQuarantineFrom(DATE_FORMAT.parse("10/09/2020"));
 		contactDto.setQuarantineTo(DATE_FORMAT.parse("24/09/2020"));
 		contactDto.setQuarantineOrderedOfficialDocumentDate(DATE_FORMAT.parse("09/09/2020"));
 		getContactFacade().saveContact(contactDto);
+
+		sampleDto = SampleDto.build(userDto.toReference(), caseDataDto.toReference());
+		sampleDto.setSampleDateTime(DATE_FORMAT.parse("11/09/2020"));
+		sampleDto.setSampleMaterial(SampleMaterial.NASAL_SWAB);
+		sampleDto.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
+		sampleDto.setSamplePurpose(SamplePurpose.EXTERNAL);
+		getSampleFacade().saveSample(sampleDto);
+
+		pathogenTestDto = PathogenTestDto.build(sampleDto.toReference(), userDto.toReference());
+		pathogenTestDto.setTestDateTime(DATE_FORMAT.parse("12/09/2020"));
+		pathogenTestDto.setTestedDisease(Disease.CORONAVIRUS);
+		pathogenTestDto.setTestResult(PathogenTestResultType.POSITIVE);
+		pathogenTestDto.setTestResultVerified(false);
+		pathogenTestDto.setTestType(PathogenTestType.ANTIBODY_DETECTION);
+		pathogenTestDto = getPathogenTestFacade().savePathogenTest(pathogenTestDto);
 	}
 
 	@Test
 	public void generateQuarantineOrderCaseTest() throws IOException {
 		ReferenceDto rootEntityReference = caseDataDto.toReference();
-		generateQuarantineOrderTest(rootEntityReference, "QuarantineCase.cmp");
+		generateQuarantineOrderTest(
+			rootEntityReference,
+			userDto.toReference(),
+			sampleDto.toReference(),
+			pathogenTestDto.toReference(),
+			"QuarantineCase.cmp");
 	}
 
 	@Test
 	public void generateQuarantineOrderContactTest() throws IOException {
-		generateQuarantineOrderTest(contactDto.toReference(), "QuarantineContact.cmp");
+		generateQuarantineOrderTest(contactDto.toReference(), userDto.toReference(), null, null, "QuarantineContact.cmp");
 	}
 
 	@Test
@@ -104,37 +138,51 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		ReferenceDto rootEntityReference = caseDataDto.toReference();
 
 		setNullReplacement("");
-		generateQuarantineOrderTest(rootEntityReference, "QuarantineCaseEmptyNullReplacement.cmp");
+		generateQuarantineOrderTest(rootEntityReference, userDto.toReference(), null, null, "QuarantineCaseEmptyNullReplacement.cmp");
 
 		setNullReplacement("xxx");
-		generateQuarantineOrderTest(rootEntityReference, "QuarantineCaseCustomNullReplacement.cmp");
+		generateQuarantineOrderTest(rootEntityReference, userDto.toReference(), null, null, "QuarantineCaseCustomNullReplacement.cmp");
 	}
 
 	@Test
 	public void generateQuarantineOrderWrongReferenceTypeTest() throws IOException {
 		try {
 			generateQuarantineOrderTest(new ReferenceDto() {
-			}, "Anything");
+			}, null, null, null, "Anything");
 			fail("Wrong ReferenceDto not recognized");
 		} catch (IllegalArgumentException e) {
 			assertEquals("Quarantine can only be issued for cases or contacts.", e.getMessage());
 		}
 	}
 
-	private void generateQuarantineOrderTest(ReferenceDto rootEntityReference, String comparisonFile) throws IOException {
-		List<String> additionalVariables = quarantineOrderFacadeEjb.getAdditionalVariables("Quarantine.docx");
+	private void generateQuarantineOrderTest(
+		ReferenceDto rootEntityReference,
+		UserReferenceDto userReference,
+		SampleReferenceDto sampleReference,
+		PathogenTestReferenceDto pathogenTest,
+		String comparisonFile)
+		throws IOException {
+		DocumentVariables documentVariables = quarantineOrderFacadeEjb.getDocumentVariables("Quarantine.docx");
+		List<String> additionalVariables = documentVariables.getAdditionalVariables();
 		List<String> expectedVariables = Arrays.asList("extraremark1", "extra.remark2", "extra.remark.no3");
 		for (String additionaVariable : additionalVariables) {
 			assertTrue(additionalVariables.contains(additionaVariable));
 		}
 		assertEquals(expectedVariables.size(), additionalVariables.size());
 
+		List<String> expectedUsedEntities = Arrays.asList("case", "user", "sample", "pathogenTest");
+		for (String usedEntity : expectedUsedEntities) {
+			assertTrue(documentVariables.isUsedEntity(usedEntity));
+		}
+		assertEquals(expectedUsedEntities.size(), documentVariables.getUsedEntities().size());
+
 		Properties properties = new Properties();
 		properties.setProperty("extraremark1", "the first remark");
 		properties.setProperty("extra.remark.no3", "the third remark");
 
-		ByteArrayInputStream generatedDocument =
-			new ByteArrayInputStream(quarantineOrderFacadeEjb.getGeneratedDocument("Quarantine.docx", rootEntityReference, properties));
+		ByteArrayInputStream generatedDocument = new ByteArrayInputStream(
+			quarantineOrderFacadeEjb
+				.getGeneratedDocument("Quarantine.docx", rootEntityReference, userReference, sampleReference, pathogenTest, properties));
 
 		XWPFDocument xwpfDocument = new XWPFDocument(generatedDocument);
 		XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(xwpfDocument);

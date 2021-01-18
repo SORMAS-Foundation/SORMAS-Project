@@ -13,6 +13,7 @@ import javax.ejb.Stateless;
 import org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -56,8 +57,8 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	}
 
 	@Override
-	public List<String> getAdditionalVariables(String templateName) throws IOException {
-		return documentTemplateFacade.getAdditionalVariables(DOCUMENT_WORKFLOW, templateName);
+	public DocumentVariables getDocumentVariables(String templateName) throws IOException {
+		return documentTemplateFacade.getDocumentVariables(DOCUMENT_WORKFLOW, templateName);
 	}
 
 	private String createStyledHtml(String title, String body) throws IOException {
