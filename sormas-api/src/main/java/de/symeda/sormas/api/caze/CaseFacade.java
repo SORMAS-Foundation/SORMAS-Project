@@ -204,4 +204,6 @@ public interface CaseFacade {
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange,
 		Boolean doTransfer);
+
+	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
 }
