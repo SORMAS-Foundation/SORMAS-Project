@@ -228,19 +228,17 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		systemEvent.setStartDate(start);
 		systemEventFacade.saveSystemEvent(systemEvent);
 
-		Date since = null;
-		since = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
+		Date since = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
 
 		if (since == null) {
 			since = new Date(0);
 		}
 
-		List<LabMessageDto> newMessages = null;
 		try {
 			InitialContext ic = new InitialContext();
 			String jndiName = configFacade.getDemisJndiName();
 			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
-			newMessages = labResultsFacade.getExternalLabMessages(since);
+			List<LabMessageDto> newMessages = labResultsFacade.getExternalLabMessages(since);
 			if (newMessages != null) {
 				newMessages.stream().forEach(labMessageDto -> save(labMessageDto));
 			}
