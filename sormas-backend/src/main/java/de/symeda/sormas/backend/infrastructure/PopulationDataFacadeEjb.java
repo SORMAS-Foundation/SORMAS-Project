@@ -35,6 +35,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -205,17 +206,17 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		if (!CollectionUtils.isEmpty(criteria.getRegions()) && CollectionUtils.isEmpty(criteria.getDistricts())) {
 			List<Long> regionIds = regionService.getIdsByReferenceDtos(criteria.getRegions());
-			service.appendInFilterValues(regionsIn, parameters, regionIds, entry -> entry);
+			BaseAdoService.appendInFilterValues(regionsIn, parameters, regionIds, entry -> entry);
 		}
 		if (!CollectionUtils.isEmpty(criteria.getDistricts())) {
 			List<Long> districtIds = districtService.getIdsByReferenceDtos(criteria.getDistricts());
-			service.appendInFilterValues(districtsIn, parameters, districtIds, entry -> entry);
+			BaseAdoService.appendInFilterValues(districtsIn, parameters, districtIds, entry -> entry);
 		}
 		if (!CollectionUtils.isEmpty(criteria.getSexes())) {
-			service.appendInFilterValues(sexesIn, parameters, criteria.getSexes(), entry -> entry.name());
+			BaseAdoService.appendInFilterValues(sexesIn, parameters, criteria.getSexes(), entry -> entry.name());
 		}
 		if (!CollectionUtils.isEmpty(criteria.getAgeGroups())) {
-			service.appendInFilterValues(ageGroupsIn, parameters, criteria.getAgeGroups(), entry -> entry.name());
+			BaseAdoService.appendInFilterValues(ageGroupsIn, parameters, criteria.getAgeGroups(), entry -> entry.name());
 		}
 
 		StringBuilder queryBuilder = new StringBuilder();
