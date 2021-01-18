@@ -56,6 +56,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
@@ -108,15 +109,8 @@ public class EventController {
 
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 				if (!eventIndexDto.contains(selectedEvent)) {
-					boolean wasEventParticipant = linkCaseToEvent(eventReferenceDto, caseDataDto, caseRef);
+					linkCaseToEvent(eventReferenceDto, caseDataDto, caseRef);
 					SormasUI.refreshView();
-					Notification notification = new Notification(
-						I18nProperties.getString(
-							wasEventParticipant ? Strings.messagePersonAlreadyEventParticipant : Strings.messagePersonAddedAsEventParticipant),
-						"",
-						Type.HUMANIZED_MESSAGE);
-					notification.setDelayMsec(10000);
-					notification.show(Page.getCurrent());
 				} else {
 					SormasUI.refreshView();
 					Notification notification =
@@ -181,23 +175,26 @@ public class EventController {
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 			eventParticipant.setResultingCase(caseRef);
 			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+			Notification notification =
+				new Notification(I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
+			notification.setDelayMsec(10000);
+			notification.show(Page.getCurrent());
 			return true;
 		}
 
 		// Create new EventParticipant for this Person
-		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
-		EventParticipantDto eventParticipantDto;
-		eventParticipantDto =
+		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
+		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
-		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
+		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {}, eventParticipantDto);
 		return false;
 	}
 
 	public void createEventParticipantWithContact(EventReferenceDto eventReferenceDto, ContactDto contact) {
-		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-		EventParticipantDto eventParticipantDto =
+		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
-		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
+		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {}, eventParticipantDto);
 	}
 
 	public void navigateToIndex() {

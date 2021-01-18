@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -48,7 +50,21 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 		addCustomField(FIRST_NAME, String.class, TextField.class);
 		addCustomField(LAST_NAME, String.class, TextField.class);
 
-		setRequired(true, EventParticipantDto.INVOLVEMENT_DESCRIPTION, FIRST_NAME, LAST_NAME);
+		setRequired(true, FIRST_NAME, LAST_NAME);
+	}
+
+	@Override
+	public void setValue(EventParticipantDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		final PersonDto person = newFieldValue.getPerson();
+		if (person != null) {
+			final Field<String> firstNameField = getField(FIRST_NAME);
+			firstNameField.setEnabled(false);
+			firstNameField.setValue(person.getFirstName());
+			final Field<String> lastNameField = getField(LAST_NAME);
+			lastNameField.setEnabled(false);
+			lastNameField.setValue(person.getLastName());
+		}
 	}
 
 	public String getPersonFirstName() {
