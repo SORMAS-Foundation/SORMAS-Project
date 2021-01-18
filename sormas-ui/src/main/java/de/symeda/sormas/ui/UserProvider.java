@@ -70,6 +70,10 @@ public class UserProvider {
 		return getUserRights().contains(userRight);
 	}
 
+	public boolean hasAllUserRights(UserRight... userRights) {
+		return getUserRights().containsAll(Arrays.asList(userRights));
+	}
+
 	public UserReferenceDto getUserReference() {
 
 		if (userReference == null) {

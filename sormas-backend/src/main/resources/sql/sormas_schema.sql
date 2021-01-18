@@ -6214,7 +6214,6 @@ ALTER TABLE events_history ADD COLUMN externaltoken varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (303, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
 
-
 -- 2021-01-07 Add system events #3927
 CREATE TABLE systemevent (
     id bigint not null,
@@ -6233,6 +6232,56 @@ ALTER TABLE systemevent OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (304, 'Add system events #3927');
 
+-- 2020-12-17 Change action's replyingUser to lastModifiedBy #3719
+ALTER TABLE action RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+ALTER TABLE action_history RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (305, 'Change action''s replyingUser to lastModifiedBy #3719');
+
+-- 2021-01-14 - Add new fields to outbreak events needed for SurvNet #4013
+ALTER TABLE action ADD COLUMN actionmeasure varchar(255);
+ALTER TABLE action_history ADD COLUMN actionmeasure varchar(255);
+ALTER TABLE events ADD COLUMN transregionaloutbreak varchar(255);
+ALTER TABLE events_history ADD COLUMN transregionaloutbreak varchar(255);
+ALTER TABLE events ADD COLUMN diseasetransmissionmode varchar(255);
+ALTER TABLE events_history ADD COLUMN diseasetransmissionmode varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (306, 'Add new fields to outbreak events needed for SurvNet #4013');
+
+-- 2020-01-12 Store sormas to sormas share options #3763
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN withassociatedcontacts boolean DEFAULT false,
+    ADD COLUMN withsamples boolean DEFAULT false,
+    ADD COLUMN pseudonymizedpersonaldata boolean DEFAULT false,
+    ADD COLUMN pseudonymizedsensitivedata boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (307, 'Store sormas to sormas share options #3763');
+
+-- 2021-01-15 - Add superordinate event to events #4020
+ALTER TABLE events ADD COLUMN superordinateevent_id bigint;
+ALTER TABLE events_history ADD COLUMN superordinateevent_id bigint;
+
+ALTER TABLE events ADD CONSTRAINT fk_events_superordinateevent_id FOREIGN KEY (superordinateevent_id) REFERENCES events(id);
+CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash (superordinateevent_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
+
+-- 2020-12-03 Remove hospital from exposure type of places #3680
+UPDATE location
+SET facilitytype = 'HOSPITAL'
+FROM location AS l
+         INNER JOIN exposures ON exposures.location_id = l.id
+WHERE exposures.typeofplace = 'HOSPITAL'
+  AND l.facilitytype IS NULL;
+
+UPDATE exposures
+SET typeofplace = 'FACILITY'
+FROM exposures as e
+         INNER JOIN location ON location.id = e.location_id
+WHERE location.facilitytype IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680');
+
 -- 2020-12-21 Fix labmessage table #3486
 ALTER TABLE labmessage OWNER TO sormas_user;
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
@@ -6241,5 +6290,5 @@ ALTER TABLE labmessage_history OWNER TO sormas_user;
 ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
 ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (305, 'Fix labmessage table #3486');
+INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
 -- *** Insert new sql commands BEFORE this line ***

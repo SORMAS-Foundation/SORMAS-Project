@@ -47,14 +47,14 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
-	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target) {
+	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new LabMessage();
 			target.setUuid(source.getUuid());
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setLabMessageDetails(source.getLabMessageDetails());
 		target.setLabSampleId(source.getLabSampleId());
@@ -91,7 +91,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		LabMessage labMessage = labMessageService.getByUuid(dto.getUuid());
 
-		labMessage = fromDto(dto, labMessage);
+		labMessage = fromDto(dto, labMessage, true);
 		labMessageService.ensurePersisted(labMessage);
 	}
 

@@ -268,7 +268,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 
-		community = fillOrBuildEntity(dto, community);
+		community = fillOrBuildEntity(dto, community, true);
 		communityService.ensurePersisted(community);
 	}
 
@@ -331,14 +331,14 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		return dto;
 	}
 
-	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target) {
+	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new Community();
 			target.setUuid(source.getUuid());
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));

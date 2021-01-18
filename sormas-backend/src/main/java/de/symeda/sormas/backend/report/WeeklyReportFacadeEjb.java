@@ -135,7 +135,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return null;
 		}
 
-		WeeklyReport report = fromDto(dto);
+		WeeklyReport report = fromDto(dto, true);
 		weeklyReportService.ensurePersisted(report);
 		return toDto(report);
 	}
@@ -255,7 +255,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		return toDto(weeklyReportService.getByEpiWeekAndUser(epiWeek, user));
 	}
 
-	public WeeklyReport fromDto(@NotNull WeeklyReportDto source) {
+	public WeeklyReport fromDto(@NotNull WeeklyReportDto source, boolean checkChangeDate) {
 
 		WeeklyReport target = weeklyReportService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -263,7 +263,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			target.setUuid(source.getUuid());
 			target.setReportDateTime(new Date());
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
@@ -277,7 +277,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 		List<WeeklyReportEntry> entries = new ArrayList<>();
 		for (WeeklyReportEntryDto entryDto : source.getReportEntries()) {
-			WeeklyReportEntry entry = fromDto(entryDto);
+			WeeklyReportEntry entry = fromDto(entryDto, checkChangeDate);
 			entry.setWeeklyReport(target);
 			entries.add(entry);
 		}
@@ -290,7 +290,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		return target;
 	}
 
-	public WeeklyReportEntry fromDto(WeeklyReportEntryDto source) {
+	public WeeklyReportEntry fromDto(WeeklyReportEntryDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -305,7 +305,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setNumberOfCases(source.getNumberOfCases());

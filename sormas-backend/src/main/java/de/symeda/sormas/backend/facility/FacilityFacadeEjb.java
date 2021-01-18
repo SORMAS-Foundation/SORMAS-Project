@@ -518,18 +518,18 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			}
 		}
 
-		facility = fillOrBuildEntity(dto, facility);
+		facility = fillOrBuildEntity(dto, facility, true);
 		facilityService.ensurePersisted(facility);
 	}
 
-	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target) {
+	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new Facility();
 			target.setUuid(source.getUuid());
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setName(source.getName());
 

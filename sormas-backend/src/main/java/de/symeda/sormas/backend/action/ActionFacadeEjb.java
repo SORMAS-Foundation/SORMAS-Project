@@ -59,7 +59,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	@EJB
 	private EventService eventService;
 
-	public Action fromDto(ActionDto source) {
+	public Action fromDto(ActionDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -75,9 +75,10 @@ public class ActionFacadeEjb implements ActionFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
 
-		target.setReplyingUser(userService.getByReferenceDto(source.getReplyingUser()));
+		DtoHelper.validateDto(source, target, checkChangeDate);
+
+		target.setLastModifiedBy(userService.getByReferenceDto(source.getLastModifiedBy()));
 		target.setReply(source.getReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setTitle(source.getTitle());
@@ -90,6 +91,7 @@ public class ActionFacadeEjb implements ActionFacade {
 			target.setStatusChangeDate(source.getStatusChangeDate());
 		}
 		target.setActionStatus(source.getActionStatus());
+		target.setActionMeasure(source.getActionMeasure());
 
 		target.setActionContext(source.getActionContext());
 		if (source.getActionContext() != null) {
@@ -124,13 +126,14 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setReply(source.getReply());
-		target.setReplyingUser(UserFacadeEjb.toReferenceDto(source.getReplyingUser()));
+		target.setLastModifiedBy(UserFacadeEjb.toReferenceDto(source.getLastModifiedBy()));
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
 		target.setStatusChangeDate(source.getStatusChangeDate());
 		target.setActionContext(source.getActionContext());
 		target.setActionStatus(source.getActionStatus());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setActionMeasure(source.getActionMeasure());
 
 		return target;
 	}
@@ -138,7 +141,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public ActionDto saveAction(ActionDto dto) {
 
-		Action ado = fromDto(dto);
+		Action ado = fromDto(dto, true);
 		actionService.ensurePersisted(ado);
 		return toDto(ado);
 	}

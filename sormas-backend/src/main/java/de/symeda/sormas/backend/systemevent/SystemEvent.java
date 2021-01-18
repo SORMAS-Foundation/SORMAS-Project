@@ -1,9 +1,7 @@
 package de.symeda.sormas.backend.systemevent;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.systemevents.SystemEventStatus;
-import de.symeda.sormas.api.systemevents.SystemEventType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,11 +9,11 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.Objects;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
 @Audited

@@ -41,8 +41,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClientProducer;
 
 /**
- * Creates mocks for resources needed in bean test / external services. <br />
- * Use {@link Mailbox#get (String)} to retrieve e-mails sent (receiver address passed).
+ * Creates mocks for resources needed in bean test / external services.
  * 
  * @author Stefan Kock
  */

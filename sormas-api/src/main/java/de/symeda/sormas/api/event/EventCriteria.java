@@ -19,6 +19,7 @@ package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
@@ -71,6 +72,9 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private PersonReferenceDto person;
 	private FacilityType facilityType;
 	private FacilityReferenceDto facility;
+	private EventReferenceDto superordinateEvent;
+	private Set<String> excludedUuids;
+	private Boolean hasNoSuperordinateEvent;
 
 	// Actions criterias
 	private ActionStatus actionStatus;
@@ -419,6 +423,48 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public EventCriteria facility(FacilityReferenceDto facility) {
 		this.facility = facility;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public EventReferenceDto getSuperordinateEvent() {
+		return superordinateEvent;
+	}
+
+	public void setSuperordinateEvent(EventReferenceDto superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
+	}
+
+	public EventCriteria superordinateEvent(EventReferenceDto superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Set<String> getExcludedUuids() {
+		return excludedUuids;
+	}
+
+	public void setExcludedUuids(Set<String> excludedUuids) {
+		this.excludedUuids = excludedUuids;
+	}
+
+	public EventCriteria excludedUuids(Set<String> excludedUuids) {
+		this.excludedUuids = excludedUuids;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Boolean getHasNoSuperordinateEvent() {
+		return hasNoSuperordinateEvent;
+	}
+
+	public void setHasNoSuperordinateEvent(Boolean hasNoSuperordinateEvent) {
+		this.hasNoSuperordinateEvent = hasNoSuperordinateEvent;
+	}
+
+	public EventCriteria hasNoSuperordinateEvent(Boolean hasNoSuperordinateEvent) {
+		this.hasNoSuperordinateEvent = hasNoSuperordinateEvent;
 		return this;
 	}
 }

@@ -28,6 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -37,6 +38,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
@@ -99,6 +101,13 @@ public class Event extends CoreAdo {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String ARCHIVED = "archived";
+	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
+	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
+	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
+	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
+
+	private Event superordinateEvent;
+	private List<Event> subordinateEvents;
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -139,6 +148,8 @@ public class Event extends CoreAdo {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private YesNoUnknown transregionalOutbreak;
+	private DiseaseTransmissionMode diseaseTransmissionMode;
 
 	private boolean archived;
 
@@ -213,7 +224,9 @@ public class Event extends CoreAdo {
 		return externalToken;
 	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getEventTitle() {
@@ -453,7 +466,7 @@ public class Event extends CoreAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public User getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
@@ -471,7 +484,7 @@ public class Event extends CoreAdo {
 		this.typeOfPlaceText = typeOfPlaceText;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Task.EVENT)
+	@OneToMany(mappedBy = Task.EVENT, fetch = FetchType.LAZY)
 	public List<Task> getTasks() {
 		return tasks;
 	}
@@ -496,6 +509,24 @@ public class Event extends CoreAdo {
 		this.reportLon = reportLon;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTransregionalOutbreak() {
+		return transregionalOutbreak;
+	}
+
+	public void setTransregionalOutbreak(YesNoUnknown transregionalOutbreak) {
+		this.transregionalOutbreak = transregionalOutbreak;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
+		return diseaseTransmissionMode;
+	}
+
+	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
+		this.diseaseTransmissionMode = diseaseTransmissionMode;
+	}
+
 	@Column
 	public boolean isArchived() {
 		return archived;
@@ -518,4 +549,21 @@ public class Event extends CoreAdo {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@ManyToOne
+	public Event getSuperordinateEvent() {
+		return superordinateEvent;
+	}
+
+	public void setSuperordinateEvent(Event superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
+	}
+
+	@OneToMany(mappedBy = Event.SUPERORDINATE_EVENT, fetch = FetchType.LAZY)
+	public List<Event> getSubordinateEvents() {
+		return subordinateEvents;
+	}
+
+	public void setSubordinateEvents(List<Event> subordinateEvents) {
+		this.subordinateEvents = subordinateEvents;
+	}
 }

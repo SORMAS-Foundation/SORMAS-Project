@@ -46,10 +46,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.VisitOrigin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -57,6 +57,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -83,7 +84,6 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
@@ -209,7 +209,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		this.validate(dto);
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-		Visit entity = fromDto(dto);
+		Visit entity = fromDto(dto, true);
 
 		visitService.ensurePersisted(entity);
 
@@ -489,7 +489,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	public Visit fromDto(@NotNull VisitDto source) {
+	public Visit fromDto(@NotNull VisitDto source, boolean checkChangeDate) {
 
 		final String visitUuid = source.getUuid();
 		Visit target = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
@@ -500,11 +500,11 @@ public class VisitFacadeEjb implements VisitFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
-		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
+		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms(), checkChangeDate));
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitStatus(source.getVisitStatus());
