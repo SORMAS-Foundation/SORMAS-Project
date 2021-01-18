@@ -108,6 +108,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEventUuid(source.getSuperordinateEvent() != null ? source.getSuperordinateEvent().getUuid() : null);
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
@@ -142,6 +143,12 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 			target.setEventLocation(locationHelper.adoToDto(location));
 		} else {
 			target.setEventLocation(null);
+		}
+
+		if (source.getSuperordinateEventUuid() != null) {
+			target.setSuperordinateEvent(new EventReferenceDto(source.getSuperordinateEventUuid()));
+		} else {
+			target.setSuperordinateEvent(null);
 		}
 
 		target.setTypeOfPlace(source.getTypeOfPlace());

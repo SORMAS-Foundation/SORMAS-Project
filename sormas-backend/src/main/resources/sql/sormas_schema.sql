@@ -6257,4 +6257,14 @@ ALTER TABLE sormastosormasshareinfo
 
 INSERT INTO schema_version (version_number, comment) VALUES (307, 'Store sormas to sormas share options #3763');
 
+-- 2021-01-15 - Add superordinate event to events #4020
+ALTER TABLE events ADD COLUMN superordinateevent_id bigint;
+ALTER TABLE events_history ADD COLUMN superordinateevent_id bigint;
+
+ALTER TABLE events ADD CONSTRAINT fk_events_superordinateevent_id FOREIGN KEY (superordinateevent_id) REFERENCES events(id);
+CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash (superordinateevent_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
+
+
 -- *** Insert new sql commands BEFORE this line ***
