@@ -6291,4 +6291,12 @@ ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
 ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
+
+-- 2020-01-13 Add indexes to optimize event directory performance #3276
+CREATE INDEX IF NOT EXISTS idx_eventparticpant_person_id ON eventparticipant USING hash (person_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticpant_event_id ON eventparticipant USING hash (event_id);
+CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING hash (person_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add indexes to optimize event directory performance #3276');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -119,13 +119,23 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				NUMBER_OF_PENDING_TASKS,
 				EventIndexDto.PARTICIPANT_COUNT,
 				EventIndexDto.CASE_COUNT,
-				EventIndexDto.DEATH_COUNT));
+				EventIndexDto.DEATH_COUNT,
+				EventIndexDto.CONTACT_COUNT,
+				EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
 
 		if (!tasksFeatureEnabled) {
 			columnIds.remove(NUMBER_OF_PENDING_TASKS);
 		}
 
 		setColumns(columnIds.toArray(new String[columnIds.size()]));
+
+		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CASE_COUNT).setSortable(false);
+		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
+
+		setContactCountMethod(false); // Count all contacts by default
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
@@ -138,6 +148,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				FieldAccessColumnStyleGenerator
 					.getDefault(getBeanType(), INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId));
 		}
+
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
+			.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
 
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
 	}
@@ -174,6 +187,16 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		}
 
 		return (srcMediaWebsite != null ? srcMediaWebsite : "") + " " + (srcMediaName != null ? "(" + srcMediaName + ")" : "");
+	}
+
+	public void setContactCountMethod(boolean SourceInEvent) {
+		if (SourceInEvent) {
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(false);
+			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(true);
+		} else {
+			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(false);
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(true);
+		}
 	}
 
 	public void reload() {
