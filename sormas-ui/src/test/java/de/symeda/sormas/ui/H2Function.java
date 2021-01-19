@@ -1,5 +1,9 @@
 package de.symeda.sormas.ui;
 
+import java.util.Date;
+
+import de.symeda.sormas.api.utils.DateHelper;
+
 public class H2Function {
 
 	public static float similarity(String a, String b) {
@@ -12,5 +16,9 @@ public class H2Function {
 
 	public static double set_limit(Double limit) {
 		return limit;
+	}
+
+	public static Date date(Date timestamp) {
+		return DateHelper.getStartOfDay(timestamp);
 	}
 }

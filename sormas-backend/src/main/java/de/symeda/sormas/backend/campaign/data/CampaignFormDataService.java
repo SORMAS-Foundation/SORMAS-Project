@@ -38,7 +38,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;

@@ -13,8 +13,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class LabMessageDto extends EntityDto {
 
-	public static final String I18N_PREFIX = "Location";
+	public static final String I18N_PREFIX = "LabMessage";
 
+	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
@@ -41,6 +42,7 @@ public class LabMessageDto extends EntityDto {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 
+	private Date messageDateTime;
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
 	private String labSampleId;
@@ -68,6 +70,14 @@ public class LabMessageDto extends EntityDto {
 	private String labMessageDetails;
 
 	private boolean processed;
+
+	public Date getMessageDateTime() {
+		return messageDateTime;
+	}
+
+	public void setMessageDateTime(Date messageDateTime) {
+		this.messageDateTime = messageDateTime;
+	}
 
 	public Date getSampleDateTime() {
 		return sampleDateTime;

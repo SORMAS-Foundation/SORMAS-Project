@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import com.nexmo.client.NexmoClientException;
 
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;

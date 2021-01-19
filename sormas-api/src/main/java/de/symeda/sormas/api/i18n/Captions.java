@@ -187,6 +187,7 @@ public interface Captions {
 	String caseConfirmCase = "caseConfirmCase";
 	String caseContacts = "caseContacts";
 	String caseCreateCase = "caseCreateCase";
+	String caseCreateNew = "caseCreateNew";
 	String CaseData = "CaseData";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_caseClassification = "CaseData.caseClassification";
@@ -411,6 +412,7 @@ public interface Captions {
 	String caseReferToFacility = "caseReferToFacility";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
+	String caseSelect = "caseSelect";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
 	String changeUserEmail = "changeUserEmail";
@@ -849,6 +851,7 @@ public interface Captions {
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";
 	String eventDefaultView = "eventDefaultView";
+	String eventEditEvent = "eventEditEvent";
 	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
@@ -858,6 +861,7 @@ public interface Captions {
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
 	String eventNoEventLinkedToContact = "eventNoEventLinkedToContact";
 	String eventOnlyWithContactSourceCaseInvolved = "eventOnlyWithContactSourceCaseInvolved";
+	String eventOpenSuperordinateEvent = "eventOpenSuperordinateEvent";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
@@ -873,6 +877,7 @@ public interface Captions {
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
 	String eventParticipantContactCountOnlyWithSourceCaseInEvent = "eventParticipantContactCountOnlyWithSourceCaseInEvent";
+	String eventParticipantCreateNew = "eventParticipantCreateNew";
 	String EventParticipantExport_addressCommunity = "EventParticipantExport.addressCommunity";
 	String EventParticipantExport_addressDistrict = "EventParticipantExport.addressDistrict";
 	String EventParticipantExport_addressGpsCoordinates = "EventParticipantExport.addressGpsCoordinates";
@@ -896,9 +901,13 @@ public interface Captions {
 	String EventParticipantExport_eventTypeOfPlace = "EventParticipantExport.eventTypeOfPlace";
 	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
 	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
+	String eventParticipantSelect = "eventParticipantSelect";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
 	String eventSelect = "eventSelect";
+	String eventSubordinateEvents = "eventSubordinateEvents";
+	String eventSuperordinateEvent = "eventSuperordinateEvent";
+	String eventUnlinkEvent = "eventUnlinkEvent";
 	String export = "export";
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";
@@ -1042,6 +1051,7 @@ public interface Captions {
 	String LabMessage = "LabMessage";
 	String LabMessage_labMessageDetails = "LabMessage.labMessageDetails";
 	String LabMessage_labSampleId = "LabMessage.labSampleId";
+	String LabMessage_messageDateTime = "LabMessage.messageDateTime";
 	String LabMessage_personBirthDateDD = "LabMessage.personBirthDateDD";
 	String LabMessage_personBirthDateMM = "LabMessage.personBirthDateMM";
 	String LabMessage_personBirthDateYYYY = "LabMessage.personBirthDateYYYY";
@@ -1065,6 +1075,10 @@ public interface Captions {
 	String LabMessage_testLabPostalCode = "LabMessage.testLabPostalCode";
 	String LabMessage_testResult = "LabMessage.testResult";
 	String LabMessage_testType = "LabMessage.testType";
+	String labMessageFetch = "labMessageFetch";
+	String labMessageProcess = "labMessageProcess";
+	String labMessageProcessed = "labMessageProcessed";
+	String labMessageUnprocessed = "labMessageUnprocessed";
 	String lastName = "lastName";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";
@@ -1846,6 +1860,7 @@ public interface Captions {
 	String View_samples = "View.samples";
 	String View_samples_archive = "View.samples.archive";
 	String View_samples_data = "View.samples.data";
+	String View_samples_labMessages = "View.samples.labMessages";
 	String View_samples_sub = "View.samples.sub";
 	String View_statistics = "View.statistics";
 	String View_statistics_database_export = "View.statistics.database-export";

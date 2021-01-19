@@ -77,6 +77,9 @@ public class EventDto extends PseudonymizableDto {
 	public static final String REPORT_LON = "reportLon";
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
+	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
+
+	private EventReferenceDto superordinateEvent;
 
 	@Required
 	private EventStatus eventStatus;
@@ -465,6 +468,14 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
 		this.diseaseTransmissionMode = diseaseTransmissionMode;
+	}
+
+	public EventReferenceDto getSuperordinateEvent() {
+		return superordinateEvent;
+	}
+
+	public void setSuperordinateEvent(EventReferenceDto superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
 	}
 
 	public EventReferenceDto toReference() {

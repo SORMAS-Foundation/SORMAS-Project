@@ -275,6 +275,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
+	public List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities) {
+		return facilityService.getFacilitiesByExternalIdAndType(id, type, includeArchivedEntities)
+			.stream()
+			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public List<FacilityReferenceDto> getByNameAndType(
 		String name,
 		DistrictReferenceDto districtRef,

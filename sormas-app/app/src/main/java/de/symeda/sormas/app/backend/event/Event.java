@@ -79,6 +79,9 @@ public class Event extends PseudonymizableAdo {
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 
+	@DatabaseField
+	private String superordinateEventUuid;
+
 	@Deprecated
 	@DatabaseField
 	private String eventType;
@@ -477,6 +480,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
 		this.diseaseTransmissionMode = diseaseTransmissionMode;
+	}
+
+	public String getSuperordinateEventUuid() {
+		return superordinateEventUuid;
+	}
+
+	public void setSuperordinateEventUuid(String superordinateEventUuid) {
+		this.superordinateEventUuid = superordinateEventUuid;
 	}
 
 	@Override

@@ -6257,11 +6257,46 @@ ALTER TABLE sormastosormasshareinfo
 
 INSERT INTO schema_version (version_number, comment) VALUES (307, 'Store sormas to sormas share options #3763');
 
+-- 2021-01-15 - Add superordinate event to events #4020
+ALTER TABLE events ADD COLUMN superordinateevent_id bigint;
+ALTER TABLE events_history ADD COLUMN superordinateevent_id bigint;
+
+ALTER TABLE events ADD CONSTRAINT fk_events_superordinateevent_id FOREIGN KEY (superordinateevent_id) REFERENCES events(id);
+CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash (superordinateevent_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
+
+-- 2020-12-03 Remove hospital from exposure type of places #3680
+UPDATE location
+SET facilitytype = 'HOSPITAL'
+FROM location AS l
+         INNER JOIN exposures ON exposures.location_id = l.id
+WHERE exposures.typeofplace = 'HOSPITAL'
+  AND l.facilitytype IS NULL;
+
+UPDATE exposures
+SET typeofplace = 'FACILITY'
+FROM exposures as e
+         INNER JOIN location ON location.id = e.location_id
+WHERE location.facilitytype IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680');
+
+-- 2020-12-21 Fix labmessage table #3486
+ALTER TABLE labmessage OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
+ALTER TABLE labmessage_history OWNER TO sormas_user;
+ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
+ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
+
 -- 2020-01-13 Add indexes to optimize event directory performance #3276
 CREATE INDEX IF NOT EXISTS idx_eventparticpant_person_id ON eventparticipant USING hash (person_id);
 CREATE INDEX IF NOT EXISTS idx_eventparticpant_event_id ON eventparticipant USING hash (event_id);
 CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING hash (person_id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add indexes to optimize event directory performance #3276');
+INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add indexes to optimize event directory performance #3276');
 
 -- *** Insert new sql commands BEFORE this line ***

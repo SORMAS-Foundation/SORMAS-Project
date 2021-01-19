@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.region.CountryFacade;
-import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import org.junit.Before;
 
 import de.symeda.sormas.api.Disease;
@@ -38,6 +36,7 @@ import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.CountryFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
@@ -52,6 +51,7 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLoca
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
@@ -83,6 +83,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery = em.createNativeQuery("CREATE ALIAS similarity_operator FOR \"de.symeda.sormas.ui.H2Function.similarity_operator\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.ui.H2Function.set_limit\"");
+		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.ui.H2Function.date\"");
 		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}

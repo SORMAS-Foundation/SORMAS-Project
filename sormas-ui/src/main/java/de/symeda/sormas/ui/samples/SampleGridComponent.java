@@ -176,7 +176,7 @@ public class SampleGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(

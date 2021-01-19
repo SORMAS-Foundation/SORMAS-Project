@@ -34,6 +34,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -49,7 +50,7 @@ public class EventListComponent extends VerticalLayout {
 
 	public EventListComponent(CaseReferenceDto caseRef) {
 
-		createEventListComponent(new EventList(caseRef), e -> {
+		createEventListComponent(new EventList(caseRef), I18nProperties.getString(Strings.entityEvents), e -> {
 
 			EventCriteria eventCriteria = new EventCriteria();
 
@@ -70,7 +71,7 @@ public class EventListComponent extends VerticalLayout {
 
 		EventList eventList = new EventList(contact.getPerson());
 
-		createEventListComponent(eventList, e -> {
+		createEventListComponent(eventList, I18nProperties.getString(Strings.entityEvents), e -> {
 
 			EventCriteria eventCriteria = new EventCriteria();
 
@@ -99,7 +100,21 @@ public class EventListComponent extends VerticalLayout {
 		}
 	}
 
-	private void createEventListComponent(EventList eventList, Button.ClickListener clickListener) {
+	public EventListComponent(EventReferenceDto superordinateEvent) {
+
+		EventList eventList = new EventList(superordinateEvent);
+		createEventListComponent(eventList, I18nProperties.getCaption(Captions.eventSubordinateEvents), e -> {
+			EventCriteria eventCriteria = new EventCriteria();
+			long events = FacadeProvider.getEventFacade().count(eventCriteria);
+			if (events > 0) {
+				ControllerProvider.getEventController().selectOrCreateSubordinateEvent(superordinateEvent);
+			} else {
+				ControllerProvider.getEventController().createSubordinateEvent(superordinateEvent);
+			}
+		});
+	}
+
+	private void createEventListComponent(EventList eventList, String heading, Button.ClickListener clickListener) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -114,7 +129,7 @@ public class EventListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label eventLabel = new Label(I18nProperties.getString(Strings.entityEvent));
+		Label eventLabel = new Label(heading);
 		eventLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(eventLabel);
 

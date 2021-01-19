@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
@@ -91,6 +93,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
@@ -3356,6 +3359,110 @@ public class CaseFacadeEjb implements CaseFacade {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	/**
+	 * Find duplicates based on case and person dto
+	 * Conditions:
+	 * * same externalId
+	 * * same externalToken
+	 * * same first name, last name, date of birth, sex (null is considered equal to any sex), disease, reportDate (ignore time), district
+	 *
+	 * @param casePerson
+	 *            - case and person
+	 * @return list of duplicate cases
+	 */
+	@Override
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+		CaseDataDto searchCaze = casePerson.getCaze();
+		PersonDto searchPerson = casePerson.getPerson();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caseRoot = cq.from(Case.class);
+		CaseJoins<Case> caseCaseJoins = new CaseJoins<>(caseRoot);
+		Join<Case, Person> person = caseCaseJoins.getPerson();
+
+		cq.multiselect(caseRoot.get(Case.UUID), person.get(Person.UUID));
+
+		Path<String> externalId = caseRoot.get(Case.EXTERNAL_ID);
+		Path<String> externalToken = caseRoot.get(Case.EXTERNAL_TOKEN);
+
+		Predicate externalIdPredicate = null;
+		if (searchCaze.getExternalID() != null) {
+			externalIdPredicate = and(cb, cb.isNotNull(externalId), cb.equal(cb.lower(externalId), searchCaze.getExternalID().toLowerCase().trim()));
+		}
+
+		Predicate externalTokenPredicate = null;
+		if (searchCaze.getExternalToken() != null) {
+			externalTokenPredicate =
+				and(cb, cb.isNotNull(externalToken), cb.equal(cb.trim(cb.lower(externalToken)), searchCaze.getExternalToken().toLowerCase().trim()));
+		}
+
+		Predicate combinedPredicate = null;
+		if (searchPerson.getFirstName() != null
+			&& searchPerson.getLastName() != null
+			&& searchCaze.getReportDate() != null
+			&& searchCaze.getDistrict() != null) {
+			Predicate personPredicate = and(
+				cb,
+				cb.equal(cb.trim(cb.lower(person.get(Person.FIRST_NAME))), searchPerson.getFirstName().toLowerCase().trim()),
+				cb.equal(cb.trim(cb.lower(person.get(Person.LAST_NAME))), searchPerson.getLastName().toLowerCase().trim()));
+
+			if (searchPerson.getBirthdateDD() != null) {
+				personPredicate = and(
+					cb,
+					personPredicate,
+					or(cb, cb.isNull(person.get(Person.BIRTHDATE_DD)), cb.equal(person.get(Person.BIRTHDATE_DD), searchPerson.getBirthdateDD())));
+			}
+
+			if (searchPerson.getBirthdateMM() != null) {
+				personPredicate = and(
+					cb,
+					personPredicate,
+					or(cb, cb.isNull(person.get(Person.BIRTHDATE_DD)), cb.equal(person.get(Person.BIRTHDATE_MM), searchPerson.getBirthdateMM())));
+			}
+
+			if (searchPerson.getBirthdateYYYY() != null) {
+				personPredicate = and(
+					cb,
+					personPredicate,
+					or(
+						cb,
+						cb.isNull(person.get(Person.BIRTHDATE_YYYY)),
+						cb.equal(person.get(Person.BIRTHDATE_YYYY), searchPerson.getBirthdateYYYY())));
+			}
+
+			if (searchPerson.getSex() != null) {
+				personPredicate =
+					and(cb, personPredicate, or(cb, cb.isNull(person.get(Person.SEX)), cb.equal(person.get(Person.SEX), searchPerson.getSex())));
+			}
+
+			combinedPredicate = and(
+				cb,
+				personPredicate,
+				cb.equal(caseRoot.get(Case.DISEASE), searchCaze.getDisease()),
+				cb.equal(
+					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))),
+				cb.equal(caseCaseJoins.getDistrict().get(District.UUID), searchCaze.getDistrict().getUuid()));
+		}
+
+		Predicate filters = or(cb, externalIdPredicate, externalTokenPredicate, combinedPredicate);
+		if (filters == null) {
+			return Collections.emptyList();
+		}
+
+		cq.where(filters);
+
+		List<Object[]> duplicateUuids = em.createQuery(cq).getResultList();
+
+		return duplicateUuids.stream()
+			.map(
+				(casePersonUuids) -> new CasePersonDto(
+					getCaseDataByUuid((String) casePersonUuids[0]),
+					personFacade.getPersonByUuid((String) casePersonUuids[1])))
+			.collect(Collectors.toList());
 	}
 
 	@LocalBean
