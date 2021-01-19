@@ -135,6 +135,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setAddresses(addresses);
 
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setBirthCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCitizenship()));
 	}
@@ -232,6 +233,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setAddresses(locationDtos);
 
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setBirthCountry(CountryDtoHelper.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryDtoHelper.toReferenceDto(source.getCitizenship()));
 	}

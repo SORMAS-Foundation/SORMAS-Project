@@ -32,7 +32,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
@@ -122,7 +122,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		restorePseudonymizedDto(prescription, existingPrescription, existingPrescriptionDto);
 
-		Prescription entity = fromDto(prescription, existingPrescription);
+		Prescription entity = fromDto(prescription, existingPrescription, true);
 
 		service.ensurePersisted(entity);
 
@@ -206,7 +206,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
 		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
-		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(prescription.get(Prescription.PRESCRIPTION_DATE)));
 
@@ -294,7 +294,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		return reference;
 	}
 
-	public Prescription fromDto(@NotNull PrescriptionDto source, Prescription target) {
+	public Prescription fromDto(@NotNull PrescriptionDto source, Prescription target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new Prescription();
@@ -304,7 +304,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));
 		target.setPrescriptionType(source.getPrescriptionType());

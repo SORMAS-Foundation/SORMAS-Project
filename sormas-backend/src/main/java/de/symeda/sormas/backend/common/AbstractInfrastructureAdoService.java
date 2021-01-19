@@ -10,7 +10,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo> extends AbstractAdoService<ADO> {
+public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo> extends AdoServiceWithUserFilter<ADO> {
 
 	public AbstractInfrastructureAdoService(Class<ADO> elementClass) {
 		super(elementClass);

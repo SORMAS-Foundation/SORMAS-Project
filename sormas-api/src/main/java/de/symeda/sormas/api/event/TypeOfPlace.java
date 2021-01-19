@@ -27,9 +27,9 @@ public enum TypeOfPlace {
 	FACILITY(true),
 	FESTIVITIES(false),
 	HOME(true),
-	HOSPITAL(false),
 	MEANS_OF_TRANSPORT(false),
 	PUBLIC_PLACE(false),
+	SCATTERED(false),
 	UNKNOWN(false),
 	OTHER(false);
 
@@ -47,7 +47,7 @@ public enum TypeOfPlace {
 
 	public static List<TypeOfPlace> getTypesOfPlaceForCases() {
 		if (typesUsableForCases == null) {
-			typesUsableForCases = new ArrayList<TypeOfPlace>();
+			typesUsableForCases = new ArrayList<>();
 			for (TypeOfPlace typeOfPlace : values()) {
 				if (typeOfPlace.isUsableForCases()) {
 					typesUsableForCases.add(typeOfPlace);

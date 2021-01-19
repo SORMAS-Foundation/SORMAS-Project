@@ -24,9 +24,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -61,8 +63,9 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
@@ -166,7 +169,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto saveEvent(EventDto dto) {
+	public EventDto saveEvent(@NotNull EventDto dto) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -174,7 +177,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
 
-		Event event = fromDto(dto);
+		Event event = fromDto(dto, true);
 		eventService.ensurePersisted(event);
 
 		return convertToDto(event, pseudonymizer);
@@ -199,13 +202,13 @@ public class EventFacadeEjb implements EventFacade {
 
 		Predicate filter = null;
 
-		if (eventCriteria.getUserFilterIncluded()) {
-			eventService.createUserFilter(cb, cq, event);
-		}
-
 		if (eventCriteria != null) {
+			if (eventCriteria.getUserFilterIncluded()) {
+				eventService.createUserFilter(cb, cq, event);
+			}
+
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -255,13 +258,13 @@ public class EventFacadeEjb implements EventFacade {
 
 		Predicate filter = null;
 
-		if (eventCriteria.getUserFilterIncluded()) {
-			eventService.createUserFilter(cb, cq, event);
-		}
-
 		if (eventCriteria != null) {
+			if (eventCriteria.getUserFilterIncluded()) {
+				eventService.createUserFilter(cb, cq, event);
+			}
+
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -428,6 +431,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
+			event.get(Event.EXTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -437,7 +441,11 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
+			event.get(Event.DISEASE_TRANSMISSION_MODE),
 			event.get(Event.NOSOCOMIAL),
+			event.get(Event.TRANSREGIONAL_OUTBREAK),
+			event.get(Event.MEANS_OF_TRANSPORT),
+			event.get(Event.MEANS_OF_TRANSPORT_DETAILS),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			district.get(District.UUID),
@@ -466,7 +474,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		cq.where(filter);
@@ -586,8 +594,41 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getArchivedUuidsSince(since);
 	}
 
-	public Event fromDto(@NotNull EventDto source) {
+	@Override
+	public Set<String> getAllSubordinateEventUuids(String eventUuid) {
 
+		Set<String> uuids = new HashSet<>();
+		Event superordinateEvent = eventService.getByUuid(eventUuid);
+		addAllSubordinateEventsToSet(superordinateEvent, uuids);
+
+		return uuids;
+	}
+
+	private void addAllSubordinateEventsToSet(Event event, Set<String> uuids) {
+
+		uuids.addAll(event.getSubordinateEvents().stream().map(AbstractDomainObject::getUuid).collect(Collectors.toSet()));
+		event.getSubordinateEvents().forEach(e -> addAllSubordinateEventsToSet(e, uuids));
+	}
+
+	@Override
+	public Set<String> getAllSuperordinateEventUuids(String eventUuid) {
+
+		Set<String> uuids = new HashSet<>();
+		Event event = eventService.getByUuid(eventUuid);
+		addSuperordinateEventToSet(event, uuids);
+
+		return uuids;
+	}
+
+	private void addSuperordinateEventToSet(Event event, Set<String> uuids) {
+
+		if (event.getSuperordinateEvent() != null) {
+			uuids.add(event.getSuperordinateEvent().getUuid());
+			addSuperordinateEventToSet(event.getSuperordinateEvent(), uuids);
+		}
+	}
+
+	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
 		Event target = eventService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Event();
@@ -596,7 +637,7 @@ public class EventFacadeEjb implements EventFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
@@ -604,6 +645,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
@@ -611,8 +653,13 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
+		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setSeatNumber(source.getSeatNumber());
+		target.setTravelDate(source.getTravelDate());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
@@ -627,6 +674,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -667,8 +717,7 @@ public class EventFacadeEjb implements EventFacade {
 			return null;
 		}
 
-		EventReferenceDto dto = new EventReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		return new EventReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	public static EventDto toDto(Event source) {
@@ -685,6 +734,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
@@ -694,6 +744,11 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setSeatNumber(source.getSeatNumber());
+		target.setTravelDate(source.getTravelDate());
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
 		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
@@ -708,6 +763,9 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -729,7 +787,7 @@ public class EventFacadeEjb implements EventFacade {
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
-	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, LocalDate referenceDate) {
+	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
 

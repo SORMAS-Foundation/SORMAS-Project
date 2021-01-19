@@ -30,6 +30,8 @@
         <import type="de.symeda.sormas.api.event.EventSourceType" />
         <import type="de.symeda.sormas.api.event.EventDto" />
         <import type="de.symeda.sormas.api.event.InstitutionalPartnerType" />
+        <import type="de.symeda.sormas.api.event.MeansOfTransport" />
+        <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
@@ -81,11 +83,13 @@
                     android:id="@+id/event_startDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@{data.startDate}" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_endDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     android:visibility="@{multiDayEvent? View.VISIBLE : View.GONE}"
                     app:value="@{data.endDate}" />
+
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -102,10 +106,12 @@
                     android:id="@+id/event_eventInvestigationStartDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@{data.eventInvestigationStartDate}" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_eventInvestigationEndDate"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.eventInvestigationEndDate}" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -150,10 +156,21 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.eventDesc}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_externalId"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@{data.externalId}" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_externalId"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.externalId}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_externalToken"
+                    app:value="@{data.externalToken}"
+                    style="@style/ControlSecondOfTwoColumnsStyle"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -180,16 +197,36 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_nosocomial"
+                    android:id="@+id/event_diseaseTransmissionMode"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:dependencyParentField="@{eventEventStatus}"
                     app:dependencyParentValue="@{EventStatus.CLUSTER}"
-                    app:value="@{data.nosocomial}"
-                    />
+                    app:value="@{data.diseaseTransmissionMode}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_nosocomial"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:dependencyParentField="@{eventEventStatus}"
+                    app:dependencyParentValue="@{EventStatus.CLUSTER}"
+                    app:value="@{data.nosocomial}" />
 
             </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_transregionalOutbreak"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{eventEventStatus}"
+                app:dependencyParentValue="@{EventStatus.CLUSTER}"
+                app:value="@{data.transregionalOutbreak}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_typeOfPlace"
+                style="@style/ControlSingleColumnStyle"
+                app:appendValue="@{data.typeOfPlaceText}"
+                app:value="@{data.typeOfPlace}"
+                app:valueFormat="@{@string/two_strings_with_hyphen_format}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_eventLocation"
@@ -198,11 +235,18 @@
                 app:value="@{data.eventLocation}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_typeOfPlace"
-                style="@style/ControlSingleColumnStyle"
-                app:appendValue="@{data.typeOfPlaceText}"
-                app:value="@{data.typeOfPlace}"
-                app:valueFormat="@{@string/two_strings_with_hyphen_format}" />
+                    android:id="@+id/event_meansOfTransport"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.meansOfTransport}"
+                    app:dependencyParentField="@{eventTypeOfPlace}"
+                    app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_meansOfTransportDetails"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.meansOfTransportDetails}"
+                    app:dependencyParentField="@{eventMeansOfTransport}"
+                    app:dependencyParentValue="@{MeansOfTransport.OTHER}" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 

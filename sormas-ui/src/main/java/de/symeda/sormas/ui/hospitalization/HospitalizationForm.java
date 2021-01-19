@@ -26,6 +26,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Label;
@@ -222,7 +223,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				true,
 				true,
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
-
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 		previousHospitalizationsField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 	}
@@ -245,6 +245,12 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		} else {
 			hospitalizedPreviouslyField.setComponentError(null);
 		}
+		if (Objects.nonNull(previousHospitalizationsField.getValue())) {
+			hospitalizedPreviouslyField.setEnabled(previousHospitalizationsField.isEmpty());
+		} else {
+			hospitalizedPreviouslyField.setEnabled(true);
+		}
+
 	}
 
 	@Override

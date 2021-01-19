@@ -34,6 +34,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -105,7 +106,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.UUID,
 				EventIndexDto.EVENT_STATUS,
 				EventIndexDto.EVENT_INVESTIGATION_STATUS,
-				createEventDateColumn(this, userLanguage),
+				createEventDateColumn(this),
 				DISEASE_SHORT,
 				EventIndexDto.EVENT_TITLE,
 				EventIndexDto.REGION,
@@ -141,20 +142,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
 	}
 
-	public static String createEventDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid, Language userLanguage) {
-		Column<EventIndexDto, String> eventDateColumn = grid.addColumn(event -> {
-			Date startDate = event.getStartDate();
-			Date endDate = event.getEndDate();
-
-			if (startDate == null) {
-				return "";
-			} else if (endDate == null) {
-				return DateHelper.formatLocalDate(startDate, userLanguage);
-			} else {
-				return String
-					.format("%s - %s", DateHelper.formatLocalDate(startDate, userLanguage), DateHelper.formatLocalDate(endDate, userLanguage));
-			}
-		});
+	public static String createEventDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid) {
+		Column<EventIndexDto, String> eventDateColumn =
+			grid.addColumn(event -> EventHelper.buildEventDateString(event.getStartDate(), event.getEndDate()));
 		eventDateColumn.setId(EVENT_DATE);
 		eventDateColumn.setSortProperty(EventDto.START_DATE);
 		eventDateColumn.setSortable(true);

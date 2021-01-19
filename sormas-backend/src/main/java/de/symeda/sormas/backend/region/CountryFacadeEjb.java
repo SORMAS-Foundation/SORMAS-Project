@@ -62,6 +62,11 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
+	public CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities) {
+		return countryService.getByIsoCode(isoCode, includeArchivedEntities).map(this::toDto).orElse(null);
+	}
+
+	@Override
 	public List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Country> cq = cb.createQuery(Country.class);
@@ -140,7 +145,7 @@ public class CountryFacadeEjb implements CountryFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
 		}
 
-		country = fillOrBuildEntity(dto, country);
+		country = fillOrBuildEntity(dto, country, true);
 		countryService.ensurePersisted(country);
 		return country.getUuid();
 	}
@@ -167,7 +172,20 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new CountryReferenceDto(entity.getUuid(), I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()));
+		return new CountryReferenceDto(
+			entity.getUuid(),
+			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
+			entity.getIsoCode());
+	}
+
+	public static CountryReferenceDto toReferenceDto(CountryDto entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new CountryReferenceDto(
+			entity.getUuid(),
+			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
+			entity.getIsoCode());
 	}
 
 	public CountryDto toDto(Country entity) {
@@ -207,14 +225,14 @@ public class CountryFacadeEjb implements CountryFacade {
 		return dto;
 	}
 
-	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target) {
+	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new Country();
 			target.setUuid(source.getUuid());
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());

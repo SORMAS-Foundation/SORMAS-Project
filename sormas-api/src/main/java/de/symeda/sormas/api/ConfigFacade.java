@@ -85,6 +85,8 @@ public interface ConfigFacade {
 
 	int getDaysAfterEventGetsArchived();
 
+	int getDaysAfterSystemEventGetsDeleted();
+
 	GeoLatLon getCountryCenter();
 
 	int getMapZoom();
@@ -115,4 +117,5 @@ public interface ConfigFacade {
 
 	boolean isSmsServiceSetUp();
 
+	String getDemisJndiName();
 }

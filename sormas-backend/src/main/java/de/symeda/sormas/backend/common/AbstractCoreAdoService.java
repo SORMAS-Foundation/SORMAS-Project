@@ -11,7 +11,7 @@ import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractAdoService<ADO> {
+public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AdoServiceWithUserFilter<ADO> {
 
 	public static final int NR_OF_LAST_PHONE_DIGITS_TO_SEARCH = 6;
 
@@ -56,6 +56,6 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		for (int i = 0; i < joinFields.length; i++) {
 			parent = parent.join(joinFields[i], JoinType.LEFT);
 		}
-		return greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
+		return CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
 }

@@ -25,14 +25,11 @@ import java.io.Serializable;
  * @author Oliver Milke
  * @since 12.11.2015
  */
-public class UserId implements Serializable {
+public final class UserId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String name;
-
-	public UserId() {
-	}
+	private final String name;
 
 	public UserId(String name) {
 		this.name = name;
@@ -40,9 +37,5 @@ public class UserId implements Serializable {
 
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 }

@@ -54,10 +54,12 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.labmessage.EventParticipantSimilarityCriteria;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -203,7 +205,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		validate(dto);
 
-		EventParticipant entity = fromDto(dto);
+		EventParticipant entity = fromDto(dto, true);
 		eventParticipantService.ensurePersisted(entity);
 
 		return convertToDto(entity, pseudonymizer);
@@ -461,6 +463,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 						int count = 0;
 						for (Sample sample : eventParticipantSamples) {
 							EmbeddedSampleExportDto sampleDto = new EmbeddedSampleExportDto(
+								sample.getUuid(),
 								sample.getSampleDateTime(),
 								sample.getLab() != null
 									? FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails())
@@ -483,6 +486,76 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		return eventParticipantResultList;
+	}
+
+	@Override
+	public List<SimilarEventParticipantDto> getSimilarEventParticipants(EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria) {
+//		final CriteriaBuilder cb = em.getCriteriaBuilder();
+//		final CriteriaQuery<SimilarEventParticipantDto> cq = cb.createQuery(SimilarEventParticipantDto.class);
+//		final Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
+//
+//		ContactJoins joins = new ContactJoins(eventParticipantRoot);
+//
+//		cq.multiselect(
+//			Stream
+//				.concat(
+//					Stream.of(
+//						joins.getPerson().get(Person.FIRST_NAME),
+//						joins.getPerson().get(Person.LAST_NAME),
+//						eventParticipantRoot.get(Contact.UUID),
+//						joins.getCaze().get(Case.UUID),
+//						joins.getCasePerson().get(Person.FIRST_NAME),
+//						joins.getCasePerson().get(Person.LAST_NAME),
+//						eventParticipantRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM),
+//						eventParticipantRoot.get(Contact.LAST_CONTACT_DATE),
+//						eventParticipantRoot.get(Contact.CONTACT_PROXIMITY),
+//						eventParticipantRoot.get(Contact.CONTACT_CLASSIFICATION),
+//						eventParticipantRoot.get(Contact.CONTACT_STATUS),
+//						eventParticipantRoot.get(Contact.FOLLOW_UP_STATUS)),
+//					listCriteriaBuilder.getJurisdictionSelections(joins))
+//				.collect(Collectors.toList()));
+//
+//		final Predicate defaultFilter = contactService.createDefaultFilter(cb, eventParticipantRoot);
+//		final Predicate userFilter = contactService.createUserFilter(cb, cq, eventParticipantRoot);
+//
+//		final PersonReferenceDto person = eventParticipantSimilarityCriteria.getPerson();
+//		final Predicate samePersonFilter = person != null ? cb.equal(joins.getPerson().get(Person.UUID), person.getUuid()) : null;
+//
+//		final Disease disease = eventParticipantSimilarityCriteria.getDisease();
+//		final Predicate diseaseFilter = disease != null ? cb.equal(eventParticipantRoot.get(Contact.DISEASE), disease) : null;
+//
+//		final CaseReferenceDto caze = eventParticipantSimilarityCriteria.getCaze();
+//		final Predicate cazeFilter = caze != null ? cb.equal(joins.getCaze().get(Case.UUID), caze.getUuid()) : null;
+//
+//		final Date reportDate = eventParticipantSimilarityCriteria.getReportDate();
+//		final Date lastContactDate = eventParticipantSimilarityCriteria.getLastContactDate();
+//		final Predicate recentContactsFilter = AbstractAdoService.and(
+//			cb,
+//			contactService.recentDateFilter(cb, reportDate, eventParticipantRoot.get(Contact.REPORT_DATE_TIME), 30),
+//			contactService.recentDateFilter(cb, lastContactDate, eventParticipantRoot.get(Contact.LAST_CONTACT_DATE), 30));
+//
+//		cq.where(AbstractAdoService.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, cazeFilter, recentContactsFilter));
+//
+//		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
+//
+//		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+//		pseudonymizer.pseudonymizeDtoCollection(
+//			SimilarContactDto.class,
+//			contacts,
+//			c -> eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(c.getJurisdiction()),
+//			(c, isInJurisdiction) -> {
+//				CaseReferenceDto contactCase = c.getCaze();
+//				if (contactCase != null) {
+//					pseudonymizer.pseudonymizeDto(
+//						CaseReferenceDto.class,
+//						contactCase,
+//						eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(c.getCaseJurisdiction()),
+//						null);
+//				}
+//			});
+//
+//		return contacts;
+		return new ArrayList<SimilarEventParticipantDto>();
 	}
 
 	@Override
@@ -576,7 +649,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			.orElse(null);
 	}
 
-	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
+	public EventParticipant fromDto(@NotNull EventParticipantDto source, boolean checkChangeDate) {
 
 		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -586,7 +659,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		if (source.getReportingUser() != null) {
 			target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));

@@ -55,18 +55,22 @@ public final class InfrastructureHelper {
 
 		items.add(new Item<>("", null));
 		items.addAll(
-				DatabaseHelper.getCountryDao()
-						.queryActiveForAll(Country.ISO_CODE, true)
-						.stream()
-						.map(c -> new Item<>(I18nProperties.getCountryName(c.getIsoCode(), c.getName()), c))
-						.sorted(Comparator.comparing(Item::getKey))
-						.collect(Collectors.toList()));
+			DatabaseHelper.getCountryDao()
+				.queryActiveForAll(Country.ISO_CODE, true)
+				.stream()
+				.map(c -> new Item<>(I18nProperties.getCountryName(c.getIsoCode(), c.getName()), c))
+				.sorted(Comparator.comparing(Item::getKey))
+				.collect(Collectors.toList()));
 
 		return items;
 	}
 
 	public static List<Item> loadRegions() {
 		return toItems(DatabaseHelper.getRegionDao().queryActiveForAll(Region.NAME, true));
+	}
+
+	public static List<Item> loadAllDistricts() {
+		return toItems(DatabaseHelper.getDistrictDao().queryActiveForAll());
 	}
 
 	public static List<Item> loadDistricts(Region region) {

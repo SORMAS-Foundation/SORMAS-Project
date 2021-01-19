@@ -11,7 +11,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
@@ -46,6 +45,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	private boolean skipChangeEvents;
 	private boolean hasFilter;
 
+	protected Button applyButton;
+	protected Button resetButton;
+
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
 
 		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(null, null), true);
@@ -76,7 +78,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	private void addApplyButton() {
-		Button applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, null, FILTER_ITEM_STYLE);
+		applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, null, FILTER_ITEM_STYLE);
 		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		getContent().addComponent(applyButton, APPLY_BUTTON_ID);
 	}
@@ -93,6 +95,10 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	protected abstract String[] getMainFilterLocators();
 
+	protected UserDto currentUserDto() {
+		return UserProvider.getCurrent().getUser();
+	}
+
 	protected String createMoreFiltersHtmlLayout() {
 		return "";
 	}
@@ -103,7 +109,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	protected void addDefaultButtons() {
 
-		Button resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
+		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
 		getContent().addComponent(resetButton, RESET_BUTTON_ID);
 
 		if (moreFiltersLayout != null) {

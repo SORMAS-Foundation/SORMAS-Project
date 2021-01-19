@@ -31,7 +31,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
@@ -122,7 +122,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		restorePseudonymizedDto(source, existingTreatment, existingDto);
 
-		Treatment entity = fromDto(source, existingTreatment);
+		Treatment entity = fromDto(source, existingTreatment, true);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -197,7 +197,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		Predicate filter = service.createUserFilter(cb, cq, treatment);
 		CaseJoins<Therapy> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
-		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
 
@@ -274,7 +274,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		return target;
 	}
 
-	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target) {
+	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target, boolean checkChangeDate) {
 		if (target == null) {
 			target = new Treatment();
 			target.setUuid(source.getUuid());
@@ -283,7 +283,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));
 		target.setTreatmentType(source.getTreatmentType());

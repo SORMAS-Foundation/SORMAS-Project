@@ -105,6 +105,7 @@
     <string name="action_select">Select</string>
     <string name="action_send">Send</string>
     <string name="action_set_cleared_to_no">Set Cleared to No</string>
+    <string name="action_set_cleared_to_unknown">Set Cleared to Unknown</string>
     <string name="action_show_classification_rules">View classification rules</string>
     <string name="action_submit_report">Submit Weekly Report</string>
     <string name="action_sync">Sync</string>

@@ -37,6 +37,8 @@ import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.POE_NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.REST_EXTERNAL_VISITS_USER;
+import static de.symeda.sormas.api.user.UserRole.SORMAS_TO_SORMAS_CLIENT;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
@@ -823,6 +825,10 @@ public enum UserRight {
 	PERFORM_BULK_OPERATIONS(
 			ADMIN
 	),
+	PERFORM_BULK_OPERATIONS_CASE_SAMPLES(
+			ADMIN,
+			ADMIN_SUPERVISOR
+	),
 	INFRASTRUCTURE_CREATE(
 			ADMIN
 	),
@@ -1110,8 +1116,13 @@ public enum UserRight {
 			CONTACT_OFFICER,
 			HOSPITAL_INFORMANT,
 			COMMUNITY_INFORMANT,
-			POE_INFORMANT),
-	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(),
+			POE_INFORMANT,
+			REST_EXTERNAL_VISITS_USER,
+            SORMAS_TO_SORMAS_CLIENT),
+	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(
+			REST_EXTERNAL_VISITS_USER,
+            SORMAS_TO_SORMAS_CLIENT
+	),
 	SEE_SENSITIVE_DATA_IN_JURISDICTION(
 			SURVEILLANCE_SUPERVISOR,
 			ADMIN_SUPERVISOR,
@@ -1127,8 +1138,13 @@ public enum UserRight {
 			HOSPITAL_INFORMANT,
 			COMMUNITY_INFORMANT,
 			POE_INFORMANT,
-			LAB_USER),
-	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(),
+			LAB_USER,
+			REST_EXTERNAL_VISITS_USER,
+            SORMAS_TO_SORMAS_CLIENT),
+	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(
+			REST_EXTERNAL_VISITS_USER,
+            SORMAS_TO_SORMAS_CLIENT
+	),
 	CAMPAIGN_VIEW(
       		ADMIN,
       		NATIONAL_USER,
@@ -1142,8 +1158,7 @@ public enum UserRight {
       		EVENT_OFFICER, 
 			POE_SUPERVISOR),
 	CAMPAIGN_EDIT(
-			ADMIN,
-			NATIONAL_USER),
+			ADMIN),
 	CAMPAIGN_ARCHIVE(
 			ADMIN,
 			NATIONAL_USER),
@@ -1206,6 +1221,10 @@ public enum UserRight {
 			NATIONAL_CLINICIAN,
 			POE_SUPERVISOR,
 			POE_NATIONAL_USER
+	),
+	LAB_MESSAGES(
+			NATIONAL_USER,
+			SURVEILLANCE_SUPERVISOR
 	);
 	//@formatter:on
 

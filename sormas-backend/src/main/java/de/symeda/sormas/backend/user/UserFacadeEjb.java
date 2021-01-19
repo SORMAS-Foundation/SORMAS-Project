@@ -53,7 +53,9 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
+import de.symeda.sormas.api.user.UserSyncResult;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -81,7 +83,6 @@ import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -192,7 +193,7 @@ public class UserFacadeEjb implements UserFacade {
 			}
 		}
 
-		User user = fromDto(dto);
+		User user = fromDto(dto, true);
 
 		try {
 			UserRole.validate(user.getUserRoles());
@@ -331,7 +332,7 @@ public class UserFacadeEjb implements UserFacade {
 		return dto;
 	}
 
-	private User fromDto(UserDto source) {
+	private User fromDto(UserDto source, boolean checkChangeDate) {
 
 		User target = userService.getByUuid(source.getUuid());
 		if (target == null) {
@@ -341,13 +342,13 @@ public class UserFacadeEjb implements UserFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setActive(source.isActive());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
 		target.setPhone(source.getPhone());
-		target.setAddress(locationFacade.fromDto(source.getAddress()));
+		target.setAddress(locationFacade.fromDto(source.getAddress(), checkChangeDate));
 
 		target.setUserName(source.getUserName());
 		target.setUserEmail(source.getUserEmail());
@@ -376,7 +377,7 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public String resetPassword(String uuid) {
 		String resetPassword = userService.resetPassword(uuid);
-		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid), resetPassword));
+		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
 		return resetPassword;
 	}
 
@@ -428,6 +429,24 @@ public class UserFacadeEjb implements UserFacade {
 			c.setContactOfficer(null);
 			contactService.ensurePersisted(c);
 		});
+	}
+
+	@Override
+	public UserSyncResult syncUser(String uuid) {
+		User user = userService.getByUuid(uuid);
+
+		UserSyncResult userSyncResult = new UserSyncResult();
+		userSyncResult.setSuccess(true);
+
+		UserUpdateEvent event = new UserUpdateEvent(user);
+		event.setExceptionCallback(exceptionMessage -> {
+			userSyncResult.setSuccess(false);
+			userSyncResult.setErrorMessage(exceptionMessage);
+		});
+
+		this.userUpdateEvent.fire(event);
+
+		return userSyncResult;
 	}
 
 	@LocalBean

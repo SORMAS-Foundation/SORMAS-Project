@@ -30,11 +30,13 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -64,6 +66,8 @@ public class Event extends PseudonymizableAdo {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
+	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS = "srcInstitutionalPartnerTypeDetails";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
@@ -74,6 +78,9 @@ public class Event extends PseudonymizableAdo {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
+
+	@DatabaseField
+	private String superordinateEventUuid;
 
 	@Deprecated
 	@DatabaseField
@@ -96,6 +103,9 @@ public class Event extends PseudonymizableAdo {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalId;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalToken;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String eventTitle;
@@ -123,6 +133,12 @@ public class Event extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private TypeOfPlace typeOfPlace;
+
+	@Enumerated(EnumType.STRING)
+	private MeansOfTransport meansOfTransport;
+
+	@Column(columnDefinition = "text")
+	private String meansOfTransportDetails;
 
 	@Enumerated(EnumType.STRING)
 	private EventSourceType srcType;
@@ -173,6 +189,11 @@ public class Event extends PseudonymizableAdo {
 	@DatabaseField
 	private Float reportLatLonAccuracy;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown transregionalOutbreak;
+	@Enumerated(EnumType.STRING)
+	private DiseaseTransmissionMode diseaseTransmissionMode;
+
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
@@ -219,6 +240,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public String getEventTitle() {
@@ -291,6 +320,22 @@ public class Event extends PseudonymizableAdo {
 
 	public void setTypeOfPlace(TypeOfPlace typeOfPlace) {
 		this.typeOfPlace = typeOfPlace;
+	}
+
+	public MeansOfTransport getMeansOfTransport() {
+		return meansOfTransport;
+	}
+
+	public void setMeansOfTransport(MeansOfTransport meansOfTransport) {
+		this.meansOfTransport = meansOfTransport;
+	}
+
+	public String getMeansOfTransportDetails() {
+		return meansOfTransportDetails;
+	}
+
+	public void setMeansOfTransportDetails(String meansOfTransportDetails) {
+		this.meansOfTransportDetails = meansOfTransportDetails;
 	}
 
 	public EventSourceType getSrcType() {
@@ -419,6 +464,30 @@ public class Event extends PseudonymizableAdo {
 
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public YesNoUnknown getTransregionalOutbreak() {
+		return transregionalOutbreak;
+	}
+
+	public void setTransregionalOutbreak(YesNoUnknown transregionalOutbreak) {
+		this.transregionalOutbreak = transregionalOutbreak;
+	}
+
+	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
+		return diseaseTransmissionMode;
+	}
+
+	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
+		this.diseaseTransmissionMode = diseaseTransmissionMode;
+	}
+
+	public String getSuperordinateEventUuid() {
+		return superordinateEventUuid;
+	}
+
+	public void setSuperordinateEventUuid(String superordinateEventUuid) {
+		this.superordinateEventUuid = superordinateEventUuid;
 	}
 
 	@Override

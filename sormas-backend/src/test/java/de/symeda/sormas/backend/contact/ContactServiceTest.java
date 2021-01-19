@@ -11,11 +11,11 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
-import de.symeda.sormas.api.VisitOrigin;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;

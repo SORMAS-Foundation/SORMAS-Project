@@ -68,9 +68,9 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.region.District;
@@ -168,7 +168,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		Collection<Disease> diseases) {
 		Join<Contact, Case> caze = root.join(Contact.CAZE, JoinType.LEFT);
 
-		return AbstractAdoService.and(
+		return CriteriaBuilderHelper.and(
 			cb,
 			contactService.createUserFilter(cb, cq, root),
 			contactService.createActiveContactsFilter(cb, root),
@@ -402,10 +402,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 
 		String poolName = doc.selectFirst("jdbc-resource[jndi-name=\"" + jndiName + "\"]").attr("pool-name");
 
-		Map<String, String> dbProperties = doc.select("jdbc-connection-pool[name=\"" + poolName + "\"] > property")
+		return doc.select("jdbc-connection-pool[name=\"" + poolName + "\"] > property")
 			.stream()
 			.collect(Collectors.toMap(e -> e.attr("name"), e -> e.attr("value")));
-		return dbProperties;
 	}
 
 	@LocalBean

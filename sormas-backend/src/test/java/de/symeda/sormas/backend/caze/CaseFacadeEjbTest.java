@@ -36,8 +36,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.VisitOrigin;
-import de.symeda.sormas.api.messaging.MessageType;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +44,7 @@ import org.junit.rules.ExpectedException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -54,6 +54,7 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -72,6 +73,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -158,13 +160,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
-				user.toReference(),
-				cazePerson.toReference(),
-				Disease.EVD,
-				CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING,
-				new Date(),
-				rdcf);
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 
 		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 
@@ -500,16 +502,19 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.getEpiData().getExposures().add(exposure);
 		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
-
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
 		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		creator.createSample(caze.toReference(), cal.getTime(), cal.getTime(), user.toReference(), SampleMaterial.CRUST, rdcf.facility);
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_MANAGEMENT, 0, 100, null, Language.EN);
+		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 
 		// List should have one entry
 		assertEquals(1, results.size());
 
+		assertEquals(true, results.get(0).getSampleDateTime2().after(results.get(0).getSampleDateTime3()));
 		// Make sure that everything that is added retrospectively (symptoms, sample
 		// dates, lab results, address, travel history) is present
 		CaseExportDto exportDto = results.get(0);
@@ -1282,6 +1287,113 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		List<CaseIndexDto> indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
 		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
+	}
+
+	@Test
+	public void testGetDuplicates() {
+		RDCF rdcf = creator.createRDCF();
+
+		//case and person matching for asserts
+		PersonDto person = creator.createPerson("Fname", "Lname", (p) -> {
+			p.setBirthdateDD(12);
+			p.setBirthdateMM(3);
+			p.setBirthdateYYYY(1968);
+		});
+
+		CaseDataDto caze = creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(person.toReference());
+			c.setExternalID("test-ext-id");
+			c.setExternalToken("test-ext-token");
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setDistrict(rdcf.district);
+			c.setReportDate(new Date());
+		});
+
+		// case and person matching for some asserts
+		PersonDto person2 = creator.createPerson("Fname", "Lname", (p) -> {
+			p.setBirthdateMM(3);
+			p.setBirthdateYYYY(1968);
+		});
+		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(person2.toReference());
+			c.setDisease(Disease.CORONAVIRUS);
+		});
+
+		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(creator.createPerson().toReference());
+			c.setDisease(Disease.CHOLERA);
+		});
+
+		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(person.toReference());
+			c.setDisease(Disease.CHOLERA);
+		});
+
+		CasePersonDto casePerson = new CasePersonDto();
+		PersonDto duplicatePerson = PersonDto.build();
+		CaseDataDto duplicateCaze = CaseDataDto.build(duplicatePerson.toReference(), Disease.CORONAVIRUS);
+		duplicateCaze.setDistrict(rdcf.district);
+		duplicateCaze.setReportDate(new Date());
+
+		casePerson.setCaze(duplicateCaze);
+		casePerson.setPerson(duplicatePerson);
+
+		List<CasePersonDto> duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(0));
+
+		// match by external ID
+		duplicateCaze.setExternalID("test-ext-id");
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(1));
+
+		// match by external ID case insensitive + trim
+		duplicateCaze.setExternalID(" test-EXT-id ");
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(1));
+
+		// match by external token
+		duplicateCaze.setExternalID(null);
+		duplicateCaze.setExternalToken(caze.getExternalToken());
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(1));
+
+		// match by external token case insensitive + trim
+		duplicateCaze.setExternalToken(" Test-ext-TOKEN ");
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(1));
+
+		// match by first name and last name
+		duplicateCaze.setExternalToken(null);
+		duplicatePerson.setFirstName("Fname");
+		duplicatePerson.setLastName("Lname");
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(2));
+
+		// match by name and birth day should match also the one with missing birth day
+		duplicatePerson.setBirthdateDD(12);
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(2));
+
+		// match by name and birth day / month should match also the one with missing birth day
+		duplicatePerson.setBirthdateMM(3);
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(2));
+
+		// match by name and birth day / month / year should match also the one with missing birth day
+		duplicatePerson.setBirthdateYYYY(1968);
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(2));
+
+		// match by name and birth month / year
+		duplicatePerson.setBirthdateDD(null);
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(2));
+
+		// case insensitive name
+		duplicatePerson.setFirstName(" fnamE");
+		duplicatePerson.setLastName("lName ");
+		duplicates = getCaseFacade().getDuplicates(casePerson);
+		MatcherAssert.assertThat(duplicates, hasSize(2));
 	}
 
 //	@Test

@@ -14,6 +14,8 @@ public interface CountryFacade {
 
 	List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
 
+	CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities);
+
 	List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(CountryCriteria criteria);

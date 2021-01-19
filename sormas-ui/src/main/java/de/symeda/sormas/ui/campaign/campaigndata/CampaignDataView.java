@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import javax.naming.NamingException;
 
+import de.symeda.sormas.api.user.UserDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -270,9 +271,13 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	public CampaignFormDataFilterForm createFilterBar() {
+		final UserDto user = UserProvider.getCurrent().getUser();
+		criteria.setRegion(user.getRegion());
+		criteria.setDistrict(user.getDistrict());
+		criteria.setCommunity(user.getCommunity());
 		filterForm = new CampaignFormDataFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
+			if (!filterForm.hasFilter() && campaignCombo == null) {
 				navigateTo(null);
 			}
 		});

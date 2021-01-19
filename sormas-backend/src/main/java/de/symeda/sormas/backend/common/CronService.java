@@ -25,6 +25,9 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +37,11 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
+import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 
 @Singleton
@@ -65,6 +68,10 @@ public class CronService {
 	private EventFacadeEjbLocal eventFacade;
 	@EJB
 	private DocumentFacadeEjbLocal documentFacade;
+	@EJB
+	private SystemEventFacadeEjbLocal systemEventFacade;
+	@EJB
+	private LabMessageFacadeEjbLocal labMessageFacade;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
@@ -138,4 +145,20 @@ public class CronService {
 	public void cleanupDeletedDocuments() {
 		documentFacade.cleanupDeletedDocuments();
 	}
+
+	@Schedule(hour = "1", minute = "30", second = "0", persistent = false)
+	public void deleteSystemEvents() {
+		int daysAfterSystemEventGetsDeleted = configFacade.getDaysAfterSystemEventGetsDeleted();
+		if (daysAfterSystemEventGetsDeleted >= 1) {
+			systemEventFacade.deleteAllDeletableSystemEvents(daysAfterSystemEventGetsDeleted);
+		}
+	}
+
+	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
+	public void fetchLabMessages() {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
+			labMessageFacade.fetchExternalLabMessages();
+		}
+	}
+
 }

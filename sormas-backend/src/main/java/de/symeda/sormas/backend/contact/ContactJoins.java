@@ -75,6 +75,8 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Person, Country> personBirthCountry;
 	private Join<Person, Country> personCitizenship;
 
+	private Join<Contact, District> reportingDistrict;
+
 	public ContactJoins(Root<Contact> contact) {
 		super(contact);
 
@@ -327,5 +329,13 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	public void setPersonCitizenship(Join<Person, Country> personCitizenship) {
 		this.personCitizenship = personCitizenship;
+	}
+
+	public Join<Contact, District> getReportingDistrict() {
+		return getOrCreate(reportingDistrict, Contact.REPORTING_DISTRICT, JoinType.LEFT, this::setReportingDistrict);
+	}
+
+	private void setReportingDistrict(Join<Contact, District> reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 }

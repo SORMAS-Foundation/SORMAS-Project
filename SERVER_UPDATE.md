@@ -48,4 +48,29 @@ These are the default users for most user roles, intended to be used on developm
 ### Mobile app users
 **Surveillance Officer:** SurvOff  
 **Hospital Informant:** HospInf  
-**Point of Entry Informant:** PoeInf  
+**Point of Entry Informant:** PoeInf
+
+# Updating Keycloak
+
+## Standalone installation
+
+Upgrading from Keycloak 11 to 12 following the steps from here https://www.keycloak.org/docs/latest/upgrading/#_upgrading
+
+1. Stop the old server and make sure to remove any open connections to the DB
+2. Backup the DB *(once the upgrade is done the old version cannot be used with the new DB version)*
+3. Backup the old installation
+4. Remove `${OLD_KEYCLOAK_HOME}/standalone/data/tx-object-store/`
+5. Download the new Keycloak installation from https://www.keycloak.org/downloads
+6. Copy the `${NEW_KEYCLOAK_HOME}/standalone/` directory from the previous installation over the directory in the new installation
+7. Copy the postgres module from `${OLD_KEYCLOAK_HOME}/modules/system/layers/keycloak/org/` over to the new installation directory
+8. Copy the SORMAS themes from `{OLD_KEYCLOAK_HOME}/themes/` over to the new installation directory
+9. While the new installation is stopped, run `${NEW_KEYCLOAK_HOME}/bin/jboss-cli.sh ----file=${NEW_KEYCLOAK_HOME}/bin/migrate-standalone.cli` *(`.bat` for Windows)*
+10. Start the new Keycloak installation from `${NEW_KEYCLOAK_HOME}/bin/standalone.sh` *(`.bat` for Windows)*
+
+## Docker installation
+
+The docker installation is automatically upgraded to the latest version specified in the Dockerfile.
+
+**Prerequisites:** Make sure the DB is backed up, because once the upgrade is done the new DB won't be usable with the old version of Keycloak.
+
+For more info see the [Keycloak Docker Documentation](https://github.com/hzi-braunschweig/SORMAS-Docker/blob/development/keycloak/README.md).

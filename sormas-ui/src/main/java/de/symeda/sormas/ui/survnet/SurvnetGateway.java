@@ -54,7 +54,7 @@ public class SurvnetGateway {
 		targetLayout.addComponent(layout, SURVNET_GATEWAY_LOC);
 	}
 
-	private static void sendToSurvnet(List<String> caseUuids) {
+	public static void sendToSurvnet(List<String> caseUuids) {
 
 		int statusCode = FacadeProvider.getSurvnetGatewayFacade().sendCases(caseUuids);
 

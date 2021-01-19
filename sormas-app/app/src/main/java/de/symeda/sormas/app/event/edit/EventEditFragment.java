@@ -21,11 +21,13 @@ import java.util.List;
 
 import android.view.View;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
@@ -56,6 +58,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> typeOfPlaceList;
 	private List<Item> srcTypeList;
 	private List<Item> srcInstitutionalPartnerTypeList;
+	private List<Item> meansOfTransportList;
+	private List<Item> diseaseTransmissionModeList;
 	private boolean isMultiDayEvent;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
@@ -87,6 +91,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
 		locationDialog.setRegionAndDistrictRequired(true);
+		locationDialog.setFacilityFieldsVisible(record.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
 		locationDialog.setPositiveCallback(() -> {
 			try {
 				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
@@ -123,6 +128,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true);
 		srcTypeList = DataUtils.getEnumItems(EventSourceType.class, true);
 		srcInstitutionalPartnerTypeList = DataUtils.getEnumItems(InstitutionalPartnerType.class, true);
+		meansOfTransportList = DataUtils.getEnumItems(MeansOfTransport.class, true);
+		diseaseTransmissionModeList = DataUtils.getEnumItems(DiseaseTransmissionMode.class, true);
 	}
 
 	@Override
@@ -144,6 +151,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventTypeOfPlace.initializeSpinner(typeOfPlaceList);
 		contentBinding.eventSrcType.initializeSpinner(srcTypeList);
 		contentBinding.eventSrcInstitutionalPartnerType.initializeSpinner(srcInstitutionalPartnerTypeList);
+		contentBinding.eventMeansOfTransport.initializeSpinner(meansOfTransportList);
+		contentBinding.eventDiseaseTransmissionMode.initializeSpinner(diseaseTransmissionModeList);
 
 		// Initialize ControlDateFields
 		contentBinding.eventStartDate.initializeDateField(getFragmentManager());

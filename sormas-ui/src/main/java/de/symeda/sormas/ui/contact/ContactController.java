@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -72,10 +73,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -197,8 +200,7 @@ public class ContactController {
 			contact.setPerson(caze.getPerson());
 		}
 
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		contact.setReportingUser(userReference);
+		setDefaults(contact);
 
 		return contact;
 	}
@@ -206,10 +208,15 @@ public class ContactController {
 	private ContactDto createNewContact(EventParticipantDto eventParticipant) {
 		ContactDto contact = ContactDto.build(eventParticipant);
 
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		contact.setReportingUser(userReference);
+		setDefaults(contact);
 
 		return contact;
+	}
+
+	private void setDefaults(ContactDto contact) {
+		UserDto user = UserProvider.getCurrent().getUser();
+		contact.setReportingUser(user.toReference());
+		contact.setReportingDistrict(user.getDistrict());
 	}
 
 	private ContactDto createNewContact(EventParticipantDto eventParticipant, Disease disease) {
@@ -305,7 +312,7 @@ public class ContactController {
 										}
 									});
 							}
-						});
+						}, true);
 				}
 			}
 		});
@@ -802,7 +809,33 @@ public class ContactController {
 		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		titleLayout.addComponent(classificationLabel);
 
-		Label contactLabel = new Label(contact.toReference().getCaptionAlwaysWithUuid());
+		String shortUuid = DataHelper.getShortUuid(contact.getUuid());
+		String contactPersonFullName = contact.getPerson().getCaption();
+		StringBuilder contactLabelSb = new StringBuilder();
+		if (StringUtils.isNotBlank(contactPersonFullName)) {
+			contactLabelSb.append(contactPersonFullName);
+
+			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			if (contactPerson.getBirthdateDD() != null && contactPerson.getBirthdateMM() != null && contactPerson.getBirthdateYYYY() != null) {
+				contactLabelSb.append(" (* ")
+					.append(
+						PersonHelper.formatBirthdate(
+							contactPerson.getBirthdateDD(),
+							contactPerson.getBirthdateMM(),
+							contactPerson.getBirthdateYYYY(),
+							I18nProperties.getUserLanguage()))
+					.append(")");
+			}
+
+			if (contact.getCaze() != null && (contact.getCaze().getFirstName() != null || contact.getCaze().getLastName() != null)) {
+				contactLabelSb.append(" ")
+					.append(I18nProperties.getString(Strings.toCase))
+					.append(" ")
+					.append(PersonDto.buildCaption(contact.getCaze().getFirstName(), contact.getCaze().getLastName()));
+			}
+		}
+		contactLabelSb.append(contactLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		Label contactLabel = new Label(contactLabelSb.toString());
 		contactLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponent(contactLabel);
 

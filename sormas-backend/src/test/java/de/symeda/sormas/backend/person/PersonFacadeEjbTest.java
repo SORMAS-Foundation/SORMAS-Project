@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.person.JournalPersonDto;
-import de.symeda.sormas.api.person.PersonFollowUpEndDto;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -237,5 +237,35 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(person.getBirthdateMM(), exportPerson.getBirthdateMM());
 		assertEquals(person.getBirthdateDD(), exportPerson.getBirthdateDD());
 		assertEquals(contact2.getFollowUpUntil(), exportPerson.getLatestFollowUpEndDate());
+	}
+
+	@Test
+	public void testGetPersonsAfter() {
+		UserDto natUser = useNationalUserLogin();
+
+		Date t1 = new Date();
+
+		PersonDto person1 = creator.createPerson();
+		person1 = getPersonFacade().savePerson(person1);
+		final ContactDto contact1 = creator.createContact(natUser.toReference(), person1.toReference());
+		getContactFacade().saveContact(contact1);
+
+		List<PersonDto> personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
+		assertEquals(1, personsAfterT1.size());
+		assertEquals(person1.getUuid(), personsAfterT1.get(0).getUuid());
+
+		Date t2 = new Date();
+
+		PersonDto person2 = creator.createPerson();
+		person2 = getPersonFacade().savePerson(person2);
+		final ContactDto contact2 = creator.createContact(natUser.toReference(), person2.toReference());
+		getContactFacade().saveContact(contact2);
+
+		List<PersonDto> personsAfterT2 = getPersonFacade().getPersonsAfter(t2);
+		assertEquals(1, personsAfterT2.size());
+		assertEquals(person2.getUuid(), personsAfterT2.get(0).getUuid());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
+		assertEquals(2, personsAfterT1.size());
 	}
 }
