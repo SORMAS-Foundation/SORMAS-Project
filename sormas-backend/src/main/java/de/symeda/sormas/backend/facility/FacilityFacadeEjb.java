@@ -210,6 +210,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			community.get(Community.NAME),
 			community.get(Community.EXTERNAL_ID),
 			root.get(Facility.CITY),
+			root.get(Facility.POSTAL_CODE),
+			root.get(Facility.STREET),
+			root.get(Facility.HOUSE_NUMBER),
+			root.get(Facility.ADDITIONAL_INFORMATION),
+			root.get(Facility.AREA_TYPE),
 			root.get(Facility.LATITUDE),
 			root.get(Facility.LONGITUDE),
 			root.get(Facility.TYPE),
@@ -383,6 +388,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setCommunity(CommunityFacadeEjb.toReferenceDto(entity.getCommunity()));
 		dto.setCity(entity.getCity());
+		dto.setPostalCode(entity.getPostalCode());
+		dto.setStreet(entity.getStreet());
+		dto.setHouseNumber(entity.getHouseNumber());
+		dto.setAdditionalInformation(entity.getAdditionalInformation());
+		dto.setAreaType(entity.getAreaType());
 		dto.setLatitude(entity.getLatitude());
 		dto.setLongitude(entity.getLongitude());
 		dto.setArchived(entity.isArchived());
@@ -536,6 +546,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
 
 		target.setCity(source.getCity());
+		target.setPostalCode(source.getPostalCode());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAreaType(source.getAreaType());
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
 
