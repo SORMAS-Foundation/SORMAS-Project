@@ -183,8 +183,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
+		Join<Sample, Sample> referredJoin = from.join(Sample.REFERRED_TO, JoinType.LEFT);
 
-		cq.where(cb.equal(from.get(Sample.REFERRED_TO), getByUuid(sampleUuid)));
+		cq.where(cb.equal(referredJoin.get(AbstractDomainObject.UUID), sampleUuid));
 		try {
 			return em.createQuery(cq).getSingleResult();
 		} catch (NoResultException e) {
@@ -406,7 +407,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContact().getUuid()));
 		}
 		if (criteria.getEventParticipant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
 		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -414,16 +416,19 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 				filter,
 				cb.between(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(), criteria.getSampleReportDateTo()));
 		} else if (criteria.getSampleReportDateFrom() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
 		} else if (criteria.getSampleReportDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
 		}
 		if (criteria.getSpecimenCondition() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(joins.getCaze().get(Case.ARCHIVED), false), cb.isNull(joins.getCaze().get(Case.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(joins.getCaze().get(Case.ARCHIVED), false), cb.isNull(joins.getCaze().get(Case.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.ARCHIVED), true));
 			}

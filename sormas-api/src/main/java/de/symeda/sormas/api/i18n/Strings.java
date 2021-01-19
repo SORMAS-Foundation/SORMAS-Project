@@ -404,6 +404,7 @@ public interface Strings {
 	String headingPIAAccountCreation = "headingPIAAccountCreation";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
+	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
 	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
@@ -423,6 +424,7 @@ public interface Strings {
 	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
+	String headingShowLabMessage = "headingShowLabMessage";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
@@ -467,6 +469,7 @@ public interface Strings {
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
+	String infoCreateEntry = "infoCreateEntry";
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
@@ -530,12 +533,14 @@ public interface Strings {
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
 	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
+	String infoSelectOrCreateEntry = "infoSelectOrCreateEntry";
 	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
 	String infoSelectOrCreatePersonForCaseImport = "infoSelectOrCreatePersonForCaseImport";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
 	String infoSelectOrCreatePersonForEventParticipantImport = "infoSelectOrCreatePersonForEventParticipantImport";
+	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	String infoSpecificEventSearch = "infoSpecificEventSearch";

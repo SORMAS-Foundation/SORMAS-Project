@@ -28,6 +28,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -41,8 +42,10 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -66,6 +69,22 @@ public class SamplesView extends AbstractView {
 		sampleListComponent = new SampleGridComponent(getViewTitleLabel(), this);
 		setSizeFull();
 		addComponent(sampleListComponent);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+			OptionGroup samplesViewSwitcher = new OptionGroup();
+			samplesViewSwitcher.setId("samplesViewSwitcher");
+			CssStyles.style(samplesViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+			for (SamplesViewType type : SamplesViewType.values()) {
+				samplesViewSwitcher.addItem(type);
+				samplesViewSwitcher.setItemCaption(type, I18nProperties.getEnumCaption(type));
+			}
+
+			samplesViewSwitcher.setValue(SamplesViewType.SAMPLES);
+			samplesViewSwitcher.addValueChangeListener(e -> {
+				SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
+			});
+			addHeaderComponent(samplesViewSwitcher);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();

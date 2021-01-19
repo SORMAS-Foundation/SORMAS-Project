@@ -6266,5 +6266,29 @@ CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash
 
 INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
 
+-- 2020-12-03 Remove hospital from exposure type of places #3680
+UPDATE location
+SET facilitytype = 'HOSPITAL'
+FROM location AS l
+         INNER JOIN exposures ON exposures.location_id = l.id
+WHERE exposures.typeofplace = 'HOSPITAL'
+  AND l.facilitytype IS NULL;
 
+UPDATE exposures
+SET typeofplace = 'FACILITY'
+FROM exposures as e
+         INNER JOIN location ON location.id = e.location_id
+WHERE location.facilitytype IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680');
+
+-- 2020-12-21 Fix labmessage table #3486
+ALTER TABLE labmessage OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
+ALTER TABLE labmessage_history OWNER TO sormas_user;
+ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
+ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
 -- *** Insert new sql commands BEFORE this line ***
