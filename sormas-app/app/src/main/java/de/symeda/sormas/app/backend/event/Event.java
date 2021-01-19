@@ -79,7 +79,6 @@ public class Event extends PseudonymizableAdo {
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
-	public static final String SEAT_NUMBER = "seatNumber";
 	public static final String TRAVEL_DATE = "travelDate";
 
 	@DatabaseField
@@ -145,9 +144,6 @@ public class Event extends PseudonymizableAdo {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String connectionNumber;
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String seatNumber;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date travelDate;
@@ -508,14 +504,6 @@ public class Event extends PseudonymizableAdo {
 
 	public void setConnectionNumber(String connectionNumber) {
 		this.connectionNumber = connectionNumber;
-	}
-
-	public String getSeatNumber() {
-		return seatNumber;
-	}
-
-	public void setSeatNumber(String seatNumber) {
-		this.seatNumber = seatNumber;
 	}
 
 	public Date getTravelDate() {

@@ -234,27 +234,19 @@
                 app:maxLines="5"
                 app:value="@{data.eventLocation}" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_meansOfTransport"
-                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    style="@style/ControlSingleColumnStyle"
                     app:value="@{data.meansOfTransport}"
                     app:dependencyParentField="@{eventTypeOfPlace}"
                     app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_meansOfTransportDetails"
-                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    style="@style/ControlSingleColumnStyle"
                     app:value="@{data.meansOfTransportDetails}"
                     app:dependencyParentField="@{eventMeansOfTransport}"
                     app:dependencyParentValue="@{MeansOfTransport.OTHER}" />
-
-        </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -269,20 +261,14 @@
                 app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_seatNumber"
+                android:id="@+id/event_travelDate"
                 style="@style/ControlSecondOfTwoColumnsStyle"
-                app:value="@{data.seatNumber}"
+                app:value="@{data.travelDate}"
                 app:dependencyParentField="@{eventTypeOfPlace}"
                 app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
 
         </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_travelDate"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@{data.travelDate}"
-                app:dependencyParentField="@{eventTypeOfPlace}"
-                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 

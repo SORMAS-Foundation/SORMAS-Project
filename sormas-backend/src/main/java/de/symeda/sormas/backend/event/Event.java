@@ -81,7 +81,6 @@ public class Event extends CoreAdo {
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
-	public static final String SEAT_NUMBER = "seatNumber";
 	public static final String TRAVEL_DATE = "travelDate";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
@@ -129,7 +128,6 @@ public class Event extends CoreAdo {
 	private MeansOfTransport meansOfTransport;
 	private String meansOfTransportDetails;
 	private String connectionNumber;
-	private String seatNumber;
 	private Date travelDate;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
@@ -339,15 +337,6 @@ public class Event extends CoreAdo {
 
 	public void setConnectionNumber(String connectionNumber) {
 		this.connectionNumber = connectionNumber;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSeatNumber() {
-		return seatNumber;
-	}
-
-	public void setSeatNumber(String seatNumber) {
-		this.seatNumber = seatNumber;
 	}
 
 	public Date getTravelDate() {

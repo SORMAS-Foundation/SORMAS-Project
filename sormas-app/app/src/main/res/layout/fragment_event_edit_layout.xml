@@ -249,30 +249,21 @@
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
                 app:locationValue="@={data.eventLocation}" />
 
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/event_meansOfTransport"
-                style="@style/ControlFirstOfTwoColumnsStyle"
+                style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{eventTypeOfPlace}"
                 app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
                 app:softRequired="true"
                 app:value="@={data.meansOfTransport}" />
 
-
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/event_meansOfTransportDetails"
-                style="@style/ControlSecondOfTwoColumnsStyle"
+                style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{eventMeansOfTransport}"
                 app:dependencyParentValue="@{MeansOfTransport.OTHER}"
                 app:softRequired="true"
                 app:value="@={data.meansOfTransportDetails}" />
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -287,23 +278,16 @@
                 app:softRequired="true"
                 app:value="@={data.connectionNumber}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/event_seatNumber"
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/event_travelDate"
                 style="@style/ControlSecondOfTwoColumnsStyle"
                 app:dependencyParentField="@{eventTypeOfPlace}"
                 app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
                 app:softRequired="true"
-                app:value="@={data.seatNumber}" />
+                app:value="@={data.travelDate}" />
 
         </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlDateField
-                android:id="@+id/event_travelDate"
-                style="@style/ControlSingleColumnStyle"
-                app:dependencyParentField="@{eventTypeOfPlace}"
-                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
-                app:softRequired="true"
-                app:value="@={data.travelDate}" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 

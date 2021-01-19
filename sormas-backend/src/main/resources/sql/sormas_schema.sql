@@ -6165,8 +6165,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (299, 'Add index for
 -- 2021-01-05 Type of place details in events entities #2947
 ALTER TABLE events ADD COLUMN connectionNumber varchar(512);
 ALTER TABLE events_history ADD COLUMN connectionNumber varchar(512);
-ALTER TABLE events ADD COLUMN seatNumber varchar(512);
-ALTER TABLE events_history ADD COLUMN seatNumber varchar(512);
 ALTER TABLE events ADD COLUMN travelDate timestamp without time zone;
 ALTER TABLE events_history ADD COLUMN travelDate timestamp without time zone;
 
