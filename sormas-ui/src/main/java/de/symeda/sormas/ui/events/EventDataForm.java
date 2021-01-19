@@ -102,7 +102,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.TRANSREGIONAL_OUTBREAK, "") +
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
 			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) + 
-			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.SEAT_NUMBER, 4, EventDto.TRAVEL_DATE) +
+			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
@@ -199,7 +199,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		ComboBox meansOfTransport = addField(EventDto.MEANS_OF_TRANSPORT);
 		TextField connectionNumber = addField(EventDto.CONNECTION_NUMBER);
-		TextField seatNumber = addField(EventDto.SEAT_NUMBER);
 		DateField travelDate = addField(EventDto.TRAVEL_DATE);
 
 		FieldHelper.setVisibleWhen(
@@ -219,7 +218,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(EventDto.CONNECTION_NUMBER, EventDto.SEAT_NUMBER, EventDto.TRAVEL_DATE),
+			Arrays.asList(EventDto.CONNECTION_NUMBER, EventDto.TRAVEL_DATE),
 			EventDto.TYPE_OF_PLACE,
 			Collections.singletonList(TypeOfPlace.MEANS_OF_TRANSPORT),
 			true);
@@ -339,7 +338,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			meansOfTransport,
 			meansOfTransportDetails,
 			connectionNumber,
-			seatNumber,
 			travelDate,
 			surveillanceOfficerField,
 			srcType,

@@ -240,6 +240,8 @@
 
             </LinearLayout>
 
+
+
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
                 android:id="@+id/event_eventLocation"
                 style="@style/ControlSingleColumnStyle"
@@ -262,6 +264,30 @@
                 app:dependencyParentValue="@{MeansOfTransport.OTHER}"
                 app:softRequired="true"
                 app:value="@={data.meansOfTransportDetails}" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_connectionNumber"
+                style="@style/ControlFirstOfTwoColumnsStyle"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                app:softRequired="true"
+                app:value="@={data.connectionNumber}" />
+
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/event_travelDate"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}"
+                app:softRequired="true"
+                app:value="@={data.travelDate}" />
+
+        </LinearLayout>
+
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 

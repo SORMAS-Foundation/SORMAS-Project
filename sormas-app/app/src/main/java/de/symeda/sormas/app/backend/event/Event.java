@@ -78,6 +78,8 @@ public class Event extends PseudonymizableAdo {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
+	public static final String CONNECTION_NUMBER = "connectionNumber";
+	public static final String TRAVEL_DATE = "travelDate";
 
 	@DatabaseField
 	private String superordinateEventUuid;
@@ -139,6 +141,12 @@ public class Event extends PseudonymizableAdo {
 
 	@Column(columnDefinition = "text")
 	private String meansOfTransportDetails;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String connectionNumber;
+
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date travelDate;
 
 	@Enumerated(EnumType.STRING)
 	private EventSourceType srcType;
@@ -488,6 +496,22 @@ public class Event extends PseudonymizableAdo {
 
 	public void setSuperordinateEventUuid(String superordinateEventUuid) {
 		this.superordinateEventUuid = superordinateEventUuid;
+	}
+
+	public String getConnectionNumber() {
+		return connectionNumber;
+	}
+
+	public void setConnectionNumber(String connectionNumber) {
+		this.connectionNumber = connectionNumber;
+	}
+
+	public Date getTravelDate() {
+		return travelDate;
+	}
+
+	public void setTravelDate(Date travelDate) {
+		this.travelDate = travelDate;
 	}
 
 	@Override
