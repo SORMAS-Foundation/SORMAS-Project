@@ -316,6 +316,8 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.DEATH_COUNT:
 				case EventIndexDto.PARTICIPANT_COUNT:
 				case EventIndexDto.CASE_COUNT:
+				case EventIndexDto.CONTACT_COUNT:
+				case EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT:
 					// generated properties - sorting happens at the end of this method
 					expression = event.get(Event.REPORT_DATE_TIME);
 					break;
@@ -421,6 +423,12 @@ public class EventFacadeEjb implements EventFacade {
 					break;
 				case EventIndexDto.PARTICIPANT_COUNT:
 					comparator = Comparator.comparing(EventIndexDto::getParticipantCount);
+					break;
+				case EventIndexDto.CONTACT_COUNT:
+					comparator = Comparator.comparing(EventIndexDto::getContactCount);
+					break;
+				case EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT:
+					comparator = Comparator.comparing(EventIndexDto::getContactCountSourceInEvent);
 					break;
 				default:
 					break;

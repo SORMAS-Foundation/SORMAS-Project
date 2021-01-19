@@ -129,12 +129,6 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		setColumns(columnIds.toArray(new String[columnIds.size()]));
 
-		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
-		getColumn(EventIndexDto.CASE_COUNT).setSortable(false);
-		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
-		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
-		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
-
 		setContactCountMethod(false); // Count all contacts by default
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
