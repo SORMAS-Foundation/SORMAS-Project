@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.spi.QueryImplementor;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -117,6 +121,52 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
+
+	@Test
+	public void testGetCasesForDuplicateMerging() {
+
+		final Date today = new Date();
+		final Date threeDaysAgo = DateUtils.addDays(today, -3);
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			today,
+			rdcf);
+
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query.setParameter("uuid", caze.getUuid());
+		Case singleResult = (Case) query.getSingleResult();
+
+		singleResult.setCreationDate(new Timestamp(threeDaysAgo.getTime()));
+		singleResult.setReportDate(threeDaysAgo);
+		em.save(singleResult);
+
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person");
+		CaseDataDto case2 = creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(today, -3),
+			rdcf);
+
+		final List<CaseIndexDto[]> casesForDuplicateMergingToday =
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true);
+		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo =
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), true);
+		Assert.assertEquals(1, casesForDuplicateMergingToday.size());
+		Assert.assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
+	}
 
 	@Test
 	public void testDiseaseChangeUpdatesContacts() {
