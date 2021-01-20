@@ -105,6 +105,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			Arrays.asList(
 				EventIndexDto.UUID,
 				EventIndexDto.EVENT_STATUS,
+				EventIndexDto.RISK_LEVEL,
 				EventIndexDto.EVENT_INVESTIGATION_STATUS,
 				createEventDateColumn(this),
 				DISEASE_SHORT,

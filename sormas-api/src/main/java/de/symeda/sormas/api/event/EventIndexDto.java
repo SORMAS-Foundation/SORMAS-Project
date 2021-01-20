@@ -32,6 +32,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public static final String UUID = "uuid";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String CASE_COUNT = "caseCount";
@@ -54,6 +55,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	private String uuid;
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private long participantCount;
 	private long caseCount;
@@ -76,6 +78,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public EventIndexDto(
 		String uuid,
 		EventStatus eventStatus,
+		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
 		Disease disease,
 		String diseaseDetails,
@@ -104,6 +107,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
+		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
@@ -135,6 +139,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {

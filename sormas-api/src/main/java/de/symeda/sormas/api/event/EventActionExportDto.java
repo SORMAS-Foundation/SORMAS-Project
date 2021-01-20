@@ -37,6 +37,7 @@ public class EventActionExportDto implements Serializable {
 	private String eventDesc;
 	private String eventDate;
 	private EventStatus eventStatus;
+	private RiskLevel eventRiskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private ActionMeasure actionMeasure;
 	private String actionTitle;
@@ -53,6 +54,7 @@ public class EventActionExportDto implements Serializable {
 		Date eventStartDate,
 		Date eventEndDate,
 		EventStatus eventStatus,
+		RiskLevel eventRiskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
 		ActionMeasure actionMeasure,
 		String actionTitle,
@@ -72,6 +74,7 @@ public class EventActionExportDto implements Serializable {
 		this.eventDesc = eventDesc;
 		this.eventDate = EventHelper.buildEventDateString(eventStartDate, eventEndDate);
 		this.eventStatus = eventStatus;
+		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.actionMeasure = actionMeasure;
 		this.actionTitle = actionTitle;
@@ -110,41 +113,46 @@ public class EventActionExportDto implements Serializable {
 	}
 
 	@Order(5)
+	public RiskLevel getEventRiskLevel() {
+		return eventRiskLevel;
+	}
+
+	@Order(6)
 	public EventInvestigationStatus getEventInvestigationStatus() {
 		return eventInvestigationStatus;
 	}
 
-	@Order(6)
+	@Order(7)
 	public ActionMeasure getActionMeasure() {
 		return actionMeasure;
 	}
 
-	@Order(7)
+	@Order(8)
 	public String getActionTitle() {
 		return actionTitle;
 	}
 
-	@Order(8)
+	@Order(9)
 	public Date getActionCreationDate() {
 		return actionCreationDate;
 	}
 
-	@Order(9)
+	@Order(10)
 	public Date getActionChangeDate() {
 		return actionChangeDate;
 	}
 
-	@Order(10)
+	@Order(11)
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
 
-	@Order(11)
+	@Order(12)
 	public ActionPriority getActionPriority() {
 		return actionPriority;
 	}
 
-	@Order(12)
+	@Order(13)
 	public UserReferenceDto getActionLastModifiedBy() {
 		return actionLastModifiedBy;
 	}
