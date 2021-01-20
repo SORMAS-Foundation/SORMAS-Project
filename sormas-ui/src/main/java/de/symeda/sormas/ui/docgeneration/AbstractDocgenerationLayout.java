@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.docgeneration;
 
 import java.io.IOException;
@@ -34,6 +49,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 
 	protected final Button createButton;
 	protected final Button cancelButton;
+	protected ComboBox<String> templateSelector;
 	protected final VerticalLayout additionalVariablesComponent;
 	protected final VerticalLayout additionalParametersComponent;
 	protected FileDownloader fileDownloader;
@@ -62,9 +78,8 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.addComponents(cancelButton, createButton);
 
-		ComboBox<String> templateSelector = new ComboBox<>(captionTemplateSelector);
+		templateSelector = new ComboBox<>(captionTemplateSelector);
 		templateSelector.setWidth(100F, Unit.PERCENTAGE);
-		templateSelector.setItems(getAvailableTemplates());
 		templateSelector.addValueChangeListener(e -> {
 			String templateFile = e.getValue();
 			boolean isValidTemplateFile = StringUtils.isNotBlank(templateFile);
@@ -103,6 +118,10 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		addComponent(additionalVariablesComponent);
 		addComponent(buttonBar);
 		setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
+	}
+
+	protected void init() {
+		templateSelector.setItems(getAvailableTemplates());
 	}
 
 	private void showTextfields() {

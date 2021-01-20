@@ -1,8 +1,23 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.docgeneration;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.vaadin.server.Page;
@@ -17,6 +32,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -30,26 +46,30 @@ import de.symeda.sormas.ui.UserProvider;
 
 public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
-	private final ReferenceDto caseReferenceDto;
+	private final ReferenceDto referenceDto;
 
 	private ComboBox<SampleIndexDto> sampleSelector;
 	private ComboBox<PathogenTestDto> pathogenTestSelector;
 
 	public QuarantineOrderLayout(ReferenceDto referenceDto) {
 		super(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder));
-		this.caseReferenceDto = referenceDto;
+		this.referenceDto = referenceDto;
+		init();
 		createSampleSelector(referenceDto);
 	}
 
 	protected void createSampleSelector(ReferenceDto referenceDto) {
 		SampleCriteria sampleCriteria = new SampleCriteria();
-		if (CaseReferenceDto.class.isAssignableFrom(referenceDto.getClass())) {
+		if (referenceDto instanceof CaseReferenceDto) {
 			sampleCriteria.caze((CaseReferenceDto) referenceDto);
-		} else if (ContactReferenceDto.class.isAssignableFrom(referenceDto.getClass())) {
+		} else if (referenceDto instanceof ContactReferenceDto) {
 			sampleCriteria.contact((ContactReferenceDto) referenceDto);
+		} else if (referenceDto instanceof EventParticipantReferenceDto) {
+			sampleCriteria.eventParticipant((EventParticipantReferenceDto) referenceDto);
 		}
-		List<SampleIndexDto> samples =
-			FacadeProvider.getSampleFacade().getIndexList(sampleCriteria, 0, 20, Arrays.asList(new SortProperty("sampleDateTime", false)));
+
+		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade()
+			.getIndexList(sampleCriteria, 0, 20, Collections.singletonList(new SortProperty("sampleDateTime", false)));
 
 		pathogenTestSelector = new ComboBox<>(I18nProperties.getCaption(Captions.PathogenTest));
 		pathogenTestSelector.setWidth(100F, Unit.PERCENTAGE);
@@ -74,18 +94,18 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	@Override
 	protected List<String> getAvailableTemplates() {
-		return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates();
+		return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(referenceDto);
 	}
 
 	@Override
 	protected String generateFilename(String templateFile) {
-		String uuid = caseReferenceDto.getUuid();
+		String uuid = referenceDto.getUuid();
 		return uuid.substring(0, Math.min(5, uuid.length())) + "_" + templateFile;
 	}
 
 	@Override
 	protected DocumentVariables getDocumentVariables(String templateFile) throws IOException {
-		return FacadeProvider.getQuarantineOrderFacade().getDocumentVariables(templateFile);
+		return FacadeProvider.getQuarantineOrderFacade().getDocumentVariables(referenceDto, templateFile);
 	}
 
 	@Override
@@ -100,7 +120,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 				return new ByteArrayInputStream(
 					quarantineOrderFacade.getGeneratedDocument(
 						templateFile,
-						caseReferenceDto,
+						referenceDto,
 						userReference,
 						sampleReference,
 						pathogenTestReference,

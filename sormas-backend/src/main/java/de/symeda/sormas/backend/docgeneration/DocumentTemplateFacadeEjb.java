@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.docgeneration;
 
 import java.io.ByteArrayInputStream;
@@ -31,6 +46,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -42,16 +58,17 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
-import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import fr.opensagres.xdocreport.core.XDocReportException;
 
 @Stateless(name = "DocumentTemplateFacade")
@@ -60,34 +77,37 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	private static final Pattern BASENAME_PATTERN = Pattern.compile("^([^_.]+)([_.].*)?");
 
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	@EJB
-	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+	private PersonFacadeEjbLocal personFacade;
 
 	@EJB
-	private UserFacadeEjb.UserFacadeEjbLocal userFacade;
+	private UserFacadeEjbLocal userFacade;
 
 	@EJB
-	private RegionFacadeEjb.RegionFacadeEjbLocal regionFacade;
+	private RegionFacadeEjbLocal regionFacade;
 
 	@EJB
-	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacade;
+	private DistrictFacadeEjbLocal districtFacade;
 
 	@EJB
-	private CommunityFacadeEjb.CommunityFacadeEjbLocal communityFacade;
+	private CommunityFacadeEjbLocal communityFacade;
 
 	@EJB
-	private FacilityFacadeEjb.FacilityFacadeEjbLocal facilityFacade;
+	private FacilityFacadeEjbLocal facilityFacade;
 
 	@EJB
-	private PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal pointOfEntryFacade;
+	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 
 	@EJB
-	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+	private EventFacadeEjbLocal eventFacade;
 
 	@EJB
-	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
+	private SampleFacadeEjbLocal sampleFacade;
+
+	@EJB
+	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 
 	private TemplateEngine templateEngine = new TemplateEngine();
 
@@ -363,6 +383,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 					return pointOfEntryFacade.getByUuid(uuid);
 				} else if (EventReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return eventFacade.getEventByUuid(uuid);
+				} else if (EventParticipantReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
+					return eventParticipantFacade.getByUuid(uuid);
 				} else if (SampleReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return sampleFacade.getSampleByUuid(uuid);
 				}

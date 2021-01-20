@@ -1,24 +1,24 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.configuration.docgeneration;
 
 import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.EVENT_HANDOUT;
-import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER;
+import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_CASE;
+import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_CONTACT;
+import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
 import com.vaadin.icons.VaadinIcons;
@@ -50,10 +50,16 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 		try {
 			gridLayout = new VerticalLayout();
 
-			addTemplateSection(QUARANTINE_ORDER, Captions.DocumentTemplate_QuarantineOrder_templates);
+			addTemplateSection(QUARANTINE_ORDER_CASE, Captions.DocumentTemplate_QuarantineOrder_templates);
 
 			// TODO: I18N
-			addTemplateSection(EVENT_HANDOUT, "Event Handout Templates");
+			addTemplateSection(QUARANTINE_ORDER_CONTACT, "Isolations-/ Quarantänebescheid Vorlagen Kontakte");
+
+			// TODO: I18N
+			addTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT, "Isolations-/ Quarantänebescheid Vorlagen Ereignisse");
+
+			// TODO: I18N
+			addTemplateSection(EVENT_HANDOUT, "Ereignis-Formular Vorlagen");
 
 			gridLayout.setWidth(100, Unit.PERCENTAGE);
 			gridLayout.setMargin(true);

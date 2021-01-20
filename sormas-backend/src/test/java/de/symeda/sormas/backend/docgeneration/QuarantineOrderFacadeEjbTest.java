@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.docgeneration;
 
 import static org.junit.Assert.assertEquals;
@@ -22,9 +37,17 @@ import org.junit.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -48,6 +71,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	private QuarantineOrderFacade quarantineOrderFacadeEjb;
 	private CaseDataDto caseDataDto;
 	private ContactDto contactDto;
+	private EventParticipantDto eventParticipantDto;
 	private PersonDto personDto;
 	private UserDto userDto;
 
@@ -101,6 +125,11 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		contactDto.setQuarantineOrderedOfficialDocumentDate(DATE_FORMAT.parse("09/09/2020"));
 		getContactFacade().saveContact(contactDto);
 
+		EventDto eventDto = creator.createEvent(userDto.toReference());
+		eventDto.setEventTitle("An event");
+		getEventFacade().saveEvent(eventDto);
+		eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, "participated", userDto.toReference());
+
 		sampleDto = SampleDto.build(userDto.toReference(), caseDataDto.toReference());
 		sampleDto.setSampleDateTime(DATE_FORMAT.parse("11/09/2020"));
 		sampleDto.setSampleMaterial(SampleMaterial.NASAL_SWAB);
@@ -134,6 +163,11 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
+	public void generateQuarantineOrderEventParticipantTest() throws IOException {
+		generateQuarantineOrderTest(eventParticipantDto.toReference(), userDto.toReference(), null, null, "QuarantineEvent.cmp");
+	}
+
+	@Test
 	public void generateQuarantineOrderCustomNullReplacementTest() throws IOException {
 		ReferenceDto rootEntityReference = caseDataDto.toReference();
 
@@ -162,7 +196,8 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		PathogenTestReferenceDto pathogenTest,
 		String comparisonFile)
 		throws IOException {
-		DocumentVariables documentVariables = quarantineOrderFacadeEjb.getDocumentVariables("Quarantine.docx");
+
+		DocumentVariables documentVariables = quarantineOrderFacadeEjb.getDocumentVariables(rootEntityReference, "Quarantine.docx");
 		List<String> additionalVariables = documentVariables.getAdditionalVariables();
 		List<String> expectedVariables = Arrays.asList("extraremark1", "extra.remark2", "extra.remark.no3");
 		for (String additionaVariable : additionalVariables) {
@@ -170,9 +205,12 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		}
 		assertEquals(expectedVariables.size(), additionalVariables.size());
 
-		List<String> expectedUsedEntities = Arrays.asList("case", "user", "sample", "pathogenTest");
+		String rootEntityName = rootEntityReference instanceof CaseReferenceDto
+			? "case"
+			: rootEntityReference instanceof ContactReferenceDto ? "contact" : "eventparticipant";
+		List<String> expectedUsedEntities = Arrays.asList(rootEntityName, "user", "sample", "pathogenTest");
 		for (String usedEntity : expectedUsedEntities) {
-			assertTrue(documentVariables.isUsedEntity(usedEntity));
+			assertTrue("Used entity not detected: " + usedEntity, documentVariables.isUsedEntity(usedEntity));
 		}
 		assertEquals(expectedUsedEntities.size(), documentVariables.getUsedEntities().size());
 
@@ -190,7 +228,11 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		xwpfWordExtractor.close();
 
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/quarantine/" + comparisonFile), writer, "UTF-8");
+		IOUtils.copy(
+			getClass()
+				.getResourceAsStream("/docgeneration/" + getDocumentWorkflow(rootEntityReference).getTemplateDirectory() + "/" + comparisonFile),
+			writer,
+			"UTF-8");
 
 		String expected = writer.toString().replaceAll("\\r\\n?", "\n");
 		assertEquals(expected, docxText);
@@ -198,15 +240,27 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void getAvailableTemplatesTest() throws URISyntaxException {
-		List<String> availableTemplates = quarantineOrderFacadeEjb.getAvailableTemplates();
+		List<String> availableTemplates = quarantineOrderFacadeEjb.getAvailableTemplates(new CaseReferenceDto());
 		assertEquals(2, availableTemplates.size());
 		assertTrue(availableTemplates.contains("Quarantine.docx"));
 		assertTrue(availableTemplates.contains("FaultyTemplate.docx"));
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, "thisDirectoryDoesNotExist");
 
-		assertTrue(quarantineOrderFacadeEjb.getAvailableTemplates().isEmpty());
+		assertTrue(quarantineOrderFacadeEjb.getAvailableTemplates(new CaseReferenceDto()).isEmpty());
 
 		resetCustomPath();
+	}
+
+	private DocumentWorkflow getDocumentWorkflow(ReferenceDto reference) {
+		if (reference instanceof CaseReferenceDto) {
+			return DocumentWorkflow.QUARANTINE_ORDER_CASE;
+		} else if (reference instanceof ContactReferenceDto) {
+			return DocumentWorkflow.QUARANTINE_ORDER_CONTACT;
+		} else if (reference instanceof EventParticipantReferenceDto) {
+			return DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT;
+		} else {
+			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+		}
 	}
 }

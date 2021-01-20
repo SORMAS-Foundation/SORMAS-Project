@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.docgeneration;
 
 import java.io.IOException;
@@ -16,6 +31,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.docgeneneration.RootEntityName;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
@@ -24,14 +40,13 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
-
-	private static final DocumentWorkflow DOCUMENT_WORKFLOW = DocumentWorkflow.QUARANTINE_ORDER;
 
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
@@ -41,6 +56,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@EJB
 	private UserFacadeEjbLocal userFacade;
+
+	@EJB
+	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 
 	@EJB
 	private SampleFacadeEjbLocal sampleFacadeEjb;
@@ -66,7 +84,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		if (rootEntityReference instanceof CaseReferenceDto) {
 			entities.put(RootEntityName.ROOT_CASE, caseFacade.getCaseDataByUuid(rootEntityUuid));
 		} else if (rootEntityReference instanceof ContactReferenceDto) {
-			entities.put(RootEntityName.ROOT_CASE, contactFacade.getContactByUuid(rootEntityUuid));
+			entities.put(RootEntityName.ROOT_CONTACT, contactFacade.getContactByUuid(rootEntityUuid));
+		} else if (rootEntityReference instanceof EventParticipantReferenceDto) {
+			entities.put(RootEntityName.ROOT_EVENT_PARTICIPANT, eventParticipantFacade.getByUuid(rootEntityUuid));
 		} else {
 			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
 		}
@@ -83,16 +103,30 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 			entities.put(RootEntityName.ROOT_PATHOGEN_TEST, pathogenTestFacade.getByUuid(pathogenTestReference.getUuid()));
 		}
 
-		return documentTemplateFacade.generateDocumentDocxFromEntities(DOCUMENT_WORKFLOW, templateName, entities, extraProperties);
+		return documentTemplateFacade
+			.generateDocumentDocxFromEntities(getDocumentWorkflow(rootEntityReference), templateName, entities, extraProperties);
 	}
 
 	@Override
-	public List<String> getAvailableTemplates() {
-		return documentTemplateFacade.getAvailableTemplates(DOCUMENT_WORKFLOW);
+	public List<String> getAvailableTemplates(ReferenceDto referenceDto) {
+		return documentTemplateFacade.getAvailableTemplates(getDocumentWorkflow(referenceDto));
 	}
 
 	@Override
-	public DocumentVariables getDocumentVariables(String templateName) throws IOException {
-		return documentTemplateFacade.getDocumentVariables(DOCUMENT_WORKFLOW, templateName);
+	public DocumentVariables getDocumentVariables(ReferenceDto referenceDto, String templateName) throws IOException {
+		DocumentWorkflow documentWorkflow = getDocumentWorkflow(referenceDto);
+		return documentTemplateFacade.getDocumentVariables(documentWorkflow, templateName);
+	}
+
+	private DocumentWorkflow getDocumentWorkflow(ReferenceDto rootEntityReference) {
+		if (CaseReferenceDto.class.isAssignableFrom(rootEntityReference.getClass())) {
+			return DocumentWorkflow.QUARANTINE_ORDER_CASE;
+		} else if (ContactReferenceDto.class.isAssignableFrom(rootEntityReference.getClass())) {
+			return DocumentWorkflow.QUARANTINE_ORDER_CONTACT;
+		} else if (EventParticipantReferenceDto.class.isAssignableFrom(rootEntityReference.getClass())) {
+			return DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT;
+		} else {
+			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+		}
 	}
 }
