@@ -260,7 +260,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
 
-		district = fillOrBuildEntity(dto, district);
+		district = fillOrBuildEntity(dto, district, true);
 		districtService.ensurePersisted(district);
 	}
 
@@ -373,14 +373,14 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return dto;
 	}
 
-	private District fillOrBuildEntity(@NotNull DistrictDto source, District target) {
+	private District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new District();
 			target.setUuid(source.getUuid());
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());

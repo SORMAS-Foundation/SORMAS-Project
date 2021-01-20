@@ -13,7 +13,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
-import javax.transaction.TransactionScoped;
 import javax.transaction.Transactional;
 
 import de.symeda.sormas.backend.util.ModelConstants;

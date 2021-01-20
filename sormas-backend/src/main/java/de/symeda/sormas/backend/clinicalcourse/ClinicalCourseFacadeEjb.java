@@ -70,7 +70,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		return target;
 	}
 
-	public ClinicalCourse fromDto(@NotNull ClinicalCourseDto source) {
+	public ClinicalCourse fromDto(@NotNull ClinicalCourseDto source, boolean checkChangeDate) {
 
 		ClinicalCourse target = service.getByUuid(source.getUuid());
 
@@ -82,10 +82,10 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		if (source.getHealthConditions() != null) {
-			target.setHealthConditions(fromHealthConditionsDto(source.getHealthConditions()));
+			target.setHealthConditions(fromHealthConditionsDto(source.getHealthConditions(), checkChangeDate));
 		}
 
 		return target;
@@ -128,7 +128,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		return target;
 	}
 
-	public HealthConditions fromHealthConditionsDto(@NotNull HealthConditionsDto source) {
+	public HealthConditions fromHealthConditionsDto(@NotNull HealthConditionsDto source, boolean checkChangeDate) {
 
 		HealthConditions target = healthConditionsService.getByUuid(source.getUuid());
 
@@ -140,7 +140,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setAsplenia(source.getAsplenia());
 		target.setChronicHeartFailure(source.getChronicHeartFailure());

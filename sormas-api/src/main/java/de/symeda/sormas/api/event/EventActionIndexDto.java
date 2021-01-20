@@ -20,6 +20,7 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -65,6 +66,7 @@ public class EventActionIndexDto implements Serializable {
 		Date eventEndDate,
 		EventStatus eventStatus,
 		EventInvestigationStatus eventInvestigationStatus,
+		ActionMeasure actionMeasure,
 		String actionTitle,
 		Date actionCreationDate,
 		Date actionChangeDate,
@@ -83,7 +85,7 @@ public class EventActionIndexDto implements Serializable {
 		this.eventEndDate = eventEndDate;
 		this.eventStatus = eventStatus;
 		this.eventInvestigationStatus = eventInvestigationStatus;
-		this.actionTitle = actionTitle;
+		this.actionTitle = EventHelper.buildEventActionTitleString(actionMeasure, actionTitle);
 		this.actionCreationDate = actionCreationDate;
 		this.actionChangeDate = actionChangeDate;
 		this.actionStatus = actionStatus;

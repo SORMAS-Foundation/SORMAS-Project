@@ -40,6 +40,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -59,6 +60,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.facility.Facility;
@@ -163,35 +165,20 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Timestamp timestamp = DateHelper.toTimestampUpper(date);
 		Predicate dateFilter = cb.or(
-				CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventJoin.get(Event.START_DATE), timestamp),
-				CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventJoin.get(Event.END_DATE), timestamp));
+			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventJoin.get(Event.START_DATE), timestamp),
+			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventJoin.get(Event.END_DATE), timestamp));
 
 		Predicate surveillanceOfficerFilter = cb.and(
-				cb.isNotNull(eventJoin.get(Event.SURVEILLANCE_OFFICER)),
-				cb.not(cb.equal(eventJoin.get(Event.SURVEILLANCE_OFFICER), caze.getReportingUser())));
+			cb.isNotNull(eventJoin.get(Event.SURVEILLANCE_OFFICER)),
+			cb.not(cb.equal(eventJoin.get(Event.SURVEILLANCE_OFFICER), caze.getReportingUser())));
 
 		Predicate activeEventsFilter = createActiveEventsFilter(cb, eventJoin);
 
-		cq.where(
-				cb.and(
-						diseaseFilter,
-						personFilter,
-						dateFilter,
-						surveillanceOfficerFilter,
-						activeEventsFilter));
+		cq.where(cb.and(diseaseFilter, personFilter, dateFilter, surveillanceOfficerFilter, activeEventsFilter));
 		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
-		cq.multiselect(Arrays.asList(
-				eventJoin.get(Event.UUID),
-				eventJoin.get(Event.SURVEILLANCE_OFFICER)
-		));
+		cq.multiselect(Arrays.asList(eventJoin.get(Event.UUID), eventJoin.get(Event.SURVEILLANCE_OFFICER)));
 
-		return em.createQuery(cq)
-				.getResultList()
-				.stream()
-				.collect(Collectors.toMap(
-						objects -> (String) objects[0],
-						objects -> (User) objects[1]
-				));
+		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(objects -> (String) objects[0], objects -> (User) objects[1]));
 	}
 
 	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
@@ -552,17 +539,19 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateFrom())),
-				cb.and(
-					cb.isNotNull(from.get(Event.END_DATE)),
-					cb.lessThan(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
-					cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateFrom())));
+				cb.or(
+					cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
+					cb.and(
+						cb.isNotNull(from.get(Event.END_DATE)),
+						cb.lessThan(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
+						cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateFrom()))));
 		} else if (eventCriteria.getEventDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo()))),
-				cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateTo()));
+				cb.or(
+					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo())),
+					cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateTo())));
 		}
 		if (eventCriteria.getSurveillanceOfficer() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -614,6 +603,18 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb,
 				filter,
 				cb.equal(from.join(Event.EVENT_LOCATION).join(Location.FACILITY).get(Facility.UUID), eventCriteria.getFacility().getUuid()));
+		}
+		if (eventCriteria.getSuperordinateEvent() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(from.get(Event.SUPERORDINATE_EVENT).get(AbstractDomainObject.UUID), eventCriteria.getSuperordinateEvent().getUuid()));
+		}
+		if (CollectionUtils.isNotEmpty(eventCriteria.getExcludedUuids())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(from.get(AbstractDomainObject.UUID).in(eventCriteria.getExcludedUuids())));
+		}
+		if (Boolean.TRUE.equals(eventCriteria.getHasNoSuperordinateEvent())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Event.SUPERORDINATE_EVENT)));
 		}
 
 		return filter;

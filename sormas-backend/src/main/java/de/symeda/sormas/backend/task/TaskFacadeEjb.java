@@ -43,7 +43,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +73,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
@@ -136,7 +136,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private TaskJurisdictionChecker taskJurisdictionChecker;
 
-	public Task fromDto(TaskDto source) {
+	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -150,7 +150,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setAssigneeUser(userService.getByReferenceDto(source.getAssigneeUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
@@ -272,7 +272,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public TaskDto saveTask(TaskDto dto) {
 
-		Task ado = fromDto(dto);
+		Task ado = fromDto(dto, true);
 		taskService.ensurePersisted(ado);
 
 		// once we have to handle additional logic this should be moved to it's own function or even class 

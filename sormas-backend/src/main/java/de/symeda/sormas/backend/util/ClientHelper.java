@@ -18,11 +18,12 @@
 
 package de.symeda.sormas.backend.util;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-
-import javax.ws.rs.client.ClientBuilder;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.ws.rs.client.ClientBuilder;
+
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
 /**
  * Helper class for creating REST clients injects supported properties from system properties.

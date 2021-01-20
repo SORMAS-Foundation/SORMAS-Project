@@ -132,7 +132,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	@Override
 	public OutbreakDto saveOutbreak(OutbreakDto outbreakDto) {
 
-		Outbreak outbreak = fromDto(outbreakDto);
+		Outbreak outbreak = fromDto(outbreakDto, true);
 		outbreakService.ensurePersisted(outbreak);
 		return toDto(outbreak);
 	}
@@ -144,7 +144,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		outbreakService.delete(outbreak);
 	}
 
-	public Outbreak fromDto(OutbreakDto source) {
+	public Outbreak fromDto(OutbreakDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -158,7 +158,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());

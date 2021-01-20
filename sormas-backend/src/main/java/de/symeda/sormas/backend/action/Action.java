@@ -31,6 +31,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.action.ActionContext;
+import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -55,10 +56,12 @@ public class Action extends AbstractDomainObject {
 	public static final String STATUS_CHANGE_DATE = "statusChangeDate";
 	public static final String ACTION_CONTEXT = "actionContext";
 	public static final String ACTION_STATUS = "actionStatus";
+	public static final String ACTION_MEASURE = "actionMeasure";
 
 	private ActionContext actionContext;
 	private Event event;
 
+	private ActionMeasure actionMeasure;
 	private ActionPriority priority;
 	private Date date;
 	private ActionStatus actionStatus;
@@ -167,5 +170,14 @@ public class Action extends AbstractDomainObject {
 
 	public void setLastModifiedBy(User lastModifiedBy) {
 		this.lastModifiedBy = lastModifiedBy;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ActionMeasure getActionMeasure() {
+		return actionMeasure;
+	}
+
+	public void setActionMeasure(ActionMeasure actionMeasure) {
+		this.actionMeasure = actionMeasure;
 	}
 }

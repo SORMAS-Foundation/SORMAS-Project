@@ -145,7 +145,7 @@ public class CountryFacadeEjb implements CountryFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
 		}
 
-		country = fillOrBuildEntity(dto, country);
+		country = fillOrBuildEntity(dto, country, true);
 		countryService.ensurePersisted(country);
 		return country.getUuid();
 	}
@@ -225,14 +225,14 @@ public class CountryFacadeEjb implements CountryFacade {
 		return dto;
 	}
 
-	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target) {
+	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
 
 		if (target == null) {
 			target = new Country();
 			target.setUuid(source.getUuid());
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());

@@ -56,7 +56,8 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 					loc(ActionDto.ACTION_CONTEXT),
 					locs(ActionDto.EVENT)) +
 			fluidRowLocs(ActionDto.DATE, ActionDto.PRIORITY) +
-			loc(CREATING_LABEL_LOC) +
+			loc(CREATING_LABEL_LOC) + 
+			fluidRowLocs(ActionDto.ACTION_MEASURE) +
 			fluidRowLocs(ActionDto.TITLE) +
 			fluidRowLocs(ActionDto.DESCRIPTION) +
 			loc(LAST_MODIFIED_BY_LABEL_LOC) +
@@ -95,6 +96,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		// XXX: set visible when other contexts will be managed
 		actionContext.setVisible(false);
 
+		addField(ActionDto.ACTION_MEASURE, TextField.class);
 		TextField title = addField(ActionDto.TITLE, TextField.class);
 		title.addStyleName(SOFT_REQUIRED);
 		RichTextArea description = addField(ActionDto.DESCRIPTION, RichTextArea.class);

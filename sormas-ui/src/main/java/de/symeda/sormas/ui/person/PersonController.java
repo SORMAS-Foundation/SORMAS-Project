@@ -54,7 +54,7 @@ public class PersonController {
 
 	}
 
-	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer) {
+	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
 		PersonSelectionField personSelect = new PersonSelectionField(person, infoText);
 		personSelect.setWidth(1024, Unit.PIXELS);
 
@@ -84,9 +84,11 @@ public class PersonController {
 
 			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
 			personSelect.selectBestMatch();
-		} else {
+		} else if (saveNewPerson) {
 			PersonDto savedPerson = personFacade.savePerson(person);
 			resultConsumer.accept(savedPerson.toReference());
+		} else {
+			resultConsumer.accept(person.toReference());
 		}
 	}
 

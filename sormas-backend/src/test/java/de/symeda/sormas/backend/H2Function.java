@@ -37,4 +37,8 @@ public class H2Function {
 	public static double set_limit(Double limit) {
 		return limit;
 	}
+
+	public static Date date(Date timestamp) {
+		return DateHelper.getStartOfDay(timestamp);
+	}
 }

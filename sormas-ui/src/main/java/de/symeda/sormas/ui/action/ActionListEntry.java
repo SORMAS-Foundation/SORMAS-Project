@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.action;
 
 import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.vaadin.icons.VaadinIcons;
@@ -31,8 +33,10 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.action.ActionDto;
+import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
+import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -63,9 +67,17 @@ public class ActionListEntry extends HorizontalLayout {
 		addComponent(withContentLayout);
 		setExpandRatio(withContentLayout, 1);
 
-		Label title = new Label(MoreObjects.firstNonNull(Strings.emptyToNull(action.getTitle()), "-"));
-		title.addStyleName(CssStyles.H3);
-		withContentLayout.addComponent(title);
+		Label measureOrTitle = new Label(
+			MoreObjects
+				.firstNonNull(Strings.emptyToNull(EventHelper.buildEventActionTitleString(action.getActionMeasure(), action.getTitle())), "-"));
+		measureOrTitle.addStyleName(CssStyles.H3);
+		withContentLayout.addComponent(measureOrTitle);
+
+		if (action.getActionMeasure() != null && action.getActionMeasure() != ActionMeasure.OTHER && StringUtils.isNotBlank(action.getTitle())) {
+			Label title = new Label(MoreObjects.firstNonNull(Strings.emptyToNull(action.getTitle()), "-"));
+			title.addStyleName(CssStyles.H4);
+			withContentLayout.addComponent(title);
+		}
 
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setMargin(false);

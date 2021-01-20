@@ -59,6 +59,7 @@ public abstract class AbstractInfoLayout<T> extends HorizontalLayout {
 		Label label = new Label(contentString);
 		label.setCaption(caption);
 		layout.addComponent(label);
+		label.setWidthFull();
 		return label;
 	}
 }
