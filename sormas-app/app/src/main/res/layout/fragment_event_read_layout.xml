@@ -70,9 +70,7 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_riskLevel"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.riskLevel}"
-                    app:dependencyParentField="@{eventEventStatus}"
-                    app:dependencyParentValue="@{EventStatus.CLUSTER}" />
+                    app:value="@{data.riskLevel}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
