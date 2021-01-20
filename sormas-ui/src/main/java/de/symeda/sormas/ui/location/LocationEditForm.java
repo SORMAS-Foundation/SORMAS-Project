@@ -179,12 +179,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			}
 		});
 
-		addField(LocationDto.STREET, TextField.class);
-		addField(LocationDto.HOUSE_NUMBER, TextField.class);
-		addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
+		TextField streetField = addField(LocationDto.STREET, TextField.class);
+		TextField houseNumberField = addField(LocationDto.HOUSE_NUMBER, TextField.class);
+		TextField additionalInformationField = addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
 		addField(LocationDto.DETAILS, TextField.class);
-		addField(LocationDto.CITY, TextField.class);
-		addField(LocationDto.POSTAL_CODE, TextField.class);
+		TextField cityField = addField(LocationDto.CITY, TextField.class);
+		TextField postalCodeField = addField(LocationDto.POSTAL_CODE, TextField.class);
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
@@ -313,6 +313,35 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				facilityDetails.setVisible(false);
 				facilityDetails.setRequired(false);
 				facilityDetails.clear();
+			}
+
+			// Fill in the address fields based on the selected facility
+			// We don't want the location form to automatically change even if the facility's address is updated later 
+			// on, so we only trigger it upon a manual change of the facility field
+			// We use isAttached() to avoid the fuss when initializing the form, it may seems a bit hacky, but it is
+			// necessary because isModified() will still return true for a short duration even if we keep the very same 
+			// value because of this field dependencies to other fields and the way updateEnumValues works
+			if (facility.isAttached()) {
+				if (facility.getValue() != null) {
+					FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(((FacilityReferenceDto) facility.getValue()).getUuid());
+					cityField.setValue(facilityDto.getCity());
+					postalCodeField.setValue(facilityDto.getPostalCode());
+					streetField.setValue(facilityDto.getStreet());
+					houseNumberField.setValue(facilityDto.getHouseNumber());
+					additionalInformationField.setValue(facilityDto.getAdditionalInformation());
+					areaType.setValue(facilityDto.getAreaType());
+					tfLatitude.setConvertedValue(facilityDto.getLatitude());
+					tfLongitude.setConvertedValue(facilityDto.getLongitude());
+				} else {
+					cityField.clear();
+					postalCodeField.clear();
+					streetField.clear();
+					houseNumberField.clear();
+					additionalInformationField.clear();
+					areaType.clear();
+					tfLatitude.clear();
+					tfLongitude.clear();
+				}
 			}
 		});
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
