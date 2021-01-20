@@ -1354,8 +1354,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate creationDateFilter = cb.or(
 			cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
 			cb.or(
-				cb.lessThan(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateFrom())),
-				cb.greaterThan(root2.get(Case.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateTo()))));
+				cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
+				cb.greaterThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
 
 		Predicate filter = cb.and(caseService.createDefaultFilter(cb, root), caseService.createDefaultFilter(cb, root2));
 		if (userFilter != null) {
