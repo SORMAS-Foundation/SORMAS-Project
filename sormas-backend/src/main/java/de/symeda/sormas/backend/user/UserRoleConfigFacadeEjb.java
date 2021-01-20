@@ -18,11 +18,14 @@
 package de.symeda.sormas.backend.user;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +46,9 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	private UserRoleConfigService userRoleConfigService;
 	@EJB
 	private UserService userService;
+
+	//Assumption: UserRoleConfigs are not changed during runtime 
+	private Map<UserRole, Set<UserRight>> userRoleRightsCache;
 
 	@Override
 	public List<UserRoleConfigDto> getAllAfter(Date since) {
@@ -77,8 +83,9 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	@Override
 	public UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto) {
 
-		UserRoleConfig entity = fromDto(dto);
+		UserRoleConfig entity = fromDto(dto, true);
 		userRoleConfigService.ensurePersisted(entity);
+		resetUserRoleRightsCache();
 		return toDto(entity);
 	}
 
@@ -87,26 +94,52 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 
 		UserRoleConfig entity = userRoleConfigService.getByUuid(dto.getUuid());
 		userRoleConfigService.delete(entity);
+		resetUserRoleRightsCache();
 	}
 
 	@Override
 	public Set<UserRight> getEffectiveUserRights(UserRole... userRoles) {
 
-		Set<UserRight> userRights = EnumSet.noneOf(UserRight.class);
+		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRightsCached();
 
+		Set<UserRight> userRights = EnumSet.noneOf(UserRight.class);
 		for (UserRole userRole : userRoles) {
-			UserRoleConfig userRoleConfig = userRoleConfigService.getByUserRole(userRole);
-			if (userRoleConfig != null) {
-				userRights.addAll(userRoleConfig.getUserRights());
-			} else {
-				userRights.addAll(userRole.getDefaultUserRights());
-			}
+			userRights.addAll(userRoleRights.get(userRole));
 		}
 
 		return userRights;
 	}
 
-	public UserRoleConfig fromDto(UserRoleConfigDto source) {
+	public void resetUserRoleRightsCache() {
+		userRoleRightsCache = null;
+	}
+
+	private Map<UserRole, Set<UserRight>> getUserRoleRightsCached() {
+
+		if (userRoleRightsCache == null) {
+			Map<UserRole, Set<UserRight>> cache = new EnumMap<>(UserRole.class);
+
+			userRoleConfigService.getAll().forEach(c -> cache.put(c.getUserRole(), c.getUserRights()));
+
+			//default values
+			Arrays.stream(UserRole.values()).forEach(r -> cache.computeIfAbsent(r, UserRole::getDefaultUserRights));
+
+			//enum sets
+			cache.replaceAll((k, v) -> {
+				if (v.isEmpty()) {
+					return EnumSet.noneOf(UserRight.class);
+				} else {
+					return EnumSet.copyOf(v);
+				}
+			});
+
+			userRoleRightsCache = cache;
+		}
+
+		return userRoleRightsCache;
+	}
+
+	public UserRoleConfig fromDto(UserRoleConfigDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
@@ -120,7 +153,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setUserRole(source.getUserRole());
 		target.setUserRights(new HashSet<UserRight>(source.getUserRights()));

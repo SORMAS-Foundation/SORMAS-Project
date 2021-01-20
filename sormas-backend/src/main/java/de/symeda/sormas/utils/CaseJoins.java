@@ -68,6 +68,7 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	private Join<Case, Sample> samples;
 	private Join<Person, Country> personBirthCountry;
 	private Join<Person, Country> personCitizenship;
+	private Join<Case, District> reportingDistrict;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -263,5 +264,13 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 
 	public void setPersonCitizenship(Join<Person, Country> personCitizenship) {
 		this.personCitizenship = personCitizenship;
+	}
+
+	public Join<Case, District> getReportingDistrict() {
+		return getOrCreate(reportingDistrict, Case.REPORTING_DISTRICT, JoinType.LEFT, this::setReportingDistrict);
+	}
+
+	private void setReportingDistrict(Join<Case, District> reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 }

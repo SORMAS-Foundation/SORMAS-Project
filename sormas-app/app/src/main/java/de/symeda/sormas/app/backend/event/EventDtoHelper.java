@@ -72,6 +72,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
@@ -84,6 +85,10 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEventLocation(locationHelper.fillOrCreateFromDto(target.getEventLocation(), source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setTravelDate(source.getTravelDate());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
@@ -103,6 +108,10 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEventUuid(source.getSuperordinateEvent() != null ? source.getSuperordinateEvent().getUuid() : null);
+
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
@@ -115,6 +124,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 		target.setEventTitle(source.getEventTitle());
 		target.setEventDesc(source.getEventDesc());
 		target.setNosocomial(source.getNosocomial());
@@ -137,7 +147,17 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 			target.setEventLocation(null);
 		}
 
+		if (source.getSuperordinateEventUuid() != null) {
+			target.setSuperordinateEvent(new EventReferenceDto(source.getSuperordinateEventUuid()));
+		} else {
+			target.setSuperordinateEvent(null);
+		}
+
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setTravelDate(source.getTravelDate());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
@@ -165,6 +185,9 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

@@ -13,7 +13,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.TextField;
 import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -35,6 +34,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -54,7 +54,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private ViewConfiguration viewConfiguration;
 
 	// Filters
-	private TextField searchField;
+	private SearchField searchField;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox typeFilter;
@@ -165,11 +165,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		filterLayout.setSpacing(true);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
-		searchField = new TextField();
-		searchField.setId("search");
-		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setNullRepresentation("");
-		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSearch));
+		searchField = new SearchField();
 		searchField.addTextChangeListener(e -> {
 			criteria.nameLike(e.getText());
 			grid.reload();

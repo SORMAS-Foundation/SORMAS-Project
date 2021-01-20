@@ -1,14 +1,16 @@
 package de.symeda.sormas.backend.campaign.form;
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.AbstractBeanTest;
-import org.junit.Test;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
-import static org.junit.Assert.fail;
+import org.junit.Test;
+
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class CampaignFormMetaMetaFacadeEjbTest extends AbstractBeanTest {
 

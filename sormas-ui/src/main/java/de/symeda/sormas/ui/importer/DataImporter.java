@@ -1,15 +1,19 @@
 package de.symeda.sormas.ui.importer;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,6 +25,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +82,7 @@ public abstract class DataImporter {
 	 * This is necessary for importers that also import data that is not referenced in the root entity,
 	 * e.g. samples for cases.
 	 */
-	private boolean hasEntityClassRow;
+	private final boolean hasEntityClassRow;
 	/**
 	 * The file path to the generated error report file that lists all problems that occurred during the import.
 	 */
@@ -207,8 +212,7 @@ public abstract class DataImporter {
 
 		long t0 = System.currentTimeMillis();
 
-		try (CSVReader csvReader =
-			CSVUtils.createCSVReader(Files.newBufferedReader(inputFile.toPath(), UTF_8), this.csvSeparator, new CSVCommentLineValidator())) {
+		try (CSVReader csvReader = getCSVReader(inputFile)) {
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), this.csvSeparator);
 
 			// Build dictionary of entity headers
@@ -303,8 +307,7 @@ public abstract class DataImporter {
 	 */
 	protected int readImportFileLength(File inputFile) throws IOException, CsvValidationException {
 		int importFileLength = 0;
-		try (CSVReader caseCountReader = CSVUtils.createCSVReader(new FileReader(inputFile), this.csvSeparator, new CSVCommentLineValidator())) {
-
+		try (CSVReader caseCountReader = getCSVReader(inputFile)) {
 			while (readNextValidLine(caseCountReader) != null) {
 				importFileLength++;
 			}
@@ -316,6 +319,15 @@ public abstract class DataImporter {
 		}
 
 		return importFileLength;
+	}
+
+	private CSVReader getCSVReader(File inputFile) throws IOException {
+		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+		InputStream inputStream = Files.newInputStream(inputFile.toPath());
+		BOMInputStream bomInputStream = new BOMInputStream(inputStream);
+		Reader reader = new InputStreamReader(bomInputStream, decoder);
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		return CSVUtils.createCSVReader(bufferedReader, this.csvSeparator, new CSVCommentLineValidator());
 	}
 
 	/**

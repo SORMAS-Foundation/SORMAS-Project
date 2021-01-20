@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.53.0</version>
+	<version>1.54.0</version>
 
 	<properties>
 
@@ -31,7 +31,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>11.0.3</keycloak.version>
+		<keycloak.version>12.0.1</keycloak.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
@@ -1155,6 +1155,17 @@
 			</activation>
 			<modules>
 				<module>../sormas-app</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<!-- Profile to build the keycloak hash provider -->
+			<id>with-keycloak</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>../sormas-keycloak-service-provider</module>
 			</modules>
 		</profile>
 

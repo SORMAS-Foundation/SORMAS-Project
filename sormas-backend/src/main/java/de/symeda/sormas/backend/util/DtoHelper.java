@@ -41,9 +41,10 @@ public final class DtoHelper {
 	 */
 	public static final int CHANGE_DATE_TOLERANCE_MS = 1000;
 
-	public static void validateDto(EntityDto dto, AbstractDomainObject entity) {
+	public static void validateDto(EntityDto dto, AbstractDomainObject entity, boolean checkChangeDate) {
 
-		if (entity.getChangeDate() != null
+		if (checkChangeDate
+			&& entity.getChangeDate() != null
 			&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
 			throw new OutdatedEntityException(dto.getUuid(), dto.getClass());
 		}

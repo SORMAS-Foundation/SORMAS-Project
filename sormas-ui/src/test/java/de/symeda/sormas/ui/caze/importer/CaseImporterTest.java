@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.function.Consumer;
 
@@ -33,7 +34,7 @@ import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		TestDataCreator creator = new TestDataCreator();
 
@@ -42,7 +43,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		// Successful import of 5 cases
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_success.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_success.csv").toURI());
 		CaseImporter caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		ImportResultStatus importResult = caseImporter.runImport();
 
@@ -50,7 +51,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Failed import of 5 cases because of errors
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_errors.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_errors.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		importResult = caseImporter.runImport();
 
@@ -60,10 +61,10 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Failed import
 		boolean exceptionWasThrown = false;
 
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_failure.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_failure.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		try {
-			importResult = caseImporter.runImport();
+			caseImporter.runImport();
 		} catch (InvalidColumnException e) {
 			exceptionWasThrown = true;
 		}
@@ -71,7 +72,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Similarity: skip
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 
 			@Override
@@ -86,7 +87,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: pick
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 
 			@Override
@@ -110,7 +111,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: cancel
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 
 			@Override
@@ -125,7 +126,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: override
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 
 			@Override
@@ -149,7 +150,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: create -> fail because of duplicate epid number
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 
 			@Override
@@ -179,7 +180,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals("ABC-DEF-GHI-19-99", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: create -> pass
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 
 			@Override
@@ -203,7 +204,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		creator.createRDCF("R2", "D2", "C2", "F2");
 		creator.createRDCF("R3", "D3", "C3", "F3");
 
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_different_infrastructure.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_different_infrastructure.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		importResult = caseImporter.runImport();
 
@@ -211,7 +212,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals(7, getCaseFacade().count(null));
 
 		// Successful import of 5 cases from a commented CSV file
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_comment_success.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_comment_success.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		importResult = caseImporter.runImport();
 
@@ -220,13 +221,13 @@ public class CaseImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		// Successful import of 5 cases
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").toURI());
 		CaseImporter caseImporter = new CaseImporterExtension(csvFile, false, user.toReference());
 		ImportResultStatus importResult = caseImporter.runImport();
 
@@ -234,7 +235,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Successful import of 5 cases from commented CSV file
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_comment_line_listing.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_comment_line_listing.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, false, user.toReference());
 		importResult = caseImporter.runImport();
 
@@ -260,7 +261,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 			return new OutputStreamWriter(new OutputStream() {
 
 				@Override
-				public void write(int b) throws IOException {
+				public void write(int b) {
 					// Do nothing
 				}
 			});

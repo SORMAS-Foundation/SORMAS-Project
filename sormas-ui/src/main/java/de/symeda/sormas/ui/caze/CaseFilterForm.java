@@ -130,7 +130,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = currentUserDto();
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
 			regionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
@@ -294,7 +294,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		final ComboBox pointOfEntryField = getField(CaseDataDto.POINT_OF_ENTRY);
 		final ComboBox caseOriginField = getField(CaseDataDto.CASE_ORIGIN);
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = currentUserDto();
 		final DistrictReferenceDto currentDistrict =
 			user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
 		final CaseOrigin currentCaseOrigin =
@@ -469,10 +469,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);
-		
+
 		disableFields(districtField, communityField);
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = currentUserDto();
 
 		if (user.getRegion() != null) {
 			if (user.getDistrict() == null) {

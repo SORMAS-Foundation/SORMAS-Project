@@ -65,6 +65,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	private List<Item> contactClassificationList;
 	private List<Item> quarantineList;
 	private List<Item> initialRegions;
+	private List<Item> allDistricts;
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
 	private List<Item> diseaseList;
@@ -125,6 +126,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
 			contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
 			contentBinding.contactExternalID.setVisibility(GONE);
+			contentBinding.contactExternalToken.setVisibility(GONE);
 		} else {
 			contentBinding.contactImmunosuppressiveTherapyBasicDisease.addValueChangedListener(e -> {
 				if (YesNoUnknown.YES.equals(e.getValue())) {
@@ -165,6 +167,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contactClassificationList = DataUtils.getEnumItems(ContactClassification.class, true);
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
 		initialRegions = InfrastructureHelper.loadRegions();
+		allDistricts = InfrastructureHelper.loadAllDistricts();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
@@ -401,6 +404,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactContactIdentificationSource.initializeSpinner(contactIdentificationSources);
 		contentBinding.contactTracingApp.initializeSpinner(tracingApps);
 		contentBinding.contactEndOfQuarantineReason.initializeSpinner(endOfQuarantineReasons);
+		contentBinding.contactReportingDistrict.initializeSpinner(allDistricts);
 
 		// Initialize ControlDateFields
 		contentBinding.contactFirstContactDate.initializeDateField(getFragmentManager());

@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.SortedMap;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.symeda.auditlog.api.sample.AnonymizedEntity;
@@ -264,6 +265,7 @@ public class AuditorTest {
 		assertThat(changes.get("someAttribute"), is("someValue"));
 	}
 
+	@Ignore("Deactivated due to instability on github actions. See #3805")
 	@Test
 	public void testDetectAnnotationChangesFast() {
 
@@ -286,7 +288,7 @@ public class AuditorTest {
 		assertThat(annotationAttributes.get(Entity.FLAG), is(equalTo("false")));
 		assertThat(annotationAttributes.get(Entity.STRING), is(equalTo("changed")));
 		assertThat(annotationAttributes.get(Entity.INTEGER), is(equalTo("42")));
-		assertThat(t2, lessThan(2000_000L));
+		assertThat(t2, lessThan(1000_000L));
 		System.out.println("AuditorTest.testDetectAnnotationChangesFast(): t1= " + t1 + " nanos, t2= " + t2 + " nanos");
 	}
 }

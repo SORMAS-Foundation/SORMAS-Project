@@ -27,7 +27,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -66,7 +65,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_CONTEXT, 140));
 		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_STATUS, 140));
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = currentUserDto();
 		if (user.getDistrict() == null) {
 			if (user.getRegion() == null) {
 				final ComboBox regionField = addField(FieldConfiguration.pixelSized(TaskIndexDto.REGION, 200));

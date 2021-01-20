@@ -1,11 +1,11 @@
 package de.symeda.sormas.api.region;
 
+import java.util.Date;
+
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
-
-import java.util.Date;
 
 public class CountryDto extends EntityDto {
 
@@ -25,14 +25,15 @@ public class CountryDto extends EntityDto {
 	private String unoCode;
 	private boolean archived;
 
-	public CountryDto(Date creationDate,
-					  Date changeDate,
-					  String uuid,
-					  boolean archived,
-					  String defaultName,
-					  String externalId,
-					  String isoCode,
-					  String unoCode) {
+	public CountryDto(
+		Date creationDate,
+		Date changeDate,
+		String uuid,
+		boolean archived,
+		String defaultName,
+		String externalId,
+		String isoCode,
+		String unoCode) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;

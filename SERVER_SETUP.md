@@ -75,9 +75,9 @@
 
 ## Keycloak Server
 
-By default Keycloak is run as a Docker container, which can be set up in two ways:
-* As a Docker container
-* As a Standalone installation
+Keycloak can be set up in two ways:
+* as a Docker container (for just using Keycloak approach)
+* as a Standalone installation (for doing development in Keycloak like themes, SPIs)
 
 ### Keycloak as a Docker container
 *To be done only in the situation when SORMAS is already installed on the machine as a standalone installation.*
@@ -88,7 +88,7 @@ By default Keycloak is run as a Docker container, which can be set up in two way
 * SORMAS Server is installed
 * PostgreSQL is installed
 * Docker is installed
-* Open and edit [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh) with your system's actual values
+* Open and edit [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh) with your system's actual values *(on Windows use Git Bash)*.
 
 **Setup**
 * Run [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh)
@@ -105,8 +105,10 @@ By default Keycloak is run as a Docker container, which can be set up in two way
 
 Setting Keycloak up as a standalone installation [Server Installation and Configuration Guide](https://www.keycloak.org/docs/11.0/server_installation/#installation)
 * Make sure to configure Keycloak with PostgreSQL Database [Relational Database Setup](https://www.keycloak.org/docs/11.0/server_installation/#_database)
-* Setup an Admin User
+* Set up an Admin User
 * Copy the `themes` folder content to `${KEYCLOAK_HOME}/themes` [Deploying Themes](https://www.keycloak.org/docs/11.0/server_development/#deploying-themes)
+* Deploy the `sormas-keycloak-service-provider` [Using Keycloak Deployer](https://www.keycloak.org/docs/11.0/server_development/#using-the-keycloak-deployer)
+* Update the [SORMAS.json](sormas-base/setup/keycloak/SORMAS.json) file by replacing the following placeholders: `${SORMAS_SERVER_URL}`, `${KEYCLOAK_SORMAS_UI_SECRET}`, `${KEYCLOAK_SORMAS_BACKEND_SECRET}`, `${KEYCLOAK_SORMAS_REST_SECRET}`
 * Create the SORMAS Realm by importing [SORMAS.json](sormas-base/setup/keycloak/SORMAS.json) see [Create a New Realm](https://www.keycloak.org/docs/11.0/server_admin/#_create-realm)
 * Update the `sormas-*` clients by generating new secrets for them
 * Update the realm's email settings to allow sending emails to users
@@ -124,10 +126,23 @@ where:
 * `${ASADMIN}` - represents the location to `${PAYARA_HOME}\bin\asadmin`
 * `${KEYCLOAK_PORT}` - the port on which keycloak will run
 * `${KEYCLOAK_SORMAS_UI_SECRET}` - is the secret generated in Keycloak for the `sormas-ui` client
-* `${KEYCLOAK_SORMAS_REST_SECRET}` - is the secret generated in Keycloack for the `sormas-rest` client
-* `${KEYCLOAK_SORMAS_BACKEND_SECRET}` - is the secret generated in Keycloack for the `sormas-backend` client
+* `${KEYCLOAK_SORMAS_REST_SECRET}` - is the secret generated in Keycloak for the `sormas-rest` client
+* `${KEYCLOAK_SORMAS_BACKEND_SECRET}` - is the secret generated in Keycloak for the `sormas-backend` client
 
 Then update `sormas.properties` file in the SORMAS domain with the property `authentication.provider=KEYCLOAK`
+
+### Connect Keycloak to an already running instance of SORMAS
+
+*after setting up Keycloak as one of the described options above*
+
+In case Keycloak is set up alongside an already running instance of SORMAS, these are the steps to follow to make sure already existing users can access the system:
+1. Manually create an admin user in Keycloak for the SORMAS realm [Creating a user](https://www.keycloak.org/docs/11.0/getting_started/index.html#creating-a-user) *(username has to be the same as admin's username in SORMAS)*
+2. Login to SORMAS and trigger the **Sync Users** button from the **Users** page
+3. This will sync users to Keycloak keeping their original password - see [SORMAS Keycloak Service Provider](sormas-keycloak-service-provider/README.md) for more information about this
+
+### Keycloak configuration
+
+More about the default configuration and how to customize can be found here [Keycloak](sormas-base/doc/keycloak.md)
 
 ## Web Server Setup
 

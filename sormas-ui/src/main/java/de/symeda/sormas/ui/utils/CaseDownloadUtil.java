@@ -49,8 +49,9 @@ public class CaseDownloadUtil {
 			exportConfiguration);
 	}
 
-	private static String captionProvider(String propertyId, Class<?> type) {
-		String caption = I18nProperties.findPrefixCaption(
+	public static String getPropertyCaption(String propertyId) {
+
+		return I18nProperties.findPrefixCaption(
 			propertyId,
 			CaseExportDto.I18N_PREFIX,
 			CaseDataDto.I18N_PREFIX,
@@ -59,6 +60,11 @@ public class CaseDownloadUtil {
 			SymptomsDto.I18N_PREFIX,
 			EpiDataDto.I18N_PREFIX,
 			HospitalizationDto.I18N_PREFIX);
+	}
+
+	private static String captionProvider(String propertyId, Class<?> type) {
+		String caption = getPropertyCaption(propertyId);
+
 		if (Date.class.isAssignableFrom(type)) {
 			caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 		}

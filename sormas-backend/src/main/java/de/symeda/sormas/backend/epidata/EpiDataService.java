@@ -22,20 +22,20 @@ import java.sql.Timestamp;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.exposure.Exposure;
 
 @Stateless
 @LocalBean
-public class EpiDataService extends AbstractAdoService<EpiData> {
+public class EpiDataService extends BaseAdoService<EpiData> {
 
 	public EpiDataService() {
 		super(EpiData.class);
@@ -48,21 +48,14 @@ public class EpiDataService extends AbstractAdoService<EpiData> {
 		return epiData;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EpiData> from) {
-		// A user should not directly query for this
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EpiData> epiData, Timestamp date) {
-		Predicate dateFilter = greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date);
+		Predicate dateFilter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date);
 
 		Join<EpiData, Exposure> exposures = epiData.join(EpiData.EXPOSURES, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, exposures.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, CriteriaBuilderHelper.greaterThanAndNotNull(cb, exposures.get(AbstractDomainObject.CHANGE_DATE), date));
 		dateFilter = cb
-			.or(dateFilter, greaterThanAndNotNull(cb, exposures.join(Exposure.LOCATION, JoinType.LEFT).get(AbstractDomainObject.CHANGE_DATE), date));
+			.or(dateFilter, CriteriaBuilderHelper.greaterThanAndNotNull(cb, exposures.join(Exposure.LOCATION, JoinType.LEFT).get(AbstractDomainObject.CHANGE_DATE), date));
 
 		return dateFilter;
 	}

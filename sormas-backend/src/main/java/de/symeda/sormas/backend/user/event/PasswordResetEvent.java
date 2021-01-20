@@ -30,18 +30,12 @@ public class PasswordResetEvent {
 
 	private final User user;
 
-	private final String internalPassword;
-
-	public PasswordResetEvent(User user, String internalPassword) {
+	public PasswordResetEvent(User user) {
 		this.user = user;
-		this.internalPassword = internalPassword;
 	}
 
 	public User getUser() {
 		return user;
 	}
 
-	public String getInternalPassword() {
-		return internalPassword;
-	}
 }

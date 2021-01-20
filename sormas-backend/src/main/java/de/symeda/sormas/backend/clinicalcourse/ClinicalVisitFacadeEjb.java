@@ -36,7 +36,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
@@ -183,7 +183,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		restorePseudonymizedDto(clinicalVisit, existingClinicalVisit);
 
-		ClinicalVisit entity = fromDto(clinicalVisit, existingClinicalVisit);
+		ClinicalVisit entity = fromDto(clinicalVisit, existingClinicalVisit, true);
 
 		service.ensurePersisted(entity);
 
@@ -276,7 +276,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		CaseJoins<ClinicalCourse> caseJoins = new CaseJoins<>(joins.getCaze());
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
-		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));
 
@@ -352,7 +352,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		return target;
 	}
 
-	public ClinicalVisit fromDto(@NotNull ClinicalVisitDto source, ClinicalVisit target) {
+	public ClinicalVisit fromDto(@NotNull ClinicalVisitDto source, ClinicalVisit target, boolean checkChangeDate) {
 		if (target == null) {
 			target = new ClinicalVisit();
 			target.setUuid(source.getUuid());
@@ -361,10 +361,10 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			}
 		}
 
-		DtoHelper.validateDto(source, target);
+		DtoHelper.validateDto(source, target, checkChangeDate);
 
 		target.setClinicalCourse(clinicalCourseService.getByReferenceDto(source.getClinicalCourse()));
-		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
+		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms(), checkChangeDate));
 		target.setDisease(source.getDisease());
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());

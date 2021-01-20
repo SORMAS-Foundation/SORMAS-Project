@@ -5947,7 +5947,7 @@ UPDATE epidata SET changedate = now();
 INSERT INTO schema_version (version_number, comment) VALUES (280, 'Epi data migration #2949');
 
 -- 2020-10-21 Set contact with source case known for all existing cases #2946
-UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND (SELECT COUNT(id) FROM contact WHERE contact.resultingcase_id = cases.id) > 0;
+UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND exists (SELECT 1 FROM contact WHERE contact.resultingcase_id = cases.id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (281, 'Set contact with source case known for all existing cases #2946');
 
@@ -6130,4 +6130,163 @@ ALTER TABLE person_history RENAME COLUMN namesofotherguardians TO namesofguardia
 
 INSERT INTO schema_version (version_number, comment) VALUES (296, 'Change namesOfOtherGuardians to namesOfGuardians #3413');
 
+-- 2020-12-7 Add a means of transports field to events #3618
+ALTER TABLE events ADD COLUMN meansOfTransport varchar(255);
+ALTER TABLE events_history ADD COLUMN meansOfTransport varchar(255);
+ALTER TABLE events ADD COLUMN meansOfTransportDetails text;
+ALTER TABLE events_history ADD COLUMN meansOfTransportDetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (297, 'Add a means of transports field to events #3618');
+
+-- 2021-01-05 Add reporting district to cases & contacts #3410
+ALTER TABLE cases ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE cases
+    ADD CONSTRAINT fk_cases_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE cases_history ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE cases_history
+    ADD CONSTRAINT fk_cases_history_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE contact ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE contact
+    ADD CONSTRAINT fk_contact_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+ALTER TABLE contact_history ADD COLUMN reportingdistrict_id bigint;
+ALTER TABLE contact_history
+    ADD CONSTRAINT fk_contact_history_reportingdistrict_id FOREIGN KEY (reportingdistrict_id) REFERENCES district(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (298, 'Add reporting district to cases & contacts #3410');
+
+-- 2021-01-07 Add index for resulting cases of contacts #3926
+CREATE INDEX IF NOT EXISTS idx_contact_resultingcase_id ON contact USING hash (resultingcase_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (299, 'Add index for resulting cases of contacts #3926');
+
+-- 2021-01-05 Type of place details in events entities #2947
+ALTER TABLE events ADD COLUMN connectionNumber varchar(512);
+ALTER TABLE events_history ADD COLUMN connectionNumber varchar(512);
+ALTER TABLE events ADD COLUMN travelDate timestamp without time zone;
+ALTER TABLE events_history ADD COLUMN travelDate timestamp without time zone;
+
+INSERT INTO schema_version (version_number, comment) VALUES (300, 'Type of place details in events entities #2947');
+
+-- 2020-01-04 Change action's columns description and reply type from varchar to text #3848
+ALTER TABLE action ALTER COLUMN description TYPE text;
+ALTER TABLE action_history ALTER COLUMN description TYPE text;
+ALTER TABLE action ALTER COLUMN reply TYPE text;
+ALTER TABLE action_history ALTER COLUMN reply TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (301, 'Change action''s columns description and reply type from varchar to text #3848');
+
+-- 2020-12-03 Remove hospital from event's type of place #3617
+UPDATE location
+SET facilitytype = 'HOSPITAL'
+    FROM location AS l
+INNER JOIN events ON events.eventlocation_id = l.id
+WHERE events.typeofplace = 'HOSPITAL'
+  AND l.facilitytype IS NULL;
+
+UPDATE events
+SET typeofplace = 'FACILITY'
+    FROM events as e
+INNER JOIN location ON location.id = e.eventlocation_id
+WHERE location.facilitytype IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617');
+
+-- 2020-01-11 SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524
+ALTER TABLE cases ADD COLUMN externaltoken varchar(512);
+ALTER TABLE cases_history ADD COLUMN externaltoken varchar(512);
+
+ALTER TABLE contact ADD COLUMN externaltoken varchar(512);
+ALTER TABLE contact_history ADD COLUMN externaltoken varchar(512);
+-- increasing person and person_history externalid size without loosing data.
+ALTER TABLE person ALTER COLUMN externalid type character varying (512);
+ALTER TABLE person_history ALTER COLUMN externalid type character varying (512);
+
+ALTER TABLE person ADD COLUMN externaltoken varchar(512);
+ALTER TABLE person_history ADD COLUMN externaltoken varchar(512);
+
+ALTER TABLE events ADD COLUMN externaltoken varchar(512);
+ALTER TABLE events_history ADD COLUMN externaltoken varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (303, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
+
+-- 2021-01-07 Add system events #3927
+CREATE TABLE systemevent (
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    type varchar(255) not null,
+    startdate timestamp not null,
+    enddate timestamp,
+    status varchar(255) not null,
+    additionalInfo text,
+    primary key(id)
+);
+
+ALTER TABLE systemevent OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (304, 'Add system events #3927');
+
+-- 2020-12-17 Change action's replyingUser to lastModifiedBy #3719
+ALTER TABLE action RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+ALTER TABLE action_history RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (305, 'Change action''s replyingUser to lastModifiedBy #3719');
+
+-- 2021-01-14 - Add new fields to outbreak events needed for SurvNet #4013
+ALTER TABLE action ADD COLUMN actionmeasure varchar(255);
+ALTER TABLE action_history ADD COLUMN actionmeasure varchar(255);
+ALTER TABLE events ADD COLUMN transregionaloutbreak varchar(255);
+ALTER TABLE events_history ADD COLUMN transregionaloutbreak varchar(255);
+ALTER TABLE events ADD COLUMN diseasetransmissionmode varchar(255);
+ALTER TABLE events_history ADD COLUMN diseasetransmissionmode varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (306, 'Add new fields to outbreak events needed for SurvNet #4013');
+
+-- 2020-01-12 Store sormas to sormas share options #3763
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN withassociatedcontacts boolean DEFAULT false,
+    ADD COLUMN withsamples boolean DEFAULT false,
+    ADD COLUMN pseudonymizedpersonaldata boolean DEFAULT false,
+    ADD COLUMN pseudonymizedsensitivedata boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (307, 'Store sormas to sormas share options #3763');
+
+-- 2021-01-15 - Add superordinate event to events #4020
+ALTER TABLE events ADD COLUMN superordinateevent_id bigint;
+ALTER TABLE events_history ADD COLUMN superordinateevent_id bigint;
+
+ALTER TABLE events ADD CONSTRAINT fk_events_superordinateevent_id FOREIGN KEY (superordinateevent_id) REFERENCES events(id);
+CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash (superordinateevent_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
+
+-- 2020-12-03 Remove hospital from exposure type of places #3680
+UPDATE location
+SET facilitytype = 'HOSPITAL'
+FROM location AS l
+         INNER JOIN exposures ON exposures.location_id = l.id
+WHERE exposures.typeofplace = 'HOSPITAL'
+  AND l.facilitytype IS NULL;
+
+UPDATE exposures
+SET typeofplace = 'FACILITY'
+FROM exposures as e
+         INNER JOIN location ON location.id = e.location_id
+WHERE location.facilitytype IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680');
+
+-- 2020-12-21 Fix labmessage table #3486
+ALTER TABLE labmessage OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
+ALTER TABLE labmessage_history OWNER TO sormas_user;
+ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
+ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
 -- *** Insert new sql commands BEFORE this line ***

@@ -27,11 +27,11 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
 @Stateless
 @LocalBean
-public class WeeklyReportEntryService extends AbstractAdoService<WeeklyReportEntry> {
+public class WeeklyReportEntryService extends AdoServiceWithUserFilter<WeeklyReportEntry> {
 
 	@EJB
 	private WeeklyReportService weeklyReportService;

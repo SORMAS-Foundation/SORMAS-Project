@@ -101,6 +101,7 @@
     <string name="action_select">Valitse</string>
     <string name="action_send">Lähetä</string>
     <string name="action_set_cleared_to_no">Aseta tyhjille arvo EI</string>
+    <string name="action_set_cleared_to_unknown">Set Cleared to Unknown</string>
     <string name="action_show_classification_rules">Näytä luokittelusäännöt</string>
     <string name="action_submit_report">Lähetä viikottainen raportti</string>
     <string name="action_sync">Synkronoi</string>

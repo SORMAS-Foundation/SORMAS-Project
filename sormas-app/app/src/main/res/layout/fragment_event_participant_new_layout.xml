@@ -44,7 +44,6 @@
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/eventParticipant_involvementDescription"
                 android:nextFocusForward="@id/eventParticipant_firstName"
-                app:required="true"
                 app:value="@={data.involvementDescription}"
                 app:imeOptions="actionNext"
                 style="@style/ControlSingleColumnStyle" />
