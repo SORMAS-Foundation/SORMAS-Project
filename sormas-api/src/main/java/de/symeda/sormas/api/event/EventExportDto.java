@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -62,6 +63,7 @@ public class EventExportDto implements Serializable {
 	private String srcMediaName;
 	private String srcMediaDetails;
 	private Date reportDateTime;
+	private UserReferenceDto reportingUser;
 
 	private EventJurisdictionDto jurisdiction;
 
@@ -104,7 +106,9 @@ public class EventExportDto implements Serializable {
 		String srcMediaName,
 		String srcMediaDetails,
 		Date reportDateTime,
-		String reportingUserUid,
+		String reportingUserUuid,
+		String reportingUserFirstName,
+		String reportingUserLastName,
 		String responsibleUserUuid) {
 		this.uuid = uuid;
 		this.externalId = externalId;
@@ -139,8 +143,9 @@ public class EventExportDto implements Serializable {
 		this.srcMediaName = srcMediaName;
 		this.srcMediaDetails = srcMediaDetails;
 		this.reportDateTime = reportDateTime;
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	@Order(0)
@@ -384,6 +389,15 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(32)
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
+	}
+
+	@Order(33)
 	public long getParticipantCount() {
 		return participantCount;
 	}
@@ -392,7 +406,7 @@ public class EventExportDto implements Serializable {
 		this.participantCount = participantCount;
 	}
 
-	@Order(33)
+	@Order(34)
 	public long getCaseCount() {
 		return caseCount;
 	}
@@ -401,12 +415,12 @@ public class EventExportDto implements Serializable {
 		this.caseCount = caseCount;
 	}
 
-	@Order(34)
+	@Order(35)
 	public long getDeathCount() {
 		return deathCount;
 	}
 
-	@Order(35)
+	@Order(36)
 	public String getExternalToken() {
 		return externalToken;
 	}

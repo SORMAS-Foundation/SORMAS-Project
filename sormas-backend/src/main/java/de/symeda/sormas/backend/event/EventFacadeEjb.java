@@ -225,6 +225,7 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -252,7 +253,9 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.SRC_MEDIA_WEBSITE),
 			event.get(Event.SRC_MEDIA_NAME),
 			event.get(Event.REPORT_DATE_TIME),
-			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			reportingUser.get(User.UUID),
+			reportingUser.get(User.FIRST_NAME),
+			reportingUser.get(User.LAST_NAME),
 			event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = null;
@@ -397,6 +400,7 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -437,7 +441,9 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.SRC_MEDIA_NAME),
 			event.get(Event.SRC_MEDIA_DETAILS),
 			event.get(Event.REPORT_DATE_TIME),
-			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			reportingUser.get(User.UUID),
+			reportingUser.get(User.FIRST_NAME),
+			reportingUser.get(User.LAST_NAME),
 			event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);

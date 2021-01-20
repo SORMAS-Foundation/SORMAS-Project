@@ -250,6 +250,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, User> creatorUser = actionJoins.getCreator();
 		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
+		Join<Event, User> eventReportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
 
 		// Add filters
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
@@ -270,6 +271,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			eventReportingUser.get(User.UUID),
+			eventReportingUser.get(User.FIRST_NAME),
+			eventReportingUser.get(User.LAST_NAME),
 			action.get(Action.ACTION_MEASURE),
 			action.get(Action.TITLE),
 			action.get(Action.CREATION_DATE),
@@ -355,6 +359,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, User> creator = actionJoins.getCreator();
 		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
+		Join<Event, User> eventReportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
 
 		// Add filters
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
@@ -376,6 +381,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			eventReportingUser.get(User.UUID),
+			eventReportingUser.get(User.FIRST_NAME),
+			eventReportingUser.get(User.LAST_NAME),
 			action.get(Action.ACTION_MEASURE),
 			action.get(Action.TITLE),
 			action.get(Action.CREATION_DATE),
