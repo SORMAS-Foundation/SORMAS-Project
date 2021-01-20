@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.caze.porthealthinfo;
 
-import java.sql.Timestamp;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -52,17 +50,7 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 	}
 
 	public PortHealthInfo fromDto(@NotNull PortHealthInfoDto source, boolean checkChangeDate) {
-		PortHealthInfo target = service.getByUuid(source.getUuid());
-
-		if (target == null) {
-			target = new PortHealthInfo();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		PortHealthInfo target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), PortHealthInfo::new, checkChangeDate);
 
 		target.setAirlineName(source.getAirlineName());
 		target.setFlightNumber(source.getFlightNumber());

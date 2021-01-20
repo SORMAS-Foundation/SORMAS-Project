@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -334,15 +333,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	private User fromDto(UserDto source, boolean checkChangeDate) {
 
-		User target = userService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = userService.createUser();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 
 		target.setActive(source.isActive());
 		target.setFirstName(source.getFirstName());

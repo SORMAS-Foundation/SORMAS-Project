@@ -60,15 +60,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			return null;
 		}
 
-		EpiData target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new EpiData();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		EpiData target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), EpiData::new, checkChangeDate);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
 		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
@@ -172,9 +164,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		EpiDataDto target = new EpiDataDto();
 		EpiData source = epiData;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
 		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
@@ -200,9 +190,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 
 		ExposureDto target = new ExposureDto();
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());

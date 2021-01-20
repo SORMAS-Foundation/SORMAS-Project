@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.hospitalization;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,24 +58,13 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	@EJB
 	private FacilityService facilityService;
 
-	public Hospitalization fromDto(HospitalizationDto dto, boolean checkChangeDate) {
+	public Hospitalization fromDto(HospitalizationDto source, boolean checkChangeDate) {
 
-		if (dto == null) {
+		if (source == null) {
 			return null;
 		}
 
-		Hospitalization hospitalization = service.getByUuid(dto.getUuid());
-		if (hospitalization == null) {
-			hospitalization = new Hospitalization();
-			hospitalization.setUuid(dto.getUuid());
-			if (dto.getCreationDate() != null) {
-				hospitalization.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
-			}
-		}
-
-		Hospitalization target = hospitalization;
-		HospitalizationDto source = dto;
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Hospitalization target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), Hospitalization::new, checkChangeDate);
 
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
@@ -101,27 +89,17 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
 
-		return hospitalization;
+		return target;
 	}
 
-	public PreviousHospitalization fromDto(PreviousHospitalizationDto dto, boolean checkChangeDate) {
+	public PreviousHospitalization fromDto(PreviousHospitalizationDto source, boolean checkChangeDate) {
 
-		if (dto == null) {
+		if (source == null) {
 			return null;
 		}
 
-		PreviousHospitalization prevHospitalization = prevHospService.getByUuid(dto.getUuid());
-		if (prevHospitalization == null) {
-			prevHospitalization = new PreviousHospitalization();
-			prevHospitalization.setUuid(dto.getUuid());
-			if (dto.getCreationDate() != null) {
-				prevHospitalization.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
-			}
-		}
-
-		PreviousHospitalization target = prevHospitalization;
-		PreviousHospitalizationDto source = dto;
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		PreviousHospitalization target =
+			DtoHelper.fillOrBuildEntity(source, prevHospService.getByUuid(source.getUuid()), PreviousHospitalization::new, checkChangeDate);
 
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
@@ -133,7 +111,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIsolated(source.getIsolated());
 		target.setDescription(source.getDescription());
 
-		return prevHospitalization;
+		return target;
 	}
 
 	public static HospitalizationDto toDto(Hospitalization hospitalization) {
@@ -145,9 +123,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		HospitalizationDto target = new HospitalizationDto();
 		Hospitalization source = hospitalization;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
@@ -170,18 +146,15 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		return target;
 	}
 
-	public static PreviousHospitalizationDto toDto(PreviousHospitalization hospitalization) {
+	public static PreviousHospitalizationDto toDto(PreviousHospitalization source) {
 
-		if (hospitalization == null) {
+		if (source == null) {
 			return null;
 		}
 
 		PreviousHospitalizationDto target = new PreviousHospitalizationDto();
-		PreviousHospitalization source = hospitalization;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
