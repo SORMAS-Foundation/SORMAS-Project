@@ -226,6 +226,7 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
+		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -256,7 +257,9 @@ public class EventFacadeEjb implements EventFacade {
 			reportingUser.get(User.UUID),
 			reportingUser.get(User.FIRST_NAME),
 			reportingUser.get(User.LAST_NAME),
-			event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID));
+			responsibleUser.get(User.UUID),
+			responsibleUser.get(User.FIRST_NAME),
+			responsibleUser.get(User.LAST_NAME));
 
 		Predicate filter = null;
 
@@ -401,6 +404,7 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
+		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -444,7 +448,9 @@ public class EventFacadeEjb implements EventFacade {
 			reportingUser.get(User.UUID),
 			reportingUser.get(User.FIRST_NAME),
 			reportingUser.get(User.LAST_NAME),
-			event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID));
+			responsibleUser.get(User.UUID),
+			responsibleUser.get(User.FIRST_NAME),
+			responsibleUser.get(User.LAST_NAME));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 

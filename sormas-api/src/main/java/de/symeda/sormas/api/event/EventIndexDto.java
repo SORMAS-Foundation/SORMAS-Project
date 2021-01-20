@@ -49,6 +49,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -74,6 +75,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private String srcMediaName;
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
+	private UserReferenceDto responsibleUser;
 	private EventJurisdictionDto jurisdiction;
 
 	public EventIndexDto(
@@ -105,7 +107,9 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String reportingUserUuid,
 		String reportingUserFirstName,
 		String reportingUserLastName,
-		String responsibleUserUuid) {
+		String responsibleUserUuid,
+		String responsibleUserFirstName,
+		String responsibleUserLastName) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
@@ -124,6 +128,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
+		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
@@ -257,6 +262,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
+	}
+
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	public long getParticipantCount() {

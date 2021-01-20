@@ -38,6 +38,7 @@ public class EventActionIndexDto implements Serializable {
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_REPORTING_USER = "eventReportingUser";
+	public static final String EVENT_RESPONSIBLE_USER = "eventResponsibleUser";
 	public static final String ACTION_TITLE = "actionTitle";
 	public static final String ACTION_CREATION_DATE = "actionCreationDate";
 	public static final String ACTION_CHANGE_DATE = "actionChangeDate";
@@ -53,6 +54,7 @@ public class EventActionIndexDto implements Serializable {
 	private EventStatus eventStatus;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private UserReferenceDto eventReportingUser;
+	private UserReferenceDto eventResponsibleUser;
 	private String actionTitle;
 	private Date actionCreationDate;
 	private Date actionChangeDate;
@@ -71,6 +73,9 @@ public class EventActionIndexDto implements Serializable {
 		String eventReportingUserUuid,
 		String eventReportingUserFirstName,
 		String eventReportingUserLastName,
+		String eventResponsibleUserUuid,
+		String eventResponsibleUserFirstName,
+		String eventResponsibleUserLastName,
 		ActionMeasure actionMeasure,
 		String actionTitle,
 		Date actionCreationDate,
@@ -91,6 +96,7 @@ public class EventActionIndexDto implements Serializable {
 		this.eventStatus = eventStatus;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null);
+		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null);
 		this.actionTitle = EventHelper.buildEventActionTitleString(actionMeasure, actionTitle);
 		this.actionCreationDate = actionCreationDate;
 		this.actionChangeDate = actionChangeDate;
@@ -154,6 +160,14 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setEventReportingUser(UserReferenceDto eventReportingUser) {
 		this.eventReportingUser = eventReportingUser;
+	}
+
+	public UserReferenceDto getEventResponsibleUser() {
+		return eventResponsibleUser;
+	}
+
+	public void setEventResponsibleUser(UserReferenceDto eventResponsibleUser) {
+		this.eventResponsibleUser = eventResponsibleUser;
 	}
 
 	public String getActionTitle() {

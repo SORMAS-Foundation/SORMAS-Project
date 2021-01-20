@@ -39,6 +39,7 @@ public class EventActionExportDto implements Serializable {
 	private EventStatus eventStatus;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private UserReferenceDto eventReportingUser;
+	private UserReferenceDto eventResponsibleUser;
 	private ActionMeasure actionMeasure;
 	private String actionTitle;
 	private Date actionCreationDate;
@@ -58,6 +59,9 @@ public class EventActionExportDto implements Serializable {
 		String eventReportingUserUuid,
 		String eventReportingUserFirstName,
 		String eventReportingUserLastName,
+		String eventResponsibleUserUuid,
+		String eventResponsibleUserFirstName,
+		String eventResponsibleUserLastName,
 		ActionMeasure actionMeasure,
 		String actionTitle,
 		Date actionCreationDate,
@@ -78,6 +82,7 @@ public class EventActionExportDto implements Serializable {
 		this.eventStatus = eventStatus;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null);
+		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null);
 		this.actionMeasure = actionMeasure;
 		this.actionTitle = actionTitle;
 		this.actionCreationDate = actionCreationDate;
@@ -125,36 +130,41 @@ public class EventActionExportDto implements Serializable {
 	}
 
 	@Order(7)
+	public UserReferenceDto getEventResponsibleUser() {
+		return eventResponsibleUser;
+	}
+
+	@Order(8)
 	public ActionMeasure getActionMeasure() {
 		return actionMeasure;
 	}
 
-	@Order(8)
+	@Order(9)
 	public String getActionTitle() {
 		return actionTitle;
 	}
 
-	@Order(9)
+	@Order(10)
 	public Date getActionCreationDate() {
 		return actionCreationDate;
 	}
 
-	@Order(10)
+	@Order(11)
 	public Date getActionChangeDate() {
 		return actionChangeDate;
 	}
 
-	@Order(11)
+	@Order(12)
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
 
-	@Order(12)
+	@Order(13)
 	public ActionPriority getActionPriority() {
 		return actionPriority;
 	}
 
-	@Order(13)
+	@Order(14)
 	public UserReferenceDto getActionLastModifiedBy() {
 		return actionLastModifiedBy;
 	}

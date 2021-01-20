@@ -838,6 +838,7 @@ public interface Captions {
 	String EventAction_actionTitle = "EventAction.actionTitle";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
 	String EventAction_eventReportingUser = "EventAction.eventReportingUser";
+	String EventAction_eventResponsibleUser = "EventAction.eventResponsibleUser";
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
 	String EventAction_eventUuid = "EventAction.eventUuid";

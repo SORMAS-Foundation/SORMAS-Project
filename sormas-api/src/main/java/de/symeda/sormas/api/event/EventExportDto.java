@@ -64,6 +64,7 @@ public class EventExportDto implements Serializable {
 	private String srcMediaDetails;
 	private Date reportDateTime;
 	private UserReferenceDto reportingUser;
+	private UserReferenceDto responsibleUser;
 
 	private EventJurisdictionDto jurisdiction;
 
@@ -109,7 +110,9 @@ public class EventExportDto implements Serializable {
 		String reportingUserUuid,
 		String reportingUserFirstName,
 		String reportingUserLastName,
-		String responsibleUserUuid) {
+		String responsibleUserUuid,
+		String responsibleUserFirstName,
+		String responsibleUserLastName) {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
@@ -144,6 +147,7 @@ public class EventExportDto implements Serializable {
 		this.srcMediaDetails = srcMediaDetails;
 		this.reportDateTime = reportDateTime;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
+		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
 
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
@@ -398,6 +402,15 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(33)
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
+	}
+
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
+	}
+
+	@Order(34)
 	public long getParticipantCount() {
 		return participantCount;
 	}
@@ -406,7 +419,7 @@ public class EventExportDto implements Serializable {
 		this.participantCount = participantCount;
 	}
 
-	@Order(34)
+	@Order(35)
 	public long getCaseCount() {
 		return caseCount;
 	}
@@ -415,12 +428,12 @@ public class EventExportDto implements Serializable {
 		this.caseCount = caseCount;
 	}
 
-	@Order(35)
+	@Order(36)
 	public long getDeathCount() {
 		return deathCount;
 	}
 
-	@Order(36)
+	@Order(37)
 	public String getExternalToken() {
 		return externalToken;
 	}
