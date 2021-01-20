@@ -47,7 +47,7 @@
 
 ## IntelliJ
 - Install the latest Ultimate edition IntelliJ
-- Set the project SDK to use the installed Zulu Java 8 SDK
+- Set the project SDK to use the installed Zulu
 - Clone the SORMAS-Project repository and open the project in IntelliJ
 	- make sure the under "File -> Project Structure -> Modules" all the modules (except the android app - this should not be added) are recognized, if not add the modules with +
 - Make sure under "File -> Settings -> Plugins" Glassfish & Ant integrations are enabled (look into the "Installed" tab)
@@ -75,8 +75,25 @@
 	- under "Eclipse Formatter config file", select ``sormas-base/java-formatter-profile.xml``
 	- check optimize imports and, for "Import order", select ``sormas-base/java-importorder-profile.importorder``
 	- **Important:** select "Do not format other file types by IntelliJ formatter"
-	- go to Preferences -> Editor -> Code style -> Java -> Imports: set class and static names counts for import with * to 99
+	- go to Settings -> Editor -> Code style -> Java -> Imports: set class and static names counts for import with * to 99
 	- for IntelliJ, code formatting is usually done with Ctrl+Alt+L. For automatic formatting, it's recommended to use the plugin Save Actions and check the first three checkboxes in "General" and the first two checkboxes in "Formatting Actions" (https://plugins.jetbrains.com/plugin/7642-save-actions)
+### Enable debugging of the application from IntelliJ side
+**Note: This is only needed for development of the SORMAS back and front apps in order to enable debugging
+-> Download Intellij Idea newer that 15 of April 2020. Version prior to 15 of April is containing a bug which will not allow to enable debugging
+
+### Enable debugging from Payara server
+**Note: This is only needed for development of the SORMAS back and front apps in order to enable debugging
+-> Better versions which do support debugging integration as today (14.01.2020) - is 5.192 (this version is set as well in the production)
+* For Payara is needed to be replaced launcher.jar from Payara launcher.zip. For that:
+	- Payara server should be stopped
+	- go to https://youtrack.jetbrains.com/issue/IDEA-216528
+	- download launcher.jar file attached to the conversation(at least for windows PCs it will be downloaded as a ZIP file. So please rename it by writing JAR instead of ZIP)
+	- need to be deleted the cash from opt\domains\sormas\osgi-cache\felix (folder felix should be deleted as well)
+	- replace original launcher.jar file with downloaded (and renamed one) for next 2 paths:
+	1) opt\payara5\glassfish\launcher.jar and
+	2) opt\payara5\glassfish\modules\launcher.jar
+* Only after fixing those issues, DEBUG should start well.
+
 
 ## Android Studio
 **Note: This is only needed for development of the SORMAS Android app
@@ -95,5 +112,48 @@
 	- under "Eclipse Formatter config file", select ``sormas-base/java-formatter-profile.xml``
 	- check optimize imports and, for "Iport order", select ``sormas-base/java-importorder-profile.importorder``
 	- **Important:** select "Do not format other file types by IntelliJ formatter"
-	- go to Preferences -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
+	- go to Settings -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
 	- for Android Studio, code formatting is usually done with Ctrl+Alt+L. For automatic formatting, it's recommended to use the plugin Save Actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
+
+
+## Issues which can appear during installation process of the project
+* (1)If was set once, sormas_user password for postgres DB to `password1`, at next run of .\server-setup.sh you need to use the same password.
+If you will use another password, that the DB connection will be refused. Because the preview password was already set for created DBs, users, etc.
+
+* (2)Payara version. As by today (18.12.2020) the latest payara version is 5.2020.7. Current version of the application cannot run with this version. Is needed to have maximum version of payara - 5.2020.2 (this is the maximum version on which application does not have problems and can run). Production PAYARA_VERSION is 5.194.
+
+* (3) For Windows: Please check your java_version. In case if you have the multiple java_versions installed on the system, it will always show to you the first version installed.
+I had the java 8 instead of 11.
+In order to fix it, go to environment variables, and move the 11 version up. And rerun the script. Seems that the console is reading those variables at the starting point, and the values of it can be updated only after console/script restart.
+
+* (4) For Windows: Pay attention to the postgres SQL files rights permissions after unziping the downloaded ZIP archive. Files physically were present but next script error has been generated:
+psql:setup.sql:7: ERROR:  could not open extension control file "C:/Program Files/PostgreSQL/10/share/extension/temporal_tables.control": No such file or directory
+-I checked the file rights, and under windows they has AV attribute, however, all others has only A attribute. When I was trying to open them with Notepad++ it was saying that such file does not exist. Do you want to create it? If `yes` will be pressed - another message saying that the file exists, appeared. Very strange scenario...
+
+* (5) All the postgres commands(of added users, etc) which were added at first startup of the application - will raise errors in case if such entity exists. Just ignore those errors at repeated installation of .\server-setup.sh
+
+* (6) Check allways the port number 6048 which can be occupied by an old instance of payara.
+-> For every installation, kill all Java/javaw processes and check the availability of 6048 port number.
+-> Delete files with generated domain folders and payara. In order to have a clean installation of each next ./server-setup.sh run.
+
+* (7) M2_HOME need to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME 
+
+* (8) For eclipse formatted plugin, there is an issue for Idea: https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
+
+
+## Remarks during installation process of the project
+* (1) In case if Payara was not installed(for any reason), manually edit file .\server-setup.sh by replacing next `if`:
+if [[ ${DEV_SYSTEM} != true ]]; then
+    PAYARA_VERSION=5.2020.2
+else
+    PAYARA_VERSION=5.194
+fi
+
+with next single line:
+	PAYARA_VERSION=5.194
+	
+* (2)  Naming for payara can be the wrong one, for the downloaded zip file. Twice can be used Zip.zip in the name
+Unzipping Payara...
+unzip:  cannot find or open /c/opt/payara5/payara-5.2020.2.zip, /c/opt/payara5/payara-5.2020.2.zip.zip or /c/opt/payara5/payara-5.2020.2.zip.ZIP.
+Rename the downloaded file by removing `.ZIP` from the end.
+
