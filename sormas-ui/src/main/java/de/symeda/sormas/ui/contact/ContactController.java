@@ -132,7 +132,8 @@ public class ContactController {
 		if (caseRef != null) {
 			caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
-		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze, asResultingCase, alternativeCallback);
+		CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
+			getContactCreateComponent(caze, asResultingCase, alternativeCallback, false);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 
@@ -227,7 +228,7 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
-		return getContactCreateComponent(caze, false, null);
+		return getContactCreateComponent(caze, false, null, false);
 	}
 
 	/**
@@ -239,7 +240,8 @@ public class ContactController {
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(
 		final CaseDataDto caze,
 		boolean asSourceContact,
-		Runnable alternativeCallback) {
+		Runnable alternativeCallback,
+		boolean createdFromLabMesssage) {
 
 		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()) : null;
 		ContactCreateForm createForm =
@@ -271,18 +273,24 @@ public class ContactController {
 							alternativeCallback.run();
 						}
 					});
+				} else if (createdFromLabMesssage) {
+					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+					if (dbPerson == null) {
+						PersonDto personDto = PersonDto.build();
+						transferDataToPerson(createForm, personDto);
+						FacadeProvider.getPersonFacade().savePerson(personDto);
+						dto.setPerson(personDto.toReference());
+						createNewContact(dto, e -> {
+						});
+					} else {
+						transferDataToPerson(createForm, dbPerson);
+						FacadeProvider.getPersonFacade().savePerson(dbPerson);
+						createNewContact(dto, e -> {
+						});
+					}
 				} else {
 					final PersonDto person = PersonDto.build();
-					person.setFirstName(createForm.getPersonFirstName());
-					person.setLastName(createForm.getPersonLastName());
-					person.setNationalHealthId(createForm.getNationalHealthId());
-					person.setPassportNumber(createForm.getPassportNumber());
-					person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-					person.setBirthdateMM(createForm.getBirthdateMM());
-					person.setBirthdateDD(createForm.getBirthdateDD());
-					person.setSex(createForm.getSex());
-					person.setPhone(createForm.getPhone());
-					person.setEmailAddress(createForm.getEmailAddress());
+					transferDataToPerson(createForm, person);
 
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
@@ -318,6 +326,20 @@ public class ContactController {
 		});
 
 		return createComponent;
+
+	}
+
+	private void transferDataToPerson(ContactCreateForm createForm, PersonDto person) {
+		person.setFirstName(createForm.getPersonFirstName());
+		person.setLastName(createForm.getPersonLastName());
+		person.setNationalHealthId(createForm.getNationalHealthId());
+		person.setPassportNumber(createForm.getPassportNumber());
+		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+		person.setBirthdateMM(createForm.getBirthdateMM());
+		person.setBirthdateDD(createForm.getBirthdateDD());
+		person.setSex(createForm.getSex());
+		person.setPhone(createForm.getPhone());
+		person.setEmailAddress(createForm.getEmailAddress());
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(EventParticipantDto eventParticipant) {
