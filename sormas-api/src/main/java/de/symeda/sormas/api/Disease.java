@@ -24,76 +24,78 @@ public enum Disease
 	implements
 	StatisticsGroupingKey {
 
-	AFP(true, true, true, false, 0),
-	CHOLERA(true, true, true, true, 5),
-	CONGENITAL_RUBELLA(true, true, true, true, 21),
-	CSM(true, true, true, false, 10),
-	DENGUE(true, true, true, false, 14),
-	EVD(true, true, true, true, 21),
-	GUINEA_WORM(true, true, true, false, 0),
-	LASSA(true, true, true, true, 21),
-	MEASLES(true, true, true, false, 21),
-	MONKEYPOX(true, true, true, true, 21),
-	NEW_INFLUENZA(true, true, true, true, 17),
-	PLAGUE(true, true, true, true, 7),
-	POLIO(true, true, true, false, 0),
-	UNSPECIFIED_VHF(true, true, true, true, 21),
-	WEST_NILE_FEVER(true, false, true, false, 0),
-	YELLOW_FEVER(true, true, true, false, 6),
-	RABIES(true, true, true, true, 6),
-	ANTHRAX(true, true, true, false, 0),
-	CORONAVIRUS(true, true, true, true, 14),
-	PNEUMONIA(true, false, true, false, 0),
-	MALARIA(true, false, false, false, 0),
-	TYPHOID_FEVER(true, false, false, false, 0),
-	ACUTE_VIRAL_HEPATITIS(true, false, false, false, 0),
-	NON_NEONATAL_TETANUS(true, false, false, false, 0),
-	HIV(true, false, false, false, 0),
-	SCHISTOSOMIASIS(true, false, false, false, 0),
-	SOIL_TRANSMITTED_HELMINTHS(true, false, false, false, 0),
-	TRYPANOSOMIASIS(true, false, false, false, 0),
-	DIARRHEA_DEHYDRATION(true, false, false, false, 0),
-	DIARRHEA_BLOOD(true, false, false, false, 0),
-	SNAKE_BITE(true, false, false, false, 0),
-	RUBELLA(true, false, false, false, 0),
-	TUBERCULOSIS(true, false, false, false, 0),
-	LEPROSY(true, false, false, false, 0),
-	LYMPHATIC_FILARIASIS(true, false, false, false, 0),
-	BURULI_ULCER(true, false, false, false, 0),
-	PERTUSSIS(true, false, false, false, 0),
-	NEONATAL_TETANUS(true, false, false, false, 0),
-	ONCHOCERCIASIS(true, false, false, false, 0),
-	DIPHTERIA(true, false, false, false, 0),
-	TRACHOMA(true, false, false, false, 0),
-	YAWS_ENDEMIC_SYPHILIS(true, false, false, false, 0),
-	MATERNAL_DEATHS(true, false, false, false, 0),
-	PERINATAL_DEATHS(true, false, false, false, 0),
-	INFLUENZA_A(true, false, true, false, 0),
-	INFLUENZA_B(true, false, true, false, 0),
-	H_METAPNEUMOVIRUS(true, false, true, false, 0),
-	RESPIRATORY_SYNCYTIAL_VIRUS(true, false, true, false, 0),
-	PARAINFLUENZA_1_4(true, false, true, false, 0),
-	ADENOVIRUS(true, false, true, false, 0),
-	RHINOVIRUS(true, false, true, false, 0),
-	ENTEROVIRUS(true, false, true, false, 0),
-	M_PNEUMONIAE(true, false, true, false, 0),
-	C_PNEUMONIAE(true, false, true, false, 0),
-	OTHER(true, true, true, true, 21),
-	UNDEFINED(true, true, true, true, 0);
+	AFP(true, true, true, false, 0, true),
+	CHOLERA(true, true, true, true, 5, true),
+	CONGENITAL_RUBELLA(true, true, true, true, 21, true),
+	CSM(true, true, true, false, 10, true),
+	DENGUE(true, true, true, false, 14, true),
+	EVD(true, true, true, true, 21, true),
+	GUINEA_WORM(true, true, true, false, 0, true),
+	LASSA(true, true, true, true, 21, true),
+	MEASLES(true, true, true, false, 21, true),
+	MONKEYPOX(true, true, true, true, 21, true),
+	NEW_INFLUENZA(true, true, true, true, 17, true),
+	PLAGUE(true, true, true, true, 7, true),
+	POLIO(true, true, true, false, 0, true),
+	UNSPECIFIED_VHF(true, true, true, true, 21, true),
+	WEST_NILE_FEVER(true, false, true, false, 0, true),
+	YELLOW_FEVER(true, true, true, false, 6, true),
+	RABIES(true, true, true, true, 6, true),
+	ANTHRAX(true, true, true, false, 0, true),
+	CORONAVIRUS(true, true, true, true, 14, true),
+	PNEUMONIA(true, false, true, false, 0, true),
+	MALARIA(true, false, false, false, 0, true),
+	TYPHOID_FEVER(true, false, false, false, 0, true),
+	ACUTE_VIRAL_HEPATITIS(true, false, false, false, 0, true),
+	NON_NEONATAL_TETANUS(true, false, false, false, 0, true),
+	HIV(true, false, false, false, 0, true),
+	SCHISTOSOMIASIS(true, false, false, false, 0, true),
+	SOIL_TRANSMITTED_HELMINTHS(true, false, false, false, 0, true),
+	TRYPANOSOMIASIS(true, false, false, false, 0, true),
+	DIARRHEA_DEHYDRATION(true, false, false, false, 0, true),
+	DIARRHEA_BLOOD(true, false, false, false, 0, true),
+	SNAKE_BITE(true, false, false, false, 0, true),
+	RUBELLA(true, false, false, false, 0, true),
+	TUBERCULOSIS(true, false, false, false, 0, true),
+	LEPROSY(true, false, false, false, 0, true),
+	LYMPHATIC_FILARIASIS(true, false, false, false, 0, true),
+	BURULI_ULCER(true, false, false, false, 0, true),
+	PERTUSSIS(true, false, false, false, 0, true),
+	NEONATAL_TETANUS(true, false, false, false, 0, true),
+	ONCHOCERCIASIS(true, false, false, false, 0, true),
+	DIPHTERIA(true, false, false, false, 0, true),
+	TRACHOMA(true, false, false, false, 0, true),
+	YAWS_ENDEMIC_SYPHILIS(true, false, false, false, 0, true),
+	MATERNAL_DEATHS(true, false, false, false, 0, true),
+	PERINATAL_DEATHS(true, false, false, false, 0, true),
+	INFLUENZA_A(true, false, true, false, 0, true),
+	INFLUENZA_B(true, false, true, false, 0, true),
+	H_METAPNEUMOVIRUS(true, false, true, false, 0, true),
+	RESPIRATORY_SYNCYTIAL_VIRUS(true, false, true, false, 0, true),
+	PARAINFLUENZA_1_4(true, false, true, false, 0, true),
+	ADENOVIRUS(true, false, true, false, 0, true),
+	RHINOVIRUS(true, false, true, false, 0, true),
+	ENTEROVIRUS(true, false, true, false, 0, true),
+	M_PNEUMONIAE(true, false, true, false, 0, true),
+	C_PNEUMONIAE(true, false, true, false, 0, true),
+	OTHER(true, true, true, true, 21, false),
+	UNDEFINED(true, true, true, true, 0, false);
 
 	private boolean defaultActive;
 	private boolean defaultPrimary;
 	private boolean defaultCaseBased;
 	private boolean defaultFollowUpEnabled;
 	private int defaultFollowUpDuration;
+	private boolean variantAllowed;
 
-	Disease(boolean defaultActive, boolean defaultPrimary, boolean defaultCaseBased, boolean defaultFollowUpEnabled, int defaultFollowUpDuration) {
+	Disease(boolean defaultActive, boolean defaultPrimary, boolean defaultCaseBased, boolean defaultFollowUpEnabled, int defaultFollowUpDuration, boolean variantAllowed) {
 
 		this.defaultActive = defaultActive;
 		this.defaultPrimary = defaultPrimary;
 		this.defaultCaseBased = defaultCaseBased;
 		this.defaultFollowUpEnabled = defaultFollowUpEnabled;
 		this.defaultFollowUpDuration = defaultFollowUpDuration;
+		this.variantAllowed = variantAllowed;
 	}
 
 	public String toString() {
@@ -140,6 +142,10 @@ public enum Disease
 
 	public boolean isDiseaseGroup() {
 		return this == UNSPECIFIED_VHF;
+	}
+
+	public boolean isVariantAllowed() {
+		return variantAllowed;
 	}
 
 	@Override

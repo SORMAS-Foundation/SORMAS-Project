@@ -200,6 +200,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
+import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
+import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -388,6 +390,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private AdditionalTestFacadeEjbLocal additionalTestFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
+	@EJB
+	private DiseaseVariantService diseaseVariantService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -2215,6 +2219,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}, checkChangeDate);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(diseaseVariantService.getByReferenceDto(source.getDiseaseVariant()));
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
@@ -2490,6 +2495,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getDiseaseVariant()));
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
