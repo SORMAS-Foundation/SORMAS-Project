@@ -1389,6 +1389,7 @@ public interface Captions {
 	String sampleAllSamples = "sampleAllSamples";
 	String sampleArchivedSamples = "sampleArchivedSamples";
 	String sampleAssociationType = "sampleAssociationType";
+	String sampleCreateNew = "sampleCreateNew";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
 	String SampleExport_arterialVenousBloodGas = "SampleExport.arterialVenousBloodGas";
@@ -1473,6 +1474,7 @@ public interface Captions {
 	String sampleReferredTo = "sampleReferredTo";
 	String sampleReferredToInternal = "sampleReferredToInternal";
 	String sampleSamplesList = "sampleSamplesList";
+	String sampleSelect = "sampleSelect";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String sex = "sex";
