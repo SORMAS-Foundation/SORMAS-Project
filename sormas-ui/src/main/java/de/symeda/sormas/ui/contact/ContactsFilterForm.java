@@ -514,7 +514,9 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			populateSurveillanceOfficers(items);
 		} else {
 			final ComboBox regionField = getField(ContactCriteria.REGION);
-			populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+			if (regionField != null) {
+				populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+			}
 		}
 	}
 
