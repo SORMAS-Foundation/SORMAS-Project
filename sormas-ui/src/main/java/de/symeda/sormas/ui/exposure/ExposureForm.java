@@ -324,7 +324,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		if (epiDataParentClass == CaseDataDto.class) {
 			ComboBox cbContactToCase = getField(ExposureDto.CONTACT_TO_CASE);
-			cbContactToCase.addItems(sourceContacts);
+			if (sourceContacts != null) {
+				cbContactToCase.addItems(sourceContacts);
+			}
 			cbContactToCase.getItemIds().forEach(i -> cbContactToCase.setItemCaption(i, ((ContactReferenceDto) i).getCaptionAlwaysWithUuid()));
 		}
 	}
