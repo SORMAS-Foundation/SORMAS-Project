@@ -96,6 +96,8 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		table.setCellStyleGenerator(
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ExposureDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
+		table.setColumnHeader(EDIT_COLUMN_ID, "");
+
 		for (Object columnId : table.getVisibleColumns()) {
 			if (!columnId.equals(EDIT_COLUMN_ID)) {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, (String) columnId));
