@@ -36,7 +36,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 
 @SuppressWarnings("serial")
 public class AggregateReportsView extends AbstractView {
@@ -113,7 +113,7 @@ public class AggregateReportsView extends AbstractView {
 
 			addHeaderComponent(btnExport);
 
-			StreamResource streamResource = new GridExportStreamResource(
+			StreamResource streamResource = new GridExportStreamResourceCSV(
 				grid,
 				"sormas_aggregate_reports",
 				"sormas_aggregate_reports_" + DateHelper.formatDateForExport(new Date()) + ".csv");

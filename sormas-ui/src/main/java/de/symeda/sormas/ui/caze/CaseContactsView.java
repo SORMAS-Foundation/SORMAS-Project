@@ -64,7 +64,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -292,7 +292,7 @@ public class CaseContactsView extends AbstractCaseView {
 			}
 
 			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				new GridExportStreamResourceCSV(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
 			StreamResource extendedExportStreamResource = ContactDownloadUtil.createContactExportResource(grid.getCriteria(), null);

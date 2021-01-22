@@ -51,7 +51,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
@@ -102,7 +102,7 @@ public class SamplesView extends AbstractView {
 
 			exportLayout.addComponent(basicExportButton);
 
-			StreamResource streamResource = new GridExportStreamResource(
+			StreamResource streamResource = new GridExportStreamResourceCSV(
 				sampleListComponent.getGrid(),
 				"sormas_samples",
 				"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv",

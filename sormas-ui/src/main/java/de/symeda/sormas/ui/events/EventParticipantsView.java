@@ -43,7 +43,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.EventParticipantDownloadUtil;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -103,7 +103,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		{
 			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_eventParticipants", createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
+				new GridExportStreamResourceCSV(grid, "sormas_eventParticipants", createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
 			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 		}
 

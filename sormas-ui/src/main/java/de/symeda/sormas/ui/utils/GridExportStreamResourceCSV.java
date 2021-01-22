@@ -49,12 +49,82 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-@SuppressWarnings("serial")
-public class GridExportStreamResource extends StreamResource {
+import javax.validation.constraints.Null;
 
-	public GridExportStreamResource(Grid<?> grid, String tempFilePrefix, String filename, String... ignoredPropertyIds) {
+@SuppressWarnings("serial")
+public class GridExportStreamResourceCSV extends StreamResource {
+
+	public GridExportStreamResourceCSV(Grid<?> grid,
+									String tempFilePrefix,
+									String filename,
+									String... ignoredPropertyIds) {
 
 		super(new StreamSource() {
+			@Null
+			private ByteArrayInputStream getByteArrayInputStream(
+					ValueProvider[] columnValueProviders,
+					String[] headerRow,
+					DataProvider<?, ?> dataProvider,
+					List<QuerySortOrder> sortOrder)
+			{
+				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+					try (CSVWriter writer = CSVUtils.createCSVWriter(
+							new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
+							FacadeProvider.getConfigFacade().getCsvSeparator())) {
+
+						writer.writeNext(headerRow);
+
+						String[] rowValues = new String[columnValueProviders.length];
+
+						int totalRowCount = dataProvider.size(new Query());
+						for (int i = 0; i < totalRowCount; i += 100) {
+							dataProvider.fetch(new Query(i, 100, sortOrder, null, null)).forEach(row -> {
+								for (int c = 0; c < columnValueProviders.length; c++) {
+									Object value = columnValueProviders[c].apply(row);
+
+									final String valueString;
+									if (value == null) {
+										valueString = "";
+									} else if (value instanceof Date) {
+										valueString = DateFormatHelper.formatLocalDateTime((Date) value);
+									} else if (value instanceof Boolean) {
+										if ((Boolean) value == true) {
+											valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
+										} else
+											valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
+									} else if (value instanceof AgeAndBirthDateDto) {
+										AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
+										valueString = PersonHelper.getAgeAndBirthdateString(
+												ageAndBirthDate.getAge(),
+												ageAndBirthDate.getAgeType(),
+												ageAndBirthDate.getBirthdateDD(),
+												ageAndBirthDate.getBirthdateMM(),
+												ageAndBirthDate.getBirthdateYYYY(),
+												I18nProperties.getUserLanguage());
+									} else if (value instanceof Label) {
+										valueString = ((Label) value).getValue();
+									} else {
+										valueString = value.toString();
+									}
+									rowValues[c] = valueString;
+								}
+								writer.writeNext(rowValues);
+							});
+							writer.flush();
+						}
+					}
+					return new ByteArrayInputStream(byteStream.toByteArray());
+				} catch (IOException e) {
+					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
+					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+					new Notification(
+							I18nProperties.getString(Strings.headingExportFailed),
+							I18nProperties.getString(Strings.messageExportFailed),
+							Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+					return null;
+				}
+			}
 
 			@SuppressWarnings({
 				"unchecked",
@@ -89,67 +159,10 @@ public class GridExportStreamResource extends StreamResource {
 							.get()
 							.getSortOrder(gridSortOrder.getDirection()))
 					.collect(Collectors.toList());
-
-				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
-					try (CSVWriter writer = CSVUtils.createCSVWriter(
-						new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
-						FacadeProvider.getConfigFacade().getCsvSeparator())) {
-
-						writer.writeNext(headerRow);
-
-						String[] rowValues = new String[columnValueProviders.length];
-
-						int totalRowCount = dataProvider.size(new Query());
-						for (int i = 0; i < totalRowCount; i += 100) {
-							dataProvider.fetch(new Query(i, 100, sortOrder, null, null)).forEach(row -> {
-								for (int c = 0; c < columnValueProviders.length; c++) {
-									Object value = columnValueProviders[c].apply(row);
-
-									final String valueString;
-									if (value == null) {
-										valueString = "";
-									} else if (value instanceof Date) {
-										valueString = DateFormatHelper.formatLocalDateTime((Date) value);
-									} else if (value instanceof Boolean) {
-										if ((Boolean) value == true) {
-											valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
-										} else
-											valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
-									} else if (value instanceof AgeAndBirthDateDto) {
-										AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
-										valueString = PersonHelper.getAgeAndBirthdateString(
-											ageAndBirthDate.getAge(),
-											ageAndBirthDate.getAgeType(),
-											ageAndBirthDate.getBirthdateDD(),
-											ageAndBirthDate.getBirthdateMM(),
-											ageAndBirthDate.getBirthdateYYYY(),
-											I18nProperties.getUserLanguage());
-									} else if (value instanceof Label) {
-										valueString = ((Label) value).getValue();
-									} else {
-										valueString = value.toString();
-									}
-									rowValues[c] = valueString;
-								}
-								writer.writeNext(rowValues);
-							});
-							writer.flush();
-						}
-					}
-					return new ByteArrayInputStream(byteStream.toByteArray());
-				} catch (IOException e) {
-					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					new Notification(
-						I18nProperties.getString(Strings.headingExportFailed),
-						I18nProperties.getString(Strings.messageExportFailed),
-						Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
-					return null;
-				}
+				return getByteArrayInputStream(columnValueProviders, headerRow, dataProvider, sortOrder);
 			}
 		}, filename);
-		setMIMEType("text/csv");
+		setMIMEType(MimeTypes.CSV.mimeType);
 		setCacheTime(0);
 	}
 }

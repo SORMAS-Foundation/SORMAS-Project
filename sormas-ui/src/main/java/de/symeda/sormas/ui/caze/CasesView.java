@@ -89,7 +89,7 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -267,7 +267,7 @@ public class CasesView extends AbstractView {
 
 			{
 				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_cases", createFileNameWithCurrentDate("sormas_cases_", ".csv"));
+					new GridExportStreamResourceCSV(grid, "sormas_cases", createFileNameWithCurrentDate("sormas_cases_", ".csv"));
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 

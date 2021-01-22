@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.events;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -68,7 +70,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -161,8 +162,11 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
+				MimeTypes mimeType = MimeTypes.CSV; // TODO get from UI or settings
 				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+					new GridExportStreamResourceCSV(grid,
+							"sormas_events",
+							"sormas_events_" + DateHelper.formatDateForExport(new Date()) + mimeType.getFileExtension());
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 

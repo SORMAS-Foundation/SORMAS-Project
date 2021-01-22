@@ -66,7 +66,7 @@ import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -165,7 +165,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 			{
 				StreamResource streamResource =
-					new GridExportStreamResource(grid, "campaign_data", createFileNameWithCurrentDate("campaign_data_", ".csv"), EDIT_BTN_ID);
+					new GridExportStreamResourceCSV(grid, "campaign_data", createFileNameWithCurrentDate("campaign_data_", ".csv"), EDIT_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}

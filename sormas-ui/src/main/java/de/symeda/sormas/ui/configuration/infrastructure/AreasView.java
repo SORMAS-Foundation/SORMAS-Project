@@ -32,7 +32,7 @@ import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.GridExportStreamResourceCSV;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -92,7 +92,7 @@ public class AreasView extends AbstractConfigurationView {
 			btnExport.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(btnExport);
 
-			StreamResource streamResource = new GridExportStreamResource(
+			StreamResource streamResource = new GridExportStreamResourceCSV(
 				grid,
 				"sormas_areas",
 				"sormas_areas_" + DateHelper.formatDateForExport(new Date()) + ".csv",
