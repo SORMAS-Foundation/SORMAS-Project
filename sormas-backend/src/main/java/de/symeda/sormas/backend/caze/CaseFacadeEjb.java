@@ -1584,6 +1584,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (diseaseChange) {
 			existingCase.setDisease(updatedCaseBulkEditData.getDisease());
+			existingCase.setDiseaseVariant(diseaseVariantService.getByReferenceDto(updatedCaseBulkEditData.getDiseaseVariant()));
 			existingCase.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
 			existingCase.setPlagueType(updatedCaseBulkEditData.getPlagueType());
 			existingCase.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());

@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.backend.disease;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariantDto;
 import de.symeda.sormas.api.disease.DiseaseVariantFacade;
 import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
@@ -50,6 +51,14 @@ public class DiseaseVariantFacadeEjb implements DiseaseVariantFacade {
     @Override
     public List<String> getAllUuids() {
         return diseaseVariantService.getAllUuids();
+    }
+
+    @Override
+    public List<DiseaseVariantReferenceDto> getAllByDisease(Disease disease) {
+        return diseaseVariantService.getAllByDisease(disease)
+                .stream()
+                .map(DiseaseVariantFacadeEjb::toReferenceDto)
+                .collect(Collectors.toList());
     }
 
     public static DiseaseVariantDto toDto(DiseaseVariant source) {

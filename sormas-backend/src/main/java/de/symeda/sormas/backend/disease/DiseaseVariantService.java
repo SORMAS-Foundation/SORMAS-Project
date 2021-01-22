@@ -18,13 +18,20 @@
 
 package de.symeda.sormas.backend.disease;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
 @Stateless
@@ -33,6 +40,24 @@ public class DiseaseVariantService extends AdoServiceWithUserFilter<DiseaseVaria
 
     public DiseaseVariantService() {
         super(DiseaseVariant.class);
+    }
+
+    public List<DiseaseVariant> getAllByDisease(Disease disease) {
+        if (disease == null || !disease.isVariantAllowed()) {
+            return Collections.emptyList();
+        }
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<DiseaseVariant> cq = cb.createQuery(DiseaseVariant.class);
+        Root<DiseaseVariant> variantPath = cq.from(DiseaseVariant.class);
+
+        ParameterExpression<Disease> diseaseParam = cb.parameter(Disease.class);
+        cq.where(cb.equal(variantPath.get(DiseaseVariant.DISEASE), diseaseParam));
+
+        cq.select(variantPath);
+        return em.createQuery(cq)
+                .setParameter(diseaseParam, disease)
+                .getResultList();
     }
 
     @SuppressWarnings("rawtypes")

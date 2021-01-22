@@ -18,6 +18,8 @@
 
 package de.symeda.sormas.api.disease;
 
+import de.symeda.sormas.api.Disease;
+
 import javax.ejb.Remote;
 import java.util.Date;
 import java.util.List;
@@ -30,4 +32,6 @@ public interface DiseaseVariantFacade {
     List<DiseaseVariantDto> getByUuids(List<String> uuids);
 
     List<String> getAllUuids();
+
+    List<DiseaseVariantReferenceDto> getAllByDisease(Disease disease);
 }
