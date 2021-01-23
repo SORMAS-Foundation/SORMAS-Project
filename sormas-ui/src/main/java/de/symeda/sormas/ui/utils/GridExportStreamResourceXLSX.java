@@ -111,13 +111,12 @@ public class GridExportStreamResourceXLSX extends StreamResource {
             }
 
             @Null
-            private ByteArrayInputStream getByteArrayInputStreamCSV(
+            private ByteArrayInputStream getByteArrayInputStream(
                     ValueProvider[] columnValueProviders,
                     String[] headerRow,
                     DataProvider<?, ?> dataProvider,
                     List<QuerySortOrder> sortOrder) {
                 XSSFWorkbook workbook = null;
-                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
                 try {
                     workbook = new XSSFWorkbook();
                     XSSFSheet sheet = workbook.createSheet();
@@ -130,7 +129,10 @@ public class GridExportStreamResourceXLSX extends StreamResource {
                     }
                     // write data rows
                     writeDataRows(sheet, dataProvider, columnValueProviders, sortOrder);
-                    byteStream.flush();
+                    ByteArrayOutputStream documentInMemory = new ByteArrayOutputStream();
+                    workbook.write(documentInMemory);
+                    workbook.close();
+                    return new ByteArrayInputStream(documentInMemory.toByteArray());
                 } catch (IOException e) {
                     // TODO This currently requires the user to click the "Export" button again or reload the page as the UI
                     // is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
@@ -140,17 +142,7 @@ public class GridExportStreamResourceXLSX extends StreamResource {
                             Type.ERROR_MESSAGE,
                             false).show(Page.getCurrent());
                     return null;
-                } finally {
-                    if (workbook != null) {
-                        try {
-                            workbook.close();
-                            // no notification if closing fails
-                        } catch (IOException  e) {
-                            e.printStackTrace();
-                        }
-                    }
                 }
-                return new ByteArrayInputStream(byteStream.toByteArray());
             }
 
             @SuppressWarnings({
@@ -185,11 +177,11 @@ public class GridExportStreamResourceXLSX extends StreamResource {
                                         .get()
                                         .getSortOrder(gridSortOrder.getDirection()))
                         .collect(Collectors.toList());
-                return getByteArrayInputStreamCSV(columnValueProviders, headerRow, dataProvider, sortOrder);
+                return getByteArrayInputStream(columnValueProviders, headerRow, dataProvider, sortOrder);
             }
         }, filename);
 
-        setMIMEType(MimeTypes.CSV.mimeType);
+        setMIMEType(MimeTypes.XSLX.mimeType);
 
         setCacheTime(0);
     }
