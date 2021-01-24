@@ -74,8 +74,7 @@ public class GridExportStreamResourceXLSX extends StreamResource {
                         xssfCell.setCellValue((Boolean) value);
                     } else if (value instanceof AgeAndBirthDateDto) {
                         AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
-                        xssfCell.setCellValue(PersonHelper.
-                    (
+                        xssfCell.setCellValue(PersonHelper.getAgeAndBirthdateString(
                                 ageAndBirthDate.getAge(),
                                 ageAndBirthDate.getAgeType(),
                                 ageAndBirthDate.getBirthdateDD(),
