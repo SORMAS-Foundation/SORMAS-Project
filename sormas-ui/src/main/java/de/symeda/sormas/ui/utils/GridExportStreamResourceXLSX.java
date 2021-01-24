@@ -65,33 +65,28 @@ public class GridExportStreamResourceXLSX extends StreamResource {
             {
                 for (int c = 0; c < columnValueProviders.length; c++) {
                     Object value = columnValueProviders[c].apply(row);
-
-                    final String valueString;
+                    XSSFCell xssfCell = xssfRow.createCell(c);
                     if (value == null) {
-                        valueString = "";
+                        xssfCell.setCellValue("");
                     } else if (value instanceof Date) {
-                        valueString = DateFormatHelper.formatLocalDateTime((Date) value);
+                        xssfCell.setCellValue((Date) value);
                     } else if (value instanceof Boolean) {
-                        if ((Boolean) value) {
-                            valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
-                        } else
-                            valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
+                        xssfCell.setCellValue((Boolean) value);
                     } else if (value instanceof AgeAndBirthDateDto) {
                         AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
-                        valueString = PersonHelper.getAgeAndBirthdateString(
+                        xssfCell.setCellValue(PersonHelper.
+                    (
                                 ageAndBirthDate.getAge(),
                                 ageAndBirthDate.getAgeType(),
                                 ageAndBirthDate.getBirthdateDD(),
                                 ageAndBirthDate.getBirthdateMM(),
                                 ageAndBirthDate.getBirthdateYYYY(),
-                                I18nProperties.getUserLanguage());
+                                I18nProperties.getUserLanguage()));
                     } else if (value instanceof Label) {
-                        valueString = ((Label) value).getValue();
+                        xssfCell.setCellValue(((Label) value).getValue());
                     } else {
-                        valueString = value.toString();
+                        xssfCell.setCellValue(value.toString());
                     }
-                    XSSFCell xssfCell = xssfRow.createCell(c);
-                    xssfCell.setCellValue(valueString);
                 }
             }
 
