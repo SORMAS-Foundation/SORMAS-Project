@@ -248,6 +248,28 @@
                     app:dependencyParentField="@{eventMeansOfTransport}"
                     app:dependencyParentValue="@{MeansOfTransport.OTHER}" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_connectionNumber"
+                style="@style/ControlFirstOfTwoColumnsStyle"
+                app:value="@{data.connectionNumber}"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_travelDate"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                app:value="@{data.travelDate}"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
+
+        </LinearLayout>
+
+
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <TextView
