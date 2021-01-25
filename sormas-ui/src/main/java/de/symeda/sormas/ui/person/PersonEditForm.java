@@ -197,6 +197,27 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields();
 	}
 
+	public PersonEditForm(boolean isPseudonymized) {
+		super(
+			PersonDto.class,
+			PersonDto.I18N_PREFIX,
+			false,
+			new FieldVisibilityCheckers()
+				.add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+			UiFieldAccessCheckers.getDefault(isPseudonymized));
+
+		this.viewMode = ViewMode.NORMAL;
+
+		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(addressHeader, ADDRESS_HEADER);
+		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
+		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
+
+		addFields();
+	}
+
 	@Override
 	protected void addFields() {
 

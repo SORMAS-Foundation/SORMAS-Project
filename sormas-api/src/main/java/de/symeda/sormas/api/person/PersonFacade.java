@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface PersonFacade {
@@ -72,4 +73,9 @@ public interface PersonFacade {
 
 	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
 
+    List<PersonIndexDto> getIndexList(PersonCriteria orElse, Integer offset, Integer limit, List<SortProperty> collect);
+
+	long count(PersonCriteria orElse);
+
+    boolean exists(String uuid);
 }

@@ -1126,6 +1126,7 @@ public interface Captions {
 	String mainMenuContacts = "mainMenuContacts";
 	String mainMenuDashboard = "mainMenuDashboard";
 	String mainMenuEvents = "mainMenuEvents";
+	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
 	String mainMenuSamples = "mainMenuSamples";
 	String mainMenuStatistics = "mainMenuStatistics";
@@ -1273,6 +1274,7 @@ public interface Captions {
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
+	String personPersonsList = "personPersonsList";
 	String personSelect = "personSelect";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
@@ -1858,6 +1860,8 @@ public interface Captions {
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
+	String View_persons = "View.persons";
+	String View_persons_data = "View.persons.data";
 	String View_reports = "View.reports";
 	String View_reports_sub = "View.reports.sub";
 	String View_samples = "View.samples";
