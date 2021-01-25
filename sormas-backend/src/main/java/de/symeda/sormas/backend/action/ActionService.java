@@ -271,6 +271,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			action.get(Action.ACTION_MEASURE),
+			event.get(Event.EVOLUTION_DATE),
 			action.get(Action.TITLE),
 			action.get(Action.CREATION_DATE),
 			action.get(Action.CHANGE_DATE),
@@ -305,6 +306,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case EventActionIndexDto.EVENT_INVESTIGATION_STATUS:
 					expression = event.get(Event.EVENT_INVESTIGATION_STATUS);
+					break;
+				case EventActionIndexDto.EVENT_EVOLUTION_DATE:
+					expression = event.get(Event.EVOLUTION_DATE);
 					break;
 				case EventActionIndexDto.ACTION_CHANGE_DATE:
 					expression = action.get(Action.CHANGE_DATE);
@@ -374,6 +378,8 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.EVENT_DESC),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVOLUTION_DATE),
+			event.get(Event.EVOLUTION_COMMENT),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			action.get(Action.ACTION_MEASURE),
