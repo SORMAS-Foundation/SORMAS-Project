@@ -50,7 +50,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	protected CampaignFormDataFilterForm() {
 
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
-		CssStyles.style(CssStyles.FORCE_CAPTION, applyButton, resetButton);
+		applyResetButtonsComponent.style(CssStyles.FORCE_CAPTION);
 	}
 
 	@Override
