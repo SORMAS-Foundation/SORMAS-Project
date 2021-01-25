@@ -66,9 +66,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			getContent().addComponent(moreFiltersLayout, MORE_FILTERS_ID);
 
 			addMoreFilters(moreFiltersLayout);
+			addShowHideMoreButton();
 		}
-
-		addShowHideMoreButton();
 
 		this.addValueChangeListener(e -> {
 			onChange();
@@ -114,24 +113,21 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	private void addShowHideMoreButton() {
-		if (moreFiltersLayout != null) {
-			String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
-			Button showHideMoreButton =
-				ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
-					Button showHideButton = e.getButton();
-					boolean isShowMore = showHideButton.getCaption().equals(showMoreCaption);
-					showHideButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
-					showHideButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
+		String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
+		Button showHideMoreButton = ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
+			Button showHideButton = e.getButton();
+			boolean isShowMore = showHideButton.getCaption().equals(showMoreCaption);
+			showHideButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
+			showHideButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
 
-					if (isShowMore) {
-						moreFiltersLayout.setVisible(true);
-					} else {
-						moreFiltersLayout.setVisible(false);
-					}
-				}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
+			if (isShowMore) {
+				moreFiltersLayout.setVisible(true);
+			} else {
+				moreFiltersLayout.setVisible(false);
+			}
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
 
-			getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
-		}
+		getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
 	}
 
 	protected CustomLayout getMoreFiltersContainer() {
