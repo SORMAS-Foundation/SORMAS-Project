@@ -169,38 +169,19 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		facilityField.setEnabled(false);
 		facilityField.setVisible(false);
 
-		ComboBox typeOfPlaceField = getField(EventDto.TYPE_OF_PLACE);
-
-		Arrays.asList(districtField, communityField, typeOfPlaceField).forEach(field -> field.addValueChangeListener(e -> {
-			final UserDto user = UserProvider.getCurrent().getUser();
-			final CommunityReferenceDto community =
-				user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
-			final DistrictReferenceDto district = user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
-			boolean visible = (community != null || district != null) && typeOfPlaceField.getValue() == TypeOfPlace.FACILITY;
-			if (!visible) {
-				facilityField.clear();
-				facilityTypeField.clear();
-				facilityTypeGroupField.clear();
-			}
-			facilityField.setVisible(visible);
-			facilityTypeField.setVisible(visible);
-			facilityTypeGroupField.setVisible(visible);
-		}));
-
-		facilityTypeGroupField.addValueChangeListener(e -> {
-			FieldHelper.updateEnumData(
+		facilityTypeGroupField.addValueChangeListener(
+			e -> FieldHelper.updateEnumData(
 				facilityTypeField,
 				facilityTypeGroupField.getValue() != null
 					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroupField.getValue())
-					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
-		});
+					: Arrays.stream(FacilityType.values()).collect(Collectors.toList())));
 
 		facilityTypeField.addValueChangeListener(e -> {
-			if (facilityTypeField.getValue() != null) {
+			final FacilityType facilityType = (FacilityType) facilityTypeField.getValue();
+			if (facilityType != null) {
 				final UserDto user = UserProvider.getCurrent().getUser();
 				final CommunityReferenceDto community =
 					user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
-				final FacilityType facilityType = (FacilityType) facilityTypeField.getValue();
 
 				facilityField.setEnabled(true);
 				if (community != null) {
@@ -319,6 +300,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				clearAndDisableFields(LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			}
 			populateSurveillanceOfficersForRegion(region);
+			applyFacilityFieldsDependencies();
 			break;
 		case LocationDto.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
@@ -328,6 +310,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				clearAndDisableFields(LocationDto.COMMUNITY);
 			}
 			populateSurveillanceOfficersForDistrict(district);
+			applyFacilityFieldsDependencies();
+			break;
+		case EventDto.TYPE_OF_PLACE:
+			applyFacilityFieldsDependencies();
 			break;
 		}
 	}
@@ -372,6 +358,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		RegionReferenceDto region = criteria.getRegion();
 		DistrictReferenceDto district = criteria.getDistrict();
 		applyRegionAndDistrictFilterDependency(region, LocationDto.DISTRICT, district, LocationDto.COMMUNITY);
+
+		applyFacilityFieldsDependencies(criteria.getTypeOfPlace(), criteria.getDistrict(), criteria.getCommunity());
 	}
 
 	private void applyDateDependencyOnNewValue(String componentId, DateFilterOption dateFilterOption, Date dateFrom, Date dateTo) {
@@ -415,6 +403,34 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
 		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER);
+	}
+
+	private void applyFacilityFieldsDependencies() {
+		applyFacilityFieldsDependencies(
+			(TypeOfPlace) getField(EventDto.TYPE_OF_PLACE).getValue(),
+			(DistrictReferenceDto) getField(LocationDto.DISTRICT).getValue(),
+			(CommunityReferenceDto) getField(LocationDto.COMMUNITY).getValue());
+	}
+
+	private void applyFacilityFieldsDependencies(
+		TypeOfPlace typeOfPlace,
+		DistrictReferenceDto districtReferenceDto,
+		CommunityReferenceDto communityReferenceDto) {
+
+		final UserDto user = UserProvider.getCurrent().getUser();
+		final boolean visible = typeOfPlace == TypeOfPlace.FACILITY
+			&& ((user.getCommunity() != null || communityReferenceDto != null) || (user.getDistrict() != null || districtReferenceDto != null));
+		final ComboBox facilityField = getField(LocationDto.FACILITY);
+		final ComboBox facilityTypeField = getField(LocationDto.FACILITY_TYPE);
+		final ComboBox facilityTypeGroupField = (ComboBox) getMoreFiltersContainer().getComponent(FACILITY_TYPE_GROUP_FILTER);
+		if (!visible) {
+			facilityField.clear();
+			facilityTypeField.clear();
+			facilityTypeGroupField.clear();
+		}
+		facilityField.setVisible(visible);
+		facilityTypeField.setVisible(visible);
+		facilityTypeGroupField.setVisible(visible);
 	}
 
 	@Override

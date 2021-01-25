@@ -311,6 +311,11 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		this.typeOfPlace = typeOfPlace;
 	}
 
+	public EventCriteria typeOfPlace(TypeOfPlace typeOfPlace) {
+		setTypeOfPlace(typeOfPlace);
+		return this;
+	}
+
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}

@@ -61,7 +61,9 @@ import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -301,6 +303,12 @@ public class EventController {
 
 	public void navigateToParticipants(String eventUuid) {
 		String navigationState = EventParticipantsView.VIEW_NAME + "/" + eventUuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateTo(EventCriteria eventCriteria) {
+		ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
+		String navigationState = AbstractView.buildNavigationState(EventsView.VIEW_NAME, eventCriteria);
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
