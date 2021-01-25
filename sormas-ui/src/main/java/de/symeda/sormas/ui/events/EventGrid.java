@@ -189,14 +189,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		return (srcMediaWebsite != null ? srcMediaWebsite : "") + " " + (srcMediaName != null ? "(" + srcMediaName + ")" : "");
 	}
 
-	public void setContactCountMethod(boolean SourceInEvent) {
-		if (SourceInEvent) {
-			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(false);
-			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(true);
-		} else {
-			getColumn(EventIndexDto.CONTACT_COUNT).setHidden(false);
-			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(true);
-		}
+	public void setContactCountMethod(EventContactCountMethod method) {
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(!(method == EventContactCountMethod.COUNT_ALL_CONTACTS));
+		getColumn(EventIndexDto.CONTACT_COUNT).setHidden(method == EventContactCountMethod.COUNT_CONTACTS_WITH_SOURCECASE_IN_EVENT);
 	}
 
 	public void reload() {

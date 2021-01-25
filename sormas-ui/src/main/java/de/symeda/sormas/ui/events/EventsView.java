@@ -92,7 +92,6 @@ public class EventsView extends AbstractView {
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
-	// calculation method to use for contact counts
 	private ComboBox contactCountMethod;
 
 	private VerticalLayout gridLayout;
@@ -458,15 +457,19 @@ public class EventsView extends AbstractView {
 				// Contact Count Method Dropdown
 				contactCountMethod = new ComboBox();
 				contactCountMethod.setCaption(I18nProperties.getCaption(Captions.Event_contactCountMethod));
-				contactCountMethod.addItem(0);
-				contactCountMethod.addItem(1);
-				contactCountMethod.setItemCaption(0, I18nProperties.getCaption(Captions.Event_contactCountAll));
-				contactCountMethod.setItemCaption(1, I18nProperties.getCaption(Captions.Event_contactCountSourceInEvent));
-				contactCountMethod.setValue(0);
+				contactCountMethod.addItem(EventContactCountMethod.COUNT_ALL_CONTACTS);
+				contactCountMethod.addItem(EventContactCountMethod.COUNT_CONTACTS_WITH_SOURCECASE_IN_EVENT);
+				contactCountMethod.setItemCaption(
+					EventContactCountMethod.COUNT_ALL_CONTACTS,
+					I18nProperties.getEnumCaption(EventContactCountMethod.COUNT_ALL_CONTACTS));
+				contactCountMethod.setItemCaption(
+					EventContactCountMethod.COUNT_CONTACTS_WITH_SOURCECASE_IN_EVENT,
+					I18nProperties.getEnumCaption(EventContactCountMethod.COUNT_CONTACTS_WITH_SOURCECASE_IN_EVENT));
+				contactCountMethod.setValue(EventContactCountMethod.COUNT_ALL_CONTACTS);
 				contactCountMethod.setTextInputAllowed(false);
 				contactCountMethod.setNullSelectionAllowed(false);
 				contactCountMethod.addValueChangeListener(event -> {
-					((EventGrid) grid).setContactCountMethod((Integer) event.getProperty().getValue() == 1);
+					((EventGrid) grid).setContactCountMethod((EventContactCountMethod) event.getProperty().getValue());
 					((EventGrid) grid).reload();
 				});
 				actionButtonsLayout.addComponent(contactCountMethod);
