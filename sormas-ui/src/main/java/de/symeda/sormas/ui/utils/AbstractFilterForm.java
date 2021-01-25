@@ -114,18 +114,21 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	private void addShowHideMoreButton() {
 		String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
-		Button showHideMoreButton = ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
-			Button showHideButton = e.getButton();
-			boolean isShowMore = showHideButton.getCaption().equals(showMoreCaption);
-			showHideButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
-			showHideButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
-
-			if (isShowMore) {
-				moreFiltersLayout.setVisible(true);
-			} else {
-				moreFiltersLayout.setVisible(false);
-			}
-		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
+		String showLessCaption = I18nProperties.getCaption(Captions.actionShowLessFilters);
+		String showHideMoreCaption = moreFiltersLayout.isVisible() ? showLessCaption : showMoreCaption;
+		Button showHideMoreButton =
+			ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showHideMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
+				Button showHideButton = e.getButton();
+				if (moreFiltersLayout.isVisible()) {
+					showHideButton.setCaption(showMoreCaption);
+					showHideButton.setIcon(VaadinIcons.CHEVRON_DOWN);
+					moreFiltersLayout.setVisible(false);
+				} else {
+					showHideButton.setCaption(showLessCaption);
+					showHideButton.setIcon(VaadinIcons.CHEVRON_UP);
+					moreFiltersLayout.setVisible(true);
+				}
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
 
 		getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
 	}
