@@ -6289,4 +6289,13 @@ ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
 ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
+
+-- 2021-01-07 Add evolution date and comment to events #3753
+ALTER TABLE events ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events_history ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events ADD COLUMN evolutionComment text;
+ALTER TABLE events_history ADD COLUMN evolutionComment text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add evolution date and comment to events #3753');
+
 -- *** Insert new sql commands BEFORE this line ***
