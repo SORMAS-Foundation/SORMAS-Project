@@ -65,6 +65,9 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Date eventDateFrom;
 	private Date eventDateTo;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
+	private Date eventEvolutionDateFrom;
+	private Date eventEvolutionDateTo;
+	private DateFilterOption evolutionDateFilterOption = DateFilterOption.DATE;
 	private UserReferenceDto responsibleUser;
 	private String freeText;
 	private EventSourceType srcType;
@@ -278,6 +281,40 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return dateFilterOption;
 	}
 
+	public EventCriteria eventEvolutionDateBetween(Date eventEvolutionDateFrom, Date eventEvolutionDateTo, DateFilterOption evolutionDateFilterOption) {
+		this.eventEvolutionDateFrom = eventEvolutionDateFrom;
+		this.eventEvolutionDateTo = eventEvolutionDateTo;
+		this.evolutionDateFilterOption = evolutionDateFilterOption;
+		return this;
+	}
+
+	public EventCriteria eventEvolutionDateFrom(Date eventEvolutionDateFrom) {
+		this.eventEvolutionDateFrom = eventEvolutionDateFrom;
+		return this;
+	}
+
+	public Date getEventEvolutionDateFrom() {
+		return eventEvolutionDateFrom;
+	}
+
+	public EventCriteria eventEvolutionDateTo(Date eventEvolutionDateTo) {
+		this.eventEvolutionDateTo = eventEvolutionDateTo;
+		return this;
+	}
+
+	public Date getEventEvolutionDateTo() {
+		return eventEvolutionDateTo;
+	}
+
+	public EventCriteria evolutionDateFilterOption(DateFilterOption evolutionDateFilterOption) {
+		this.evolutionDateFilterOption = evolutionDateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getEvolutionDateFilterOption() {
+		return evolutionDateFilterOption;
+	}
+
 	public EventCriteria responsibleUser(UserReferenceDto responsibleUser) {
 		this.responsibleUser = responsibleUser;
 		return this;
@@ -321,6 +358,11 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		this.typeOfPlace = typeOfPlace;
 	}
 
+	public EventCriteria typeOfPlace(TypeOfPlace typeOfPlace) {
+		setTypeOfPlace(typeOfPlace);
+		return this;
+	}
+
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
@@ -345,6 +387,9 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		switch (dateType) {
 		case EVENT:
 			eventDateBetween(dateFrom, dateTo, dateFilterOption);
+			break;
+		case EVENT_SIGNAL_EVOLUTION:
+			eventEvolutionDateBetween(dateFrom, dateTo, dateFilterOption);
 			break;
 		case ACTION:
 			actionChangeDateBetween(dateFrom, dateTo, dateFilterOption);
@@ -394,6 +439,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public enum DateType {
 		EVENT,
+		EVENT_SIGNAL_EVOLUTION,
 		ACTION,
 	}
 

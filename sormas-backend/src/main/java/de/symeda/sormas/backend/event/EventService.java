@@ -553,6 +553,22 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo())),
 					cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateTo())));
 		}
+		if (eventCriteria.getEventEvolutionDateFrom() != null && eventCriteria.getEventEvolutionDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.between(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom(), eventCriteria.getEventEvolutionDateTo()));
+		} else if (eventCriteria.getEventEvolutionDateFrom() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom()));
+		} else if (eventCriteria.getEventEvolutionDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.lessThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateTo()));
+		}
 		if (eventCriteria.getResponsibleUser() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,

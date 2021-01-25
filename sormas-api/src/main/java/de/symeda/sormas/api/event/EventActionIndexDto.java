@@ -39,6 +39,7 @@ public class EventActionIndexDto implements Serializable {
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_REPORTING_USER = "eventReportingUser";
 	public static final String EVENT_RESPONSIBLE_USER = "eventResponsibleUser";
+	public static final String EVENT_EVOLUTION_DATE = "eventEvolutionDate";
 	public static final String ACTION_TITLE = "actionTitle";
 	public static final String ACTION_CREATION_DATE = "actionCreationDate";
 	public static final String ACTION_CHANGE_DATE = "actionChangeDate";
@@ -55,6 +56,7 @@ public class EventActionIndexDto implements Serializable {
 	private EventInvestigationStatus eventInvestigationStatus;
 	private UserReferenceDto eventReportingUser;
 	private UserReferenceDto eventResponsibleUser;
+	private Date eventEvolutionDate;
 	private String actionTitle;
 	private Date actionCreationDate;
 	private Date actionChangeDate;
@@ -77,6 +79,7 @@ public class EventActionIndexDto implements Serializable {
 		String eventResponsibleUserFirstName,
 		String eventResponsibleUserLastName,
 		ActionMeasure actionMeasure,
+		Date eventEvolutionDate,
 		String actionTitle,
 		Date actionCreationDate,
 		Date actionChangeDate,
@@ -98,6 +101,8 @@ public class EventActionIndexDto implements Serializable {
 		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null);
 		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null);
 		this.actionTitle = EventHelper.buildEventActionTitleString(actionMeasure, actionTitle);
+		this.eventEvolutionDate = eventEvolutionDate;
+		this.actionTitle = actionTitle;
 		this.actionCreationDate = actionCreationDate;
 		this.actionChangeDate = actionChangeDate;
 		this.actionStatus = actionStatus;
@@ -168,6 +173,14 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setEventResponsibleUser(UserReferenceDto eventResponsibleUser) {
 		this.eventResponsibleUser = eventResponsibleUser;
+	}
+
+	public Date getEventEvolutionDate() {
+		return eventEvolutionDate;
+	}
+
+	public void setEventEvolutionDate(Date eventEvolutionDate) {
+		this.eventEvolutionDate = eventEvolutionDate;
 	}
 
 	public String getActionTitle() {

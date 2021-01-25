@@ -864,8 +864,12 @@ public interface Strings {
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventEpiWeekFrom = "promptEventEpiWeekFrom";
 	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
+	String promptEventEvolutionDateFrom = "promptEventEvolutionDateFrom";
+	String promptEventEvolutionDateTo = "promptEventEvolutionDateTo";
 	String promptEventParticipantsSearchField = "promptEventParticipantsSearchField";
 	String promptEventResponsibleUserRoleField = "promptEventResponsibleUserRoleField";
+	String promptEventSignalEvolutionEpiWeekFrom = "promptEventSignalEvolutionEpiWeekFrom";
+	String promptEventSignalEvolutionEpiWeekTo = "promptEventSignalEvolutionEpiWeekTo";
 	String promptEventsSearchField = "promptEventsSearchField";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";

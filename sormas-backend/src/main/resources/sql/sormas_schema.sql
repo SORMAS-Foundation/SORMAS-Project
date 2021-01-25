@@ -6290,10 +6290,18 @@ ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
 
+-- 2021-01-07 Add evolution date and comment to events #3753
+ALTER TABLE events ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events_history ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events ADD COLUMN evolutionComment text;
+ALTER TABLE events_history ADD COLUMN evolutionComment text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add evolution date and comment to events #3753');
+
 -- 2021-01-07 Change event's surveillanceOfficer to responsibleUser allow more roles to be it #3827
 ALTER TABLE events RENAME surveillanceofficer_id to responsibleuser_id;
 ALTER TABLE events_history RENAME surveillanceofficer_id to responsibleuser_id;
 
-INSERT INTO schema_version (version_number, comment) VALUES (311, 'Change event''s surveillanceOfficer to responsibleUser allow more roles to be it #3827');
+INSERT INTO schema_version (version_number, comment) VALUES (312, 'Change event''s surveillanceOfficer to responsibleUser allow more roles to be it #3827');
 
 -- *** Insert new sql commands BEFORE this line ***

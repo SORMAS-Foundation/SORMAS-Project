@@ -41,6 +41,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
+	public static final String EVOLUTION_DATE = "evolutionDate";
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String SRC_TYPE = "srcType";
@@ -65,6 +66,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
+	private Date evolutionDate;
 	private String eventTitle;
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
@@ -86,6 +88,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String diseaseDetails,
 		Date startDate,
 		Date endDate,
+		Date evolutionDate,
 		String eventTitle,
 		String regionUuid,
 		String regionName,
@@ -118,6 +121,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.evolutionDate = evolutionDate;
 		this.eventTitle = eventTitle;
 		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		this.srcType = srcType;
@@ -186,6 +190,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
 	}
 
 	public String getEventTitle() {

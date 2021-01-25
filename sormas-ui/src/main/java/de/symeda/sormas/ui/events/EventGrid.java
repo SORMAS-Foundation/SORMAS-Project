@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,6 +58,7 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 	public static final String EVENT_DATE = Captions.singleDayEventDate;
+	public static final String EVENT_EVOLUTION_DATE = Captions.Event_evolutionDate;
 	public static final String INFORMATION_SOURCE = Captions.Event_informationSource;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
@@ -107,6 +109,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.EVENT_STATUS,
 				EventIndexDto.EVENT_INVESTIGATION_STATUS,
 				createEventDateColumn(this),
+				createEventEvolutionDateColumn(this),
 				DISEASE_SHORT,
 				EventIndexDto.EVENT_TITLE,
 				EventIndexDto.REGION,
@@ -150,12 +153,22 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 	public static String createEventDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid) {
 		Column<EventIndexDto, String> eventDateColumn =
-			grid.addColumn(event -> EventHelper.buildEventDateString(event.getStartDate(), event.getEndDate()));
+				grid.addColumn(event -> EventHelper.buildEventDateString(event.getStartDate(), event.getEndDate()));
 		eventDateColumn.setId(EVENT_DATE);
 		eventDateColumn.setSortProperty(EventDto.START_DATE);
 		eventDateColumn.setSortable(true);
 
 		return EVENT_DATE;
+	}
+
+	public static String createEventEvolutionDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid) {
+		Column<EventIndexDto, String> eventDateColumn =
+				grid.addColumn(event -> DateFormatHelper.formatDate(event.getEvolutionDate()));
+		eventDateColumn.setId(EVENT_EVOLUTION_DATE);
+		eventDateColumn.setSortProperty(EventDto.EVOLUTION_DATE);
+		eventDateColumn.setSortable(true);
+
+		return EVENT_EVOLUTION_DATE;
 	}
 
 	private String buildSourcePersonText(EventIndexDto event) {
