@@ -52,11 +52,12 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(null, null), true);
 
-		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
-		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
-
 		// needed before adding date filters
 		addApplyButton();
+		addResetButton();
+
+		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
+		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
 
 		if (hasMoreFilters) {
 			moreFiltersLayout = new CustomLayout();
@@ -67,7 +68,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			addMoreFilters(moreFiltersLayout);
 		}
 
-		addDefaultButtons();
+		addShowHideMoreButton();
 
 		this.addValueChangeListener(e -> {
 			onChange();
@@ -81,6 +82,11 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, null, FILTER_ITEM_STYLE);
 		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		getContent().addComponent(applyButton, APPLY_BUTTON_ID);
+	}
+
+	private void addResetButton() {
+		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
+		getContent().addComponent(resetButton, RESET_BUTTON_ID);
 	}
 
 	public void onChange() {
@@ -107,11 +113,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	}
 
-	protected void addDefaultButtons() {
-
-		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
-		getContent().addComponent(resetButton, RESET_BUTTON_ID);
-
+	private void addShowHideMoreButton() {
 		if (moreFiltersLayout != null) {
 			String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
 			Button showHideMoreButton =
