@@ -6,7 +6,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -422,17 +422,13 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 					UserRole.SURVEILLANCE_OFFICER,
 					UserRole.SURVEILLANCE_SUPERVISOR });
 
-		final List<UserReferenceDto> items = new ArrayList<>();
-		if (district != null) {
-			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, responsibleUserRoles));
-			if (Arrays.asList(responsibleUserRoles).contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-				items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR));
-			}
-		} else {
-			items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, responsibleUserRoles));
+		final Set<UserReferenceDto> responsibleUsers = new LinkedHashSet<>();
+		if (district != null && Arrays.asList(responsibleUserRoles).contains(UserRole.SURVEILLANCE_OFFICER)) {
+			responsibleUsers.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER));
 		}
+		responsibleUsers.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, responsibleUserRoles));
 
-		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), items);
+		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), new ArrayList<>(responsibleUsers));
 	}
 
 	@Override
