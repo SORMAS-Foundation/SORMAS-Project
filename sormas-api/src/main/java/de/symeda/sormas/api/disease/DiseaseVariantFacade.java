@@ -33,5 +33,7 @@ public interface DiseaseVariantFacade {
 
     List<String> getAllUuids();
 
+    List<DiseaseVariantReferenceDto> getAll();
+
     List<DiseaseVariantReferenceDto> getAllByDisease(Disease disease);
 }

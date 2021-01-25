@@ -55,6 +55,7 @@ public class DiseaseVariantService extends AdoServiceWithUserFilter<DiseaseVaria
         cq.where(cb.equal(variantPath.get(DiseaseVariant.DISEASE), diseaseParam));
 
         cq.select(variantPath);
+        cq.orderBy(cb.asc(variantPath.get(DiseaseVariant.NAME)));
         return em.createQuery(cq)
                 .setParameter(diseaseParam, disease)
                 .getResultList();
