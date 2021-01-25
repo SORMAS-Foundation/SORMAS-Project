@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -38,26 +40,33 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFTable;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class CsvStreamUtils {
+public class ExportStreamUtils {
 
 	public static final int STEP_SIZE = 50;
 
 	public static <T> void writeCsvContentToStream(
-		Class<T> csvRowClass,
-		SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
-		SupplierBiFunction<String, Class<?>, String> propertyIdCaptionSupplier,
-		ExportConfigurationDto exportConfiguration,
-		final Predicate redMethodFilter,
-		ConfigFacade configFacade,
-		OutputStream out) {
+			Class<T> csvRowClass,
+			SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
+			SupplierBiFunction<String, Class<?>, String> propertyIdCaptionSupplier,
+			ExportConfigurationDto exportConfiguration,
+			final Predicate redMethodFilter,
+			ConfigFacade configFacade,
+			OutputStream out) {
 
 		try (
-			CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), configFacade.getCsvSeparator())) {
+				CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), configFacade.getCsvSeparator())) {
 
 			// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
 			List<Method> readMethods =
-				getExportRowClassReadMethods(csvRowClass, exportConfiguration, redMethodFilter, configFacade.getCountryLocale());
+					getExportRowClassReadMethods(csvRowClass, exportConfiguration, redMethodFilter, configFacade.getCountryLocale());
 
 			// 2. replace entity fields with all the columns of the entity
 			Map<Method, SubEntityProvider<T>> subEntityProviders = new HashMap<Method, SubEntityProvider<T>>();
@@ -133,6 +142,111 @@ public class CsvStreamUtils {
 				startIndex += STEP_SIZE;
 				exportRows = exportRowsSupplier.apply(startIndex, STEP_SIZE);
 			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static <T> void writeXslxContentToStream(
+			Class<T> csvRowClass,
+			SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
+			SupplierBiFunction<String, Class<?>, String> propertyIdCaptionSupplier,
+			ExportConfigurationDto exportConfiguration,
+			final Predicate redMethodFilter,
+			ConfigFacade configFacade,
+			OutputStream out) {
+
+		try {
+			SXSSFWorkbook workbook = new SXSSFWorkbook(STEP_SIZE);
+			SXSSFSheet sheet = workbook.createSheet();
+			// write header rows
+			SXSSFRow xssfRow = sheet.createRow(0);
+
+			// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
+			List<Method> readMethods =
+					getExportRowClassReadMethods(csvRowClass, exportConfiguration, redMethodFilter, configFacade.getCountryLocale());
+
+			// 2. replace entity fields with all the columns of the entity
+			Map<Method, SubEntityProvider<T>> subEntityProviders = new HashMap<Method, SubEntityProvider<T>>();
+			for (int i = 0; i < readMethods.size(); i++) {
+				final Method method = readMethods.get(i);
+				if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
+
+					// allows us to access the sub entity
+					SubEntityProvider<T> subEntityProvider = new SubEntityProvider<T>() {
+
+						@Override
+						public Object get(T o) {
+							try {
+								return method.invoke(o);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								throw new RuntimeException(e);
+							}
+						}
+					};
+
+					// remove entity field
+					readMethods.remove(i);
+
+					// add columns of the entity
+					List<Method> subReadMethods = getReadMethods(method.getReturnType(), null);
+					readMethods.addAll(i, subReadMethods);
+					i--;
+
+					for (Method subReadMethod : subReadMethods) {
+						subEntityProviders.put(subReadMethod, subEntityProvider);
+					}
+				}
+			}
+
+			String[] fieldValues = new String[readMethods.size()];
+			for (int i = 0; i < readMethods.size(); i++) {
+				final Method method = readMethods.get(i);
+				// field caption
+				String propertyId = method.getName().startsWith("get") ? method.getName().substring(3) : method.getName().substring(2);
+				if (method.isAnnotationPresent(ExportProperty.class)) {
+					// TODO not sure why we are using the export property name to get the caption here
+					final ExportProperty exportProperty = method.getAnnotation(ExportProperty.class);
+					if (!exportProperty.combined()) {
+						propertyId = exportProperty.value();
+					}
+				}
+				propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
+				fieldValues[i] = propertyIdCaptionSupplier.apply(propertyId, method.getReturnType());
+
+				xssfRow.createCell(i).setCellValue(fieldValues[i]); // TODO use Date, Boolean etc
+			}
+
+			int rowNumber = 1;
+			int startIndex = 0;
+			List<T> exportRows = exportRowsSupplier.apply(startIndex, STEP_SIZE);
+			while (!exportRows.isEmpty()) {
+				try {
+					for (T exportRow : exportRows) {
+						for (int i = 0; i < readMethods.size(); i++) {
+							Method method = readMethods.get(i);
+							SubEntityProvider<T> subEntityProvider = subEntityProviders.get(method);
+							Object entity = subEntityProvider != null ? subEntityProvider.get(exportRow) : exportRow;
+							// Sub entity might be null
+							Object value = entity != null ? method.invoke(entity) : null;
+
+							fieldValues[i] = DataHelper.valueToString(value);
+						}
+						xssfRow = sheet.createRow(rowNumber);
+						for (int i = 0; i < fieldValues.length; i++) {
+							xssfRow.createCell(i).setCellValue(fieldValues[i]);
+						}
+					}
+				} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+					throw new RuntimeException(e);
+				}
+
+				workbook.write(out);
+				out.flush();
+				startIndex += STEP_SIZE;
+				exportRows = exportRowsSupplier.apply(startIndex, STEP_SIZE);
+			}
+			workbook.close();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

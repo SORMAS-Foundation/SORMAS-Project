@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -302,6 +303,11 @@ public class UserController {
 		for (Language language : Language.values()) {
 			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
 		}
+	}
+
+	public void setExportFormatIcons(ComboBox cbExportFormat) {
+		cbExportFormat.setItemIcon(MimeTypes.CSV.getName(),VaadinIcons.FILE_TEXT_O);
+		cbExportFormat.setItemIcon(MimeTypes.XSLX.getName(),VaadinIcons.FILE_TABLE);
 	}
 
 	public void sync() {

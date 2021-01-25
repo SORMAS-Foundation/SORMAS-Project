@@ -315,6 +315,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
+		target.setExportFormat(source.getExportFormat());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		source.getUserRoles().size();
@@ -362,6 +363,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
+		target.setExportFormat(source.getExportFormat());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));

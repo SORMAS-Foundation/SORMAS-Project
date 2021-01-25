@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import de.symeda.sormas.ui.utils.GridExportStreamResourceXLSX;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -101,16 +103,24 @@ public class EventParticipantsView extends AbstractEventView {
 		PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 		addHeaderComponent(exportPopupButton);
 
+		String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
 		{
-			StreamResource streamResource =
-				new GridExportStreamResourceCSV(grid, "sormas_eventParticipants", createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
+			StreamResource streamResource;
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				streamResource = new GridExportStreamResourceXLSX(grid, "sormas_eventParticipants", createFileNameWithCurrentDate("sormas_eventParticipants_", ".xlsx"));
+			} else {
+				streamResource = new GridExportStreamResourceCSV(grid, "sormas_eventParticipants", createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
+			}
 			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 		}
 
 		{
-			StreamResource extendedExportStreamResource =
-				EventParticipantDownloadUtil.createExtendedEventParticipantExportResource(grid.getCriteria());
-
+			StreamResource extendedExportStreamResource;
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				extendedExportStreamResource = EventParticipantDownloadUtil.createExtendedEventParticipantExportResourceXSLX(grid.getCriteria());
+			} else {
+				extendedExportStreamResource = EventParticipantDownloadUtil.createExtendedEventParticipantExportResourceCSV(grid.getCriteria());
+			}
 			addExportButton(
 				extendedExportStreamResource,
 				exportPopupButton,

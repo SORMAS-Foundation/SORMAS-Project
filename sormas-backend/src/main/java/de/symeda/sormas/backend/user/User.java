@@ -110,6 +110,8 @@ public class User extends AbstractDomainObject {
 
 	private Language language;
 
+	private String exportFormat;
+
 	private boolean hasConsentedToGdpr;
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
@@ -313,6 +315,12 @@ public class User extends AbstractDomainObject {
 		this.language = language;
 	}
 
+	public String getExportFormat() {
+		return exportFormat;
+	}
+	public void setExportFormat(String exportFormat) {
+		this.exportFormat = exportFormat;
+	}
 	public boolean isHasConsentedToGdpr() {
 		return hasConsentedToGdpr;
 	}

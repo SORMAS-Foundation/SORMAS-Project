@@ -32,7 +32,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.CsvStreamUtils;
+import de.symeda.sormas.api.utils.ExportStreamUtils;
 import de.symeda.sormas.api.utils.DateHelper;
 
 @Path("/bagexport")
@@ -46,7 +46,7 @@ public class BAGExportResource {
 	@Path("/cases")
 	public Response exportCases(String file) {
 		return createFileDownloadResponse(
-			output -> CsvStreamUtils.writeCsvContentToStream(
+			output -> ExportStreamUtils.writeCsvContentToStream(
 				BAGExportCaseDto.class,
 				(from, to) -> FacadeProvider.getBAGExportFacade().getCaseExportList(from, to),
 				(propertyId, type) -> propertyId,
@@ -62,7 +62,7 @@ public class BAGExportResource {
 	@Path("/contacts")
 	public Response exportContacts(String file) {
 		return createFileDownloadResponse(
-			output -> CsvStreamUtils.writeCsvContentToStream(
+			output -> ExportStreamUtils.writeCsvContentToStream(
 				BAGExportContactDto.class,
 				(from, to) -> FacadeProvider.getBAGExportFacade().getContactExportList(from, to),
 				(propertyId, type) -> propertyId,

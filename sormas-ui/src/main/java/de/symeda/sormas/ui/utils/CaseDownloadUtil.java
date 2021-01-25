@@ -34,19 +34,34 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 
 public class CaseDownloadUtil {
 
-	public static StreamResource createCaseExportResource(
-		CaseCriteria criteria,
-		CaseExportType exportType,
-		ExportConfigurationDto exportConfiguration) {
+	public static StreamResource createCaseExportResourceCSV(
+			CaseCriteria criteria,
+			CaseExportType exportType,
+			ExportConfigurationDto exportConfiguration) {
 
 		return DownloadUtil.createCsvExportStreamResource(
-			CaseExportDto.class,
-			exportType,
-			(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
-				.getExportList(criteria, exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
-			CaseDownloadUtil::captionProvider,
-			DownloadUtil.createFileNameWithCurrentDate("sormas_cases_", ".csv"),
-			exportConfiguration);
+				CaseExportDto.class,
+				exportType,
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
+						.getExportList(criteria, exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
+				CaseDownloadUtil::captionProvider,
+				DownloadUtil.createFileNameWithCurrentDate("sormas_cases_", ".csv"),
+				exportConfiguration);
+	}
+
+	public static StreamResource createCaseExportResourceXLSX(
+			CaseCriteria criteria,
+			CaseExportType exportType,
+			ExportConfigurationDto exportConfiguration) {
+
+		return DownloadUtil.createXslxExportStreamResource(
+				CaseExportDto.class,
+				exportType,
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
+						.getExportList(criteria, exportType, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
+				CaseDownloadUtil::captionProvider,
+				DownloadUtil.createFileNameWithCurrentDate("sormas_cases_", ".xlsx"),
+				exportConfiguration);
 	}
 
 	public static String getPropertyCaption(String propertyId) {

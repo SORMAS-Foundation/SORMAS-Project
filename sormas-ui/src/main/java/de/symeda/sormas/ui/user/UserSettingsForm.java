@@ -40,6 +40,10 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 		CssStyles.style(cbLanguage, CssStyles.COMBO_BOX_WITH_FLAG_ICON);
 		ControllerProvider.getUserController().setFlagIcons(cbLanguage);
 
+		ComboBox cbExportFormat = addField(UserDto.EXPORT_FORMAT, ComboBox.class);
+		CssStyles.style(cbExportFormat, CssStyles.COMBO_BOX_WITH_FLAG_ICON);
+		ControllerProvider.getUserController().setExportFormatIcons(cbExportFormat);
+
 		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
 		if (AuthProvider.KEYCLOAK.equals(authenticationProvider)) {
 			emailTf = addField(UserDto.USER_EMAIL, TextField.class);

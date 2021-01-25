@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Date;
 
+import de.symeda.sormas.ui.utils.GridExportStreamResourceXLSX;
+import de.symeda.sormas.ui.utils.MimeTypes;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -102,44 +104,86 @@ public class SamplesView extends AbstractView {
 
 			exportLayout.addComponent(basicExportButton);
 
-			StreamResource streamResource = new GridExportStreamResourceCSV(
-				sampleListComponent.getGrid(),
-				"sormas_samples",
-				"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv",
-				SampleGrid.EDIT_BTN_ID);
+			StreamResource streamResource;
+			String userExportFormat = UserProvider.getCurrent().getUser().getExportFormat();
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				streamResource = new GridExportStreamResourceXLSX(
+						sampleListComponent.getGrid(),
+						"sormas_samples",
+						"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".xlsx",
+						SampleGrid.EDIT_BTN_ID);
+			} else {
+				streamResource = new GridExportStreamResourceCSV(
+						sampleListComponent.getGrid(),
+						"sormas_samples",
+						"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+						SampleGrid.EDIT_BTN_ID);
+			}
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
-				SampleExportDto.class,
-				null,
-				(Integer start, Integer max) -> FacadeProvider.getSampleFacade()
-					.getExportList(sampleListComponent.getGrid().getCriteria(), start, max),
-				(propertyId, type) -> {
-					String caption = I18nProperties.getPrefixCaption(
-						SampleExportDto.I18N_PREFIX,
-						propertyId,
-						I18nProperties.getPrefixCaption(
-							SampleDto.I18N_PREFIX,
-							propertyId,
-							I18nProperties.getPrefixCaption(
-								CaseDataDto.I18N_PREFIX,
-								propertyId,
-								I18nProperties.getPrefixCaption(
-									ContactDto.I18N_PREFIX,
+			StreamResource extendedExportStreamResource;
+			if (MimeTypes.XSLX.getName().equals(userExportFormat)) {
+				extendedExportStreamResource = DownloadUtil.createXslxExportStreamResource(
+						SampleExportDto.class,
+						null,
+						(Integer start, Integer max) -> FacadeProvider.getSampleFacade()
+								.getExportList(sampleListComponent.getGrid().getCriteria(), start, max),
+						(propertyId, type) -> {
+							String caption = I18nProperties.getPrefixCaption(
+									SampleExportDto.I18N_PREFIX,
 									propertyId,
 									I18nProperties.getPrefixCaption(
-										PersonDto.I18N_PREFIX,
-										propertyId,
-										I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, propertyId))))));
-					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-					}
-					return caption;
-				},
-				createFileNameWithCurrentDate("sormas_samples_", ".csv"),
-				null);
-
+											SampleDto.I18N_PREFIX,
+											propertyId,
+											I18nProperties.getPrefixCaption(
+													CaseDataDto.I18N_PREFIX,
+													propertyId,
+													I18nProperties.getPrefixCaption(
+															ContactDto.I18N_PREFIX,
+															propertyId,
+															I18nProperties.getPrefixCaption(
+																	PersonDto.I18N_PREFIX,
+																	propertyId,
+																	I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, propertyId))))));
+							if (Date.class.isAssignableFrom(type)) {
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+							}
+							return caption;
+						},
+						createFileNameWithCurrentDate("sormas_samples_", ".xlsx"),
+						null);
+			} else {
+				extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
+						SampleExportDto.class,
+						null,
+						(Integer start, Integer max) -> FacadeProvider.getSampleFacade()
+								.getExportList(sampleListComponent.getGrid().getCriteria(), start, max),
+						(propertyId, type) -> {
+							String caption = I18nProperties.getPrefixCaption(
+									SampleExportDto.I18N_PREFIX,
+									propertyId,
+									I18nProperties.getPrefixCaption(
+											SampleDto.I18N_PREFIX,
+											propertyId,
+											I18nProperties.getPrefixCaption(
+													CaseDataDto.I18N_PREFIX,
+													propertyId,
+													I18nProperties.getPrefixCaption(
+															ContactDto.I18N_PREFIX,
+															propertyId,
+															I18nProperties.getPrefixCaption(
+																	PersonDto.I18N_PREFIX,
+																	propertyId,
+																	I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, propertyId))))));
+							if (Date.class.isAssignableFrom(type)) {
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+							}
+							return caption;
+						},
+						createFileNameWithCurrentDate("sormas_samples_", ".csv"),
+						null);
+			}
 			addExportButton(
 				extendedExportStreamResource,
 				exportButton,

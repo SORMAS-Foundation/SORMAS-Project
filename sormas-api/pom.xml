@@ -71,7 +71,11 @@
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 
 </project>

@@ -34,15 +34,26 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 
 public class ContactDownloadUtil {
 
-	public static StreamResource createContactExportResource(ContactCriteria contactCriteria, ExportConfigurationDto exportConfiguration) {
+	public static StreamResource createContactExportResourceCSV(ContactCriteria contactCriteria, ExportConfigurationDto exportConfiguration) {
 		return DownloadUtil.createCsvExportStreamResource(
-			ContactExportDto.class,
-			null,
-			(Integer start, Integer max) -> FacadeProvider.getContactFacade()
-				.getExportList(contactCriteria, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
-			ContactDownloadUtil::captionProvider,
-			DownloadUtil.createFileNameWithCurrentDate("sormas_contacts_", ".csv"),
-			exportConfiguration);
+				ContactExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getContactFacade()
+						.getExportList(contactCriteria, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
+				ContactDownloadUtil::captionProvider,
+				DownloadUtil.createFileNameWithCurrentDate("sormas_contacts_", ".csv"),
+				exportConfiguration);
+	}
+
+	public static StreamResource createContactExportResourceXLSX(ContactCriteria contactCriteria, ExportConfigurationDto exportConfiguration) {
+		return DownloadUtil.createXslxExportStreamResource(
+				ContactExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getContactFacade()
+						.getExportList(contactCriteria, start, max, exportConfiguration, I18nProperties.getUserLanguage()),
+				ContactDownloadUtil::captionProvider,
+				DownloadUtil.createFileNameWithCurrentDate("sormas_contacts_", ".xlsx"),
+				exportConfiguration);
 	}
 
 	public static String getPropertyCaption(String propertyId) {

@@ -47,7 +47,8 @@ public class CustomExportController {
 			ContactDownloadUtil::getPropertyCaption,
 			customExportWindow::close);
 		customExportsLayout.setExportCallback((exportConfig) -> {
-			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, exportConfig), null, true);
+			// TODO support XLSX #839
+			Page.getCurrent().open(ContactDownloadUtil.createContactExportResourceCSV(contactCriteria, exportConfig), null, true);
 		});
 		customExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
