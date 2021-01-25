@@ -1948,8 +1948,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> surveillanceOfficerByEventByEventUuid = eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
-		for (Map.Entry<String, User> entry : surveillanceOfficerByEventByEventUuid.entrySet()) {
+		Map<String, User> responsibleUserByEventByEventUuid =
+			eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
+		for (Map.Entry<String, User> entry : responsibleUserByEventByEventUuid.entrySet()) {
 			try {
 				messagingService.sendMessage(
 					entry.getValue(),
@@ -1966,7 +1967,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			} catch (NotificationDeliveryFailedException e) {
 				logger.error(
 					String.format(
-						"NotificationDeliveryFailedException when trying to notify event surveillance officer about a newly confirmed case. "
+						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case. "
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
 						entry.getValue().getUuid()));
 			}
