@@ -164,21 +164,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		addFields(EventDto.EXTERNAL_ID);
 		addFields(EventDto.EXTERNAL_TOKEN);
+
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
 		DateField endDate = addField(EventDto.END_DATE, DateField.class);
-
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
-
 		addField(EventDto.RISK_LEVEL);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			Collections.singletonList(EventDto.RISK_LEVEL),
-			EventDto.EVENT_STATUS,
-			Collections.singletonList(EventStatus.CLUSTER),
-			true);
 
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
@@ -191,11 +184,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			false);
 		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
 		title.addStyleName(CssStyles.SOFT_REQUIRED);
+
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
 		descriptionField.setRows(2);
 		descriptionField.setDescription(
 			I18nProperties.getPrefixDescription(EventDto.I18N_PREFIX, EventDto.EVENT_DESC, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
+
 		addField(EventDto.DISEASE_TRANSMISSION_MODE, ComboBox.class);
 		addField(EventDto.NOSOCOMIAL, NullableOptionGroup.class);
 
