@@ -1353,7 +1353,12 @@ public class CaseFacadeEjb implements CaseFacade {
 						cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
 				new Long(30 * 24 * 60 * 60) // 30 days
 			));
-		Predicate creationDateFilter = cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
+
+		Predicate creationDateFilter = cb.or(
+			cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
+			cb.or(
+				cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
+				cb.greaterThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
 
 		Predicate filter = cb.and(caseService.createDefaultFilter(cb, root), caseService.createDefaultFilter(cb, root2));
 		if (userFilter != null) {
@@ -1379,6 +1384,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		filter = cb.and(filter, cb.or(sexFilter, birthDateFilter));
 		filter = cb.and(filter, onsetDateFilter);
 		filter = cb.and(filter, creationDateFilter);
+		filter = cb.and(filter, cb.notEqual(root.get(Case.ID), root2.get(Case.ID)));
 
 		cq.where(filter);
 		cq.multiselect(root.get(Case.ID), root2.get(Case.ID), root.get(Case.CREATION_DATE));

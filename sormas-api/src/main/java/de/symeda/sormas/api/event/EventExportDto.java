@@ -41,6 +41,8 @@ public class EventExportDto implements Serializable {
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
+	private Date evolutionDate;
+	private String evolutionComment;
 	private String eventTitle;
 	private String eventDesc;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
@@ -64,7 +66,6 @@ public class EventExportDto implements Serializable {
 	private String srcMediaName;
 	private String srcMediaDetails;
 	private Date reportDateTime;
-
 	private EventJurisdictionDto jurisdiction;
 
 	public EventExportDto(
@@ -78,6 +79,8 @@ public class EventExportDto implements Serializable {
 		String diseaseDetails,
 		Date startDate,
 		Date endDate,
+		Date evolutionDate,
+		String evolutionComment,
 		String eventTitle,
 		String eventDesc,
 		DiseaseTransmissionMode diseaseTransmissionMode,
@@ -118,6 +121,8 @@ public class EventExportDto implements Serializable {
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.evolutionDate = evolutionDate;
+		this.evolutionComment = evolutionComment;
 		this.eventTitle = eventTitle;
 		this.eventDesc = eventDesc;
 		this.diseaseTransmissionMode = diseaseTransmissionMode;
@@ -219,6 +224,24 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(9)
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
+	}
+
+	@Order(10)
+	public String getEvolutionComment() {
+		return evolutionComment;
+	}
+
+	public void setEvolutionComment(String evolutionComment) {
+		this.evolutionComment = evolutionComment;
+	}
+
+	@Order(11)
 	public String getEventTitle() {
 		return eventTitle;
 	}
@@ -227,7 +250,7 @@ public class EventExportDto implements Serializable {
 		this.eventTitle = eventTitle;
 	}
 
-	@Order(10)
+	@Order(12)
 	public String getEventDesc() {
 		return eventDesc;
 	}
@@ -236,27 +259,27 @@ public class EventExportDto implements Serializable {
 		this.eventDesc = eventDesc;
 	}
 
-	@Order(11)
+	@Order(13)
 	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
 		return diseaseTransmissionMode;
 	}
 
-	@Order(12)
+	@Order(14)
 	public YesNoUnknown getNosocomial() {
 		return nosocomial;
 	}
 
-	@Order(13)
+	@Order(15)
 	public YesNoUnknown getTransregionalOutbreak() {
 		return transregionalOutbreak;
 	}
 
-	@Order(14)
+	@Order(16)
 	public String getMeansOfTransport() {
 		return meansOfTransport;
 	}
 
-	@Order(15)
+	@Order(17)
 	public String getRegion() {
 		return region;
 	}
@@ -265,7 +288,7 @@ public class EventExportDto implements Serializable {
 		this.region = region;
 	}
 
-	@Order(16)
+	@Order(18)
 	public String getDistrict() {
 		return district;
 	}
@@ -274,7 +297,7 @@ public class EventExportDto implements Serializable {
 		this.district = district;
 	}
 
-	@Order(17)
+	@Order(19)
 	public String getCommunity() {
 		return community;
 	}
@@ -283,7 +306,7 @@ public class EventExportDto implements Serializable {
 		this.community = community;
 	}
 
-	@Order(18)
+	@Order(20)
 	public String getCity() {
 		return city;
 	}
@@ -292,7 +315,7 @@ public class EventExportDto implements Serializable {
 		this.city = city;
 	}
 
-	@Order(19)
+	@Order(21)
 	public String getStreet() {
 		return street;
 	}
@@ -301,7 +324,7 @@ public class EventExportDto implements Serializable {
 		this.street = street;
 	}
 
-	@Order(20)
+	@Order(22)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
@@ -310,7 +333,7 @@ public class EventExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 	}
 
-	@Order(21)
+	@Order(23)
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
@@ -319,17 +342,17 @@ public class EventExportDto implements Serializable {
 		this.additionalInformation = additionalInformation;
 	}
 
-	@Order(22)
+	@Order(24)
 	public EventSourceType getSrcType() {
 		return srcType;
 	}
 
-	@Order(23)
+	@Order(25)
 	public String getSrcInstitutionalPartnerType() {
 		return srcInstitutionalPartnerType;
 	}
 
-	@Order(24)
+	@Order(26)
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -338,7 +361,7 @@ public class EventExportDto implements Serializable {
 		this.srcFirstName = srcFirstName;
 	}
 
-	@Order(25)
+	@Order(27)
 	public String getSrcLastName() {
 		return srcLastName;
 	}
@@ -347,7 +370,7 @@ public class EventExportDto implements Serializable {
 		this.srcLastName = srcLastName;
 	}
 
-	@Order(26)
+	@Order(28)
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}
@@ -356,27 +379,27 @@ public class EventExportDto implements Serializable {
 		this.srcTelNo = srcTelNo;
 	}
 
-	@Order(27)
+	@Order(29)
 	public String getSrcEmail() {
 		return srcEmail;
 	}
 
-	@Order(28)
+	@Order(30)
 	public String getSrcMediaWebsite() {
 		return srcMediaWebsite;
 	}
 
-	@Order(29)
+	@Order(31)
 	public String getSrcMediaName() {
 		return srcMediaName;
 	}
 
-	@Order(30)
+	@Order(32)
 	public String getSrcMediaDetails() {
 		return srcMediaDetails;
 	}
 
-	@Order(31)
+	@Order(33)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
@@ -385,7 +408,7 @@ public class EventExportDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 	}
 
-	@Order(32)
+	@Order(34)
 	public long getParticipantCount() {
 		return participantCount;
 	}
@@ -394,7 +417,7 @@ public class EventExportDto implements Serializable {
 		this.participantCount = participantCount;
 	}
 
-	@Order(33)
+	@Order(35)
 	public long getCaseCount() {
 		return caseCount;
 	}
@@ -403,12 +426,12 @@ public class EventExportDto implements Serializable {
 		this.caseCount = caseCount;
 	}
 
-	@Order(34)
+	@Order(36)
 	public long getDeathCount() {
 		return deathCount;
 	}
 
-	@Order(35)
+	@Order(37)
 	public String getExternalToken() {
 		return externalToken;
 	}

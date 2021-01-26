@@ -52,12 +52,13 @@ public class EventDto extends PseudonymizableDto {
 	public static final String MULTI_DAY_EVENT = "multiDayEvent";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVOLUTION_DATE = "evolutionDate";
+	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
-	public static final String SEAT_NUMBER = "seatNumber";
 	public static final String TRAVEL_DATE = "travelDate";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
@@ -99,14 +100,14 @@ public class EventDto extends PseudonymizableDto {
 	private Date reportDateTime;
 	@Required
 	private UserReferenceDto reportingUser;
+	private Date evolutionDate;
+	private String evolutionComment;
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
 	private String meansOfTransportDetails;
 	@SensitiveData
 	private String connectionNumber;
-	@SensitiveData
-	private String seatNumber;
 	private Date travelDate;
 
 	private EventSourceType srcType;
@@ -262,6 +263,22 @@ public class EventDto extends PseudonymizableDto {
 		this.reportingUser = reportingUser;
 	}
 
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
+	}
+
+	public String getEvolutionComment() {
+		return evolutionComment;
+	}
+
+	public void setEvolutionComment(String evolutionComment) {
+		this.evolutionComment = evolutionComment;
+	}
+
 	public TypeOfPlace getTypeOfPlace() {
 		return typeOfPlace;
 	}
@@ -292,14 +309,6 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setConnectionNumber(String connectionNumber) {
 		this.connectionNumber = connectionNumber;
-	}
-
-	public String getSeatNumber() {
-		return seatNumber;
-	}
-
-	public void setSeatNumber(String seatNumber) {
-		this.seatNumber = seatNumber;
 	}
 
 	public Date getTravelDate() {

@@ -76,12 +76,13 @@ public class Event extends CoreAdo {
 	public static final String END_DATE = "endDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVOLUTION_DATE = "evolutionDate";
+	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
-	public static final String SEAT_NUMBER = "seatNumber";
 	public static final String TRAVEL_DATE = "travelDate";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
@@ -124,12 +125,13 @@ public class Event extends CoreAdo {
 	private Date endDate;
 	private Date reportDateTime;
 	private User reportingUser;
+	private Date evolutionDate;
+	private String evolutionComment;
 	private Location eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
 	private String meansOfTransportDetails;
 	private String connectionNumber;
-	private String seatNumber;
 	private Date travelDate;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
@@ -293,6 +295,23 @@ public class Event extends CoreAdo {
 		this.reportingUser = reportingUser;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
+	}
+
+	public String getEvolutionComment() {
+		return evolutionComment;
+	}
+
+	public void setEvolutionComment(String evolutionComment) {
+		this.evolutionComment = evolutionComment;
+	}
+
 	@OneToOne(cascade = CascadeType.ALL)
 	public Location getEventLocation() {
 		if (eventLocation == null) {
@@ -339,15 +358,6 @@ public class Event extends CoreAdo {
 
 	public void setConnectionNumber(String connectionNumber) {
 		this.connectionNumber = connectionNumber;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSeatNumber() {
-		return seatNumber;
-	}
-
-	public void setSeatNumber(String seatNumber) {
-		this.seatNumber = seatNumber;
 	}
 
 	public Date getTravelDate() {

@@ -478,6 +478,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getEventStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
 		}
+		if (eventCriteria.getRiskLevel() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.RISK_LEVEL), eventCriteria.getRiskLevel()));
+		}
 		if (eventCriteria.getEventInvestigationStatus() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Event.EVENT_INVESTIGATION_STATUS), eventCriteria.getEventInvestigationStatus()));
@@ -539,17 +542,35 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateFrom())),
-				cb.and(
-					cb.isNotNull(from.get(Event.END_DATE)),
-					cb.lessThan(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
-					cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateFrom())));
+				cb.or(
+					cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
+					cb.and(
+						cb.isNotNull(from.get(Event.END_DATE)),
+						cb.lessThan(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
+						cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateFrom()))));
 		} else if (eventCriteria.getEventDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo()))),
-				cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateTo()));
+				cb.or(
+					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo())),
+					cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateTo())));
+		}
+		if (eventCriteria.getEventEvolutionDateFrom() != null && eventCriteria.getEventEvolutionDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.between(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom(), eventCriteria.getEventEvolutionDateTo()));
+		} else if (eventCriteria.getEventEvolutionDateFrom() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom()));
+		} else if (eventCriteria.getEventEvolutionDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.lessThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateTo()));
 		}
 		if (eventCriteria.getSurveillanceOfficer() != null) {
 			filter = CriteriaBuilderHelper.and(

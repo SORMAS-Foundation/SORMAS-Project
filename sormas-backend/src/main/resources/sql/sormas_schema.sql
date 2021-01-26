@@ -6165,8 +6165,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (299, 'Add index for
 -- 2021-01-05 Type of place details in events entities #2947
 ALTER TABLE events ADD COLUMN connectionNumber varchar(512);
 ALTER TABLE events_history ADD COLUMN connectionNumber varchar(512);
-ALTER TABLE events ADD COLUMN seatNumber varchar(512);
-ALTER TABLE events_history ADD COLUMN seatNumber varchar(512);
 ALTER TABLE events ADD COLUMN travelDate timestamp without time zone;
 ALTER TABLE events_history ADD COLUMN travelDate timestamp without time zone;
 
@@ -6292,11 +6290,20 @@ ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
 
+-- 2021-01-07 Add evolution date and comment to events #3753
+ALTER TABLE events ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events_history ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events ADD COLUMN evolutionComment text;
+ALTER TABLE events_history ADD COLUMN evolutionComment text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add evolution date and comment to events #3753');
+
+
 -- 2020-01-13 Add indexes to optimize event directory performance #3276
 CREATE INDEX IF NOT EXISTS idx_eventparticipant_person_id ON eventparticipant USING hash (person_id);
 CREATE INDEX IF NOT EXISTS idx_eventparticipant_event_id ON eventparticipant USING hash (event_id);
 CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING hash (person_id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add indexes to optimize event directory performance #3276');
+INSERT INTO schema_version (version_number, comment) VALUES (312, 'Add indexes to optimize event directory performance #3276');
 
 -- *** Insert new sql commands BEFORE this line ***
