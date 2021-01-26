@@ -89,6 +89,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -168,6 +169,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
+	@EJB
+	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
@@ -809,7 +812,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction);
 			User currentUser = userService.getCurrentUser();
 
-			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
+			boolean samplePseudonimized = true;
+			if (dto.getAssociatedEventParticipant()!=null){
+				samplePseudonimized = eventParticipantJurisdictionChecker.isPseudonymized(dto.getAssociatedEventParticipant().getUuid());
+			}
+			EventParticipantReferenceDto eventParticipantReference = dto.getAssociatedEventParticipant();
+
+			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, eventParticipantReference!=null?samplePseudonimized:isInJurisdiction, s -> {
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					sampleJurisdiction,
@@ -818,7 +827,6 @@ public class SampleFacadeEjb implements SampleFacade {
 					s.getAssociatedEventParticipant(),
 					pseudonymizer);
 			});
-
 		}
 	}
 
@@ -866,10 +874,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		if (sampleEventParticipant != null) {
-			pseudonymizer.pseudonymizeDto(
-				EventParticipantReferenceDto.class,
-				sampleEventParticipant,
-				eventJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getEventJurisdiction()),
+			pseudonymizer.pseudonymizeDto(EventParticipantReferenceDto.class, sampleEventParticipant,
+				eventParticipantJurisdictionChecker.isPseudonymized(sampleEventParticipant.getUuid()),
 				null);
 		}
 	}
