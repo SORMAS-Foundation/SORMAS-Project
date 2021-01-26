@@ -135,7 +135,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
 
-		setContactCountMethod(EventContactCountMethod.COUNT_ALL_CONTACTS); // Count all contacts by default
+		setContactCountMethod(EventContactCountMethod.ALL); // Count all contacts by default
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
@@ -190,8 +190,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	}
 
 	public void setContactCountMethod(EventContactCountMethod method) {
-		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(!(method == EventContactCountMethod.COUNT_ALL_CONTACTS));
-		getColumn(EventIndexDto.CONTACT_COUNT).setHidden(method == EventContactCountMethod.COUNT_CONTACTS_WITH_SOURCECASE_IN_EVENT);
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(method == EventContactCountMethod.ALL);
+		getColumn(EventIndexDto.CONTACT_COUNT).setHidden(method == EventContactCountMethod.SOURCE_CASE_IN_EVENT);
 	}
 
 	public void reload() {
