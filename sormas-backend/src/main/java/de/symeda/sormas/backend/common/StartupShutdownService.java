@@ -355,6 +355,12 @@ public class StartupShutdownService {
 			userService.persist(admin);
 			userUpdateEvent.fire(new UserUpdateEvent(admin));
 
+
+			if (!configFacade.getCreateDefaultUsers()) {
+				// return if getCreateDefaultUsers() is false
+				return;
+			}
+
 			// Create Surveillance Supervisor
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");
 			surveillanceSupervisor.setUserName("SurvSup");

@@ -130,6 +130,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 
+	private static final String CREATE_DEFAULT_USERS = "createDefaultUsers";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup = "sormas/Properties")
@@ -535,7 +537,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	public int getDashboardMapMarkerLimit() {
-		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
+	    return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
+	}
+
+	public boolean getCreateDefaultUsers(){
+	    return getBoolean(CREATE_DEFAULT_USERS,true);
 	}
 
 	public String getDocgenerationNullReplacement() {
