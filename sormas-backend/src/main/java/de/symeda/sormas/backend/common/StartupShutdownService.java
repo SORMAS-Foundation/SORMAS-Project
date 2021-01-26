@@ -358,8 +358,11 @@ public class StartupShutdownService {
 
 			if (!configFacade.getCreateDefaultUsers()) {
 				// return if getCreateDefaultUsers() is false
+				logger.info("Skipping the creation of default users");
 				return;
 			}
+
+			logger.info("Create default users");
 
 			// Create Surveillance Supervisor
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");
