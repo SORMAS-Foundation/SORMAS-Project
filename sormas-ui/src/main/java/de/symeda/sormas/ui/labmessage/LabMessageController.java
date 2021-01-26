@@ -31,6 +31,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -38,6 +39,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
+import de.symeda.sormas.ui.samples.PathogenTestSelectionField;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
 import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -168,7 +170,12 @@ public class LabMessageController {
 		selectionField.addCommitListener(() -> {
 			SampleDto sampleDto = selectField.getValue();
 			if (sampleDto != null) {
-				createPathogenTest(sampleDto, labMessageDto);
+				List<PathogenTestDto> tests = FacadeProvider.getPathogenTestFacade().getAllBySample(sampleDto.toReference());
+				if (tests.isEmpty()) {
+					createPathogenTest(sampleDto, labMessageDto);
+				} else {
+					pickOrCreateTest(sampleDto, labMessageDto, tests, samples.size());
+				}
 			} else if (CaseDataDto.class.equals(dto.getClass())) {
 				createSample((CaseDataDto) dto, labMessageDto);
 			} else if (ContactDto.class.equals(dto.getClass())) {
@@ -183,6 +190,48 @@ public class LabMessageController {
 		selectionField.addDiscardListener(() -> window.close());
 
 		showFormWithLabMessage(labMessageDto, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample));
+	}
+
+	private void pickOrCreateTest(SampleDto sampleDto, LabMessageDto labMessageDto, List<PathogenTestDto> tests, int caseSampleCount) {
+		PathogenTestSelectionField selectField = new PathogenTestSelectionField(tests, I18nProperties.getString(Strings.infoPickOrCreateSample));
+
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		final CommitDiscardWrapperComponent<PathogenTestSelectionField> selectionField = new CommitDiscardWrapperComponent(selectField);
+		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+		selectionField.addCommitListener(() -> {
+			PathogenTestDto testDto = selectField.getValue();
+			if (testDto != null) {
+				editPatogenTest(sampleDto, testDto, caseSampleCount);
+			} else {
+				createPathogenTest(sampleDto, labMessageDto);
+			}
+			window.close();
+		});
+		selectField.setSelectionChangeCallback((commitAllowed) -> {
+			selectionField.getCommitButton().setEnabled(commitAllowed);
+		});
+		selectionField.getCommitButton().setEnabled(false);
+		selectionField.addDiscardListener(() -> window.close());
+
+		showFormWithLabMessage(labMessageDto, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample));
+	}
+
+	private void editPatogenTest(SampleDto sampleDto, PathogenTestDto testDto, int caseSampleCount) {
+		PathogenTestForm form = new PathogenTestForm(sampleDto, false, caseSampleCount, testDto.isPseudonymized());
+		form.setValue(testDto);
+
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT), form.getFieldGroup());
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditPathogenTestResult));
+
+		editView.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				savePathogenTest(form.getValue(), onSavedPathogenTest);
+				doneCallback.run();
+			}
+		});
 	}
 
 	private void createCase(LabMessageDto labMessageDto, PersonDto person) {
