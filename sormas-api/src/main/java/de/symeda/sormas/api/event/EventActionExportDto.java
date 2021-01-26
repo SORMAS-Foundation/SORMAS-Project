@@ -39,6 +39,7 @@ public class EventActionExportDto implements Serializable {
 	private Date eventEvolutionDate;
 	private String eventEvolutionComment;
 	private EventStatus eventStatus;
+	private RiskLevel eventRiskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private ActionMeasure actionMeasure;
 	private String actionTitle;
@@ -57,6 +58,7 @@ public class EventActionExportDto implements Serializable {
 		Date eventEvolutionDate,
 		String eventEvolutionComment,
 		EventStatus eventStatus,
+		RiskLevel eventRiskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
 		ActionMeasure actionMeasure,
 		String actionTitle,
@@ -78,6 +80,7 @@ public class EventActionExportDto implements Serializable {
 		this.eventEvolutionDate = eventEvolutionDate;
 		this.eventEvolutionComment = eventEvolutionComment;
 		this.eventStatus = eventStatus;
+		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.actionMeasure = actionMeasure;
 		this.actionTitle = actionTitle;
@@ -126,41 +129,46 @@ public class EventActionExportDto implements Serializable {
 	}
 
 	@Order(7)
+	public RiskLevel getEventRiskLevel() {
+		return eventRiskLevel;
+	}
+
+	@Order(8)
 	public EventInvestigationStatus getEventInvestigationStatus() {
 		return eventInvestigationStatus;
 	}
 
-	@Order(8)
+	@Order(9)
 	public ActionMeasure getActionMeasure() {
 		return actionMeasure;
 	}
 
-	@Order(9)
+	@Order(10)
 	public String getActionTitle() {
 		return actionTitle;
 	}
 
-	@Order(10)
+	@Order(11)
 	public Date getActionCreationDate() {
 		return actionCreationDate;
 	}
 
-	@Order(11)
+	@Order(12)
 	public Date getActionChangeDate() {
 		return actionChangeDate;
 	}
 
-	@Order(12)
+	@Order(13)
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
 
-	@Order(13)
+	@Order(14)
 	public ActionPriority getActionPriority() {
 		return actionPriority;
 	}
 
-	@Order(14)
+	@Order(15)
 	public UserReferenceDto getActionLastModifiedBy() {
 		return actionLastModifiedBy;
 	}
