@@ -42,7 +42,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataSelectionField;
@@ -63,7 +62,7 @@ public class CampaignFormDataImporter extends DataImporter {
 	public CampaignFormDataImporter(
 		File inputFile,
 		boolean hasEntityClassRow,
-		UserReferenceDto currentUser,
+		UserDto currentUser,
 		String campaignFormMetaUuid,
 		CampaignReferenceDto campaignReferenceDto) {
 		super(inputFile, hasEntityClassRow, currentUser);

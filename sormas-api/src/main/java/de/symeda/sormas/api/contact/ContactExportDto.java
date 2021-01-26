@@ -370,21 +370,27 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(10)
-	@ExportProperty(PersonDto.FIRST_NAME)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.FIRST_NAME })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getFirstName() {
 		return firstName;
 	}
 
 	@Order(11)
-	@ExportProperty(PersonDto.LAST_NAME)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.LAST_NAME })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getLastName() {
 		return lastName;
 	}
 
 	@Order(12)
-	@ExportProperty(PersonDto.SALUTATION)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.SALUTATION })
 	@ExportGroup(ExportGroupType.PERSON)
 	@HideForCountriesExcept
 	public String getSalutation() {
@@ -392,21 +398,27 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(13)
-	@ExportProperty(PersonDto.SEX)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.SEX })
 	@ExportGroup(ExportGroupType.PERSON)
 	public Sex getSex() {
 		return sex;
 	}
 
 	@Order(14)
-	@ExportProperty(PersonDto.BIRTH_DATE)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.BIRTH_DATE })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
 	}
 
 	@Order(15)
-	@ExportProperty(PersonDto.APPROXIMATE_AGE)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.APPROXIMATE_AGE })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getApproximateAge() {
 		return approximateAge;
@@ -606,14 +618,18 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(41)
-	@ExportProperty(PersonDto.PRESENT_CONDITION)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.PRESENT_CONDITION })
 	@ExportGroup(ExportGroupType.PERSON)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
 	@Order(42)
-	@ExportProperty(PersonDto.DEATH_DATE)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.DEATH_DATE })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public Date getDeathDate() {
 		return deathDate;
@@ -683,28 +699,36 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(52)
-	@ExportProperty(PersonDto.PHONE)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.PHONE })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getPhone() {
 		return phone;
 	}
 
 	@Order(53)
-	@ExportProperty(PersonDto.EMAIL_ADDRESS)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.EMAIL_ADDRESS })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getEmailAddress() {
 		return emailAddress;
 	}
 
 	@Order(60)
-	@ExportProperty(PersonDto.OCCUPATION_TYPE)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.OCCUPATION_TYPE })
 	@ExportGroup(ExportGroupType.PERSON)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
 	@Order(61)
-	@ExportProperty(PersonDto.ARMED_FORCES_RELATION_TYPE)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ARMED_FORCES_RELATION_TYPE })
 	@ExportGroup(ExportGroupType.PERSON)
 	public ArmedForcesRelationType getArmedForcesRelationType() {
 		return armedForcesRelationType;
@@ -772,7 +796,9 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(69)
-	@ExportProperty(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN)
+	@ExportProperty({
+		CaseDataDto.EPI_DATA,
+		EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN })
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
 	public YesNoUnknown getContactWithSourceCaseKnown() {
 		return contactWithSourceCaseKnown;
@@ -823,7 +849,9 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(80)
-	@ExportProperty(PersonDto.BIRTH_NAME)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.BIRTH_NAME })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	@HideForCountriesExcept
 	public String getBirthName() {
@@ -831,7 +859,9 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(81)
-	@ExportProperty(PersonDto.BIRTH_COUNTRY)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.BIRTH_COUNTRY })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	@HideForCountriesExcept
 	public String getBirthCountry() {
@@ -839,7 +869,9 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(82)
-	@ExportProperty(PersonDto.CITIZENSHIP)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.CITIZENSHIP })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	@HideForCountriesExcept
 	public String getCitizenship() {

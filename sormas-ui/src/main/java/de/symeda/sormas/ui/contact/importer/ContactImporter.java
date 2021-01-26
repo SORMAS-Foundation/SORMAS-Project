@@ -29,7 +29,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.contact.ContactSelectionField;
@@ -60,7 +60,7 @@ public class ContactImporter extends DataImporter {
 	private CaseDataDto caze;
 	private UI currentUI;
 
-	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser, CaseDataDto caze) {
+	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
 
 		super(inputFile, hasEntityClassRow, currentUser);
 		this.caze = caze;
@@ -91,7 +91,7 @@ public class ContactImporter extends DataImporter {
 
 		final PersonDto newPersonTemp = PersonDto.build();
 		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
-		newContactTemp.setReportingUser(currentUser);
+		newContactTemp.setReportingUser(currentUser.toReference());
 
 		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
 			// If the cell entry is not empty, try to insert it into the current contact or person object
@@ -388,7 +388,8 @@ public class ContactImporter extends DataImporter {
 					}
 				}
 			} catch (IntrospectionException e) {
-				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
+//				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
+				continue;
 			} catch (InvocationTargetException | IllegalAccessException e) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));

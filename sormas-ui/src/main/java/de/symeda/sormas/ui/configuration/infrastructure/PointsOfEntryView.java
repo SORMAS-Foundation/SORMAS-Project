@@ -214,8 +214,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		activeFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.ACTIVE));
 		activeFilter.addItem(Boolean.TRUE);
 		activeFilter.addItem(Boolean.FALSE);
-		activeFilter.setItemCaption(Boolean.TRUE, DataHelper.parseBoolean(Boolean.TRUE));
-		activeFilter.setItemCaption(Boolean.FALSE, DataHelper.parseBoolean(Boolean.FALSE));
+		activeFilter.setItemCaption(Boolean.TRUE, DataHelper.stringifyBoolean(Boolean.TRUE));
+		activeFilter.setItemCaption(Boolean.FALSE, DataHelper.stringifyBoolean(Boolean.FALSE));
 		activeFilter.addValueChangeListener(e -> {
 			criteria.active((Boolean) e.getProperty().getValue());
 			navigateTo(criteria);

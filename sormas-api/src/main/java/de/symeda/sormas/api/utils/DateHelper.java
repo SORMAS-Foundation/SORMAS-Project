@@ -141,34 +141,34 @@ public final class DateHelper {
 		}
 	}
 
-	public static Date parseDateWithException(String date) throws ParseException {
+	public static Date parseDateWithException(String date, String dateFormat) throws ParseException {
 
 		if (date != null) {
-			try {
-				SimpleDateFormat dateFormat = clone(SHORT_DATE_FORMAT);
-				dateFormat.setLenient(false);
-				return dateFormat.parse(date);
-			} catch (ParseException e) {
-				// Try next format
-			}
-			try {
-				SimpleDateFormat dateFormat = clone(DATE_FORMAT);
-				dateFormat.setLenient(false);
-				return dateFormat.parse(date);
-			} catch (ParseException e) {
-				// Try next format
-			}
-			try {
-				SimpleDateFormat dateFormat = clone(DATE_FORMAT_DOTS);
-				dateFormat.setLenient(false);
-				return dateFormat.parse(date);
-			} catch (ParseException e) {
-				// Try next format
-			}
-			// If this fails, an exception is thrown
-			SimpleDateFormat dateFormat = clone(DATE_FORMAT_HYPHEN);
-			dateFormat.setLenient(false);
-			return dateFormat.parse(date);
+//			try {
+			SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+			formatter.setLenient(false);
+			return formatter.parse(date);
+//			} catch (ParseException e) {
+//				// Try next format
+//			}
+//			try {
+//				SimpleDateFormat dateFormat = clone(DATE_FORMAT);
+//				dateFormat.setLenient(false);
+//				return dateFormat.parse(date);
+//			} catch (ParseException e) {
+//				// Try next format
+//			}
+//			try {
+//				SimpleDateFormat dateFormat = clone(DATE_FORMAT_DOTS);
+//				dateFormat.setLenient(false);
+//				return dateFormat.parse(date);
+//			} catch (ParseException e) {
+//				// Try next format
+//			}
+//			// If this fails, an exception is thrown
+//			SimpleDateFormat dateFormat = clone(DATE_FORMAT_HYPHEN);
+//			dateFormat.setLenient(false);
+//			return dateFormat.parse(date);
 		} else {
 			return null;
 		}

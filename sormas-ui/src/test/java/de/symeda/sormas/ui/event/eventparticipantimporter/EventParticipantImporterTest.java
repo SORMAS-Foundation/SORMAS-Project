@@ -37,7 +37,6 @@ import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -76,7 +75,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		// Successful import of 5 event participant
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_success.csv").toURI());
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef);
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -119,7 +118,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef) {
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
 
 				@Override
 				protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
@@ -179,7 +178,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef) {
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
 
 				@Override
 				protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
@@ -243,7 +242,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef) {
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
 
 				@Override
 				protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
@@ -287,7 +286,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef) {
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
 
 				@Override
 				protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
@@ -326,7 +325,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		// Successful import of 5 event participant
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_comment_success.csv").toURI());
 		EventParticipantImporterExtension eventParticipantImporter =
-			new EventParticipantImporterExtension(csvFile, false, user.toReference(), eventRef);
+			new EventParticipantImporterExtension(csvFile, false, user, eventRef);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -335,7 +334,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {
 
-		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser, EventReferenceDto event) {
+		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
 			super(inputFile, hasEntityClassRow, currentUser, event);
 		}
 

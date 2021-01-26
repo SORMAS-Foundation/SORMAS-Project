@@ -9,7 +9,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ExportProperty {
 
-	String value();
+	Class<?> entity() default Object.class;
+
+	String[] value();
 
 	boolean combined() default false;
 }

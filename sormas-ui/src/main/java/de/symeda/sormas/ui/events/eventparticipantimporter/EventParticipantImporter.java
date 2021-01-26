@@ -50,7 +50,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.DataImporter;
@@ -82,7 +82,7 @@ public class EventParticipantImporter extends DataImporter {
 	private final EventReferenceDto event;
 	private UI currentUI;
 
-	public EventParticipantImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser, EventReferenceDto event) {
+	public EventParticipantImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
 		super(inputFile, hasEntityClassRow, currentUser);
 		this.event = event;
 
@@ -114,7 +114,7 @@ public class EventParticipantImporter extends DataImporter {
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
-		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event, currentUser);
+		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event, currentUser.toReference());
 		newEventParticipantTemp.setPerson(newPersonTemp);
 
 		boolean eventParticipantHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {

@@ -4,7 +4,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,13 +104,16 @@ public abstract class DataImporter {
 	 */
 	private char csvSeparator;
 
-	protected UserReferenceDto currentUser;
+	protected UserDto currentUser;
 	private CSVWriter errorReportCsvWriter;
 
-	public DataImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
+	private final EnumCaptionCache enumCaptionCache;
+
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
+		this.enumCaptionCache = new EnumCaptionCache(currentUser.getLanguage());
 
 		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
 		Path errorReportFilePath = exportDirectory.resolve(
@@ -365,12 +367,25 @@ public abstract class DataImporter {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
-			pd.getWriteMethod().invoke(element, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
+			Enum enumValue = null;
+			Class<Enum> enumType = (Class<Enum>) propertyType;
+			try {
+				enumValue = Enum.valueOf(enumType, entry.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				// ignore
+			}
+
+			if (enumValue == null) {
+				enumValue = enumCaptionCache.getEnumByCaption(enumType, entry);
+			}
+
+			pd.getWriteMethod().invoke(element, enumValue);
+
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
 			try {
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry));
+				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, currentUser.getLanguage().getDateFormat()));
 				return true;
 			} catch (ParseException e) {
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, pd.getName()));
