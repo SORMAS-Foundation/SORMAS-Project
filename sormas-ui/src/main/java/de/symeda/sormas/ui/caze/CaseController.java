@@ -158,11 +158,30 @@ public class CaseController {
 	}
 
 	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+		if (event.getDisease() == null) {
+			new Notification(
+				I18nProperties.getString(Strings.headingCreateNewCaseIssue),
+				I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
+		if (disease == null) {
+			new Notification(
+					I18nProperties.getString(Strings.headingCreateNewCaseIssue),
+					I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			return;
+		}
+
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
