@@ -1,12 +1,24 @@
 package de.symeda.sormas.ui.person;
 
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.VerticalLayout;
+import java.util.HashMap;
 
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class PersonsView extends AbstractView {
 
@@ -14,6 +26,8 @@ public class PersonsView extends AbstractView {
 
 	private final PersonCriteria criteria;
 	private final FilteredGrid<?, PersonCriteria> grid;
+	private HashMap<Button, String> associationButtons;
+	private Button activeAssociationButton;
 	private PersonFilterForm filterForm;
 
 	public PersonsView() {
@@ -23,7 +37,9 @@ public class PersonsView extends AbstractView {
 		grid = new PersonGrid(criteria);
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-//		gridLayout.addComponent(createRelatedToFilterBar());
+		final HorizontalLayout associationFilterBar = createAssociationFilterBar();
+		gridLayout.addComponent(associationFilterBar);
+		gridLayout.setComponentAlignment(associationFilterBar, Alignment.MIDDLE_RIGHT);
 		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(true);
@@ -32,7 +48,7 @@ public class PersonsView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
-//		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+		grid.getDataProvider().addDataProviderListener(e -> updateAssociationButtons());
 
 		addComponent(gridLayout);
 	}
@@ -52,11 +68,27 @@ public class PersonsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-//		updateStatusButtons();
+		updateAssociationButtons();
 
 		filterForm.setValue(criteria);
 
 		applyingCriteria = false;
+	}
+
+	private void updateAssociationButtons() {
+
+		associationButtons.keySet().forEach(b -> {
+			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
+			b.setCaption(associationButtons.get(b));
+			if (b.getData() == criteria.getPersonAssociation()) {
+				activeAssociationButton = b;
+			}
+		});
+		CssStyles.removeStyles(activeAssociationButton, CssStyles.BUTTON_FILTER_LIGHT);
+		if (activeAssociationButton != null) {
+			activeAssociationButton.setCaption(
+				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+		}
 	}
 
 	public VerticalLayout createFilterBar() {
@@ -79,5 +111,39 @@ public class PersonsView extends AbstractView {
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
+	}
+
+	public HorizontalLayout createAssociationFilterBar() {
+		HorizontalLayout associationFilterLayout = new HorizontalLayout();
+		associationFilterLayout.setSpacing(true);
+		associationFilterLayout.setMargin(false);
+		associationFilterLayout.setWidth(100, Unit.PERCENTAGE);
+		associationFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		associationButtons = new HashMap<>();
+
+		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
+			criteria.personAssociation(null);
+			navigateTo(criteria);
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+		statusAll.setCaptionAsHtml(true);
+
+		associationFilterLayout.addComponent(statusAll);
+		associationButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
+		activeAssociationButton = statusAll;
+
+		for (PersonAssociation association : PersonAssociation.values()) {
+			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
+				criteria.personAssociation(association);
+				navigateTo(criteria);
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+			associationButton.setData(association);
+			associationButton.setCaptionAsHtml(true);
+
+			associationFilterLayout.addComponent(associationButton);
+			associationButtons.put(associationButton, association.toString());
+		}
+
+		return associationFilterLayout;
 	}
 }

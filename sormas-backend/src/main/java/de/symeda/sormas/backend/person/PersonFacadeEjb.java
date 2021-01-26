@@ -195,35 +195,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		return personService.exists(personUuid);
 	}
 
-	// multiselect does not work for person, because getting all persons requires multiple querries and we currently don't have an abstraction for this
-	//	@Override
-	//	public List<PersonIndexDto> getIndexList(UserReferenceDto userRef) {
-	//
-	//		User user = userService.getByReferenceDto(userRef);
-	//		if (user == null) {
-	//			return Collections.emptyList();
-	//		}
-	//		
-	//		CriteriaBuilder cb = em.getCriteriaBuilder();
-	//		CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-	//		Root<Person> person = cq.from(Person.class);
-	//
-	//		cq.multiselect(person.get(Person.UUID), 
-	//				person.get(Person.SEX), person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME),
-	//				person.get(Person.PRESENT_CONDITION), person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM),
-	//				person.get(Person.BIRTHDATE_YYYY), person.get(Person.APPROXIMATE_AGE), person.get(Person.APPROXIMATE_AGE_TYPE),
-	//				person.get(Person.DEATH_DATE));
-	//
-	//		Predicate filter = personService.createUserFilter(cb, cq, person, user);
-	//
-	//		if (filter != null) {
-	//			cq.where(filter);
-	//		}
-	//
-	//		List<PersonIndexDto> resultList = em.createQuery(cq).getResultList();
-	//		return resultList;
-	//	}
-
 	@Override
 	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts) {
 
@@ -549,7 +520,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (personCriteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(personCriteria, cb, person);
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(personCriteria, cq, cb, person);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -613,7 +584,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		if (personCriteria != null) {
 			personService.createUserFilter(cb, cq, person);
-			Predicate criteriaFilter = personService.buildCriteriaFilter(personCriteria, cb, person);
+			Predicate criteriaFilter = personService.buildCriteriaFilter(personCriteria, cq, cb, person);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 

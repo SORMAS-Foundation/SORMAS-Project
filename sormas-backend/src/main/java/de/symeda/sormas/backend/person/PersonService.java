@@ -46,13 +46,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.Region;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -61,6 +54,7 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -74,7 +68,9 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.utils.CaseJoins;
 
@@ -160,7 +156,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return null; // TODO: 22/01/2021 extend this
 	}
 
-	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, CriteriaBuilder cb, From<?, Person> personFrom) {
+	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Person> personFrom) {
 
 		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
@@ -193,6 +189,31 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		andEqualsReferenceDto(cb, region, filter, personCriteria.getRegion());
 		andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
 		andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
+		
+		if (personCriteria.getPersonAssociation() != null) {
+			switch (personCriteria.getPersonAssociation()) {
+
+			case CASE:
+				final Subquery<Case> caseSubquery = cq.subquery(Case.class);
+				final Root<Case> caseRoot = caseSubquery.from(Case.class);
+				caseSubquery.select(caseRoot.get(Case.ID)).where(cb.equal(caseRoot.get(Case.PERSON), personFrom));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(caseSubquery));
+				break;
+			case CONTACT:
+				final Subquery<Contact> contactSubquery = cq.subquery(Contact.class);
+				final Root<Contact> contactRoot = contactSubquery.from(Contact.class);
+				contactSubquery.select(contactRoot.get(Contact.ID)).where(cb.equal(contactRoot.get(Contact.PERSON), personFrom));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(contactSubquery));
+				break;
+			case EVENT_PARTICIPANT:
+				final Subquery<EventParticipant> eventParticipantSubquery = cq.subquery(EventParticipant.class);
+				final Root<EventParticipant> eventParticipantRoot = eventParticipantSubquery.from(EventParticipant.class);
+				eventParticipantSubquery.select(eventParticipantRoot.get(EventParticipant.ID))
+					.where(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON), personFrom));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(eventParticipantSubquery));
+				break;
+			}
+		}
 
 		return filter;
 	}

@@ -148,6 +148,7 @@ public interface Strings {
 	String entityDocuments = "entityDocuments";
 	String entityEvent = "entityEvent";
 	String entityEventParticipant = "entityEventParticipant";
+	String entityEventParticipants = "entityEventParticipants";
 	String entityEvents = "entityEvents";
 	String entityExposure = "entityExposure";
 	String entityGathering = "entityGathering";

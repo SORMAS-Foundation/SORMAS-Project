@@ -246,7 +246,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties) {
 
-		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
+		if ((eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) && eventParticipantCriteria.getPerson() == null) {
 			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
 		}
 

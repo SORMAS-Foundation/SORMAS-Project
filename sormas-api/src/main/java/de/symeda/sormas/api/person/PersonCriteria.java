@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -15,6 +17,7 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String PERSONASSOCIATION = "personAssociation";
 
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
@@ -24,6 +27,7 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	private PersonAssociation personAssociation;
 
 	public Integer getBirthdateYYYY() {
 		return birthdateYYYY;
@@ -87,5 +91,18 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 
 	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
+	}
+
+	public PersonAssociation getPersonAssociation() {
+		return personAssociation;
+	}
+
+	public void setPersonAssociation(PersonAssociation personAssociation) {
+		this.personAssociation = personAssociation;
+	}
+
+	public PersonCriteria personAssociation(PersonAssociation personAssociation) {
+		this.personAssociation = personAssociation;
+		return this;
 	}
 }
