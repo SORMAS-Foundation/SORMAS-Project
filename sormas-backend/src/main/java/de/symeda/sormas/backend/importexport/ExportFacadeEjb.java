@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -196,16 +195,8 @@ public class ExportFacadeEjb implements ExportFacade {
 
 	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source, boolean checkChangeDate) {
 
-		ExportConfiguration target = exportConfigurationService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new ExportConfiguration();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		ExportConfiguration target =
+			DtoHelper.fillOrBuildEntity(source, exportConfigurationService.getByUuid(source.getUuid()), ExportConfiguration::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setUser(userService.getByReferenceDto(source.getUser()));

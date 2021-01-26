@@ -375,12 +375,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	private District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new District();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());

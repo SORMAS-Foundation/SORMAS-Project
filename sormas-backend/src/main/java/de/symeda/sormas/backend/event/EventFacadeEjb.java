@@ -604,15 +604,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
-		Event target = eventService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Event();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());

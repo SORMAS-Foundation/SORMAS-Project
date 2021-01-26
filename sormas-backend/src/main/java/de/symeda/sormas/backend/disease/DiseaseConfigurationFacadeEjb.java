@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.disease;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -224,15 +223,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {
 
-		DiseaseConfiguration target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new DiseaseConfiguration();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		DiseaseConfiguration target =
+			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), DiseaseConfiguration::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setActive(source.getActive());
