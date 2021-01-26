@@ -30,6 +30,7 @@
 
 package de.symeda.sormas.backend.docgeneration;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,6 +55,8 @@ import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.apache.velocity.util.introspection.SecureUberspector;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import fr.opensagres.xdocreport.core.XDocReportException;
@@ -71,7 +74,7 @@ public class TemplateEngine {
 
 	public DocumentVariables extractTemplateVariablesDocx(File templateFile) throws IOException, XDocReportException {
 		FileInputStream templateInputStream = new FileInputStream(templateFile);
-		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateInputStream, TemplateEngineKind.Velocity);
+		IXDocReport report = readXDocReport(templateInputStream);
 
 		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 		report.extractFields(extractor);
@@ -90,7 +93,7 @@ public class TemplateEngine {
 
 	public byte[] generateDocumentDocx(Properties properties, File templateFile) throws IOException, XDocReportException {
 		FileInputStream templateInputStream = new FileInputStream(templateFile);
-		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateInputStream, TemplateEngineKind.Velocity);
+		IXDocReport report = readXDocReport(templateInputStream);
 		IContext context = report.createContext();
 
 		for (Object key : properties.keySet()) {
@@ -134,11 +137,26 @@ public class TemplateEngine {
 
 	public void validateTemplateDocx(InputStream templateInputStream) {
 		try {
-			IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateInputStream, TemplateEngineKind.Velocity);
+			IXDocReport report = readXDocReport(templateInputStream);
 			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 			report.extractFields(extractor);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getMessage());
+		}
+	}
+
+	protected IXDocReport readXDocReport(InputStream templateInputStream) throws IOException, XDocReportException {
+		try {
+			// Sanitize docx template for XXEs
+			WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(templateInputStream);
+			wordMLPackage.getDocumentModel();
+
+			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+			wordMLPackage.save(outStream);
+			ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
+			return XDocReportRegistry.getRegistry().loadReport(inStream, TemplateEngineKind.Velocity);
+		} catch (Docx4JException e) {
+			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 	}
 
