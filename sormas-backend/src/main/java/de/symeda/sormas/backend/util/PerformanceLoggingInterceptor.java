@@ -25,7 +25,6 @@ public class PerformanceLoggingInterceptor {
 	/**
 	 * Avoids fast but noisy and mostly internal EJB calls to be logged on DEBUG level.
 	 */
-
 	private static final int SIGNIFANT_DURATION = 5;
 
 	private final Logger logger = LoggerFactory.getLogger(PerformanceLoggingInterceptor.class);
