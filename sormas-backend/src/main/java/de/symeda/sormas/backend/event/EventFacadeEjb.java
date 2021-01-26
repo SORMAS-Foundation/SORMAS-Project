@@ -229,11 +229,13 @@ public class EventFacadeEjb implements EventFacade {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
+			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVOLUTION_DATE),
 			event.get(Event.EVENT_TITLE),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
@@ -279,6 +281,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
+				case EventIndexDto.EVOLUTION_DATE:
 				case EventIndexDto.EVENT_TITLE:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:
@@ -409,6 +412,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVOLUTION_DATE),
+			event.get(Event.EVOLUTION_COMMENT),
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.DISEASE_TRANSMISSION_MODE),
@@ -615,6 +620,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
@@ -703,6 +710,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
