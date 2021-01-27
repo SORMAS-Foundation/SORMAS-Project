@@ -21,7 +21,10 @@
 package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +36,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -42,6 +46,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
@@ -79,5 +84,26 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have two entries
 		assertThat(results, Matchers.hasSize(2));
+	}
+
+	@Test
+	public void testGetByEventUuids() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+
+		EventDto event1 = creator.createEvent(user.toReference());
+		EventDto event2 = creator.createEvent(user.toReference());
+
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+		creator.createEventParticipant(event1.toReference(), person1, user.toReference());
+		creator.createEventParticipant(event1.toReference(), person2, user.toReference());
+		creator.createEventParticipant(event2.toReference(), person1, user.toReference());
+
+		List<EventParticipantDto> eps = getEventParticipantFacade().getByEventUuids(Collections.singletonList(event1.getUuid()));
+		assertThat(eps, hasSize(2));
+		eps = getEventParticipantFacade().getByEventUuids(Arrays.asList(event1.getUuid(), event2.getUuid()));
+		assertThat(eps, hasSize(3));
 	}
 }
