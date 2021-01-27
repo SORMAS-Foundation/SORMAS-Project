@@ -24,6 +24,12 @@ public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 
 		createConfigurations();
 		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+
+		/*
+		 * update relies on that all serverFeature configurations are already present,
+		 * that's why the createMissing needs to be run before.
+		 */
+		featureConfigurationService.createMissingFeatureConfigurations();
 		featureConfigurationService.updateFeatureConfigurations();
 	}
 

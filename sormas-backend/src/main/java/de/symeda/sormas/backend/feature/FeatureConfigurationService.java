@@ -126,7 +126,7 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilter<Featur
 
 		List<FeatureConfiguration> featureConfigurations = getAll();
 		Map<FeatureType, FeatureConfiguration> existingListOfConfigurations =
-			featureConfigurations.stream().collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity()));
+			featureConfigurations.stream().collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity(), (e1, e2) -> e2));
 
 		FeatureType.getAllServerFeatures().forEach(featureType -> {
 			FeatureConfiguration savedConfiguration = existingListOfConfigurations.get(featureType);
@@ -141,7 +141,7 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilter<Featur
 
 		List<FeatureConfiguration> featureConfigurations = getAll();
 		Map<FeatureType, FeatureConfiguration> featureConfigurationMap =
-			featureConfigurations.stream().collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity()));
+			featureConfigurations.stream().collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity(), (e1, e2) -> e2));
 
 		FeatureType.getAllServerFeatures().forEach(featureType -> {
 			if (featureType.isDependent()) {
