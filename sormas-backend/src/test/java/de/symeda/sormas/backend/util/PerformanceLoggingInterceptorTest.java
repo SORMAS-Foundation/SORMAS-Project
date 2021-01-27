@@ -2,13 +2,6 @@ package de.symeda.sormas.backend.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.Method;
-
-import javax.interceptor.InvocationContext;
 
 import org.junit.Test;
 
@@ -18,20 +11,19 @@ import org.junit.Test;
  */
 public class PerformanceLoggingInterceptorTest {
 
+	/**
+	 * Only tests the String inspection but avoids mocking due to massive performance impacts on other unit tests in the same test run.
+	 */
 	@Test
 	public void testGetInvokedMethod() {
 
-		InvocationContext context = mock(InvocationContext.class);
-		Method method = mock(Method.class);
-		when(context.getMethod()).thenReturn(method);
+		assertThat(
+			PerformanceLoggingInterceptor.getInvokedMethod("de.symeda.sormas.backend.region.CommunityService@15301bba", "count"),
+			equalTo("CommunityService.count"));
 
-		when(context.getTarget()).thenReturn("de.symeda.sormas.backend.region.CommunityService@15301bba");
-		when(context.getMethod().getName()).thenReturn("count");
-		assertThat(PerformanceLoggingInterceptor.getInvokedMethod(context), equalTo("CommunityService.count"));
-
-		when(context.getTarget()).thenReturn("de.symeda.sormas.backend.facility.FacilityFacadeEjb$FacilityFacadeEjbLocal@630e5556");
-		assertThat(PerformanceLoggingInterceptor.getInvokedMethod(context), equalTo("FacilityFacadeEjb.count"));
-
-		reset(context, method);
+		assertThat(
+			PerformanceLoggingInterceptor
+				.getInvokedMethod("de.symeda.sormas.backend.facility.FacilityFacadeEjb$FacilityFacadeEjbLocal@630e5556", "count"),
+			equalTo("FacilityFacadeEjb.count"));
 	}
 }
