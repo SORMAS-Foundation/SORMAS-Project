@@ -327,12 +327,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new PointOfEntry();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, PointOfEntry::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setPointOfEntryType(source.getPointOfEntryType());

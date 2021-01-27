@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -41,6 +40,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Language;
@@ -583,27 +583,31 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, e -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Object[]> contactCount = cb.createQuery(Object[].class);
-			Root<Contact> contact = contactCount.from(Contact.class);
-			Join<Contact, Person> person = contact.join(Contact.PERSON);
-			Join<Person, EventParticipant> eventParticipant = person.join(Person.EVENT_PARTICIPANTS);
 
-			contactCount.where(
-				eventParticipant.get(EventParticipant.UUID).in(eventParticipantUuids),
-				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)),
-				cb.isFalse(contact.get(Contact.DELETED)));
+			Root<EventParticipant> epRoot = contactCount.from(EventParticipant.class);
+			Root<Contact> contactRoot = contactCount.from(Contact.class);
+
+			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
+			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
+			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(eventParticipantUuids);
+
 			if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
-				contactCount.where(
-					contactCount.getRestriction(),
-					contact.join(Contact.CAZE)
-						.get(Case.UUID)
-						.in(
-							eventParticipant.join(EventParticipant.EVENT)
-								.join(Event.EVENT_PERSONS)
-								.join(EventParticipant.RESULTING_CASE)
-								.get(Case.UUID)));
+				Subquery<EventParticipant> sourceCaseSubquery = contactCount.subquery(EventParticipant.class);
+				Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
+				sourceCaseSubquery.select(epr2);
+				sourceCaseSubquery.where(
+					cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
+					cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
+
+				contactCount.multiselect(
+					epRoot.get(EventParticipant.UUID),
+					cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
+			} else {
+				contactCount.multiselect(epRoot.get(EventParticipant.UUID), cb.count(epRoot));
 			}
-			contactCount.multiselect(eventParticipant.get(EventParticipant.UUID), cb.countDistinct(contact.get(Contact.UUID)));
-			contactCount.groupBy(eventParticipant.get(EventParticipant.UUID));
+			contactCount.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInEvent);
+			contactCount.groupBy(epRoot.get(EventParticipant.UUID));
 
 			List<Object[]> resultList = em.createQuery(contactCount).getResultList();
 			resultList.forEach(r -> contactCountMap.put((String) r[0], (Long) r[1]));
@@ -651,15 +655,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	public EventParticipant fromDto(@NotNull EventParticipantDto source, boolean checkChangeDate) {
 
-		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new EventParticipant();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		EventParticipant target =
+			DtoHelper.fillOrBuildEntity(source, eventParticipantService.getByUuid(source.getUuid()), EventParticipant::new, checkChangeDate);
 
 		if (source.getReportingUser() != null) {
 			target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));

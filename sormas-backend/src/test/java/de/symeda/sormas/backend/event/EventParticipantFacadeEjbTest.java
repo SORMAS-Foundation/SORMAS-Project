@@ -21,10 +21,13 @@
 package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 
 import java.util.Date;
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -33,6 +36,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -79,5 +83,18 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have two entries
 		assertThat(results, Matchers.hasSize(2));
+	}
+
+	@Test
+	public void testCreateWithoutUuid() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		EventParticipantDto eventParticipant = new EventParticipantDto();
+		eventParticipant.setEvent(creator.createEvent(user.toReference()).toReference());
+		eventParticipant.setPerson(creator.createPerson());
+
+		EventParticipantDto savedEventParticipant = getEventParticipantFacade().saveEventParticipant(eventParticipant);
+
+		MatcherAssert.assertThat(savedEventParticipant.getUuid(), not(isEmptyOrNullString()));
 	}
 }

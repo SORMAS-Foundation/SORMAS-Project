@@ -87,9 +87,9 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 
 	private void addCreateEntityRadioGroup() {
 		rbCreateEntity = new RadioButtonGroup<>();
-// 		TODO: Add creation of contacts and event participants
+// 		TODO: Add creation of event participants
 //		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT, CREATE_EVENT_PARTICIPANT);
-		rbCreateEntity.setItems(CREATE_CASE);
+		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT);
 		rbCreateEntity.setItemCaptionGenerator((item) -> {
 			if (item == CREATE_CASE) {
 				return I18nProperties.getCaption(Captions.caseCreateNew);
