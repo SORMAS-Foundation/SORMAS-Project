@@ -2179,13 +2179,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Case();
-			target.setUuid(source.getUuid());
-			target.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
-		}
+		target = DtoHelper.fillOrBuildEntity(source, target, () -> {
+			Case newCase = new Case();
+			newCase.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
 
-		DtoHelper.validateDto(source, target, checkChangeDate);
+			return newCase;
+		}, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());

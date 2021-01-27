@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -189,6 +190,39 @@ public final class FieldHelper {
 
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(Field sourceField, List<? extends Field<?>> targetFields, List<?> sourceValues, boolean clearOnHidden) {
+		setVisibleWhen(sourceField, targetFields, field -> sourceValues.contains(getNullableSourceFieldValue(field)), clearOnHidden);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhenSourceNotNull(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		String sourcePropertyId,
+		boolean clearOnHidden) {
+
+		final List<? extends Field<?>> targetFields = targetPropertyIds.stream().map(id -> fieldGroup.getField(id)).collect(Collectors.toList());
+		Field sourceField = fieldGroup.getField(sourcePropertyId);
+		setVisibleWhenSourceNotNull(sourceField, targetFields, clearOnHidden);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhenSourceNotNull(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Field sourceField,
+		boolean clearOnHidden) {
+
+		final List<? extends Field<?>> targetFields = targetPropertyIds.stream().map(id -> fieldGroup.getField(id)).collect(Collectors.toList());
+		setVisibleWhenSourceNotNull(sourceField, targetFields, clearOnHidden);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhenSourceNotNull(Field sourceField, List<? extends Field<?>> targetFields, boolean clearOnHidden) {
+		setVisibleWhen(sourceField, targetFields, field -> getNullableSourceFieldValue(field) != null, clearOnHidden);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(Field sourceField, List<? extends Field<?>> targetFields, Function<Field, Boolean> isVisibleFunction, boolean clearOnHidden) {
 		if (sourceField != null) {
 			if (sourceField instanceof AbstractField<?>) {
 				((AbstractField) sourceField).setImmediate(true);
@@ -196,7 +230,7 @@ public final class FieldHelper {
 
 			// initialize
 			{
-				boolean visible = sourceValues.contains(getNullableSourceFieldValue(sourceField));
+				boolean visible = isVisibleFunction.apply(sourceField);
 
 				targetFields.forEach(targetField -> {
 					targetField.setVisible(visible);
@@ -207,7 +241,7 @@ public final class FieldHelper {
 			}
 
 			sourceField.addValueChangeListener(event -> {
-				boolean visible = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
+				boolean visible = isVisibleFunction.apply((Field) event.getProperty());
 				targetFields.forEach(targetField -> {
 					targetField.setVisible(visible);
 					if (!visible && clearOnHidden && targetField.getValue() != null) {

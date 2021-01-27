@@ -226,13 +226,7 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
-
-		if (target == null) {
-			target = new Country();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());

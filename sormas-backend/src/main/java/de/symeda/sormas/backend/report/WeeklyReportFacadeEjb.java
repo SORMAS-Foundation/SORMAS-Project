@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -257,13 +256,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	public WeeklyReport fromDto(@NotNull WeeklyReportDto source, boolean checkChangeDate) {
 
-		WeeklyReport target = weeklyReportService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new WeeklyReport();
-			target.setUuid(source.getUuid());
-			target.setReportDateTime(new Date());
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		WeeklyReport target =
+			DtoHelper.fillOrBuildEntity(source, weeklyReportService.getByUuid(source.getUuid()), WeeklyReport::new, checkChangeDate);
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setReportDateTime(source.getReportDateTime());
@@ -296,16 +290,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return null;
 		}
 
-		WeeklyReportEntry target = weeklyReportEntryService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new WeeklyReportEntry();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		WeeklyReportEntry target =
+			DtoHelper.fillOrBuildEntity(source, weeklyReportEntryService.getByUuid(source.getUuid()), WeeklyReportEntry::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setNumberOfCases(source.getNumberOfCases());
@@ -360,9 +346,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 		WeeklyReportEntryDto target = new WeeklyReportEntryDto();
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setDisease(source.getDisease());
 		target.setNumberOfCases(source.getNumberOfCases());

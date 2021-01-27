@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
-import java.sql.Timestamp;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -72,17 +70,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 
 	public ClinicalCourse fromDto(@NotNull ClinicalCourseDto source, boolean checkChangeDate) {
 
-		ClinicalCourse target = service.getByUuid(source.getUuid());
-
-		if (target == null) {
-			target = new ClinicalCourse();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		ClinicalCourse target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), ClinicalCourse::new, checkChangeDate);
 
 		if (source.getHealthConditions() != null) {
 			target.setHealthConditions(fromHealthConditionsDto(source.getHealthConditions(), checkChangeDate));
@@ -130,17 +118,8 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 
 	public HealthConditions fromHealthConditionsDto(@NotNull HealthConditionsDto source, boolean checkChangeDate) {
 
-		HealthConditions target = healthConditionsService.getByUuid(source.getUuid());
-
-		if (target == null) {
-			target = new HealthConditions();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		HealthConditions target =
+			DtoHelper.fillOrBuildEntity(source, healthConditionsService.getByUuid(source.getUuid()), HealthConditions::new, checkChangeDate);
 
 		target.setAsplenia(source.getAsplenia());
 		target.setChronicHeartFailure(source.getChronicHeartFailure());

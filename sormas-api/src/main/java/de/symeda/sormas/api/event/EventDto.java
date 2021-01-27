@@ -52,6 +52,8 @@ public class EventDto extends PseudonymizableDto {
 	public static final String MULTI_DAY_EVENT = "multiDayEvent";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVOLUTION_DATE = "evolutionDate";
+	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
@@ -98,6 +100,8 @@ public class EventDto extends PseudonymizableDto {
 	private Date reportDateTime;
 	@Required
 	private UserReferenceDto reportingUser;
+	private Date evolutionDate;
+	private String evolutionComment;
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
@@ -257,6 +261,22 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
+	}
+
+	public String getEvolutionComment() {
+		return evolutionComment;
+	}
+
+	public void setEvolutionComment(String evolutionComment) {
+		this.evolutionComment = evolutionComment;
 	}
 
 	public TypeOfPlace getTypeOfPlace() {
