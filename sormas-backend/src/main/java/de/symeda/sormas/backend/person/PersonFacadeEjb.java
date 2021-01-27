@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -695,14 +694,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = personService.createPerson();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, personService::createPerson, checkChangeDate);
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());

@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.infrastructure;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -300,15 +299,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 	public PopulationData fromDto(@NotNull PopulationDataDto source, boolean checkChangeDate) {
 
-		PopulationData target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new PopulationData();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		PopulationData target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), PopulationData::new, checkChangeDate);
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));

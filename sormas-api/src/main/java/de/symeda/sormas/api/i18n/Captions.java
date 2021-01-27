@@ -841,6 +841,7 @@ public interface Captions {
 	String EventAction_eventEvolutionComment = "EventAction.eventEvolutionComment";
 	String EventAction_eventEvolutionDate = "EventAction.eventEvolutionDate";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
+	String EventAction_eventRiskLevel = "EventAction.eventRiskLevel";
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
 	String EventAction_eventUuid = "EventAction.eventUuid";

@@ -139,12 +139,7 @@ public class AreaFacadeEjb implements AreaFacade {
 	}
 
 	public Area fromDto(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
-		if (target == null) {
-			target = new Area();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setExternalId(source.getExternalId());
