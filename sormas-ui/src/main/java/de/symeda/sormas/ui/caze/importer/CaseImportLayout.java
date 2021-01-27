@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
-import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -54,13 +53,7 @@ public class CaseImportLayout extends AbstractImportLayout {
 
 				try {
 					CaseImporter importer = new CaseImporter(file, true, currentUser);
-					importer.startImport(new Consumer<StreamResource>() {
-
-						@Override
-						public void accept(StreamResource resource) {
-							extendDownloadErrorReportButton(resource);
-						}
-					}, currentUI, true);
+					importer.startImport(resource -> extendDownloadErrorReportButton(resource), currentUI, true);
 				} catch (IOException | CsvValidationException e) {
 					new Notification(
 						I18nProperties.getString(Strings.headingImportFailed),
