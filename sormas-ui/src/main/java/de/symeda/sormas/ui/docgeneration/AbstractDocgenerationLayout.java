@@ -39,6 +39,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -101,13 +102,10 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 					}
 					performTemplateUpdates();
 					setStreamResource(templateFile);
-				} catch (IOException | IllegalArgumentException ioException) {
-					ioException.printStackTrace();
-					new Notification(
-						I18nProperties.getString(Strings.errorOccurred),
-						ioException.getMessage(),
-						Notification.Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					new Notification(I18nProperties.getString(Strings.errorOccurred), ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)
+						.show(Page.getCurrent());
 				}
 			}
 		});
@@ -193,7 +191,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 
 	protected abstract String generateFilename(String templateFile);
 
-	protected abstract DocumentVariables getDocumentVariables(String templateFile) throws IOException;
+	protected abstract DocumentVariables getDocumentVariables(String templateFile) throws IOException, DocumentTemplateException;
 
 	protected abstract StreamResource createStreamResource(String templateFile, String filename);
 

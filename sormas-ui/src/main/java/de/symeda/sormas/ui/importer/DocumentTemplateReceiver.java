@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -101,7 +100,7 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingUploadSuccess),
 				I18nProperties.getString(Strings.messageUploadSuccessful));
-		} catch (IOException | IllegalArgumentException e) {
+		} catch (Exception e) {
 			new Notification(I18nProperties.getString(Strings.headingImportFailed), e.getMessage(), Notification.Type.ERROR_MESSAGE, false)
 				.show(Page.getCurrent());
 		}

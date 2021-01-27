@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.docgeneneration;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -36,9 +35,9 @@ public interface QuarantineOrderFacade {
 		SampleReferenceDto sampleReference,
 		PathogenTestReferenceDto pathogenTest,
 		Properties extraProperties)
-		throws IOException;
+		throws DocumentTemplateException;
 
-	List<String> getAvailableTemplates(ReferenceDto referenceDto);
+	List<String> getAvailableTemplates(ReferenceDto referenceDto) throws DocumentTemplateException;
 
-	DocumentVariables getDocumentVariables(ReferenceDto referenceDto, String templateName) throws IOException;
+	DocumentVariables getDocumentVariables(ReferenceDto referenceDto, String templateName) throws DocumentTemplateException;
 }

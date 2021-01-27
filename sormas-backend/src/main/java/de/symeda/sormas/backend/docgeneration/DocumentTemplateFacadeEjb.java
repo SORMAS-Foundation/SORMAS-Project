@@ -39,10 +39,10 @@ import javax.ejb.Stateless;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.runtime.parser.ParseException;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
@@ -69,7 +69,6 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import fr.opensagres.xdocreport.core.XDocReportException;
 
 @Stateless(name = "DocumentTemplateFacade")
 public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
@@ -117,9 +116,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		String templateName,
 		Map<String, Object> entities,
 		Properties extraProperties)
-		throws IOException {
+		throws DocumentTemplateException {
 		if (!documentWorkflow.isDocx()) {
-			throw new IllegalArgumentException("Workflow " + documentWorkflow + " is not a .docs workflow");
+			// TODO: I18N
+			throw new DocumentTemplateException("Workflow " + documentWorkflow + " is not a .docx workflow");
 		}
 
 		// 1. Read template from custom directory
@@ -141,9 +141,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		String templateName,
 		Map<String, Object> entities,
 		Properties extraProperties)
-		throws IOException {
+		throws DocumentTemplateException {
 		if (documentWorkflow.isDocx()) {
-			throw new IllegalArgumentException("Workflow " + documentWorkflow + " is a .docs workflow");
+			// TODO: I18N
+			throw new DocumentTemplateException("Workflow " + documentWorkflow + " is a .docx workflow");
 		}
 
 		// 1. Read template from custom directory
@@ -233,12 +234,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return properties;
 	}
 
-	private byte[] generateDocumentDocx(File templateFile, Properties properties) throws IOException {
-		try {
-			return templateEngine.generateDocumentDocx(properties, templateFile);
-		} catch (XDocReportException e) {
-			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), e.getMessage()));
-		}
+	private byte[] generateDocumentDocx(File templateFile, Properties properties) throws DocumentTemplateException {
+		return templateEngine.generateDocumentDocx(properties, templateFile);
 	}
 
 	private String generateDocumentTxt(File templateFile, Properties properties) {
@@ -266,7 +263,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	public DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws IOException {
+	public DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException {
 		File templateFile = getTemplateFile(documentWorkflow, templateName);
 		DocumentVariables documentVariables =
 			documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile);
@@ -280,13 +277,13 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	public void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, byte[] document) throws IOException {
+	public void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, byte[] document) throws DocumentTemplateException {
 		if (!documentWorkflow.getFileExtension().equalsIgnoreCase(FilenameUtils.getExtension(templateName))) {
-			throw new IllegalArgumentException(I18nProperties.getString(Strings.headingWrongFileType));
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.headingWrongFileType));
 		}
 		String path = FilenameUtils.getPath(templateName);
 		if (StringUtils.isNotBlank(path)) {
-			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), templateName));
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), templateName));
 		}
 
 		ByteArrayInputStream templateInputStream = new ByteArrayInputStream(document);
@@ -297,51 +294,56 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		Path workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
-		Files.createDirectories(workflowTemplateDirPath);
+		try {
+			Files.createDirectories(workflowTemplateDirPath);
+		} catch (IOException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Could not create template directory.");
+		}
 		try (FileOutputStream fileOutputStream =
 			new FileOutputStream(new File(workflowTemplateDirPath.resolve(FilenameUtils.getName(templateName)).toUri()))) {
 			fileOutputStream.write(document);
+		} catch (IOException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Could not write template.");
 		}
 	}
 
 	@Override
-	public boolean deleteDocumentTemplate(DocumentWorkflow documentWorkflow, String fileName) {
+	public boolean deleteDocumentTemplate(DocumentWorkflow documentWorkflow, String fileName) throws DocumentTemplateException {
 		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(fileName).toUri());
 		if (templateFile.exists() && templateFile.isFile()) {
 			return templateFile.delete();
 		} else {
-			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorFileNotFound), fileName));
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorFileNotFound), fileName));
 		}
 	}
 
 	@Override
-	public byte[] getDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName) throws IOException {
-		return FileUtils.readFileToByteArray(getTemplateFile(documentWorkflow, templateName));
+	public byte[] getDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException {
+		try {
+			return FileUtils.readFileToByteArray(getTemplateFile(documentWorkflow, templateName));
+		} catch (IOException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Could not read template.");
+		}
 	}
 
-	private File getTemplateFile(DocumentWorkflow documentWorkflow, String templateName) {
+	private File getTemplateFile(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException {
 		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(templateName).toString());
 
 		if (!templateFile.exists()) {
-			throw new IllegalArgumentException(String.format(I18nProperties.getString(Strings.errorFileNotFound), templateName));
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorFileNotFound), templateName));
 		}
 		return templateFile;
 	}
 
-	private DocumentVariables getTemplateVariablesDocx(File templateFile) throws IOException {
-		try {
-			return templateEngine.extractTemplateVariablesDocx(templateFile);
-		} catch (XDocReportException e) {
-			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
-		}
+	private DocumentVariables getTemplateVariablesDocx(File templateFile) throws DocumentTemplateException {
+		return templateEngine.extractTemplateVariablesDocx(templateFile);
 	}
 
-	private DocumentVariables getTemplateVariablesTxt(File templateFile) throws IOException {
-		try {
-			return templateEngine.extractTemplateVariablesTxt(templateFile);
-		} catch (ParseException e) {
-			throw new RuntimeException(String.format(I18nProperties.getString(Strings.errorProcessingTemplate), templateFile.getName()));
-		}
+	private DocumentVariables getTemplateVariablesTxt(File templateFile) throws DocumentTemplateException {
+		return templateEngine.extractTemplateVariablesTxt(templateFile);
 	}
 
 	private boolean isEntityVariable(DocumentWorkflow documentWorkflow, String propertyKey) {

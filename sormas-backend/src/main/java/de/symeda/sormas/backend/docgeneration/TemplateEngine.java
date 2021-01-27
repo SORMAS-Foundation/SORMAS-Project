@@ -58,6 +58,7 @@ import org.apache.velocity.util.introspection.SecureUberspector;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
@@ -72,42 +73,57 @@ public class TemplateEngine {
 
 	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *(!)? *([A-Za-z0-9._]+) *[}]| *(!)? *([A-Za-z0-9._]+) *)");
 
-	public DocumentVariables extractTemplateVariablesDocx(File templateFile) throws IOException, XDocReportException {
-		FileInputStream templateInputStream = new FileInputStream(templateFile);
-		IXDocReport report = readXDocReport(templateInputStream);
+	public DocumentVariables extractTemplateVariablesDocx(File templateFile) throws DocumentTemplateException {
+		try {
+			FileInputStream templateInputStream = new FileInputStream(templateFile);
+			IXDocReport report = readXDocReport(templateInputStream);
 
-		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
-		report.extractFields(extractor);
+			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
+			report.extractFields(extractor);
 
-		return filterExtractedVariables(extractor);
+			return filterExtractedVariables(extractor);
+		} catch (XDocReportException | IOException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Could not read file.");
+		}
 	}
 
-	public DocumentVariables extractTemplateVariablesTxt(File templateFile) throws IOException, ParseException {
-		FileReader templateFileReader = new FileReader(templateFile);
-		String templateName = templateFile.getName();
+	public DocumentVariables extractTemplateVariablesTxt(File templateFile) throws DocumentTemplateException {
+		try {
+			FileReader templateFileReader = new FileReader(templateFile);
+			String templateName = templateFile.getName();
 
-		FieldsExtractor<FieldExtractor> extractor = getFieldExtractorTxt(templateFileReader, templateName);
+			FieldsExtractor<FieldExtractor> extractor = getFieldExtractorTxt(templateFileReader, templateName);
 
-		return filterExtractedVariables(extractor);
+			return filterExtractedVariables(extractor);
+		} catch (IOException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Could not read file");
+		}
 	}
 
-	public byte[] generateDocumentDocx(Properties properties, File templateFile) throws IOException, XDocReportException {
-		FileInputStream templateInputStream = new FileInputStream(templateFile);
-		IXDocReport report = readXDocReport(templateInputStream);
-		IContext context = report.createContext();
+	public byte[] generateDocumentDocx(Properties properties, File templateFile) throws DocumentTemplateException {
+		try {
+			FileInputStream templateInputStream = new FileInputStream(templateFile);
+			IXDocReport report = readXDocReport(templateInputStream);
+			IContext context = report.createContext();
 
-		for (Object key : properties.keySet()) {
-			if (key instanceof String) {
-				Object property = properties.get(key);
-				if (property != null && !(property instanceof String && ((String) property).isEmpty())) {
-					context.put((String) key, property);
+			for (Object key : properties.keySet()) {
+				if (key instanceof String) {
+					Object property = properties.get(key);
+					if (property != null && !(property instanceof String && ((String) property).isEmpty())) {
+						context.put((String) key, property);
+					}
 				}
 			}
-		}
 
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		report.process(context, outputStream);
-		return outputStream.toByteArray();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			report.process(context, outputStream);
+			return outputStream.toByteArray();
+		} catch (IOException | XDocReportException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Error generating Document.");
+		}
 	}
 
 	public String generateDocumentTxt(Properties properties, File templateFile) {
@@ -135,50 +151,61 @@ public class TemplateEngine {
 		return stringWriter.toString();
 	}
 
-	public void validateTemplateDocx(InputStream templateInputStream) {
+	public void validateTemplateDocx(InputStream templateInputStream) throws DocumentTemplateException {
 		try {
 			IXDocReport report = readXDocReport(templateInputStream);
 			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 			report.extractFields(extractor);
-		} catch (Exception e) {
-			throw new IllegalArgumentException(e.getMessage());
+		} catch (XDocReportException | IOException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Could not validate template.");
 		}
 	}
 
-	protected IXDocReport readXDocReport(InputStream templateInputStream) throws IOException, XDocReportException {
+	protected IXDocReport readXDocReport(InputStream templateInputStream) throws DocumentTemplateException {
+		ByteArrayOutputStream outStream;
+
 		try {
 			// Sanitize docx template for XXEs
 			WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(templateInputStream);
 			wordMLPackage.getDocumentModel();
 
-			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+			outStream = new ByteArrayOutputStream();
 			wordMLPackage.save(outStream);
+		} catch (Docx4JException | NullPointerException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Template file is corrupt.");
+		}
+
+		try {
 			ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
 			return XDocReportRegistry.getRegistry().loadReport(inStream, TemplateEngineKind.Velocity);
-		} catch (Docx4JException e) {
-			throw new IllegalArgumentException(e.getMessage(), e);
+		} catch (IOException | XDocReportException | NullPointerException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Could not read template.");
 		}
 	}
 
-	public void validateTemplateTxt(InputStream templateInputStream) {
-		try {
-			getFieldExtractorTxt(new InputStreamReader(templateInputStream), "validate");
-		} catch (Exception e) {
-			throw new IllegalArgumentException(e.getMessage());
-		}
+	public void validateTemplateTxt(InputStream templateInputStream) throws DocumentTemplateException {
+		getFieldExtractorTxt(new InputStreamReader(templateInputStream), "validate");
 	}
 
-	private FieldsExtractor<FieldExtractor> getFieldExtractorTxt(Reader templateFileReader, String templateName) throws ParseException {
+	private FieldsExtractor<FieldExtractor> getFieldExtractorTxt(Reader templateFileReader, String templateName) throws DocumentTemplateException {
 		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 		ExtractVariablesVelocityVisitor visitor = new ExtractVariablesVelocityVisitor(extractor);
-		SimpleNode document = RuntimeSingleton.parse(templateFileReader, templateName);
-		document.jjtAccept(visitor, null);
-		return extractor;
+		try {
+			SimpleNode document = RuntimeSingleton.parse(templateFileReader, templateName);
+			document.jjtAccept(visitor, null);
+			return extractor;
+		} catch (ParseException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Syntax Error");
+		}
 	}
 
 	private DocumentVariables filterExtractedVariables(FieldsExtractor<FieldExtractor> extractor) {
 		Set<String> variables = new HashSet<>();
-		Set<String> nullablVariables = new HashSet<>();
+		Set<String> nullableVariables = new HashSet<>();
 		for (FieldExtractor field : extractor.getFields()) {
 			String fieldName = field.getName();
 			Matcher matcher = VARIABLE_PATTERN.matcher(fieldName);
@@ -190,12 +217,12 @@ public class TemplateEngine {
 					variables.add(variable);
 				}
 				if (matcher.group(2) != null || matcher.group(4) != null) {
-					nullablVariables.add(variable);
+					nullableVariables.add(variable);
 				} else {
-					nullablVariables.remove(variable);
+					nullableVariables.remove(variable);
 				}
 			}
 		}
-		return new DocumentVariables(variables, nullablVariables);
+		return new DocumentVariables(variables, nullableVariables);
 	}
 }

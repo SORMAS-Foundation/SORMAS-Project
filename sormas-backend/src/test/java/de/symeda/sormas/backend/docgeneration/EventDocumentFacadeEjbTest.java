@@ -18,6 +18,7 @@ import org.junit.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -32,10 +33,6 @@ import de.symeda.sormas.backend.TestDataCreator;
 public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 
 	private EventDocumentFacade eventDocumentFacade;
-
-	private PersonDto personDto1;
-	private PersonDto personDto2;
-	private PersonDto personDto3;
 
 	private EventDto eventDto;
 
@@ -63,7 +60,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 			Disease.CORONAVIRUS,
 			rdcf.district);
 
-		personDto1 = PersonDto.build();
+		PersonDto personDto1 = PersonDto.build();
 		personDto1.setFirstName("Isidore");
 		personDto1.setLastName("Isou");
 		personDto1.setPhone("+49 681 1234");
@@ -75,7 +72,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		eventParticipantDto1.setInvolvementDescription("involved");
 		getEventParticipantFacade().saveEventParticipant(eventParticipantDto1);
 
-		personDto2 = PersonDto.build();
+		PersonDto personDto2 = PersonDto.build();
 		personDto2.setFirstName("Guy");
 		personDto2.setLastName("Debord");
 		personDto2.setPhone("+49 681 4567");
@@ -87,7 +84,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		eventParticipantDto2.setInvolvementDescription("involved");
 		getEventParticipantFacade().saveEventParticipant(eventParticipantDto2);
 
-		personDto3 = PersonDto.build();
+		PersonDto personDto3 = PersonDto.build();
 		personDto3.setFirstName("Georges");
 		personDto3.setLastName("Bataille");
 		personDto3.setPhone("+49 681 8901");
@@ -120,7 +117,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void generateEventHandoutTest() throws IOException, URISyntaxException {
+	public void generateEventHandoutTest() throws IOException, URISyntaxException, DocumentTemplateException {
 		String testCasesDirPath = "/docgeneration/eventHandout";
 		File testCasesDir = new File(getClass().getResource(testCasesDirPath).toURI());
 		File[] testCasesHtml = testCasesDir.listFiles((d, name) -> name.endsWith(".html"));

@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.docgeneration;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -77,7 +77,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		SampleReferenceDto sampleReference,
 		PathogenTestReferenceDto pathogenTestReference,
 		Properties extraProperties)
-		throws IOException {
+		throws DocumentTemplateException {
 		String rootEntityUuid = rootEntityReference.getUuid();
 
 		Map<String, Object> entities = new HashMap<>();
@@ -88,7 +88,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		} else if (rootEntityReference instanceof EventParticipantReferenceDto) {
 			entities.put(RootEntityName.ROOT_EVENT_PARTICIPANT, eventParticipantFacade.getByUuid(rootEntityUuid));
 		} else {
-			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
 		}
 
 		if (userReference != null) {
@@ -108,17 +108,17 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	}
 
 	@Override
-	public List<String> getAvailableTemplates(ReferenceDto referenceDto) {
+	public List<String> getAvailableTemplates(ReferenceDto referenceDto) throws DocumentTemplateException {
 		return documentTemplateFacade.getAvailableTemplates(getDocumentWorkflow(referenceDto));
 	}
 
 	@Override
-	public DocumentVariables getDocumentVariables(ReferenceDto referenceDto, String templateName) throws IOException {
+	public DocumentVariables getDocumentVariables(ReferenceDto referenceDto, String templateName) throws DocumentTemplateException {
 		DocumentWorkflow documentWorkflow = getDocumentWorkflow(referenceDto);
 		return documentTemplateFacade.getDocumentVariables(documentWorkflow, templateName);
 	}
 
-	private DocumentWorkflow getDocumentWorkflow(ReferenceDto rootEntityReference) {
+	private DocumentWorkflow getDocumentWorkflow(ReferenceDto rootEntityReference) throws DocumentTemplateException {
 		if (CaseReferenceDto.class.isAssignableFrom(rootEntityReference.getClass())) {
 			return DocumentWorkflow.QUARANTINE_ORDER_CASE;
 		} else if (ContactReferenceDto.class.isAssignableFrom(rootEntityReference.getClass())) {
@@ -126,7 +126,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		} else if (EventParticipantReferenceDto.class.isAssignableFrom(rootEntityReference.getClass())) {
 			return DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT;
 		} else {
-			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
 		}
 	}
 }

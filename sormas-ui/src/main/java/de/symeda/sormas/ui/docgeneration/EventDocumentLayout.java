@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.docgeneration;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import com.vaadin.server.Page;
@@ -24,6 +23,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -51,7 +51,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected DocumentVariables getDocumentVariables(String templateFile) throws IOException {
+	protected DocumentVariables getDocumentVariables(String templateFile) throws DocumentTemplateException {
 		return FacadeProvider.getEventDocumentFacade().getDocumentVariables(templateFile);
 	}
 
@@ -62,7 +62,8 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 			try {
 				return new ByteArrayInputStream(
 					eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, readAdditionalVariables()).getBytes());
-			} catch (IOException | IllegalArgumentException e) {
+			} catch (Exception e) {
+				e.printStackTrace();
 				new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 				return null;
 			}

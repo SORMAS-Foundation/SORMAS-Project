@@ -30,6 +30,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -45,7 +46,7 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void writeAndDeleteTemplateTest() throws IOException, URISyntaxException {
+	public void writeAndDeleteTemplateTest() throws IOException, URISyntaxException, DocumentTemplateException {
 		String testDirectory = "target" + File.separator + "doctest";
 		byte[] document = IOUtils.toByteArray(getClass().getResourceAsStream("/docgeneration/quarantine/Quarantine.docx"));
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, testDirectory);
@@ -68,37 +69,32 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 		try {
 			documentTemplateFacade.writeDocumentTemplate(QUARANTINE_ORDER_CASE, "TemplateFileToBeValidated.txt", new byte[0]);
 			fail("Invalid file extension not recognized.");
-		} catch (IllegalArgumentException e) {
+		} catch (DocumentTemplateException e) {
 			assertEquals("Wrong file type", e.getMessage());
 		}
 		try {
 			documentTemplateFacade.writeDocumentTemplate(QUARANTINE_ORDER_CASE, "../TemplateFileToBeValidated.docx", new byte[0]);
 			fail("Invalid file extension not recognized.");
-		} catch (IllegalArgumentException e) {
+		} catch (DocumentTemplateException e) {
 			assertEquals("Illegal file name: ../TemplateFileToBeValidated.docx", e.getMessage());
 		}
 		try {
 			documentTemplateFacade.writeDocumentTemplate(QUARANTINE_ORDER_CASE, "TemplateFileToBeValidated.docx", new byte[0]);
 			fail("Invalid docx file not recognized.");
-		} catch (IllegalArgumentException e) {
-			assertEquals("Error reading from the stream (no bytes available)", e.getMessage());
+		} catch (DocumentTemplateException e) {
+			assertEquals("Template file is corrupt.", e.getMessage());
 		}
 		try {
 			byte[] document = IOUtils.toByteArray(getClass().getResourceAsStream("/docgeneration/quarantine/FaultyTemplate.docx"));
 			documentTemplateFacade.writeDocumentTemplate(QUARANTINE_ORDER_CASE, "TemplateFileToBeValidated.docx", document);
 			fail("Syntax error not recognized.");
-		} catch (IllegalArgumentException e) {
-			String message =
-				"org.apache.velocity.runtime.parser.TemplateParseException: Encountered \"].</w:t>\\n            </w:r>\\n        </w:p>\\n        <w:p>\\n            <w:pPr>\\n                <w:pStyle w:val=\\\"Normal\\\"/>\\n                <w:bidi w:val=\\\"false\\\"/>\\n                <w:ind w:right=\\\"3117\\\" w:hanging=\\\"0\\\"/>\\n                <w:jc w:val=\\\"both\\\"/>\\n                <w:rPr>\\n                    <w:rFonts w:ascii=\\\"DejaVu Sans\\\" w:hAnsi=\\\"DejaVu Sans\\\"/>\\n                    <w:sz w:val=\\\"21\\\"/>\\n                    <w:szCs w:val=\\\"21\\\"/>\\n                </w:rPr>\\n            </w:pPr>\\n            <w:r>\\n                <w:rPr>\\n                    <w:b w:val=\\\"false\\\"/>\\n                    <w:bCs w:val=\\\"false\\\"/>\\n                </w:rPr>\\n            </w:r>\\n        </w:p>\\n        <w:p>\\n            <w:pPr>\\n                <w:pStyle w:val=\\\"Normal\\\"/>\\n                <w:bidi w:val=\\\"false\\\"/>\\n                <w:ind w:right=\\\"3117\\\" w:hanging=\\\"0\\\"/>\\n                <w:jc w:val=\\\"both\\\"/>\\n                <w:rPr>\\n                    <w:b w:val=\\\"false\\\"/>\\n                    <w:bCs w:val=\\\"false\\\"/>\\n                </w:rPr>\\n            </w:pPr>\\n            <w:r>\\n                <w:rPr>\\n                    <w:rFonts w:ascii=\\\"DejaVu Sans\\\" w:hAnsi=\\\"DejaVu Sans\\\"/>\\n                    <w:b w:val=\\\"false\\\"/>\\n                    <w:bCs w:val=\\\"false\\\"/>\\n                    <w:sz w:val=\\\"21\\\"/>\\n                    <w:szCs w:val=\\\"21\\\"/>\\n                </w:rPr>\\n                <w:t>Processing of this template should fail.</w:t>\\n            </w:r>\\n        </w:p>\\n        <w:sectPr>\\n            <w:type w:val=\\\"nextPage\\\"/>\\n            <w:pgSz w:w=\\\"11906\\\" w:h=\\\"16838\\\"/>\\n            <w:pgMar w:top=\\\"1134\\\" w:right=\\\"1134\\\" w:bottom=\\\"1134\\\" w:left=\\\"1134\\\" w:header=\\\"0\\\" w:footer=\\\"0\\\" w:gutter=\\\"0\\\"/>\\n            <w:pgNumType w:fmt=\\\"decimal\\\"/>\\n            <w:formProt w:val=\\\"false\\\"/>\\n            <w:textDirection w:val=\\\"lrTb\\\"/>\\n            <w:docGrid w:type=\\\"default\\\" w:linePitch=\\\"100\\\" w:charSpace=\\\"0\\\"/>\\n        </w:sectPr>\\n    </w:body>\\n</w:document>\" at word/document.xml[line 22, column 59]\n"
-					+ "Was expecting one of:\n" //
-					+ "    \"[\" ...\n" //
-					+ "    \"}\" ...\n    ";
-			assertEquals(message, e.getMessage().replaceAll("\\r\\n?", "\n"));
+		} catch (DocumentTemplateException e) {
+			assertEquals("Could not validate template.", e.getMessage());
 		}
 	}
 
 	@Test
-	public void readTemplateTest() throws IOException {
+	public void readTemplateTest() throws DocumentTemplateException {
 		byte[] template = documentTemplateFacade.getDocumentTemplate(QUARANTINE_ORDER_CASE, "Quarantine.docx");
 		assertEquals(12683, template.length);
 	}

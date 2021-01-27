@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.docgeneration;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +29,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -94,7 +94,13 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	@Override
 	protected List<String> getAvailableTemplates() {
-		return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(referenceDto);
+		try {
+			return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(referenceDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
+			return Collections.emptyList();
+		}
 	}
 
 	@Override
@@ -104,7 +110,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected DocumentVariables getDocumentVariables(String templateFile) throws IOException {
+	protected DocumentVariables getDocumentVariables(String templateFile) throws DocumentTemplateException {
 		return FacadeProvider.getQuarantineOrderFacade().getDocumentVariables(referenceDto, templateFile);
 	}
 
@@ -125,7 +131,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 						sampleReference,
 						pathogenTestReference,
 						readAdditionalVariables()));
-			} catch (IOException | IllegalArgumentException e) {
+			} catch (Exception e) {
+				e.printStackTrace();
 				new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 				return null;
 			}

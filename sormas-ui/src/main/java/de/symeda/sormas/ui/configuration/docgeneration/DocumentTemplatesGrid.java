@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.configuration.docgeneration;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import com.vaadin.data.provider.DataProvider;
@@ -32,6 +31,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -70,7 +70,7 @@ public class DocumentTemplatesGrid extends Grid<String> {
 		List<String> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow);
 		setItems(availableTemplates);
 		getDataProvider().refreshAll();
-		setHeightByRows(availableTemplates.size());
+		setHeightByRows(Math.max(1, availableTemplates.size()));
 	}
 
 	private Button buildDeleteButton(String templateFileName) {
@@ -81,7 +81,7 @@ public class DocumentTemplatesGrid extends Grid<String> {
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), templateFileName), () -> {
 					try {
 						FacadeProvider.getDocumentTemplateFacade().deleteDocumentTemplate(documentWorkflow, templateFileName);
-					} catch (IllegalArgumentException ex) {
+					} catch (DocumentTemplateException ex) {
 						new Notification(
 							I18nProperties.getString(Strings.errorDeletingDocumentTemplate),
 							ex.getMessage(),
@@ -98,7 +98,7 @@ public class DocumentTemplatesGrid extends Grid<String> {
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			try {
 				return new ByteArrayInputStream(FacadeProvider.getDocumentTemplateFacade().getDocumentTemplate(documentWorkflow, templateFileName));
-			} catch (IOException | IllegalArgumentException e) {
+			} catch (DocumentTemplateException e) {
 				new Notification(
 					String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFileName),
 					e.getMessage(),

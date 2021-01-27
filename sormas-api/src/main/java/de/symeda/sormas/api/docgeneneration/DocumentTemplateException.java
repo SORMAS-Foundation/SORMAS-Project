@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,19 +15,9 @@
 
 package de.symeda.sormas.api.docgeneneration;
 
-import java.util.List;
-import java.util.Properties;
+public class DocumentTemplateException extends Exception {
 
-import javax.ejb.Remote;
-
-import de.symeda.sormas.api.event.EventReferenceDto;
-
-@Remote
-public interface EventDocumentFacade {
-
-	String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties) throws DocumentTemplateException;
-
-	List<String> getAvailableTemplates();
-
-	DocumentVariables getDocumentVariables(String templateName) throws DocumentTemplateException;
+	public DocumentTemplateException(String message) {
+		super(message);
+	}
 }

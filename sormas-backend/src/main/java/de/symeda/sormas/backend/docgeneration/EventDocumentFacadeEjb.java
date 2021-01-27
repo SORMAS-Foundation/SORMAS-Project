@@ -13,6 +13,7 @@ import javax.ejb.Stateless;
 import org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
@@ -38,7 +39,8 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	EventParticipantFacadeEjbLocal eventParticipantFacade;
 
 	@Override
-	public String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties) throws IOException {
+	public String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties)
+		throws DocumentTemplateException {
 		Map<String, Object> entities = new HashMap<>();
 		entities.put("event", eventReference);
 
@@ -57,14 +59,19 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	}
 
 	@Override
-	public DocumentVariables getDocumentVariables(String templateName) throws IOException {
+	public DocumentVariables getDocumentVariables(String templateName) throws DocumentTemplateException {
 		return documentTemplateFacade.getDocumentVariables(DOCUMENT_WORKFLOW, templateName);
 	}
 
-	private String createStyledHtml(String title, String body) throws IOException {
+	private String createStyledHtml(String title, String body) throws DocumentTemplateException {
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(getClass().getResourceAsStream("/docgeneration/sormasStyle.html"), writer, "UTF-8");
-		String document = writer.toString();
-		return document.replace(PLACEHOLDER_TITLE, title).replace(PLACEHOLDER_BODY, body);
+		try {
+			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/sormasStyle.html"), writer, "UTF-8");
+			String document = writer.toString();
+			return document.replace(PLACEHOLDER_TITLE, title).replace(PLACEHOLDER_BODY, body);
+		} catch (IOException e) {
+			// TODO: I18N
+			throw new DocumentTemplateException("Could not create document.");
+		}
 	}
 }

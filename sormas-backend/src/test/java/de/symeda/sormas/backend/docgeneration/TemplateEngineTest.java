@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -43,12 +42,12 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import fr.opensagres.xdocreport.core.XDocReportException;
 
 public class TemplateEngineTest {
 
 	private static final Pattern OBJECT_PROPERTY_PATTERN = Pattern.compile("^ *[(] *([\\[]?[A-Za-z0-9.]+;?) *[)] *([{\\[].*[}\\]]) *$");
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	private TemplateEngine templateEngine;
 
@@ -58,17 +57,19 @@ public class TemplateEngineTest {
 	}
 
 	@Test
-	public void genericTestCasesDocxTest() throws IOException, XDocReportException, ClassNotFoundException, ParseException, URISyntaxException {
+	public void genericTestCasesDocxTest()
+		throws IOException, XDocReportException, ClassNotFoundException, ParseException, URISyntaxException, DocumentTemplateException {
 		genericTestCases(getTestCaseRunnerDocx());
 	}
 
 	@Test
-	public void genericTestCasesTxtTest() throws IOException, XDocReportException, ClassNotFoundException, ParseException, URISyntaxException {
+	public void genericTestCasesTxtTest()
+		throws IOException, XDocReportException, ClassNotFoundException, ParseException, URISyntaxException, DocumentTemplateException {
 		genericTestCases(getTestCaseRunnerTxt());
 	}
 
 	private void genericTestCases(TestCaseRunner testCaseRunner)
-		throws IOException, XDocReportException, ParseException, ClassNotFoundException, URISyntaxException {
+		throws IOException, XDocReportException, ParseException, ClassNotFoundException, URISyntaxException, DocumentTemplateException {
 		File testCasesDir = new File(getClass().getResource(testCaseRunner.getTestCasesDirPath()).toURI());
 		File[] testCases = testCasesDir.listFiles((d, name) -> name.endsWith(testCaseRunner.getTestCaseExtension()));
 		assertNotNull(testCases);
@@ -134,9 +135,9 @@ public class TemplateEngineTest {
 
 		String getTestCaseExtension();
 
-		Set<String> extractTemplateVariables(File testCase) throws IOException, XDocReportException, ParseException;
+		Set<String> extractTemplateVariables(File testCase) throws IOException, XDocReportException, ParseException, DocumentTemplateException;
 
-		String getGeneratedText(File testCase, Properties properties) throws IOException, XDocReportException;
+		String getGeneratedText(File testCase, Properties properties) throws IOException, XDocReportException, DocumentTemplateException;
 	}
 
 	private TestCaseRunner getTestCaseRunnerDocx() {
@@ -153,12 +154,12 @@ public class TemplateEngineTest {
 			}
 
 			@Override
-			public Set<String> extractTemplateVariables(File testCase) throws IOException, XDocReportException {
+			public Set<String> extractTemplateVariables(File testCase) throws DocumentTemplateException {
 				return templateEngine.extractTemplateVariablesDocx(testCase).getVariables();
 			}
 
 			@Override
-			public String getGeneratedText(File testCase, Properties properties) throws IOException, XDocReportException {
+			public String getGeneratedText(File testCase, Properties properties) throws IOException, DocumentTemplateException {
 				InputStream generatedFile = new ByteArrayInputStream(templateEngine.generateDocumentDocx(properties, testCase));
 				XWPFDocument generatedDocument = new XWPFDocument(generatedFile);
 				XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(generatedDocument);
@@ -183,7 +184,7 @@ public class TemplateEngineTest {
 			}
 
 			@Override
-			public Set<String> extractTemplateVariables(File testCase) throws IOException, ParseException {
+			public Set<String> extractTemplateVariables(File testCase) throws DocumentTemplateException {
 				return templateEngine.extractTemplateVariablesTxt(testCase).getVariables();
 			}
 
