@@ -193,6 +193,22 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_externalID"
+                    app:value="@{data.externalID}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_externalToken"
+                    app:value="@{data.externalToken}"
+                    style="@style/ControlSecondOfTwoColumnsStyle"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/date_fields_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
