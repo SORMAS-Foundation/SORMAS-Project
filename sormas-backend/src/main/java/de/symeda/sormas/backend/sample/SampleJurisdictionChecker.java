@@ -45,12 +45,11 @@ public class SampleJurisdictionChecker {
 
 	public boolean isPseudonymized(Sample sample) {
 
-		if (sample.getAssociatedEventParticipant()!=null){
+		if (sample.getAssociatedEventParticipant() != null) {
 			eventParticipantJurisdictionChecker.isPseudonymized(sample.getAssociatedEventParticipant());
 		}
 
 		return false;
-
 
 	}
 }

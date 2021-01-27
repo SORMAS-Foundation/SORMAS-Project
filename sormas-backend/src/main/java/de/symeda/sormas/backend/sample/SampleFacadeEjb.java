@@ -813,12 +813,12 @@ public class SampleFacadeEjb implements SampleFacade {
 			User currentUser = userService.getCurrentUser();
 
 			boolean samplePseudonimized = true;
-			if (dto.getAssociatedEventParticipant()!=null){
+			if (dto.getAssociatedEventParticipant() != null) {
 				samplePseudonimized = eventParticipantJurisdictionChecker.isPseudonymized(dto.getAssociatedEventParticipant().getUuid());
 			}
 			EventParticipantReferenceDto eventParticipantReference = dto.getAssociatedEventParticipant();
 
-			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, eventParticipantReference!=null?samplePseudonimized:isInJurisdiction, s -> {
+			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, eventParticipantReference != null ? samplePseudonimized : isInJurisdiction, s -> {
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					sampleJurisdiction,
@@ -874,7 +874,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		if (sampleEventParticipant != null) {
-			pseudonymizer.pseudonymizeDto(EventParticipantReferenceDto.class, sampleEventParticipant,
+			pseudonymizer.pseudonymizeDto(
+				EventParticipantReferenceDto.class,
+				sampleEventParticipant,
 				eventParticipantJurisdictionChecker.isPseudonymized(sampleEventParticipant.getUuid()),
 				null);
 		}
