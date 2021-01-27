@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.vaadin.event.Action.Notifier;
@@ -184,12 +183,18 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected void addDirtyHandler(FieldGroup[] fieldGroups) {
 		if (fieldGroups != null) {
 			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
-				if ((((Field.ValueChangeEvent) ev).getSource()) instanceof LocationEditForm) {
-					final LocationEditForm locationEditForm = (LocationEditForm) ((Field.ValueChangeEvent) ev).getSource();
+				final Object source = ((Field.ValueChangeEvent) ev).getSource();
+				if (source instanceof LocationEditForm) {
+					final LocationEditForm locationEditForm = (LocationEditForm) source;
 					if (atLeastOneFieldModified(
-							locationEditForm.getField(LocationDto.LATITUDE),
-							locationEditForm.getField(LocationDto.LONGITUDE),
-							locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						locationEditForm.getField(LocationDto.LATITUDE),
+						locationEditForm.getField(LocationDto.LONGITUDE),
+						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = true;
+					}
+				} else if (source instanceof AccessibleTextField) {
+					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
+					if (accessibleTextField.isModified()) {
 						dirty = true;
 					}
 				} else {
