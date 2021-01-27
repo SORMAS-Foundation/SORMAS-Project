@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
@@ -30,5 +31,7 @@ public class PerformanceLoggingInterceptorTest {
 
 		when(context.getTarget()).thenReturn("de.symeda.sormas.backend.facility.FacilityFacadeEjb$FacilityFacadeEjbLocal@630e5556");
 		assertThat(PerformanceLoggingInterceptor.getInvokedMethod(context), equalTo("FacilityFacadeEjb.count"));
+
+		reset(context, method);
 	}
 }
