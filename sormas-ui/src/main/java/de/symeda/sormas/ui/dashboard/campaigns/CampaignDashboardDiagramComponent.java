@@ -35,7 +35,6 @@ import de.symeda.sormas.ui.highcharts.HighChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("serial")
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CampaignDashboardDiagramComponent.class);
@@ -159,8 +158,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		final Map<String, Long> stackMap = diagramDefinition.getCampaignDiagramSeries()
 			.stream()
-			.filter(campaignDiagramSeries -> campaignDiagramSeries.getStack() != null)
 			.map(CampaignDiagramSeries::getStack)
+			.filter(Objects::nonNull)
 			.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
 		//@formatter:off
