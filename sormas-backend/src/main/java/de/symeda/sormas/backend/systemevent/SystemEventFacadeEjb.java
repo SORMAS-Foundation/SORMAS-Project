@@ -71,12 +71,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	public SystemEvent fromDto(@NotNull SystemEventDto source, SystemEvent target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new SystemEvent();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, SystemEvent::new, checkChangeDate);
 
 		target.setType(source.getType());
 		target.setStartDate(source.getStartDate());

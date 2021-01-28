@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.outbreak;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -150,15 +149,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 			return null;
 		}
 
-		Outbreak target = outbreakService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Outbreak();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Outbreak target = DtoHelper.fillOrBuildEntity(source, outbreakService.getByUuid(source.getUuid()), Outbreak::new, checkChangeDate);
 
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());

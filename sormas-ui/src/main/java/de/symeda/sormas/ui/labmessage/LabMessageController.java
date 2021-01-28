@@ -16,6 +16,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -84,12 +85,12 @@ public class LabMessageController {
 					caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
 					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
 
-//					TODO: Add picking of contacts and event participants
-//					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
-//					contactSimilarityCriteria.setPerson(selectedPerson);
-//					contactSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
-//					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
-//
+					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
+					contactSimilarityCriteria.setPerson(selectedPerson);
+					contactSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
+					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
+
+//					TODO: Add picking of event participants
 //					EventParticipantSimilarityCriteria eventParticipantSimilarityCriteria = new EventParticipantSimilarityCriteria();
 //					eventParticipantSimilarityCriteria.setPerson(selectedPerson);
 //					eventParticipantSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
@@ -97,7 +98,7 @@ public class LabMessageController {
 //						FacadeProvider.getEventParticipantFacade().getSimilarEventParticipants(eventParticipantSimilarityCriteria);
 //
 //					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants);
-					pickOrCreateEntry(labMessageDto, similarCases, null, null, selectedPersonDto);
+					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, null, selectedPersonDto);
 				}
 			}, false);
 	}
@@ -120,6 +121,8 @@ public class LabMessageController {
 				createContact(labMessageDto, person);
 			} else if (similarEntriesDto.getCaze() != null) {
 				createSample(FacadeProvider.getCaseFacade().getCaseDataByUuid(similarEntriesDto.getCaze().getUuid()), labMessageDto);
+			} else if (similarEntriesDto.getContact() != null) {
+				createSample(FacadeProvider.getContactFacade().getContactByUuid(similarEntriesDto.getContact().getUuid()), labMessageDto);
 			}
 		});
 

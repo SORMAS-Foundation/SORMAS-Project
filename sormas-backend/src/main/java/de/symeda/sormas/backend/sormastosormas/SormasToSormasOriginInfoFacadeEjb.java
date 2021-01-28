@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import java.sql.Timestamp;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -48,16 +46,8 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 			return null;
 		}
 
-		SormasToSormasOriginInfo target = sormasToSormasOriginInfoService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new SormasToSormasOriginInfo();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		SormasToSormasOriginInfo target = DtoHelper
+			.fillOrBuildEntity(source, sormasToSormasOriginInfoService.getByUuid(source.getUuid()), SormasToSormasOriginInfo::new, checkChangeDate);
 
 		target.setOrganizationId(source.getOrganizationId());
 		target.setSenderName(source.getSenderName());

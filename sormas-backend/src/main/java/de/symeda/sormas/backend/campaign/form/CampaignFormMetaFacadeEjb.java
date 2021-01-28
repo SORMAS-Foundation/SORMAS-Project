@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.campaign.form;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,15 +50,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	private UserService userService;
 
 	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source, boolean checkChangeDate) {
-		CampaignFormMeta target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new CampaignFormMeta();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		CampaignFormMeta target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CampaignFormMeta::new, checkChangeDate);
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());

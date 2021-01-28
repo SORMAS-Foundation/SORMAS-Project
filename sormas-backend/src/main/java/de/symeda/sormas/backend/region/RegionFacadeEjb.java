@@ -323,12 +323,7 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Region();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Region::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());
