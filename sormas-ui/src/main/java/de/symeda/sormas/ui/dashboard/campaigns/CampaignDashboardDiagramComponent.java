@@ -32,9 +32,13 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.highcharts.HighChart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
+
+	private static final Logger LOG = LoggerFactory.getLogger(CampaignDashboardDiagramComponent.class);
 
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
@@ -231,8 +235,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
 			Collection<CampaignDiagramDataDto> values = seriesData.values();
-			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
-			String fieldName = (iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey);
+			String fieldName = assembleFieldname(values, series, seriesKey);
 			if (showPercentages) {
 				if (campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY) {
 					fieldName = I18nProperties.getString(Strings.populationDataByCommunity);
@@ -248,6 +251,14 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			}
 		}
 		hcjs.append("]");
+	}
+
+	private String assembleFieldname(final Collection<CampaignDiagramDataDto> values, final CampaignDiagramSeries series, final String defaultValue) {
+		if (series.getCaption() != null && !series.getCaption().isEmpty()) {
+			return series.getCaption();
+		}
+		Iterator<CampaignDiagramDataDto> iterator = values.iterator();
+		return iterator.hasNext() ? iterator.next().getFieldCaption() : defaultValue;
 	}
 
 	private void appendData(
