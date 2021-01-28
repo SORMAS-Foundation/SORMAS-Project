@@ -14,6 +14,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,7 @@ public class TemplateEngineService {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public Set<String> extractTemplateVariables(InputStream templateFile) throws IOException, XDocReportException {
-		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
+		IXDocReport report = readXDocReport(templateFile);
 
 		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 		report.extractFields(extractor);
@@ -60,7 +62,7 @@ public class TemplateEngineService {
 	}
 
 	public InputStream generateDocument(Properties properties, InputStream templateFile) throws IOException, XDocReportException {
-		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
+		IXDocReport report = readXDocReport(templateFile);
 
 		IContext context = report.createContext();
 		for (Object key : properties.keySet()) {
@@ -78,8 +80,9 @@ public class TemplateEngineService {
 	}
 
 	public void validateTemplate(InputStream templateFile) {
+
 		try {
-			IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
+			IXDocReport report = readXDocReport(templateFile);
 			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 			report.extractFields(extractor);
 		} catch (Exception e) {
@@ -89,5 +92,21 @@ public class TemplateEngineService {
 
 	public String getTempDir() {
 		return configFacade.getCustomFilesPath();
+	}
+
+	private IXDocReport readXDocReport(InputStream templateFile) throws IOException, XDocReportException {
+
+		try {
+			// Sanitize docx template for XXEs
+			WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(templateFile);
+			wordMLPackage.getDocumentModel();
+
+			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+			wordMLPackage.save(outStream);
+			ByteArrayInputStream inStream1 = new ByteArrayInputStream(outStream.toByteArray());
+			return XDocReportRegistry.getRegistry().loadReport(inStream1, TemplateEngineKind.Velocity);
+		} catch (Docx4JException e) {
+			throw new IllegalArgumentException(e.getMessage(), e);
+		}
 	}
 }

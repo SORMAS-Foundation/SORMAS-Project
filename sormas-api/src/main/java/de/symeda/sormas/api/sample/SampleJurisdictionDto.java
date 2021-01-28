@@ -4,14 +4,14 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 
 public class SampleJurisdictionDto implements Serializable {
 
 	private String reportingUserUuid;
 	private CaseJurisdictionDto caseJurisdiction;
 	private ContactJurisdictionDto contactJurisdiction;
-	private EventJurisdictionDto eventJurisdiction;
+	private EventParticipantJurisdictionDto eventParticipantJurisdiction;
 	private String labUuid;
 
 	public SampleJurisdictionDto() {
@@ -22,11 +22,12 @@ public class SampleJurisdictionDto implements Serializable {
 		String reportingUserUuid,
 		CaseJurisdictionDto caseJurisdiction,
 		ContactJurisdictionDto contactJurisdiction,
-		EventJurisdictionDto eventJurisdiction,
+		EventParticipantJurisdictionDto eventParticipantJurisdiction,
 		String labUuid) {
 		this.reportingUserUuid = reportingUserUuid;
 		this.caseJurisdiction = caseJurisdiction;
 		this.contactJurisdiction = contactJurisdiction;
+		this.eventParticipantJurisdiction = eventParticipantJurisdiction;
 		this.labUuid = labUuid;
 	}
 
@@ -54,12 +55,12 @@ public class SampleJurisdictionDto implements Serializable {
 		this.contactJurisdiction = contactJurisdiction;
 	}
 
-	public EventJurisdictionDto getEventJurisdiction() {
-		return eventJurisdiction;
+	public EventParticipantJurisdictionDto getEventParticipantJurisdiction() {
+		return eventParticipantJurisdiction;
 	}
 
-	public void setEventJurisdiction(EventJurisdictionDto eventJurisdiction) {
-		this.eventJurisdiction = eventJurisdiction;
+	public void setEventParticipantJurisdiction(EventParticipantJurisdictionDto eventParticipantJurisdiction) {
+		this.eventParticipantJurisdiction = eventParticipantJurisdiction;
 	}
 
 	public String getLabUuid() {
