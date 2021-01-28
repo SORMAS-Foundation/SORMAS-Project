@@ -194,6 +194,8 @@ public class CaseExportDto implements Serializable {
 	@SensitiveData
 	private String phone;
 	@SensitiveData
+	private String phoneOwner;
+	@SensitiveData
 	private String emailAddress;
 	private String occupationType;
 	private ArmedForcesRelationType armedForcesRelationType;
@@ -356,7 +358,8 @@ public class CaseExportDto implements Serializable {
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility, facilityDetails);
-		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
+		this.phone = phone;
+		this.phoneOwner = phoneOwner;
 		this.emailAddress = emailAddress;
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
@@ -1155,13 +1158,26 @@ public class CaseExportDto implements Serializable {
 	@ExportEntity(PersonDto.class)
 	@ExportProperty({
 		CaseDataDto.PERSON,
+		PersonDto.PHONE_OWNER })
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getPhoneOwner() {
+		return phoneOwner;
+	}
+
+	@Order(76)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		CaseDataDto.PERSON,
 		PersonDto.EMAIL_ADDRESS })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getEmailAddress() {
 		return emailAddress;
 	}
 
-	@Order(76)
+	@Order(77)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1178,7 +1194,7 @@ public class CaseExportDto implements Serializable {
 		this.educationType = educationType;
 	}
 
-	@Order(77)
+	@Order(78)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1191,7 +1207,7 @@ public class CaseExportDto implements Serializable {
 		return occupationType;
 	}
 
-	@Order(78)
+	@Order(79)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1204,7 +1220,7 @@ public class CaseExportDto implements Serializable {
 		return armedForcesRelationType;
 	}
 
-	@Order(79)
+	@Order(80)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVELED)
@@ -1217,7 +1233,7 @@ public class CaseExportDto implements Serializable {
 		this.traveled = traveled;
 	}
 
-	@Order(80)
+	@Order(81)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(TRAVEL_HISTORY)
@@ -1226,7 +1242,7 @@ public class CaseExportDto implements Serializable {
 		return travelHistory;
 	}
 
-	@Order(81)
+	@Order(82)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(BURIAL_ATTENDED)
@@ -1239,7 +1255,7 @@ public class CaseExportDto implements Serializable {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(82)
+	@Order(83)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportEntity(EpiDataDto.class)

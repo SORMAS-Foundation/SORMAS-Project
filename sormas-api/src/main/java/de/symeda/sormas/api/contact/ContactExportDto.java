@@ -133,6 +133,8 @@ public class ContactExportDto implements Serializable {
 	@SensitiveData
 	private String phone;
 	@SensitiveData
+	private String phoneOwner;
+	@SensitiveData
 	private String emailAddress;
 	private String occupationType;
 	private ArmedForcesRelationType armedForcesRelationType;
@@ -257,7 +259,8 @@ public class ContactExportDto implements Serializable {
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility, facilityDetails);
-		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
+		this.phone = phone;
+		this.phoneOwner = phoneOwner;
 		this.emailAddress = emailAddress;
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails);
 		this.armedForcesRelationType = armedForcesRelationType;
@@ -636,63 +639,90 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(43)
-	@ExportProperty(ADDRESS_REGION)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.REGION })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getAddressRegion() {
 		return addressRegion;
 	}
 
 	@Order(44)
-	@ExportProperty(ADDRESS_DISTRICT)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.DISTRICT })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getAddressDistrict() {
 		return addressDistrict;
 	}
 
 	@Order(45)
-	@ExportProperty(ADDRESS_COMMUNITY)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.COMMUNITY })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getAddressCommunity() {
 		return addressCommunity;
 	}
 
 	@Order(46)
-	@ExportProperty(LocationDto.CITY)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.CITY })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getCity() {
 		return city;
 	}
 
 	@Order(47)
-	@ExportProperty(LocationDto.STREET)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.STREET })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getStreet() {
 		return street;
 	}
 
 	@Order(48)
-	@ExportProperty(LocationDto.HOUSE_NUMBER)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.HOUSE_NUMBER })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
 
 	@Order(49)
-	@ExportProperty(LocationDto.ADDITIONAL_INFORMATION)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.ADDITIONAL_INFORMATION })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
 
 	@Order(50)
-	@ExportProperty(LocationDto.POSTAL_CODE)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.POSTAL_CODE })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getPostalCode() {
 		return postalCode;
 	}
 
 	@Order(51)
-	@ExportProperty(FACILITY)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.FACILITY })
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getFacility() {
 		return facility;
@@ -708,6 +738,15 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(53)
+	@ExportProperty({
+		CaseDataDto.PERSON,
+		PersonDto.PHONE_OWNER })
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getPhoneOwner() {
+		return phoneOwner;
+	}
+
+	@Order(54)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.EMAIL_ADDRESS })

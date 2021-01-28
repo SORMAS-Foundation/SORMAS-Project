@@ -30,7 +30,9 @@ import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportProperty;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.PersonDto;
@@ -45,6 +47,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
+@ExportEntity(EventParticipantDto.class)
 public class EventParticipantExportDto implements Serializable {
 
 	public static final String I18N_PREFIX = "EventParticipantExport";
@@ -221,7 +224,7 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(9)
-	@ExportProperty(EventParticipantExportDto.EVENT_PARTICIPANT_UUID)
+	@ExportProperty(EventParticipantDto.UUID)
 	public String getEventParticipantUuid() {
 		return eventParticipantUuid;
 	}
@@ -236,7 +239,10 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(11)
-	@ExportProperty(EventParticipantExportDto.PERSON_NATIONAL_HEALTH_ID)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.NATIONAL_HEALTH_ID })
 	public String getPersonNationalHealthId() {
 		return personNationalHealthId;
 	}
@@ -247,33 +253,52 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(13)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.FIRST_NAME })
 	public String getFirstName() {
 		return firstName;
 	}
 
 	@Order(14)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.LAST_NAME })
 	public String getLastName() {
 		return lastName;
 	}
 
 	@Order(15)
 	@HideForCountriesExcept
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.SALUTATION })
 	public String getSalutation() {
 		return salutation;
 	}
 
 	@Order(16)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.SEX })
 	public Sex getSex() {
 		return sex;
 	}
 
 	@Order(17)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.APPROXIMATE_AGE })
 	public String getApproximateAge() {
 		return approximateAge;
 	}
 
 	@Order(18)
-	@ExportProperty(EventParticipantExportDto.AGE_GROUP)
 	public String getAgeGroup() {
 		return ageGroup;
 	}
@@ -284,11 +309,19 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(20)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.PRESENT_CONDITION })
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
 	@Order(21)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.DEATH_DATE })
 	public Date getDeathDate() {
 		return deathDate;
 	}
@@ -300,43 +333,81 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(31)
-	@ExportProperty(EventParticipantExportDto.ADDRESS_REGION)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.REGION })
 	public String getAddressRegion() {
 		return addressRegion;
 	}
 
 	@Order(32)
-	@ExportProperty(EventParticipantExportDto.ADDRESS_DISTRICT)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.DISTRICT })
 	public String getAddressDistrict() {
 		return addressDistrict;
 	}
 
 	@Order(32)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.COMMUNITY })
 	public String getAddressCommunity() {
 		return addressCommunity;
 	}
 
 	@Order(33)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.CITY })
 	public String getCity() {
 		return city;
 	}
 
 	@Order(34)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.STREET })
 	public String getStreet() {
 		return street;
 	}
 
 	@Order(35)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.HOUSE_NUMBER })
 	public String getHouseNumber() {
 		return houseNumber;
 	}
 
 	@Order(36)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.ADDITIONAL_INFORMATION })
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
 
 	@Order(37)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.ADDRESS,
+		LocationDto.POSTAL_CODE })
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -348,31 +419,48 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(40)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.PHONE })
 	public String getPhone() {
 		return phone;
 	}
 
 	@Order(41)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.EMAIL_ADDRESS })
 	public String getEmailAddress() {
 		return emailAddress;
 	}
 
 	@Order(42)
-	@ExportProperty(PersonDto.BIRTH_NAME)
+	@ExportEntity(PersonDto.class)
 	@HideForCountriesExcept
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.BIRTH_NAME })
 	public String getBirthName() {
 		return birthName;
 	}
 
 	@Order(43)
-	@ExportProperty(PersonDto.BIRTH_COUNTRY)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.BIRTH_COUNTRY })
 	@HideForCountriesExcept
 	public String getBirthCountry() {
 		return birthCountry;
 	}
 
 	@Order(44)
-	@ExportProperty(PersonDto.CITIZENSHIP)
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.CITIZENSHIP })
 	@HideForCountriesExcept
 	public String getCitizenship() {
 		return citizenship;
@@ -392,97 +480,124 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(46)
-	@ExportProperty(EventParticipantExportDto.EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION)
+	@ExportProperty(EventParticipantDto.INVOLVEMENT_DESCRIPTION)
 	public String getInvolvmentDescription() {
 		return involvmentDescription;
 	}
 
 	@Order(50)
+	@ExportEntity(EventDto.class)
 	@ExportProperty(EventDto.UUID)
 	public String getEventUuid() {
 		return eventUuid;
 	}
 
 	@Order(51)
+	@ExportEntity(EventDto.class)
 	@ExportProperty(EventDto.EVENT_STATUS)
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
 
 	@Order(52)
+	@ExportEntity(EventDto.class)
 	@ExportProperty(EventDto.EVENT_INVESTIGATION_STATUS)
 	public EventInvestigationStatus getEventInvestigationStatus() {
 		return eventInvestigationStatus;
 	}
 
 	@Order(53)
-	@ExportProperty(EventParticipantExportDto.EVENT_DISEASE)
+	@ExportEntity(EventDto.class)
+	@ExportProperty(EventDto.DISEASE)
 	public Disease getEventDisease() {
 		return eventDisease;
 	}
 
 	@Order(54)
-	@ExportProperty(EventParticipantExportDto.EVENT_TYPE_OF_PLACE)
+	@ExportEntity(EventDto.class)
+	@ExportProperty(EventDto.TYPE_OF_PLACE)
 	public TypeOfPlace getTypeOfPlace() {
 		return typeOfPlace;
 	}
 
 	@Order(55)
-	@ExportProperty(EventParticipantExportDto.EVENT_START_DATE)
+	@ExportEntity(EventDto.class)
+	@ExportProperty(EventDto.START_DATE)
 	public Date getEventStartDate() {
 		return eventStartDate;
 	}
 
 	@Order(56)
-	@ExportProperty(EventParticipantExportDto.EVENT_END_DATE)
+	@ExportEntity(EventDto.class)
+	@ExportProperty(EventDto.END_DATE)
 	public Date getEventEndDate() {
 		return eventEndDate;
 	}
 
 	@Order(57)
-	@ExportProperty(EventParticipantExportDto.EVENT_TITLE)
+	@ExportEntity(EventDto.class)
+	@ExportProperty(EventDto.EVENT_TITLE)
 	public String getEventTitle() {
 		return eventTitle;
 	}
 
 	@Order(58)
-	@ExportProperty(EventParticipantExportDto.EVENT_DESCRIPTION)
+	@ExportEntity(EventDto.class)
+	@ExportProperty(EventDto.EVENT_DESC)
 	public String getEventDesc() {
 		return eventDesc;
 	}
 
 	@Order(59)
-	@ExportProperty(EventParticipantExportDto.EVENT_REGION)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.REGION })
 	public String getEventRegion() {
 		return eventRegion;
 	}
 
 	@Order(60)
-	@ExportProperty(EventParticipantExportDto.EVENT_DISTRICT)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.DISTRICT })
 	public String getEventDistrict() {
 		return eventDistrict;
 	}
 
 	@Order(61)
-	@ExportProperty(EventParticipantExportDto.EVENT_COMMUNITY)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.COMMUNITY })
 	public String getEventCommunity() {
 		return eventCommunity;
 	}
 
 	@Order(62)
-	@ExportProperty(EventParticipantExportDto.EVENT_CITY)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.CITY })
 	public String getEventCity() {
 		return eventCity;
 	}
 
 	@Order(63)
-	@ExportProperty(EventParticipantExportDto.EVENT_STREET)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.STREET })
 	public String getEventStreet() {
 		return eventStreet;
 	}
 
 	@Order(64)
-	@ExportProperty(EventParticipantExportDto.EVENT_HOUSE_NUMBER)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.HOUSE_NUMBER })
 	public String getEventHouseNumber() {
 		return eventHouseNumber;
 	}

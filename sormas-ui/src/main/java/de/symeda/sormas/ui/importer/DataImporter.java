@@ -404,7 +404,7 @@ public abstract class DataImporter {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
-			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
+			pd.getWriteMethod().invoke(element, DataHelper.parseBoolean(entry));
 			return true;
 		}
 		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
@@ -469,7 +469,9 @@ public abstract class DataImporter {
 		boolean ignoreEmptyEntries,
 		Function<ImportCellData, Exception> insertCallback)
 		throws IOException, InvalidColumnException {
+
 		boolean dataHasImportError = false;
+		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
 			String value = values[i];
@@ -492,11 +494,15 @@ public abstract class DataImporter {
 						writeImportError(values, exception.getMessage());
 						break;
 					} else if (exception instanceof InvalidColumnException) {
-						throw (InvalidColumnException) exception;
+						invalidColumns.add(((InvalidColumnException) exception).getColumnName());
 					}
 				}
 			}
 
+		}
+
+		if (invalidColumns.size() > 0) {
+			LoggerFactory.getLogger(getClass()).warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
 		}
 
 		return dataHasImportError;

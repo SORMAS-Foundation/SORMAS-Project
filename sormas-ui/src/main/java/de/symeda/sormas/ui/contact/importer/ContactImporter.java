@@ -388,8 +388,7 @@ public class ContactImporter extends DataImporter {
 					}
 				}
 			} catch (IntrospectionException e) {
-//				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
-				continue;
+				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
 			} catch (InvocationTargetException | IllegalAccessException e) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));

@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -155,7 +154,7 @@ public final class DateHelper {
 			return null;
 		}
 
-		Set<String> dateFormats = getPossibleDateFormats(dateFormat);
+		List<String> dateFormats = getAllowedDateFormats(dateFormat);
 
 		for (String format : dateFormats) {
 			try {
@@ -170,18 +169,34 @@ public final class DateHelper {
 		throw new ParseException("Unable to parse date [" + date + "]", 0);
 	}
 
-	private static Set<String> getPossibleDateFormats(String defaultFormat) throws ParseException {
-		final Set<String> dateFormats = new HashSet<>();
+	public static List<String> getAllowedDateFormats(String defaultFormat) {
+		final List<String> dateFormats = new ArrayList<>();
 
 		Matcher matcher = DATE_FORMAT_PATTERN.matcher(defaultFormat);
 		if (matcher.find()) {
-			final List<String> dateFields = Arrays.asList(matcher.group(1), matcher.group(3), matcher.group(5));
-			final String defaultSeparator = matcher.group(2);
+			final List<String> dateFieldsDefault = new ArrayList<>(Arrays.asList(matcher.group(1), matcher.group(3), matcher.group(5)));
 
-			dateFormats.add(defaultFormat);
-			for (String separator : DATE_FORMAT_SEPARATORS) {
-				if (!separator.equals(defaultSeparator)) {
-					dateFormats.add(StringUtils.join(dateFields, separator));
+			final List<String> dateFieldsYearFormat = new ArrayList<>(dateFieldsDefault.size());
+			for (String dateField : dateFieldsDefault) {
+				if (dateField.toLowerCase().startsWith("y")) {
+					dateFieldsYearFormat.add(dateField.length() == 4 ? dateField.substring(0, 2) : dateField + dateField);
+				} else {
+					dateFieldsYearFormat.add(dateField);
+				}
+			}
+
+			final List<List<String>> dateFields = new ArrayList<>(dateFieldsDefault.size());
+			dateFields.add(dateFieldsDefault);
+			dateFields.add(dateFieldsYearFormat);
+
+			String defaultSeparator = matcher.group(2);
+			for (List<String> fields : dateFields) {
+				dateFormats.add(StringUtils.join(fields, defaultSeparator));
+
+				for (String separator : DATE_FORMAT_SEPARATORS) {
+					if (!separator.equals(defaultSeparator)) {
+						dateFormats.add(StringUtils.join(fields, separator));
+					}
 				}
 			}
 		}

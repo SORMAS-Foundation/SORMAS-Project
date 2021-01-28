@@ -46,6 +46,7 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -64,6 +65,7 @@ public class GridExportStreamResource extends StreamResource {
 
 				ValueProvider[] columnValueProviders;
 				String[] headerRow;
+				String[] labelsRow;
 				{
 					List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
 					List<Column> columns = grid.getColumns()
@@ -74,7 +76,9 @@ public class GridExportStreamResource extends StreamResource {
 
 					columnValueProviders = columns.stream().map(Column::getValueProvider).toArray(ValueProvider[]::new);
 
-					headerRow = columns.stream().map(c -> c.getCaption()).toArray(String[]::new);
+					headerRow = columns.stream().map(Column::getId).toArray(String[]::new);
+					labelsRow = columns.stream().map(Column::getCaption).toArray(String[]::new);
+					labelsRow[0] = CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX + labelsRow[0];
 				}
 
 				DataProvider<?, ?> dataProvider = grid.getDataProvider();
@@ -96,6 +100,7 @@ public class GridExportStreamResource extends StreamResource {
 						FacadeProvider.getConfigFacade().getCsvSeparator())) {
 
 						writer.writeNext(headerRow);
+						writer.writeNext(labelsRow, false);
 
 						String[] rowValues = new String[columnValueProviders.length];
 

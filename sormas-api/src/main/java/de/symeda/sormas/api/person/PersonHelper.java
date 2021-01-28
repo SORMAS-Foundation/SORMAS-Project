@@ -27,7 +27,6 @@ import org.simmetrics.metrics.StringMetrics;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
 public final class PersonHelper {
@@ -128,21 +127,6 @@ public final class PersonHelper {
 				result.append(" ");
 			}
 			result.append(burialPlaceDescription);
-		}
-		return result.toString();
-	}
-
-	public static String buildPhoneString(String phone, String phoneOwner) {
-
-		StringBuilder result = new StringBuilder();
-		if (!DataHelper.isNullOrEmpty(phone)) {
-			result.append(phone);
-		}
-		if (!DataHelper.isNullOrEmpty(phoneOwner)) {
-			if (result.length() > 0) {
-				result.append(" - ");
-			}
-			result.append(phoneOwner);
 		}
 		return result.toString();
 	}
