@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.caze.maternalhistory;
 
-import java.sql.Timestamp;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -68,17 +66,7 @@ public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
 	}
 
 	public MaternalHistory fromDto(@NotNull MaternalHistoryDto source, boolean checkChangeDate) {
-		MaternalHistory target = service.getByUuid(source.getUuid());
-
-		if (target == null) {
-			target = new MaternalHistory();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		MaternalHistory target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), MaternalHistory::new, checkChangeDate);
 
 		target.setAgeAtBirth(source.getAgeAtBirth());
 		target.setArthralgiaArthritis(source.getArthralgiaArthritis());

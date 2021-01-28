@@ -333,12 +333,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Community();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));

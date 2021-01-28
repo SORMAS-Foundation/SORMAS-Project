@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -656,15 +655,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	public EventParticipant fromDto(@NotNull EventParticipantDto source, boolean checkChangeDate) {
 
-		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new EventParticipant();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		EventParticipant target =
+			DtoHelper.fillOrBuildEntity(source, eventParticipantService.getByUuid(source.getUuid()), EventParticipant::new, checkChangeDate);
 
 		if (source.getReportingUser() != null) {
 			target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
@@ -766,6 +758,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		return eventParticipantService.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return eventParticipantService.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 }

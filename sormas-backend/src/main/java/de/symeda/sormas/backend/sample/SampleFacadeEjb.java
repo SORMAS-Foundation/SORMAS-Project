@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -89,6 +88,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -168,6 +168,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private EventJurisdictionChecker eventJurisdictionChecker;
+	@EJB
+	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
@@ -743,15 +745,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
 
-		Sample target = sampleService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Sample();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Sample target = DtoHelper.fillOrBuildEntity(source, sampleService.getByUuid(source.getUuid()), Sample::new, checkChangeDate);
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
 		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
@@ -809,7 +803,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction);
 			User currentUser = userService.getCurrentUser();
 
-			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
+			boolean samplePseudonimized = true;
+			if (dto.getAssociatedEventParticipant() != null) {
+				samplePseudonimized = eventParticipantJurisdictionChecker.isPseudonymized(dto.getAssociatedEventParticipant().getUuid());
+			}
+			EventParticipantReferenceDto eventParticipantReference = dto.getAssociatedEventParticipant();
+
+			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, eventParticipantReference != null ? samplePseudonimized : isInJurisdiction, s -> {
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					sampleJurisdiction,
@@ -818,7 +818,6 @@ public class SampleFacadeEjb implements SampleFacade {
 					s.getAssociatedEventParticipant(),
 					pseudonymizer);
 			});
-
 		}
 	}
 
@@ -869,7 +868,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizer.pseudonymizeDto(
 				EventParticipantReferenceDto.class,
 				sampleEventParticipant,
-				eventJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getEventJurisdiction()),
+				eventParticipantJurisdictionChecker.isPseudonymized(sampleEventParticipant.getUuid()),
 				null);
 		}
 	}

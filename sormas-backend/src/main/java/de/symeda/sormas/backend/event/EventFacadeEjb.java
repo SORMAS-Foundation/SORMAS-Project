@@ -277,6 +277,7 @@ public class EventFacadeEjb implements EventFacade {
 				switch (sortProperty.propertyName) {
 				case EventIndexDto.UUID:
 				case EventIndexDto.EVENT_STATUS:
+				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
@@ -604,15 +605,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
-		Event target = eventService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Event();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
