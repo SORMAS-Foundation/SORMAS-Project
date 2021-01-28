@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.54.0</version>
+	<version>1.54.1</version>
 
 	<properties>
 
@@ -33,6 +33,7 @@
 		<bouncycastle.version>1.67</bouncycastle.version>
 		<keycloak.version>12.0.1</keycloak.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
+		<docx4j.version>8.2.8</docx4j.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
@@ -614,6 +615,17 @@
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-jaxrs2</artifactId>
 				<version>${swagger.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.docx4j</groupId>
+				<artifactId>docx4j-docx-anon</artifactId>
+				<version>${docx4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.docx4j</groupId>
+				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+				<version>${docx4j.version}</version>
 			</dependency>
 
 			<dependency>
