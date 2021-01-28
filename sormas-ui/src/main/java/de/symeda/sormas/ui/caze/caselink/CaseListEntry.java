@@ -10,7 +10,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -36,31 +35,44 @@ public class CaseListEntry extends HorizontalLayout {
 		addComponent(mainLayout);
 		setExpandRatio(mainLayout, 1);
 
-		Label caseUuidLabel = new Label(
-			DataHelper
-				.toStringNullable(I18nProperties.getCaption(Captions.CaseData_uuid) + SEPARATOR + DataHelper.getShortUuid(caseIndexDto.getUuid())));
-		caseUuidLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		HorizontalLayout uuidReportDateLayout = new HorizontalLayout();
+		uuidReportDateLayout.setMargin(false);
+		uuidReportDateLayout.setSpacing(true);
+
+		Label caseUuidLabel = new Label(DataHelper.toStringNullable(DataHelper.getShortUuid(caseIndexDto.getUuid())));
 		caseUuidLabel.setDescription(caseIndexDto.getUuid());
-		mainLayout.addComponent(caseUuidLabel);
-
-		Label classificationLabel =
-			new Label(I18nProperties.getCaption(Captions.CaseData_caseClassification) + SEPARATOR + caseIndexDto.getCaseClassification());
-		classificationLabel.addStyleNames(CssStyles.LABEL_BOLD);
-		classificationLabel.setDescription(caseIndexDto.getCaseClassification().toString());
-		mainLayout.addComponent(classificationLabel);
-
-		Label diseaseLabel =
-			new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE) + SEPARATOR + caseIndexDto.getDisease());
-		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
-		diseaseLabel.setDescription(caseIndexDto.getDisease().toString());
-		mainLayout.addComponent(diseaseLabel);
+		uuidReportDateLayout.addComponent(caseUuidLabel);
 
 		Label reportDateLabel = new Label(
 			I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)
 				+ SEPARATOR
 				+ DateFormatHelper.formatDate(caseIndexDto.getReportDate()));
-		reportDateLabel.addStyleNames(CssStyles.LABEL_BOLD);
-		mainLayout.addComponent(reportDateLabel);
+		uuidReportDateLayout.addComponent(reportDateLabel);
+
+		uuidReportDateLayout.setWidthFull();
+		uuidReportDateLayout.setComponentAlignment(caseUuidLabel, Alignment.MIDDLE_LEFT);
+		uuidReportDateLayout.setComponentAlignment(reportDateLabel, Alignment.MIDDLE_RIGHT);
+		mainLayout.addComponent(uuidReportDateLayout);
+
+		HorizontalLayout diseaseClassificationLayout = new HorizontalLayout();
+		diseaseClassificationLayout.setMargin(false);
+		diseaseClassificationLayout.setSpacing(true);
+
+		Label diseaseLabel = new Label(caseIndexDto.getDisease().toString());
+		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		diseaseLabel.setDescription(caseIndexDto.getDisease().toString());
+
+		Label classificationLabel = new Label(caseIndexDto.getCaseClassification().toString());
+		classificationLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		classificationLabel.setDescription(caseIndexDto.getCaseClassification().toString());
+
+		diseaseClassificationLayout.addComponent(diseaseLabel);
+		diseaseClassificationLayout.addComponent(classificationLabel);
+		diseaseClassificationLayout.setWidthFull();
+		diseaseClassificationLayout.setComponentAlignment(diseaseLabel, Alignment.MIDDLE_LEFT);
+		diseaseClassificationLayout.setComponentAlignment(classificationLabel, Alignment.MIDDLE_RIGHT);
+		mainLayout.addComponent(diseaseClassificationLayout);
+
 	}
 
 	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {

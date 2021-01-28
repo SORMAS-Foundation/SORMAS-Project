@@ -23,7 +23,7 @@ public class EventParticipantListComponent extends VerticalLayout {
 	public EventParticipantListComponent(PersonReferenceDto personReferenceDto) {
 		createEventParticipantListComponent(
 			new EventParticipantList(personReferenceDto),
-			I18nProperties.getString(Strings.entityEventParticipants),
+			I18nProperties.getString(Strings.entityEvents),
 			clickEvent -> ControllerProvider.getEventController().navigateTo(new EventCriteria().person(personReferenceDto)));
 	}
 

@@ -40,10 +40,9 @@ public class ContactListEntry extends HorizontalLayout {
 
 		HorizontalLayout uuidStatusLayout = new HorizontalLayout();
 		uuidStatusLayout.setMargin(false);
-		uuidStatusLayout.setSpacing(false);
+		uuidStatusLayout.setSpacing(true);
 
-		Label contactUuidLabel = new Label(I18nProperties.getCaption(Captions.Contact_uuid) + SEPARATOR + DataHelper.toStringNullable(DataHelper.getShortUuid(contactIndexDto.getUuid())));
-		contactUuidLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		Label contactUuidLabel = new Label(DataHelper.toStringNullable(DataHelper.getShortUuid(contactIndexDto.getUuid())));
 		contactUuidLabel.setDescription(contactIndexDto.getUuid());
 
 		Label statusLabel = new Label(contactIndexDto.getContactStatus().toString());
@@ -57,19 +56,26 @@ public class ContactListEntry extends HorizontalLayout {
 		uuidStatusLayout.setComponentAlignment(statusLabel, Alignment.MIDDLE_RIGHT);
 		mainLayout.addComponent(uuidStatusLayout);
 
+		HorizontalLayout diseaseClassificationLayout = new HorizontalLayout();
+		diseaseClassificationLayout.setMargin(false);
+		diseaseClassificationLayout.setSpacing(true);
+
 		Label diseaseLabel =
-			new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE) + SEPARATOR + contactIndexDto.getDisease());
+			new Label( contactIndexDto.getDisease().toString());
 		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		diseaseLabel.setDescription(contactIndexDto.getDisease().toString());
-		mainLayout.addComponent(diseaseLabel);
 
 		Label classificationLabel = new Label(
-			I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_CLASSIFICATION)
-				+ SEPARATOR
-				+ contactIndexDto.getContactClassification());
+			contactIndexDto.getContactClassification().toString());
 		classificationLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		classificationLabel.setDescription(contactIndexDto.getContactClassification().toString());
-		mainLayout.addComponent(classificationLabel);
+
+		diseaseClassificationLayout.addComponent(diseaseLabel);
+		diseaseClassificationLayout.addComponent(classificationLabel);
+		diseaseClassificationLayout.setWidthFull();
+		diseaseClassificationLayout.setComponentAlignment(diseaseLabel, Alignment.MIDDLE_LEFT);
+		diseaseClassificationLayout.setComponentAlignment(classificationLabel, Alignment.MIDDLE_RIGHT);
+		mainLayout.addComponent(diseaseClassificationLayout);
 
 		final ContactCategory contactCategory = contactIndexDto.getContactCategory();
 		if (contactCategory != null) {

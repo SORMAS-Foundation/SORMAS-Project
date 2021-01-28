@@ -6,6 +6,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -129,6 +130,7 @@ public class PersonsView extends AbstractView {
 		statusAll.setCaptionAsHtml(true);
 
 		associationFilterLayout.addComponent(statusAll);
+		associationFilterLayout.setComponentAlignment(statusAll, Alignment.MIDDLE_LEFT);
 		associationButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeAssociationButton = statusAll;
 
@@ -141,8 +143,14 @@ public class PersonsView extends AbstractView {
 			associationButton.setCaptionAsHtml(true);
 
 			associationFilterLayout.addComponent(associationButton);
+			associationFilterLayout.setComponentAlignment(associationButton, Alignment.MIDDLE_LEFT);
 			associationButtons.put(associationButton, association.toString());
 		}
+
+		Label emptyLabel = new Label("");
+		associationFilterLayout.addComponent(emptyLabel);
+		associationFilterLayout.setComponentAlignment(emptyLabel, Alignment.MIDDLE_RIGHT);
+		associationFilterLayout.setExpandRatio(emptyLabel, 1);
 
 		return associationFilterLayout;
 	}

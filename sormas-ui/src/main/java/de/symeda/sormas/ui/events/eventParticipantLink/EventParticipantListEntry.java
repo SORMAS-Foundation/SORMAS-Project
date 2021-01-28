@@ -38,12 +38,10 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		Label eventParticipantUuidLabel = new Label(
 			I18nProperties.getCaption(Captions.EventParticipant_uuid) + SEPARATOR
 				+ DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipantListEntryDto.getUuid())));
-		eventParticipantUuidLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		eventParticipantUuidLabel.setDescription(eventParticipantListEntryDto.getUuid());
 		Label eventUuidLabel = new Label(
 			I18nProperties.getCaption(Captions.Event_uuid) + SEPARATOR
 				+ DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipantListEntryDto.getEventUuid())));
-		eventUuidLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		eventUuidLabel.setDescription(eventParticipantListEntryDto.getEventUuid());
 
 		idLayout.addComponent(eventParticipantUuidLabel);
@@ -54,13 +52,13 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		mainLayout.addComponent(idLayout);
 
 		HorizontalLayout diseaseStatusLayout = new HorizontalLayout();
-		Label diseaseLabel = new Label(I18nProperties.getCaption(Captions.Event_diseaseShort) + SEPARATOR + eventParticipantListEntryDto.getDisease());
+		Label diseaseLabel = new Label(eventParticipantListEntryDto.getDisease().toString());
 		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		diseaseLabel.setDescription(eventParticipantListEntryDto.getDisease().toString());
 		diseaseStatusLayout.addComponent(diseaseLabel);
 
 		Label statusLabel =
-			new Label(I18nProperties.getCaption(Captions.Event_eventStatus) + SEPARATOR + eventParticipantListEntryDto.getEventStatus().toString());
+			new Label(eventParticipantListEntryDto.getEventStatus().toString());
 		statusLabel.addStyleNames(CssStyles.LABEL_BOLD);
 		statusLabel.setDescription(eventParticipantListEntryDto.getEventStatus().toString());
 		diseaseStatusLayout.addComponent(statusLabel);
@@ -72,8 +70,7 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		diseaseStatusLayout.setComponentAlignment(statusLabel, Alignment.MIDDLE_RIGHT);
 		mainLayout.addComponent(diseaseStatusLayout);
 
-		Label titleLabel = new Label(I18nProperties.getCaption(Captions.Event_eventTitle) + SEPARATOR + eventParticipantListEntryDto.getEventTitle());
-		titleLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		Label titleLabel = new Label(eventParticipantListEntryDto.getEventTitle());
 		titleLabel.setDescription(eventParticipantListEntryDto.getEventTitle());
 		mainLayout.addComponent(titleLabel);
 
