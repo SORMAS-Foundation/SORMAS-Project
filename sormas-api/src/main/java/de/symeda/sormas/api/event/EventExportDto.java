@@ -431,16 +431,11 @@ public class EventExportDto implements Serializable {
 		return deathCount;
 	}
 
-	@Order(37)
-	public String getExternalToken() {
-		return externalToken;
-	}
-
 	public void setDeathCount(long deathCount) {
 		this.deathCount = deathCount;
 	}
 
-	@Order(33)
+	@Order(37)
 	public long getContactCount() {
 		return contactCount;
 	}
@@ -449,9 +444,14 @@ public class EventExportDto implements Serializable {
 		this.contactCount = contactCount;
 	}
 
-	@Order(34)
+	@Order(38)
 	public long getContactCountSourceInEvent() {
 		return contactCountSourceInEvent;
+	}
+
+	@Order(39)
+	public String getExternalToken() {
+		return externalToken;
 	}
 
 	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
