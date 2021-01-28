@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.events;
 
+import java.util.Collections;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -36,6 +38,8 @@ import de.symeda.sormas.ui.action.ActionStatsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
+import de.symeda.sormas.ui.survnet.SurvnetGateway;
+import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -77,6 +81,7 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 12, 0, DOCUMENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -143,6 +148,8 @@ public class EventDataView extends AbstractEventView {
 				ValoTheme.BUTTON_PRIMARY);
 			shortcutLinksLayout.addComponent(seeEventContactsBtn);
 		}
+
+		SurvnetGateway.addComponentToLayout(layout, SurvnetGatewayType.EVENTS, () -> Collections.singletonList(event.getUuid()));
 
 		layout.addComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);
 
