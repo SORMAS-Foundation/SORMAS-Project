@@ -9,64 +9,79 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class CaseListEntry extends HorizontalLayout {
 
-    private final CaseIndexDto caseIndexDto;
-    private Button editButton;
+	public static final String SEPARATOR = ": ";
+	private final CaseIndexDto caseIndexDto;
+	private Button editButton;
 
-    public CaseListEntry(CaseIndexDto caseIndexDto) {
-        this.caseIndexDto = caseIndexDto;
-        setSpacing(true);
-        setWidth(100, Unit.PERCENTAGE);
-        addStyleName(CssStyles.SORMAS_LIST_ENTRY);
+	public CaseListEntry(CaseIndexDto caseIndexDto) {
+		this.caseIndexDto = caseIndexDto;
+		setSpacing(true);
+		setWidth(100, Unit.PERCENTAGE);
+		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 
-        VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setWidth(100, Unit.PERCENTAGE);
-        mainLayout.setMargin(false);
-        mainLayout.setSpacing(false);
-        addComponent(mainLayout);
-        setExpandRatio(mainLayout, 1);
+		VerticalLayout mainLayout = new VerticalLayout();
+		mainLayout.setWidth(100, Unit.PERCENTAGE);
+		mainLayout.setMargin(false);
+		mainLayout.setSpacing(false);
+		addComponent(mainLayout);
+		setExpandRatio(mainLayout, 1);
 
-        VerticalLayout leftLayout = new VerticalLayout();
-        leftLayout.setMargin(false);
-        leftLayout.setSpacing(false);
+		Label caseUuidLabel = new Label(
+			DataHelper
+				.toStringNullable(I18nProperties.getCaption(Captions.CaseData_uuid) + SEPARATOR + DataHelper.getShortUuid(caseIndexDto.getUuid())));
+		caseUuidLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		caseUuidLabel.setDescription(caseIndexDto.getUuid());
+		mainLayout.addComponent(caseUuidLabel);
 
-        Label caseUuidLabel = new Label(DataHelper.toStringNullable(DataHelper.getShortUuid(caseIndexDto.getUuid())));
-        caseUuidLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-        caseUuidLabel.setDescription(caseIndexDto.getUuid());
-        leftLayout.addComponent(caseUuidLabel);
+		Label classificationLabel =
+			new Label(I18nProperties.getCaption(Captions.CaseData_caseClassification) + SEPARATOR + caseIndexDto.getCaseClassification());
+		classificationLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		classificationLabel.setDescription(caseIndexDto.getCaseClassification().toString());
+		mainLayout.addComponent(classificationLabel);
 
-        Label diseaseLabel = new Label(caseIndexDto.getDisease().toString());
-        diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-        diseaseLabel.setDescription(caseIndexDto.getDisease().toString());
-        leftLayout.addComponent(diseaseLabel);
+		Label diseaseLabel =
+			new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE) + SEPARATOR + caseIndexDto.getDisease());
+		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		diseaseLabel.setDescription(caseIndexDto.getDisease().toString());
+		mainLayout.addComponent(diseaseLabel);
 
-        mainLayout.addComponent(leftLayout);
-    }
+		Label reportDateLabel = new Label(
+			I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)
+				+ SEPARATOR
+				+ DateFormatHelper.formatDate(caseIndexDto.getReportDate()));
+		reportDateLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		mainLayout.addComponent(reportDateLabel);
+	}
 
-    public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
-        if (editButton == null) {
-            editButton = ButtonHelper.createIconButtonWithCaption(
-                    "edit-participant-" + rowIndex,
-                    null,
-                    VaadinIcons.PENCIL,
-                    null,
-                    ValoTheme.BUTTON_LINK,
-                    CssStyles.BUTTON_COMPACT);
+	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
+		if (editButton == null) {
+			editButton = ButtonHelper.createIconButtonWithCaption(
+				"edit-participant-" + rowIndex,
+				null,
+				VaadinIcons.PENCIL,
+				null,
+				ValoTheme.BUTTON_LINK,
+				CssStyles.BUTTON_COMPACT);
 
-            addComponent(editButton);
-            setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
-            setExpandRatio(editButton, 0);
-        }
+			addComponent(editButton);
+			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
+			setExpandRatio(editButton, 0);
+		}
 
-        editButton.addClickListener(editClickListener);
-    }
+		editButton.addClickListener(editClickListener);
+	}
 
-    public CaseIndexDto getCaseIndexDto() {
-        return caseIndexDto;
-    }
+	public CaseIndexDto getCaseIndexDto() {
+		return caseIndexDto;
+	}
 }

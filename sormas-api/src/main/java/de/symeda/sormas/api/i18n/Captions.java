@@ -1275,6 +1275,9 @@ public interface Captions {
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
+	String personLinkToCases = "personLinkToCases";
+	String personLinkToContacts = "personLinkToContacts";
+	String personLinkToEvents = "personLinkToEvents";
 	String personNoCaseLinkedToPerson = "personNoCaseLinkedToPerson";
 	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";

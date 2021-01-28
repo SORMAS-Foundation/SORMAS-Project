@@ -8,18 +8,21 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.event.EventParticipantListEntryDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventParticipantListEntry extends HorizontalLayout {
 
-	private final EventParticipantIndexDto eventParticipant;
+	public static final String SEPARATOR = ": ";
+	private final EventParticipantListEntryDto eventParticipantListEntryDto;
 	private Button editButton;
 
-	public EventParticipantListEntry(EventParticipantIndexDto eventParticipant) {
-		this.eventParticipant = eventParticipant;
+	public EventParticipantListEntry(EventParticipantListEntryDto eventParticipantListEntryDto) {
+		this.eventParticipantListEntryDto = eventParticipantListEntryDto;
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
@@ -31,16 +34,50 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		addComponent(mainLayout);
 		setExpandRatio(mainLayout, 1);
 
-		VerticalLayout leftLayout = new VerticalLayout();
-		leftLayout.setMargin(false);
-		leftLayout.setSpacing(false);
+		HorizontalLayout idLayout = new HorizontalLayout();
+		Label eventParticipantUuidLabel = new Label(
+			I18nProperties.getCaption(Captions.EventParticipant_uuid) + SEPARATOR
+				+ DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipantListEntryDto.getUuid())));
+		eventParticipantUuidLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		eventParticipantUuidLabel.setDescription(eventParticipantListEntryDto.getUuid());
+		Label eventUuidLabel = new Label(
+			I18nProperties.getCaption(Captions.Event_uuid) + SEPARATOR
+				+ DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipantListEntryDto.getEventUuid())));
+		eventUuidLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		eventUuidLabel.setDescription(eventParticipantListEntryDto.getEventUuid());
 
-		Label eventParticipantUuidLabel = new Label(DataHelper.toStringNullable(DataHelper.getShortUuid(eventParticipant.getUuid())));
-		eventParticipantUuidLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		eventParticipantUuidLabel.setDescription(eventParticipant.getUuid());
-		leftLayout.addComponent(eventParticipantUuidLabel);
+		idLayout.addComponent(eventParticipantUuidLabel);
+		idLayout.addComponent(eventUuidLabel);
+		idLayout.setWidthFull();
+		idLayout.setComponentAlignment(eventParticipantUuidLabel, Alignment.MIDDLE_LEFT);
+		idLayout.setComponentAlignment(eventUuidLabel, Alignment.MIDDLE_RIGHT);
+		mainLayout.addComponent(idLayout);
 
-		mainLayout.addComponent(leftLayout);
+		HorizontalLayout diseaseStatusLayout = new HorizontalLayout();
+		Label diseaseLabel = new Label(I18nProperties.getCaption(Captions.Event_diseaseShort) + SEPARATOR + eventParticipantListEntryDto.getDisease());
+		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		diseaseLabel.setDescription(eventParticipantListEntryDto.getDisease().toString());
+		diseaseStatusLayout.addComponent(diseaseLabel);
+
+		Label statusLabel =
+			new Label(I18nProperties.getCaption(Captions.Event_eventStatus) + SEPARATOR + eventParticipantListEntryDto.getEventStatus().toString());
+		statusLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		statusLabel.setDescription(eventParticipantListEntryDto.getEventStatus().toString());
+		diseaseStatusLayout.addComponent(statusLabel);
+
+		diseaseStatusLayout.addComponent(diseaseLabel);
+		diseaseStatusLayout.addComponent(statusLabel);
+		diseaseStatusLayout.setWidthFull();
+		diseaseStatusLayout.setComponentAlignment(diseaseLabel, Alignment.MIDDLE_LEFT);
+		diseaseStatusLayout.setComponentAlignment(statusLabel, Alignment.MIDDLE_RIGHT);
+		mainLayout.addComponent(diseaseStatusLayout);
+
+		Label titleLabel = new Label(I18nProperties.getCaption(Captions.Event_eventTitle) + SEPARATOR + eventParticipantListEntryDto.getEventTitle());
+		titleLabel.addStyleNames(CssStyles.LABEL_BOLD);
+		titleLabel.setDescription(eventParticipantListEntryDto.getEventTitle());
+		mainLayout.addComponent(titleLabel);
+
+		mainLayout.addComponent(titleLabel);
 	}
 
 	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
@@ -61,7 +98,7 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		editButton.addClickListener(editClickListener);
 	}
 
-	public EventParticipantIndexDto getEventParticipant() {
-		return eventParticipant;
+	public EventParticipantListEntryDto getEventParticipantListEntryDto() {
+		return eventParticipantListEntryDto;
 	}
 }

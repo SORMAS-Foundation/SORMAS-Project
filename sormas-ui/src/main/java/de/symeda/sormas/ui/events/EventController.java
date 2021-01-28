@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.ui.caze.CasesView;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;

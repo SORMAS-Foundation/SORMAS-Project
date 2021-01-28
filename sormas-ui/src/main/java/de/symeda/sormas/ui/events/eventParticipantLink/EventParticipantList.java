@@ -7,7 +7,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -16,7 +16,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
-public class EventParticipantList extends PaginationList<EventParticipantIndexDto> {
+public class EventParticipantList extends PaginationList<EventParticipantListEntryDto> {
 
 	private final EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 	private final Label noEventParticipantLabel;
@@ -29,8 +29,8 @@ public class EventParticipantList extends PaginationList<EventParticipantIndexDt
 
 	@Override
 	public void reload() {
-		List<EventParticipantIndexDto> eventParticipants =
-			FacadeProvider.getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, maxDisplayedEntries * 20, null);
+		List<EventParticipantListEntryDto> eventParticipants =
+			FacadeProvider.getEventParticipantFacade().getListEntries(eventParticipantCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(eventParticipants);
 		if (!eventParticipants.isEmpty()) {
@@ -44,15 +44,15 @@ public class EventParticipantList extends PaginationList<EventParticipantIndexDt
 
 	@Override
 	protected void drawDisplayedEntries() {
-		List<EventParticipantIndexDto> displayedEntries = getDisplayedEntries();
+		List<EventParticipantListEntryDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
-			final EventParticipantIndexDto eventParticipant = displayedEntries.get(i);
+			final EventParticipantListEntryDto eventParticipant = displayedEntries.get(i);
 			final EventParticipantListEntry listEntry = new EventParticipantListEntry(eventParticipant);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
 				listEntry.addEditListener(
 					i,
 					(Button.ClickListener) event -> ControllerProvider.getEventParticipantController()
-						.navigateToData(listEntry.getEventParticipant().getUuid()));
+						.navigateToData(listEntry.getEventParticipantListEntryDto().getUuid()));
 			}
 
 			listLayout.addComponent(listEntry);
