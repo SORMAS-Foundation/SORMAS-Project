@@ -6298,7 +6298,7 @@ ALTER TABLE events_history ADD COLUMN evolutionComment text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add evolution date and comment to events #3753');
 
--- 2020-01-27 Marin
+-- 2020-01-27
 ALTER TABLE exportconfiguration
     ADD COLUMN reportsToPublic boolean default false;
 
