@@ -180,6 +180,28 @@ public class ExportFacadeEjb implements ExportFacade {
 	}
 
 	@Override
+	public List<ExportConfigurationDto> getPublicCustomExportConfigurations(ExportConfigurationCriteria criteria) {
+
+		User user = userService.getCurrentUser();
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExportConfiguration> cq = cb.createQuery(ExportConfiguration.class);
+		Root<ExportConfiguration> config = cq.from(ExportConfiguration.class);
+
+		Predicate criteriaFilters = buildExportConfigurationCriteriaFilter(criteria, cb, config);
+		Predicate filters = CriteriaBuilderHelper.and(cb, criteriaFilters, cb.equal(config.get(ExportConfiguration.REPORTS_TO_PUBLIC), true),
+				cb.notEqual(config.get(ExportConfiguration.USER), user));
+
+		cq.where(filters);
+		cq.orderBy(cb.desc(config.get(ExportConfiguration.CHANGE_DATE)));
+
+		return em.createQuery(cq).getResultList().stream().map(ExportFacadeEjb::toExportConfigurationDto).collect(Collectors.toList());
+	}
+
+	@Override
 	public void saveExportConfiguration(ExportConfigurationDto exportConfiguration) {
 
 		ExportConfiguration entity = fromExportConfigurationDto(exportConfiguration, true);
@@ -199,6 +221,7 @@ public class ExportFacadeEjb implements ExportFacade {
 			DtoHelper.fillOrBuildEntity(source, exportConfigurationService.getByUuid(source.getUuid()), ExportConfiguration::new, checkChangeDate);
 
 		target.setName(source.getName());
+		target.setReportsToPublic(source.isReportsToPublic());
 		target.setUser(userService.getByReferenceDto(source.getUser()));
 		target.setExportType(source.getExportType());
 		target.setProperties(source.getProperties());
@@ -216,6 +239,7 @@ public class ExportFacadeEjb implements ExportFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setName(source.getName());
+		target.setReportsToPublic(source.isReportsToPublic());
 		target.setUser(UserFacadeEjb.toReferenceDto(source.getUser()));
 		target.setExportType(source.getExportType());
 		target.setProperties(source.getProperties());

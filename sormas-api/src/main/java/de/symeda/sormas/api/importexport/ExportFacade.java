@@ -38,6 +38,8 @@ public interface ExportFacade {
 
 	List<ExportConfigurationDto> getExportConfigurations(ExportConfigurationCriteria criteria);
 
+	List<ExportConfigurationDto> getPublicCustomExportConfigurations(ExportConfigurationCriteria criteria);
+
 	void saveExportConfiguration(ExportConfigurationDto exportConfiguration);
 
 	void deleteExportConfiguration(String exportConfigurationUuid);

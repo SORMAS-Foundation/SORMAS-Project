@@ -46,6 +46,9 @@ public class CustomExportController {
 			ImportExportUtils.getContactExportProperties(),
 			ContactDownloadUtil::getPropertyCaption,
 			customExportWindow::close);
+		customExportsLayout.setExportCallbackPublicCustomConfiguration((exportConfig) -> {
+			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, exportConfig), null, true);
+		});
 		customExportsLayout.setExportCallback((exportConfig) -> {
 			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, exportConfig), null, true);
 		});
@@ -69,9 +72,13 @@ public class CustomExportController {
 				new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Notification.Type.WARNING_MESSAGE, false)
 					.show(Page.getCurrent());
 				grid.reload();
+				//Next reports where not modified for current user - EVER
+				//grid.reloadPublicExportCustomConfiguration();
 			}, () -> {
 				newExportWindow.close();
 				grid.reload();
+				//Next reports where not modified for current user - EVER
+				//grid.reloadPublicExportCustomConfiguration();
 			});
 		newExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));

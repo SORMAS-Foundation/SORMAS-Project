@@ -15,6 +15,7 @@ public class ExportConfigurationDto extends EntityDto {
 	public static final String NAME = "name";
 
 	private String name;
+	private boolean reportsToPublic;
 	private ExportType exportType;
 	private UserReferenceDto user;
 	private Set<String> properties;
@@ -35,6 +36,14 @@ public class ExportConfigurationDto extends EntityDto {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isReportsToPublic() {
+		return reportsToPublic;
+	}
+
+	public void setReportsToPublic(boolean reportsToPublic) {
+		this.reportsToPublic = reportsToPublic;
 	}
 
 	public ExportType getExportType() {

@@ -27,6 +27,7 @@ public class ExportConfiguration extends AbstractDomainObject {
 	private static final long serialVersionUID = 8901097581909494666L;
 
 	public static final String NAME = "name";
+	public static final String REPORTS_TO_PUBLIC = "reportsToPublic";
 	public static final String EXPORT_TYPE = "exportType";
 	public static final String TARGET = "target";
 	public static final String USER = "user";
@@ -34,6 +35,7 @@ public class ExportConfiguration extends AbstractDomainObject {
 	public static final String PROPERTIES = "properties";
 
 	private String name;
+	private boolean reportsToPublic;
 	private ExportType exportType;
 	private User user;
 	private String propertiesString;
@@ -42,6 +44,15 @@ public class ExportConfiguration extends AbstractDomainObject {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getName() {
 		return name;
+	}
+
+	@Column
+	public boolean isReportsToPublic() {
+		return reportsToPublic;
+	}
+
+	public void setReportsToPublic(boolean reportsToPublic) {
+		this.reportsToPublic = reportsToPublic;
 	}
 
 	public void setName(String name) {

@@ -44,6 +44,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 	private Button btnNewExportConfiguration;
 	private Button btnExport;
 	private ExportConfigurationsGrid grid;
+	private ExportConfigurationsGrid gridPublicCustomConfiguration;
 
 	public ExportConfigurationsLayout(
 		ExportType exportType,
@@ -67,6 +68,12 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
 
+		gridPublicCustomConfiguration = new ExportConfigurationsGrid(exportType, availableProperties, propertyCaptionProvider, true);
+		if (gridPublicCustomConfiguration.getPublicExportCustomConfigurationRecords() > 0 ) {
+			gridPublicCustomConfiguration.setWidth(100, Unit.PERCENTAGE);
+			addComponent(gridPublicCustomConfiguration);
+		}
+
 		Button btnClose = ButtonHelper.createButton(Captions.actionClose, e -> closeCallback.run());
 		addComponent(btnClose);
 		setComponentAlignment(btnClose, Alignment.MIDDLE_RIGHT);
@@ -78,5 +85,9 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 
 	public void setExportCallback(Consumer<ExportConfigurationDto> exportCallback) {
 		grid.setExportCallback(exportCallback);
+	}
+
+	public void setExportCallbackPublicCustomConfiguration(Consumer<ExportConfigurationDto> exportCallbackPublicCustomConfiguration) {
+		gridPublicCustomConfiguration.setExportCallbackPublicExportCustomConfiguration(exportCallbackPublicCustomConfiguration);
 	}
 }
