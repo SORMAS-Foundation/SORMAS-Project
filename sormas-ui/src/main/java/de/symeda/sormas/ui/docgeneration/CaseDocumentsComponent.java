@@ -54,9 +54,4 @@ public class CaseDocumentsComponent extends AbstractDocumentGenerationComponent 
 		super();
 		addDocumentBar(() -> new QuarantineOrderLayout(referenceDto), Captions.DocumentTemplate_QuarantineOrder);
 	}
-
-	@Override
-	protected String getComponentLabel() {
-		return Captions.caseDocuments;
-	}
 }

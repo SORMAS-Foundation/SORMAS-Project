@@ -32,9 +32,11 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.docgeneneration.RootEntityName;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -98,7 +100,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 			return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(referenceDto);
 		} catch (Exception e) {
 			e.printStackTrace();
-			new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
+				.show(Page.getCurrent());
 			return Collections.emptyList();
 		}
 	}
@@ -133,7 +136,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 						readAdditionalVariables()));
 			} catch (Exception e) {
 				e.printStackTrace();
-				new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
+				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
+					.show(Page.getCurrent());
 				return null;
 			}
 		}, filename);
@@ -146,7 +150,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	@Override
 	protected void performTemplateUpdates() {
-		if (documentVariables != null && (documentVariables.isUsedEntity("sample") || documentVariables.isUsedEntity("pathogentest"))) {
+		if (documentVariables != null
+			&& (documentVariables.isUsedEntity(RootEntityName.ROOT_SAMPLE) || documentVariables.isUsedEntity(RootEntityName.ROOT_PATHOGEN_TEST))) {
 			showAdditionalParameters();
 		} else {
 			hideAdditionalParameters();

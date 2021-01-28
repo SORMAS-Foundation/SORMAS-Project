@@ -1,6 +1,8 @@
 package de.symeda.sormas.ui.docgeneration;
 
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class EventDocumentsComponent extends AbstractDocumentGenerationComponent {
 
@@ -8,13 +10,6 @@ public class EventDocumentsComponent extends AbstractDocumentGenerationComponent
 
 	public EventDocumentsComponent(EventReferenceDto eventReferenceDto) {
 		super();
-		// TODO: I18N
-		addDocumentBar(() -> new EventDocumentLayout(eventReferenceDto), "Ereignis-Formular erstellen");
-	}
-
-	@Override
-	protected String getComponentLabel() {
-		// TODO: I18N
-		return "Dokumente";
+		addDocumentBar(() -> new EventDocumentLayout(eventReferenceDto), I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout_create));
 	}
 }

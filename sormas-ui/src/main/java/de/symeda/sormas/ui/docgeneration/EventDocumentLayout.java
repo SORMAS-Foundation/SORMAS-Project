@@ -27,14 +27,16 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 
 public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
 	private final EventReferenceDto eventReferenceDto;
 
 	public EventDocumentLayout(EventReferenceDto eventReferenceDto) {
-		// TODO: i18n
-		super("Ereignis-Formular");
+		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout));
 		this.eventReferenceDto = eventReferenceDto;
 		init();
 	}
@@ -64,7 +66,8 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 					eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, readAdditionalVariables()).getBytes());
 			} catch (Exception e) {
 				e.printStackTrace();
-				new Notification("Document generation failed", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
+				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
+					.show(Page.getCurrent());
 				return null;
 			}
 		}, filename);
@@ -72,7 +75,6 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
 	@Override
 	protected String getWindowCaption() {
-		// TODO: I18N
-		return "Ereignis-Formular erstellen";
+		return I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout_create);
 	}
 }

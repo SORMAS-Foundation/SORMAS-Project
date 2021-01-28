@@ -52,5 +52,7 @@ public abstract class AbstractDocumentGenerationComponent extends VerticalLayout
 		documentBar.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 	}
 
-	protected abstract String getComponentLabel();
+	protected String getComponentLabel() {
+		return I18nProperties.getCaption(Captions.DocumentTemplate_plural);
+	}
 }
