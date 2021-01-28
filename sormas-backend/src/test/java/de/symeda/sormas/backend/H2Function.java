@@ -11,10 +11,12 @@ public class H2Function {
 		return a.equalsIgnoreCase(b) ? 1 : 0;
 	}
 
-	public static int date_part(String part, Date date) {
+	public static long date_part(String part, Date date) {
 		switch (part) {
 		case "year":
 			return DateHelper8.toLocalDate(date).getYear();
+		case "epoch":
+			return date.getTime() / 1000;
 		default:
 			throw new IllegalArgumentException(part);
 		}
@@ -34,5 +36,9 @@ public class H2Function {
 
 	public static double set_limit(Double limit) {
 		return limit;
+	}
+
+	public static Date date(Date timestamp) {
+		return DateHelper.getStartOfDay(timestamp);
 	}
 }

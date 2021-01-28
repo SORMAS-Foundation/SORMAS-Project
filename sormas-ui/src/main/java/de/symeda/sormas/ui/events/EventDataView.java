@@ -14,7 +14,9 @@
  */
 package de.symeda.sormas.ui.events;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -22,9 +24,13 @@ import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -32,6 +38,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
 import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
+import de.symeda.sormas.ui.events.eventLink.EventListComponent;
+import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -48,9 +56,10 @@ public class EventDataView extends AbstractEventView {
 	public static final String EVENT_LOC = "event";
 	public static final String TASKS_LOC = "tasks";
 	public static final String ACTIONS_LOC = "actions";
-	public static final String CASES_LINK_LOC = "cases";
-	public static final String CONTACTS_LINK_LOC = "contacts";
+	public static final String SHORTCUT_LINKS_LOC = "shortcut-links";
 	public static final String DOCUMENTS_LOC = "documents";
+	public static final String SUBORDINATE_EVENTS_LOC = "subordinate-events";
+	public static final String SUPERORDINATE_EVENT_LOC = "superordinate-event";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
 
@@ -61,6 +70,8 @@ public class EventDataView extends AbstractEventView {
 	@Override
 	protected void initView(String params) {
 
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
+
 		setHeightUndefined();
 
 		String htmlLayout = LayoutUtil.fluidRow(
@@ -69,8 +80,9 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 12, 0, DOCUMENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LINK_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LINK_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -111,26 +123,54 @@ public class EventDataView extends AbstractEventView {
 		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
+		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
+		superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
+
+		EventListComponent subordinateEventList = new EventListComponent(event.toReference());
+		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
+
+		VerticalLayout shortcutLinksLayout = new VerticalLayout();
+		shortcutLinksLayout.setMargin(false);
+		shortcutLinksLayout.setSpacing(true);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
-			layout.addComponent(
-				ButtonHelper.createButtonWithCaption(
-					"eventLinkToCases",
-					I18nProperties.getCaption(Captions.eventLinkToCases),
-					event -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().eventLike(getEventRef().getUuid())),
-					ValoTheme.BUTTON_PRIMARY),
-				CASES_LINK_LOC);
+			Button seeEventCasesBtn = ButtonHelper.createButtonWithCaption(
+				"eventLinkToCases",
+				I18nProperties.getCaption(Captions.eventLinkToCases),
+				thisEvent -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().eventLike(getEventRef().getUuid())),
+				ValoTheme.BUTTON_PRIMARY);
+			shortcutLinksLayout.addComponent(seeEventCasesBtn);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
-			layout.addComponent(
-				ButtonHelper.createButtonWithCaption(
-					"eventLinkToContacts",
-					I18nProperties.getCaption(Captions.eventLinkToContacts),
-					event -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().eventUuid(getEventRef().getUuid())),
-					ValoTheme.BUTTON_PRIMARY,
-					CssStyles.VSPACE_TOP_2),
-				CONTACTS_LINK_LOC);
+			Button seeEventContactsBtn = ButtonHelper.createButtonWithCaption(
+				"eventLinkToContacts",
+				I18nProperties.getCaption(Captions.eventLinkToContacts),
+				thisEvent -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().eventUuid(getEventRef().getUuid())),
+				ValoTheme.BUTTON_PRIMARY);
+			shortcutLinksLayout.addComponent(seeEventContactsBtn);
 		}
+
+		LocationDto eventLocationDto = ((EventDataForm) editComponent.getWrappedComponent()).getValue().getEventLocation();
+		if (eventLocationDto.getFacility() != null) {
+			Button seeEventsWithinTheSameFacility = ButtonHelper.createButtonWithCaption(
+				"eventLinkToEventsWithinTheSameFacility",
+				I18nProperties.getCaption(Captions.eventLinkToEventsWithinTheSameFacility),
+				thisEvent -> ControllerProvider.getEventController()
+					.navigateTo(
+						new EventCriteria().region(eventLocationDto.getRegion())
+							.district(eventLocationDto.getDistrict())
+							.eventCommunity(eventLocationDto.getCommunity())
+							.typeOfPlace(TypeOfPlace.FACILITY)
+							.facilityType(eventLocationDto.getFacilityType())
+							.facility(eventLocationDto.getFacility())),
+				ValoTheme.BUTTON_PRIMARY);
+			shortcutLinksLayout.addComponent(seeEventsWithinTheSameFacility);
+		}
+
+		layout.addComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);
 
 		setEventEditPermission(container);
 	}

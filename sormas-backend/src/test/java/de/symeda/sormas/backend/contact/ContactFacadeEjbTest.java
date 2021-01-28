@@ -21,6 +21,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -50,6 +52,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -955,7 +958,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getVisitFacade().saveVisit(visit);
 
 		List<ContactExportDto> results;
-		results = getContactFacade().getExportList(null, 0, 100, Language.EN);
+		results = getContactFacade().getExportList(null, 0, 100, null, Language.EN);
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, results.size());
@@ -994,7 +997,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(new EventReferenceDto(event2.getUuid()), contactPerson, reportingUser);
 		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
 
-		results = getContactFacade().getExportList(null, 0, 100, Language.EN);
+		results = getContactFacade().getExportList(null, 0, 100, null, Language.EN);
 		assertThat(results, hasSize(1));
 		{
 			ContactExportDto dto = results.get(0);
@@ -1275,5 +1278,24 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
 		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));
+	}
+
+	@Test
+	public void testCreateWithoutUuid() {
+		RDCF rdcf = creator.createRDCF();
+
+		ContactDto contact = new ContactDto();
+		contact.setReportDateTime(new Date());
+		contact.setReportingUser(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference());
+		contact.setDisease(Disease.CORONAVIRUS);
+		contact.setPerson(creator.createPerson().toReference());
+		contact.setRegion(rdcf.region);
+		contact.setDistrict(rdcf.district);
+		contact.setHealthConditions(new HealthConditionsDto());
+
+		ContactDto savedContact = getContactFacade().saveContact(contact);
+
+		assertThat(savedContact.getUuid(), not(isEmptyOrNullString()));
+		assertThat(savedContact.getHealthConditions().getUuid(), not(isEmptyOrNullString()));
 	}
 }

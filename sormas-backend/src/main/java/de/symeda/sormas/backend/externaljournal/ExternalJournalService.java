@@ -10,7 +10,6 @@ import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryVali
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Optional;
@@ -28,8 +27,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.person.JournalPersonDto;
-import de.symeda.sormas.backend.util.ClientHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -55,10 +52,12 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryRespon
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.util.ClientHelper;
 
 /**
  * This service provides methods for communicating with external symptom journals.

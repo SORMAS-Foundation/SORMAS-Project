@@ -16,6 +16,8 @@
 package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,6 +44,7 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -189,7 +193,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"First",
 			"Name",
 			"12345",
-			TypeOfPlace.HOSPITAL,
+			TypeOfPlace.FACILITY,
 			DateHelper.subtractDays(new Date(), 1),
 			new Date(),
 			user.toReference(),
@@ -207,7 +211,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("TitleEv1", results.get(0).getEventTitle());
 
 		eventCriteria.eventStatus(null);
-		eventCriteria.setTypeOfPlace(TypeOfPlace.HOSPITAL);
+		eventCriteria.setTypeOfPlace(TypeOfPlace.FACILITY);
 		results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		assertEquals(1, results.size());
 		assertEquals("TitleEv2", results.get(0).getEventTitle());
@@ -331,7 +335,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"",
 			"",
 			"",
-			TypeOfPlace.HOSPITAL,
+			TypeOfPlace.FACILITY,
 			new Date(),
 			new Date(),
 			user,
@@ -351,5 +355,21 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		cut.archiveAllArchivableEvents(70, LocalDate.now().plusDays(71));
 		assertTrue(cut.isArchived(event1.getUuid()));
 		assertTrue(cut.isArchived(event2.getUuid()));
+	}
+
+	@Test
+	public void testCreateWithoutUuid() {
+		RDCF rdcf = creator.createRDCF();
+		EventDto event = new EventDto();
+		event.setEventStatus(EventStatus.EVENT);
+		event.setReportDateTime(new Date());
+		event.setReportingUser(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference());
+		event.setEventTitle("Test event");
+		event.setEventLocation(new LocationDto());
+
+		EventDto savedEvent = getEventFacade().saveEvent(event);
+
+		MatcherAssert.assertThat(savedEvent.getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedEvent.getEventLocation().getUuid(), not(isEmptyOrNullString()));
 	}
 }

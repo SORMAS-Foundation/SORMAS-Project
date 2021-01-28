@@ -78,6 +78,7 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String RESULTING_CASE_USER = "resultingCaseUser";
 	public static final String VISITS = "visits";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -180,6 +181,10 @@ public class ContactDto extends PseudonymizableDto {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
+	@HideForCountriesExcept(countries = {
+			COUNTRY_CODE_GERMANY,
+			COUNTRY_CODE_SWITZERLAND })
+	private String externalToken;
 
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
@@ -548,6 +553,12 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
 	}
 
 	public RegionReferenceDto getRegion() {

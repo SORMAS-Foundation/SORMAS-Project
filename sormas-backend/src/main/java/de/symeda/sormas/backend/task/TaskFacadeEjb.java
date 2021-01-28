@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -43,7 +42,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +72,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
@@ -136,21 +135,13 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private TaskJurisdictionChecker taskJurisdictionChecker;
 
-	public Task fromDto(TaskDto source) {
+	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		Task target = taskService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Task();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		Task target = DtoHelper.fillOrBuildEntity(source, taskService.getByUuid(source.getUuid()), Task::new, checkChangeDate);
 
 		target.setAssigneeUser(userService.getByReferenceDto(source.getAssigneeUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
@@ -208,18 +199,15 @@ public class TaskFacadeEjb implements TaskFacade {
 		return target;
 	}
 
-	public TaskDto toDto(Task task, Pseudonymizer pseudonymizer) {
+	public TaskDto toDto(Task source, Pseudonymizer pseudonymizer) {
 
-		if (task == null) {
+		if (source == null) {
 			return null;
 		}
 
 		TaskDto target = new TaskDto();
-		Task source = task;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setAssigneeUser(UserFacadeEjb.toReferenceDto(source.getAssigneeUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
@@ -241,7 +229,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setClosedLon(source.getClosedLon());
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 
-		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdictionOrOwned(task), t -> {
+		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdictionOrOwned(source), t -> {
 			if (source.getCaze() != null) {
 				CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
 				pseudonymizer.pseudonymizeDto(
@@ -272,7 +260,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public TaskDto saveTask(TaskDto dto) {
 
-		Task ado = fromDto(dto);
+		Task ado = fromDto(dto, true);
 		taskService.ensurePersisted(ado);
 
 		// once we have to handle additional logic this should be moved to it's own function or even class 

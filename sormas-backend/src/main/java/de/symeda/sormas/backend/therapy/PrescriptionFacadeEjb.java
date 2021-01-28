@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.therapy;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +31,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -123,7 +121,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		restorePseudonymizedDto(prescription, existingPrescription, existingPrescriptionDto);
 
-		Prescription entity = fromDto(prescription, existingPrescription);
+		Prescription entity = fromDto(prescription, existingPrescription, true);
 
 		service.ensurePersisted(entity);
 
@@ -295,17 +293,9 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		return reference;
 	}
 
-	public Prescription fromDto(@NotNull PrescriptionDto source, Prescription target) {
+	public Prescription fromDto(@NotNull PrescriptionDto source, Prescription target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Prescription();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, Prescription::new, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));
 		target.setPrescriptionType(source.getPrescriptionType());

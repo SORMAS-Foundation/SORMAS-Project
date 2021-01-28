@@ -106,9 +106,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD = "interface.patientdiary.defaultuser.password";
 
 	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
+	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
+
+	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
 	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
@@ -376,6 +379,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public int getDaysAfterSystemEventGetsDeleted() {
+		return getInt(DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED, 90);
+	}
+
+	@Override
 	public String getGeocodingServiceUrlTemplate() {
 		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
 	}
@@ -543,6 +551,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isSmsServiceSetUp() {
 		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
+	}
+
+	@Override
+	public String getDemisJndiName() {
+		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
 	}
 
 }

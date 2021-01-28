@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api;
 
+import javax.naming.ConfigurationException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -50,6 +51,8 @@ import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
+import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
+import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.AreaFacade;
@@ -66,6 +69,7 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
@@ -329,6 +333,28 @@ public class FacadeProvider {
 
 	public static DocumentFacade getDocumentFacade() {
 		return get().lookupEjbRemote(DocumentFacade.class);
+	}
+
+	public static SystemEventFacade getSystemEventFacade() {
+
+		return get().lookupEjbRemote(SystemEventFacade.class);
+	}
+
+	public static LabMessageFacade getLabMessageFacade() {
+		return get().lookupEjbRemote(LabMessageFacade.class);
+	}
+
+	public static ExternalLabResultsFacade getExternalLabResultsFacade() {
+		try {
+			String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
+			if (jndiName == null) {
+				throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
+			} else {
+				return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
+			}
+		} catch (NamingException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

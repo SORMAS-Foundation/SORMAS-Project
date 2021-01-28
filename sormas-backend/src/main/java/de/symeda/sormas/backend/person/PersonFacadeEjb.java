@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,7 +42,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -83,6 +81,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -321,6 +320,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
+		return savePerson(source, true);
+	}
+
+	public PersonDto savePerson(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
@@ -333,7 +336,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			handleExternalJournalPerson(existingPerson, source);
 		}
 
-		person = fillOrBuildEntity(source, person);
+		person = fillOrBuildEntity(source, person, checkChangeDate);
 
 		personService.ensurePersisted(person);
 
@@ -601,16 +604,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		cleanUp(newPerson);
 	}
 
-	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target) {
+	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = personService.createPerson();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, personService::createPerson, checkChangeDate);
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
@@ -641,10 +637,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setPhone(source.getPhone());
 		target.setPhoneOwner(source.getPhoneOwner());
-		target.setAddress(locationFacade.fromDto(source.getAddress()));
+		target.setAddress(locationFacade.fromDto(source.getAddress(), checkChangeDate));
 		List<Location> locations = new ArrayList<>();
 		for (LocationDto locationDto : source.getAddresses()) {
-			Location location = locationFacade.fromDto(locationDto);
+			Location location = locationFacade.fromDto(locationDto, checkChangeDate);
 			locations.add(location);
 		}
 		if (!DataHelper.equal(target.getAddresses(), locations)) {
@@ -681,6 +677,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setBirthCountry(countryService.getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(countryService.getByReferenceDto(source.getCitizenship()));
@@ -847,6 +844,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));

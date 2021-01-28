@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.disease;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -185,7 +184,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public void saveDiseaseConfiguration(DiseaseConfigurationDto configuration) {
-		service.ensurePersisted(fromDto(configuration));
+		service.ensurePersisted(fromDto(configuration, true));
 	}
 
 	@Override
@@ -222,17 +221,10 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return target;
 	}
 
-	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source) {
+	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {
 
-		DiseaseConfiguration target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new DiseaseConfiguration();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		DiseaseConfiguration target =
+			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), DiseaseConfiguration::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setActive(source.getActive());

@@ -70,9 +70,7 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_riskLevel"
                     style="@style/ControlSingleColumnStyle"
-                    app:value="@{data.riskLevel}"
-                    app:dependencyParentField="@{eventEventStatus}"
-                    app:dependencyParentValue="@{EventStatus.CLUSTER}" />
+                    app:value="@{data.riskLevel}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,12 +81,25 @@
                     android:id="@+id/event_startDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@{data.startDate}" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_endDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     android:visibility="@{multiDayEvent? View.VISIBLE : View.GONE}"
                     app:value="@{data.endDate}" />
+
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_evolutionDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.evolutionDate}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_evolutionComment"
+                style="@style/ControlSingleColumnStyle"
+                android:visibility="@{data.evolutionDate != null ? View.VISIBLE : View.GONE}"
+                app:value="@{data.evolutionComment}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_eventInvestigationStatus"
@@ -104,10 +115,12 @@
                     android:id="@+id/event_eventInvestigationStartDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@{data.eventInvestigationStartDate}" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_eventInvestigationEndDate"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.eventInvestigationEndDate}" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -152,10 +165,21 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.eventDesc}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_externalId"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@{data.externalId}" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_externalId"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.externalId}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_externalToken"
+                    app:value="@{data.externalToken}"
+                    style="@style/ControlSecondOfTwoColumnsStyle"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -182,22 +206,29 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_nosocomial"
+                    android:id="@+id/event_diseaseTransmissionMode"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:dependencyParentField="@{eventEventStatus}"
                     app:dependencyParentValue="@{EventStatus.CLUSTER}"
-                    app:value="@{data.nosocomial}"
-                    />
+                    app:value="@{data.diseaseTransmissionMode}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/event_nosocomial"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:dependencyParentField="@{eventEventStatus}"
+                    app:dependencyParentValue="@{EventStatus.CLUSTER}"
+                    app:value="@{data.nosocomial}" />
 
             </LinearLayout>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_eventLocation"
+                android:id="@+id/event_transregionalOutbreak"
                 style="@style/ControlSingleColumnStyle"
-                app:maxLines="5"
-                app:value="@{data.eventLocation}" />
+                app:dependencyParentField="@{eventEventStatus}"
+                app:dependencyParentValue="@{EventStatus.CLUSTER}"
+                app:value="@{data.transregionalOutbreak}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_typeOfPlace"
@@ -205,6 +236,12 @@
                 app:appendValue="@{data.typeOfPlaceText}"
                 app:value="@{data.typeOfPlace}"
                 app:valueFormat="@{@string/two_strings_with_hyphen_format}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_eventLocation"
+                style="@style/ControlSingleColumnStyle"
+                app:maxLines="5"
+                app:value="@{data.eventLocation}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_meansOfTransport"
@@ -219,6 +256,28 @@
                     app:value="@{data.meansOfTransportDetails}"
                     app:dependencyParentField="@{eventMeansOfTransport}"
                     app:dependencyParentValue="@{MeansOfTransport.OTHER}" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_connectionNumber"
+                style="@style/ControlFirstOfTwoColumnsStyle"
+                app:value="@{data.connectionNumber}"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_travelDate"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                app:value="@{data.travelDate}"
+                app:dependencyParentField="@{eventTypeOfPlace}"
+                app:dependencyParentValue="@{TypeOfPlace.MEANS_OF_TRANSPORT}" />
+
+        </LinearLayout>
+
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 

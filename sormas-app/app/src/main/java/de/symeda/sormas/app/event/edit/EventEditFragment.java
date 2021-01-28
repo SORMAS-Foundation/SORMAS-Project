@@ -21,6 +21,7 @@ import java.util.List;
 
 import android.view.View;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
@@ -29,6 +30,7 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -49,6 +51,10 @@ import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {
 
+	private static final String EVENT_ENTITY = "Event";
+	private static final String EVOLUTION_DATE_WITH_STATUS = "eventEvolutionDateWithStatus";
+	private static final String EVOLUTION_COMMENT_WITH_STATUS = "eventEvolutionCommentWithStatus";
+
 	private Event record;
 
 	// Enum lists
@@ -58,6 +64,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> srcTypeList;
 	private List<Item> srcInstitutionalPartnerTypeList;
 	private List<Item> meansOfTransportList;
+	private List<Item> diseaseTransmissionModeList;
 	private boolean isMultiDayEvent;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
@@ -81,6 +88,24 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 				openAddressPopup(contentBinding);
 			}
 		});
+
+		contentBinding.eventEventStatus.addValueChangedListener(e -> {
+			EventStatus eventStatus = (EventStatus) e.getValue();
+			// The status will be used to modify the caption of the field
+			// However we don't want to have somthing like "Dropped evolution date"
+			// So let's ignore the DROPPED status and use the EVENT status instead
+			String statusCaption;
+			if (eventStatus == EventStatus.DROPPED) {
+				statusCaption = I18nProperties.getCaption(EVENT_ENTITY);
+			} else {
+				statusCaption = I18nProperties.getEnumCaption(eventStatus);
+			}
+
+			contentBinding.eventEvolutionDate.setCaption(String.format(
+				I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
+			contentBinding.eventEvolutionComment.setCaption(String.format(
+				I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
+		});
 	}
 
 	private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
@@ -89,6 +114,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
 		locationDialog.setRegionAndDistrictRequired(true);
+		locationDialog.setFacilityFieldsVisible(record.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
 		locationDialog.setPositiveCallback(() -> {
 			try {
 				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
@@ -126,6 +152,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		srcTypeList = DataUtils.getEnumItems(EventSourceType.class, true);
 		srcInstitutionalPartnerTypeList = DataUtils.getEnumItems(InstitutionalPartnerType.class, true);
 		meansOfTransportList = DataUtils.getEnumItems(MeansOfTransport.class, true);
+		diseaseTransmissionModeList = DataUtils.getEnumItems(DiseaseTransmissionMode.class, true);
 	}
 
 	@Override
@@ -148,6 +175,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventSrcType.initializeSpinner(srcTypeList);
 		contentBinding.eventSrcInstitutionalPartnerType.initializeSpinner(srcInstitutionalPartnerTypeList);
 		contentBinding.eventMeansOfTransport.initializeSpinner(meansOfTransportList);
+		contentBinding.eventDiseaseTransmissionMode.initializeSpinner(diseaseTransmissionModeList);
 
 		// Initialize ControlDateFields
 		contentBinding.eventStartDate.initializeDateField(getFragmentManager());
@@ -160,6 +188,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		contentBinding.eventEventInvestigationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.eventEventInvestigationEndDate.initializeDateField(getFragmentManager());
+		contentBinding.eventTravelDate.initializeDateField(getFragmentManager());
+		contentBinding.eventEvolutionDate.initializeDateField(getFragmentManager());
 
 		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
 	}

@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -55,8 +54,12 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 
 	@Override
 	public AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest) {
+		return saveAdditionalTest(additionalTest, true);
+	}
 
-		AdditionalTest entity = fromDto(additionalTest);
+	public AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest, boolean checkChangeDate) {
+
+		AdditionalTest entity = fromDto(additionalTest, checkChangeDate);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -107,18 +110,9 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		return dto;
 	}
 
-	public AdditionalTest fromDto(@NotNull AdditionalTestDto source) {
+	public AdditionalTest fromDto(@NotNull AdditionalTestDto source, boolean checkChangeDate) {
 
-		AdditionalTest target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new AdditionalTest();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target);
+		AdditionalTest target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), AdditionalTest::new, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestDateTime(source.getTestDateTime());

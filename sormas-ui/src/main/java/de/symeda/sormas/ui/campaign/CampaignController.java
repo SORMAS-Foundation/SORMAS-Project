@@ -16,9 +16,15 @@
 package de.symeda.sormas.ui.campaign;
 
 import static com.vaadin.v7.data.Validator.InvalidValueException;
+import static de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria.CAMPAIGN;
 
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -154,7 +160,7 @@ public class CampaignController {
 		campaignEditForm.setValue(campaignDto);
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent =
-			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup()) {
+			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT), campaignEditForm.getFieldGroup()) {
 
 				@Override
 				public void discard() {
@@ -230,12 +236,13 @@ public class CampaignController {
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
 				if (commitCallback != null) {
 					commitCallback.run();
-					UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME);
+					UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
 				}
 			}
 		});
 
-		component.addDiscardListener(() -> UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME));
+		component.addDiscardListener(
+			() -> UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid()));
 
 		if (revertFormOnDiscard) {
 			component.addDiscardListener(form::resetFormValues);

@@ -45,6 +45,7 @@ public class FacilityDto extends EntityDto {
 	public static final String CITY = "city";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String TYPE_GROUP = "typeGroup";
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 

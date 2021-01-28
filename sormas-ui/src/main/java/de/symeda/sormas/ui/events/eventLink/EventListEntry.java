@@ -105,6 +105,7 @@ public class EventListEntry extends HorizontalLayout {
 				null,
 				ValoTheme.BUTTON_LINK,
 				CssStyles.BUTTON_COMPACT);
+			editButton.setDescription(I18nProperties.getCaption(Captions.eventEditEvent));
 
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
@@ -123,6 +124,7 @@ public class EventListEntry extends HorizontalLayout {
 				null,
 				ValoTheme.BUTTON_LINK,
 				CssStyles.BUTTON_COMPACT);
+			unlinkEventButton.setDescription(I18nProperties.getCaption(Captions.eventUnlinkEvent));
 
 			addComponent(unlinkEventButton);
 			setComponentAlignment(unlinkEventButton, Alignment.MIDDLE_RIGHT);

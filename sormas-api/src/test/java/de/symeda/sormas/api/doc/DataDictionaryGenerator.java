@@ -69,8 +69,12 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.visit.VisitDto;
 
 /**
@@ -122,12 +126,15 @@ public class DataDictionaryGenerator {
 	private enum EntityColumn {
 		FIELD,
 		TYPE,
+		DATA_PROTECTION,
 		CAPTION,
 		DESCRIPTION,
 		REQUIRED,
 		NEW_DISEASE,
 		DISEASES,
 		OUTBREAKS,
+		IGNORED_COUNTRIES,
+		EXCLUSIVE_COUNTRIES,
 	}
 
 	@SuppressWarnings("unchecked")
@@ -158,12 +165,15 @@ public class DataDictionaryGenerator {
 		// column width
 		sheet.setColumnWidth(EntityColumn.FIELD.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.TYPE.ordinal(), 256 * 30);
+		sheet.setColumnWidth(EntityColumn.DATA_PROTECTION.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.CAPTION.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.DESCRIPTION.ordinal(), 256 * 60);
 		sheet.setColumnWidth(EntityColumn.REQUIRED.ordinal(), 256 * 10);
 		sheet.setColumnWidth(EntityColumn.NEW_DISEASE.ordinal(), 256 * 8);
 		sheet.setColumnWidth(EntityColumn.DISEASES.ordinal(), 256 * 45);
 		sheet.setColumnWidth(EntityColumn.OUTBREAKS.ordinal(), 256 * 10);
+		sheet.setColumnWidth(EntityColumn.IGNORED_COUNTRIES.ordinal(), 256 * 20);
+		sheet.setColumnWidth(EntityColumn.EXCLUSIVE_COUNTRIES.ordinal(), 256 * 20);
 
 		CellStyle defaultCellStyle = workbook.createCellStyle();
 		defaultCellStyle.setWrapText(true);
@@ -207,6 +217,15 @@ public class DataDictionaryGenerator {
 				fieldValueCell.setCellValue(Boolean.TRUE.toString() + ", " + Boolean.FALSE.toString());
 			}
 
+			//sensitive data
+			XSSFCell dataProtectionCell = row.createCell(EntityColumn.DATA_PROTECTION.ordinal());
+			if (field.getAnnotation(PersonalData.class) != null) {
+				dataProtectionCell.setCellValue("personal");
+			} else {
+				if (field.getAnnotation(SensitiveData.class) != null)
+					dataProtectionCell.setCellValue("sensitive");
+			}
+
 			// caption
 			XSSFCell captionCell = row.createCell(EntityColumn.CAPTION.ordinal());
 			captionCell.setCellValue(I18nProperties.getPrefixCaption(i18nPrefix, field.getName(), ""));
@@ -241,6 +260,32 @@ public class DataDictionaryGenerator {
 			XSSFCell outbreakCell = row.createCell(EntityColumn.OUTBREAKS.ordinal());
 			if (field.getAnnotation(Outbreaks.class) != null)
 				outbreakCell.setCellValue(true);
+
+			//ignored countries
+			XSSFCell ignoreForCountriesCell = row.createCell(EntityColumn.IGNORED_COUNTRIES.ordinal());
+			HideForCountries hideForCountries = field.getAnnotation(HideForCountries.class);
+			if (hideForCountries != null) {
+				StringBuilder hideForCountriesString = new StringBuilder();
+				for (String country : hideForCountries.countries()) {
+					if (hideForCountriesString.length() > 0)
+						hideForCountriesString.append(", ");
+					hideForCountriesString.append(country);
+				}
+				ignoreForCountriesCell.setCellValue(hideForCountriesString.toString());
+			}
+
+			//exclusive countries
+			XSSFCell exclusiveCountriesCell = row.createCell(EntityColumn.EXCLUSIVE_COUNTRIES.ordinal());
+			HideForCountriesExcept hideForCountriesExcept = field.getAnnotation(HideForCountriesExcept.class);
+			if (hideForCountriesExcept != null) {
+				StringBuilder hideForCountriesExceptString = new StringBuilder();
+				for (String exceptCountry : hideForCountriesExcept.countries()) {
+					if (hideForCountriesExceptString.length() > 0)
+						hideForCountriesExceptString.append(", ");
+					hideForCountriesExceptString.append(exceptCountry);
+				}
+				exclusiveCountriesCell.setCellValue(hideForCountriesExceptString.toString());
+			}
 		}
 
 		AreaReference reference =

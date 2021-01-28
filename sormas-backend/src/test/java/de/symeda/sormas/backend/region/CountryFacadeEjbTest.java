@@ -2,10 +2,8 @@ package de.symeda.sormas.backend.region;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
@@ -13,7 +11,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;

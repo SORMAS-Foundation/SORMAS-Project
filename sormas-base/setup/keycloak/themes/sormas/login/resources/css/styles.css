@@ -7,7 +7,7 @@
 
 .login-pf body h1, .login-pf body h2, .login-pf body ul, .login-pf body label {
     font-weight: 600;
-    line-height: 1.1;
+    line-height: 1.2;
     letter-spacing: -0.02em;
 }
 
@@ -45,6 +45,7 @@
     border-radius: 4px;
     margin-top: 10%;
     margin-bottom: 0;
+    border: hidden;
 }
 
 .otp .card-pf {
@@ -52,7 +53,7 @@
     margin-top: 0;
 }
 
-.form-group input {
+form input.pf-c-form-control, form input.pf-c-button {
     font: inherit;
     font-weight: 400;
     line-height: normal;
@@ -64,11 +65,16 @@
     color: #374B59;
 }
 
-.form-group input:focus {
-    box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5)
+.form-group input.pf-c-form-control:hover {
+    box-shadow: 0 0 0 2px rgba(205, 216, 236, 0.5);
+    border-bottom-color: #CDD8EC;
 }
 
-.form-group input[type=submit] {
+.form-group input.pf-c-form-control[aria-invalid="true"] {
+    border-color: #C9190B;
+}
+
+form input.pf-c-button[type=submit] {
     color: #FEFEFE;
     background: #005A9C;
     border: 2px solid #005A9C;
