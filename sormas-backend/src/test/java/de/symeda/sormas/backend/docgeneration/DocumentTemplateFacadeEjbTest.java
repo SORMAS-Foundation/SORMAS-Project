@@ -82,14 +82,14 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 			documentTemplateFacade.writeDocumentTemplate(QUARANTINE_ORDER_CASE, "TemplateFileToBeValidated.docx", new byte[0]);
 			fail("Invalid docx file not recognized.");
 		} catch (DocumentTemplateException e) {
-			assertEquals("Template file is corrupt.", e.getMessage());
+			assertEquals("The template file is corrupt.", e.getMessage());
 		}
 		try {
 			byte[] document = IOUtils.toByteArray(getClass().getResourceAsStream("/docgeneration/quarantine/FaultyTemplate.docx"));
 			documentTemplateFacade.writeDocumentTemplate(QUARANTINE_ORDER_CASE, "TemplateFileToBeValidated.docx", document);
 			fail("Syntax error not recognized.");
 		} catch (DocumentTemplateException e) {
-			assertEquals("Could not validate template.", e.getMessage());
+			assertEquals("Error processing template.", e.getMessage());
 		}
 	}
 

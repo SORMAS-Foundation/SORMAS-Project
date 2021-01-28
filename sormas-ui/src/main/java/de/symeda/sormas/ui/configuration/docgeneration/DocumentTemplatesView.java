@@ -50,21 +50,17 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 		try {
 			gridLayout = new VerticalLayout();
 
-			addTemplateSection(QUARANTINE_ORDER_CASE, Captions.DocumentTemplate_QuarantineOrder_templates);
+			addTemplateSection(QUARANTINE_ORDER_CASE);
 
-			// TODO: I18N
-			addTemplateSection(QUARANTINE_ORDER_CONTACT, "Isolations-/ Quarantänebescheid Vorlagen Kontakte");
+			addTemplateSection(QUARANTINE_ORDER_CONTACT);
 
-			// TODO: I18N
-			addTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT, "Isolations-/ Quarantänebescheid Vorlagen Ereignisse");
+			addTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT);
 
-			// TODO: I18N
-			addTemplateSection(EVENT_HANDOUT, "Ereignis-Formular Vorlagen");
+			addTemplateSection(EVENT_HANDOUT);
 
 			gridLayout.setWidth(100, Unit.PERCENTAGE);
 			gridLayout.setMargin(true);
 			gridLayout.setSpacing(true);
-			// gridLayout.setSizeFull();
 			gridLayout.setStyleName("crud-main-layout");
 
 			addComponent(gridLayout);
@@ -73,14 +69,14 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 		}
 	}
 
-	protected void addTemplateSection(DocumentWorkflow documentWorkflow, String caption) {
+	protected void addTemplateSection(DocumentWorkflow documentWorkflow) {
 		VerticalLayout sectionComponent = new VerticalLayout();
 		HorizontalLayout sectionHeader = new HorizontalLayout();
 
 		DocumentTemplatesGrid documentTemplatesGrid = new DocumentTemplatesGrid(documentWorkflow);
 		documentTemplatesGrid.setWidth(700, Unit.PIXELS);
 
-		Label quarantineTemplatesLabel = new Label(I18nProperties.getCaption(caption));
+		Label quarantineTemplatesLabel = new Label(documentWorkflow.toString());
 		quarantineTemplatesLabel.addStyleName(H3);
 		Button uploadButton = buildUploadButton(documentWorkflow, documentTemplatesGrid);
 		sectionHeader.addComponents(quarantineTemplatesLabel, uploadButton);
@@ -96,7 +92,7 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 	private Button buildUploadButton(DocumentWorkflow documentWorkflow, DocumentTemplatesGrid documentTemplatesGrid) {
 		return ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate), VaadinIcons.UPLOAD, e -> {
 			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout(documentWorkflow));
-			window.setCaption(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate));
+			window.setCaption(String.format(I18nProperties.getCaption(Captions.DocumentTemplate_uploadWorkflowTemplate), documentWorkflow));
 			window.addCloseListener(c -> documentTemplatesGrid.reload());
 		}, ValoTheme.BUTTON_PRIMARY);
 	}

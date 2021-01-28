@@ -30,6 +30,9 @@ import static de.symeda.sormas.api.docgeneneration.TemplateFileType.HTML;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public enum DocumentWorkflow {
 
 	// rootEntityNames define the root variables in a document template.
@@ -39,16 +42,36 @@ public enum DocumentWorkflow {
 	// to either a CaseDataDto or a ContactDto, depending on from where
 	// it is called. So "${case.person.firstName}" in the template refers
 	// to the case's or contact's person's first name in either case.
-	QUARANTINE_ORDER_CASE("quarantine", DOCX, ROOT_CASE, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
-	QUARANTINE_ORDER_CONTACT("quarantineContact", DOCX, ROOT_CONTACT, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
-	QUARANTINE_ORDER_EVENT_PARTICIPANT("quarantineEventParticipant", DOCX, ROOT_EVENT_PARTICIPANT, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
-	EVENT_HANDOUT("eventHandout", HTML, ROOT_EVENT, ROOT_USER, ROOT_EVENT_ACTIONS, ROOT_EVENT_PARTICIPANTS);
+	QUARANTINE_ORDER_CASE(Captions.DocumentTemplate_TemplatesCases, "quarantine", DOCX, ROOT_CASE, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST),
+	QUARANTINE_ORDER_CONTACT(Captions.DocumentTemplate_TemplatesContacts,
+		"quarantineContact",
+		DOCX,
+		ROOT_CONTACT,
+		ROOT_USER,
+		ROOT_SAMPLE,
+		ROOT_PATHOGEN_TEST),
+	QUARANTINE_ORDER_EVENT_PARTICIPANT(Captions.DocumentTemplate_TemplatesEventParticipants,
+		"quarantineEventParticipant",
+		DOCX,
+		ROOT_EVENT_PARTICIPANT,
+		ROOT_USER,
+		ROOT_SAMPLE,
+		ROOT_PATHOGEN_TEST),
+	EVENT_HANDOUT(Captions.DocumentTemplate_TemplatesEvents,
+		"eventHandout",
+		HTML,
+		ROOT_EVENT,
+		ROOT_USER,
+		ROOT_EVENT_ACTIONS,
+		ROOT_EVENT_PARTICIPANTS);
 
+	private String name;
 	private String templateDirectory;
 	private TemplateFileType fileType;
 	private List<String> rootEntityNames;
 
-	DocumentWorkflow(String templateDirectory, TemplateFileType fileType, String... rootEntityNames) {
+	DocumentWorkflow(String name, String templateDirectory, TemplateFileType fileType, String... rootEntityNames) {
+		this.name = name;
 		this.templateDirectory = templateDirectory;
 		this.fileType = fileType;
 		this.rootEntityNames = new ArrayList<>();
@@ -75,5 +98,9 @@ public enum DocumentWorkflow {
 
 	public boolean isDocx() {
 		return fileType == DOCX;
+	}
+
+	public String toString() {
+		return I18nProperties.getCaption(name);
 	}
 }

@@ -84,8 +84,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 
 	private void addUploadResourceComponent() {
 		String headline = I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate);
-		// TODO: format file extension
-		String infoText = I18nProperties.getString(Strings.infoUploadDocumentTemplate);
+		String infoText = String.format(I18nProperties.getString(Strings.infoUploadDocumentTemplate), documentWorkflow.getFileExtension());
 
 		ImportLayoutComponent uploadTemplateComponent = new ImportLayoutComponent(2, headline, infoText, null, null);
 		addComponent(uploadTemplateComponent);

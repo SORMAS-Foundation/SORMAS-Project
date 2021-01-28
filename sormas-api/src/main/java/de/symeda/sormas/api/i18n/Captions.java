@@ -758,7 +758,12 @@ public interface Captions {
 	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
 	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";
 	String DocumentTemplate_QuarantineOrder_templates = "DocumentTemplate.QuarantineOrder.templates";
+	String DocumentTemplate_TemplatesCases = "DocumentTemplate.TemplatesCases";
+	String DocumentTemplate_TemplatesContacts = "DocumentTemplate.TemplatesContacts";
+	String DocumentTemplate_TemplatesEventParticipants = "DocumentTemplate.TemplatesEventParticipants";
+	String DocumentTemplate_TemplatesEvents = "DocumentTemplate.TemplatesEvents";
 	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
+	String DocumentTemplate_uploadWorkflowTemplate = "DocumentTemplate.uploadWorkflowTemplate";
 	String documentUploadDocument = "documentUploadDocument";
 	String EpiData = "EpiData";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";

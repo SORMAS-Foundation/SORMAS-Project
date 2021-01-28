@@ -60,6 +60,8 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
@@ -83,8 +85,7 @@ public class TemplateEngine {
 
 			return filterExtractedVariables(extractor);
 		} catch (XDocReportException | IOException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Could not read file.");
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFile.getName()));
 		}
 	}
 
@@ -97,8 +98,7 @@ public class TemplateEngine {
 
 			return filterExtractedVariables(extractor);
 		} catch (IOException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Could not read file");
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFile.getName()));
 		}
 	}
 
@@ -121,8 +121,7 @@ public class TemplateEngine {
 			report.process(context, outputStream);
 			return outputStream.toByteArray();
 		} catch (IOException | XDocReportException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Error generating Document.");
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), templateFile.getName()));
 		}
 	}
 
@@ -157,8 +156,7 @@ public class TemplateEngine {
 			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 			report.extractFields(extractor);
 		} catch (XDocReportException | IOException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Could not validate template.");
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
 		}
 	}
 
@@ -173,16 +171,14 @@ public class TemplateEngine {
 			outStream = new ByteArrayOutputStream();
 			wordMLPackage.save(outStream);
 		} catch (Docx4JException | NullPointerException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Template file is corrupt.");
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorTemplateFileCorrupt));
 		}
 
 		try {
 			ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
 			return XDocReportRegistry.getRegistry().loadReport(inStream, TemplateEngineKind.Velocity);
 		} catch (IOException | XDocReportException | NullPointerException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Could not read template.");
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
 		}
 	}
 
@@ -198,8 +194,7 @@ public class TemplateEngine {
 			document.jjtAccept(visitor, null);
 			return extractor;
 		} catch (ParseException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Syntax Error");
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
 		}
 	}
 

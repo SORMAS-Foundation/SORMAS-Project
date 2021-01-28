@@ -118,8 +118,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		Properties extraProperties)
 		throws DocumentTemplateException {
 		if (!documentWorkflow.isDocx()) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Workflow " + documentWorkflow + " is not a .docx workflow");
+			throw new DocumentTemplateException(
+				String.format(I18nProperties.getString(Strings.messageWrongTemplateFileType), documentWorkflow, documentWorkflow.getFileExtension()));
 		}
 
 		// 1. Read template from custom directory
@@ -143,8 +143,8 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		Properties extraProperties)
 		throws DocumentTemplateException {
 		if (documentWorkflow.isDocx()) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Workflow " + documentWorkflow + " is a .docx workflow");
+			throw new DocumentTemplateException(
+				String.format(I18nProperties.getString(Strings.messageWrongTemplateFileType), documentWorkflow, documentWorkflow.getFileExtension()));
 		}
 
 		// 1. Read template from custom directory
@@ -297,15 +297,13 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		try {
 			Files.createDirectories(workflowTemplateDirPath);
 		} catch (IOException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Could not create template directory.");
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorCreatingTemplateDirectory));
 		}
 		try (FileOutputStream fileOutputStream =
 			new FileOutputStream(new File(workflowTemplateDirPath.resolve(FilenameUtils.getName(templateName)).toUri()))) {
 			fileOutputStream.write(document);
 		} catch (IOException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Could not write template.");
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorWritingTemplate));
 		}
 	}
 
@@ -324,8 +322,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		try {
 			return FileUtils.readFileToByteArray(getTemplateFile(documentWorkflow, templateName));
 		} catch (IOException e) {
-			// TODO: I18N
-			throw new DocumentTemplateException("Could not read template.");
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateName));
 		}
 	}
 
