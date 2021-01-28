@@ -459,10 +459,13 @@ public class EventsView extends AbstractView {
 				contactCountMethod.setCaption(I18nProperties.getCaption(Captions.Event_contactCountMethod));
 				contactCountMethod.addItem(EventContactCountMethod.ALL);
 				contactCountMethod.addItem(EventContactCountMethod.SOURCE_CASE_IN_EVENT);
+				contactCountMethod.addItem(EventContactCountMethod.BOTH_METHODS);
 				contactCountMethod.setItemCaption(EventContactCountMethod.ALL, I18nProperties.getEnumCaption(EventContactCountMethod.ALL));
 				contactCountMethod.setItemCaption(
 					EventContactCountMethod.SOURCE_CASE_IN_EVENT,
 					I18nProperties.getEnumCaption(EventContactCountMethod.SOURCE_CASE_IN_EVENT));
+				contactCountMethod
+					.setItemCaption(EventContactCountMethod.BOTH_METHODS, I18nProperties.getEnumCaption(EventContactCountMethod.BOTH_METHODS));
 				contactCountMethod.setValue(EventContactCountMethod.ALL);
 				contactCountMethod.setTextInputAllowed(false);
 				contactCountMethod.setNullSelectionAllowed(false);
