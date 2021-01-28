@@ -36,7 +36,7 @@ public class SampleSelectionGrid extends Grid {
 			SampleDto.PATHOGEN_TEST_RESULT);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixCaption(column.getPropertyId().toString(), SampleDto.I18N_PREFIX));
+			column.setHeaderCaption(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, column.getPropertyId().toString()));
 		}
 	}
 

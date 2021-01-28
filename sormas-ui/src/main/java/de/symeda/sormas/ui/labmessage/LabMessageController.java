@@ -116,6 +116,7 @@ public class LabMessageController {
 		EntrySelectionField selectField = new EntrySelectionField(labMessageDto, cases, contacts, eventParticipants);
 
 		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
+		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
 		selectionField.addCommitListener(() -> {
 			SimilarEntriesDto similarEntriesDto = selectField.getValue();
@@ -162,6 +163,7 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent(selectField);
+		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
 		selectionField.addCommitListener(() -> {
 			SampleDto sampleDto = selectField.getValue();
@@ -246,6 +248,7 @@ public class LabMessageController {
 	private void showFormWithLabMessage(LabMessageDto labMessageDto, CommitDiscardWrapperComponent createComponent, Window window, String heading) {
 		LabMessageEditForm form = new LabMessageEditForm(true);
 		form.setValue(labMessageDto);
+		form.setWidth(550, Sizeable.Unit.PIXELS);
 		HorizontalLayout layout = new HorizontalLayout(form, createComponent);
 		layout.setMargin(true);
 		window.setContent(layout);
