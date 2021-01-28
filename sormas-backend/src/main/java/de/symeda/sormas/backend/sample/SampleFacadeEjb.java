@@ -812,13 +812,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction);
 			User currentUser = userService.getCurrentUser();
 
-			boolean samplePseudonimized = true;
+			boolean samplePseudonymized = true;
 			if (dto.getAssociatedEventParticipant() != null) {
-				samplePseudonimized = eventParticipantJurisdictionChecker.isPseudonymized(dto.getAssociatedEventParticipant().getUuid());
+				samplePseudonymized = eventParticipantJurisdictionChecker.isPseudonymized(dto.getAssociatedEventParticipant().getUuid());
 			}
 			EventParticipantReferenceDto eventParticipantReference = dto.getAssociatedEventParticipant();
 
-			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, eventParticipantReference != null ? samplePseudonimized : isInJurisdiction, s -> {
+			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, eventParticipantReference != null ? samplePseudonymized : isInJurisdiction, s -> {
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					sampleJurisdiction,
