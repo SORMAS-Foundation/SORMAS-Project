@@ -267,7 +267,7 @@ public class CasesView extends AbstractView {
 
 			{
 				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_cases", createFileNameWithCurrentDate("sormas_cases_", ".csv"));
+					new GridExportStreamResource(grid, createFileNameWithCurrentDate("sormas_cases_", ".csv"));
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 

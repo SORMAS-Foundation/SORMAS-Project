@@ -109,7 +109,6 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 
 			StreamResource streamResource = new GridExportStreamResource(
 				grid,
-				"sormas_pointsofentry",
 				"sormas_pointsofentry_" + DateHelper.formatDateForExport(new Date()) + ".csv",
 				PointsOfEntryGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);

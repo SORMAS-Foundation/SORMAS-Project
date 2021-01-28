@@ -162,7 +162,7 @@ public class EventsView extends AbstractView {
 
 			{
 				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+					new GridExportStreamResource(grid, "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 

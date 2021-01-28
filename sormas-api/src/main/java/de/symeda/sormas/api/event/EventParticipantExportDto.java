@@ -39,7 +39,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.utils.EnumHelper;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -53,26 +52,17 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String I18N_PREFIX = "EventParticipantExport";
 
 	public static final String EVENT_DISEASE = "eventDisease";
-	public static final String EVENT_TYPE_OF_PLACE = "eventTypeOfPlace";
 	public static final String EVENT_START_DATE = "eventStartDate";
 	public static final String EVENT_END_DATE = "eventEndDate";
 	public static final String EVENT_TITLE = "eventTitle";
-	public static final String EVENT_DESCRIPTION = "eventDescription";
 	public static final String EVENT_REGION = "eventRegion";
 	public static final String EVENT_DISTRICT = "eventDistrict";
 	public static final String EVENT_COMMUNITY = "eventCommunity";
 	public static final String EVENT_CITY = "eventCity";
 	public static final String EVENT_STREET = "eventStreet";
-	public static final String EVENT_HOUSE_NUMBER = "eventHouseNumber";
-	public static final String AGE_GROUP = "ageGroup";
-	public static final String ADDRESS_REGION = "addressRegion";
-	public static final String ADDRESS_DISTRICT = "addressDistrict";
 	public static final String ADDRESS_GPS_COORDINATES = "addressGpsCoordinates";
 	public static final String BURIAL_INFO = "burialInfo";
 	public static final String SAMPLE_INFORMATION = "sampleInformation";
-	public static final String PERSON_NATIONAL_HEALTH_ID = "personNationalHealthId";
-	public static final String EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION = "eventParticipantInvolvmentDescription";
-	public static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
 	public static final String CONTACT_COUNT = "contactCount";
 
 	private long id;
@@ -108,8 +98,9 @@ public class EventParticipantExportDto implements Serializable {
 	@PersonalData
 	@SensitiveData
 	private String lastName;
+	private Salutation salutation;
 	@SensitiveData
-	private String salutation;
+	private String otherSalutation;
 	private Sex sex;
 	private String approximateAge;
 	private String ageGroup;
@@ -196,7 +187,8 @@ public class EventParticipantExportDto implements Serializable {
 
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.salutation = EnumHelper.toString(salutation, otherSalutation, Salutation.OTHER);
+		this.salutation = salutation;
+		this.otherSalutation = otherSalutation;
 		this.sex = sex;
 		this.involvmentDescription = involvmentDescription;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
@@ -276,11 +268,21 @@ public class EventParticipantExportDto implements Serializable {
 	@ExportProperty({
 		EventParticipantDto.PERSON,
 		PersonDto.SALUTATION })
-	public String getSalutation() {
+	public Salutation getSalutation() {
 		return salutation;
 	}
 
 	@Order(16)
+	@HideForCountriesExcept
+	@ExportEntity(PersonDto.class)
+	@ExportProperty({
+		EventParticipantDto.PERSON,
+		PersonDto.OTHER_SALUTATION })
+	public String getOtherSalutation() {
+		return otherSalutation;
+	}
+
+	@Order(17)
 	@ExportEntity(PersonDto.class)
 	@ExportProperty({
 		EventParticipantDto.PERSON,
@@ -289,7 +291,7 @@ public class EventParticipantExportDto implements Serializable {
 		return sex;
 	}
 
-	@Order(17)
+	@Order(18)
 	@ExportEntity(PersonDto.class)
 	@ExportProperty({
 		EventParticipantDto.PERSON,
@@ -298,17 +300,17 @@ public class EventParticipantExportDto implements Serializable {
 		return approximateAge;
 	}
 
-	@Order(18)
+	@Order(19)
 	public String getAgeGroup() {
 		return ageGroup;
 	}
 
-	@Order(19)
+	@Order(20)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
 	}
 
-	@Order(20)
+	@Order(21)
 	@ExportEntity(PersonDto.class)
 	@ExportProperty({
 		EventParticipantDto.PERSON,
@@ -317,7 +319,7 @@ public class EventParticipantExportDto implements Serializable {
 		return presentCondition;
 	}
 
-	@Order(21)
+	@Order(22)
 	@ExportEntity(PersonDto.class)
 	@ExportProperty({
 		EventParticipantDto.PERSON,
@@ -326,7 +328,7 @@ public class EventParticipantExportDto implements Serializable {
 		return deathDate;
 	}
 
-	@Order(22)
+	@Order(23)
 	@ExportProperty(EventParticipantExportDto.BURIAL_INFO)
 	public BurialInfoDto getBurialInfo() {
 		return burialInfo;
