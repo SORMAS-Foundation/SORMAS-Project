@@ -33,9 +33,9 @@ public class SurvnetGateway {
 		//NOOP
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
+	public static HorizontalLayout addComponentToLayout(CustomLayout targetLayout, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
 		if (!FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
-			return;
+			return null;
 		}
 
 		Label header = new Label(I18nProperties.getCaption(Captions.SurvnetGateway_title));
@@ -55,6 +55,8 @@ public class SurvnetGateway {
 
 		layout.addStyleNames(CssStyles.SIDE_COMPONENT);
 		targetLayout.addComponent(layout, SURVNET_GATEWAY_LOC);
+
+		return layout;
 	}
 
 	public static void sendToSurvnet(SurvnetGatewayType gatewayType, List<String> uuids) {
