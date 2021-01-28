@@ -6,10 +6,12 @@ import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 public class PathogenTestSelectionGrid extends Grid {
 
@@ -28,13 +30,15 @@ public class PathogenTestSelectionGrid extends Grid {
 		setContainerDataSource(generatedContainer);
 
 		setColumns(
-			SampleDto.UUID,
-			SampleDto.SAMPLE_DATE_TIME,
-			SampleDto.RECEIVED_DATE,
-			SampleDto.LAB_SAMPLE_ID,
-			SampleDto.SAMPLE_MATERIAL,
-			SampleDto.LAB,
-			SampleDto.PATHOGEN_TEST_RESULT);
+			PathogenTestDto.UUID,
+			PathogenTestDto.TEST_DATE_TIME,
+			PathogenTestDto.TESTED_DISEASE,
+			PathogenTestDto.TEST_TYPE,
+			PathogenTestDto.LAB,
+			PathogenTestDto.TEST_RESULT);
+
+		getColumn(PathogenTestDto.UUID).setRenderer(new V7UuidRenderer());
+		getColumn(PathogenTestDto.TEST_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, column.getPropertyId().toString()));
