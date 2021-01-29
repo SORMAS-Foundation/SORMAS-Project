@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.user;
 import java.io.Serializable;
 
 import javax.enterprise.context.RequestScoped;
-import javax.transaction.TransactionScoped;
 
 @RequestScoped
 // FIXME @TransactionScoped would be better for performance, but is not support by novatec.bean-test (see their github #4)

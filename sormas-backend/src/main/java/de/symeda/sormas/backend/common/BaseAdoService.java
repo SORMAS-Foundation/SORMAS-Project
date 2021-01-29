@@ -18,14 +18,11 @@
 package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -53,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserQualifier;
 import de.symeda.sormas.backend.user.User;
@@ -166,7 +162,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return em.createQuery(cq).getSingleResult();
 	}
 
-
 	public List<ADO> getByUuids(List<String> uuids) {
 
 		if (uuids == null || uuids.isEmpty()) {
@@ -213,6 +208,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	@Override
 	public ADO getByUuid(@NotNull String uuid) {
+
+		if (uuid == null) {
+			return null;
+		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);

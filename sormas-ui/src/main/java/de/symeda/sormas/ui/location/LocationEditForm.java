@@ -25,6 +25,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -124,15 +125,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		addressType = addField(LocationDto.ADDRESS_TYPE, ComboBox.class);
 		addressType.setVisible(false);
+		final PersonAddressType[] personAddressTypeValues = PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode());
 		if (!isConfiguredServer("ch")) {
 			addressType.removeAllItems();
 			addressType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
-			addressType.addItems(PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode()));
+			addressType.addItems(personAddressTypeValues);
 		}
 		TextField addressTypeDetails = addField(LocationDto.ADDRESS_TYPE_DETAILS, TextField.class);
 		addressTypeDetails.setVisible(false);
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), LocationDto.ADDRESS_TYPE_DETAILS, addressType, Arrays.asList(PersonAddressType.OTHER_ADDRESS), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			LocationDto.ADDRESS_TYPE_DETAILS,
+			addressType,
+			Arrays.stream(personAddressTypeValues).filter(pat -> !pat.equals(PersonAddressType.HOME)).collect(Collectors.toList()),
+			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
 			addressType,
@@ -176,12 +182,13 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
-		TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
-		tfLatitude.setConverter(new StringToAngularLocationConverter());
-		TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
-		tfLongitude.setConverter(new StringToAngularLocationConverter());
-		TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
-		tfAccuracy.setConverter(new StringToAngularLocationConverter());
+		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, AccessibleTextField.class);
+		final StringToAngularLocationConverter stringToAngularLocationConverter = new StringToAngularLocationConverter();
+		tfLatitude.setConverter(stringToAngularLocationConverter);
+		tfLongitude.setConverter(stringToAngularLocationConverter);
+		tfAccuracy.setConverter(stringToAngularLocationConverter);
 
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);

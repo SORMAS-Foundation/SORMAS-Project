@@ -18,9 +18,9 @@
 
 package de.symeda.sormas.backend.user.event;
 
-import de.symeda.sormas.backend.user.User;
-
 import java.util.function.Consumer;
+
+import de.symeda.sormas.backend.user.User;
 
 /**
  * Event fired when an existing user is updated.

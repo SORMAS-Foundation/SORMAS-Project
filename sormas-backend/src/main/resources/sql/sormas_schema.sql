@@ -6165,8 +6165,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (299, 'Add index for
 -- 2021-01-05 Type of place details in events entities #2947
 ALTER TABLE events ADD COLUMN connectionNumber varchar(512);
 ALTER TABLE events_history ADD COLUMN connectionNumber varchar(512);
-ALTER TABLE events ADD COLUMN seatNumber varchar(512);
-ALTER TABLE events_history ADD COLUMN seatNumber varchar(512);
 ALTER TABLE events ADD COLUMN travelDate timestamp without time zone;
 ALTER TABLE events_history ADD COLUMN travelDate timestamp without time zone;
 
@@ -6180,6 +6178,12 @@ ALTER TABLE action_history ALTER COLUMN reply TYPE text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (301, 'Change action''s columns description and reply type from varchar to text #3848');
 
+-- 2020-12-03 Remove hospital from event's type of place #3617
+-- 2021-01-28 [Hotfix] Fixed migration code setting facility type for all locations in the system #4120
+UPDATE location SET facilitytype = 'HOSPITAL' WHERE facilitytype IS NULL AND (SELECT typeofplace FROM events WHERE eventlocation_id = location.id) = 'HOSPITAL';
+UPDATE events SET typeofplace = 'FACILITY' WHERE (SELECT facilitytype FROM location WHERE id = events.eventlocation_id) IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617, #4120');
 
 -- 2020-01-11 SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524
 ALTER TABLE cases ADD COLUMN externaltoken varchar(512);
@@ -6187,7 +6191,7 @@ ALTER TABLE cases_history ADD COLUMN externaltoken varchar(512);
 
 ALTER TABLE contact ADD COLUMN externaltoken varchar(512);
 ALTER TABLE contact_history ADD COLUMN externaltoken varchar(512);
---increasing person and person_history externalid size without loosing data.
+-- increasing person and person_history externalid size without loosing data.
 ALTER TABLE person ALTER COLUMN externalid type character varying (512);
 ALTER TABLE person_history ALTER COLUMN externalid type character varying (512);
 
@@ -6197,24 +6201,7 @@ ALTER TABLE person_history ADD COLUMN externaltoken varchar(512);
 ALTER TABLE events ADD COLUMN externaltoken varchar(512);
 ALTER TABLE events_history ADD COLUMN externaltoken varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (302, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
-
--- 2020-12-03 Remove hospital from event's type of place #3617
-UPDATE location
-SET facilitytype = 'HOSPITAL'
-FROM location AS l
-INNER JOIN events ON events.eventlocation_id = l.id
-WHERE events.typeofplace = 'HOSPITAL'
-  AND l.facilitytype IS NULL;
-
-UPDATE events
-SET typeofplace = 'FACILITY'
-FROM events as e
-INNER JOIN location ON location.id = e.eventlocation_id
-WHERE location.facilitytype IS NOT NULL;
-
-INSERT INTO schema_version (version_number, comment) VALUES (303, 'Remove hospital from event''s type of place #3617');
-
+INSERT INTO schema_version (version_number, comment) VALUES (303, 'SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524');
 
 -- 2021-01-07 Add system events #3927
 CREATE TABLE systemevent (
@@ -6233,5 +6220,72 @@ CREATE TABLE systemevent (
 ALTER TABLE systemevent OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (304, 'Add system events #3927');
+
+-- 2020-12-17 Change action's replyingUser to lastModifiedBy #3719
+ALTER TABLE action RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+ALTER TABLE action_history RENAME COLUMN replyinguser_id TO lastmodifiedby_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (305, 'Change action''s replyingUser to lastModifiedBy #3719');
+
+-- 2021-01-14 - Add new fields to outbreak events needed for SurvNet #4013
+ALTER TABLE action ADD COLUMN actionmeasure varchar(255);
+ALTER TABLE action_history ADD COLUMN actionmeasure varchar(255);
+ALTER TABLE events ADD COLUMN transregionaloutbreak varchar(255);
+ALTER TABLE events_history ADD COLUMN transregionaloutbreak varchar(255);
+ALTER TABLE events ADD COLUMN diseasetransmissionmode varchar(255);
+ALTER TABLE events_history ADD COLUMN diseasetransmissionmode varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (306, 'Add new fields to outbreak events needed for SurvNet #4013');
+
+-- 2020-01-12 Store sormas to sormas share options #3763
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN withassociatedcontacts boolean DEFAULT false,
+    ADD COLUMN withsamples boolean DEFAULT false,
+    ADD COLUMN pseudonymizedpersonaldata boolean DEFAULT false,
+    ADD COLUMN pseudonymizedsensitivedata boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (307, 'Store sormas to sormas share options #3763');
+
+-- 2021-01-15 - Add superordinate event to events #4020
+ALTER TABLE events ADD COLUMN superordinateevent_id bigint;
+ALTER TABLE events_history ADD COLUMN superordinateevent_id bigint;
+
+ALTER TABLE events ADD CONSTRAINT fk_events_superordinateevent_id FOREIGN KEY (superordinateevent_id) REFERENCES events(id);
+CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash (superordinateevent_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
+
+-- 2020-12-03 Remove hospital from exposure type of places #3680
+-- 2021-01-28 [Hotfix] Fixed migration code setting facility type for all locations in the system #4120
+UPDATE location SET facilitytype = 'HOSPITAL' WHERE facilitytype IS NULL AND (SELECT typeofplace FROM exposures WHERE location_id = location.id) = 'HOSPITAL';
+UPDATE exposures SET typeofplace = 'FACILITY' WHERE (SELECT facilitytype FROM location WHERE id = exposures.location_id) IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680, #4120');
+
+-- 2020-12-21 Fix labmessage table #3486
+ALTER TABLE labmessage OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
+ALTER TABLE labmessage_history OWNER TO sormas_user;
+ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
+ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
+
+-- 2021-01-07 Add evolution date and comment to events #3753
+ALTER TABLE events ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events_history ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events ADD COLUMN evolutionComment text;
+ALTER TABLE events_history ADD COLUMN evolutionComment text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add evolution date and comment to events #3753');
+
+
+-- 2020-01-13 Add indexes to optimize event directory performance #3276
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_person_id ON eventparticipant USING hash (person_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_event_id ON eventparticipant USING hash (event_id);
+CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING hash (person_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (312, 'Add indexes to optimize event directory performance #3276');
 
 -- *** Insert new sql commands BEFORE this line ***

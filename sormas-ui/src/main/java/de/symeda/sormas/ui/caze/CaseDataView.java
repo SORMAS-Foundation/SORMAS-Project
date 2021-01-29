@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.survnet.SurvnetGateway;
+import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -174,8 +175,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		SurvnetGateway.addComponentToLayout(layout, editComponent, () -> Collections.singletonList(caze.getUuid()));
-
+		SurvnetGateway.addComponentToLayout(layout, editComponent, SurvnetGatewayType.CASES, () -> Collections.singletonList(caze.getUuid()));
 
 		DocGenerationComponent.addComponentToLayout(layout, getCaseRef(), caze.getQuarantine());
 

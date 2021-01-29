@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.campaign.form;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,16 +49,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	@EJB
 	private UserService userService;
 
-	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source) {
-		CampaignFormMeta target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new CampaignFormMeta();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source, boolean checkChangeDate) {
+		CampaignFormMeta target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CampaignFormMeta::new, checkChangeDate);
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());
@@ -91,7 +82,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	public CampaignFormMetaDto saveCampaignFormMeta(CampaignFormMetaDto campaignFormMetaDto) throws ValidationRuntimeException {
 		validateAndClean(campaignFormMetaDto);
 
-		CampaignFormMeta campaignFormMeta = fromDto(campaignFormMetaDto);
+		CampaignFormMeta campaignFormMeta = fromDto(campaignFormMetaDto, true);
 		service.ensurePersisted(campaignFormMeta);
 		return toDto(campaignFormMeta);
 	}

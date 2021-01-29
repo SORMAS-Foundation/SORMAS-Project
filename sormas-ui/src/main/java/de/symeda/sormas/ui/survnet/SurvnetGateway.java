@@ -38,16 +38,19 @@ public class SurvnetGateway {
 		//NOOP
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, DirtyStateComponent editComponent, Supplier<List<String>> caseUuids) {
+	public static HorizontalLayout addComponentToLayout(CustomLayout targetLayout, DirtyStateComponent editComponent, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
 		if (!FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
-			return;
+			return null;
 		}
 
 		Label header = new Label(I18nProperties.getCaption(Captions.SurvnetGateway_title));
 		header.addStyleName(CssStyles.H3);
 
-		Button button = ButtonHelper
-			.createIconButton(Captions.SurvnetGateway_send, VaadinIcons.OUTBOX, e -> onSendButtonClick(editComponent, caseUuids), ValoTheme.BUTTON_PRIMARY);
+		Button button = ButtonHelper.createIconButton(
+			Captions.SurvnetGateway_send,
+			VaadinIcons.OUTBOX,
+			e -> onSendButtonClick(editComponent, caseUuids)),
+			ValoTheme.BUTTON_PRIMARY);
 
 		HorizontalLayout layout = new HorizontalLayout(header, button);
 		layout.setExpandRatio(button, 1);
@@ -57,6 +60,8 @@ public class SurvnetGateway {
 
 		layout.addStyleNames(CssStyles.SIDE_COMPONENT);
 		targetLayout.addComponent(layout, SURVNET_GATEWAY_LOC);
+
+		return layout;
 	}
 
 	private static void onSendButtonClick(DirtyStateComponent editComponent, Supplier<List<String>> caseUuids) {
@@ -81,9 +86,20 @@ public class SurvnetGateway {
 		}
 	}
 
-	private static void sendToSurvnet(List<String> caseUuids) {
+	public static void sendToSurvnet(SurvnetGatewayType gatewayType, List<String> uuids) {
 
-		int statusCode = FacadeProvider.getSurvnetGatewayFacade().sendCases(caseUuids);
+		int statusCode;
+
+		switch (gatewayType) {
+		case CASES:
+			statusCode = FacadeProvider.getSurvnetGatewayFacade().sendCases(uuids);
+			break;
+		case EVENTS:
+			statusCode = FacadeProvider.getSurvnetGatewayFacade().sendEvents(uuids);
+			break;
+		default:
+			throw new IllegalArgumentException(gatewayType.toString());
+		}
 
 		Notification.Type type;
 		String message;

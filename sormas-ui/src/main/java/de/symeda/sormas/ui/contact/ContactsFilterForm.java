@@ -50,6 +50,7 @@ import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
@@ -349,6 +350,19 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			}
 			break;
 		}
+		case ContactCriteria.BIRTHDATE_MM: {
+			Integer birthMM = (Integer) event.getProperty().getValue();
+
+			ComboBox birthDayDD = getField(ContactCriteria.BIRTHDATE_DD);
+			birthDayDD.setEnabled(birthMM != null);
+			FieldHelper.updateItems(
+				birthDayDD,
+				DateHelper.getDaysInMonth(
+					(Integer) getField(ContactCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(ContactCriteria.BIRTHDATE_YYYY).getValue()));
+
+			break;
+		}
 		}
 	}
 
@@ -510,7 +524,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	private void populateSurveillanceOfficersForDistrict(DistrictReferenceDto districtReferenceDto) {
 		if (districtReferenceDto != null) {
 			List<UserReferenceDto> items =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.SURVEILLANCE_OFFICER);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.CONTACT_OFFICER);
 			populateSurveillanceOfficers(items);
 		} else {
 			final ComboBox regionField = getField(ContactCriteria.REGION);
@@ -525,6 +539,6 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
-		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER);
+		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.CONTACT_OFFICER);
 	}
 }

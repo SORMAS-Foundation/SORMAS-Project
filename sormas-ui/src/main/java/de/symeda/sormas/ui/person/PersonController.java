@@ -30,6 +30,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonContext;
@@ -54,7 +55,7 @@ public class PersonController {
 
 	}
 
-	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer) {
+	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
 		PersonSelectionField personSelect = new PersonSelectionField(person, infoText);
 		personSelect.setWidth(1024, Unit.PIXELS);
 
@@ -62,6 +63,9 @@ public class PersonController {
 			// TODO add user right parameter
 			final CommitDiscardWrapperComponent<PersonSelectionField> component =
 				new CommitDiscardWrapperComponent<PersonSelectionField>(personSelect);
+			if (!saveNewPerson) {
+				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+			}
 			component.addCommitListener(new CommitListener() {
 
 				@Override
@@ -84,9 +88,11 @@ public class PersonController {
 
 			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
 			personSelect.selectBestMatch();
-		} else {
+		} else if (saveNewPerson) {
 			PersonDto savedPerson = personFacade.savePerson(person);
 			resultConsumer.accept(savedPerson.toReference());
+		} else {
+			resultConsumer.accept(person.toReference());
 		}
 	}
 
