@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.ui.caze.CasesView;
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -273,7 +275,8 @@ public class EventController {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
-		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {}, eventParticipantDto);
+		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
+		}, eventParticipantDto);
 		return false;
 	}
 
@@ -281,7 +284,8 @@ public class EventController {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
-		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {}, eventParticipantDto);
+		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
+		}, eventParticipantDto);
 	}
 
 	public void navigateToIndex() {
@@ -436,7 +440,7 @@ public class EventController {
 		return component;
 	}
 
-	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
+	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, Consumer<EventStatus> saveCallback) {
 
 		EventDto event = findEvent(eventUuid);
 		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
@@ -452,6 +456,10 @@ public class EventController {
 				eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
 				Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
 				SormasUI.refreshView();
+
+				if (saveCallback != null) {
+					saveCallback.accept(eventDto.getEventStatus());
+				}
 			}
 		});
 

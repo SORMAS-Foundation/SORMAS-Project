@@ -105,6 +105,7 @@ import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.survnet.SurvnetGateway;
+import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -1425,7 +1426,7 @@ public class CaseController {
 			return;
 		}
 
-		SurvnetGateway.sendToSurvnet(selectedUuids);
+		SurvnetGateway.sendToSurvnet(SurvnetGatewayType.CASES, selectedUuids);
 
 		Notification successNotification =
 			new Notification(I18nProperties.getString(Strings.notificationCasesSentToSurvNet), "", Type.HUMANIZED_MESSAGE);

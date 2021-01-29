@@ -45,6 +45,18 @@ public class SurvnetGatewayFacadeEjb implements SurvnetGatewayFacade {
 		ExportParameters params = new ExportParameters();
 		params.setCaseUuids(caseUuids);
 
+		return sendRequest(params);
+	}
+
+	@Override
+	public int sendEvents(List<String> eventUuids) {
+		ExportParameters params = new ExportParameters();
+		params.setEventUuids(eventUuids);
+
+		return sendRequest(params);
+	}
+
+	private int sendRequest(ExportParameters params) {
 		String serviceUrl = configFacade.getSurvnetGatewayUrl().trim();
 
 		Response response = ClientBuilder.newBuilder()
@@ -60,6 +72,7 @@ public class SurvnetGatewayFacadeEjb implements SurvnetGatewayFacade {
 	public static class ExportParameters {
 
 		private List<String> caseUuids;
+		private List<String> eventUuids;
 
 		public List<String> getCaseUuids() {
 			return caseUuids;
@@ -67,6 +80,14 @@ public class SurvnetGatewayFacadeEjb implements SurvnetGatewayFacade {
 
 		public void setCaseUuids(List<String> caseUuids) {
 			this.caseUuids = caseUuids;
+		}
+
+		public List<String> getEventUuids() {
+			return eventUuids;
+		}
+
+		public void setEventUuids(List<String> eventUuids) {
+			this.eventUuids = eventUuids;
 		}
 	}
 }

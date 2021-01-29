@@ -277,6 +277,7 @@ public class EventFacadeEjb implements EventFacade {
 				switch (sortProperty.propertyName) {
 				case EventIndexDto.UUID:
 				case EventIndexDto.EVENT_STATUS:
+				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:

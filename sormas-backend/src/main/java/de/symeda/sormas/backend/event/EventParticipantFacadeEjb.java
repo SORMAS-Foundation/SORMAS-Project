@@ -801,4 +801,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return eventParticipantService.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
 	}
 
+	@Override
+	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return eventParticipantService.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+	}
+
 }
