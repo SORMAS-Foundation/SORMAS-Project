@@ -21,15 +21,9 @@ public class LabMessageEditForm extends AbstractEditForm<LabMessageDto> {
 	private final boolean readOnly;
 	private Label labMessageDetails;
 
-	public LabMessageEditForm() {
-		this(false);
-	}
-
 	public LabMessageEditForm(boolean readOnly) {
 
 		super(LabMessageDto.class, LabMessageDto.I18N_PREFIX);
-
-		setWidth(800, Unit.PIXELS);
 
 		this.readOnly = readOnly;
 	}

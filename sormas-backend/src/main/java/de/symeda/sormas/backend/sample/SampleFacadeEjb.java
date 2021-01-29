@@ -211,6 +211,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public List<SampleDto> getByContactUuids(List<String> contactUuids) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return sampleService.getByContactUuids(contactUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
 	public boolean exists(String uuid) {
 		return sampleService.exists(uuid);
 	}
