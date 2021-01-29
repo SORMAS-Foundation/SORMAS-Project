@@ -103,7 +103,9 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactIndexDto.CONTACT_CATEGORY,
 			ContactIndexDto.FOLLOW_UP_STATUS,
 			ContactCriteria.NAME_UUID_CASE_LIKE,
-			ContactCriteria.EVENT_LIKE };
+			ContactCriteria.EVENT_LIKE,
+			ContactCriteria.EXTERNAL_ID,
+			ContactCriteria.EXTERNAL_TOKEN };
 	}
 
 	@Override
@@ -135,6 +137,22 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			FieldConfiguration
 				.withCaptionAndPixelSized(ContactCriteria.EVENT_LIKE, I18nProperties.getString(Strings.promptCaseOrContactEventSearchField), 200));
 		eventSearchField.setNullRepresentation("");
+
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY) || isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+			TextField externalIdTextField = addField(
+				FieldConfiguration.withCaptionAndPixelSized(
+					ContactCriteria.EXTERNAL_ID,
+					I18nProperties.getString(Strings.promptCaseOrContactExternalIdSearchField),
+					200));
+			externalIdTextField.setNullRepresentation("");
+
+			TextField externalTokenTextField = addField(
+				FieldConfiguration.withCaptionAndPixelSized(
+					ContactCriteria.EXTERNAL_TOKEN,
+					I18nProperties.getString(Strings.promptCaseOrContactExternalTokenSearchField),
+					200));
+			externalTokenTextField.setNullRepresentation("");
+		}
 	}
 
 	@Override

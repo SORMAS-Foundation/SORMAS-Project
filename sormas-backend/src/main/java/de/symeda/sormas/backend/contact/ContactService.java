@@ -1071,7 +1071,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 		if (contactCriteria.getSymptomJournalStatus() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), contactCriteria.getSymptomJournalStatus()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), contactCriteria.getSymptomJournalStatus()));
 		}
 		if (contactCriteria.getQuarantineTo() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -1197,6 +1198,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			if (hasOnlyContactsSharingEventWithSourceCase) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(event.get(Event.UUID), joins.getCaseEvent().get(Event.UUID)));
 			}
+		}
+		if (contactCriteria.getExternalIdLike() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), formatForLike(contactCriteria.getExternalIdLike())));
+		}
+		if (contactCriteria.getExternalTokenLike() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.like(cb.lower(from.get(Case.EXTERNAL_TOKEN)), formatForLike(contactCriteria.getExternalTokenLike())));
 		}
 		if (contactCriteria.getEventUuid() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), contactCriteria.getEventUuid()));
