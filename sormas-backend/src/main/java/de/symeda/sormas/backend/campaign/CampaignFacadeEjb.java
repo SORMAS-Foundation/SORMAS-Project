@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.campaign;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -169,18 +168,9 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	public Campaign fromDto(@NotNull CampaignDto source, boolean checkChangeDate) {
-
-		Campaign target = campaignService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Campaign();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
-
 		validate(source);
+
+		Campaign target = DtoHelper.fillOrBuildEntity(source, campaignService.getByUuid(source.getUuid()), Campaign::new, checkChangeDate);
 
 		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
 		target.setDescription(source.getDescription());

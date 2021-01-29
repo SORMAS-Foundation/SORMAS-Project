@@ -269,8 +269,10 @@ public interface Strings {
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
 	String headingCreateNewCampaign = "headingCreateNewCampaign";
 	String headingCreateNewCase = "headingCreateNewCase";
+	String headingCreateNewCaseIssue = "headingCreateNewCaseIssue";
 	String headingCreateNewClinicalVisit = "headingCreateNewClinicalVisit";
 	String headingCreateNewContact = "headingCreateNewContact";
+	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
 	String headingCreateNewEvent = "headingCreateNewEvent";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
 	String headingCreateNewFacility = "headingCreateNewFacility";
@@ -597,6 +599,7 @@ public interface Strings {
 	String messageCaseDuplicateDeleted = "messageCaseDuplicateDeleted";
 	String messageCaseIncidenceUnsupportedAgeGroup = "messageCaseIncidenceUnsupportedAgeGroup";
 	String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
+	String messageCaseRelationToEventWithoutDisease = "messageCaseRelationToEventWithoutDisease";
 	String messageCasesArchived = "messageCasesArchived";
 	String messageCaseSaved = "messageCaseSaved";
 	String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";
@@ -663,6 +666,8 @@ public interface Strings {
 	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
 	String messageEventParticipantsDeleted = "messageEventParticipantsDeleted";
+	String messageEventParticipantToCaseWithoutEventDisease = "messageEventParticipantToCaseWithoutEventDisease";
+	String messageEventParticipantToContactWithoutEventDisease = "messageEventParticipantToContactWithoutEventDisease";
 	String messageEventsArchived = "messageEventsArchived";
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDearchived = "messageEventsDearchived";
@@ -866,7 +871,11 @@ public interface Strings {
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventEpiWeekFrom = "promptEventEpiWeekFrom";
 	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
+	String promptEventEvolutionDateFrom = "promptEventEvolutionDateFrom";
+	String promptEventEvolutionDateTo = "promptEventEvolutionDateTo";
 	String promptEventParticipantsSearchField = "promptEventParticipantsSearchField";
+	String promptEventSignalEvolutionEpiWeekFrom = "promptEventSignalEvolutionEpiWeekFrom";
+	String promptEventSignalEvolutionEpiWeekTo = "promptEventSignalEvolutionEpiWeekTo";
 	String promptEventsSearchField = "promptEventsSearchField";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";

@@ -18,6 +18,7 @@ package de.symeda.sormas.app.event.read;
 import android.os.Bundle;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -31,6 +32,10 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.databinding.FragmentEventReadLayoutBinding;
 
 public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutBinding, Event, Event> {
+
+	private static final String EVENT_ENTITY = "Event";
+	private static final String EVOLUTION_DATE_WITH_STATUS = "eventEvolutionDateWithStatus";
+	private static final String EVOLUTION_COMMENT_WITH_STATUS = "eventEvolutionCommentWithStatus";
 
 	private Event record;
 
@@ -68,6 +73,22 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 		contentBinding.eventStartDate.setCaption(startDateCaption);
 
 		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
+
+		EventStatus eventStatus = record.getEventStatus();
+		// The status will be used to modify the caption of the field
+		// However we don't want to have somthing like "Dropped evolution date"
+		// So let's ignore the DROPPED status and use the EVENT status instead
+		String statusCaption;
+		if (eventStatus == EventStatus.DROPPED) {
+			statusCaption = I18nProperties.getCaption(EVENT_ENTITY);
+		} else {
+			statusCaption = I18nProperties.getEnumCaption(eventStatus);
+		}
+
+		contentBinding.eventEvolutionDate.setCaption(String.format(
+			I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
+		contentBinding.eventEvolutionComment.setCaption(String.format(
+			I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
 	}
 
 	@Override

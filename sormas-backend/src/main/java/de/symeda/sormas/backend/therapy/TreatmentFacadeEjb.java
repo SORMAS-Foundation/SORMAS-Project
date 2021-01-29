@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.therapy;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -275,15 +274,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target, boolean checkChangeDate) {
-		if (target == null) {
-			target = new Treatment();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
 
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Treatment::new, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));
 		target.setTreatmentType(source.getTreatmentType());

@@ -524,12 +524,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Facility();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);
 
 		target.setName(source.getName());
 

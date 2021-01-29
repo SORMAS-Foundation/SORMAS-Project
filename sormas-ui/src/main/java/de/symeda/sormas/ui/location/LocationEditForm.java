@@ -182,12 +182,13 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
-		TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
-		tfLatitude.setConverter(new StringToAngularLocationConverter());
-		TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
-		tfLongitude.setConverter(new StringToAngularLocationConverter());
-		TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
-		tfAccuracy.setConverter(new StringToAngularLocationConverter());
+		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, AccessibleTextField.class);
+		final StringToAngularLocationConverter stringToAngularLocationConverter = new StringToAngularLocationConverter();
+		tfLatitude.setConverter(stringToAngularLocationConverter);
+		tfLongitude.setConverter(stringToAngularLocationConverter);
+		tfAccuracy.setConverter(stringToAngularLocationConverter);
 
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);

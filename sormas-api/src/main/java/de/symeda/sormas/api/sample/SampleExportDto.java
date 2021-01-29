@@ -19,7 +19,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationReferenceDto;
@@ -283,17 +283,21 @@ public class SampleExportDto implements Serializable {
 			this.contactDistrict = contactDistrict;
 		}
 
-		EventJurisdictionDto associatedEventJurisdiction = null;
+		EventParticipantJurisdictionDto associatedEventParticipantJurisdiction = null;
 		if (eventParticipantUuid != null) {
-			associatedEventJurisdiction =
-				new EventJurisdictionDto(eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid);
+			associatedEventParticipantJurisdiction = new EventParticipantJurisdictionDto(
+				associatedEventParticipant.getUuid(),
+				eventReportingUserUuid,
+				eventRegionUuid,
+				eventDistrictUuid,
+				eventCommunityUuid);
 		}
 
 		jurisdiction = new SampleJurisdictionDto(
 			reportingUserUuid,
 			associatedCaseJurisdiction,
 			associatedContactJurisdiction,
-			associatedEventJurisdiction,
+			associatedEventParticipantJurisdiction,
 			labUuid);
 	}
 

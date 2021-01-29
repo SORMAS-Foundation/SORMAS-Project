@@ -6179,20 +6179,11 @@ ALTER TABLE action_history ALTER COLUMN reply TYPE text;
 INSERT INTO schema_version (version_number, comment) VALUES (301, 'Change action''s columns description and reply type from varchar to text #3848');
 
 -- 2020-12-03 Remove hospital from event's type of place #3617
-UPDATE location
-SET facilitytype = 'HOSPITAL'
-    FROM location AS l
-INNER JOIN events ON events.eventlocation_id = l.id
-WHERE events.typeofplace = 'HOSPITAL'
-  AND l.facilitytype IS NULL;
+-- 2021-01-28 [Hotfix] Fixed migration code setting facility type for all locations in the system #4120
+UPDATE location SET facilitytype = 'HOSPITAL' WHERE facilitytype IS NULL AND (SELECT typeofplace FROM events WHERE eventlocation_id = location.id) = 'HOSPITAL';
+UPDATE events SET typeofplace = 'FACILITY' WHERE (SELECT facilitytype FROM location WHERE id = events.eventlocation_id) IS NOT NULL;
 
-UPDATE events
-SET typeofplace = 'FACILITY'
-    FROM events as e
-INNER JOIN location ON location.id = e.eventlocation_id
-WHERE location.facilitytype IS NOT NULL;
-
-INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617');
+INSERT INTO schema_version (version_number, comment) VALUES (302, 'Remove hospital from event''s type of place #3617, #4120');
 
 -- 2020-01-11 SurvNet Adaptation - Dedicated fields for technical and non-technical external IDs #3524
 ALTER TABLE cases ADD COLUMN externaltoken varchar(512);
@@ -6265,20 +6256,11 @@ CREATE INDEX IF NOT EXISTS idx_events_superordinateevent_id ON events USING hash
 INSERT INTO schema_version (version_number, comment) VALUES (308, 'Add superordinate event to events #4020');
 
 -- 2020-12-03 Remove hospital from exposure type of places #3680
-UPDATE location
-SET facilitytype = 'HOSPITAL'
-FROM location AS l
-         INNER JOIN exposures ON exposures.location_id = l.id
-WHERE exposures.typeofplace = 'HOSPITAL'
-  AND l.facilitytype IS NULL;
+-- 2021-01-28 [Hotfix] Fixed migration code setting facility type for all locations in the system #4120
+UPDATE location SET facilitytype = 'HOSPITAL' WHERE facilitytype IS NULL AND (SELECT typeofplace FROM exposures WHERE location_id = location.id) = 'HOSPITAL';
+UPDATE exposures SET typeofplace = 'FACILITY' WHERE (SELECT facilitytype FROM location WHERE id = exposures.location_id) IS NOT NULL;
 
-UPDATE exposures
-SET typeofplace = 'FACILITY'
-FROM exposures as e
-         INNER JOIN location ON location.id = e.location_id
-WHERE location.facilitytype IS NOT NULL;
-
-INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680');
+INSERT INTO schema_version (version_number, comment) VALUES (309, 'Remove hospital from exposure type of places #3680, #4120');
 
 -- 2020-12-21 Fix labmessage table #3486
 ALTER TABLE labmessage OWNER TO sormas_user;
@@ -6289,4 +6271,13 @@ ALTER TABLE labmessage ADD COLUMN messagedatetime timestamp;
 ALTER TABLE labmessage_history ADD COLUMN messagedatetime timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (310, 'Fix labmessage table #3486');
+
+-- 2021-01-07 Add evolution date and comment to events #3753
+ALTER TABLE events ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events_history ADD COLUMN evolutionDate timestamp;
+ALTER TABLE events ADD COLUMN evolutionComment text;
+ALTER TABLE events_history ADD COLUMN evolutionComment text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add evolution date and comment to events #3753');
+
 -- *** Insert new sql commands BEFORE this line ***

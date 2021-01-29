@@ -105,6 +105,7 @@ import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.survnet.SurvnetGateway;
+import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -158,11 +159,30 @@ public class CaseController {
 	}
 
 	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+		if (event.getDisease() == null) {
+			new Notification(
+				I18nProperties.getString(Strings.headingCreateNewCaseIssue),
+				I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
+		if (disease == null) {
+			new Notification(
+					I18nProperties.getString(Strings.headingCreateNewCaseIssue),
+					I18nProperties.getString(Strings.messageEventParticipantToCaseWithoutEventDisease),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			return;
+		}
+
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
@@ -1406,7 +1426,7 @@ public class CaseController {
 			return;
 		}
 
-		SurvnetGateway.sendToSurvnet(selectedUuids);
+		SurvnetGateway.sendToSurvnet(SurvnetGatewayType.CASES, selectedUuids);
 
 		Notification successNotification =
 			new Notification(I18nProperties.getString(Strings.notificationCasesSentToSurvNet), "", Type.HUMANIZED_MESSAGE);

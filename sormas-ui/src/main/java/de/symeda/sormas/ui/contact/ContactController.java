@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.event.EventDto;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -139,6 +140,17 @@ public class ContactController {
 
 	public void create(EventParticipantReferenceDto eventParticipantRef) {
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+
+		if (event.getDisease() == null) {
+			new Notification(
+					I18nProperties.getString(Strings.headingCreateNewContactIssue),
+					I18nProperties.getString(Strings.messageEventParticipantToContactWithoutEventDisease),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			return;
+		}
+
 		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(eventParticipant);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}

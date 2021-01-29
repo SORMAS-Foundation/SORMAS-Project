@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,15 +59,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			return null;
 		}
 
-		EpiData target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new EpiData();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		EpiData target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), EpiData::new, checkChangeDate);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
 		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
@@ -97,17 +88,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			return null;
 		}
 
-		Exposure exposure = exposureService.getByUuid(source.getUuid());
-		if (exposure == null) {
-			exposure = new Exposure();
-			exposure.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				exposure.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		Exposure target = exposure;
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Exposure target = DtoHelper.fillOrBuildEntity(source, exposureService.getByUuid(source.getUuid()), Exposure::new, checkChangeDate);
 
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
@@ -160,7 +141,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRiskArea(source.getRiskArea());
 		target.setPatientExpositionRole(source.getPatientExpositionRole());
 
-		return exposure;
+		return target;
 	}
 
 	public static EpiDataDto toDto(EpiData epiData) {
@@ -172,9 +153,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		EpiDataDto target = new EpiDataDto();
 		EpiData source = epiData;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setExposureDetailsKnown(source.getExposureDetailsKnown());
 		target.setContactWithSourceCaseKnown(source.getContactWithSourceCaseKnown());
@@ -200,9 +179,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 
 		ExposureDto target = new ExposureDto();
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());

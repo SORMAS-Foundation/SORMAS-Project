@@ -38,6 +38,8 @@ public class EventParticipantJurisdictionChecker {
 	private EventParticipantJurisdictionDto createEventParticipantJurisdictionDto(EventParticipant eventParticipant) {
 		EventParticipantJurisdictionDto jurisdiction = new EventParticipantJurisdictionDto();
 
+		jurisdiction.setEventParticipantUuid(eventParticipant.getUuid());
+
 		if (eventParticipant.getReportingUser() != null) {
 			jurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
 		}
@@ -48,6 +50,10 @@ public class EventParticipantJurisdictionChecker {
 
 		if (eventParticipant.getDistrict() != null) {
 			jurisdiction.setDistrictUuid(eventParticipant.getDistrict().getUuid());
+		}
+
+		if (eventParticipant.getEvent() != null) {
+			jurisdiction.setEventUuid(eventParticipant.getEvent().getUuid());
 		}
 
 		return jurisdiction;
@@ -92,6 +98,8 @@ public class EventParticipantJurisdictionChecker {
 		boolean isInEventParticipantJurisdiction = isInJurisdiction(eventParticipant);
 		boolean isInEventJurisdiction = isInEventJurisdiction(eventParticipant);
 
+		// "true" means the pseudomyzatnion will not occur
+		// "return" false means the sensitive data will be pseudonymized
 		return isOwned || isInEventParticipantJurisdiction || isInEventJurisdiction;
 	}
 
