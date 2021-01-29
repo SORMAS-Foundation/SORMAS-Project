@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.survnet;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -20,7 +19,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -49,7 +47,7 @@ public class SurvnetGateway {
 		Button button = ButtonHelper.createIconButton(
 			Captions.SurvnetGateway_send,
 			VaadinIcons.OUTBOX,
-			e -> onSendButtonClick(editComponent, caseUuids)),
+			e -> onSendButtonClick(editComponent, gatewayType, uuids),
 			ValoTheme.BUTTON_PRIMARY);
 
 		HorizontalLayout layout = new HorizontalLayout(header, button);
@@ -64,7 +62,7 @@ public class SurvnetGateway {
 		return layout;
 	}
 
-	private static void onSendButtonClick(DirtyStateComponent editComponent, Supplier<List<String>> caseUuids) {
+	private static void onSendButtonClick(DirtyStateComponent editComponent, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
 		if (editComponent.isDirty()) {
 			VaadinUiUtil.showSimplePopupWindow(
 					I18nProperties.getCaption(Captions.SurvnetGateway_unableToSend),
@@ -79,7 +77,7 @@ public class SurvnetGateway {
 					640,
 					confirmed -> {
 						if (confirmed) {
-							sendToSurvnet(caseUuids.get());
+							sendToSurvnet(gatewayType, uuids.get());
 							SormasUI.refreshView();
 						}
 					});

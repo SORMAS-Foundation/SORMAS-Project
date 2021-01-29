@@ -101,7 +101,7 @@ public class EventDataView extends AbstractEventView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		survNetLayout = SurvnetGateway.addComponentToLayout(layout, SurvnetGatewayType.EVENTS, () -> Collections.singletonList(event.getUuid()));
+		survNetLayout = SurvnetGateway.addComponentToLayout(layout, editComponent, SurvnetGatewayType.EVENTS, () -> Collections.singletonList(event.getUuid()));
 		setSurvNetLayoutVisibility(event.getEventStatus());
 
 		editComponent = ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setSurvNetLayoutVisibility);
