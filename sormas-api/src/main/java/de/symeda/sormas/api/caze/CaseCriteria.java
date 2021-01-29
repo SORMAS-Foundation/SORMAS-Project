@@ -53,6 +53,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
 	public static final String EVENT_LIKE = "eventLike";
+	public static final String EXTERNAL_ID = "externalIdLike";
+	public static final String EXTERNAL_TOKEN = "externalTokenLike";
 	public static final String ONLY_CASES_WITH_EVENTS = "onlyCasesWithEvents";
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
 	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
@@ -95,6 +97,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String eventLike;
+	private String externalIdLike;
+	private String externalTokenLike;
 	private Boolean onlyCasesWithEvents = Boolean.FALSE;
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
@@ -400,6 +404,32 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public CaseCriteria eventLike(String eventLike) {
 		setEventLike(eventLike);
+		return this;
+	}
+
+	public void setExternalIdLike(String externalIdLike) {
+		this.externalIdLike = externalIdLike;
+	}
+
+	public String getExternalIdLike() {
+		return externalIdLike;
+	}
+
+	public CaseCriteria externalIdLike(String externalIdLike) {
+		setExternalIdLike(externalIdLike);
+		return this;
+	}
+
+	public void setExternalTokenLike(String externalTokenLike) {
+		this.externalTokenLike = externalTokenLike;
+	}
+
+	public String getExternalTokenLike() {
+		return externalTokenLike;
+	}
+
+	public CaseCriteria externalTokenLike(String externalTokenLike) {
+		setExternalTokenLike(externalTokenLike);
 		return this;
 	}
 
