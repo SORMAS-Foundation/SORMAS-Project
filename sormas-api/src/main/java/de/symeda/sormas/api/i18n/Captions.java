@@ -785,6 +785,9 @@ public interface Captions {
 	String Event = "Event";
 	String Event_caseCount = "Event.caseCount";
 	String Event_connectionNumber = "Event.connectionNumber";
+	String Event_contactCount = "Event.contactCount";
+	String Event_contactCountMethod = "Event.contactCountMethod";
+	String Event_contactCountSourceInEvent = "Event.contactCountSourceInEvent";
 	String Event_deathCount = "Event.deathCount";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
@@ -1398,6 +1401,7 @@ public interface Captions {
 	String sampleAllSamples = "sampleAllSamples";
 	String sampleArchivedSamples = "sampleArchivedSamples";
 	String sampleAssociationType = "sampleAssociationType";
+	String sampleCreateNew = "sampleCreateNew";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
 	String SampleExport_arterialVenousBloodGas = "SampleExport.arterialVenousBloodGas";
@@ -1482,6 +1486,7 @@ public interface Captions {
 	String sampleReferredTo = "sampleReferredTo";
 	String sampleReferredToInternal = "sampleReferredToInternal";
 	String sampleSamplesList = "sampleSamplesList";
+	String sampleSelect = "sampleSelect";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String sex = "sex";
