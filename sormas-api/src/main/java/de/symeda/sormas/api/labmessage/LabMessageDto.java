@@ -81,14 +81,6 @@ public class LabMessageDto extends EntityDto {
 		this.messageDateTime = messageDateTime;
 	}
 
-	public Date getMessageDateTime() {
-		return messageDateTime;
-	}
-
-	public void setMessageDateTime(Date messageDateTime) {
-		this.messageDateTime = messageDateTime;
-	}
-
 	public Date getSampleDateTime() {
 		return sampleDateTime;
 	}
