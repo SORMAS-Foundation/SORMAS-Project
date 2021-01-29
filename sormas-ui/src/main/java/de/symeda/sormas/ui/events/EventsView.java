@@ -92,6 +92,8 @@ public class EventsView extends AbstractView {
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
+	private ComboBox contactCountMethod;
+
 	private VerticalLayout gridLayout;
 
 	// Bulk operations
@@ -411,6 +413,7 @@ public class EventsView extends AbstractView {
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.setTextInputAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.eventActiveEvents));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.eventArchivedEvents));
@@ -420,6 +423,7 @@ public class EventsView extends AbstractView {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
+				relevanceStatusFilter.setCaption("");
 				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
@@ -445,7 +449,31 @@ public class EventsView extends AbstractView {
 					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
+				bulkOperationsDropdown.setCaption("");
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
+
+			if (isDefaultViewType()) {
+				// Contact Count Method Dropdown
+				contactCountMethod = new ComboBox();
+				contactCountMethod.setCaption(I18nProperties.getCaption(Captions.Event_contactCountMethod));
+				contactCountMethod.addItem(EventContactCountMethod.ALL);
+				contactCountMethod.addItem(EventContactCountMethod.SOURCE_CASE_IN_EVENT);
+				contactCountMethod.addItem(EventContactCountMethod.BOTH_METHODS);
+				contactCountMethod.setItemCaption(EventContactCountMethod.ALL, I18nProperties.getEnumCaption(EventContactCountMethod.ALL));
+				contactCountMethod.setItemCaption(
+					EventContactCountMethod.SOURCE_CASE_IN_EVENT,
+					I18nProperties.getEnumCaption(EventContactCountMethod.SOURCE_CASE_IN_EVENT));
+				contactCountMethod
+					.setItemCaption(EventContactCountMethod.BOTH_METHODS, I18nProperties.getEnumCaption(EventContactCountMethod.BOTH_METHODS));
+				contactCountMethod.setValue(EventContactCountMethod.ALL);
+				contactCountMethod.setTextInputAllowed(false);
+				contactCountMethod.setNullSelectionAllowed(false);
+				contactCountMethod.addValueChangeListener(event -> {
+					((EventGrid) grid).setContactCountMethod((EventContactCountMethod) event.getProperty().getValue());
+					((EventGrid) grid).reload();
+				});
+				actionButtonsLayout.addComponent(contactCountMethod);
 			}
 		}
 		statusFilterLayout.addComponent(actionButtonsLayout);
