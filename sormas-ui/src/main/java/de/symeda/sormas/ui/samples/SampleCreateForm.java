@@ -97,24 +97,14 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 		pathogenTestResultField.addValueChangeListener(e -> {
 			PathogenTestResultType testResult = (PathogenTestResultType) e.getProperty().getValue();
-			if ((testTypeField.getValue() == PathogenTestType.PCR_RT_PCR && testResult == PathogenTestResultType.POSITIVE)
-				|| testTypeField.getValue() == PathogenTestType.CQ_VALUE_DETECTION) {
-				cqValueField.setVisible(true);
-			} else {
-				cqValueField.setVisible(false);
-				cqValueField.clear();
-			}
+			PathogenTestType testType = (PathogenTestType) testTypeField.getValue();
+			showCqValueField(cqValueField, testType, testResult);
 		});
 
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
-			if ((testType == PathogenTestType.PCR_RT_PCR && pathogenTestResultField.getValue() == PathogenTestResultType.POSITIVE)
-				|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
-				cqValueField.setVisible(true);
-			} else {
-				cqValueField.setVisible(false);
-				cqValueField.clear();
-			}
+			PathogenTestResultType testResult = (PathogenTestResultType) pathogenTestResultField.getValue();
+			showCqValueField(cqValueField, testType, testResult);
 		});
 
 		includeTestField.addValueChangeListener(e -> {
@@ -134,6 +124,16 @@ public class SampleCreateForm extends AbstractSampleForm {
 			samplePurposeField.setValue(SamplePurpose.EXTERNAL);
 			getField(SampleDto.PATHOGEN_TEST_RESULT).setVisible(false);
 		});
+	}
+
+	private void showCqValueField(TextField cqValueField, PathogenTestType testType, PathogenTestResultType testResult) {
+		if ((testType == PathogenTestType.PCR_RT_PCR && testResult == PathogenTestResultType.POSITIVE)
+			|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
+			cqValueField.setVisible(true);
+		} else {
+			cqValueField.setVisible(false);
+			cqValueField.clear();
+		}
 	}
 
 	@Override
