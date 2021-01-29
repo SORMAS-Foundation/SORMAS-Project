@@ -53,6 +53,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 	private String phone;
 	@SensitiveData
 	private String emailAddress;
+	private Boolean isInJurisdiction;
 
 	public PersonIndexDto(
 		String uuid,
@@ -70,7 +71,8 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 		String postalCode,
 		String city,
 		String phone,
-		String email) {
+		String email,
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.firstName = firstName;
@@ -84,6 +86,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.city = city;
 		this.phone = phone;
 		this.emailAddress = email;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -180,6 +183,14 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
+	}
+
+	public void setInJurisdiction(Boolean inJurisdiction) {
+		isInJurisdiction = inJurisdiction;
 	}
 
 	@Override

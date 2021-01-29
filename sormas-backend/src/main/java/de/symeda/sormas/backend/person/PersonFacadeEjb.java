@@ -51,12 +51,14 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -498,6 +500,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
 		final Join<Location, District> district = location.join(Location.COMMUNITY, JoinType.LEFT);
+		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
 
 		cq.multiselect(
 			person.get(Person.UUID),
@@ -515,14 +518,14 @@ public class PersonFacadeEjb implements PersonFacade {
 			location.get(Location.POSTAL_CODE),
 			location.get(Location.CITY),
 			person.get(Person.PHONE),
-			person.get(Person.EMAIL_ADDRESS));
+			person.get(Person.EMAIL_ADDRESS),
+			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (personCriteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(personCriteria, cq, cb, person);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
-
 
 		if (filter != null) {
 			cq.where(filter);
@@ -563,14 +566,21 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
 		}
 
-		List<PersonIndexDto> indexList;
+		List<PersonIndexDto> persons;
 		if (first != null && max != null) {
-			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			persons = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			indexList = em.createQuery(cq).getResultList();
+			persons = em.createQuery(cq).getResultList();
 		}
 
-		return indexList;
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(
+			PersonIndexDto.class,
+			persons,
+			p -> p.getInJurisdiction(),
+			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
+
+		return persons;
 	}
 
 	@Override

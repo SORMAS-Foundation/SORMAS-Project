@@ -324,7 +324,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}
 
-	private Predicate getJurisdictionPredicate(CriteriaBuilder cb, CriteriaQuery<Long> cq, Root<Person> personRoot) {
+	public Predicate getJurisdictionPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Person> personRoot) {
 
 		final Path<Object> personId = personRoot.get(Person.ID);
 
