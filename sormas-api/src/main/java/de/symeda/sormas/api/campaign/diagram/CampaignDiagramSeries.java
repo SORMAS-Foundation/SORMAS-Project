@@ -3,8 +3,10 @@ package de.symeda.sormas.api.campaign.diagram;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.symeda.sormas.api.AgeGroup;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CampaignDiagramSeries implements Serializable {
 
 	private static final long serialVersionUID = 1420672609912364060L;
