@@ -46,30 +46,28 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 
 	public DocumentTemplatesView() {
+
 		super(VIEW_NAME);
-		try {
-			gridLayout = new VerticalLayout();
+		gridLayout = new VerticalLayout();
 
-			addTemplateSection(QUARANTINE_ORDER_CASE);
+		addTemplateSection(QUARANTINE_ORDER_CASE);
 
-			addTemplateSection(QUARANTINE_ORDER_CONTACT);
+		addTemplateSection(QUARANTINE_ORDER_CONTACT);
 
-			addTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT);
+		addTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT);
 
-			addTemplateSection(EVENT_HANDOUT);
+		addTemplateSection(EVENT_HANDOUT);
 
-			gridLayout.setWidth(100, Unit.PERCENTAGE);
-			gridLayout.setMargin(true);
-			gridLayout.setSpacing(true);
-			gridLayout.setStyleName("crud-main-layout");
+		gridLayout.setWidth(100, Unit.PERCENTAGE);
+		gridLayout.setMargin(true);
+		gridLayout.setSpacing(true);
+		gridLayout.setStyleName("crud-main-layout");
 
-			addComponent(gridLayout);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		addComponent(gridLayout);
 	}
 
 	protected void addTemplateSection(DocumentWorkflow documentWorkflow) {
+
 		VerticalLayout sectionComponent = new VerticalLayout();
 		HorizontalLayout sectionHeader = new HorizontalLayout();
 
@@ -90,6 +88,7 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 	}
 
 	private Button buildUploadButton(DocumentWorkflow documentWorkflow, DocumentTemplatesGrid documentTemplatesGrid) {
+
 		return ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate), VaadinIcons.UPLOAD, e -> {
 			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout(documentWorkflow));
 			window.setCaption(String.format(I18nProperties.getCaption(Captions.DocumentTemplate_uploadWorkflowTemplate), documentWorkflow));

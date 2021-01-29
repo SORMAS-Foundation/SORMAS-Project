@@ -4,6 +4,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 
+import org.junit.After;
+
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -28,5 +30,10 @@ public abstract class AbstractDocGenerationTest extends AbstractBeanTest {
 
 	protected void resetDefaultNullReplacement() {
 		MockProducer.getProperties().remove(ConfigFacadeEjb.DOCGENERATION_NULL_REPLACEMENT);
+	}
+
+	@After
+	public void teardown() throws URISyntaxException {
+		reset();
 	}
 }

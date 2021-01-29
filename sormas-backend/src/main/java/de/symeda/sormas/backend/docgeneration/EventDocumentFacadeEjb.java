@@ -33,13 +33,13 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	private static final String PLACEHOLDER_BODY = "___body___";
 
 	@EJB
-	DocumentTemplateFacadeEjbLocal documentTemplateFacade;
+	private DocumentTemplateFacadeEjbLocal documentTemplateFacade;
 
 	@EJB
-	ActionFacadeEjbLocal actionFacade;
+	private ActionFacadeEjbLocal actionFacade;
 
 	@EJB
-	EventParticipantFacadeEjbLocal eventParticipantFacade;
+	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 
 	@Override
 	public String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties)

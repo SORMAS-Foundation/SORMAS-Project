@@ -41,6 +41,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper;
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
@@ -180,7 +181,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			if (isEntityVariable(documentWorkflow, propertyKey)) {
 				String variableBaseName = getVariableBaseName(propertyKey);
 				Object entity = entities.get(variableBaseName);
-				if (entity != null) {
+				if (entity instanceof HasUuid) {
 					if (documentWorkflow.isDocx() || propertyKey.contains(propertySeparator)) {
 						String propertyPath = propertyKey.replaceFirst("(?i)" + variableBaseName + "[" + propertySeparator + "]", "");
 						if (!".".equals(propertySeparator)) {
@@ -188,7 +189,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 						}
 						Object propertyValue;
 						try {
-							propertyValue = EntityDtoAccessHelper.getPropertyPathValueString(entity, propertyPath, referenceDtoResolver);
+							propertyValue = EntityDtoAccessHelper.getPropertyPathValueString((HasUuid) entity, propertyPath, referenceDtoResolver);
 						} catch (Exception e) {
 							propertyValue = "*** " + e.getMessage().replaceAll("(Reference)?Dto$", "") + " ***";
 						}

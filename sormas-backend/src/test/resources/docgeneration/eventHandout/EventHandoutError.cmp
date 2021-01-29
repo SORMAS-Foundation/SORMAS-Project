@@ -45,6 +45,6 @@
 
 <span>*** In Event: No property blubber in class Event ***</span>
 <span>*** In Event.surveillanceOfficer: No property blubber in class User ***</span>
-<span>*** In Event.surveillanceOfficer.firstName: No property blubber in class String ***</span>
+<span>*** In Event.surveillanceOfficer.firstName: String.blubber cannot be resolved. ***</span>
 </body>
 </html>

@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,12 +30,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class EntityDtoAccessHelper {
 
-	public static Object getPropertyValue(Object entity, String propertyKey) throws InvocationTargetException, IllegalAccessException {
+	public static Object getPropertyValue(HasUuid entity, String propertyKey) throws InvocationTargetException, IllegalAccessException {
 		if (entity == null) {
 			return null;
 		}
 		Class<?> entityClass = entity.getClass();
-		while (entityClass != null) {
+		while (HasUuid.class.isAssignableFrom(entityClass)) {
 			Method[] declaredMethods = entityClass.getDeclaredMethods();
 			for (Method method : declaredMethods) {
 				String methodName = method.getName();
@@ -31,18 +46,16 @@ public class EntityDtoAccessHelper {
 					}
 				}
 			}
-			Class<?> superclass = entityClass.getSuperclass();
-			entityClass = superclass.isAssignableFrom(Object.class) ? null : superclass;
+			entityClass = entityClass.getSuperclass();
 		}
-		throw new IllegalArgumentException(
-			"No property " + propertyKey + " in class " + (entity.getClass() != null ? entity.getClass().getSimpleName() : "<null>"));
+		throw new IllegalArgumentException("No property " + propertyKey + " in class " + entity.getClass().getSimpleName());
 	}
 
-	public static Object getPropertyPathValue(Object entity, String propertyPath) {
+	public static Object getPropertyPathValue(HasUuid entity, String propertyPath) {
 		return getPropertyPathValue(entity, propertyPath, null);
 	}
 
-	public static Object getPropertyPathValue(Object entity, String propertyPath, IReferenceDtoResolver referenceDtoResolver) {
+	public static Object getPropertyPathValue(HasUuid entity, String propertyPath, IReferenceDtoResolver referenceDtoResolver) {
 		String[] propertyKeys = propertyPath.split("[.]");
 		Object currentEntity = entity;
 		for (int i = 0; i < propertyKeys.length; i++) {
@@ -53,9 +66,13 @@ public class EntityDtoAccessHelper {
 
 			Object propertyValue = null;
 			try {
-				propertyValue = getPropertyValue(currentEntity, propertyKeys[i]);
+				propertyValue = getPropertyValue((HasUuid) currentEntity, propertyKeys[i]);
 			} catch (InvocationTargetException | IllegalAccessException e) {
 				throwIllegalArgumentException(e, entity, propertyKeys, i);
+			} catch (ClassCastException e) {
+				String entityClass = currentEntity.getClass().getSimpleName();
+				String message = entityClass + "." + propertyKeys[i] + " cannot be resolved.";
+				throwIllegalArgumentException(new IllegalArgumentException(message, e), entity, propertyKeys, i);
 			} catch (IllegalArgumentException e) {
 				if (!isResolvable) {
 					throwIllegalArgumentException(e, entity, propertyKeys, i);
@@ -78,14 +95,14 @@ public class EntityDtoAccessHelper {
 		return currentEntity;
 	}
 
-	private static void throwIllegalArgumentException(Exception e, Object entity, String[] propertyKeys, int i) {
+	private static void throwIllegalArgumentException(Exception e, HasUuid entity, String[] propertyKeys, int i) {
 		String errorPropertyPath = cleanDictionaryClassNames(entity.getClass().getSimpleName())
 			+ (i > 0 ? "." : "")
 			+ StringUtils.join(Arrays.copyOfRange(propertyKeys, 0, i), ".");
 		throw new IllegalArgumentException("In " + errorPropertyPath + ": " + cleanDictionaryClassNames(e.getMessage()), e);
 	}
 
-	public static Object getPropertyPathValueString(Object entity, String propertyPath, IReferenceDtoResolver referenceDtoResolver) {
+	public static Object getPropertyPathValueString(HasUuid entity, String propertyPath, IReferenceDtoResolver referenceDtoResolver) {
 		Object value = getPropertyPathValue(entity, propertyPath, referenceDtoResolver);
 		return formatObject(value);
 	}
