@@ -715,6 +715,8 @@ public interface Captions {
 	String dashboardUncooperative = "dashboardUncooperative";
 	String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
+	String dashboardViewAsBarChart = "dashboardViewAsBarChart";
+	String dashboardViewAsColumnChart = "dashboardViewAsColumnChart";
 	String dashboardWeekBefore = "dashboardWeekBefore";
 	String dashboardYesterday = "dashboardYesterday";
 	String date = "date";
