@@ -30,6 +30,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonContext;
@@ -62,6 +63,9 @@ public class PersonController {
 			// TODO add user right parameter
 			final CommitDiscardWrapperComponent<PersonSelectionField> component =
 				new CommitDiscardWrapperComponent<PersonSelectionField>(personSelect);
+			if (!saveNewPerson) {
+				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+			}
 			component.addCommitListener(new CommitListener() {
 
 				@Override
