@@ -85,9 +85,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 
 	public void setExportCallback(Consumer<ExportConfigurationDto> exportCallback) {
 		grid.setExportCallback(exportCallback);
+		gridPublicCustomConfiguration.setExportCallbackSharedCustomConfiguration(exportCallback);
 	}
 
-	public void setExportCallbackPublicCustomConfiguration(Consumer<ExportConfigurationDto> exportCallbackPublicCustomConfiguration) {
-		gridPublicCustomConfiguration.setExportCallbackPublicExportCustomConfiguration(exportCallbackPublicCustomConfiguration);
-	}
 }

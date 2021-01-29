@@ -50,7 +50,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 	public static final String COLUMN_ACTIONS_PUBLIC = "actionsPublic";
 
 	private Consumer<ExportConfigurationDto> exportCallback;
-	private Consumer<ExportConfigurationDto> exportCallbackPublicExportCustomConfiguration;
+	private Consumer<ExportConfigurationDto> exportCallbackSharedCustomConfiguration;
 
 	private int publicExportCustomConfigurationRecords;
 
@@ -67,9 +67,10 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 	}
 
 	public ExportConfigurationsGrid(
-			ExportType exportType,
-			List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-			Function<String, String> propertyCaptionProvider, Boolean isPublicExport) {
+		ExportType exportType,
+		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
+		Function<String, String> propertyCaptionProvider,
+		Boolean isPublicExport) {
 		this.exportType = exportType;
 
 		buildGridPublicExportCustomConfiguration(availableProperties, propertyCaptionProvider);
@@ -85,33 +86,37 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			.setCaption(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, ExportConfigurationDto.NAME))
 			.setExpandRatio(1);
 
-		addComponentColumn((config) -> this.buildButtonLayout(config, availableProperties, propertyCaptionProvider)).setId(COLUMN_ACTIONS)
+		addComponentColumn((config) -> this.buildButtonLayout(config, availableProperties, propertyCaptionProvider, true))
+			.setId(COLUMN_ACTIONS)
 			.setCaption("");
 	}
 
-	private void buildGridPublicExportCustomConfiguration(List<DataHelper.Pair<String, ExportGroupType>> availableProperties, Function<String, String> propertyCaptionProvider) {
+	private void buildGridPublicExportCustomConfiguration(
+		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
+		Function<String, String> propertyCaptionProvider) {
 
 		setSelectionMode(SelectionMode.NONE);
 		setHeightMode(HeightMode.ROW);
 
 		addColumn(ExportConfigurationDto::getName)
-				.setCaption(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_reportsToPublic))
-				.setExpandRatio(1);
+			.setCaption(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_sharedToPublic))
+			.setExpandRatio(1);
 
-		addComponentColumn((config) -> this.buildButtonLayoutCustomExport(config, availableProperties, propertyCaptionProvider)).setId(COLUMN_ACTIONS_PUBLIC)
-				.setCaption("");
+		addComponentColumn((config) -> this.buildButtonLayout(config, availableProperties, propertyCaptionProvider, false))
+			.setId(COLUMN_ACTIONS_PUBLIC)
+			.setCaption("");
 	}
 
 	public void reload() {
 		List<ExportConfigurationDto> configs =
-			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType));
+			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), false);
 		setItems(configs);
 		setHeightByRows(configs.size() > 0 ? (Math.min(configs.size(), 10)) : 1);
 	}
 
 	public void reloadPublicExportCustomConfiguration() {
 		List<ExportConfigurationDto> sharedConfigs =
-				FacadeProvider.getExportFacade().getPublicCustomExportConfigurations(new ExportConfigurationCriteria().exportType(exportType));
+			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), true);
 		setItems(sharedConfigs);
 		setHeightByRows(sharedConfigs.size() > 0 ? (Math.min(sharedConfigs.size(), 10)) : 1);
 		setPublicExportCustomConfigurationRecords(sharedConfigs.size());
@@ -120,23 +125,35 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 	private HorizontalLayout buildButtonLayout(
 		ExportConfigurationDto config,
 		List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider) {
+		Function<String, String> propertyCaptionProvider,
+		boolean canEditOrDelete) {
 
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSpacing(true);
 
-		Button btnExport = ButtonHelper.createIconButtonWithCaption(
-			config.getUuid() + "-download",
-			null,
-			VaadinIcons.DOWNLOAD,
-			e -> exportCallback.accept(config),
-			ValoTheme.BUTTON_PRIMARY);
+		Button btnExport;
+		if (canEditOrDelete) {
+			btnExport = ButtonHelper.createIconButtonWithCaption(
+				config.getUuid() + "-download",
+				null,
+				VaadinIcons.DOWNLOAD,
+				e -> exportCallback.accept(config),
+				ValoTheme.BUTTON_PRIMARY);
+		} else {
+			btnExport = ButtonHelper.createIconButtonWithCaption(
+				config.getUuid() + "-download",
+				null,
+				VaadinIcons.DOWNLOAD,
+				e -> exportCallbackSharedCustomConfiguration.accept(config),
+				ValoTheme.BUTTON_PRIMARY);
+		}
 		layout.addComponent(btnExport);
 
 		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
 			ControllerProvider.getCustomExportController()
 				.openEditExportConfigurationWindow(this, config, availableProperties, propertyCaptionProvider);
 		});
+		btnEdit.setEnabled(canEditOrDelete);
 		layout.addComponent(btnEdit);
 
 		Button btnDelete = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-delete", null, VaadinIcons.TRASH, e -> {
@@ -145,57 +162,18 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 				.show(Page.getCurrent());
 			reload();
 		});
+		btnDelete.setEnabled(canEditOrDelete);
 		layout.addComponent(btnDelete);
 
 		return layout;
-	}
-
-	private HorizontalLayout buildButtonLayoutCustomExport(
-			ExportConfigurationDto config,
-			List<DataHelper.Pair<String, ExportGroupType>> availableProperties,
-			Function<String, String> propertyCaptionProvider) {
-
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setSpacing(true);
-
-		Button btnExport = ButtonHelper.createIconButtonWithCaption(
-				config.getUuid() + "-download",
-				null,
-				VaadinIcons.DOWNLOAD,
-				e -> exportCallbackPublicExportCustomConfiguration.accept(config),
-				ValoTheme.BUTTON_PRIMARY);
-		layout.addComponent(btnExport);
-
-		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
-			ControllerProvider.getCustomExportController()
-					.openEditExportConfigurationWindow(this, config, availableProperties, propertyCaptionProvider);
-		});
-		btnEdit.setEnabled( hasRights(config));
-		layout.addComponent(btnEdit);
-
-		Button btnDelete = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-delete", null, VaadinIcons.TRASH, e -> {
-			FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
-			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false)
-					.show(Page.getCurrent());
-			reloadPublicExportCustomConfiguration();
-		});
-		btnDelete.setEnabled( hasRights(config));
-		layout.addComponent(btnDelete);
-
-		return layout;
-	}
-
-	private boolean hasRights(ExportConfigurationDto config) {
-		return UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_PUBLIC_EXPORT_CONFIGURATION)
-				&& (UserProvider.getCurrent().getUserReference().equals(config.getUser()));
 	}
 
 	public void setExportCallback(Consumer<ExportConfigurationDto> exportCallback) {
 		this.exportCallback = exportCallback;
 	}
 
-	public void setExportCallbackPublicExportCustomConfiguration(Consumer<ExportConfigurationDto> exportCallbackPublicExportCustomConfiguration) {
-		this.exportCallbackPublicExportCustomConfiguration = exportCallbackPublicExportCustomConfiguration;
+	public void setExportCallbackSharedCustomConfiguration(Consumer<ExportConfigurationDto> exportCallbackSharedCustomConfiguration) {
+		this.exportCallbackSharedCustomConfiguration = exportCallbackSharedCustomConfiguration;
 	}
 
 	public int getPublicExportCustomConfigurationRecords() {

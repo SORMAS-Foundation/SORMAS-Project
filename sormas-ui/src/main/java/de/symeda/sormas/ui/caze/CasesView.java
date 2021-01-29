@@ -347,9 +347,6 @@ public class CasesView extends AbstractView {
 						ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, hasCaseManagementRight),
 						CaseDownloadUtil::getPropertyCaption,
 						customExportWindow::close);
-					customExportsLayout.setExportCallbackPublicCustomConfiguration(
-						(exportConfigPublicCustomConfiguration) -> Page.getCurrent()
-								.open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfigPublicCustomConfiguration), null, true));
 					customExportsLayout.setExportCallback(
 						(exportConfig) -> Page.getCurrent()
 							.open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true));
