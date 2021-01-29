@@ -767,8 +767,10 @@ public interface Captions {
 	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
 	String DocumentTemplate_EventHandout = "DocumentTemplate.EventHandout";
 	String DocumentTemplate_EventHandout_create = "DocumentTemplate.EventHandout.create";
-	String DocumentTemplate_exampleTemplateLibreOffice = "DocumentTemplate.exampleTemplateLibreOffice";
-	String DocumentTemplate_exampleTemplateWord = "DocumentTemplate.exampleTemplateWord";
+	String DocumentTemplate_exampleTemplateCases = "DocumentTemplate.exampleTemplateCases";
+	String DocumentTemplate_exampleTemplateContacts = "DocumentTemplate.exampleTemplateContacts";
+	String DocumentTemplate_exampleTemplateEventHandout = "DocumentTemplate.exampleTemplateEventHandout";
+	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
 	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
 	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";

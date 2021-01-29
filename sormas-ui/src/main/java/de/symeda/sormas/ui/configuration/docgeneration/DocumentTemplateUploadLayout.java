@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.ui.configuration.docgeneration;
 
-import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_CASE;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileDownloader;
@@ -61,9 +59,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		Button button = importGuideComponent.getButton();
 		addFileDownloader(button, new ClassResource("/SORMAS_Document_Template_Guide.pdf"));
 
-		if (documentWorkflow == QUARANTINE_ORDER_CASE) {
-			addExampleTemplatesQuarantineOrder();
-		}
+		addExampleTemplatesQuarantineOrder();
 
 		addDownloadResource(Captions.importDownloadDataDictionary, VaadinIcons.FILE_TABLE, new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 
@@ -71,15 +67,27 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 	}
 
 	private void addExampleTemplatesQuarantineOrder() {
-		addDownloadResource(
-			Captions.DocumentTemplate_exampleTemplateWord,
-			VaadinIcons.FILE_TEXT,
-			new ClassResource("/ExampleTemplateMicrosoftWord.docx"));
-
-		addDownloadResource(
-			Captions.DocumentTemplate_exampleTemplateLibreOffice,
-			VaadinIcons.FILE_TEXT,
-			new ClassResource("/ExampleTemplateLibreOffice.docx"));
+		if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_CASE) {
+			addDownloadResource(
+				Captions.DocumentTemplate_exampleTemplateCases,
+				VaadinIcons.FILE_TEXT,
+				new ClassResource("/ExampleDocumentTemplateCases.docx"));
+		} else if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_CONTACT) {
+			addDownloadResource(
+				Captions.DocumentTemplate_exampleTemplateContacts,
+				VaadinIcons.FILE_TEXT,
+				new ClassResource("/ExampleDocumentTemplateContacts.docx"));
+		} else if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT) {
+			addDownloadResource(
+				Captions.DocumentTemplate_exampleTemplateEventParticipants,
+				VaadinIcons.FILE_TEXT,
+				new ClassResource("/ExampleDocumentTemplateEventParticipant.docx"));
+		} else if (documentWorkflow == DocumentWorkflow.EVENT_HANDOUT) {
+			addDownloadResource(
+				Captions.DocumentTemplate_exampleTemplateEventHandout,
+				VaadinIcons.FILE_TEXT,
+				new ClassResource("/ExampleDocumentTemplateEventHandout.html"));
+		}
 	}
 
 	private void addUploadResourceComponent() {
