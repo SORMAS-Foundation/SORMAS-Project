@@ -49,7 +49,11 @@ public abstract class EntityDtoResource {
 	protected <T extends Object> String createErrorMessage(T dto) {
 
 		final EntityDto entityDto = (EntityDto) dto;
-		return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " " + DateFormat.getDateTimeInstance().format(entityDto.getChangeDate())
-			+ "\n";
+		if (entityDto.getChangeDate() == null) {
+			return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + "\n";
+		} else {
+			return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " "
+				+ DateFormat.getDateTimeInstance().format(entityDto.getChangeDate()) + "\n";
+		}
 	}
 }

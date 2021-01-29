@@ -36,8 +36,8 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -310,6 +310,19 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		} catch (NoResultException e) {
 			return Optional.empty();
 		}
+	}
+
+	public List<EventParticipant> getByEventUuids(List<String> eventUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
+		Root<EventParticipant> epRoot = cq.from(EventParticipant.class);
+		Join<EventParticipant, Event> eventJoin = epRoot.join(EventParticipant.EVENT, JoinType.LEFT);
+
+		Predicate filter = cb.and(createDefaultFilter(cb, epRoot), eventJoin.get(AbstractDomainObject.UUID).in(eventUuids));
+
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
 	}
 
 }

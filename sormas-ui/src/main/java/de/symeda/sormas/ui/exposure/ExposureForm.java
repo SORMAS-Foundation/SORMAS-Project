@@ -130,6 +130,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private final Class<? extends EntityDto> epiDataParentClass;
 	private final List<ContactReferenceDto> sourceContacts;
 
+	private LocationEditForm locationForm;
+
 	public ExposureForm(
 		boolean create,
 		Class<? extends EntityDto> epiDataParentClass,
@@ -158,7 +160,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		addField(ExposureDto.DESCRIPTION, TextArea.class).setRows(5);
 
-		addField(ExposureDto.LOCATION, LocationEditForm.class).setCaption(null);
+		locationForm = addField(ExposureDto.LOCATION, LocationEditForm.class);
+		locationForm.setCaption(null);
 		addField(ExposureDto.CONNECTION_NUMBER, TextField.class);
 		getField(ExposureDto.MEANS_OF_TRANSPORT).addValueChangeListener(e -> {
 			if (e.getProperty().getValue() == MeansOfTransport.PLANE) {
@@ -300,6 +303,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			getContent().getComponent(LOC_ANIMAL_CONTACT_DETAILS_HEADING).setVisible(selectedExposureType == ExposureType.ANIMAL_CONTACT);
 			getContent().getComponent(LOC_BURIAL_DETAILS_HEADING).setVisible(selectedExposureType == ExposureType.BURIAL);
 		});
+
+		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
+		getField(ExposureDto.TYPE_OF_PLACE)
+			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 	}
 
 	private void setUpRequirements() {
@@ -317,7 +324,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		if (epiDataParentClass == CaseDataDto.class) {
 			ComboBox cbContactToCase = getField(ExposureDto.CONTACT_TO_CASE);
-			cbContactToCase.addItems(sourceContacts);
+			if (sourceContacts != null) {
+				cbContactToCase.addItems(sourceContacts);
+			}
 			cbContactToCase.getItemIds().forEach(i -> cbContactToCase.setItemCaption(i, ((ContactReferenceDto) i).getCaptionAlwaysWithUuid()));
 		}
 	}

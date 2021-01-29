@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.therapy;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +30,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -123,7 +121,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		restorePseudonymizedDto(source, existingTreatment, existingDto);
 
-		Treatment entity = fromDto(source, existingTreatment);
+		Treatment entity = fromDto(source, existingTreatment, true);
 		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
@@ -275,16 +273,9 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		return target;
 	}
 
-	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target) {
-		if (target == null) {
-			target = new Treatment();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
+	public Treatment fromDto(@NotNull TreatmentDto source, Treatment target, boolean checkChangeDate) {
 
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, Treatment::new, checkChangeDate);
 
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));
 		target.setTreatmentType(source.getTreatmentType());

@@ -40,9 +40,6 @@ public class LabMessagesGridComponent extends VerticalLayout {
 		originalViewTitle = viewTitleLabel.getValue();
 
 		criteria = ViewModelProviders.of(LabMessagesView.class).get(LabMessageCriteria.class);
-		if (criteria.getProcessed() == null) {
-			criteria.processed(false);
-		}
 
 		grid = new LabMessageGrid(criteria);
 		gridLayout = new VerticalLayout();
@@ -96,7 +93,9 @@ public class LabMessagesGridComponent extends VerticalLayout {
 			criteria.processed(processed != null ? Boolean.valueOf(processed) : null);
 			labMessagesView.navigateTo(criteria);
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
-		button.setData(processed);
+		if (processed != null) {
+			button.setData(processed);
+		}
 		button.setCaptionAsHtml(true);
 
 		buttonLayout.addComponent(button);
@@ -109,8 +108,7 @@ public class LabMessagesGridComponent extends VerticalLayout {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
-			if (criteria.getProcessed() != null && criteria.getProcessed().equals(b.getData())
-				|| criteria.getProcessed() != null && criteria.getProcessed().equals(b.getData())) {
+			if (b.getData() == criteria.getProcessed()) {
 				activeStatusButton = b;
 			}
 		});

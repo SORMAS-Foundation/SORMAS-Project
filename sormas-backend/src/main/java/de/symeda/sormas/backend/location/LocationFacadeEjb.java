@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import java.sql.Timestamp;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -52,21 +50,13 @@ public class LocationFacadeEjb implements LocationFacade {
 	@EJB
 	private FacilityService facilityService;
 
-	public Location fromDto(LocationDto source) {
+	public Location fromDto(LocationDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		Location target = locationService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Location();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		Location target = DtoHelper.fillOrBuildEntity(source, locationService.getByUuid(source.getUuid()), Location::new, checkChangeDate);
 
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());

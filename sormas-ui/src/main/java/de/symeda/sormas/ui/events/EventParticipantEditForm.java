@@ -79,7 +79,6 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		getContent().addComponent(pef, EventParticipantDto.PERSON);
 
 		addField(EventParticipantDto.INVOLVEMENT_DESCRIPTION, TextField.class);
-		setRequired(true, EventParticipantDto.INVOLVEMENT_DESCRIPTION);
 
 		ComboBox region = addInfrastructureField(EventParticipantDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(EventParticipantDto.I18N_PREFIX, EventParticipantDto.REGION));

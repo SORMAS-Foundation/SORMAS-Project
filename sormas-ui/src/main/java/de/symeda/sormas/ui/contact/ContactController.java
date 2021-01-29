@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.event.EventDto;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -72,10 +74,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -129,12 +133,24 @@ public class ContactController {
 		if (caseRef != null) {
 			caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
-		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze, asResultingCase, alternativeCallback);
+		CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
+			getContactCreateComponent(caze, asResultingCase, alternativeCallback, false);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 
 	public void create(EventParticipantReferenceDto eventParticipantRef) {
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+
+		if (event.getDisease() == null) {
+			new Notification(
+					I18nProperties.getString(Strings.headingCreateNewContactIssue),
+					I18nProperties.getString(Strings.messageEventParticipantToContactWithoutEventDisease),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			return;
+		}
+
 		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(eventParticipant);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
@@ -224,7 +240,7 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
-		return getContactCreateComponent(caze, false, null);
+		return getContactCreateComponent(caze, false, null, false);
 	}
 
 	/**
@@ -236,7 +252,8 @@ public class ContactController {
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(
 		final CaseDataDto caze,
 		boolean asSourceContact,
-		Runnable alternativeCallback) {
+		Runnable alternativeCallback,
+		boolean createdFromLabMesssage) {
 
 		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()) : null;
 		ContactCreateForm createForm =
@@ -268,18 +285,24 @@ public class ContactController {
 							alternativeCallback.run();
 						}
 					});
+				} else if (createdFromLabMesssage) {
+					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+					if (dbPerson == null) {
+						PersonDto personDto = PersonDto.build();
+						transferDataToPerson(createForm, personDto);
+						FacadeProvider.getPersonFacade().savePerson(personDto);
+						dto.setPerson(personDto.toReference());
+						createNewContact(dto, e -> {
+						});
+					} else {
+						transferDataToPerson(createForm, dbPerson);
+						FacadeProvider.getPersonFacade().savePerson(dbPerson);
+						createNewContact(dto, e -> {
+						});
+					}
 				} else {
 					final PersonDto person = PersonDto.build();
-					person.setFirstName(createForm.getPersonFirstName());
-					person.setLastName(createForm.getPersonLastName());
-					person.setNationalHealthId(createForm.getNationalHealthId());
-					person.setPassportNumber(createForm.getPassportNumber());
-					person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-					person.setBirthdateMM(createForm.getBirthdateMM());
-					person.setBirthdateDD(createForm.getBirthdateDD());
-					person.setSex(createForm.getSex());
-					person.setPhone(createForm.getPhone());
-					person.setEmailAddress(createForm.getEmailAddress());
+					transferDataToPerson(createForm, person);
 
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
@@ -309,12 +332,26 @@ public class ContactController {
 										}
 									});
 							}
-						});
+						}, true);
 				}
 			}
 		});
 
 		return createComponent;
+
+	}
+
+	private void transferDataToPerson(ContactCreateForm createForm, PersonDto person) {
+		person.setFirstName(createForm.getPersonFirstName());
+		person.setLastName(createForm.getPersonLastName());
+		person.setNationalHealthId(createForm.getNationalHealthId());
+		person.setPassportNumber(createForm.getPassportNumber());
+		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+		person.setBirthdateMM(createForm.getBirthdateMM());
+		person.setBirthdateDD(createForm.getBirthdateDD());
+		person.setSex(createForm.getSex());
+		person.setPhone(createForm.getPhone());
+		person.setEmailAddress(createForm.getEmailAddress());
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(EventParticipantDto eventParticipant) {
@@ -806,7 +843,33 @@ public class ContactController {
 		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
 		titleLayout.addComponent(classificationLabel);
 
-		Label contactLabel = new Label(contact.toReference().getCaptionAlwaysWithUuid());
+		String shortUuid = DataHelper.getShortUuid(contact.getUuid());
+		String contactPersonFullName = contact.getPerson().getCaption();
+		StringBuilder contactLabelSb = new StringBuilder();
+		if (StringUtils.isNotBlank(contactPersonFullName)) {
+			contactLabelSb.append(contactPersonFullName);
+
+			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			if (contactPerson.getBirthdateDD() != null && contactPerson.getBirthdateMM() != null && contactPerson.getBirthdateYYYY() != null) {
+				contactLabelSb.append(" (* ")
+					.append(
+						PersonHelper.formatBirthdate(
+							contactPerson.getBirthdateDD(),
+							contactPerson.getBirthdateMM(),
+							contactPerson.getBirthdateYYYY(),
+							I18nProperties.getUserLanguage()))
+					.append(")");
+			}
+
+			if (contact.getCaze() != null && (contact.getCaze().getFirstName() != null || contact.getCaze().getLastName() != null)) {
+				contactLabelSb.append(" ")
+					.append(I18nProperties.getString(Strings.toCase))
+					.append(" ")
+					.append(PersonDto.buildCaption(contact.getCaze().getFirstName(), contact.getCaze().getLastName()));
+			}
+		}
+		contactLabelSb.append(contactLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		Label contactLabel = new Label(contactLabelSb.toString());
 		contactLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 		titleLayout.addComponent(contactLabel);
 

@@ -28,6 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -37,6 +38,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
@@ -74,12 +76,13 @@ public class Event extends CoreAdo {
 	public static final String END_DATE = "endDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String EVOLUTION_DATE = "evolutionDate";
+	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
 	public static final String MEANS_OF_TRANSPORT = "meansOfTransport";
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
-	public static final String SEAT_NUMBER = "seatNumber";
 	public static final String TRAVEL_DATE = "travelDate";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
@@ -99,6 +102,13 @@ public class Event extends CoreAdo {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String ARCHIVED = "archived";
+	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
+	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
+	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
+	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
+
+	private Event superordinateEvent;
+	private List<Event> subordinateEvents;
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -115,12 +125,13 @@ public class Event extends CoreAdo {
 	private Date endDate;
 	private Date reportDateTime;
 	private User reportingUser;
+	private Date evolutionDate;
+	private String evolutionComment;
 	private Location eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
 	private String meansOfTransportDetails;
 	private String connectionNumber;
-	private String seatNumber;
 	private Date travelDate;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
@@ -139,6 +150,8 @@ public class Event extends CoreAdo {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private YesNoUnknown transregionalOutbreak;
+	private DiseaseTransmissionMode diseaseTransmissionMode;
 
 	private boolean archived;
 
@@ -213,7 +226,9 @@ public class Event extends CoreAdo {
 		return externalToken;
 	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getEventTitle() {
@@ -280,6 +295,23 @@ public class Event extends CoreAdo {
 		this.reportingUser = reportingUser;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
+	}
+
+	public String getEvolutionComment() {
+		return evolutionComment;
+	}
+
+	public void setEvolutionComment(String evolutionComment) {
+		this.evolutionComment = evolutionComment;
+	}
+
 	@OneToOne(cascade = CascadeType.ALL)
 	public Location getEventLocation() {
 		if (eventLocation == null) {
@@ -326,15 +358,6 @@ public class Event extends CoreAdo {
 
 	public void setConnectionNumber(String connectionNumber) {
 		this.connectionNumber = connectionNumber;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSeatNumber() {
-		return seatNumber;
-	}
-
-	public void setSeatNumber(String seatNumber) {
-		this.seatNumber = seatNumber;
 	}
 
 	public Date getTravelDate() {
@@ -453,7 +476,7 @@ public class Event extends CoreAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public User getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
@@ -471,7 +494,7 @@ public class Event extends CoreAdo {
 		this.typeOfPlaceText = typeOfPlaceText;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Task.EVENT)
+	@OneToMany(mappedBy = Task.EVENT, fetch = FetchType.LAZY)
 	public List<Task> getTasks() {
 		return tasks;
 	}
@@ -496,6 +519,24 @@ public class Event extends CoreAdo {
 		this.reportLon = reportLon;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTransregionalOutbreak() {
+		return transregionalOutbreak;
+	}
+
+	public void setTransregionalOutbreak(YesNoUnknown transregionalOutbreak) {
+		this.transregionalOutbreak = transregionalOutbreak;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DiseaseTransmissionMode getDiseaseTransmissionMode() {
+		return diseaseTransmissionMode;
+	}
+
+	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
+		this.diseaseTransmissionMode = diseaseTransmissionMode;
+	}
+
 	@Column
 	public boolean isArchived() {
 		return archived;
@@ -518,4 +559,21 @@ public class Event extends CoreAdo {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@ManyToOne
+	public Event getSuperordinateEvent() {
+		return superordinateEvent;
+	}
+
+	public void setSuperordinateEvent(Event superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
+	}
+
+	@OneToMany(mappedBy = Event.SUPERORDINATE_EVENT, fetch = FetchType.LAZY)
+	public List<Event> getSubordinateEvents() {
+		return subordinateEvents;
+	}
+
+	public void setSubordinateEvents(List<Event> subordinateEvents) {
+		this.subordinateEvents = subordinateEvents;
+	}
 }

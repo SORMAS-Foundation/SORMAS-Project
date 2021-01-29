@@ -61,7 +61,6 @@
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/eventParticipant_involvementDescription"
-                        app:required="true"
                         app:value="@={data.involvementDescription}"
                         style="@style/ControlSingleColumnStyle" />
 

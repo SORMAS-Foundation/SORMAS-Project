@@ -1,14 +1,9 @@
 package de.symeda.sormas.backend.systemevent;
 
-import de.symeda.sormas.api.systemevents.SystemEventDto;
-import de.symeda.sormas.api.systemevents.SystemEventFacade;
-import de.symeda.sormas.api.systemevents.SystemEventStatus;
-import de.symeda.sormas.api.systemevents.SystemEventType;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -18,13 +13,19 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.systemevents.SystemEventDto;
+import de.symeda.sormas.api.systemevents.SystemEventFacade;
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "SystemEventFacade")
 public class SystemEventFacadeEjb implements SystemEventFacade {
@@ -63,19 +64,14 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 	public void saveSystemEvent(SystemEventDto dto) {
 		SystemEvent systemEvent = systemEventService.getByUuid(dto.getUuid());
 
-		systemEvent = fromDto(dto, systemEvent);
+		systemEvent = fromDto(dto, systemEvent, true);
 		systemEventService.ensurePersisted(systemEvent);
 
 	}
 
-	public SystemEvent fromDto(@NotNull SystemEventDto source, SystemEvent target) {
+	public SystemEvent fromDto(@NotNull SystemEventDto source, SystemEvent target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new SystemEvent();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, SystemEvent::new, checkChangeDate);
 
 		target.setType(source.getType());
 		target.setStartDate(source.getStartDate());

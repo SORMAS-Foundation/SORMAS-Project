@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -54,7 +54,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
@@ -163,12 +162,16 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@Override
 	public PathogenTestDto savePathogenTest(PathogenTestDto dto) {
+		return savePathogenTest(dto, true);
+	}
+
+	public PathogenTestDto savePathogenTest(PathogenTestDto dto, boolean checkChangeDate) {
 		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
 		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
 
 		restorePseudonymizedDto(dto, existingSampleTest, existingSampleTestDto);
 
-		PathogenTest pathogenTest = fromDto(dto);
+		PathogenTest pathogenTest = fromDto(dto, checkChangeDate);
 		pathogenTestService.ensurePersisted(pathogenTest);
 
 		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
@@ -266,16 +269,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 	}
 
-	public PathogenTest fromDto(@NotNull PathogenTestDto source) {
-		PathogenTest target = pathogenTestService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new PathogenTest();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+	public PathogenTest fromDto(@NotNull PathogenTestDto source, boolean checkChangeDate) {
+		PathogenTest target =
+			DtoHelper.fillOrBuildEntity(source, pathogenTestService.getByUuid(source.getUuid()), PathogenTest::new, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());

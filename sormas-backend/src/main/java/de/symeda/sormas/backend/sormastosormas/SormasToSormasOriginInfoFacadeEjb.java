@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import java.sql.Timestamp;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -33,7 +31,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 
 	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
 
-		SormasToSormasOriginInfo originInfo = toDto(originInfoDto);
+		SormasToSormasOriginInfo originInfo = toDto(originInfoDto, true);
 
 		originInfoService.ensurePersisted(originInfo);
 
@@ -43,21 +41,13 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 	@EJB
 	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 
-	public SormasToSormasOriginInfo toDto(SormasToSormasOriginInfoDto source) {
+	public SormasToSormasOriginInfo toDto(SormasToSormasOriginInfoDto source, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		SormasToSormasOriginInfo target = sormasToSormasOriginInfoService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new SormasToSormasOriginInfo();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target);
+		SormasToSormasOriginInfo target = DtoHelper
+			.fillOrBuildEntity(source, sormasToSormasOriginInfoService.getByUuid(source.getUuid()), SormasToSormasOriginInfo::new, checkChangeDate);
 
 		target.setOrganizationId(source.getOrganizationId());
 		target.setSenderName(source.getSenderName());

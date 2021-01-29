@@ -34,4 +34,6 @@ public interface SurvnetGatewayFacade {
 	 * @return http response code of the gateway
 	 */
 	int sendCases(List<String> caseUuids);
+
+	int sendEvents(List<String> eventUuids);
 }

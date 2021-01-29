@@ -67,7 +67,7 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 			EventIndexDto.REPORT_DATE_TIME);
 
 		for (Column<EventIndexDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.forSensitiveData(EventIndexDto.class, column.getId()));
 		}
 

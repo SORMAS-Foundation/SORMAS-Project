@@ -65,7 +65,6 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		mainLayout.setSpacing(true);
 		mainLayout.setMargin(false);
 		mainLayout.setSizeUndefined();
-		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
 		addInfoComponent();
 		addLabMessageComponent();
@@ -88,9 +87,9 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 
 	private void addCreateEntityRadioGroup() {
 		rbCreateEntity = new RadioButtonGroup<>();
-// 		TODO: Add creation of contacts and event participants
+// 		TODO: Add creation of event participants
 //		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT, CREATE_EVENT_PARTICIPANT);
-		rbCreateEntity.setItems(CREATE_CASE);
+		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT);
 		rbCreateEntity.setItemCaptionGenerator((item) -> {
 			if (item == CREATE_CASE) {
 				return I18nProperties.getCaption(Captions.caseCreateNew);
@@ -208,8 +207,12 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		rbSelectContact.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
 				rbCreateEntity.setValue(null);
-				rbSelectCase.setValue(null);
-				rbSelectEventParticipant.setValue(null);
+				if (rbSelectCase != null) {
+					rbSelectCase.setValue(null);
+				}
+				if (rbSelectEventParticipant != null) {
+					rbSelectEventParticipant.setValue(null);
+				}
 				contactGrid.setEnabled(true);
 				if (caseGrid != null) {
 					caseGrid.setEnabled(false);
@@ -306,7 +309,7 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		if (cases != null && !cases.isEmpty()
 			|| contacts != null && !contacts.isEmpty()
 			|| eventParticipants != null && !eventParticipants.isEmpty()) {
-			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoSelectOrCreateEntity)));
+			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoSelectOrCreateEntry)));
 		} else {
 			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoCreateEntry)));
 		}

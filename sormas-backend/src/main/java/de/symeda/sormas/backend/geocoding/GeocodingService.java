@@ -34,7 +34,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
-import de.symeda.sormas.backend.util.ClientHelper;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -47,6 +46,7 @@ import com.nimbusds.jose.util.StandardCharset;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.util.ClientHelper;
 
 @Stateless
 @LocalBean

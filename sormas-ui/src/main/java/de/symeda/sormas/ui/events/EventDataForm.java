@@ -21,6 +21,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import com.vaadin.v7.ui.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -74,6 +75,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final String STATUS_CHANGE = "statusChange";
 
+	private static final String EVENT_ENTITY = "Event";
+	private static final String EVOLUTION_DATE_WITH_STATUS = "eventEvolutionDateWithStatus";
+	private static final String EVOLUTION_COMMENT_WITH_STATUS = "eventEvolutionCommentWithStatus";
+
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
@@ -81,13 +86,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
 			fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
+			fluidRowLocs(EventDto.EVOLUTION_DATE, EventDto.EVOLUTION_COMMENT) +
 			fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS) +
 			fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
 			fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
 			fluidRowLocs(EventDto.EVENT_TITLE) +
 			fluidRowLocs(EventDto.EVENT_DESC) +
-			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
+			fluidRowLocs(EventDto.DISEASE_TRANSMISSION_MODE, EventDto.NOSOCOMIAL) +
 
 			loc(INFORMATION_SOURCE_HEADING_LOC) +
 			fluidRowLocs(EventDto.SRC_TYPE, "") +
@@ -99,9 +105,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.SRC_MEDIA_DETAILS) +
 
 			loc(LOCATION_HEADING_LOC) +
+			fluidRowLocs(EventDto.TRANSREGIONAL_OUTBREAK, "") +
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
 			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) + 
-			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.SEAT_NUMBER, 4, EventDto.TRAVEL_DATE) +
+			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
@@ -157,21 +164,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		addFields(EventDto.EXTERNAL_ID);
 		addFields(EventDto.EXTERNAL_TOKEN);
+
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
 		DateField endDate = addField(EventDto.END_DATE, DateField.class);
-
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
-
 		addField(EventDto.RISK_LEVEL);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			Collections.singletonList(EventDto.RISK_LEVEL),
-			EventDto.EVENT_STATUS,
-			Collections.singletonList(EventStatus.CLUSTER),
-			true);
 
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
@@ -184,12 +184,47 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			false);
 		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
 		title.addStyleName(CssStyles.SOFT_REQUIRED);
+
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
 		descriptionField.setRows(2);
 		descriptionField.setDescription(
 			I18nProperties.getPrefixDescription(EventDto.I18N_PREFIX, EventDto.EVENT_DESC, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
+
+		addField(EventDto.DISEASE_TRANSMISSION_MODE, ComboBox.class);
 		addField(EventDto.NOSOCOMIAL, NullableOptionGroup.class);
+
+		DateField evolutionDateField = addField(EventDto.EVOLUTION_DATE, DateField.class);
+		TextField evolutionCommentField = addField(EventDto.EVOLUTION_COMMENT, TextField.class);
+
+		Field<?> statusField = getField(EventDto.EVENT_STATUS);
+		statusField.addValueChangeListener(e -> {
+			if (statusField.getValue() == null) {
+				return;
+			}
+
+			EventStatus eventStatus = (EventStatus) statusField.getValue();
+			// The status will be used to modify the caption of the field
+			// However we don't want to have somthing like "Dropped evolution date"
+			// So let's ignore the DROPPED status and use the Event entity caption instead
+			String statusCaption;
+			if (eventStatus == EventStatus.DROPPED) {
+				statusCaption = I18nProperties.getCaption(EVENT_ENTITY);
+			} else {
+				statusCaption = I18nProperties.getEnumCaption(eventStatus);
+			}
+
+			evolutionDateField.setCaption(String.format(
+				I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
+			evolutionCommentField.setCaption(String.format(
+				I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
+		});
+
+		FieldHelper.setVisibleWhenSourceNotNull(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.EVOLUTION_COMMENT),
+			EventDto.EVOLUTION_DATE,
+			true);
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
@@ -197,7 +232,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		ComboBox meansOfTransport = addField(EventDto.MEANS_OF_TRANSPORT);
 		TextField connectionNumber = addField(EventDto.CONNECTION_NUMBER);
-		TextField seatNumber = addField(EventDto.SEAT_NUMBER);
 		DateField travelDate = addField(EventDto.TRAVEL_DATE);
 
 		FieldHelper.setVisibleWhen(
@@ -217,7 +251,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(EventDto.CONNECTION_NUMBER, EventDto.SEAT_NUMBER, EventDto.TRAVEL_DATE),
+			Arrays.asList(EventDto.CONNECTION_NUMBER, EventDto.TRAVEL_DATE),
 			EventDto.TYPE_OF_PLACE,
 			Collections.singletonList(TypeOfPlace.MEANS_OF_TRANSPORT),
 			true);
@@ -232,6 +266,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
+		addField(EventDto.TRANSREGIONAL_OUTBREAK, NullableOptionGroup.class);
 
 		ComboBox srcType = addField(EventDto.SRC_TYPE);
 
@@ -299,7 +334,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			I18nProperties.getCaption(Captions.Event_startDate));
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Collections.singletonList(EventDto.NOSOCOMIAL),
+			Arrays.asList(EventDto.NOSOCOMIAL, EventDto.TRANSREGIONAL_OUTBREAK, EventDto.DISEASE_TRANSMISSION_MODE),
 			EventDto.EVENT_STATUS,
 			Collections.singletonList(EventStatus.CLUSTER),
 			true);
@@ -336,7 +371,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			meansOfTransport,
 			meansOfTransportDetails,
 			connectionNumber,
-			seatNumber,
 			travelDate,
 			surveillanceOfficerField,
 			srcType,

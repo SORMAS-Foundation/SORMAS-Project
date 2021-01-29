@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.labmessage;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +8,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -30,7 +28,6 @@ import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
@@ -50,14 +47,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
-	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target) {
+	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new LabMessage();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target);
+		target = DtoHelper.fillOrBuildEntity(source, target, LabMessage::new, checkChangeDate);
 
 		target.setLabMessageDetails(source.getLabMessageDetails());
 		target.setLabSampleId(source.getLabSampleId());
@@ -95,7 +87,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		LabMessage labMessage = labMessageService.getByUuid(dto.getUuid());
 
-		labMessage = fromDto(dto, labMessage);
+		labMessage = fromDto(dto, labMessage, true);
 		labMessageService.ensurePersisted(labMessage);
 	}
 
@@ -152,7 +144,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		Predicate filter = null;
 
 		if (criteria != null) {
-			Predicate statusFilter = labMessageService.createStatusFilter(cb, labMessage, criteria);
+			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
 		}
 
@@ -181,7 +173,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		Predicate filter = null;
 		if (criteria != null) {
-			Predicate statusFilter = labMessageService.createStatusFilter(cb, labMessage, criteria);
+			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
 		}
 
@@ -226,43 +218,41 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@Override
 	public void fetchExternalLabMessages() {
-		Date now = new Date(DateHelper.now());
+		Date start = new Date(DateHelper.now());
 		SystemEventDto systemEvent = SystemEventDto.build();
 		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
 		systemEvent.setStatus(SystemEventStatus.STARTED);
-		systemEvent.setStartDate(now);
+		systemEvent.setStartDate(start);
 		systemEventFacade.saveSystemEvent(systemEvent);
 
-		Date since = null;
-		since = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
+		Date since = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
 
 		if (since == null) {
 			since = new Date(0);
 		}
 
-		List<LabMessageDto> newMessages = null;
 		try {
 			InitialContext ic = new InitialContext();
 			String jndiName = configFacade.getDemisJndiName();
 			ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
-			newMessages = labResultsFacade.getExternalLabMessages(since);
+			List<LabMessageDto> newMessages = labResultsFacade.getExternalLabMessages(since);
 			if (newMessages != null) {
-				newMessages.forEach(this::save);
+				newMessages.stream().forEach(labMessageDto -> save(labMessageDto));
 			}
 		} catch (Exception e) {
 			systemEvent.setStatus(SystemEventStatus.ERROR);
 			systemEvent.setAdditionalInfo(e.getMessage());
-			now.setTime(DateHelper.now());
-			systemEvent.setEndDate(now);
-			systemEvent.setChangeDate(now);
+			Date end = new Date(DateHelper.now());
+			systemEvent.setEndDate(end);
+			systemEvent.setChangeDate(end);
 			systemEventFacade.saveSystemEvent(systemEvent);
 			e.printStackTrace();
 			return;
 		}
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
-		now.setTime(DateHelper.now());
-		systemEvent.setEndDate(now);
-		systemEvent.setChangeDate(now);
+		Date end = new Date(DateHelper.now());
+		systemEvent.setEndDate(end);
+		systemEvent.setChangeDate(end);
 		systemEventFacade.saveSystemEvent(systemEvent);
 	}
 

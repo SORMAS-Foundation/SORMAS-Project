@@ -3,26 +3,30 @@ package de.symeda.sormas.backend.person;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.person.JournalPersonDto;
-import de.symeda.sormas.api.person.PersonFollowUpEndDto;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -267,5 +271,20 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
 		assertEquals(2, personsAfterT1.size());
+	}
+
+	@Test
+	public void testCreateWithoutUuid() {
+		PersonDto person = new PersonDto();
+		person.setFirstName("Fname");
+		person.setLastName("Lname");
+		person.setAddress(new LocationDto());
+		person.setAddresses(Collections.singletonList(new LocationDto()));
+
+		PersonDto savedPerson = getPersonFacade().savePerson(person);
+
+		assertThat(savedPerson.getUuid(), not(isEmptyOrNullString()));
+		assertThat(savedPerson.getAddress().getUuid(), not(isEmptyOrNullString()));
+		assertThat(savedPerson.getAddresses().get(0).getUuid(), not(isEmptyOrNullString()));
 	}
 }

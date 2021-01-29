@@ -8,6 +8,8 @@ import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 
 public class SimilarEntriesDto implements Serializable {
 
+	private static final long serialVersionUID = 5902907041512754766L;
+
 	CaseIndexDto caze;
 	SimilarContactDto contact;
 	SimilarEventParticipantDto eventParticipant;

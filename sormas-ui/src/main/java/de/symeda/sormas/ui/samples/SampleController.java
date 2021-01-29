@@ -80,7 +80,9 @@ public class SampleController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(SamplesView.VIEW_NAME, SamplesView.class);
 		navigator.addView(SampleDataView.VIEW_NAME, SampleDataView.class);
-		navigator.addView(LabMessagesView.VIEW_NAME, LabMessagesView.class);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+			navigator.addView(LabMessagesView.VIEW_NAME, LabMessagesView.class);
+		}
 	}
 
 	public void navigateToData(String sampleUuid) {
@@ -136,6 +138,12 @@ public class SampleController {
 		createView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				saveSample(createForm);
+
+				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getUuid());
+				updatedSample.setReferredTo(referralSample.toReference());
+				FacadeProvider.getSampleFacade().saveSample(updatedSample);
+
+				navigateToData(sample.getUuid());
 			}
 		});
 
