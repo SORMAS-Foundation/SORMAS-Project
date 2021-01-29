@@ -24,6 +24,7 @@ import java.util.HashSet;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -76,6 +77,17 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
+		return createUser(regionUuid, districtUuid, facilityUuid, firstName, lastName, Language.EN, roles);
+	}
+
+	public UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		Language language,
+		UserRole... roles) {
 
 		UserDto user = UserDto.build();
 		user.setFirstName(firstName);
@@ -85,6 +97,7 @@ public class TestDataCreator {
 		user.setRegion(FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid));
 		user.setDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
 		user.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
+		user.setLanguage(language);
 		user = FacadeProvider.getUserFacade().saveUser(user);
 
 		return user;
