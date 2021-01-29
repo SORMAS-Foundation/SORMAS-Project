@@ -25,7 +25,7 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -112,7 +112,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, 
 						  String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
-						  String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid) {
+						  String eventReportingUserUuid, String eventOfficerUuid, String eventParticipantRegionUuid, String eventParticipantDistrictUuid, String eventUuid) {
 	//@formatter:on
 
 		this.uuid = uuid;
@@ -133,7 +133,8 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.labSampleID = labSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.district = createDistrictReference(districtName, caseDistrictUuid, contactDistrictUuid, contactCaseDistrictUuid, eventDistrictUuid);
+		this.district =
+			createDistrictReference(districtName, caseDistrictUuid, contactDistrictUuid, contactCaseDistrictUuid, eventParticipantDistrictUuid);
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
@@ -179,14 +180,22 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 				contactCaseJurisdiction);
 		}
 
-		EventJurisdictionDto eventJurisdiction = null;
+		EventParticipantJurisdictionDto eventParticipantJurisdiction = null;
 		if (associatedEventParticipantUuid != null) {
-			eventJurisdiction =
-				new EventJurisdictionDto(eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid);
+			eventParticipantJurisdiction = new EventParticipantJurisdictionDto(
+				associatedEventParticipantUuid,
+				eventReportingUserUuid,
+				eventParticipantRegionUuid,
+				eventParticipantDistrictUuid,
+				eventUuid);
 		}
 
-		jurisdiction =
-			new SampleJurisdictionDto(reportingUserUuid, associatedCaseJurisdiction, associatedContactJurisdiction, eventJurisdiction, labUuid);
+		jurisdiction = new SampleJurisdictionDto(
+			reportingUserUuid,
+			associatedCaseJurisdiction,
+			associatedContactJurisdiction,
+			eventParticipantJurisdiction,
+			labUuid);
 	}
 
 	private DistrictReferenceDto createDistrictReference(

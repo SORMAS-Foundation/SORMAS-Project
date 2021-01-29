@@ -14,8 +14,11 @@
  */
 package de.symeda.sormas.ui.events;
 
+import java.util.Collections;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -26,6 +29,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -40,6 +44,8 @@ import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
+import de.symeda.sormas.ui.survnet.SurvnetGateway;
+import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -62,6 +68,7 @@ public class EventDataView extends AbstractEventView {
 	public static final String SUPERORDINATE_EVENT_LOC = "superordinate-event";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
+	private HorizontalLayout survNetLayout;
 
 	public EventDataView() {
 		super(VIEW_NAME);
@@ -82,6 +89,7 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -95,7 +103,10 @@ public class EventDataView extends AbstractEventView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		editComponent = ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid());
+		survNetLayout = SurvnetGateway.addComponentToLayout(layout, SurvnetGatewayType.EVENTS, () -> Collections.singletonList(event.getUuid()));
+		setSurvNetLayoutVisibility(event.getEventStatus());
+
+		editComponent = ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setSurvNetLayoutVisibility);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -173,5 +184,11 @@ public class EventDataView extends AbstractEventView {
 		layout.addComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);
 
 		setEventEditPermission(container);
+	}
+
+	private void setSurvNetLayoutVisibility(EventStatus eventStatus) {
+		if (survNetLayout != null) {
+			survNetLayout.setVisible(eventStatus == EventStatus.CLUSTER);
+		}
 	}
 }
