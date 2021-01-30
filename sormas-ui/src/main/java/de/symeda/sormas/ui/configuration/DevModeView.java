@@ -371,6 +371,13 @@ public class DevModeView extends AbstractConfigurationView {
 			.bind(EventGenerationConfig::getMaxParticipantsPerEvent, EventGenerationConfig::setMaxParticipantsPerEvent);
 		eventOptionsSecondLineLayout.addComponent(maxParticipantsPerEventField);
 
+		TextField percentageOfCasesField = new TextField();
+		percentageOfCasesField.setCaption("Percentage of cases among participants");
+		eventGeneratorConfigBinder.forField(percentageOfCasesField)
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(EventGenerationConfig::getPercentageOfCases, EventGenerationConfig::setPercentageOfCases);
+		eventOptionsSecondLineLayout.addComponent(percentageOfCasesField);
+
 		EventGenerationConfig config = new EventGenerationConfig();
 		eventGeneratorLayout.addComponent(eventOptionsSecondLineLayout);
 		eventGeneratorConfigBinder.setBean(config);
@@ -746,6 +753,12 @@ public class DevModeView extends AbstractConfigurationView {
 		float baseOffset = random().nextFloat();
 		int daysBetween = (int) ChronoUnit.DAYS.between(config.startDate, config.endDate);
 
+		// this should be adjusted to be much more complex
+		FacilityCriteria facilityCriteria = new FacilityCriteria();
+		facilityCriteria.region(config.getRegion());
+		facilityCriteria.district(config.getDistrict());
+		List<FacilityDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, 1, null);
+
 		long dt = System.nanoTime();
 
 		for (int i = 0; i < config.getEventCount(); i++) {
@@ -799,6 +812,22 @@ public class DevModeView extends AbstractConfigurationView {
 				FacadeProvider.getPersonFacade().savePerson(person);
 				eventParticipant.setPerson(person);
 				eventParticipant.setInvolvementDescription("Participant");
+
+				// generate cases for some participants
+				FacilityDto facility = random(healthFacilities);
+				if (randomPercent(config.getPercentageOfCases())) {
+					CaseDataDto caze = CaseDataDto.buildFromEventParticipant(eventParticipant, person, event.getDisease());
+					fillEntity(caze, referenceDateTime);
+					caze.setReportingUser(UserProvider.getCurrent().getUserReference());
+					caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+					caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+					caze.setRegion(config.getRegion());
+					caze.setDistrict(config.getDistrict());
+					caze.setHealthFacility(facility.toReference());
+					caze.setFacilityType(facility.getType());
+					FacadeProvider.getCaseFacade().saveCase(caze);
+					eventParticipant.setResultingCase(caze.toReference());
+				}
 
 				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 				generatedParticipants++;
@@ -999,6 +1028,7 @@ public class DevModeView extends AbstractConfigurationView {
 		private DistrictReferenceDto district = null;
 		private int minParticipantsPerEvent = 3;
 		private int maxParticipantsPerEvent = 10;
+		private int percentageOfCases = 20;
 
 		public int getEventCount() {
 			return eventCount;
@@ -1062,6 +1092,18 @@ public class DevModeView extends AbstractConfigurationView {
 
 		public void setMaxParticipantsPerEvent(int maxParticipantsPerEvent) {
 			this.maxParticipantsPerEvent = maxParticipantsPerEvent;
+		}
+
+		public int getPercentageOfCases() {
+			return percentageOfCases;
+		}
+
+		public void setPercentageOfCases(int percentageOfCases) {
+			this.percentageOfCases = percentageOfCases;
+			if (this.percentageOfCases >= 100)
+				this.percentageOfCases = 100;
+			if (this.percentageOfCases <= 0)
+				this.percentageOfCases = 0;
 		}
 
 	}
