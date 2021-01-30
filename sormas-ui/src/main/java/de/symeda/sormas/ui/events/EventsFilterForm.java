@@ -68,10 +68,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		FACILITY_TYPE_GROUP_FILTER,
 		LocationDto.FACILITY_TYPE,
 		LocationDto.FACILITY,
-		EventDto.EVENT_INVESTIGATION_STATUS) +
-		loc(EVENT_WEEK_AND_DATE_FILTER) +
-		loc(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER) +
-		loc(ACTION_WEEK_AND_DATE_FILTER);
+		EventDto.EVENT_INVESTIGATION_STATUS)
+		+ loc(EVENT_WEEK_AND_DATE_FILTER)
+		+ loc(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER)
+		+ loc(ACTION_WEEK_AND_DATE_FILTER);
 
 	private final boolean hideEventStatusFilter;
 	private final boolean hideActionFilters;
@@ -146,7 +146,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		communityField.setDescription(I18nProperties.getDescription(Descriptions.descCommunityFilter));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT), EVENT_WEEK_AND_DATE_FILTER);
-		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT_SIGNAL_EVOLUTION), EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
+		moreFiltersContainer
+			.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT_SIGNAL_EVOLUTION), EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION), ACTION_WEEK_AND_DATE_FILTER);
 
 		ComboBox facilityTypeGroupField = new ComboBox();
@@ -259,7 +260,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 		}
-		weekAndDateFilter.setVisible(false);
 
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			criteria.dateBetween(dateType, fromDate, toDate, dateFilterOption);
