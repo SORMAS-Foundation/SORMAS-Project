@@ -832,8 +832,7 @@ public class DevModeView extends AbstractConfigurationView {
 				eventParticipant.setInvolvementDescription("Participant");
 
 				// generate cases for some participants
-				FacilityDto facility = random(healthFacilities);
-				if (randomPercent(config.getPercentageOfCases())) {
+				if (randomPercent(config.getPercentageOfCases()) && !healthFacilities.isEmpty()) {
 					CaseDataDto caze = CaseDataDto.buildFromEventParticipant(eventParticipant, person, event.getDisease());
 					fillEntity(caze, referenceDateTime);
 					caze.setReportingUser(UserProvider.getCurrent().getUserReference());
@@ -841,6 +840,7 @@ public class DevModeView extends AbstractConfigurationView {
 					caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 					caze.setRegion(config.getRegion());
 					caze.setDistrict(config.getDistrict());
+					FacilityDto facility = random(healthFacilities);
 					caze.setHealthFacility(facility.toReference());
 					caze.setFacilityType(facility.getType());
 					FacadeProvider.getCaseFacade().saveCase(caze);
@@ -849,14 +849,14 @@ public class DevModeView extends AbstractConfigurationView {
 				}
 
 				// generate contacts for some participants
+				List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
+					.getRandomCaseReferences(
+						new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
+						numParticipants * 2);
 				int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
-				for (int k = 0; k < numContacts; k++) {
+				for (int k = 0; (k < numContacts && !cases.isEmpty()); k++) {
 					ContactDto contact = ContactDto.build(eventParticipant);
 					contact.setDisease(event.getDisease());
-					List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
-						.getRandomCaseReferences(
-							new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
-							numParticipants * 2);
 					contact.setCaze(random(cases));
 					contact.setReportingUser(UserProvider.getCurrent().getUserReference());
 					contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
