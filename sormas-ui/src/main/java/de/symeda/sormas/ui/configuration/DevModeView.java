@@ -64,6 +64,9 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -103,6 +106,7 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private Binder<CaseGenerationConfig> caseGeneratorConfigBinder = new Binder<>();
 	private Binder<ContactGenerationConfig> contactGeneratorConfigBinder = new Binder<>();
+	private Binder<EventGenerationConfig> eventGeneratorConfigBinder = new Binder<>();
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
@@ -120,6 +124,7 @@ public class DevModeView extends AbstractConfigurationView {
 			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptions), ContentMode.HTML));
 		contentLayout.addComponent(createCaseGeneratorLayout());
 		contentLayout.addComponent(createContactGeneratorLayout());
+		contentLayout.addComponent(createEventsGeneratorLayout());
 
 		addComponent(contentLayout);
 	}
@@ -288,6 +293,91 @@ public class DevModeView extends AbstractConfigurationView {
 		return contactGeneratorLayout;
 	}
 
+	private VerticalLayout createEventsGeneratorLayout() {
+		VerticalLayout eventGeneratorLayout = new VerticalLayout();
+		eventGeneratorLayout.setMargin(false);
+		eventGeneratorLayout.setSpacing(false);
+
+		Label heading = new Label("Event Generation");
+		CssStyles.style(heading, CssStyles.H2);
+		eventGeneratorLayout.addComponent(heading);
+
+		HorizontalLayout eventOptionsFirstLineLayout = new HorizontalLayout();
+
+		TextField eventCountField = new TextField();
+		eventCountField.setCaption(I18nProperties.getCaption(Captions.devModeContactCount));
+		eventGeneratorConfigBinder.forField(eventCountField)
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(EventGenerationConfig::getEventCount, EventGenerationConfig::setEventCount);
+		eventOptionsFirstLineLayout.addComponent(eventCountField);
+
+		DateField startDateField = new DateField();
+		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeContactStartDate));
+		startDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
+		startDateField.setLenient(true);
+		eventGeneratorConfigBinder.bind(startDateField, EventGenerationConfig::getStartDate, EventGenerationConfig::setStartDate);
+		eventOptionsFirstLineLayout.addComponent(startDateField);
+
+		DateField endDateField = new DateField();
+		endDateField.setCaption(I18nProperties.getCaption(Captions.devModeContactEndDate));
+		endDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
+		endDateField.setLenient(true);
+		eventGeneratorConfigBinder.bind(endDateField, EventGenerationConfig::getEndDate, EventGenerationConfig::setEndDate);
+		eventOptionsFirstLineLayout.addComponent(endDateField);
+
+		ComboBox<Disease> diseaseField = new ComboBox<>(null, FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
+		diseaseField.setCaption(I18nProperties.getCaption(Captions.devModeContactDisease));
+		eventGeneratorConfigBinder.bind(diseaseField, EventGenerationConfig::getDisease, EventGenerationConfig::setDisease);
+		eventOptionsFirstLineLayout.addComponent(diseaseField);
+
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
+		regionField.setCaption(I18nProperties.getCaption(Captions.devModeContactRegion));
+		eventGeneratorConfigBinder.bind(regionField, EventGenerationConfig::getRegion, EventGenerationConfig::setRegion);
+		eventOptionsFirstLineLayout.addComponent(regionField);
+
+		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
+		districtField.setCaption(I18nProperties.getCaption(Captions.devModeContactDistrict));
+		eventGeneratorConfigBinder.bind(districtField, EventGenerationConfig::getDistrict, EventGenerationConfig::setDistrict);
+		eventOptionsFirstLineLayout.addComponent(districtField);
+
+		regionField.addValueChangeListener(event -> {
+			RegionReferenceDto region = event.getValue();
+			if (region != null) {
+				districtField.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			} else {
+				districtField.setItems(new ArrayList<DistrictReferenceDto>());
+			}
+		});
+
+		Button generateButton = ButtonHelper.createButton("Generate Events", e -> generateEvents(), CssStyles.FORCE_CAPTION);
+		eventOptionsFirstLineLayout.addComponent(generateButton);
+
+		eventGeneratorLayout.addComponent(eventOptionsFirstLineLayout);
+
+		HorizontalLayout eventOptionsSecondLineLayout = new HorizontalLayout();
+
+		TextField minParticipantsPerEventField = new TextField();
+		minParticipantsPerEventField.setCaption("Min participants per event");
+		eventGeneratorConfigBinder.forField(minParticipantsPerEventField)
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(EventGenerationConfig::getMinParticipantsPerEvent, EventGenerationConfig::setMinParticipantsPerEvent);
+		eventOptionsSecondLineLayout.addComponent(minParticipantsPerEventField);
+
+		TextField maxParticipantsPerEventField = new TextField();
+		maxParticipantsPerEventField.setCaption("Max participants per event");
+		eventGeneratorConfigBinder.forField(maxParticipantsPerEventField)
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(EventGenerationConfig::getMaxParticipantsPerEvent, EventGenerationConfig::setMaxParticipantsPerEvent);
+		eventOptionsSecondLineLayout.addComponent(maxParticipantsPerEventField);
+
+		EventGenerationConfig config = new EventGenerationConfig();
+		eventGeneratorLayout.addComponent(eventOptionsSecondLineLayout);
+		eventGeneratorConfigBinder.setBean(config);
+
+		return eventGeneratorLayout;
+	}
+
 	private final String[] maleFirstNames = new String[] {
 		"Nelson",
 		"Malik",
@@ -323,6 +413,14 @@ public class DevModeView extends AbstractConfigurationView {
 		"Tinibu",
 		"Okar",
 		"Egwu" };
+	private final String[] eventTitles = new String[] {
+		"Wedding",
+		"Party",
+		"Funeral",
+		"Concert",
+		"Fair",
+		"Rallye",
+		"Demonstration" };
 
 	private static Random random() {
 		return ThreadLocalRandom.current();
@@ -330,6 +428,12 @@ public class DevModeView extends AbstractConfigurationView {
 
 	private static boolean randomPercent(int p) {
 		return random().nextInt(100) <= p;
+	}
+
+	private static int randomInt(int min, int max) {
+		if (max <= min)
+			return min;
+		return min + random().nextInt(max - min);
 	}
 
 	private static <T> T random(List<T> list) {
@@ -632,6 +736,87 @@ public class DevModeView extends AbstractConfigurationView {
 		}
 	}
 
+	private void generateEvents() {
+
+		EventGenerationConfig config = eventGeneratorConfigBinder.getBean();
+
+		int generatedParticipants = 0;
+
+		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+		float baseOffset = random().nextFloat();
+		int daysBetween = (int) ChronoUnit.DAYS.between(config.startDate, config.endDate);
+
+		long dt = System.nanoTime();
+
+		for (int i = 0; i < config.getEventCount(); i++) {
+			Disease disease = config.getDisease();
+			if (disease == null) {
+				disease = random(diseases);
+			}
+
+			LocalDateTime referenceDateTime =
+				getReferenceDateTime(i, config.getEventCount(), baseOffset, disease, config.getStartDate(), daysBetween);
+
+			fieldVisibilityCheckers = new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()));
+
+			EventDto event = EventDto.build();
+
+			// disease
+			event.setDisease(disease); // reset
+			if (event.getDisease() == Disease.OTHER) {
+				event.setDiseaseDetails("RD " + (random().nextInt(20) + 1));
+			}
+
+			// title
+			event.setEventTitle(random(eventTitles));
+
+			// report
+			UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+			event.setReportingUser(userReference);
+			event.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+
+			// region & district
+			event.getEventLocation().setRegion(config.getRegion());
+			event.getEventLocation().setDistrict(config.getDistrict());
+
+			// status
+			event.setEventStatus(EventStatus.EVENT);
+
+			FacadeProvider.getEventFacade().saveEvent(event);
+
+			// EventParticipants
+			int numParticipants = randomInt(config.getMinParticipantsPerEvent(), config.getMaxParticipantsPerEvent());
+			for (int j = 0; j < numParticipants; j++) {
+				EventParticipantDto eventParticipant = EventParticipantDto.build(event.toReference(), UserProvider.getCurrent().getUserReference());
+				// person
+				// instead of creating new persons everytime, it would be nice if some persons came of the original database
+				// also, some participants should get cases and contacts created for them
+				PersonDto person = PersonDto.build();
+				fillEntity(person, referenceDateTime);
+				person.setSymptomJournalStatus(null);
+				setPersonName(person);
+				FacadeProvider.getPersonFacade().savePerson(person);
+				eventParticipant.setPerson(person);
+				eventParticipant.setInvolvementDescription("Participant");
+
+				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+				generatedParticipants++;
+			}
+		}
+
+		dt = System.nanoTime() - dt;
+		long perCase = dt / config.getEventCount();
+		String msg = String.format(
+			"Generating %,d events with a total of %,d participants took %,d  ms (%,d ms per event)",
+			config.getEventCount(),
+			generatedParticipants,
+			dt / 1_000_000,
+			perCase / 1_000_000);
+		logger.info(msg);
+		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
+	}
+
 	private LocalDateTime getReferenceDateTime(int i, int count, float baseOffset, Disease disease, LocalDate startDate, int daysBetween) {
 
 		float x = (float) i / count;
@@ -802,5 +987,82 @@ public class DevModeView extends AbstractConfigurationView {
 		public void setCreateWithVisits(boolean createWithVisits) {
 			this.createWithVisits = createWithVisits;
 		}
+	}
+
+	private static class EventGenerationConfig {
+
+		private int eventCount = 10;
+		private LocalDate startDate = LocalDate.now().minusDays(90);
+		private LocalDate endDate = LocalDate.now();
+		private Disease disease = null;
+		private RegionReferenceDto region = null;
+		private DistrictReferenceDto district = null;
+		private int minParticipantsPerEvent = 3;
+		private int maxParticipantsPerEvent = 10;
+
+		public int getEventCount() {
+			return eventCount;
+		}
+
+		public void setEventCount(int contactCount) {
+			this.eventCount = contactCount;
+		}
+
+		public LocalDate getStartDate() {
+			return startDate;
+		}
+
+		public void setStartDate(LocalDate startDate) {
+			this.startDate = startDate;
+		}
+
+		public LocalDate getEndDate() {
+			return endDate;
+		}
+
+		public void setEndDate(LocalDate endDate) {
+			this.endDate = endDate;
+		}
+
+		public Disease getDisease() {
+			return disease;
+		}
+
+		public void setDisease(Disease disease) {
+			this.disease = disease;
+		}
+
+		public RegionReferenceDto getRegion() {
+			return region;
+		}
+
+		public void setRegion(RegionReferenceDto region) {
+			this.region = region;
+		}
+
+		public DistrictReferenceDto getDistrict() {
+			return district;
+		}
+
+		public void setDistrict(DistrictReferenceDto district) {
+			this.district = district;
+		}
+
+		public int getMinParticipantsPerEvent() {
+			return minParticipantsPerEvent;
+		}
+
+		public void setMinParticipantsPerEvent(int minParticipantsPerEvent) {
+			this.minParticipantsPerEvent = minParticipantsPerEvent;
+		}
+
+		public int getMaxParticipantsPerEvent() {
+			return maxParticipantsPerEvent;
+		}
+
+		public void setMaxParticipantsPerEvent(int maxParticipantsPerEvent) {
+			this.maxParticipantsPerEvent = maxParticipantsPerEvent;
+		}
+
 	}
 }
