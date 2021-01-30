@@ -371,6 +371,20 @@ public class DevModeView extends AbstractConfigurationView {
 			.bind(EventGenerationConfig::getMaxParticipantsPerEvent, EventGenerationConfig::setMaxParticipantsPerEvent);
 		eventOptionsSecondLineLayout.addComponent(maxParticipantsPerEventField);
 
+		TextField minContactsPerParticipantField = new TextField();
+		minContactsPerParticipantField.setCaption("Min contacts per participant");
+		eventGeneratorConfigBinder.forField(minContactsPerParticipantField)
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(EventGenerationConfig::getMinContactsPerParticipant, EventGenerationConfig::setMinContactsPerParticipant);
+		eventOptionsSecondLineLayout.addComponent(minContactsPerParticipantField);
+
+		TextField maxContactsPerParticipantField = new TextField();
+		maxContactsPerParticipantField.setCaption("Max contacts per participant");
+		eventGeneratorConfigBinder.forField(maxContactsPerParticipantField)
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(EventGenerationConfig::getMaxContactsPerParticipant, EventGenerationConfig::setMaxContactsPerParticipant);
+		eventOptionsSecondLineLayout.addComponent(maxContactsPerParticipantField);
+
 		TextField percentageOfCasesField = new TextField();
 		percentageOfCasesField.setCaption("Percentage of cases among participants");
 		eventGeneratorConfigBinder.forField(percentageOfCasesField)
@@ -427,7 +441,9 @@ public class DevModeView extends AbstractConfigurationView {
 		"Concert",
 		"Fair",
 		"Rallye",
-		"Demonstration" };
+		"Demonstration",
+		"Football Match",
+		"Tournament" };
 
 	private static Random random() {
 		return ThreadLocalRandom.current();
@@ -748,6 +764,8 @@ public class DevModeView extends AbstractConfigurationView {
 		EventGenerationConfig config = eventGeneratorConfigBinder.getBean();
 
 		int generatedParticipants = 0;
+		int generatedCases = 0;
+		int generatedContacts = 0;
 
 		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 		float baseOffset = random().nextFloat();
@@ -827,6 +845,23 @@ public class DevModeView extends AbstractConfigurationView {
 					caze.setFacilityType(facility.getType());
 					FacadeProvider.getCaseFacade().saveCase(caze);
 					eventParticipant.setResultingCase(caze.toReference());
+					generatedCases++;
+				}
+
+				// generate contacts for some participants
+				int numContacts = randomInt(config.getMinContactsPerParticipant(), config.getMaxContactsPerParticipant());
+				for (int k = 0; k < numContacts; k++) {
+					ContactDto contact = ContactDto.build(eventParticipant);
+					contact.setDisease(event.getDisease());
+					List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
+						.getRandomCaseReferences(
+							new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
+							numParticipants * 2);
+					contact.setCaze(random(cases));
+					contact.setReportingUser(UserProvider.getCurrent().getUserReference());
+					contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+					FacadeProvider.getContactFacade().saveContact(contact);
+					generatedContacts++;
 				}
 
 				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
@@ -837,11 +872,13 @@ public class DevModeView extends AbstractConfigurationView {
 		dt = System.nanoTime() - dt;
 		long perCase = dt / config.getEventCount();
 		String msg = String.format(
-			"Generating %,d events with a total of %,d participants took %,d  ms (%,d ms per event)",
+			"Generating %d events with a total of %d participants (%d contacts, %d cases) took %.2f  s (%.1f ms per event)",
 			config.getEventCount(),
 			generatedParticipants,
-			dt / 1_000_000,
-			perCase / 1_000_000);
+			generatedContacts,
+			generatedCases,
+			(double) dt / 1_000_000_000,
+			(double) perCase / 1_000_000);
 		logger.info(msg);
 		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
@@ -1028,6 +1065,8 @@ public class DevModeView extends AbstractConfigurationView {
 		private DistrictReferenceDto district = null;
 		private int minParticipantsPerEvent = 3;
 		private int maxParticipantsPerEvent = 10;
+		private int minContactsPerParticipant = 0;
+		private int maxContactsPerParticipant = 3;
 		private int percentageOfCases = 20;
 
 		public int getEventCount() {
@@ -1092,6 +1131,22 @@ public class DevModeView extends AbstractConfigurationView {
 
 		public void setMaxParticipantsPerEvent(int maxParticipantsPerEvent) {
 			this.maxParticipantsPerEvent = maxParticipantsPerEvent;
+		}
+
+		public int getMinContactsPerParticipant() {
+			return minContactsPerParticipant;
+		}
+
+		public void setMinContactsPerParticipant(int minContactsPerParticipant) {
+			this.minContactsPerParticipant = minContactsPerParticipant;
+		}
+
+		public int getMaxContactsPerParticipant() {
+			return maxContactsPerParticipant;
+		}
+
+		public void setMaxContactsPerParticipant(int maxContactsPerParticipant) {
+			this.maxContactsPerParticipant = maxContactsPerParticipant;
 		}
 
 		public int getPercentageOfCases() {
