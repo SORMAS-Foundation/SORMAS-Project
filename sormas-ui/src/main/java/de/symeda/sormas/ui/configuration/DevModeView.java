@@ -603,6 +603,9 @@ public class DevModeView extends AbstractConfigurationView {
 				caze.setQuarantineReduced(false);
 			}
 
+			// description
+			caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());
+
 			// report
 			UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 			caze.setReportingUser(userReference);
@@ -718,6 +721,9 @@ public class DevModeView extends AbstractConfigurationView {
 				contact.setFollowUpComment("-");
 			}
 
+			// description
+			contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
+
 			FacadeProvider.getPersonFacade().savePerson(person);
 			contact = FacadeProvider.getContactFacade().saveContact(contact);
 
@@ -802,6 +808,9 @@ public class DevModeView extends AbstractConfigurationView {
 			// title
 			event.setEventTitle(random(eventTitles));
 
+			// description
+			event.setEventDesc("Event generated using DevMode on " + LocalDate.now());
+
 			// report
 			UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 			event.setReportingUser(userReference);
@@ -843,6 +852,7 @@ public class DevModeView extends AbstractConfigurationView {
 					FacilityDto facility = random(healthFacilities);
 					caze.setHealthFacility(facility.toReference());
 					caze.setFacilityType(facility.getType());
+					caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());
 					FacadeProvider.getCaseFacade().saveCase(caze);
 					eventParticipant.setResultingCase(caze.toReference());
 					generatedCases++;
@@ -860,6 +870,7 @@ public class DevModeView extends AbstractConfigurationView {
 					contact.setCaze(random(cases));
 					contact.setReportingUser(UserProvider.getCurrent().getUserReference());
 					contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+					contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 					FacadeProvider.getContactFacade().saveContact(contact);
 					generatedContacts++;
 				}
