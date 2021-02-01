@@ -243,8 +243,18 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
 			appendData(campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY, hcjs, series, seriesData);
-			if (series.getStack() != null) {
-				hcjs.append("],stack:'").append(StringEscapeUtils.escapeEcmaScript(series.getStack())).append("'},");
+			final String stack = series.getStack();
+			final String color = series.getColor();
+			if (color != null || stack != null) {
+				hcjs.append("],");
+				if (stack != null) {
+					hcjs.append("stack:'").append(StringEscapeUtils.escapeEcmaScript(stack)).append("'");
+					hcjs.append(color != null ? "," : "");
+				}
+				if (color != null) {
+					hcjs.append("color:'").append(StringEscapeUtils.escapeEcmaScript(color)).append("'");
+				}
+				hcjs.append("},");
 			} else {
 				hcjs.append("]},");
 			}
