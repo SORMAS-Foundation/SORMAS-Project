@@ -117,7 +117,12 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!columnId.equals(EDIT_COLUMN_ID)) {
+
+
+			if (columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, "&nbsp");
+			}
+			else{
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
 			}
 		}
