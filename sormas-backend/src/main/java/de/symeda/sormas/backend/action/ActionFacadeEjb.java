@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.action;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +32,7 @@ import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.action.ActionStatEntry;
+import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRight;
@@ -58,37 +58,28 @@ public class ActionFacadeEjb implements ActionFacade {
 	@EJB
 	private EventService eventService;
 
-	public Action fromDto(ActionDto source) {
+	public Action fromDto(ActionDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		boolean creation = false;
-		Action target = actionService.getByUuid(source.getUuid());
-		if (target == null) {
-			creation = true;
-			target = new Action();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		Action target = DtoHelper.fillOrBuildEntity(source, actionService.getByUuid(source.getUuid()), Action::new, checkChangeDate);
 
-		target.setReplyingUser(userService.getByReferenceDto(source.getReplyingUser()));
+		target.setLastModifiedBy(userService.getByReferenceDto(source.getLastModifiedBy()));
 		target.setReply(source.getReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
-		if (target.getActionStatus() != source.getActionStatus() && !creation) {
+		if (target.getActionStatus() != source.getActionStatus() && target.getId() != null) {
 			target.setStatusChangeDate(new Date());
 		} else {
 			target.setStatusChangeDate(source.getStatusChangeDate());
 		}
 		target.setActionStatus(source.getActionStatus());
+		target.setActionMeasure(source.getActionMeasure());
 
 		target.setActionContext(source.getActionContext());
 		if (source.getActionContext() != null) {
@@ -115,21 +106,20 @@ public class ActionFacadeEjb implements ActionFacade {
 		ActionDto target = new ActionDto();
 		Action source = action;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setReply(source.getReply());
-		target.setReplyingUser(UserFacadeEjb.toReferenceDto(source.getReplyingUser()));
+		target.setLastModifiedBy(UserFacadeEjb.toReferenceDto(source.getLastModifiedBy()));
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
 		target.setStatusChangeDate(source.getStatusChangeDate());
 		target.setActionContext(source.getActionContext());
 		target.setActionStatus(source.getActionStatus());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setActionMeasure(source.getActionMeasure());
 
 		return target;
 	}
@@ -137,7 +127,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public ActionDto saveAction(ActionDto dto) {
 
-		Action ado = fromDto(dto);
+		Action ado = fromDto(dto, true);
 		actionService.ensurePersisted(ado);
 		return toDto(ado);
 	}
@@ -198,6 +188,11 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public List<EventActionIndexDto> getEventActionList(EventCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		return actionService.getEventActionIndexList(criteria, first, max, sortProperties);
+	}
+
+	@Override
+	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
+		return actionService.getEventActionExportList(criteria, first, max);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -28,6 +30,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.Event;
@@ -61,11 +64,13 @@ import de.symeda.sormas.backend.visit.Visit;
 @LocalBean
 public class DatabaseExportService {
 
-	private static final String COPY_SINGLE_TABLE = "COPY (SELECT * FROM %s) TO STDOUT WITH (FORMAT CSV, DELIMITER ';', HEADER)";
+	private static final String COPY_SINGLE_TABLE = "COPY (SELECT * FROM %s) TO STDOUT WITH (FORMAT CSV, DELIMITER '%s', HEADER)";
 	private static final String COPY_WITH_JOIN_TABLE =
-		"COPY (SELECT * FROM %s AS root_table INNER JOIN %s AS leaf_table ON (root_table.%s = leaf_table.%s)) TO STDOUT WITH (FORMAT CSV, DELIMITER ';', HEADER)";
+		"COPY (SELECT * FROM %s AS root_table INNER JOIN %s AS leaf_table ON (root_table.%s = leaf_table.%s)) TO STDOUT WITH (FORMAT CSV, DELIMITER '%s', HEADER)";
 
 	private static final Map<DatabaseTable, DatabaseExportConfiguration> EXPORT_CONFIGS = new LinkedHashMap<>();
+	public static final String COUNT_TABLE_COLUMNS = "SELECT COUNT(column_name) FROM information_schema.columns WHERE table_name=:tableName";
+
 	static {
 		EXPORT_CONFIGS.put(DatabaseTable.CASES, new DatabaseExportConfiguration(Case.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.HOSPITALIZATIONS, new DatabaseExportConfiguration(Hospitalization.TABLE_NAME));
@@ -106,6 +111,9 @@ public class DatabaseExportService {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
+
 	public void exportAsCsvFiles(ZipOutputStream zos, List<DatabaseTable> databaseTables) throws IOException {
 
 		//Writer must not be closed so it does not close the zip too early
@@ -113,32 +121,62 @@ public class DatabaseExportService {
 
 		// Export all selected tables to .csv files
 		for (DatabaseTable databaseTable : databaseTables) {
-
-			long startTime = System.currentTimeMillis();
 			zos.putNextEntry(new ZipEntry(databaseTable.getFileName() + ".csv"));
+			DatabaseExportConfiguration exportConfig = getConfig(databaseTable);
+			addEntityNamesRow(exportConfig, writer);
+			addDataRows(databaseTable, exportConfig, writer);
+			writer.flush();
+			zos.closeEntry();
+		}
+	}
 
-			DatabaseExportConfiguration config = getConfig(databaseTable);
-			final String sql;
-			if (config.isUseJoinTable()) {
-				sql = String.format(
+	private void addEntityNamesRow(DatabaseExportConfiguration config, Writer writer) throws IOException {
+		final int mainTableColumnCount = getColumnCount(config.getTableName());
+		char csvSeparator = configFacade.getCsvSeparator();
+		if (mainTableColumnCount > 0) {
+			writer.write(config.getTableName());
+		}
+		for (int i = 0; i < mainTableColumnCount - 1; i++) {
+			writer.write(csvSeparator + config.getTableName());
+		}
+		if (config.isUseJoinTable()) {
+			final int joinTableColumnCount = getColumnCount(config.getJoinTableName());
+			for (int i = 0; i < joinTableColumnCount; i++) {
+				writer.write(csvSeparator + config.getJoinTableName());
+			}
+		}
+		writer.write('\n');
+	}
+
+	private int getColumnCount(String tableName) {
+		BigInteger bigIntegerResult = (BigInteger) em.createNativeQuery(COUNT_TABLE_COLUMNS)
+				.setParameter("tableName", tableName)
+				.getSingleResult();
+		return bigIntegerResult.intValue();
+	}
+
+	private void addDataRows(DatabaseTable databaseTable, DatabaseExportConfiguration config, Writer writer) {
+		long startTime = System.currentTimeMillis();
+		final String sql;
+		if (config.isUseJoinTable()) {
+			sql = String.format(
 					COPY_WITH_JOIN_TABLE,
 					config.getTableName(),
 					config.getJoinTableName(),
 					config.getColumnName(),
-					config.getJoinColumnName());
-			} else {
-				sql = String.format(COPY_SINGLE_TABLE, config.getTableName());
-			}
-			writeCsv(writer, sql, databaseTable.getFileName());
-			writer.flush();
-			zos.closeEntry();
-			// Be able to check performance for each export query
-			logger.trace(
+					config.getJoinColumnName(),
+					configFacade.getCsvSeparator());
+		} else {
+			sql = String.format(COPY_SINGLE_TABLE, config.getTableName(), configFacade.getCsvSeparator());
+		}
+		writeCsv(writer, sql, databaseTable.getFileName());
+
+		// Be able to check performance for each export query
+		logger.trace(
 				"exportAsCsvFiles(): Exported '{}' in {} ms. sql='{}'",
 				databaseTable.getFileName(),
 				System.currentTimeMillis() - startTime,
 				sql);
-		}
 	}
 
 	/**

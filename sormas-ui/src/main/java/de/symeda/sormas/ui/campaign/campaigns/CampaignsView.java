@@ -103,6 +103,7 @@ public class CampaignsView extends AbstractCampaignView {
 		filterLayout.setSpacing(true);
 
 		searchField = new TextField();
+		searchField.setCaption(I18nProperties.getCaption(Captions.campaignSearch));
 		searchField.setId("search");
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
@@ -117,7 +118,7 @@ public class CampaignsView extends AbstractCampaignView {
 		// Show active/archived/all dropdown
 		relevanceStatusFilter = new com.vaadin.v7.ui.ComboBox();
 		relevanceStatusFilter.setId("relevanceStatus");
-		relevanceStatusFilter.setWidth(140, Unit.PIXELS);
+		relevanceStatusFilter.setWidth(160, Unit.PIXELS);
 		relevanceStatusFilter.setNullSelectionAllowed(false);
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.campaignActiveCampaigns));

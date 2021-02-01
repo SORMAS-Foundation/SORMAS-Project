@@ -151,5 +151,9 @@ public class ContactReferenceDto extends ReferenceDto {
 		public String getLastName() {
 			return lastName;
 		}
+
+		public String toString() {
+			return firstName + " " + lastName;
+		}
 	}
 }

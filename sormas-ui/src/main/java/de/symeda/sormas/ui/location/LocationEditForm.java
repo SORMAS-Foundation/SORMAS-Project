@@ -25,6 +25,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -124,15 +125,20 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		addressType = addField(LocationDto.ADDRESS_TYPE, ComboBox.class);
 		addressType.setVisible(false);
+		final PersonAddressType[] personAddressTypeValues = PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode());
 		if (!isConfiguredServer("ch")) {
 			addressType.removeAllItems();
 			addressType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
-			addressType.addItems(PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode()));
+			addressType.addItems(personAddressTypeValues);
 		}
 		TextField addressTypeDetails = addField(LocationDto.ADDRESS_TYPE_DETAILS, TextField.class);
 		addressTypeDetails.setVisible(false);
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), LocationDto.ADDRESS_TYPE_DETAILS, addressType, Arrays.asList(PersonAddressType.OTHER_ADDRESS), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			LocationDto.ADDRESS_TYPE_DETAILS,
+			addressType,
+			Arrays.stream(personAddressTypeValues).filter(pat -> !pat.equals(PersonAddressType.HOME)).collect(Collectors.toList()),
+			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
 			addressType,
@@ -156,16 +162,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			FacilityType oldType = (FacilityType) facilityType.getValue();
 			FacilityReferenceDto oldFacility = (FacilityReferenceDto) facility.getValue();
 			String oldDetails = facilityDetails.getValue();
-			facilityTypeGroup.removeAllItems();
 			if (PersonAddressType.HOME.equals(addressType.getValue())) {
+				facilityTypeGroup.removeAllItems();
 				facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+				setOldFacilityValuesIfPossible(oldGroup, oldType, oldFacility, oldDetails);
 			} else {
+				facilityTypeGroup.removeAllItems();
 				facilityTypeGroup.addItems(FacilityTypeGroup.values());
+				setOldFacilityValuesIfPossible(oldGroup, oldType, oldFacility, oldDetails);
 			}
-			facilityTypeGroup.setValue(oldGroup);
-			facilityType.setValue(oldType);
-			facility.setValue(oldFacility);
-			facilityDetails.setValue(oldDetails);
 		});
 
 		addField(LocationDto.STREET, TextField.class);
@@ -177,12 +182,13 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
-		TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
-		tfLatitude.setConverter(new StringToAngularLocationConverter());
-		TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
-		tfLongitude.setConverter(new StringToAngularLocationConverter());
-		TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
-		tfAccuracy.setConverter(new StringToAngularLocationConverter());
+		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
+		final AccessibleTextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, AccessibleTextField.class);
+		final StringToAngularLocationConverter stringToAngularLocationConverter = new StringToAngularLocationConverter();
+		tfLatitude.setConverter(stringToAngularLocationConverter);
+		tfLongitude.setConverter(stringToAngularLocationConverter);
+		tfAccuracy.setConverter(stringToAngularLocationConverter);
 
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
@@ -266,7 +272,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		});
 		facility.addValueChangeListener(e -> {
 			if (facility.getValue() != null) {
-				boolean visibleAndRequired = ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+				boolean visibleAndRequired = areFacilityDetailsRequired();
 
 				facilityDetails.setVisible(visibleAndRequired);
 				facilityDetails.setRequired(visibleAndRequired);
@@ -287,6 +293,17 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+	}
+
+	private void setOldFacilityValuesIfPossible(
+		FacilityTypeGroup oldGroup,
+		FacilityType oldType,
+		FacilityReferenceDto oldFacility,
+		String oldDetails) {
+		facilityTypeGroup.setValue(oldGroup);
+		facilityType.setValue(oldType);
+		facility.setValue(oldFacility);
+		facilityDetails.setValue(oldDetails);
 	}
 
 	private HorizontalLayout createGeoButton() {
@@ -423,5 +440,23 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		field.addValueChangeListener(e -> fireValueChange(false));
 
 		return super.addFieldToLayout(layout, propertyId, field);
+	}
+
+	public void setFacilityFieldsVisible(boolean visible, boolean clearOnHidden) {
+		facility.setVisible(visible);
+		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
+		facilityType.setVisible(visible);
+		facilityTypeGroup.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
+			facility.clear();
+			facilityDetails.clear();
+			facilityType.clear();
+			facilityTypeGroup.clear();
+		}
+	}
+
+	private boolean areFacilityDetailsRequired() {
+		return facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 	}
 }

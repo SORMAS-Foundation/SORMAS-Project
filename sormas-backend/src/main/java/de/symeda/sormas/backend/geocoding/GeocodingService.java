@@ -29,7 +29,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -47,6 +46,7 @@ import com.nimbusds.jose.util.StandardCharset;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.util.ClientHelper;
 
 @Stateless
 @LocalBean
@@ -90,7 +90,7 @@ public class GeocodingService {
 			throw new IllegalArgumentException(e);
 		}
 
-		Client client = ClientBuilder.newBuilder().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build();
+		Client client = ClientHelper.newBuilderWithProxy().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build();
 		WebTarget target = client.target(targetUrl);
 		Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
 		String responseText = readResponseAsText(response);

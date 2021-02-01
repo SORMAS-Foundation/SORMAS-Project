@@ -19,8 +19,8 @@ package de.symeda.sormas.ui.utils;
 
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
+import de.symeda.sormas.api.utils.HtmlHelper;
 import elemental.json.JsonValue;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class V7ShortStringRenderer extends HtmlRenderer {
@@ -39,7 +39,7 @@ public class V7ShortStringRenderer extends HtmlRenderer {
 				value = value.substring(0, length);
 				value += "...";
 			}
-			return super.encode(StringEscapeUtils.escapeHtml4(value));
+			return super.encode(HtmlHelper.cleanHtml(value));
 		} else {
 			return null;
 		}

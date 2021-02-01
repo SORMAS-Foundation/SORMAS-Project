@@ -19,7 +19,6 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.SOR
 
 import javax.enterprise.inject.Alternative;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
@@ -29,6 +28,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.symeda.sormas.backend.util.ClientHelper;
 
 @Alternative
 public class SormasToSormasRestClient {
@@ -54,7 +55,7 @@ public class SormasToSormasRestClient {
 	}
 
 	private Invocation.Builder buildRestClient(String host, String endpoint, String authToken) {
-		return ClientBuilder.newBuilder()
+		return ClientHelper.newBuilderWithProxy()
 			.build()
 			.target(String.format(SORMAS_REST_URL_TEMPLATE, host, endpoint))
 			.request()

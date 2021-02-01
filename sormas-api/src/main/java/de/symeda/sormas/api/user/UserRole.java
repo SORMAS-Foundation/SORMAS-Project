@@ -61,7 +61,8 @@ public enum UserRole
 	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
 	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NONE),
 	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
-	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NONE);
+	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION),
+	BAG_USER(false, false, false, false, JurisdictionLevel.NONE);
 
 	/*
 	 * Hint for SonarQube issues:
@@ -92,6 +93,7 @@ public enum UserRole
 	public static final String _REST_EXTERNAL_VISITS_USER = REST_EXTERNAL_VISITS_USER.name();
 	public static final String _REST_USER = REST_USER.name();
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
+	public static final String _BAG_USER = "BAG_USER";
 
 	private Set<UserRight> defaultUserRights = null;
 
@@ -219,6 +221,9 @@ public enum UserRole
 			break;
 		case SORMAS_TO_SORMAS_CLIENT:
 			collection.add(SORMAS_TO_SORMAS_CLIENT);
+			break;
+		case BAG_USER:
+			collection.add(BAG_USER);
 			break;
 		default:
 			break;

@@ -67,7 +67,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		savedItems.addAll(savedElements);
 		grid.setItems(new ArrayList<>(savedElements));
 		reorderGrid();
-		grid.setSelectionMode(Grid.SelectionMode.SINGLE);
+		grid.setSelectionMode(Grid.SelectionMode.NONE);
 		setSizeFull();
 
 		final GridRowDragger<T> gridRowDragger = new GridRowDragger<>(grid);
@@ -77,13 +77,10 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 
 		Grid.Column<T, String> deleteColumn =
 			grid.addColumn(t -> VaadinIcons.TRASH.getHtml(), new HtmlRenderer()).setId(DELETE).setCaption(I18nProperties.getCaption(Captions.remove));
-		deleteColumn.setMaximumWidth(50);
+		deleteColumn.setMaximumWidth(50).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK + " " + CssStyles.ALIGN_CENTER);
 
 		grid.getColumns().stream().forEach(col -> {
 			col.setSortable(false);
-			if (DELETE.equals(col.getId())) {
-				col.setStyleGenerator(item -> CssStyles.ALIGN_CENTER);
-			}
 		});
 
 		grid.addItemClickListener(e -> {
@@ -98,7 +95,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		});
 
 		grid.getEditor().setBinder(binder);
-		grid.getEditor().setBuffered(false);
+		grid.getEditor().setBuffered(true);
 		grid.getEditor().setEnabled(true);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();

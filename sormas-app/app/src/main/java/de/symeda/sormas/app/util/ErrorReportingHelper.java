@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.app.util;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -28,9 +28,10 @@ public class ErrorReportingHelper {
 	 * Sends an exception report to Firebase Analytics.
 	 */
 	public static void sendCaughtException(Exception e) {
-		Crashlytics.setString(FirebaseParameter.CONNECTION_ID, String.valueOf(RetroProvider.getLastConnectionId()));
-		Crashlytics.setString(FirebaseParameter.SERVER_URL, ConfigProvider.getServerRestUrl());
-		Crashlytics.logException(e);
+		FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+		crashlytics.setCustomKey(FirebaseParameter.CONNECTION_ID, String.valueOf(RetroProvider.getLastConnectionId()));
+		crashlytics.setCustomKey(FirebaseParameter.SERVER_URL, ConfigProvider.getServerRestUrl());
+		crashlytics.recordException(e);
 	}
 
 	/**
@@ -41,8 +42,9 @@ public class ErrorReportingHelper {
 	 */
 	public static void sendCaughtException(Exception e, AbstractDomainObject entity) {
 		if (entity != null) {
-			Crashlytics.setString(FirebaseParameter.ENTITY_TYPE, entity.getClass().getSimpleName());
-			Crashlytics.setString(FirebaseParameter.ENTITY_UUID, entity.getUuid());
+			FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+			crashlytics.setCustomKey(FirebaseParameter.ENTITY_TYPE, entity.getClass().getSimpleName());
+			crashlytics.setCustomKey(FirebaseParameter.ENTITY_UUID, entity.getUuid());
 		}
 		sendCaughtException(e);
 	}

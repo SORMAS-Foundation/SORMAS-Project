@@ -15,17 +15,18 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class PrescriptionService extends AbstractAdoService<Prescription> {
+public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> {
 
 	@EJB
 	private CaseService caseService;
@@ -63,12 +64,12 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = AbstractAdoService.and(cb, filter, dateFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -108,7 +109,7 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -123,10 +124,10 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 		Join<Prescription, Therapy> therapy = prescription.join(Prescription.THERAPY, JoinType.LEFT);
 
 		if (criteria.getTherapy() != null) {
-			filter = and(cb, filter, cb.equal(therapy.get(Therapy.UUID), criteria.getTherapy().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(therapy.get(Therapy.UUID), criteria.getTherapy().getUuid()));
 		}
 		if (criteria.getPrescriptionType() != null) {
-			filter = and(cb, filter, cb.equal(prescription.get(Prescription.PRESCRIPTION_TYPE), criteria.getPrescriptionType()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(prescription.get(Prescription.PRESCRIPTION_TYPE), criteria.getPrescriptionType()));
 		}
 		if (!StringUtils.isEmpty(criteria.getTextFilter())) {
 			String[] textFilters = criteria.getTextFilter().split("\\s+");
@@ -140,7 +141,7 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 						cb.like(cb.lower(prescription.get(Prescription.PRESCRIPTION_DETAILS)), textFilter),
 //							cb.like(cb.lower(prescription.get(Prescription.TYPE_OF_DRUG)), textFilter),
 						cb.like(cb.lower(prescription.get(Prescription.PRESCRIBING_CLINICIAN)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}

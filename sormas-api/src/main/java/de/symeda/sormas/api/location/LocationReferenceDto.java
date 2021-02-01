@@ -87,7 +87,38 @@ public class LocationReferenceDto extends ReferenceDto {
 			stringBuilder.append(street);
 		}
 		if (!DataHelper.isNullOrEmpty(houseNumber)) {
+			if (stringBuilder.length() > 0 && DataHelper.isNullOrEmpty(street)) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(houseNumber);
+		}
+		if (!DataHelper.isNullOrEmpty(additionalInformation)) {
 			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(additionalInformation);
+		}
+		return stringBuilder.toString();
+	}
+
+	public static String buildCaption(String city, String street, String houseNumber, String additionalInformation) {
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		if (!DataHelper.isNullOrEmpty(city)) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(city);
+		}
+		if (!DataHelper.isNullOrEmpty(street)) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(street);
+		}
+		if (!DataHelper.isNullOrEmpty(houseNumber)) {
+			if (stringBuilder.length() > 0 && DataHelper.isNullOrEmpty(street)) {
 				stringBuilder.append(", ");
 			}
 			stringBuilder.append(houseNumber);

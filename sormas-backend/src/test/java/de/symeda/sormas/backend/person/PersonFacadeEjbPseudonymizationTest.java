@@ -37,6 +37,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
@@ -126,8 +127,24 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	@Test
 	public void testGetContactPersonOutsideJurisdiction() {
 
-		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact =
+			creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
 		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+
+		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson().toReference(), rdcf2);
+		contact.setCaze(caze.toReference());
+		contact = getContactFacade().saveContact(contact);
+		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+
+		contact.setRegion(rdcf2.region);
+		contact.setDistrict(rdcf2.district);
+		contact = getContactFacade().saveContact(contact);
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
+
+		contact.setRegion(null);
+		contact.setDistrict(null);
+		contact = getContactFacade().saveContact(contact);
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test

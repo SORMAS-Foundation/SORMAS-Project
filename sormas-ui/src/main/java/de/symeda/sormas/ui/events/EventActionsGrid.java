@@ -17,14 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import java.util.Date;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -36,13 +42,12 @@ import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-import java.util.Date;
-import java.util.stream.Collectors;
-
 @SuppressWarnings("serial")
 public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCriteria> {
 
 	public static final String EVENT_DATE = Captions.singleDayEventDate;
+	public static final String ACTION_LAST_MODIFIED_BY_OR_CREATOR = "actionLastModifiedByOrCreator";
+	public static final String EVENT_EVOLUTION_DATE = Captions.singleDayEventEvolutionDate;
 
 	@SuppressWarnings("unchecked")
 	public <V extends View> EventActionsGrid(EventCriteria eventCriteria, Class<V> viewClass) {
@@ -61,15 +66,17 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 		setColumns(
 			EventActionIndexDto.EVENT_UUID,
 			EventActionIndexDto.EVENT_TITLE,
-			createEventDateColumn(this, userLanguage),
+			createEventDateColumn(this),
+			createEventEvolutionDateColumn(this),
 			EventActionIndexDto.EVENT_STATUS,
+			EventActionIndexDto.EVENT_RISK_LEVEL,
 			EventActionIndexDto.EVENT_INVESTIGATION_STATUS,
 			EventActionIndexDto.ACTION_TITLE,
 			EventActionIndexDto.ACTION_CREATION_DATE,
 			EventActionIndexDto.ACTION_CHANGE_DATE,
 			EventActionIndexDto.ACTION_STATUS,
 			EventActionIndexDto.ACTION_PRIORITY,
-			EventActionIndexDto.ACTION_REPLYING_USER);
+			createLastModifiedByOrCreatorColumn(this));
 
 		((Column<EventActionIndexDto, String>) getColumn(EventActionIndexDto.EVENT_UUID)).setRenderer(new UuidRenderer());
 		((Column<EventActionIndexDto, Date>) getColumn(EventActionIndexDto.ACTION_CREATION_DATE))
@@ -86,25 +93,40 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			new ShowDetailsListener<>(EventActionIndexDto.EVENT_UUID, e -> ControllerProvider.getEventController().navigateToData(e.getEventUuid())));
 	}
 
-	private String createEventDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid, Language userLanguage) {
-		Column<EventActionIndexDto, String> eventDateColumn = grid.addColumn(event -> {
-			Date startDate = event.getEventStartDate();
-			Date endDate = event.getEventEndDate();
-
-			if (startDate == null) {
-				return "";
-			} else if (endDate == null) {
-				return DateHelper.formatLocalDate(startDate, userLanguage);
-			} else {
-				return String
-					.format("%s - %s", DateHelper.formatLocalDate(startDate, userLanguage), DateHelper.formatLocalDate(endDate, userLanguage));
-			}
-		});
+	private String createEventDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
+		Column<EventActionIndexDto, String> eventDateColumn =
+			grid.addColumn(event -> EventHelper.buildEventDateString(event.getEventStartDate(), event.getEventEndDate()));
 		eventDateColumn.setId(EVENT_DATE);
 		eventDateColumn.setSortProperty(EventActionIndexDto.EVENT_START_DATE);
 		eventDateColumn.setSortable(true);
 
 		return EVENT_DATE;
+	}
+
+	private String createLastModifiedByOrCreatorColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
+
+		grid.addColumn(event -> {
+			if (event.getActionLastModifiedBy() != null && event.getActionLastModifiedBy().getUuid() != null) {
+				return event.getActionLastModifiedBy();
+			} else {
+				return event.getActionCreatorUser();
+			}
+		})
+			.setId(ACTION_LAST_MODIFIED_BY_OR_CREATOR)
+			.setSortProperty(EventActionIndexDto.ACTION_LAST_MODIFIED_BY)
+			.setCaption(I18nProperties.getPrefixCaption(EventActionIndexDto.I18N_PREFIX, EventActionIndexDto.ACTION_LAST_MODIFIED_BY));
+
+		return ACTION_LAST_MODIFIED_BY_OR_CREATOR;
+	}
+
+	private String createEventEvolutionDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
+		Column<EventActionIndexDto, String> eventDateColumn =
+				grid.addColumn(event -> DateFormatHelper.formatDate(event.getEventEvolutionDate()));
+		eventDateColumn.setId(EVENT_EVOLUTION_DATE);
+		eventDateColumn.setSortProperty(EventActionIndexDto.EVENT_EVOLUTION_DATE);
+		eventDateColumn.setSortable(true);
+
+		return EVENT_EVOLUTION_DATE;
 	}
 
 	public void reload() {

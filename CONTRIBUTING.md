@@ -10,6 +10,8 @@
 
 Please read adhere to the following guidelines when submitting new issues. This allows us to process your request as quickly as possible. Make sure to always use the templates that are automatically provided when creating an issue.
 
+If you want to report a **security issue**, please follow our guideline for [*Responsible Disclosure*](SECURITY.md).
+
 **Important:** Whenever creating a new issue, **please search the repository for similar issues first** to avoid duplicates. You can do this manually or by using the search functionality in the header and limiting your results to the SORMAS repository.
 
 * [Bug Report](#bug-report)
@@ -108,6 +110,18 @@ Approved tickets are supposed to be moved manually from **Testing** to **Done*.
 The GitHub project has been configured to **automatically** move issues that are closed to **Testing** and issues that are reopened back to **In Progress**.
 
 The Development Team is responsible to keep the tickets up to date on this board and to assign the appropriate milestone in which the work is going to be released.
+
+
+### Managing dependencies
+
+For managing Java libraries as dependencies, they are managed by Maven and listed in *sormas-base/pom.xml*.  The purpose of a centralized management is to have an overview of the used libraries and adjust for new versions.
+
+1. **Payara modules**: Provided by Payara in *{payara-home}/glassfish/modules* and used in that version by other libs.
+2. **Domain libs**: Provided in Payara domain under *{payara-domain}/lib* to be usable by deployed artifacts (ear, war). They have to be listed in *sormas-base/dependencies/serverlibs.pom*. Usually for helper libraries that several artifacts need.
+3. **Compile dependencies**: Bundled in respective artifacts who need the dependency explicitly. Usually for dependencies singularly needed in one artifact.
+4. **Test libraries**: Libraries used in automated tests in one or more modules.
+
+Due to the separate build management tool Gradle for *sormas-app*, there exists a redundant listing of compile dependencies in *sormas-app/app/build.gradle*.
 
 
 ### Eclipse Troubleshooting

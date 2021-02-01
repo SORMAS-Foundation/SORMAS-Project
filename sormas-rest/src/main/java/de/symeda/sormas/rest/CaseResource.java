@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CasePersonDto;
 
 @Path("/cases")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -75,5 +76,11 @@ public class CaseResource extends EntityDtoResource {
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getDeletedUuidsSince(new Date(since));
+	}
+
+	@POST
+	@Path("/getduplicates")
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+		return FacadeProvider.getCaseFacade().getDuplicates(casePerson);
 	}
 }

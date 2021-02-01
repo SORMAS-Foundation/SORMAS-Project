@@ -53,6 +53,10 @@ $v-grid-cell-focused-border: none !default;
         &:last-child {
           padding-right: 0;
         }
+
+        &.link {
+          cursor: pointer;
+        }
       
         &.priority-high {
           color: $s-important-color;

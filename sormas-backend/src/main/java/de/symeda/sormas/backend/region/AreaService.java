@@ -7,8 +7,6 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -17,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.AreaCriteria;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
@@ -54,15 +53,15 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 				String textFilter = "%" + s.toLowerCase() + "%";
 				if (StringUtils.isNotBlank(textFilter)) {
 					Predicate likeFilters = cb.or(cb.like(cb.lower(areaRoot.get(Region.NAME)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = and(cb, filter, cb.or(cb.equal(areaRoot.get(Area.ARCHIVED), false), cb.isNull(areaRoot.get(Area.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(areaRoot.get(Area.ARCHIVED), false), cb.isNull(areaRoot.get(Area.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = and(cb, filter, cb.equal(areaRoot.get(Area.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(areaRoot.get(Area.ARCHIVED), true));
 			}
 		}
 		return filter;

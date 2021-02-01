@@ -49,7 +49,11 @@ WebUI.setText(findTestObject('Events/NewEventView/input_City_inputBox'), 'Klammh
 WebUI.click(findTestObject('Events/NewEventView/td_AreaType_Urban_DDItem'))*/
 WebUI.click(findTestObject('Events/NewEventView/div_District_v-filterselect-button'))
 
-WebUI.click(findTestObject('Events/NewEventView/td_Voreingestellter Landkreis'))
+WebUI.setText(findTestObject('Events/NewEventView/input_district'), 'vorein')
+
+WebUI.sendKeys(findTestObject('Events/NewEventView/input_district'), Keys.chord(Keys.ENTER))
+
+//WebUI.click(findTestObject('Events/NewEventView/td_Voreingestellter Landkreis'))
 
 /*WebUI.click(findTestObject('Events/NewEventView/div_Community_v-filterselect-button'))
 

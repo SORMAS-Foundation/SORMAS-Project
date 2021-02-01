@@ -35,17 +35,20 @@ import androidx.databinding.Bindable;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
@@ -73,6 +76,12 @@ public class Person extends PseudonymizableAdo {
 	private String firstName;
 	@Column(nullable = false)
 	private String lastName;
+	@Enumerated(EnumType.STRING)
+	private Salutation salutation;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String otherSalutation;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String birthName;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String nickname;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -81,6 +90,8 @@ public class Person extends PseudonymizableAdo {
 	private String mothersName;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String fathersName;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String namesOfGuardians;
 	@Column
 	private Integer birthdateDD;
 	@Column
@@ -156,6 +167,8 @@ public class Person extends PseudonymizableAdo {
 	private OccupationType occupationType;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String occupationDetails;
+	@Enumerated
+	private ArmedForcesRelationType armedForcesRelationType;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String generalPractitionerDetails;
@@ -166,8 +179,16 @@ public class Person extends PseudonymizableAdo {
 
 	private List<Location> addresses = new ArrayList<>();
 
-	@Column
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalId;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalToken;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Country birthCountry;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Country citizenship;
 
 	public Person() {
 	}
@@ -188,6 +209,30 @@ public class Person extends PseudonymizableAdo {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public Salutation getSalutation() {
+		return salutation;
+	}
+
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	public String getOtherSalutation() {
+		return otherSalutation;
+	}
+
+	public void setOtherSalutation(String otherSalutation) {
+		this.otherSalutation = otherSalutation;
+	}
+
+	public String getBirthName() {
+		return birthName;
+	}
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
 	}
 
 	public String getNickname() {
@@ -352,6 +397,14 @@ public class Person extends PseudonymizableAdo {
 		this.occupationDetails = occupationDetails;
 	}
 
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
+	}
+
 	public CauseOfDeath getCauseOfDeath() {
 		return causeOfDeath;
 	}
@@ -426,6 +479,14 @@ public class Person extends PseudonymizableAdo {
 
 	public void setFathersName(String fathersName) {
 		this.fathersName = fathersName;
+	}
+
+	public String getNamesOfGuardians() {
+		return namesOfGuardians;
+	}
+
+	public void setNamesOfGuardians(String namesOfGuardians) {
+		this.namesOfGuardians = namesOfGuardians;
 	}
 
 	public Region getPlaceOfBirthRegion() {
@@ -532,7 +593,31 @@ public class Person extends PseudonymizableAdo {
 		this.addresses = addresses;
 	}
 
-	public String getExternalId() { return externalId; }
+	public String getExternalId() {
+		return externalId;
+	}
 
-	public void setExternalId(String externalId) { this.externalId = externalId; }
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+
+	public Country getBirthCountry() {
+		return birthCountry;
+	}
+
+	public void setBirthCountry(Country birthCountry) {
+		this.birthCountry = birthCountry;
+	}
+
+	public Country getCitizenship() {
+		return citizenship;
+	}
+
+	public void setCitizenship(Country citizenship) {
+		this.citizenship = citizenship;
+	}
 }

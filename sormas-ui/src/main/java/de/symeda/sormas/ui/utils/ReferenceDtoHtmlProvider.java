@@ -17,12 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import com.vaadin.data.ValueProvider;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 
 @SuppressWarnings("serial")
 public class ReferenceDtoHtmlProvider implements ValueProvider<ReferenceDto, String> {
@@ -30,11 +29,12 @@ public class ReferenceDtoHtmlProvider implements ValueProvider<ReferenceDto, Str
 	@Override
 	public String apply(ReferenceDto source) {
 
-		String html;
+		final String html;
 		if (source != null) {
-			String uuid = source.getUuid();
-			html = "<a title='" + StringEscapeUtils.escapeHtml4(uuid) + "'>" + StringEscapeUtils.escapeHtml4(DataHelper.getShortUuid(uuid)) + "</a> ("
-				+ StringEscapeUtils.escapeHtml4(source.getCaption()) + ")";
+			html = String.format(
+				"%s (%s)",
+				HtmlHelper.buildHyperlinkTitle(source.getUuid(), DataHelper.getShortUuid(source.getUuid())),
+				HtmlHelper.cleanHtml(source.getCaption()));
 		} else {
 			html = "";
 		}

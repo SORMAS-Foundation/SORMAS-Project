@@ -77,10 +77,21 @@
                         app:maxLength="24"
                         style="@style/ControlSingleColumnStyle"/>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/caseData_externalID"
                         app:value="@={data.externalID}"
-                        style="@style/ControlSingleColumnStyle"/>
+                    style="@style/ControlFirstOfTwoColumnsStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_externalToken"
+                    app:value="@={data.externalToken}"
+                    style="@style/ControlSecondOfTwoColumnsStyle"/>
+                </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_caseIdIsm"
@@ -166,6 +177,11 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_reportingType"
                     app:value="@={data.reportingType}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_reportingDistrict"
+                    app:value="@={data.reportingDistrict}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
@@ -356,6 +372,43 @@
                         app:value="@{data.pointOfEntryDetails}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/caseData_nosocomialOutbreak"
+                    app:value="@={data.nosocomialOutbreak}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_infectionSetting"
+                    app:dependencyParentField="@{caseDataNosocomialOutbreak}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@={data.infectionSetting}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_prohibitionToWork"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.prohibitionToWork}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/caseData_prohibitionToWorkFrom"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:dependencyParentField="@{caseDataProhibitionToWork}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@={data.prohibitionToWorkFrom}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/caseData_prohibitionToWorkUntil"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:dependencyParentField="@{caseDataProhibitionToWork}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@={data.prohibitionToWorkUntil}" />
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField

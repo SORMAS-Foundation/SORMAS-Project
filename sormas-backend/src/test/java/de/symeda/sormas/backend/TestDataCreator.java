@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -62,6 +63,8 @@ import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
@@ -82,6 +85,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.systemevents.SystemEventDto;
+import de.symeda.sormas.api.systemevents.SystemEventStatus;
+import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -93,6 +99,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -341,6 +348,7 @@ public class TestDataCreator {
 		caze.setFacilityType(beanTest.getFacilityFacade().getByUuid(rdcf.facility.getUuid()).getType());
 		caze.setHealthFacility(rdcf.facility);
 		caze.setPointOfEntry(rdcf.pointOfEntry);
+		caze.setOutcomeDate(DateHelper.addWeeks(reportAndOnsetDate, 2));
 
 		if (setCustomFields != null) {
 			setCustomFields.accept(caze);
@@ -562,6 +570,11 @@ public class TestDataCreator {
 
 	public EventDto createEvent(UserReferenceDto reportingUser) {
 
+		return createEvent(reportingUser, new Date());
+	}
+
+	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {
+
 		return createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -571,7 +584,7 @@ public class TestDataCreator {
 			"LastName",
 			null,
 			null,
-			new Date(),
+			eventDate,
 			new Date(),
 			reportingUser,
 			null,
@@ -987,7 +1000,7 @@ public class TestDataCreator {
 		return campaign;
 	}
 
-	public CampaignDiagramDefinitionDto createCampaignDiagramDefinition(String diagramId, String diagramCaption){
+	public CampaignDiagramDefinitionDto createCampaignDiagramDefinition(String diagramId, String diagramCaption) {
 		CampaignDiagramDefinitionDto campaignDiagramDefinition = CampaignDiagramDefinitionDto.build();
 		campaignDiagramDefinition.setDiagramType(DiagramType.COLUMN);
 		campaignDiagramDefinition.setDiagramId(diagramId);
@@ -1265,6 +1278,30 @@ public class TestDataCreator {
 		document.setRelatedEntityUuid(relatedEntityUuid);
 
 		return beanTest.getDocumentFacade().saveDocument(document, content);
+	}
+
+	public ExportConfigurationDto createExportConfiguration(String name, ExportType exportType, Set<String> properites, UserReferenceDto user) {
+		ExportConfigurationDto exportConfiguration = ExportConfigurationDto.build(user, exportType);
+		exportConfiguration.setName(name);
+		exportConfiguration.setProperties(properites);
+
+		beanTest.getExportFacade().saveExportConfiguration(exportConfiguration);
+
+		return exportConfiguration;
+	}
+
+	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, SystemEventStatus status) {
+		return createSystemEvent(type, startDate, new Date(startDate.getTime() + 1000), status, "Generated for test purposes");
+	};
+
+	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, Date endDate, SystemEventStatus status, String additionalInfo) {
+		SystemEventDto systemEvent = SystemEventDto.build();
+		systemEvent.setType(type);
+		systemEvent.setStartDate(startDate);
+		systemEvent.setEndDate(endDate);
+		systemEvent.setStatus(status);
+		systemEvent.setAdditionalInfo(additionalInfo);
+		return systemEvent;
 	}
 
 	/**

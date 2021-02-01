@@ -16,17 +16,20 @@
 package de.symeda.sormas.app.epidata;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
 
 import android.content.res.Resources;
-import android.view.View;
+import android.text.Html;
 import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -35,6 +38,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
@@ -89,7 +93,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 
 		contentBinding.epiDataExposureDetailsKnown.addValueChangedListener(field -> {
 			YesNoUnknown value = (YesNoUnknown) field.getValue();
-			contentBinding.exposuresLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : GONE);
+			contentBinding.exposuresLayout.setVisibility(value == YesNoUnknown.YES ? VISIBLE : GONE);
 			if (value != YesNoUnknown.YES) {
 				clearExposures();
 			}
@@ -117,6 +121,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 	private void updateExposures() {
 		getContentBinding().setExposureList(getExposureList());
 		getContentBinding().epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
+		updateAddExposuresButtonVisibility();
 	}
 
 	private void addExposure(Exposure exposure) {
@@ -160,6 +165,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		if (!(getActivityRootData() instanceof Case)) {
 			contentBinding.epiDataContactWithSourceCaseKnown.setVisibility(GONE);
 			contentBinding.sourceContactsHeading.setVisibility(GONE);
+			contentBinding.exposureInvestigationInfo.setText(Html.fromHtml(I18nProperties.getString(Strings.infoExposureInvestigationContacts)));
 		}
 	}
 
@@ -176,6 +182,14 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 	@Override
 	public boolean isShowNewAction() {
 		return false;
+	}
+
+	private void updateAddExposuresButtonVisibility() {
+		if (getActivityRootData() instanceof Contact && !getExposureList().isEmpty()) {
+			getContentBinding().btnAddExposure.setVisibility(GONE);
+		} else {
+			getContentBinding().btnAddExposure.setVisibility(VISIBLE);
+		}
 	}
 
 }

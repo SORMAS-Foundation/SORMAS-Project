@@ -25,6 +25,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -46,7 +47,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 	private static final long serialVersionUID = -6759724916847528789L;
 
 	private static final String CREATING_LABEL_LOC = "creatingLabelLoc";
-	private static final String REPLYING_LABEL_LOC = "replyingLabelLoc";
+	private static final String LAST_MODIFIED_BY_LABEL_LOC = "lastModifiedByLabelLoc";
 	private static final String STATUS_CHANGE_LABEL_LOC = "statusChangeLabelLoc";
 
 	//@formatter:off
@@ -55,10 +56,11 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 					loc(ActionDto.ACTION_CONTEXT),
 					locs(ActionDto.EVENT)) +
 			fluidRowLocs(ActionDto.DATE, ActionDto.PRIORITY) +
-			loc(CREATING_LABEL_LOC) +
+			loc(CREATING_LABEL_LOC) + 
+			fluidRowLocs(ActionDto.ACTION_MEASURE) +
 			fluidRowLocs(ActionDto.TITLE) +
 			fluidRowLocs(ActionDto.DESCRIPTION) +
-			loc(REPLYING_LABEL_LOC) +
+			loc(LAST_MODIFIED_BY_LABEL_LOC) +
 			fluidRowLocs(ActionDto.REPLY) +
 			fluidRowLocs(4, ActionDto.ACTION_STATUS, 8, STATUS_CHANGE_LABEL_LOC);
 	//@formatter:on
@@ -69,7 +71,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		addValueChangeListener(e -> {
 			updateByActionContext();
 			updateByCreating();
-			updateReplyInfo();
+			updateLastModifiedByInfo();
 			updateStatusChangeInfo();
 		});
 
@@ -87,13 +89,14 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		DateTimeField date = addDateField(ActionDto.DATE, DateTimeField.class, -1);
 		date.setImmediate(true);
 		addField(ActionDto.PRIORITY, ComboBox.class);
-		addField(ActionDto.ACTION_STATUS, NullableOptionGroup.class);
+		addField(ActionDto.ACTION_STATUS, OptionGroup.class);
 		NullableOptionGroup actionContext = addField(ActionDto.ACTION_CONTEXT, NullableOptionGroup.class);
 		actionContext.setImmediate(true);
 		actionContext.addValueChangeListener(event -> updateByActionContext());
 		// XXX: set visible when other contexts will be managed
 		actionContext.setVisible(false);
 
+		addField(ActionDto.ACTION_MEASURE, TextField.class);
 		TextField title = addField(ActionDto.TITLE, TextField.class);
 		title.addStyleName(SOFT_REQUIRED);
 		RichTextArea description = addField(ActionDto.DESCRIPTION, RichTextArea.class);
@@ -103,19 +106,19 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		reply.setNullRepresentation("");
 		reply.setImmediate(true);
 
-		setRequired(true, ActionDto.ACTION_CONTEXT, ActionDto.DATE);
+		setRequired(true, ActionDto.ACTION_CONTEXT, ActionDto.DATE, ActionDto.ACTION_STATUS);
 		setReadOnly(true, ActionDto.ACTION_CONTEXT, ActionDto.EVENT);
 	}
 
-	private void updateReplyInfo() {
-		if (getValue().getReplyingUser() != null && getValue().getChangeDate() != null) {
+	private void updateLastModifiedByInfo() {
+		if (getValue().getLastModifiedBy() != null && getValue().getChangeDate() != null) {
 			Label replyLabel = new Label(
 				String.format(
-					I18nProperties.getCaption(Captions.actionReplyingLabel),
+					I18nProperties.getCaption(Captions.actionLastModifiedByLabel),
 					DateFormatHelper.formatDate(getValue().getChangeDate()),
-					getValue().getReplyingUser().getCaption()));
+					getValue().getLastModifiedBy().getCaption()));
 			replyLabel.addStyleNames(CssStyles.LABEL_ITALIC);
-			getContent().addComponent(replyLabel, REPLYING_LABEL_LOC);
+			getContent().addComponent(replyLabel, LAST_MODIFIED_BY_LABEL_LOC);
 		}
 	}
 

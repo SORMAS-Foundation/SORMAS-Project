@@ -27,6 +27,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -88,6 +89,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String DECEASED_PERSON_ILL = "deceasedPersonIll";
 	public static final String DECEASED_PERSON_NAME = "deceasedPersonName";
 	public static final String DECEASED_PERSON_RELATION = "deceasedPersonRelation";
+	public static final String PATIENT_EXPOSITION_ROLE = "patientExpositionRole";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -100,6 +102,8 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	private String exposureTypeDetails;
 	private LocationDto location;
+	@HideForCountriesExcept
+	private PatientExpositionRole patientExpositionRole;
 
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
@@ -300,6 +304,14 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setLocation(LocationDto location) {
 		this.location = location;
+	}
+
+	public PatientExpositionRole getPatientExpositionRole() {
+		return patientExpositionRole;
+	}
+
+	public void setPatientExpositionRole(PatientExpositionRole patientExpositionRole) {
+		this.patientExpositionRole = patientExpositionRole;
 	}
 
 	public YesNoUnknown getIndoors() {

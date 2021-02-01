@@ -197,7 +197,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 					+ "', color: '#B22222', dataLabels: { allowOverlap: false }, data: [");
 			for (int i = 0; i < confirmedNumbers.length; i++) {
 				if (i == confirmedNumbers.length - 1) {
-					hcjs.append(confirmedNumbers[i] + "]}]};");
+					hcjs.append(confirmedNumbers[i] + "]}],");
 				} else {
 					hcjs.append(confirmedNumbers[i] + ", ");
 				}
@@ -245,12 +245,31 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 					+ "', color: '#B22222', dataLabels: { allowOverlap: false },  data: [");
 			for (int i = 0; i < deadNumbers.length; i++) {
 				if (i == deadNumbers.length - 1) {
-					hcjs.append(deadNumbers[i] + "]}]};");
+					hcjs.append(deadNumbers[i] + "]}],");
 				} else {
 					hcjs.append(deadNumbers[i] + ", ");
 				}
 			}
 		}
+
+		hcjs.append("exporting: {\n" +
+				"        buttons: {\n" +
+				"            contextButton: {\n" +
+				"                menuItems: [\n" +
+				"                    'printChart',\n" +
+				"                    'separator',\n" +
+				"                    'downloadPNG',\n" +
+				"                    'downloadJPEG',\n" +
+				"                    'downloadPDF',\n" +
+				"                    'downloadSVG',\n" +
+				"                    'downloadCSV',\n" +
+				"                    'downloadXLS'\n" +
+				"                ]\n" +
+				"            }\n" +
+				"        }\n" +
+				"    }");
+
+		hcjs.append("};");
 
 		epiCurveChart.setHcjs(hcjs.toString());
 	}

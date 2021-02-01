@@ -51,6 +51,7 @@ import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
@@ -148,7 +149,10 @@ public class Case extends CoreAdo {
 	public static final String COMPLETENESS = "completeness";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
+	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
+	public static final String INFECTION_SETTING = "infectionSetting";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
@@ -189,6 +193,7 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS = "quarantineReasonBeforeIsolationDetails";
 	public static final String END_OF_ISOLATION_REASON = "endOfIsolationReason";
 	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
+	public static final String REPORTING_DISTRICT = "reportingDistrict";
 
 	private Person person;
 	private String description;
@@ -276,6 +281,7 @@ public class Case extends CoreAdo {
 	private Float completeness;
 	private String additionalDetails;
 	private String externalID;
+	private String externalToken;
 	private boolean sharedToCountry;
 
 	private QuarantineType quarantine;
@@ -322,6 +328,15 @@ public class Case extends CoreAdo {
 	private String quarantineReasonBeforeIsolationDetails;
 	private EndOfIsolationReason endOfIsolationReason;
 	private String endOfIsolationReasonDetails;
+
+	private boolean nosocomialOutbreak;
+	private InfectionSetting infectionSetting;
+
+	private YesNoUnknown prohibitionToWork;
+	private Date prohibitionToWorkFrom;
+	private Date prohibitionToWorkUntil;
+
+	private District reportingDistrict;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
@@ -1021,6 +1036,13 @@ public class Case extends CoreAdo {
 		this.externalID = externalID;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+
 	@Column
 	public boolean isSharedToCountry() {
 		return sharedToCountry;
@@ -1343,6 +1365,60 @@ public class Case extends CoreAdo {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	@Column
+	public boolean isNosocomialOutbreak() {
+		return nosocomialOutbreak;
+	}
+
+	public void setNosocomialOutbreak(boolean nosocomialOutbreak) {
+		this.nosocomialOutbreak = nosocomialOutbreak;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionSetting getInfectionSetting() {
+		return infectionSetting;
+	}
+
+	public void setInfectionSetting(InfectionSetting infectionSetting) {
+		this.infectionSetting = infectionSetting;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	@ManyToOne
+	public District getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(District reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	@ManyToOne(cascade = CascadeType.ALL)

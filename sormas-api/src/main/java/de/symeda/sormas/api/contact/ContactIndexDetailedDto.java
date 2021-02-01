@@ -4,7 +4,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
@@ -64,10 +63,10 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
 								   String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, String caseDistrictName, String caseCommunityUuid,
-								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate, String externalID,
+								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate, String externalID, String externalToken,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								   String reportingUserFirstName, String reportingUserLastName, int visitCount, long eventCount
+								   String reportingUserFirstName, String reportingUserLastName, int visitCount
 	) {
 	//@formatter:on
 
@@ -75,7 +74,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, regionName, districtUuid, districtName, communityUuid,
 				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil, symptomJournalStatus,
 				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-				caseReportingUserUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, visitCount);
+				caseReportingUserUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, visitCount);
 		//@formatter:on
 
 		this.sex = sex;
@@ -87,7 +86,6 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
-		this.eventCount = eventCount;
 	}
 
 	public Sex getSex() {
@@ -132,6 +130,10 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 	public Long getEventCount() {
 		return eventCount;
+	}
+
+	public void setEventCount(Long eventCount) {
+		this.eventCount = eventCount;
 	}
 
 	public String getLatestEventId() {

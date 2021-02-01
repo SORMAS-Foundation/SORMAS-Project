@@ -31,9 +31,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -165,7 +167,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		layout.addComponent(this.createLastReportedDistrictComponent());
 
-		layout.addComponent(createOutbreakDistrictComponent());
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+			layout.addComponent(createOutbreakDistrictComponent());
+		}
 
 		layout.addComponent(createCasesInQuarantineLayout());
 
@@ -447,7 +451,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		updateCaseComponent(disease);
 		updateCaseFatalityComponent(disease);
 		updateLastReportedDistrictComponent(disease);
-		updateOutbreakDistrictComponent(disease);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+			updateOutbreakDistrictComponent(disease);
+		}
 		updateEventComponent(disease);
 		updateTestResultComponent(disease);
 		updateCasesInQuarantineData();

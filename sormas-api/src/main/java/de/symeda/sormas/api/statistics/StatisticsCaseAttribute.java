@@ -45,6 +45,18 @@ public enum StatisticsCaseAttribute {
 		StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR,
 		StatisticsCaseSubAttribute.DATE_RANGE),
 
+	OUTCOME_TIME(StatisticsCaseAttributeGroup.TIME,
+		false,
+		true,
+		StatisticsCaseSubAttribute.YEAR,
+		StatisticsCaseSubAttribute.QUARTER,
+		StatisticsCaseSubAttribute.MONTH,
+		StatisticsCaseSubAttribute.EPI_WEEK,
+		StatisticsCaseSubAttribute.QUARTER_OF_YEAR,
+		StatisticsCaseSubAttribute.MONTH_OF_YEAR,
+		StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR,
+		StatisticsCaseSubAttribute.DATE_RANGE),
+
 	JURISDICTION(StatisticsCaseAttributeGroup.PLACE,
 		true,
 		true,

@@ -30,20 +30,22 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
-import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteria> {
 
 	private static final long serialVersionUID = -7922340233873282326L;
 
-	private static final String VIEW_FORMS_BTN_ID = "viewForms";
+	private static final String OPEN_BTN_ID = "open";
 
 	@SuppressWarnings("unchecked")
 	public CampaignGrid(CampaignCriteria criteria) {
@@ -63,22 +65,18 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			setCriteria(criteria);
 		}
 
-		addEditColumn(e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid()));
+		final boolean canEditCampaigns = UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT);
+		final String navigateToCampaignColumnIcon = canEditCampaigns ? VaadinIcons.EDIT.getHtml() : VaadinIcons.EYE.getHtml();
+		final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon, new HtmlRenderer());
+		final String navigateToCampaignColumnId = canEditCampaigns ? EDIT_BTN_ID : OPEN_BTN_ID;
+		navigateToCampaignColumn.setId(navigateToCampaignColumnId);
+		navigateToCampaignColumn.setSortable(false);
+		navigateToCampaignColumn.setWidth(20);
 
-		Column<CampaignIndexDto, String> viewFormsColumn = addColumn(entry -> VaadinIcons.EYE.getHtml(), new HtmlRenderer());
-		viewFormsColumn.setId(VIEW_FORMS_BTN_ID);
-		viewFormsColumn.setSortable(false);
-		viewFormsColumn.setWidth(25);
+		addItemClickListener(new ShowDetailsListener<>(navigateToCampaignColumnId, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
 
-		setColumns(
-			EDIT_BTN_ID,
-			VIEW_FORMS_BTN_ID,
-			CampaignIndexDto.UUID,
-			CampaignIndexDto.NAME,
-			CampaignIndexDto.START_DATE,
-			CampaignIndexDto.END_DATE);
+		setColumns(navigateToCampaignColumnId, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
 		Language userLanguage = I18nProperties.getUserLanguage();
-		((Column<CampaignIndexDto, String>) getColumn(CampaignIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.END_DATE))
@@ -87,11 +85,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
-		getColumn(EDIT_BTN_ID).setWidth(40);
-		getColumn(VIEW_FORMS_BTN_ID).setWidth(40);
-
-		addItemClickListener(
-			new ShowDetailsListener<>(VIEW_FORMS_BTN_ID, e -> ControllerProvider.getCampaignController().navigateToCampaignData(e.getUuid())));
+		getColumn(navigateToCampaignColumnId).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 	}
 
 	public void setLazyDataProvider() {

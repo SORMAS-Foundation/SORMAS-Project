@@ -1,20 +1,28 @@
 
 @mixin sormas-notification {
-	
+
 	.v-Notification {
 		@include valo-notification-closable-style;
-		
+
+		text-align: left;
+
 		&:after {
 			line-height: 16px;
 		}
 	}
+	.v-Notification.error {
+		top: 322px !important;
+	}
+	.v-Notification.warning {
+		top: 322px !important;
+	}
 
 	.v-Notification.tray {
-		
+
 		&.notification-error {
 			background: #cc0000;
 			color: white;
-			 
+
 			&::after {
 				color: white;
 				border-color: white;
@@ -26,6 +34,10 @@
       				p  {}
 		}
 	
+	}
+
+	.v-Notification.humanized .v-Notification-caption {
+		color: #005A9C;
 	}
 
 }

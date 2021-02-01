@@ -18,9 +18,7 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
@@ -39,7 +37,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -131,7 +128,8 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+	public void refreshMenu(SubMenu menu, String params) {
+
 		if (!findReferenceByParams(params)) {
 			return;
 		}
@@ -139,7 +137,9 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
 
 		// Handle outbreaks for the disease and district of the case
-		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease()) && caze.getDisease().usesSimpleViewForOutbreaks()) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
+			&& FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease())
+			&& caze.getDisease().usesSimpleViewForOutbreaks()) {
 			hasOutbreak = true;
 
 			//			viewConfiguration.setViewMode(ViewMode.SIMPLE);
@@ -165,8 +165,10 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getCaption(CaseDataDto.I18N_PREFIX), params);
 
-		boolean showExtraMenuEntries =
-			!hasOutbreak || !caze.getDisease().usesSimpleViewForOutbreaks() || viewConfiguration.getViewMode() != ViewMode.SIMPLE;
+		boolean showExtraMenuEntries = FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.OUTBREAKS)
+			|| !hasOutbreak
+			|| !caze.getDisease().usesSimpleViewForOutbreaks()
+			|| viewConfiguration.getViewMode() != ViewMode.SIMPLE;
 		if (showExtraMenuEntries) {
 			menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
 			if (caze.getDisease() == Disease.CONGENITAL_RUBELLA) {
@@ -199,7 +201,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
-		
+
 		if (caseFollowupEnabled && caze.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 			menu.addView(CaseVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VISITS), params);
 		}
@@ -220,12 +222,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 
-		infoLabel.setValue(getReference().getCaption());
-
-		infoLabelSub.setValue(
-			caze.getDisease() != Disease.OTHER
-				? DataHelper.toStringNullable(caze.getDisease())
-				: DataHelper.toStringNullable(caze.getDiseaseDetails()));
+		setMainHeaderComponent(ControllerProvider.getCaseController().getCaseViewTitleLayout(caze));
 	}
 
 	@Override

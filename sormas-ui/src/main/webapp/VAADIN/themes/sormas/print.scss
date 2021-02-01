@@ -122,6 +122,11 @@
     .v-grid-selection-checkbox {
       display: none !important;
     }
+    :root .sormas .v-select-optiongroup-horizontal .v-radiobutton > input:checked ~ label,
+    :root .sormas .v-select-optiongroup-horizontal .v-checkbox > input:checked ~ label {
+	  -webkit-print-color-adjust: exact !important;
+	  color-adjust: exact !important;
+	}
     // TODO: a lot of things…
   }
 }

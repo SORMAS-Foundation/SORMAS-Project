@@ -49,7 +49,7 @@ public class InfoProvider {
 	 * @return
 	 */
 	public String getMinimumRequiredVersion() {
-		return "1.52.0";
+		return "1.53.0";
 	}
 
 	/**

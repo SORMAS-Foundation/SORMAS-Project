@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.feature;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -17,10 +16,23 @@ public enum FeatureType {
 	WEEKLY_REPORTING(true, true, null),
 	CLINICAL_MANAGEMENT(true, true, null),
 	NATIONAL_CASE_SHARING(true, false, null),
-	TASK_GENERATION_CASE_SURVEILLANCE(true, true, null),
-	TASK_GENERATION_CONTACT_TRACING(true, true, null),
-	TASK_GENERATION_EVENT_SURVEILLANCE(true, true, null),
-	TASK_GENERATION_GENERAL(true, true, null),
+	TASK_MANAGEMENT(true, true, null),
+	TASK_GENERATION_CASE_SURVEILLANCE(true,
+		true,
+		new FeatureType[] {
+			TASK_MANAGEMENT }),
+	TASK_GENERATION_CONTACT_TRACING(true,
+		true,
+		new FeatureType[] {
+			TASK_MANAGEMENT }),
+	TASK_GENERATION_EVENT_SURVEILLANCE(true,
+		true,
+		new FeatureType[] {
+			TASK_MANAGEMENT }),
+	TASK_GENERATION_GENERAL(true,
+		true,
+		new FeatureType[] {
+			TASK_MANAGEMENT }),
 	CAMPAIGNS(true, false, null),
 	CASE_SURVEILANCE(true, true, null),
 	CONTACT_TRACING(true,
@@ -34,9 +46,16 @@ public enum FeatureType {
 			CONTACT_TRACING }),
 	INFRASTRUCTURE_TYPE_AREA(true, false, null),
 	CASE_FOLLOWUP(true, false, null),
-	TASK_NOTIFICATIONS(true, true, null),
+	TASK_NOTIFICATIONS(true,
+		true,
+		new FeatureType[] {
+			TASK_MANAGEMENT }),
+	MANUAL_EXTERNAL_MESSAGES(true, true, null),
 	OTHER_NOTIFICATIONS(true, true, null),
-	DOCUMENTS(true, false, null);
+	DOCUMENTS(true, false, null),
+	OUTBREAKS(true, true, null),
+	LAB_MESSAGES(true, false, null),
+	ASSIGN_TASKS_TO_HIGHER_LEVEL(true, true, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
@@ -49,7 +68,7 @@ public enum FeatureType {
 	 */
 	private final boolean enabledDefault;
 
-	private FeatureType[] dependentFeatures;
+	private final FeatureType[] dependentFeatures;
 
 	FeatureType(boolean serverFeature, boolean enabledDefault, FeatureType[] dependentFeatures) {
 		this.serverFeature = serverFeature;
@@ -84,26 +103,8 @@ public enum FeatureType {
 		return dependentFeatures != null;
 	}
 
-	public boolean dependencyTriggered() {
-		List<FeatureType> featureDependencyList = Arrays.asList(dependentFeatures);
-		List<FeatureType> listOfEnabledDependentFeatures = new ArrayList<>();
-
-		listOfEnabledDependentFeatures.addAll(checkDependency(featureDependencyList));
-		return listOfEnabledDependentFeatures.isEmpty();
-	}
-
-	public List<FeatureType> checkDependency(List<FeatureType> featureTypeList) {
-		List<FeatureType> listOfEnabledDependentFeatures = new ArrayList<>();
-		for (FeatureType featureType : featureTypeList) {
-			if (featureType.isDependent()) {
-				listOfEnabledDependentFeatures.addAll(checkDependency(Arrays.asList(featureType.dependentFeatures)));
-			}
-
-			if (featureType.isEnabledDefault() && !featureType.isDependent()) {
-				listOfEnabledDependentFeatures.add(featureType);
-			}
-		} ;
-		return listOfEnabledDependentFeatures;
+	public FeatureType[] getDependentFeatures() {
+		return dependentFeatures;
 	}
 
 }

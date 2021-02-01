@@ -369,14 +369,19 @@ public class ContactsDashboardView extends AbstractDashboardView {
 				rowsLayout.setSizeFull();
 			} else {
 				rowsLayout.addComponent(statisticsComponent, 0);
-				mapLayout.ifPresent(l -> epiCurveAndMapLayout.addComponent(l, 1));
+				mapLayout.ifPresent(l -> {
+					epiCurveAndMapLayout.addComponent(l, 1);
+					mapComponent.refreshMap();
+				});
 				epiCurveLayout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 				ContactsDashboardView.this.setHeightUndefined();
 				epiCurveAndMapLayout.setHeightUndefined();
 				rowsLayout.setHeightUndefined();
 			}
 			caseStatisticsLayout.setVisible(!expanded);
-			networkDiagramRowLayout.setVisible(!expanded);
+			if (networkDiagramRowLayout != null) {
+				networkDiagramRowLayout.setVisible(!expanded);
+			}
 			contactsStatisticsLayout.setVisible(!expanded);
 		});
 
@@ -415,7 +420,9 @@ public class ContactsDashboardView extends AbstractDashboardView {
 				rowsLayout.setHeightUndefined();
 			}
 			caseStatisticsLayout.setVisible(!expanded);
-			networkDiagramRowLayout.setVisible(!expanded);
+			if (networkDiagramRowLayout != null) {
+				networkDiagramRowLayout.setVisible(!expanded);
+			}
 			contactsStatisticsLayout.setVisible(!expanded);
 		});
 
@@ -452,6 +459,9 @@ public class ContactsDashboardView extends AbstractDashboardView {
 				}
 				caseStatisticsLayout.setVisible(!expanded);
 				epiCurveAndMapLayout.setVisible(!expanded);
+				if (!expanded) {
+					mapLayout.ifPresent(l -> mapComponent.refreshMap());
+				}
 				contactsStatisticsLayout.setVisible(!expanded);
 			});
 			return layout;

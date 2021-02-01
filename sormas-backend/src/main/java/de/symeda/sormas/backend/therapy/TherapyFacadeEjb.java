@@ -47,19 +47,16 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		return target;
 	}
 
-	public Therapy fromDto(@NotNull TherapyDto source) {
+	public Therapy fromDto(@NotNull TherapyDto source, boolean checkChangeDate) {
 
-		Therapy target = service.getByUuid(source.getUuid());
-
-		if (target == null) {
-			target = new Therapy();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+		Therapy target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), () -> {
+			Therapy newTherapy = new Therapy();
+			if (source.getChangeDate() != null) {
+				newTherapy.setChangeDate(new Timestamp(source.getChangeDate().getTime()));
 			}
-		}
 
-		DtoHelper.validateDto(source, target);
+			return newTherapy;
+		}, checkChangeDate);
 
 		return target;
 	}

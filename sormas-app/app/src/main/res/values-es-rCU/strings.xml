@@ -101,6 +101,7 @@
     <string name="action_select">Seleccionar</string>
     <string name="action_send">Enviar</string>
     <string name="action_set_cleared_to_no">Marcar limpios como No</string>
+    <string name="action_set_cleared_to_unknown">Marcar limpios como Desconocido</string>
     <string name="action_show_classification_rules">Ver reglas de clasificación</string>
     <string name="action_submit_report">Enviar informe semanal</string>
     <string name="action_sync">Sincronizar</string>

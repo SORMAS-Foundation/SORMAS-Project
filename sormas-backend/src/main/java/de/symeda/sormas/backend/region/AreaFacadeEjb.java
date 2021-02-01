@@ -110,7 +110,7 @@ public class AreaFacadeEjb implements AreaFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
 		}
 
-		entity = fromDto(area, entity);
+		entity = fromDto(area, entity, true);
 		service.ensurePersisted(entity);
 	}
 
@@ -138,13 +138,8 @@ public class AreaFacadeEjb implements AreaFacade {
 		return service.getByName(name, includeArchivedAreas).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	public Area fromDto(@NotNull AreaDto source, Area target) {
-		if (target == null) {
-			target = new Area();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target);
+	public Area fromDto(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setExternalId(source.getExternalId());

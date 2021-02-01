@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="sormas-keycloak-service-provider" basedir="." default="3-collect">
+
+	<import file="../sormas-base/build-artifact.xml" />
+
+	<property name="maven.artifactId" value="sormas-keycloak-service-provider" />
+	<property name="file.suffix" value="jar" />
+
+	<target name="3-collect" description="Kopiert das Artefakt nach deploy/apps.">
+
+		<property name="copy.path" value="../deploy/keycloak" />
+		<antcall inheritAll="true" target="--copy-artifact" />
+	</target>
+
+</project>

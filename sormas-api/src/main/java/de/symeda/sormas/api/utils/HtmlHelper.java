@@ -1,35 +1,77 @@
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import org.apache.commons.text.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
+// This class provides general XSS-Prevention methods using Jsoup.clean
 public class HtmlHelper {
 
-	// unescape specific tags (<b>,<i>,<br>,<li>,<ul>) escaped using StringEscapeUtils.escapeHtml4(String)
-	public static String unescapeBasicTags(String escapedString) {
-		String res = escapedString;
+	public static final Whitelist EVENTACTION_WHITELIST =
+		Whitelist.relaxed().addTags("hr", "font").addAttributes("font", "size", "face", "color").addAttributes("div", "align");
 
-		// <b> Tags
-		res = res.replaceAll("&lt;b&gt;", "<b>");
-		res = res.replaceAll("&lt;/b&gt;", "</b>");
-		// <i> Tags
-		res = res.replaceAll("&lt;i&gt;", "<i>");
-		res = res.replaceAll("&lt;/i&gt;", "</i>");
-		// <ul> Tags
-		res = res.replaceAll("&lt;ul&gt;", "<ul>");
-		res = res.replaceAll("&lt;/ul&gt;", "</ul>");
-		// <li> Tags
-		res = res.replaceAll("&lt;li&gt;", "<li>");
-		res = res.replaceAll("&lt;/li&gt;", "</li>");
-		// <br> Tags
-		res = res.replaceAll("&lt;br&gt;", "<br>");
-		res = res.replaceAll("&lt;/br&gt;", "<br>");
-		res = res.replaceAll("&lt;br/&gt;", "<br>");
+	private static final String HYPERLINK_TAG = "a";
+	private static final String TITLE_ATTRIBUTE = "title";
 
-		return res;
+	public static String cleanHtml(String string) {
+		return (string == null) ? "" : Jsoup.clean(string, Whitelist.none());
 	}
 
-	// escapes html4 and then unescapes specific tags
-	public static String escapeAndUnescapeBasicTags(String text) {
-		return unescapeBasicTags(StringEscapeUtils.escapeHtml4(text));
+	public static String cleanHtml(String string, Whitelist whitelist) {
+		return (string == null) ? "" : Jsoup.clean(string, whitelist);
+	}
+
+	/**
+	 * @param attributeKey
+	 *            For example {@code title}.
+	 * @param attributeValue
+	 *            The value for the given {@code attributeKey}.
+	 * @return Built syntax for a HTML tag attribute with possible html tags in {@code attributeValue} escaped to prevent HTML injection.
+	 */
+	public static String cleanHtmlAttribute(String attributeKey, String attributeValue) {
+
+		return String.format("%s='%s'", attributeKey, HtmlHelper.cleanHtml(attributeValue));
+	}
+
+	// this method should be used for i18n-strings and captions so that custom whitelist rules can be added when needed
+	public static String cleanI18nString(String string) {
+		return (string == null) ? "" : Jsoup.clean(string, Whitelist.basic());
+	}
+
+	public static String cleanHtmlRelaxed(String string) {
+		return (string == null) ? "" : Jsoup.clean(string, Whitelist.relaxed());
+	}
+
+	/**
+	 * @param title
+	 *            Title for {@code a} tag (hover text).
+	 * @param caption
+	 *            Caption of the {@code a} tag (visual text).
+	 * @return Generated hyperlink with possible html tags escaped to prevent HTML injection.
+	 */
+	public static String buildHyperlinkTitle(String title, String caption) {
+
+		// Build hyperlink with title tag
+		String result = String.format("<a %s>%s</a>", cleanHtmlAttribute(TITLE_ATTRIBUTE, title), HtmlHelper.cleanHtml(caption));
+
+		// Prevent breakout in tag attributes: only allow the intended tag attribute
+		result = Jsoup.clean(result, Whitelist.none().addTags(HYPERLINK_TAG).addAttributes(HYPERLINK_TAG, TITLE_ATTRIBUTE));
+		return result;
 	}
 }

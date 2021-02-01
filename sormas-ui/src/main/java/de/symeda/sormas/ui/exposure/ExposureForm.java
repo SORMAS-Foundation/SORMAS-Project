@@ -45,6 +45,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -88,6 +89,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					))
 			) +
 			loc(LOC_EXPOSURE_DETAILS_HEADING) +
+			loc(ExposureDto.PATIENT_EXPOSITION_ROLE) +
 			loc(ExposureDto.RISK_AREA) +
 			loc(ExposureDto.INDOORS) +
 			loc(ExposureDto.OUTDOORS) +
@@ -128,6 +130,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private final Class<? extends EntityDto> epiDataParentClass;
 	private final List<ContactReferenceDto> sourceContacts;
 
+	private LocationEditForm locationForm;
+
 	public ExposureForm(
 		boolean create,
 		Class<? extends EntityDto> epiDataParentClass,
@@ -156,7 +160,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		addField(ExposureDto.DESCRIPTION, TextArea.class).setRows(5);
 
-		addField(ExposureDto.LOCATION, LocationEditForm.class).setCaption(null);
+		locationForm = addField(ExposureDto.LOCATION, LocationEditForm.class);
+		locationForm.setCaption(null);
 		addField(ExposureDto.CONNECTION_NUMBER, TextField.class);
 		getField(ExposureDto.MEANS_OF_TRANSPORT).addValueChangeListener(e -> {
 			if (e.getProperty().getValue() == MeansOfTransport.PLANE) {
@@ -222,7 +227,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.TYPE_OF_PLACE_DETAILS,
 			ExposureDto.MEANS_OF_TRANSPORT,
 			ExposureDto.MEANS_OF_TRANSPORT_DETAILS,
-			ExposureDto.SEAT_NUMBER);
+			ExposureDto.SEAT_NUMBER,
+			ExposureDto.PATIENT_EXPOSITION_ROLE);
 
 		addFieldsWithCss(
 			NullableOptionGroup.class,
@@ -253,7 +259,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.GATHERING_DETAILS, ExposureDto.GATHERING_TYPE, GatheringType.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.HABITATION_DETAILS, ExposureDto.HABITATION_TYPE, HabitationType.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL_DETAILS, ExposureDto.TYPE_OF_ANIMAL, AnimalContactType.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL_DETAILS, ExposureDto.TYPE_OF_ANIMAL, TypeOfAnimal.OTHER, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(
@@ -297,6 +303,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			getContent().getComponent(LOC_ANIMAL_CONTACT_DETAILS_HEADING).setVisible(selectedExposureType == ExposureType.ANIMAL_CONTACT);
 			getContent().getComponent(LOC_BURIAL_DETAILS_HEADING).setVisible(selectedExposureType == ExposureType.BURIAL);
 		});
+
+		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
+		getField(ExposureDto.TYPE_OF_PLACE)
+			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 	}
 
 	private void setUpRequirements() {
@@ -314,7 +324,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		if (epiDataParentClass == CaseDataDto.class) {
 			ComboBox cbContactToCase = getField(ExposureDto.CONTACT_TO_CASE);
-			cbContactToCase.addItems(sourceContacts);
+			if (sourceContacts != null) {
+				cbContactToCase.addItems(sourceContacts);
+			}
 			cbContactToCase.getItemIds().forEach(i -> cbContactToCase.setItemCaption(i, ((ContactReferenceDto) i).getCaptionAlwaysWithUuid()));
 		}
 	}

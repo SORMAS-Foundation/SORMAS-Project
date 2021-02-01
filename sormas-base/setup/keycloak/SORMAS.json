@@ -47,7 +47,7 @@
       {
         "id": "a9ced198-8c8d-4405-92ef-60f1764e9b88",
         "name": "REST_USER",
-        "description": "Used to pre-validate access to the API",
+        "description": "Used to pre-validate access to the Internal API",
         "composite": false,
         "clientRole": false,
         "containerId": "SORMAS",
@@ -56,7 +56,25 @@
       {
         "id": "f3d27036-07fb-469c-8bf4-acecf6ea70b0",
         "name": "REST_EXTERNAL_VISITS_USER",
-        "description": "Used to pre-validate access to the API",
+        "description": "Used to pre-validate access to the External Visits API",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "SORMAS",
+        "attributes": {}
+      },
+      {
+        "id": "89cc1d31-b0f2-4f49-8230-1f76b4127413",
+        "name": "SORMAS_TO_SORMAS_CLIENT",
+        "description": "Used to pre-validate access to the Sormas2Sormas API",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "SORMAS",
+        "attributes": {}
+      },
+      {
+        "id": "39771f20-31d4-4c28-b014-467f791ffa88",
+        "name": "USER",
+        "description": "Default USER role",
         "composite": false,
         "clientRole": false,
         "containerId": "SORMAS",
@@ -392,6 +410,7 @@
   "requiredCredentials": [
     "password"
   ],
+  "passwordPolicy": "length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername(undefined) and notEmail(undefined)",
   "otpPolicyType": "totp",
   "otpPolicyAlgorithm": "HmacSHA1",
   "otpPolicyInitialCounter": 0,

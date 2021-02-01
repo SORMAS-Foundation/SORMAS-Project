@@ -19,15 +19,38 @@ import java.io.Serializable;
 
 public class EventParticipantJurisdictionDto implements Serializable {
 
+	private String eventParticipantUuid;
 	private String reportingUserUuid;
 	private String regionUuid;
 	private String districtUuid;
+	private String eventUuid;
 
 	public EventParticipantJurisdictionDto() {
 	}
 
 	public EventParticipantJurisdictionDto(String reportingUserUuid) {
 		this.reportingUserUuid = reportingUserUuid;
+	}
+
+	public EventParticipantJurisdictionDto(
+		String eventParticipantUuid,
+		String reportingUserUuid,
+		String regionUuid,
+		String districtUuid,
+		String eventUuid) {
+		this.eventParticipantUuid = eventParticipantUuid;
+		this.reportingUserUuid = reportingUserUuid;
+		this.regionUuid = regionUuid;
+		this.districtUuid = districtUuid;
+		this.eventUuid = eventUuid;
+	}
+
+	public String getEventParticipantUuid() {
+		return eventParticipantUuid;
+	}
+
+	public void setEventParticipantUuid(String eventParticipantUuid) {
+		this.eventParticipantUuid = eventParticipantUuid;
 	}
 
 	public String getReportingUserUuid() {
@@ -52,5 +75,13 @@ public class EventParticipantJurisdictionDto implements Serializable {
 
 	public void setDistrictUuid(String districtUuid) {
 		this.districtUuid = districtUuid;
+	}
+
+	public String getEventUuid() {
+		return eventUuid;
+	}
+
+	public void setEventUuid(String eventUuid) {
+		this.eventUuid = eventUuid;
 	}
 }

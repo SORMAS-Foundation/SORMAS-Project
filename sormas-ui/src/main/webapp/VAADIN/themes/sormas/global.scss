@@ -14,6 +14,10 @@
       margin-right : -1000px;
     }
 
+    &.v-caption-on-top {
+      display: block;
+    }
+
     &.v-caption-caption-fixed-width-100 {
 
       .v-captiontext {
@@ -60,7 +64,8 @@
       vertical-align: top;
       font-size: 12px;
 
-      .filter-item {
+      .filter-item,
+      .v-caption-filter-item {
         margin-left: 8px;
         margin-right: 8px;
       }

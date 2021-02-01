@@ -65,6 +65,23 @@
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_multiDayContact"
+                        app:value="@{data.multiDayContact}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_firstContactDate"
+                        app:value="@{data.firstContactDate}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/contact_lastContactDate"
                         app:value="@{data.lastContactDate}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -82,13 +99,17 @@
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/contact_disease"
-                        app:value="@{data.disease}"
-                        app:appendValue="@{data.diseaseDetails}"
-                        app:valueFormat="@string/two_strings_with_hyphen_format"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
+                        android:id="@+id/contact_externalToken"
+                        app:value="@{data.externalToken}"
+                        style="@style/ControlSecondOfTwoColumnsStyle"/>
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_disease"
+                    app:value="@{data.disease}"
+                    app:appendValue="@{data.diseaseDetails}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -146,6 +167,31 @@
                     app:textArea="true"
                     app:value="@{data.caseOrEventInformation}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_prohibitionToWork"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.prohibitionToWork}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_prohibitionToWorkFrom"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:dependencyParentField="@{contactProhibitionToWork}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.prohibitionToWorkFrom}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_prohibitionToWorkUntil"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:dependencyParentField="@{contactProhibitionToWork}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.prohibitionToWorkUntil}" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -339,6 +385,11 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_reportingDistrict"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.reportingDistrict}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

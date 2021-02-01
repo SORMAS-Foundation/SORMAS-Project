@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.symptoms;
 
 import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.H4;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
@@ -30,9 +31,15 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +48,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -70,6 +78,8 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.utils.SymptomGroup;
+import de.symeda.sormas.api.utils.SymptomGrouping;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -90,6 +100,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private static final String CLINICAL_MEASUREMENTS_HEADING_LOC = "clinicalMeasurementsHeadingLoc";
 	private static final String SIGNS_AND_SYMPTOMS_HEADING_LOC = "signsAndSymptomsHeadingLoc";
+	private static final String GENERAL_SIGNS_AND_SYMPTOMS_HEADING_LOC = "generalSignsAndSymptomsHeadingLoc";
+	private static final String RESPIRATORY_SIGNS_AND_SYMPTOMS_HEADING_LOC = "respiratorySignsAndSymptomsHeadingLoc";
+	private static final String CARDIOVASCULAR_SIGNS_AND_SYMPTOMS_HEADING_LOC = "cardiovascularSignsAndSymptomsHeadingLoc";
+	private static final String GASTROINTESTINAL_SIGNS_AND_SYMPTOMS_HEADING_LOC = "gastrointestinalSignsAndSymptomsHeadingLoc";
+	private static final String URINARY_SIGNS_AND_SYMPTOMS_HEADING_LOC = "urinarySignsAndSymptomsHeadingLoc";
+	private static final String NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC = "nervousSystemSignsAndSymptomsHeadingLoc";
+	private static final String SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC = "skinSignsAndSymptomsHeadingLoc";
+	private static final String OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC = "otherSignsAndSymptomsHeadingLoc";
 	private static final String BUTTONS_LOC = "buttonsLoc";
 	private static final String LESIONS_LOCATIONS_LOC = "lesionsLocationsLoc";
 	private static final String MONKEYPOX_LESIONS_IMG1 = "monkeypoxLesionsImg1";
@@ -98,6 +116,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String MONKEYPOX_LESIONS_IMG4 = "monkeypoxLesionsImg4";
 	private static final String SYMPTOMS_HINT_LOC = "symptomsHintLoc";
 	private static final String COMPLICATIONS_HEADING = "complicationsHeading";
+
+	private static Map<String, List<String>> symptomGroupMap = new HashMap();
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -110,67 +130,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
 					fluidRow(fluidColumn(8,4, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
-					fluidRow(
-							fluidColumn(6, -1,
-									locsCss(VSPACE_3,
-											FEELING_ILL, SHIVERING, HEADACHE, MUSCLE_PAIN, ABDOMINAL_PAIN, ABNORMAL_LUNG_XRAY_FINDINGS,
-											ACUTE_RESPIRATORY_DISTRESS_SYNDROME, HEARINGLOSS, ANOREXIA_APPETITE_LOSS,
-											BACKACHE, BLACKENING_DEATH_OF_TISSUE, BLOOD_IN_STOOL,
-											BUBOES_GROIN_ARMPIT_NECK, BULGING_FONTANELLE,
-											BILATERAL_CATARACTS, UNILATERAL_CATARACTS, CHEST_PAIN, CHILLS_SWEATS,
-											CONGENITAL_GLAUCOMA, CONGENITAL_HEART_DISEASE,
-											CONGENITAL_HEART_DISEASE_TYPE, CONGENITAL_HEART_DISEASE_DETAILS,
-											CONJUNCTIVITIS, CONJUNCTIVAL_INJECTION, COUGH, COUGH_WITHOUT_SPUTUM, COUGH_WITH_SPUTUM,
-											COUGH_WITH_HEAMOPTYSIS, RESPIRATORY_DISEASE_VENTILATION,
-											DARK_URINE, DEHYDRATION, DEVELOPMENTAL_DELAY, DIARRHEA,
-											CHEST_PRESSURE, DIFFICULTY_BREATHING, LYMPHADENOPATHY, LYMPHADENOPATHY_AXILLARY,
-											LYMPHADENOPATHY_CERVICAL, LYMPHADENOPATHY_INGUINAL,
-											FATIGUE_WEAKNESS, WEAKNESS, FATIGUE,FEVER, FEVERISHFEELING, FLUID_IN_LUNG_CAVITY,
-											FLUID_IN_LUNG_CAVITY_AUSCULTATION, FLUID_IN_LUNG_CAVITY_XRAY,
-											HICCUPS, BEDRIDDEN,
-											JAUNDICE, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, JOINT_PAIN, KOPLIKS_SPOTS,
-											LOSS_SKIN_TURGOR,
-											SKIN_RASH, MALAISE, MENINGOENCEPHALITIS, OTITIS_MEDIA, MICROCEPHALY,
-											NAUSEA, NECK_STIFFNESS, OEDEMA_FACE_NECK, OEDEMA_LOWER_EXTREMITY,
-											EYE_PAIN_LIGHT_SENSITIVE,
-											PAINFUL_LYMPHADENITIS, ANXIETY_STATES, DELIRIUM, UPROARIOUSNESS,
-											PARASTHESIA_AROUND_WOUND,
-											EXCESS_SALIVATION, INSOMNIA, PARALYSIS, EXCITATION, DYSPHAGIA, AEROPHOBIA
-											, CONVULSION)),
-							fluidColumn(6, 0,
-									locsCss(VSPACE_3,
-											FAST_HEART_RATE, PALPABLE_LIVER, PALPABLE_SPLEEN, PHARYNGEAL_ERYTHEMA, PHARYNGEAL_EXUDATE,
-											PIGMENTARY_RETINOPATHY, PNEUMONIA_CLINICAL_OR_RADIOLOGIC,
-											PURPURIC_RASH, RADIOLUCENT_BONE_DISEASE, RAPID_BREATHING,
-											REFUSAL_FEEDOR_DRINK, RUNNY_NOSE,
-											ORAL_ULCERS, SIDE_PAIN, SORE_THROAT, SPLENOMEGALY, SUNKEN_EYES_FONTANELLE
-											, SWOLLEN_GLANDS,
-											THROBOCYTOPENIA, TREMOR, UNEXPLAINED_BLEEDING, EYES_BLEEDING,
-											INJECTION_SITE_BLEEDING,
-											BLEEDING_VAGINA, GUMS_BLEEDING, STOMACH_BLEEDING, BLOOD_URINE,
-											BLOODY_BLACK_STOOL,
-											SKIN_BRUISING, COUGHING_BLOOD, DIGESTED_BLOOD_VOMIT, RED_BLOOD_VOMIT,
-											NOSE_BLEEDING,
-											OTHER_HEMORRHAGIC_SYMPTOMS, OTHER_HEMORRHAGIC_SYMPTOMS_TEXT,
-											LESIONS, LESIONS_THAT_ITCH, LESIONS_SAME_STATE, LESIONS_SAME_SIZE,
-											LESIONS_DEEP_PROFOUND,
-											LESIONS_LOCATIONS_LOC, LESIONS_FACE, LESIONS_LEGS, LESIONS_SOLES_FEET,
-											LESIONS_PALMS_HANDS, LESIONS_THORAX,
-											LESIONS_ARMS, LESIONS_GENITALS, LESIONS_ALL_OVER_BODY,
-											LESIONS_RESEMBLE_IMG1, MONKEYPOX_LESIONS_IMG1,
-											LESIONS_RESEMBLE_IMG2, MONKEYPOX_LESIONS_IMG2, LESIONS_RESEMBLE_IMG3,
-											MONKEYPOX_LESIONS_IMG3, LESIONS_RESEMBLE_IMG4, MONKEYPOX_LESIONS_IMG4,
-											LESIONS_ONSET_DATE, VOMITING, HYDROPHOBIA, OPISTHOTONUS, HYPERACTIVITY,
-											PARESIS, AGITATION,
-											ASCENDING_FLACCID_PARALYSIS, ERRATIC_BEHAVIOUR, COMA, LOSS_OF_TASTE,
-											LOSS_OF_SMELL, WHEEZING, SKIN_ULCERS, INABILITY_TO_WALK,
-											IN_DRAWING_OF_CHEST_WALL, OXYGEN_SATURATION_LOWER_94,
-											BREATHLESSNESS, BLUE_LIPS, BLOOD_CIRCULATION_PROBLEMS, PALPITATIONS,
-											DIZZINESS_STANDING_UP, HIGH_OR_LOW_BLOOD_PRESSURE, URINARY_RETENTION,
-											OTHER_NON_HEMORRHAGIC_SYMPTOMS, OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT) +
-									locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS)
-							)
-					) +
+					createSymptomGroupLayout(SymptomGroup.GENERAL, GENERAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.RESPIRATORY, RESPIRATORY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.CARDIOVASCULAR, CARDIOVASCULAR_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.GASTROINTESTINAL, GASTROINTESTINAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.URINARY, URINARY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.NERVOUS_SYSTEM, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.SKIN, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					createSymptomGroupLayout(SymptomGroup.OTHER, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
 					loc(COMPLICATIONS_HEADING) +
 					fluidRow(
@@ -184,6 +152,23 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 											MENINGEAL_SIGNS, SEIZURES, SEPSIS, SHOCK))
 					);
 	//@formatter:on
+	
+	private static String createSymptomGroupLayout(SymptomGroup symptomGroup, String loc) {
+
+		final Predicate<java.lang.reflect.Field> groupSymptoms =
+			field -> field.isAnnotationPresent(SymptomGrouping.class) && field.getAnnotation(SymptomGrouping.class).value() == symptomGroup;
+		final List<String> symptomLocations = Arrays.stream(SymptomsDto.class.getDeclaredFields())
+			.filter(groupSymptoms)
+			.map(field -> field.getName())
+			.sorted(Comparator.comparing(fieldName -> I18nProperties.getPrefixCaption(I18N_PREFIX, fieldName)))
+			.collect(Collectors.toList());
+
+		symptomGroupMap.put(loc, symptomLocations);
+
+		return loc(loc) + fluidRow(
+			fluidColumn(6, -1, locsCss(VSPACE_3, new ArrayList<>(symptomLocations.subList(0, symptomLocations.size() / 2)))),
+			fluidColumn(6, 0, locsCss(VSPACE_3, new ArrayList<>(symptomLocations.subList(symptomLocations.size() / 2, symptomLocations.size())))));
+	}
 
 	private final CaseDataDto caze;
 	private final Disease disease;
@@ -237,13 +222,24 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		// Add fields
-		Label clinicalMeasurementsHeadingLabel = new Label(I18nProperties.getString(Strings.headingClinicalMeasurements));
-		clinicalMeasurementsHeadingLabel.addStyleName(H3);
-		getContent().addComponent(clinicalMeasurementsHeadingLabel, CLINICAL_MEASUREMENTS_HEADING_LOC);
+		Label clinicalMeasurementsHeadingLabel =
+			createLabel(I18nProperties.getString(Strings.headingClinicalMeasurements), H3, CLINICAL_MEASUREMENTS_HEADING_LOC);
 
-		Label signsAndSymptomsHeadingLabel = new Label(I18nProperties.getString(Strings.headingSignsAndSymptoms));
-		signsAndSymptomsHeadingLabel.addStyleName(H3);
-		getContent().addComponent(signsAndSymptomsHeadingLabel, SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		Label signsAndSymptomsHeadingLabel =
+			createLabel(I18nProperties.getString(Strings.headingSignsAndSymptoms), H3, SIGNS_AND_SYMPTOMS_HEADING_LOC);
+
+		final Label generalSymptomsHeadingLabel = createLabel(SymptomGroup.GENERAL.toString(), H4, GENERAL_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		final Label respiratorySymptomsHeadingLabel =
+			createLabel(SymptomGroup.RESPIRATORY.toString(), H4, RESPIRATORY_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		final Label cardiovascularSymptomsHeadingLabel =
+			createLabel(SymptomGroup.CARDIOVASCULAR.toString(), H4, CARDIOVASCULAR_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		final Label gastrointestinalSymptomsHeadingLabel =
+			createLabel(SymptomGroup.GASTROINTESTINAL.toString(), H4, GASTROINTESTINAL_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		final Label urinarySymptomsHeadingLabel = createLabel(SymptomGroup.URINARY.toString(), H4, URINARY_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		final Label nervousSystemSymptomsHeadingLabel =
+			createLabel(SymptomGroup.NERVOUS_SYSTEM.toString(), H4, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		final Label skinSymptomsHeadingLabel = createLabel(SymptomGroup.SKIN.toString(), H4, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		final Label otherSymptomsHeadingLabel = createLabel(SymptomGroup.OTHER.toString(), H4, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);
@@ -316,7 +312,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CONJUNCTIVITIS,
 			EYE_PAIN_LIGHT_SENSITIVE,
 			KOPLIKS_SPOTS,
-			THROBOCYTOPENIA,
+            THROBOCYTOPENIA,
 			OTITIS_MEDIA,
 			HEARINGLOSS,
 			DEHYDRATION,
@@ -721,6 +717,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getFieldGroup().getField(PATIENT_ILL_LOCATION).setVisible(false);
 		}
 
+		symptomGroupMap.forEach((location, strings) -> {
+			final Component groupLabel = getContent().getComponent(location);
+			final Optional<String> groupHasVisibleSymptom = strings.stream().filter(s -> getFieldGroup().getField(s).isVisible()).findAny();
+			if (!groupHasVisibleSymptom.isPresent()) {
+				groupLabel.setVisible(false);
+			}
+		});
+
 		if (isEditableAllowed(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)) {
 			FieldHelper.setRequiredWhen(
 				getFieldGroup(),
@@ -789,6 +793,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		buttonsLayout.setMargin(new MarginInfo(true, false, true, true));
 
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
+	}
+
+	private Label createLabel(String text, String h4, String location) {
+		final Label label = new Label(text);
+		label.setId(text);
+		label.addStyleName(h4);
+		getContent().addComponent(label, location);
+		return label;
 	}
 
 	@Override

@@ -32,12 +32,18 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public static final String UUID = "uuid";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String PARTICIPANT_COUNT = "participantCount";
+	public static final String CASE_COUNT = "caseCount";
+	public static final String DEATH_COUNT = "deathCount";
+	public static final String CONTACT_COUNT = "contactCount";
+	public static final String CONTACT_COUNT_SOURCE_IN_EVENT = "contactCountSourceInEvent";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
+	public static final String EVOLUTION_DATE = "evolutionDate";
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String SRC_TYPE = "srcType";
@@ -45,15 +51,31 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+	public static final String ADDRESS = "address";
 
 	private String uuid;
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private long participantCount;
+	private long caseCount;
+	private long deathCount;
+	/**
+	 * number of contacts whose person is involved in this event
+	 */
+	private long contactCount;
+	/**
+	 * number of contacts whose person is involved in this event, and where the source case is also part of the event
+	 */
+	private long contactCountSourceInEvent;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
+	private Date evolutionDate;
 	private String eventTitle;
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
@@ -68,12 +90,13 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public EventIndexDto(
 		String uuid,
 		EventStatus eventStatus,
+		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
-		Long participantCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
 		Date endDate,
+		Date evolutionDate,
 		String eventTitle,
 		String regionUuid,
 		String regionName,
@@ -97,11 +120,13 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
+		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.evolutionDate = evolutionDate;
 		this.eventTitle = eventTitle;
 		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		this.srcType = srcType;
@@ -112,7 +137,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
-		this.participantCount = participantCount;
 	}
 
 	public String getUuid() {
@@ -129,6 +153,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {
@@ -169,6 +201,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public Date getEvolutionDate() {
+		return evolutionDate;
+	}
+
+	public void setEvolutionDate(Date evolutionDate) {
+		this.evolutionDate = evolutionDate;
 	}
 
 	public String getEventTitle() {
@@ -247,6 +287,54 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.participantCount = participantCount;
 	}
 
+	public long getCaseCount() {
+		return caseCount;
+	}
+
+	public void setCaseCount(long caseCount) {
+		this.caseCount = caseCount;
+	}
+
+	public long getDeathCount() {
+		return deathCount;
+	}
+
+	public void setDeathCount(long deathCount) {
+		this.deathCount = deathCount;
+	}
+
+	public long getContactCount() {
+		return contactCount;
+	}
+
+	public void setContactCount(long contactCount) {
+		this.contactCount = contactCount;
+	}
+
+	public long getContactCountSourceInEvent() {
+		return contactCountSourceInEvent;
+	}
+
+	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
+		this.contactCountSourceInEvent = contactCountSourceInEvent;
+	}
+
+	public String getRegion() {
+		return getEventLocation().getRegion();
+	}
+
+	public String getDistrict() {
+		return getEventLocation().getDistrict();
+	}
+
+	public String getCommunity() {
+		return getEventLocation().getCommunity();
+	}
+
+	public String getAddress() {
+		return getEventLocation().getAddress();
+	}
+
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
 	}
@@ -300,6 +388,22 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 			this.street = street;
 			this.houseNumber = houseNumber;
 			this.additionalInformation = additionalInformation;
+		}
+
+		public String getRegion() {
+			return regionName;
+		}
+
+		public String getDistrict() {
+			return districtName;
+		}
+
+		public String getCommunity() {
+			return communityName;
+		}
+
+		public String getAddress() {
+			return LocationReferenceDto.buildCaption(city, street, houseNumber, additionalInformation);
 		}
 
 		@Override

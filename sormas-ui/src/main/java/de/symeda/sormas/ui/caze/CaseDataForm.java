@@ -105,10 +105,12 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
@@ -149,7 +151,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE) +
 					fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, ASSIGN_NEW_EPID_NUMBER_LOC) +
 					loc(EPID_NUMBER_WARNING_LOC) +
-					fluidRowLocs(6, CaseDataDto.EXTERNAL_ID, 6, null) +
+					fluidRowLocs(6, CaseDataDto.EXTERNAL_ID, 6, CaseDataDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(6, CaseDataDto.CASE_ID_ISM, 6, null) +
 					fluidRow(
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
@@ -160,15 +162,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
-					fluidRowLocs(CaseDataDto.REPORTING_TYPE,
-							"")
-					+
+					fluidRowLocs(CaseDataDto.REPORTING_TYPE, CaseDataDto.REPORTING_DISTRICT) +
 					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
 					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY) +
 					fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
+					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
+					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_POSSIBLE, 8, CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
 					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3, CaseDataDto.QUARANTINE_TO) +
@@ -302,13 +304,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label epidNumberWarningLabel = new Label(I18nProperties.getString(Strings.messageEpidNumberWarning));
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
 		addField(CaseDataDto.EXTERNAL_ID, TextField.class);
+		addField(CaseDataDto.EXTERNAL_TOKEN, TextField.class);
 
 		addField(CaseDataDto.INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(CaseDataDto.OUTCOME, NullableOptionGroup.class);
 		addField(CaseDataDto.SEQUELAE, NullableOptionGroup.class);
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			addField(CaseDataDto.REPORTING_TYPE);
-		}
+
+		addField(CaseDataDto.REPORTING_TYPE);
+		((ComboBox) addField(CaseDataDto.REPORTING_DISTRICT)).addItems(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
@@ -369,6 +372,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 		TextField quarantineTypeDetails = addField(CaseDataDto.QUARANTINE_TYPE_DETAILS, TextField.class);
 		quarantineTypeDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+
+		addField(CaseDataDto.NOSOCOMIAL_OUTBREAK).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
+		addField(CaseDataDto.INFECTION_SETTING);
+		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.INFECTION_SETTING, CaseDataDto.NOSOCOMIAL_OUTBREAK, true, true);
 
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE, NullableOptionGroup.class);
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
@@ -527,9 +534,33 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
-		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
+		addField(CaseDataDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		DateField prohibitionToWorkFrom = addField(CaseDataDto.PROHIBITION_TO_WORK_FROM, DateField.class);
+		DateField prohibitionToWorkUntil = addDateField(CaseDataDto.PROHIBITION_TO_WORK_UNTIL, DateField.class, -1);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(CaseDataDto.PROHIBITION_TO_WORK_FROM, CaseDataDto.PROHIBITION_TO_WORK_UNTIL),
+			CaseDataDto.PROHIBITION_TO_WORK,
+			YesNoUnknown.YES,
+			true);
+		prohibitionToWorkFrom.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkFrom,
+				prohibitionToWorkUntil,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, prohibitionToWorkFrom.getCaption(), prohibitionToWorkUntil.getCaption())));
+		prohibitionToWorkUntil.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkUntil,
+				prohibitionToWorkFrom,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
+
+		AccessibleTextField tfReportLat = addField(CaseDataDto.REPORT_LAT, AccessibleTextField.class);
 		tfReportLat.setConverter(new StringToAngularLocationConverter());
-		TextField tfReportLon = addField(CaseDataDto.REPORT_LON, TextField.class);
+		AccessibleTextField tfReportLon = addField(CaseDataDto.REPORT_LON, AccessibleTextField.class);
 		tfReportLon.setConverter(new StringToAngularLocationConverter());
 		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 
@@ -1241,6 +1272,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getContent().removeComponent(epidNumberWarningLabel);
 			assignNewEpidNumberButton.setVisible(
 				!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+					&& !isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)
 					&& !CaseLogic.isEpidNumberPrefix(fieldValue)
 					&& !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}

@@ -103,6 +103,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
 		Case caze = getStoredRootEntity();
 		// Sections must be removed in reverse order
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
+			menuItems.set(CaseSection.TASKS.ordinal(), null);
+		}
 		if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
 			|| (caze != null && caze.isUnreferredPortHealthCase())
 			|| (caze != null && caze.getClinicalCourse() == null)

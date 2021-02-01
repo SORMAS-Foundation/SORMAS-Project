@@ -5,239 +5,224 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.53.0-SNAPSHOT</version>
+	<version>1.55.0-SNAPSHOT</version>
 
 	<properties>
-		<slf4j.version>1.7.30</slf4j.version>
-		<logback.version>1.1.7</logback.version>
-		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.11.1</vaadin.version>
-		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<jersey.version>2.29.1</jersey.version>
-		<jackson.version>2.9.8</jackson.version>
-		<swagger.version>2.1.2</swagger.version>
-		<bouncycastle.version>1.66</bouncycastle.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<!-- Versions used for release. Overwrite them in settings.xml for local development with different versions -->
-		<payara.version>5.2020.2</payara.version>
-		<payara.oidc.version>1.1.0</payara.oidc.version>
-		<microprofile.api.version>1.4</microprofile.api.version>
-
-		<keycloak.version>11.0.0</keycloak.version>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- *** Payara module versions *** -->
+		<jackson.version>2.10.2</jackson.version>
+		<jakarta.activation.version>1.2.1</jakarta.activation.version>
+		<javaee.version>8.0.1</javaee.version>
+		<jersey.version>2.30</jersey.version>
+		<!-- Payara version used for release. Overwrite them in settings.xml for local development with different versions -->
+		<payara.version>5.2020.2</payara.version>
+
+		<!-- *** Other dependency versions *** -->
+		<glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
+		<slf4j.version>1.7.30</slf4j.version>
+		<logback.version>1.1.7</logback.version>
+		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
+		<vaadin.version>8.12.1</vaadin.version>
+		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+		<swagger.version>2.1.6</swagger.version>
+		<bouncycastle.version>1.67</bouncycastle.version>
+		<keycloak.version>12.0.1</keycloak.version>
+		<xdocreport.version>2.0.2</xdocreport.version>
+		<docx4j.version>8.2.8</docx4j.version>
+
+		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
+
 	</properties>
 
+	<distributionManagement>
+		<site>
+			<id>local</id>
+			<name>local</name>
+			<url>file://${project.build.directory}/doc/</url>
+		</site>
+	</distributionManagement>
 
 	<dependencyManagement>
 		<dependencies>
 
-			<!-- Baseline for tests, so that in all projects in any case the test
-				libs are available -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.12</version>
-				<scope>test</scope>
-			</dependency>
+			<!-- *** Payara modules *** -->
+			<!-- The versions here listed reflect the precise or minimal version provided as Payara module -->
 
 			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-core</artifactId>
-				<version>1.3</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-library</artifactId>
-				<version>1.3</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-inline</artifactId>
-				<version>3.5.13</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-core</artifactId>
-				<version>5.4.18.Final</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.hibernate.validator</groupId>
-				<artifactId>hibernate-validator</artifactId>
-				<version>6.1.5.Final</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.h2database</groupId>
-				<artifactId>h2</artifactId>
-				<version>1.4.200</version>
-				<scope>test</scope>
-				<!-- In-memory-database for bean-test -->
-				<!-- better compatibility to PostgreSQL than HSQLDB -->
-			</dependency>
-
-			<dependency>
-				<groupId>info.novatec</groupId>
-				<artifactId>bean-test</artifactId>
-				<version>0.2.Final</version>
-				<scope>test</scope>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
-			<dependency>
-				<groupId>org.apache.poi</groupId>
-				<artifactId>poi-ooxml</artifactId>
-				<version>3.17</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.geronimo.config</groupId>
-				<artifactId>geronimo-config-impl</artifactId>
-				<version>1.0</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>p6spy</groupId>
-				<artifactId>p6spy</artifactId>
-				<version>3.9.0</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>fr.opensagres.xdocreport</groupId>
-				<artifactId>xdocreport</artifactId>
-				<version>2.0.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>fr.opensagres.xdocreport</groupId>
-				<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
-				<version>2.0.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.freemarker</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>2.3.20</version>
-			</dependency>
-
-			<!-- Java EE -->
-
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>4.0.1</version>
+				<groupId>javax</groupId>
+				<artifactId>javaee-api</artifactId>
+				<version>${javaee.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax</groupId>
 				<artifactId>javaee-web-api</artifactId>
+				<version>${javaee.version}</version>
 				<scope>provided</scope>
-				<version>8.0</version>
 			</dependency>
 			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
+				<groupId>javax.activation</groupId>
+				<artifactId>activation</artifactId>
+				<version>1.1.1</version>
 				<scope>provided</scope>
-				<version>8.0</version>
+				<!-- Payara module: jakarta.activation -->
+			</dependency>
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>javax.activation-api</artifactId>
+				<version>1.2.0</version>
+				<scope>provided</scope>
+				<!-- Payara module: jakarta.activation-api -->
+			</dependency>
+			<dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>javax.persistence-api</artifactId>
+				<version>2.2</version>
+				<scope>provided</scope>
+				<!-- Payara module: jakarta.persistence -->
 			</dependency>
 			<dependency>
 				<groupId>javax.security.enterprise</groupId>
 				<artifactId>javax.security.enterprise-api</artifactId>
 				<version>1.0</version>
 				<scope>provided</scope>
-			</dependency>
-
-			<!-- compile dependencies -->
-
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>3.10</version>
-			</dependency>
-
-			<dependency>
-				<groupId>commons-validator</groupId>
-				<artifactId>commons-validator</artifactId>
-				<version>1.6</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.github.mpkorstanje</groupId>
-				<artifactId>simmetrics-core</artifactId>
-				<version>4.1.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>2.9.4</version>
+				<!-- Payara module: jakarta.security.enterprise-api -->
 			</dependency>
 			<dependency>
-				<groupId>com.googlecode.libphonenumber</groupId>
-				<artifactId>libphonenumber</artifactId>
-				<version>8.12.11</version>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>4.0.1</version>
+				<scope>provided</scope>
+				<!-- Payara module: jakarta.servlet-api -->
 			</dependency>
-
-			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-admin-client</artifactId>
-				<version>${keycloak.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
-			</dependency>
-			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-core</artifactId>
-				<version>${keycloak.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
-			</dependency>
-			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-servlet-filter-adapter</artifactId>
-				<version>${keycloak.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
-			</dependency>
-
-			<dependency>
-				<groupId>com.googlecode.libphonenumber</groupId>
-				<artifactId>libphonenumber</artifactId>
-				<version>8.12.11</version>
-				<!-- TODO #3449: avoid scope compile -->
-			</dependency>
-
-			<dependency>
-				<groupId>com.jayway.jsonpath</groupId>
-				<artifactId>json-path</artifactId>
-				<version>2.4.0</version>
-				<!-- TODO #3449: avoid scope compile -->
-			</dependency>
-
-			<dependency>
-				<groupId>com.vladmihalcea</groupId>
-				<artifactId>hibernate-types-52</artifactId>
-				<version>2.9.13</version>
-				<!-- TODO #3449: avoid scope compile -->
-			</dependency>
-
-			<!-- glassfish-modules -->
-
 			<dependency>
 				<groupId>javax.validation</groupId>
 				<artifactId>validation-api</artifactId>
 				<version>2.0.1.Final</version>
+				<scope>provided</scope>
+				<!-- Payara module: jakarta.validation-api -->
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-jaxb-annotations</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.stephenc.jcip</groupId>
+				<artifactId>jcip-annotations</artifactId>
+				<version>1.0-1</version>
+				<scope>provided</scope>
+				<!-- Payara module: jcip-annotations-repackaged -->
+			</dependency>
+
+			<dependency>
+				<groupId>com.sun.activation</groupId>
+				<artifactId>jakarta.activation</artifactId>
+				<version>${jakarta.activation.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.istack</groupId>
+				<artifactId>istack-commons-runtime</artifactId>
+				<version>3.0.10</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.mail</groupId>
+				<artifactId>javax.mail</artifactId>
+				<version>1.6.2</version>
+				<scope>provided</scope>
+				<!-- Payara module: jakarta.mail -->
+			</dependency>
+
+			<dependency>
+				<groupId>fish.payara.api</groupId>
+				<artifactId>payara-api</artifactId>
+				<version>${payara.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>fish.payara.security.connectors</groupId>
+				<artifactId>security-connector-oidc-client</artifactId>
+				<version>1.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>jakarta.activation</groupId>
+				<artifactId>jakarta.activation-api</artifactId>
+				<version>${jakarta.activation.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.annotation</groupId>
+				<artifactId>jakarta.annotation-api</artifactId>
+				<version>1.3.5</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.validation</groupId>
+				<artifactId>jakarta.validation-api</artifactId>
+				<version>2.0.2</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.ws.rs</groupId>
+				<artifactId>jakarta.ws.rs-api</artifactId>
+				<version>2.1.6</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>2.3.2</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>net.minidev</groupId>
+				<artifactId>accessors-smart</artifactId>
+				<version>1.2</version>
+				<scope>provided</scope>
+				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.microprofile.config</groupId>
+				<artifactId>microprofile-config-api</artifactId>
+				<version>1.4</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -246,8 +231,8 @@
 				<artifactId>javax.el</artifactId>
 				<version>3.0.0</version>
 				<scope>provided</scope>
+				<!-- Payara module: jakarta.el -->
 			</dependency>
-
 			<dependency>
 				<groupId>org.glassfish.corba</groupId>
 				<artifactId>glassfish-corba-omgapi</artifactId>
@@ -265,13 +250,13 @@
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
 				<version>${jersey.version}</version>
-				<!-- TODO #3449: avoid scope compile -->
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.inject</groupId>
 				<artifactId>jersey-hk2</artifactId>
 				<version>${jersey.version}</version>
-				<scope>test</scope>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.media</groupId>
@@ -281,94 +266,37 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
+				<groupId>org.glassfish.soteria</groupId>
+				<artifactId>javax.security.enterprise</artifactId>
+				<version>1.0</version>
+				<scope>provided</scope>
+				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
 			</dependency>
 
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-module-jaxm-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.fasterxml.jackson.module</groupId>
-				<artifactId>jackson-module-jaxb-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>fish.payara.api</groupId>
-				<artifactId>payara-api</artifactId>
-				<version>${payara.version}</version>
+				<groupId>org.javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.26.0-GA</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
-				<groupId>fish.payara.security.connectors</groupId>
-				<artifactId>security-connector-oidc-client</artifactId>
-				<version>${payara.oidc.version}</version>
+				<groupId>org.jboss.logging</groupId>
+				<artifactId>jboss-logging</artifactId>
+				<version>3.3.2.Final</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
-				<groupId>org.eclipse.microprofile.config</groupId>
-				<artifactId>microprofile-config-api</artifactId>
-				<version>${microprofile.api.version}</version>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>1.25</version>
 				<scope>provided</scope>
 			</dependency>
 
-			<!-- serverlibs -->
+			<!-- *** Payara modules END *** -->
 
-			<dependency>
-				<groupId>org.postgresql</groupId>
-				<artifactId>postgresql</artifactId>
-				<version>42.2.14</version>
-				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<artifactId>waffle-jna</artifactId>
-						<groupId>com.github.dblock.waffle</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<!-- bundles -->
-
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${slf4j.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>jcl-over-slf4j</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>jul-to-slf4j</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
+			<!-- *** Domain libs *** -->
 
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
@@ -383,7 +311,377 @@
 				<scope>runtime</scope>
 			</dependency>
 
-			<!-- Vaadin -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-base</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-json-provider</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.module</groupId>
+						<artifactId>jackson-module-jaxb-annotations</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.mpkorstanje</groupId>
+				<artifactId>simmetrics-core</artifactId>
+				<version>4.1.1</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>30.0-jre</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.opencsv</groupId>
+				<artifactId>opencsv</artifactId>
+				<version>5.3</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-themes</artifactId>
+				<version>${vaadin.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.9.4</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>1.15</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2.2</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.8.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>1.2</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>2.10.8</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.5.13</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>4.4.14</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.4</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.11</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+				<version>1.9</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk15on</artifactId>
+				<version>${bouncycastle.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>${bouncycastle.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>5.4.25.Final</version>
+				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.sun.istack</groupId>
+						<artifactId>istack-commons-runtime</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.activation</groupId>
+						<artifactId>javax.activation-api</artifactId>
+						<!-- Payara module: jakarta.activation-api -->
+					</exclusion>
+					<exclusion>
+						<groupId>javax.persistence</groupId>
+						<artifactId>javax.persistence-api</artifactId>
+						<!-- Payara module: jakarta.persistence -->
+					</exclusion>
+					<exclusion>
+						<groupId>javax.xml.bind</groupId>
+						<artifactId>jaxb-api</artifactId>
+						<!-- Payara module: jakarta.xml.bind-api -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.javassist</groupId>
+						<artifactId>javassist</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.transaction</groupId>
+						<artifactId>jboss-transaction-api_1.2_spec</artifactId>
+						<!-- Payara module: jakarta.transaction-api -->
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.fastinfoset</groupId>
+				<artifactId>FastInfoset</artifactId>
+				<version>1.2.18</version>
+				<scope>provided</scope>
+				<!-- Dependency of hibernate-core -->
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>${glassfish.jaxb.version}</version>
+				<scope>provided</scope>
+				<!-- Dependency of hibernate-core -->
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>txw2</artifactId>
+				<version>${glassfish.jaxb.version}</version>
+				<scope>provided</scope>
+				<!-- Dependency of hibernate-core -->
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.staxex</groupId>
+				<artifactId>stax-ex</artifactId>
+				<version>1.8.3</version>
+				<scope>provided</scope>
+				<!-- Dependency of hibernate-core -->
+			</dependency>
+			<dependency>
+				<groupId>com.vladmihalcea</groupId>
+				<artifactId>hibernate-types-52</artifactId>
+				<version>2.10.0</version>
+				<scope>provided</scope>
+				<!-- Additional datatypes for hibernate-core -->
+				<exclusions>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.module</groupId>
+						<artifactId>jackson-module-jaxb-annotations</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>1.13.1</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>42.2.18</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<artifactId>waffle-jna</artifactId>
+						<groupId>com.github.dblock.waffle</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- *** Domain libs END *** -->
+
+			<!-- *** Compile dependencies *** -->
+
+			<dependency>
+				<groupId>com.googlecode.libphonenumber</groupId>
+				<artifactId>libphonenumber</artifactId>
+				<version>8.12.14</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>2.4.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.nexmo</groupId>
+				<artifactId>client</artifactId>
+				<version>5.6.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-validator</groupId>
+				<artifactId>commons-validator</artifactId>
+				<version>1.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>fr.opensagres.xdocreport</groupId>
+				<artifactId>xdocreport</artifactId>
+				<version>${xdocreport.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>fr.opensagres.xdocreport</groupId>
+				<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
+				<version>${xdocreport.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-jaxrs2</artifactId>
+				<version>${swagger.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.docx4j</groupId>
+				<artifactId>docx4j-docx-anon</artifactId>
+				<version>${docx4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.docx4j</groupId>
+				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+				<version>${docx4j.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>2.3.30</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-shapefile</artifactId>
+				<version>24.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-admin-client</artifactId>
+				<version>${keycloak.version}</version>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>org.jboss.spec.javax.annotation</groupId>
+						<artifactId>jboss-annotations-api_1.3_spec</artifactId>
+						<!-- Payara module: jakarta.annotation-api -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.ws.rs</groupId>
+						<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+						<!-- Payara module: jakarta.ws.rs-api -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.xml.bind</groupId>
+						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+						<!-- Payara module: jakarta.xml.bind-api -->
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-common</artifactId>
+				<version>${keycloak.version}</version>
+				<!-- No Domain lib, because it ran with Ant into problem, see https://stackoverflow.com/questions/64857838/invalid-jdk-version-in-profile-compile-java8-release-flag-unbounded-range-9 -->
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-core</artifactId>
+				<version>${keycloak.version}</version>
+				<!-- No Domain lib, because it ran with Ant into problem, see https://stackoverflow.com/questions/64857838/invalid-jdk-version-in-profile-compile-java8-release-flag-unbounded-range-9 -->
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-servlet-filter-adapter</artifactId>
+				<version>${keycloak.version}</version>
+			</dependency>
+
+			<!-- ** Vaadin ** -->
 
 			<dependency>
 				<groupId>com.vaadin</groupId>
@@ -409,12 +707,6 @@
 				<artifactId>vaadin-compatibility-server</artifactId>
 				<version>${vaadin.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-themes</artifactId>
-				<version>${vaadin.version}</version>
-				<scope>provided</scope>
-			</dependency>
 
 			<dependency>
 				<groupId>org.vaadin.addons</groupId>
@@ -428,68 +720,110 @@
 				<version>0.3.0</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-shapefile</artifactId>
-				<version>21.4</version>
-			</dependency>
+			<!-- ** Vaadin END ** -->
 
-			<!-- Nexmo SMS API -->
-			<dependency>
-				<groupId>com.nexmo</groupId>
-				<artifactId>client</artifactId>
-				<version>3.3.0</version>
-			</dependency>
+			<!-- *** Compile dependencies END *** -->
 
-			<!-- OpenCSV -->
+			<!-- *** Test dependencies *** -->
+
 			<dependency>
-				<groupId>com.opencsv</groupId>
-				<artifactId>opencsv</artifactId>
-				<version>5.3</version>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>1.4.200</version>
+				<scope>test</scope>
+				<!-- In-memory-database for bean-test -->
+				<!-- better compatibility to PostgreSQL than HSQLDB -->
 			</dependency>
 
 			<dependency>
-				<groupId>org.jsoup</groupId>
-				<artifactId>jsoup</artifactId>
-				<version>1.13.1</version>
-				<scope>provided</scope>
+				<groupId>info.novatec</groupId>
+				<artifactId>bean-test</artifactId>
+				<version>0.2.Final</version>
+				<scope>test</scope>
 			</dependency>
 
-			<!-- Swagger -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.13.1</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.geronimo.config</groupId>
+				<artifactId>geronimo-config-impl</artifactId>
+				<version>1.2.2</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>3.17</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-core</artifactId>
+				<version>1.3</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-library</artifactId>
+				<version>1.3</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hibernate.validator</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>6.1.6.Final</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>3.5.15</version>
+				<scope>test</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-jaxrs2</artifactId>
+				<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
 				<version>${swagger.version}</version>
 			</dependency>
-			
+
 			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcpkix-jdk15on</artifactId>
-				<version>${bouncycastle.version}</version>
-				<scope>provided</scope>
+				<groupId>p6spy</groupId>
+				<artifactId>p6spy</artifactId>
+				<version>3.9.1</version>
+				<scope>test</scope>
 			</dependency>
+
+			<!-- *** Test dependencies END *** -->
 
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
-		<!-- Testbibliotheken für alle Submodule -->
-		<!-- Reihenfolge ist wichtig (Matcher-Implementierungen) -->
+
+		<!-- Test libraries for all modules as baseline -->
+		<!-- Order is important because of Matcher implementations -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-inline</artifactId>
@@ -720,6 +1054,46 @@
 					</dependencies>
 				</plugin>
 
+				<!-- *** Plugins for generate-reports *** -->
+				<plugin>
+					<artifactId>maven-changelog-plugin</artifactId>
+					<version>2.3</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-changes-plugin</artifactId>
+					<version>2.12.1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.9.1</version>
+					<configuration>
+						<inputEncoding>UTF-8</inputEncoding>
+						<outputEncoding>UTF-8</outputEncoding>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>2.12</version>
+							<!-- add support for ssh/scp -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<artifactId>maven-surefire-report-plugin</artifactId>
+					<version>2.22.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.8.1</version>
+				</plugin>
+				<!-- *** Plugins for generate-reports END *** -->
+
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -794,6 +1168,95 @@
 			<modules>
 				<module>../sormas-app</module>
 			</modules>
+		</profile>
+
+		<profile>
+			<!-- Profile to build the keycloak hash provider -->
+			<id>with-keycloak</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>../sormas-keycloak-service-provider</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<id>generate-reports</id>
+			<!-- Create reports of used dependencies, plugins etc. and available newer versions -->
+			<properties>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+				<!-- Do not execute JavaDoc, because it runs into Exception with JDK 8. See https://bugs.openjdk.java.net/browse/JDK-8170447 -->
+				<!-- Exception that happens: ClassCastException: com.sun.tools.javadoc.MethodDocImpl cannot be cast to com.sun.tools.javadoc.AnnotationTypeElementDocImpl -->
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-dependency-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>analyze</id>
+									<phase>site</phase>
+									<goals>
+										<goal>analyze-only</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+						<plugin>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<configuration>
+								<docencoding>${java.encoding}</docencoding>
+								<minmemory>512</minmemory>
+								<maxmemory>512</maxmemory>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+			<reporting>
+				<plugins>
+					<plugin>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>index</report>
+									<report>team</report>
+									<report>summary</report>
+									<report>modules</report>
+									<report>ci-management</report>
+									<report>issue-management</report>
+									<report>licenses</report>
+									<report>dependencies</report>
+									<report>dependency-convergence</report>
+									<report>dependency-info</report>
+									<report>dependency-management</report>
+									<report>plugins</report>
+									<report>plugin-management</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>versions-maven-plugin</artifactId>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>dependency-updates-report</report>
+									<report>plugin-updates-report</report>
+									<report>property-updates-report</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+				</plugins>
+			</reporting>
 		</profile>
 
 	</profiles>

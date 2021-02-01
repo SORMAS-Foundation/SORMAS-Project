@@ -107,7 +107,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
 
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (isConfiguredServer("de")) {
 			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
 		} else {
 			final ComboBox caseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
@@ -133,8 +133,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
-		UserDto user = UserProvider.getCurrent().getUser();
-		ComboBox regionField;
+		UserDto user = currentUserDto();
+		ComboBox regionField = null;
 		if (user.getRegion() == null) {
 			regionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
@@ -303,7 +303,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		final ComboBox pointOfEntryField = getField(CaseDataDto.POINT_OF_ENTRY);
 		final ComboBox caseOriginField = getField(CaseDataDto.CASE_ORIGIN);
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = currentUserDto();
 		final DistrictReferenceDto currentDistrict =
 			user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
 		final CaseOrigin currentCaseOrigin =
@@ -478,10 +478,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);
-		
+
 		disableFields(districtField, communityField);
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = currentUserDto();
 
 		if (user.getRegion() != null) {
 			if (user.getDistrict() == null) {
@@ -677,10 +677,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	public void setValue(CaseCriteria newCriteria) throws ReadOnlyException, Converter.ConversionException {
 
 		super.setValue(newCriteria);
-		ComboBox typeField = getField(CaseCriteria.FACILITY_TYPE);
+		ComboBox typeField = (ComboBox) getField(CaseCriteria.FACILITY_TYPE);
 		if (newCriteria.getFacilityType() != null && typeField != null) {
 			typeField.setValue(newCriteria.getFacilityType());
-			ComboBox facilityField = getField(CaseDataDto.HEALTH_FACILITY);
+			ComboBox facilityField = (ComboBox) getField(CaseDataDto.HEALTH_FACILITY);
 			if (newCriteria.getHealthFacility() != null && facilityField != null) {
 				facilityField.setValue(newCriteria.getHealthFacility());
 			}

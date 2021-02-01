@@ -31,5 +31,8 @@
 	<security-role>
         <role-name>SORMAS_TO_SORMAS_CLIENT</role-name>
     </security-role>
+	<security-role>
+        <role-name>BAG_USER</role-name>
+    </security-role>
 
 </web-app>

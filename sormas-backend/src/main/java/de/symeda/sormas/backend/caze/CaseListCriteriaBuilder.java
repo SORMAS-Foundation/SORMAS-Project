@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.caze;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -29,8 +31,8 @@ import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -40,6 +42,8 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
@@ -74,7 +78,7 @@ public class CaseListCriteriaBuilder {
 		CaseCriteria caseCriteria,
 		OrderExpressionProvider orderExpressionProvider,
 		List<SortProperty> sortProperties,
-		boolean withEventInfo) {
+		boolean detailed) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(type);
@@ -89,7 +93,7 @@ public class CaseListCriteriaBuilder {
 		visitCountSq.select(cb.size(visitCountRoot.get(Case.VISITS)));
 		selectionList.add(visitCountSq);
 
-		if (withEventInfo) {
+		if (detailed) {
 			// Events count subquery
 			Subquery<Long> eventCountSq = cq.subquery(Long.class);
 			Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
@@ -103,7 +107,27 @@ public class CaseListCriteriaBuilder {
 					cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
 			eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 			selectionList.add(eventCountSq);
+
+			// Latest sampleDateTime subquery
+			Subquery<Timestamp> latestSampleDateTimeSq = cq.subquery(Timestamp.class);
+			Root<Sample> sample = latestSampleDateTimeSq.from(Sample.class);
+			Path<Timestamp> sampleDateTime = sample.get(Sample.SAMPLE_DATE_TIME);
+			latestSampleDateTimeSq.where(
+				cb.equal(sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)),
+				cb.isFalse(sample.get(Sample.DELETED)));
+			latestSampleDateTimeSq.select(cb.greatest(sampleDateTime));
+			selectionList.add(latestSampleDateTimeSq);
+
+			// Samples count subquery
+			Subquery<Long> sampleCountSq = cq.subquery(Long.class);
+			Root<Sample> sampleCountRoot = sampleCountSq.from(Sample.class);
+			sampleCountSq.where(
+				cb.equal(sampleCountRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)),
+				cb.isFalse(sampleCountRoot.get(Sample.DELETED)));
+			sampleCountSq.select(cb.countDistinct(sampleCountRoot.get(AbstractDomainObject.ID)));
+			selectionList.add(sampleCountSq);
 		}
+
 		cq.multiselect(selectionList);
 		cq.distinct(true);
 
@@ -129,7 +153,7 @@ public class CaseListCriteriaBuilder {
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze, joins);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -146,6 +170,7 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.UUID),
 			root.get(Case.EPID_NUMBER),
 			root.get(Case.EXTERNAL_ID),
+			root.get(Case.EXTERNAL_TOKEN),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			root.get(Case.DISEASE),
@@ -190,6 +215,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.UUID:
 		case CaseIndexDto.EPID_NUMBER:
 		case CaseIndexDto.EXTERNAL_ID:
+		case CaseIndexDto.EXTERNAL_TOKEN:
 		case CaseIndexDto.DISEASE:
 		case CaseIndexDto.DISEASE_DETAILS:
 		case CaseIndexDto.CASE_CLASSIFICATION:
@@ -243,7 +269,8 @@ public class CaseListCriteriaBuilder {
 				joins.getAddress().get(Location.POSTAL_CODE),
 				joins.getPerson().get(Person.PHONE),
 				joins.getReportingUser().get(User.FIRST_NAME),
-				joins.getReportingUser().get(User.LAST_NAME)));
+				joins.getReportingUser().get(User.LAST_NAME),
+				joins.getSymptoms().get(Symptoms.ONSET_DATE)));
 
 		return selections;
 	}
@@ -261,6 +288,8 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
+		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:
+			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		default:
 			return getIndexOrders(sortProperty, caze, joins);
 		}

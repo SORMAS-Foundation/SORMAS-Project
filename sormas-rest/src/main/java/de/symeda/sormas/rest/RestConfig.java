@@ -17,11 +17,23 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
+import javax.ws.rs.ApplicationPath;
+
+import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.rest.swagger.AttributeConverter;
+import de.symeda.sormas.rest.swagger.SormasSwaggerExtensions;
+import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
+import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import org.apache.commons.collections4.SetUtils;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-
-import javax.ws.rs.ApplicationPath;
 
 import de.symeda.sormas.rest.swagger.SwaggerConfig;
 
@@ -40,9 +52,31 @@ public class RestConfig extends ResourceConfig {
 
 		// as described in https://jersey.github.io/documentation/latest/security.html
 		register(RolesAllowedDynamicFeature.class);
-
 		register(JacksonFeature.class);
 
 		SwaggerConfig.init();
+
+		Info info = new Info().title("SORMAS external symptom journal API")
+				.version(InfoProvider.get().getVersion())
+				.description(
+						"The purpose of this API is to enable communication between SORMAS and other symptom journals. "
+								+ "Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. "
+								+ "If you would like to receive access, please contact the System Administrator. "
+								+ "For technical details please contact the dev team on gitter. "
+								+ "Authentication is done using basic auth, with the user and password.")
+				.contact(new Contact().url("https://gitter.im/SORMAS-Project/dev-support").name("Dev support"))
+				.license(new License().name("GNU General Public License").url("https://www.gnu.org/licenses/"));
+
+		OpenAPI openAPI = new OpenAPI().info(info);
+		openAPI.addExtension("sormas-extension", new SormasSwaggerExtensions());
+		ModelConverters.getInstance().addConverter(new AttributeConverter(Json.mapper()));
+		SwaggerConfiguration openAPIConfiguration = new SwaggerConfiguration()
+				.prettyPrint(true)
+				.openAPI(openAPI)
+				.readAllResources(false)
+				.resourceClasses(SetUtils.hashSet(ExternalVisitsResource.class.getSimpleName()));
+		OpenApiResource openApiResource = new OpenApiResource();
+		openApiResource.setOpenApiConfiguration(openAPIConfiguration);
+		register(openApiResource);
 	}
 }

@@ -30,24 +30,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -72,9 +66,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
 
 import de.symeda.sormas.api.AgeGroup;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
@@ -86,7 +78,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -97,11 +88,10 @@ import de.symeda.sormas.api.therapy.PrescriptionExportDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentExportDto;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.CsvStreamUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExportErrorException;
-import de.symeda.sormas.api.utils.Order;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
@@ -121,7 +111,7 @@ public final class DownloadUtil {
 			Map<CheckBox, DatabaseTable> databaseToggles = databaseExportView.getDatabaseTableToggles();
 			List<DatabaseTable> tablesToExport = new ArrayList<>();
 			for (CheckBox checkBox : databaseToggles.keySet()) {
-				if (checkBox.getValue() == true) {
+				if (checkBox.getValue()) {
 					tablesToExport.add(databaseToggles.get(checkBox));
 				}
 			}
@@ -536,136 +526,43 @@ public final class DownloadUtil {
 	public static <T> StreamResource createCsvExportStreamResource(
 		Class<T> exportRowClass,
 		Enum<?> exportType,
-		BiFunction<Integer, Integer, List<T>> exportRowsSupplier,
-		BiFunction<String, Class<?>, String> propertyIdCaptionFunction,
+		CsvStreamUtils.SupplierBiFunction<Integer, Integer, List<T>> exportRowsSupplier,
+		CsvStreamUtils.SupplierBiFunction<String, Class<?>, String> propertyIdCaptionFunction,
 		String exportFileName,
 		ExportConfigurationDto exportConfiguration) {
 
-		StreamResource extendedStreamResource = new StreamResource(() -> {
+		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
+			try {
+				CsvStreamUtils.writeCsvContentToStream(
+					exportRowClass,
+					exportRowsSupplier,
+					propertyIdCaptionFunction,
+					exportConfiguration,
+					(o) -> exportType == null || hasExportTarget(exportType, (Method) o),
+					FacadeProvider.getConfigFacade(),
+					out);
+			} catch (Exception e) {
+				LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
 
-			return new DelayedInputStream((out) -> {
-				try (CSVWriter writer = CSVUtils.createCSVWriter(
-					new OutputStreamWriter(out, StandardCharsets.UTF_8.name()),
-					FacadeProvider.getConfigFacade().getCsvSeparator())) {
+				throw e;
+			}
 
-					// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
-					List<Method> readMethods = getExportRowClassReadMethods(exportRowClass, exportType, exportConfiguration);
-
-					// 2. replace entity fields with all the columns of the entity
-					Map<Method, Function<T, ?>> subEntityProviders = new HashMap<Method, Function<T, ?>>();
-					for (int i = 0; i < readMethods.size(); i++) {
-						Method method = readMethods.get(i);
-						if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
-
-							// allows us to access the sub entity
-							Function<T, ?> subEntityProvider = o -> {
-								try {
-									return method.invoke(o);
-								} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-									throw new RuntimeException(e);
-								}
-							};
-
-							// remove entity field
-							readMethods.remove(i);
-
-							// add columns of the entity
-							List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
-								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
-								.sorted(Comparator.comparingInt(a2 -> a2.getAnnotationsByType(Order.class)[0].value()))
-								.collect(Collectors.toList());
-							readMethods.addAll(i, subReadMethods);
-							i--;
-
-							for (Method subReadMethod : subReadMethods) {
-								subEntityProviders.put(subReadMethod, subEntityProvider);
-							}
-						}
-					}
-
-					String[] fieldValues = new String[readMethods.size()];
-					for (int i = 0; i < readMethods.size(); i++) {
-						final Method method = readMethods.get(i);
-						// field caption
-						String propertyId = method.getName().startsWith("get") ? method.getName().substring(3) : method.getName().substring(2);
-						if (method.isAnnotationPresent(ExportProperty.class)) {
-							// TODO not sure why we are using the export property name to get the caption here
-							final ExportProperty exportProperty = method.getAnnotation(ExportProperty.class);
-							if (!exportProperty.combined()) {
-								propertyId = exportProperty.value();
-							}
-						}
-						propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-						fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
-					}
-					writer.writeNext(fieldValues);
-
-					int startIndex = 0;
-					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
-					Language userLanguage = I18nProperties.getUserLanguage();
-					while (!exportRows.isEmpty()) {
-						try {
-							for (T exportRow : exportRows) {
-								for (int i = 0; i < readMethods.size(); i++) {
-									Method method = readMethods.get(i);
-									Function<T, ?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
-									Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
-									// Sub entity might be null
-									Object value = entity != null ? method.invoke(entity) : null;
-
-									fieldValues[i] = DataHelper.valueToString(value);
-								}
-								writer.writeNext(fieldValues);
-							} ;
-						} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-							throw new RuntimeException(e);
-						}
-
-						writer.flush();
-						startIndex += DETAILED_EXPORT_STEP_SIZE;
-						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
-					}
-				} catch (Exception e) {
-					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
-					throw new RuntimeException(e);
-				}
-			},
-				e -> {
-					// TODO This currently requires the user to click the "Export" button again or reload the page
-					//  as the UI
-					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					VaadinSession.getCurrent()
-						.access(
-							() -> new Notification(
-								I18nProperties.getString(Strings.headingExportFailed),
-								I18nProperties.getString(Strings.messageExportFailed),
-								Type.ERROR_MESSAGE,
-								false).show(Page.getCurrent()));
-				});
-		}, exportFileName);
+		},
+			e -> {
+				// TODO This currently requires the user to click the "Export" button again or reload the page
+				//  as the UI
+				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+				VaadinSession.getCurrent()
+					.access(
+						() -> new Notification(
+							I18nProperties.getString(Strings.headingExportFailed),
+							I18nProperties.getString(Strings.messageExportFailed),
+							Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent()));
+			}), exportFileName);
 		extendedStreamResource.setMIMEType("text/csv");
 		extendedStreamResource.setCacheTime(0);
 		return extendedStreamResource;
-	}
-
-	private static <T> List<Method> getExportRowClassReadMethods(
-		Class<T> exportRowClass,
-		Enum<?> exportType,
-		ExportConfigurationDto exportConfiguration) {
-		CountryFieldVisibilityChecker countryFieldVisibilityChecker =
-			new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale());
-
-		List<Method> methods = Stream.of(exportRowClass.getDeclaredMethods())
-			.filter(
-				m -> (m.getName().startsWith("get") || m.getName().startsWith("is"))
-					&& m.isAnnotationPresent(Order.class)
-					&& (countryFieldVisibilityChecker.isVisible(m))
-					&& (exportType == null || hasExportTarget(exportType, m))
-					&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
-			.sorted(Comparator.comparingInt(a -> a.getAnnotationsByType(Order.class)[0].value()))
-			.collect(Collectors.toList());
-
-		return methods;
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
-import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -46,7 +45,7 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<LocationEditForm> editView =
-			new CommitDiscardWrapperComponent<LocationEditForm>(editForm, true, editForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(editForm, true, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(LocationDto.I18N_PREFIX));
@@ -101,7 +100,7 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 
 		for (Object columnId : table.getVisibleColumns()) {
 			if (!columnId.equals(EDIT_COLUMN_ID)) {
-				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
+				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, (String) columnId));
 			}
 		}
 	}

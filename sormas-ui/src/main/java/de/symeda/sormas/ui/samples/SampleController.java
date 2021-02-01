@@ -59,13 +59,16 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -77,6 +80,9 @@ public class SampleController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(SamplesView.VIEW_NAME, SamplesView.class);
 		navigator.addView(SampleDataView.VIEW_NAME, SampleDataView.class);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+			navigator.addView(LabMessagesView.VIEW_NAME, LabMessagesView.class);
+		}
 	}
 
 	public void navigateToData(String sampleUuid) {
@@ -97,6 +103,11 @@ public class SampleController {
 	}
 
 	private void createSample(Runnable callback, SampleDto sampleDto) {
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, callback);
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
+	}
+
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
 		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
@@ -111,7 +122,7 @@ public class SampleController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
+		return editView;
 	}
 
 	public void createReferral(SampleDto sample) {
@@ -127,6 +138,12 @@ public class SampleController {
 		createView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				saveSample(createForm);
+
+				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getUuid());
+				updatedSample.setReferredTo(referralSample.toReference());
+				FacadeProvider.getSampleFacade().saveSample(updatedSample);
+
+				navigateToData(sample.getUuid());
 			}
 		});
 
@@ -380,5 +397,31 @@ public class SampleController {
 						false).show(Page.getCurrent());
 				});
 		}
+	}
+
+	public VerticalLayout getSampleViewTitleLayout(SampleDto sample) {
+
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
+		titleLayout.setSpacing(false);
+
+		Label uuidLabel = new Label(DataHelper.getShortUuid(sample.getUuid()));
+		uuidLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponent(uuidLabel);
+
+		Label sampleDateLabel = new Label(DateFormatHelper.formatDate(sample.getSampleDateTime()));
+		sampleDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		titleLayout.addComponent(sampleDateLabel);
+
+		Label sampleCaptionLabel = new Label(
+			SampleReferenceDto.buildCaption(
+				sample.getSampleMaterial(),
+				sample.getAssociatedCase() != null ? sample.getAssociatedCase().getUuid() : null,
+				sample.getAssociatedContact() != null ? sample.getAssociatedContact().getUuid() : null,
+				sample.getAssociatedEventParticipant() != null ? sample.getAssociatedEventParticipant().getUuid() : null));
+		sampleCaptionLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		titleLayout.addComponents(sampleCaptionLabel);
+
+		return titleLayout;
 	}
 }

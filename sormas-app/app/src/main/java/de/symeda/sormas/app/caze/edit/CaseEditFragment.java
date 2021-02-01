@@ -36,6 +36,7 @@ import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
@@ -90,6 +91,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> humanRabiesTypeList;
 	private List<Item> hospitalWardTypeList;
 	private List<Item> initialRegions;
+	private List<Item> allDistricts;
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
@@ -101,6 +103,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> endOfIsolationReasonList;
 	private List<Item> covidTestReasonList;
 	private List<Item> contactTracingContactTypeList;
+	private List<Item> infectionSettingList;
 
 	// Static methods
 
@@ -183,6 +186,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
+			contentBinding.caseDataExternalToken.setVisibility(GONE);
 			contentBinding.caseDataReportingType.setVisibility(GONE);
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
 			contentBinding.caseDataEpidemiologicalConfirmation.setVisibility(GONE);
@@ -257,6 +261,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		reportingTypeList = DataUtils.getEnumItems(ReportingType.class, true);
 
 		initialRegions = InfrastructureHelper.loadRegions();
+		allDistricts = InfrastructureHelper.loadAllDistricts();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
@@ -267,6 +272,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		endOfIsolationReasonList = DataUtils.getEnumItems(EndOfIsolationReason.class, true);
 		covidTestReasonList = DataUtils.getEnumItems(CovidTestReason.class, true);
 		contactTracingContactTypeList = DataUtils.getEnumItems(ContactTracingContactType.class, true);
+		infectionSettingList = DataUtils.getEnumItems(InfectionSetting.class, true);
 	}
 
 	@Override
@@ -439,6 +445,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			.addValueChangedListener(e -> contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE));
 		contentBinding.caseDataQuarantineReduced
 			.addValueChangedListener(e -> contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE));
+
+		CaseValidator.initializeProhibitionToWorkIntervalValidator(contentBinding);
 	}
 
 	@Override
@@ -458,6 +466,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataNotifyingClinic.initializeSpinner(hospitalWardTypeList);
 		contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
 		contentBinding.caseDataQuarantine.initializeSpinner(quarantineList);
+		contentBinding.caseDataReportingDistrict.initializeSpinner(allDistricts);
 
 		// Initialize ControlDateFields
 		contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
@@ -494,7 +503,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReasonBeforeIsolation.initializeSpinner(quarantineReasonList);
 		contentBinding.caseDataEndOfIsolationReason.initializeSpinner(endOfIsolationReasonList);
 
-		if(isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)){
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataCovidTestReason)) {
 			contentBinding.caseDataCovidTestReasonDivider.setVisibility(VISIBLE);
 			contentBinding.caseDataCovidTestReason.initializeSpinner(covidTestReasonList);
 		}
@@ -506,6 +515,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataContactTracingFirstContactType.initializeSpinner(contactTracingContactTypeList);
 			contentBinding.caseDataContactTracingFirstContactDate.initializeDateField(getChildFragmentManager());
 		}
+
+		// end swiss fields
+		contentBinding.caseDataInfectionSetting.initializeSpinner(infectionSettingList);
+		contentBinding.caseDataProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
+		contentBinding.caseDataProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
 	}
 
 	@Override

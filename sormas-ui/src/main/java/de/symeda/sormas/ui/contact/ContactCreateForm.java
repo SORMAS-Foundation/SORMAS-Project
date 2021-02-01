@@ -18,11 +18,16 @@
 package de.symeda.sormas.ui.contact;
 
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 
+import com.vaadin.v7.ui.CheckBox;
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
@@ -90,7 +95,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
 					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
-					LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
+					LayoutUtil.fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
+					LayoutUtil.fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
+					LayoutUtil.fluidRow(
+						LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE,6,0, ContactDto.FIRST_CONTACT_DATE),
+						LayoutUtil.fluidColumnLoc(6, 0, ContactDto.LAST_CONTACT_DATE)) +
 					LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
 					LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 					LayoutUtil.fluidRowLocs(ContactDto.COMMUNITY) +
@@ -154,10 +163,16 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
 		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
 
+		CheckBox multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
+		DateField firstContactDate = addField(ContactDto.FIRST_CONTACT_DATE, DateField.class);
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
+		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
+
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		if (isConfiguredServer("de")) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getNullableValue()));
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
@@ -193,7 +208,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		ComboBox sex = addCustomField(PersonDto.SEX, Sex.class, ComboBox.class);
 		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
 
-		CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, lastContactDate, contactProximity, relationToCase);
+		CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, firstContactDate, lastContactDate, contactProximity, relationToCase);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -299,6 +314,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					PersonDto.PASSPORT_NUMBER,
 					PersonDto.PHONE,
 					PersonDto.EMAIL_ADDRESS);
+
+				setRequired(false, PersonDto.SEX);
 
 				TextField personNameField = addCustomField(PERSON_NAME_LOC, String.class, TextField.class);
 				personNameField.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
@@ -495,5 +512,34 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	public void setDiseaseReadOnly() {
 		getField(CaseDataDto.DISEASE).setEnabled(false);
+	}
+
+	private void initContactDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+		DateComparisonValidator startDateValidator = new DateComparisonValidator(
+			startDate,
+			endDate,
+			true,
+			true,
+			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
+
+		DateComparisonValidator endDateValidator = new DateComparisonValidator(
+			endDate,
+			startDate,
+			false,
+			true,
+			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
+
+		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));
+
+		multiDayCheckbox.addValueChangeListener(e -> {
+			if ((Boolean) e.getProperty().getValue()) {
+				startDate.addValidator(startDateValidator);
+				endDate.addValidator(endDateValidator);
+			} else {
+				startDate.removeValidator(startDateValidator);
+				endDate.removeValidator(endDateValidator);
+			}
+		});
+
 	}
 }

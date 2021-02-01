@@ -42,22 +42,27 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
@@ -72,7 +77,10 @@ public class Person extends AbstractDomainObject {
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
+	public static final String SALUTATION = "salutation";
+	public static final String OTHER_SALUTATION = "otherSalutation";
 	public static final String NICKNAME = "nickname";
+	public static final String BIRTH_NAME = "birthName";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String APPROXIMATE_AGE_TYPE = "approximateAgeType";
@@ -94,6 +102,7 @@ public class Person extends AbstractDomainObject {
 	public static final String EDUCATION_DETAILS = "educationDetails";
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
+	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 	public static final String PHONE = "phone";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String FATHERS_NAME = "fathersName";
@@ -116,16 +125,23 @@ public class Person extends AbstractDomainObject {
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String BIRTH_COUNTRY = "birthCountry";
+	public static final String CITIZENSHIP = "citizenship";
 	public static final String PERSON_CASES = "personCases";
 	public static final String PERSON_CONTACTS = "personContacts";
 	public static final String PERSON_EVENT_PARTICIPANTS = "personEventParticipants";
 
 	private String firstName;
 	private String lastName;
+	private Salutation salutation;
+	private String otherSalutation;
+	private String birthName;
 	private String nickname;
 	private String mothersName;
 	private String mothersMaidenName;
 	private String fathersName;
+	private String namesOfGuardians;
 
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
@@ -144,6 +160,7 @@ public class Person extends AbstractDomainObject {
 	private String phone;
 	private String phoneOwner;
 	private String emailAddress;
+	private List<ManualMessageLog> manualMessageLogs;
 
 	private Sex sex;
 
@@ -165,6 +182,7 @@ public class Person extends AbstractDomainObject {
 
 	private OccupationType occupationType;
 	private String occupationDetails;
+	private ArmedForcesRelationType armedForcesRelationType;
 	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
@@ -177,6 +195,10 @@ public class Person extends AbstractDomainObject {
 	private boolean hasCovidApp;
 	private boolean covidCodeDelivered;
 	private String externalId;
+	private String externalToken;
+
+	private Country birthCountry;
+	private Country citizenship;
 
 	private Set<EventParticipant> eventParticipants = new HashSet<>();
 	private Set<Contact> contacts = new HashSet<>();
@@ -201,6 +223,33 @@ public class Person extends AbstractDomainObject {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Salutation getSalutation() {
+		return salutation;
+	}
+
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getOtherSalutation() {
+		return otherSalutation;
+	}
+
+	public void setOtherSalutation(String otherSalutation) {
+		this.otherSalutation = otherSalutation;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getBirthName() {
+		return birthName;
+	}
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -430,6 +479,15 @@ public class Person extends AbstractDomainObject {
 		this.occupationDetails = occupationDetails;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public ArmedForcesRelationType getArmedForcesRelationType() {
+		return armedForcesRelationType;
+	}
+
+	public void setArmedForcesRelationType(ArmedForcesRelationType armedForcesRelationType) {
+		this.armedForcesRelationType = armedForcesRelationType;
+	}
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getMothersName() {
 		return mothersName;
@@ -446,6 +504,15 @@ public class Person extends AbstractDomainObject {
 
 	public void setFathersName(String fathersName) {
 		this.fathersName = fathersName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getNamesOfGuardians() {
+		return namesOfGuardians;
+	}
+
+	public void setNamesOfGuardians(String namesOfGuardians) {
+		this.namesOfGuardians = namesOfGuardians;
 	}
 
 	@ManyToOne(cascade = {})
@@ -615,6 +682,31 @@ public class Person extends AbstractDomainObject {
 		this.externalId = externalId;
 	}
 
+	@Column
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+
+	@ManyToOne
+	public Country getBirthCountry() {
+		return birthCountry;
+	}
+
+	public void setBirthCountry(Country placeOfBirthCountry) {
+		this.birthCountry = placeOfBirthCountry;
+	}
+
+	@ManyToOne
+	public Country getCitizenship() {
+		return citizenship;
+	}
+
+	public void setCitizenship(Country nationality) {
+		this.citizenship = nationality;
+	}
+
 	public void setEventParticipants(Set<EventParticipant> eventParticipants) {
 		this.eventParticipants = eventParticipants;
 	}
@@ -651,17 +743,31 @@ public class Person extends AbstractDomainObject {
 		this.personEventParticipants = personEventParticipants;
 	}
 
+	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
+	public Set<Contact> getContacts() {
+		return contacts;
+	}
+
 	public void setContacts(Set<Contact> contacts) {
 		this.contacts = contacts;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
-	public Set<Contact> getContacts() {
-		return contacts;
+	@OneToMany(mappedBy = ManualMessageLog.RECIPIENT_PERSON, fetch = FetchType.LAZY)
+	public List<ManualMessageLog> getManualMessageLogs() {
+		return manualMessageLogs;
+	}
+
+	public void setManualMessageLogs(List<ManualMessageLog> manualMessageLogs) {
+		this.manualMessageLogs = manualMessageLogs;
+	}
+
+	public PersonReferenceDto toReference() {
+		return new PersonReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
+
 }

@@ -18,12 +18,13 @@ package de.symeda.sormas.api.campaign.data;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.JsonDataEntry;
 
-public class CampaignFormDataEntry implements Serializable {
+public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 
 	private static final long serialVersionUID = -3096020120349257398L;
 
@@ -58,22 +59,6 @@ public class CampaignFormDataEntry implements Serializable {
 		this.value = value;
 	}
 
-	// does not make sense. Leads to hibernate not persisting any changes in value
-//	@Override
-//	public boolean equals(Object o) {
-//		if (this == o)
-//			return true;
-//		if (o == null || getClass() != o.getClass())
-//			return false;
-//		CampaignFormDataEntry that = (CampaignFormDataEntry) o;
-//		return Objects.equals(id, that.id);
-//	}
-//
-//	@Override
-//	public int hashCode() {
-//		return Objects.hash(id);
-//	}
-
 	@Override
 	public String toString() {
 		if (value == null) {
@@ -96,5 +81,24 @@ public class CampaignFormDataEntry implements Serializable {
 				iterator.remove();
 			}
 		}
+	}
+
+	/**
+	 * Needed. Otherwise hibernate will persist whenever loading,
+	 * because hibernate types creates new instances that aren't equal.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		CampaignFormDataEntry that = (CampaignFormDataEntry) o;
+		return Objects.equals(id, that.id) && Objects.equals(value, that.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, value);
 	}
 }

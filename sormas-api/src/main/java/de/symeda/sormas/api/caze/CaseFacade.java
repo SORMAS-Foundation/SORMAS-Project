@@ -31,6 +31,8 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.messaging.ManualMessageLogDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -115,6 +117,8 @@ public interface CaseFacade {
 
 	Date getOldestCaseReportDate();
 
+	Date getOldestCaseOutcomeDate();
+
 	boolean isArchived(String caseUuid);
 
 	boolean isDeleted(String caseUuid);
@@ -173,4 +177,33 @@ public interface CaseFacade {
 		Date to);
 
 	long countCasesConvertedFromContacts(CaseCriteria caseCriteria);
+
+	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
+
+	long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType);
+
+	List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType);
+
+	String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids);
+
+	void saveBulkCase(
+		List<String> caseUuidList,
+		CaseBulkEditData updatedCaseBulkEditData,
+		boolean diseaseChange,
+		boolean classificationChange,
+		boolean investigationStatusChange,
+		boolean outcomeChange,
+		boolean surveillanceOfficerChange);
+
+	void saveBulkEditWithFacilities(
+		List<String> caseUuidList,
+		CaseBulkEditData updatedCaseBulkEditData,
+		boolean diseaseChange,
+		boolean classificationChange,
+		boolean investigationStatusChange,
+		boolean outcomeChange,
+		boolean surveillanceOfficerChange,
+		Boolean doTransfer);
+
+	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
 }

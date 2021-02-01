@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,7 +35,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.contact.ContactSelectionField;
 import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.DataImporter;
-import de.symeda.sormas.ui.importer.ImportCellData;
 import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
@@ -95,22 +93,21 @@ public class ContactImporter extends DataImporter {
 		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
 		newContactTemp.setReportingUser(currentUser);
 
-		boolean contactHasImportError =
-			insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
-				// If the cell entry is not empty, try to insert it into the current contact or person object
-				if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
-					try {
-						insertColumnEntryIntoData(
-							newContactTemp,
-							newPersonTemp,
-							importColumnInformation.getValue(),
-							importColumnInformation.getEntityPropertyPath());
-					} catch (ImportErrorException | InvalidColumnException e) {
-						return e;
-					}
+		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
+			// If the cell entry is not empty, try to insert it into the current contact or person object
+			if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
+				try {
+					insertColumnEntryIntoData(
+						newContactTemp,
+						newPersonTemp,
+						importColumnInformation.getValue(),
+						importColumnInformation.getEntityPropertyPath());
+				} catch (ImportErrorException | InvalidColumnException e) {
+					return e;
 				}
-				return null;
-			});
+			}
+			return null;
+		});
 
 		// try to assign the contact to an existing case
 		if (caze == null && newContactTemp.getCaseIdExternalSystem() != null) {
@@ -205,7 +202,7 @@ public class ContactImporter extends DataImporter {
 						}
 					}
 
-					FacadeProvider.getContactFacade().saveContact(newContact, false);
+					FacadeProvider.getContactFacade().saveContact(newContact, true, false);
 
 					consumer.result = null;
 					return ImportLineResult.SUCCESS;
@@ -299,6 +296,7 @@ public class ContactImporter extends DataImporter {
 	 */
 	private void insertColumnEntryIntoData(ContactDto contact, PersonDto person, String entry, String[] entryHeaderPath)
 		throws InvalidColumnException, ImportErrorException {
+
 		Object currentElement = contact;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];

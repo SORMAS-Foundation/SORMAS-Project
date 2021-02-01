@@ -25,6 +25,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -73,10 +74,12 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new BooleanRenderer());
 
 		for (Column<VisitIndexDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(VisitIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
-
-			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
-
+			final String columnId = column.getId();
+			final String i18nPrefix = columnId.equals(VisitIndexDto.SYMPTOMATIC) || columnId.equals(VisitIndexDto.TEMPERATURE)
+				? SymptomsDto.I18N_PREFIX
+				: VisitIndexDto.I18N_PREFIX;
+			column.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, columnId, column.getCaption()));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), columnId));
 		}
 	}
 

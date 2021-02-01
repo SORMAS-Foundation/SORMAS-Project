@@ -38,7 +38,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -152,7 +151,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 247;
+	public static final int DATABASE_VERSION = 265;
 
 	private static DatabaseHelper instance = null;
 
@@ -1773,9 +1772,114 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "SELECT exposureDetailsKnown, contactWithSourceCaseKnown, wildbirds, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid, pseudonymized "
 						+ "FROM tmp_epidata;");
 				getDao(EpiData.class).executeRaw("DROP TABLE tmp_epidata;");
+			case 247:
+				currentVersion = 247;
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column multiDayContact boolean default false;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD column firstContactDate timestamp;");
+			case 248:
+				currentVersion = 248;
+
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN armedForcesRelationType varchar(255);");
+
+			case 249:
+				currentVersion = 249;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN nosocomialOutbreak boolean DEFAULT false");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN infectionSetting varchar(255)");
+
+			case 250:
+				currentVersion = 250;
+
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD column namesOfGuardians varchar(512);");
+
+			case 251:
+				currentVersion = 251;
+
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWork varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWorkFrom timestamp;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN  prohibitionToWorkUntil timestamp;");
+
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWork varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWorkFrom timestamp;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN  prohibitionToWorkUntil timestamp;");
+
+			case 252:
+				currentVersion = 252;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255)");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN srcInstitutionalPartnerTypeDetails varchar(512)");
+
+			case 253:
+				currentVersion = 253;
+				getDao(Contact.class).executeRaw("ALTER TABLE events ADD column riskLevel varchar(255);");
+
+			case 254:
+				currentVersion = 254;
+
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN salutation varchar(255)");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN otherSalutation text");
+
+			case 255:
+				currentVersion = 255;
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD column birthName varchar(255);");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD column birthCountry_id bigint REFERENCES country (id);");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD column citizenship_id bigint REFERENCES country (id);");
+
+			case 256:
+				currentVersion = 256;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN meansOfTransport varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN meansOfTransportDetails text;");
+
+			case 257:
+				currentVersion = 257;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportingDistrict_id REFERENCES district (id);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN reportingDistrict_id REFERENCES district (id);");
+
+			case 258:
+				currentVersion = 258;
+				getDao(Location.class).executeRaw(
+					"UPDATE location SET facilitytype = 'HOSPITAL' " + "WHERE facilitytype IS NULL "
+						+ "AND (SELECT typeofplace from events WHERE eventlocation_id = location.id) = 'HOSPITAL';");
+				getDao(Event.class).executeRaw(
+					"UPDATE events SET typeofplace = 'FACILITY' "
+						+ "WHERE (SELECT facilitytype FROM location WHERE id = events.eventlocation_id) IS NOT NULL;");
+
+			case 259:
+				currentVersion = 259;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN externalToken text;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN externalToken text;");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN externalToken text;");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN externalToken text;");
+
+			case 260:
+				currentVersion = 260;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN transregionalOutbreak varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseTransmissionMode varchar(255);");
+
+			case 261:
+				currentVersion = 261;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN superordinateEventUuid varchar(36);");
+
+			case 262:
+				currentVersion = 262;
+				getDao(Location.class).executeRaw(
+					"UPDATE location SET facilityType = 'HOSPITAL' " + "WHERE facilityType IS NULL "
+						+ "AND (SELECT typeOfPlace from exposures WHERE location_id = location.id) = 'HOSPITAL';");
+				getDao(Exposure.class).executeRaw(
+					"UPDATE exposures SET typeOfPlace = 'FACILITY' "
+						+ "WHERE (SELECT facilityType FROM location WHERE id = exposures.location_id) IS NOT NULL;");
+
+			case 263:
+				currentVersion = 263;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN connectionNumber varchar(512);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN travelDate timestamp;");
+
+			case 264:
+				currentVersion = 264;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN evolutionDate timestamp;");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN evolutionComment text;");
 
 				// ATTENTION: break should only be done after last version
 				break;
+
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
 			}

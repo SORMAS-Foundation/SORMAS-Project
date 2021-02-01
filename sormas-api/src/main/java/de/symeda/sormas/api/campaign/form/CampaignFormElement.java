@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.campaign.form;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class CampaignFormElement implements Serializable {
 
@@ -109,5 +111,31 @@ public class CampaignFormElement implements Serializable {
 
 	public void setImportant(boolean important) {
 		this.important = important;
+	}
+
+	/**
+	 * Needed. Otherwise hibernate will persist whenever loading,
+	 * because hibernate types creates new instances that aren't equal.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CampaignFormElement that = (CampaignFormElement) o;
+		return important == that.important &&
+				Objects.equals(type, that.type) &&
+				Objects.equals(id, that.id) &&
+				Objects.equals(caption, that.caption) &&
+				Arrays.equals(styles, that.styles) &&
+				Objects.equals(dependingOn, that.dependingOn) &&
+				Arrays.equals(dependingOnValues, that.dependingOnValues);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hash(type, id, caption, dependingOn, important);
+		result = 31 * result + Arrays.hashCode(styles);
+		result = 31 * result + Arrays.hashCode(dependingOnValues);
+		return result;
 	}
 }

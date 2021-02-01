@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Zum einfacheren Erstellen von CustomLayouts.<br/>
  * <p>
@@ -46,6 +49,9 @@ public final class LayoutUtil {
 	}
 
 	public static String locs(String... locations) {
+		return locs(Arrays.asList(locations));
+	}
+	public static String locs(List<String> locations) {
 		StringBuilder sb = new StringBuilder();
 		for (String location : locations) {
 			sb.append("<div location='").append(location).append("'></div>\n");
@@ -54,6 +60,10 @@ public final class LayoutUtil {
 	}
 
 	public static String locsCss(String css, String... locations) {
+		return divCss(css, locs(locations));
+	}
+
+	public static String locsCss(String css, List<String> locations) {
 		return divCss(css, locs(locations));
 	}
 

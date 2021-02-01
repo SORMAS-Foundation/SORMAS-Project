@@ -21,11 +21,14 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.JsonDataEntry;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -40,9 +43,10 @@ public final class DtoHelper {
 	 */
 	public static final int CHANGE_DATE_TOLERANCE_MS = 1000;
 
-	public static void validateDto(EntityDto dto, AbstractDomainObject entity) {
+	public static void validateDto(EntityDto dto, AbstractDomainObject entity, boolean checkChangeDate) {
 
-		if (entity.getChangeDate() != null
+		if (checkChangeDate
+			&& entity.getChangeDate() != null
 			&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
 			throw new OutdatedEntityException(dto.getUuid(), dto.getClass());
 		}
@@ -113,7 +117,9 @@ public final class DtoHelper {
 									newEntry.setCreationDate(null);
 									fillDto(newEntry, (EntityDto) sourceEntry, true);
 									targetCollection.add(newEntry);
-								} else if (DataHelper.isValueType(sourceEntry.getClass()) || sourceEntry instanceof ReferenceDto) {
+								} else if (DataHelper.isValueType(sourceEntry.getClass())
+									|| sourceEntry instanceof ReferenceDto
+									|| sourceEntry instanceof JsonDataEntry) {
 									targetCollection.add(sourceEntry);
 								} else {
 									throw new UnsupportedOperationException(
@@ -140,5 +146,22 @@ public final class DtoHelper {
 			| InstantiationException e) {
 			throw new RuntimeException("Exception when trying to fill dto: " + e.getMessage(), e.getCause());
 		}
+	}
+
+	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
+		if (target == null) {
+			target = newEntity.get();
+
+			String uuid = source.getUuid() != null ? source.getUuid() : DataHelper.createUuid();
+			target.setUuid(uuid);
+
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+
+		DtoHelper.validateDto(source, target, checkChangeDate);
+
+		return target;
 	}
 }

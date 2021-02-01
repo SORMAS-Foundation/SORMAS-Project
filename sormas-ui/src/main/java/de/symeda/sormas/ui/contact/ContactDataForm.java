@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.contact;
 
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
@@ -82,7 +83,9 @@ import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -103,10 +106,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
             loc(CONTACT_DATA_HEADING_LOC) +
                     fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
                     locCss(VSPACE_3, TO_CASE_BTN_LOC) +
-                    fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.DISEASE) +
+					fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
+					LayoutUtil.fluidRow(
+						LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE,4,0, ContactDto.FIRST_CONTACT_DATE),
+						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.LAST_CONTACT_DATE),
+						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.DISEASE)) +
                     fluidRowLocs(ContactDto.DISEASE_DETAILS) +
-                    fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
-                    fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
+					fluidRowLocs(ContactDto.UUID) +
+					fluidRowLocs(6, ContactDto.EXTERNAL_ID, 6, ContactDto.EXTERNAL_TOKEN) +
+					fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.REPORTING_DISTRICT) +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
 					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
@@ -118,6 +126,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
                     fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
                     fluidRowLocs(ContactDto.DESCRIPTION) +
+					fluidRowLocs(6, CaseDataDto.PROHIBITION_TO_WORK, 3, CaseDataDto.PROHIBITION_TO_WORK_FROM, 3, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
                     fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
@@ -187,9 +196,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.CONTACT_STATUS, NullableOptionGroup.class);
 		addField(ContactDto.UUID, TextField.class);
 		addField(ContactDto.EXTERNAL_ID, TextField.class);
+		addField(ContactDto.EXTERNAL_TOKEN, TextField.class);
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
+		CheckBox multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
+		DateField firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
+		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
+
 		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+		((ComboBox) addField(ContactDto.REPORTING_DISTRICT)).addItems(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
 		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
 		contactIdentificationSourceDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -232,6 +250,30 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		cbDisease = addDiseaseField(ContactDto.DISEASE, false);
 		cbDisease.setNullSelectionAllowed(false);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
+
+		addField(ContactDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		DateField prohibitionToWorkFrom = addField(ContactDto.PROHIBITION_TO_WORK_FROM);
+		DateField prohibitionToWorkUntil = addDateField(ContactDto.PROHIBITION_TO_WORK_UNTIL, DateField.class, -1);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(ContactDto.PROHIBITION_TO_WORK_FROM, ContactDto.PROHIBITION_TO_WORK_UNTIL),
+			ContactDto.PROHIBITION_TO_WORK,
+			YesNoUnknown.YES,
+			true);
+		prohibitionToWorkFrom.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkFrom,
+				prohibitionToWorkUntil,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, prohibitionToWorkFrom.getCaption(), prohibitionToWorkUntil.getCaption())));
+		prohibitionToWorkUntil.addValidator(
+			new DateComparisonValidator(
+				prohibitionToWorkUntil,
+				prohibitionToWorkFrom,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, prohibitionToWorkUntil.getCaption(), prohibitionToWorkFrom.getCaption())));
 
 		quarantine = addField(ContactDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> onValueChange());
@@ -522,7 +564,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		});
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
-		FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
+		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximity, relationToCase);
 	}
 
 	/*
@@ -844,5 +886,33 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			quarantineReduced.setValue(false);
 			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
 		}
+	}
+
+	private void initContactDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+		DateComparisonValidator startDateValidator = new DateComparisonValidator(
+			startDate,
+			endDate,
+			true,
+			true,
+			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
+
+		DateComparisonValidator endDateValidator = new DateComparisonValidator(
+			endDate,
+			startDate,
+			false,
+			true,
+			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
+
+		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));
+
+		multiDayCheckbox.addValueChangeListener(e -> {
+			if ((Boolean) e.getProperty().getValue()) {
+				startDate.addValidator(startDateValidator);
+				endDate.addValidator(endDateValidator);
+			} else {
+				startDate.removeValidator(startDateValidator);
+				endDate.removeValidator(endDateValidator);
+			}
+		});
 	}
 }

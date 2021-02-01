@@ -1,18 +1,24 @@
 package de.symeda.sormas.backend.facility;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
+import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.region.Community;
@@ -131,5 +137,36 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 	public void testHasArchivedParentInfrastructureNoFacilities() {
 
 		assertFalse(getFacilityFacade().hasArchivedParentInfrastructure(Collections.emptyList()));
+	}
+
+	@Test
+	public void testGetIndexListMappedSorting() {
+
+		FacilityCriteria facilityCriteria = new FacilityCriteria();
+
+		// 0. No sortProperties
+		List<FacilityDto> result = getFacilityFacade().getIndexList(facilityCriteria, null, null, new ArrayList<>());
+		assertThat(result, is(empty()));
+
+		List<SortProperty> allSortProperties = new ArrayList<>();
+		allSortProperties.add(new SortProperty(FacilityDto.NAME));
+		allSortProperties.add(new SortProperty(FacilityDto.TYPE));
+		allSortProperties.add(new SortProperty(FacilityDto.REGION));
+		allSortProperties.add(new SortProperty(FacilityDto.DISTRICT));
+		allSortProperties.add(new SortProperty(FacilityDto.COMMUNITY));
+		allSortProperties.add(new SortProperty(FacilityDto.CITY));
+		allSortProperties.add(new SortProperty(FacilityDto.LATITUDE));
+		allSortProperties.add(new SortProperty(FacilityDto.LONGITUDE));
+		allSortProperties.add(new SortProperty(FacilityDto.EXTERNAL_ID));
+
+		// 1. Sort by every property
+		for (SortProperty sortProperty : allSortProperties) {
+			getFacilityFacade().getIndexList(facilityCriteria, null, null, Collections.singletonList(sortProperty));
+			assertThat(sortProperty.toString(), result, is(empty()));
+		}
+
+		// 2. Sort by all properties at once
+		getFacilityFacade().getIndexList(facilityCriteria, null, null, allSortProperties);
+		assertThat(result, is(empty()));
 	}
 }

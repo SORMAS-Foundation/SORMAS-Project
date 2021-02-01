@@ -34,6 +34,7 @@
         <variable name="symptomStateClass" type="Class"/>
         <variable name="clearAllCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
         <variable name="setClearedToNoCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
+        <variable name="setClearedToUnknownCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener"/>
         <variable name="symptomsContext" type="de.symeda.sormas.api.symptoms.SymptomsContext" />
     </data>
 
@@ -87,6 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:weightSum="2"
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
@@ -103,10 +105,28 @@
                     android:id="@+id/btn_cleared_to_no"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/control_spacing"
                     android:layout_weight="1"
+                    android:layout_marginLeft="@dimen/control_spacing"
                     android:onClick="@{(view) -> setClearedToNoCallback.onClick(view, data)}"
                     android:text="@string/action_set_cleared_to_no"
+                    app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                    app:slim="true" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/btn_cleared_to_unknown"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{(view) -> setClearedToUnknownCallback.onClick(view, data)}"
+                    android:text="@string/action_set_cleared_to_unknown"
                     app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
                     app:slim="true"/>
 

@@ -38,8 +38,9 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -47,7 +48,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class CampaignFormDataService extends AbstractAdoService<CampaignFormData> {
+public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFormData> {
 
 	public CampaignFormDataService() {
 		super(CampaignFormData.class);
@@ -62,21 +63,28 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 		Predicate filter = null;
 
 		if (criteria.getCampaign() != null) {
-			filter = and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
 		} else {
-			filter = and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
 		}
 		if (criteria.getCampaignFormMeta() != null) {
-			filter = and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
 		}
 		if (criteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(regionJoin.get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(regionJoin.get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(districtJoin.get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(districtJoin.get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getCommunity() != null) {
-			filter = and(cb, filter, cb.equal(communityJoin.get(Community.UUID), criteria.getCommunity().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(communityJoin.get(Community.UUID), criteria.getCommunity().getUuid()));
+		}
+		if (criteria.getFormDate() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getStartOfDay(criteria.getFormDate())),
+				cb.lessThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getEndOfDay(criteria.getFormDate())));
 		}
 
 		return filter;
@@ -97,19 +105,19 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {
-					filter = or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.REGION).get(Region.ID), region.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.REGION).get(Region.ID), region.getId()));
 				}
 				break;
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.DISTRICT).get(District.ID), district.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.DISTRICT).get(District.ID), district.getId()));
 				}
 				break;
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), community.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), community.getId()));
 				}
 				break;
 			default:
@@ -129,7 +137,7 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
+			filter = CriteriaBuilderHelper.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
 		}
 
 		cq.where(filter);
@@ -147,7 +155,7 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
+			filter = CriteriaBuilderHelper.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
 		}
 
 		if (date != null) {

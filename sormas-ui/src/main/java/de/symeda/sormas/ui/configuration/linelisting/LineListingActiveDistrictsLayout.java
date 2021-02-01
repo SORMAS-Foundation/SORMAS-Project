@@ -9,9 +9,9 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import org.apache.commons.text.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class LineListingActiveDistrictsLayout extends CssLayout {
@@ -28,7 +28,7 @@ public class LineListingActiveDistrictsLayout extends CssLayout {
 
 		for (FeatureConfigurationIndexDto config : configurations) {
 			StringBuilder captionBuilder = new StringBuilder();
-			captionBuilder.append("<b>").append(StringEscapeUtils.escapeHtml4(config.getDistrictName())).append("</b><br/>");
+			captionBuilder.append("<b>").append(HtmlHelper.cleanHtml(config.getDistrictName())).append("</b><br/>");
 			if (config.getEndDate() != null) {
 				captionBuilder.append(I18nProperties.getString(Strings.until)).append(" ").append(DateFormatHelper.formatDate(config.getEndDate()));
 			} else {

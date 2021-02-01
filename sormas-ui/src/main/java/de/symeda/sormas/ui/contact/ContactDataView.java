@@ -25,14 +25,15 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -192,9 +193,11 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(buttonsLayout, CASE_BUTTONS_LOC);
 		}
 
-		TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef());
-		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(taskList, TASKS_LOC);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+			TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef());
+			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(taskList, TASKS_LOC);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
@@ -215,7 +218,8 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 			VerticalLayout eventsLayout = new VerticalLayout();
 			eventsLayout.setMargin(false);
 			eventsLayout.setSpacing(false);

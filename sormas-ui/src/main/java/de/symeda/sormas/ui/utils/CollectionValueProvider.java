@@ -20,7 +20,8 @@ package de.symeda.sormas.ui.utils;
 import java.util.Collection;
 
 import com.vaadin.data.ValueProvider;
-import org.apache.commons.text.StringEscapeUtils;
+
+import de.symeda.sormas.api.utils.HtmlHelper;
 
 /**
  * A ValueProvider that allows displaying a collection as a comma separated list of
@@ -44,7 +45,7 @@ public class CollectionValueProvider<T extends Collection> implements ValueProvi
 			b.append(", ");
 		}
 		if (b.length() >= 2) {
-			return StringEscapeUtils.escapeHtml4(b.substring(0, b.length() - 2));
+			return HtmlHelper.cleanHtml(b.substring(0, b.length() - 2));
 		}
 		return "";
 	}

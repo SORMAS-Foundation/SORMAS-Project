@@ -45,6 +45,7 @@ public class CampaignFormDataDto extends EntityDto {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String CREATING_USER = "creatingUser";
 
 	private List<CampaignFormDataEntry> formValues;
 	private CampaignReferenceDto campaign;
@@ -143,6 +144,5 @@ public class CampaignFormDataDto extends EntityDto {
 	public void setCreatingUser(UserReferenceDto creatingUser) {
 		this.creatingUser = creatingUser;
 	}
-
 
 }

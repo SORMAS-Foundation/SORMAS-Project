@@ -22,7 +22,8 @@ public enum EventSourceType {
 	NOT_APPLICABLE,
 	MEDIA_NEWS,
 	HOTLINE_PERSON,
-	MATHEMATICAL_MODEL;
+	MATHEMATICAL_MODEL,
+	INSTITUTIONAL_PARTNER;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

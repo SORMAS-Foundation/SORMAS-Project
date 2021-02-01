@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +55,15 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
-		return countryService.getByDefaultName(name, includeArchivedEntities).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return countryService.getByDefaultName(name, includeArchivedEntities)
+			.stream()
+			.map(CountryFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities) {
+		return countryService.getByIsoCode(isoCode, includeArchivedEntities).map(this::toDto).orElse(null);
 	}
 
 	@Override
@@ -74,10 +83,12 @@ public class CountryFacadeEjb implements CountryFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case Country.DEFAULT_NAME:
-				case Country.EXTERNAL_ID:
-				case Country.ISO_CODE:
-				case Country.UNO_CODE:
+				case CountryIndexDto.DISPLAY_NAME:
+					expression = country.get(Country.DEFAULT_NAME);
+					break;
+				case CountryIndexDto.EXTERNAL_ID:
+				case CountryIndexDto.ISO_CODE:
+				case CountryIndexDto.UNO_CODE:
 					expression = country.get(sortProperty.propertyName);
 					break;
 				default:
@@ -134,7 +145,7 @@ public class CountryFacadeEjb implements CountryFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
 		}
 
-		country = fillOrBuildEntity(dto, country);
+		country = fillOrBuildEntity(dto, country, true);
 		countryService.ensurePersisted(country);
 		return country.getUuid();
 	}
@@ -161,7 +172,20 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new CountryReferenceDto(entity.getUuid(), entity.toString());
+		return new CountryReferenceDto(
+			entity.getUuid(),
+			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
+			entity.getIsoCode());
+	}
+
+	public static CountryReferenceDto toReferenceDto(CountryDto entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new CountryReferenceDto(
+			entity.getUuid(),
+			I18nProperties.getCountryName(entity.getIsoCode(), entity.getDefaultName()),
+			entity.getIsoCode());
 	}
 
 	public CountryDto toDto(Country entity) {
@@ -201,14 +225,8 @@ public class CountryFacadeEjb implements CountryFacade {
 		return dto;
 	}
 
-	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target) {
-
-		if (target == null) {
-			target = new Country();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target);
+	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
@@ -253,6 +271,15 @@ public class CountryFacadeEjb implements CountryFacade {
 			return Collections.emptyList();
 		}
 		return countryService.getAllUuids();
+	}
+
+	@Override
+	public List<CountryReferenceDto> getAllActiveAsReference() {
+		return countryService.getAllActive(Country.ISO_CODE, true)
+			.stream()
+			.map(CountryFacadeEjb::toReferenceDto)
+			.sorted(Comparator.comparing(CountryReferenceDto::getCaption))
+			.collect(Collectors.toList());
 	}
 
 	// Need to be in the same order as in the constructor

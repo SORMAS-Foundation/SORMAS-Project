@@ -38,6 +38,7 @@ import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -140,7 +141,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		getContent().addComponent(
 			new Label(
 				h3(I18nProperties.getString(Strings.headingExposureInvestigation))
-					+ divsCss(VSPACE_3, I18nProperties.getString(Strings.infoExposureInvestigation)),
+					+ divsCss(
+						VSPACE_3,
+						I18nProperties.getString(
+							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation)),
 				ContentMode.HTML),
 			LOC_EXPOSURE_INVESTIGATION_HEADING);
 

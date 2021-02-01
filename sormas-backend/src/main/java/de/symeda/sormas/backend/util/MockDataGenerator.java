@@ -17,16 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.util;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.user.User;
-import org.apache.commons.collections4.CollectionUtils;
 
 public final class MockDataGenerator {
 

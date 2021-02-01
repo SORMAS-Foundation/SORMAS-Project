@@ -17,8 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -26,10 +31,12 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
@@ -38,8 +45,10 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -63,9 +72,20 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.setMargin(false);
 		aboutContent.addComponent(infoLayout, "info");
 
-		Label versionLabel = new Label(
-			VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(),
-			ContentMode.HTML);
+		Label aboutLabel = new Label(I18nProperties.getCaption(Captions.about), ContentMode.HTML);
+		aboutLabel.addStyleName(CssStyles.H1);
+		infoLayout.addComponent(aboutLabel);
+
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+		String infoLabelStr = configFacade.isCustomBranding()
+			? String.format(I18nProperties.getCaption(Captions.aboutBrandedSormasVersion), configFacade.getCustomBrandingName())
+			: "SORMAS";
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + infoLabelStr, ContentMode.HTML);
+		infoLayout.addComponent(infoLabel);
+
+		Label versionLabel =
+			new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
+		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
 		infoLayout.addComponent(versionLabel);
 
 		Link whatsNewLink = new Link(
@@ -90,40 +110,67 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.addComponent(changelogLink);
 
 		// Documents section
-		VerticalLayout documentsLayout = new VerticalLayout();
-		documentsLayout.setSpacing(false);
-		documentsLayout.setMargin(false);
-		aboutContent.addComponent(documentsLayout, "documents");
+		if (shouldShowDocumentsSection()) {
+			VerticalLayout documentsLayout = new VerticalLayout();
+			documentsLayout.setSpacing(false);
+			documentsLayout.setMargin(new MarginInfo(true, false, false, false));
+			aboutContent.addComponent(documentsLayout, "documents");
 
-		Button classificationDocumentButton =
-			ButtonHelper.createButton(Captions.aboutCaseClassificationRules, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
-		documentsLayout.addComponent(classificationDocumentButton);
+			Label documentsLabel = new Label(I18nProperties.getCaption(Captions.aboutDocuments), ContentMode.HTML);
+			documentsLabel.addStyleName(CssStyles.H1);
+			documentsLayout.addComponent(documentsLabel);
 
-		try {
-			String serverUrl =
-				new URL(((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest().getRequestURL().toString()).getAuthority();
-			StreamResource classificationResource = DownloadUtil.createStringStreamResource(
-				ClassificationHtmlRenderer.createHtmlForDownload(
-					serverUrl,
-					FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true),
-					I18nProperties.getUserLanguage()),
-				"classification_rules.html",
-				"text/html");
-			new FileDownloader(classificationResource).extend(classificationDocumentButton);
-		} catch (MalformedURLException e) {
+			List<String> customDocuments = listCustomDocumentsFiles();
+			if (!customDocuments.isEmpty()) {
+				customDocuments.stream().forEach(customDocument -> {
+					Button customDocumentButton = ButtonHelper.createButton(customDocument, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+					documentsLayout.addComponent(customDocumentButton);
+					String customDocumentPath = getCustomDocumentsPath() + File.separator + customDocument;
+					FileDownloader customDocumentDownloader = new FileDownloader(new FileResource(new File(customDocumentPath)));
+					customDocumentDownloader.extend(customDocumentButton);
+				});
+			}
 
+			if (shouldShowClassificationDocumentLink()) {
+				Button classificationDocumentButton =
+					ButtonHelper.createButton(Captions.aboutCaseClassificationRules, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+				documentsLayout.addComponent(classificationDocumentButton);
+
+				try {
+					String serverUrl =
+						new URL(((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest().getRequestURL().toString())
+							.getAuthority();
+					StreamResource classificationResource = DownloadUtil.createStringStreamResource(
+						ClassificationHtmlRenderer.createHtmlForDownload(
+							serverUrl,
+							FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true),
+							I18nProperties.getUserLanguage()),
+						"classification_rules.html",
+						"text/html");
+					new FileDownloader(classificationResource).extend(classificationDocumentButton);
+				} catch (MalformedURLException e) {
+
+				}
+			}
+
+			if (shouldShowDataDictionaryLink()) {
+				Button dataDictionaryButton =
+					ButtonHelper.createButton(Captions.aboutDataDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+				documentsLayout.addComponent(dataDictionaryButton);
+				FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+				dataDictionaryDownloader.extend(dataDictionaryButton);
+			}
+
+			// This link is hidden until an updated version of the document is provided
+			/*
+			 * Link technicalManualLink = new Link(
+			 * I18nProperties.getCaption(Captions.aboutTechnicalManual),
+			 * new ExternalResource(
+			 * "https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"));
+			 * technicalManualLink.setTargetName("_blank");
+			 * documentsLayout.addComponent(technicalManualLink);
+			 */
 		}
-
-		Button dataDictionaryButton = ButtonHelper.createButton(Captions.aboutDataDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
-		documentsLayout.addComponent(dataDictionaryButton);
-		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		dataDictionaryDownloader.extend(dataDictionaryButton);
-
-		Link technicalManualLink = new Link(
-			I18nProperties.getCaption(Captions.aboutTechnicalManual),
-			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"));
-		technicalManualLink.setTargetName("_blank");
-		documentsLayout.addComponent(technicalManualLink);
 
 		setSizeFull();
 		setStyleName("about-view");
@@ -135,4 +182,35 @@ public class AboutView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 
 	}
+
+	private boolean shouldShowDocumentsSection() {
+		return !listCustomDocumentsFiles().isEmpty() || shouldShowClassificationDocumentLink() || shouldShowDataDictionaryLink();
+	}
+
+	private List<String> listCustomDocumentsFiles() {
+		File customDocumentsDir = new File(getCustomDocumentsPath());
+		if (!customDocumentsDir.exists() || !customDocumentsDir.isDirectory()) {
+			return Collections.emptyList();
+		}
+		File[] customDocuments = customDocumentsDir.listFiles();
+		if (customDocuments == null) {
+			return Collections.emptyList();
+		}
+		return Arrays.stream(customDocuments).map(File::getName).sorted(String::compareTo).collect(Collectors.toList());
+	}
+
+	private boolean shouldShowClassificationDocumentLink() {
+		return FacadeProvider.getConfigFacade().isFeatureAutomaticCaseClassification()
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+	}
+
+	private boolean shouldShowDataDictionaryLink() {
+		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE);
+	}
+
+	private String getCustomDocumentsPath() {
+		return FacadeProvider.getConfigFacade().getCustomFilesPath() + "aboutfiles";
+	}
+
 }

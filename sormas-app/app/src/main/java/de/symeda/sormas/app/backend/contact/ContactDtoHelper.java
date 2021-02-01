@@ -87,6 +87,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setReportDateTime(source.getReportDateTime());
 		target.setContactOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getContactOfficer()));
 
+		target.setMultiDayContact(source.isMultiDayContact());
+		target.setFirstContactDate(source.getFirstContactDate());
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
@@ -109,6 +111,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
 		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
@@ -155,6 +158,12 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setReturningTraveler(source.getReturningTraveler());
+
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
+		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
 	}
 
 	@Override
@@ -205,6 +214,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		}
 		target.setReportDateTime(source.getReportDateTime());
 
+		target.setMultiDayContact(source.isMultiDayContact());
+		target.setFirstContactDate(source.getFirstContactDate());
 		target.setLastContactDate(source.getLastContactDate());
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
@@ -231,6 +242,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
 
 		target.setHighPriority(source.isHighPriority());
 		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
@@ -284,6 +296,17 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setReturningTraveler(source.getReturningTraveler());
+
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
+		if (source.getReportingDistrict() != null) {
+			District district = DatabaseHelper.getDistrictDao().queryForId(source.getReportingDistrict().getId());
+			target.setReportingDistrict(DistrictDtoHelper.toReferenceDto(district));
+		} else {
+			target.setReportingDistrict(null);
+		}
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {

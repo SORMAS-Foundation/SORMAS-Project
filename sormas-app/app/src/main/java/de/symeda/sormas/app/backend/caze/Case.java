@@ -38,6 +38,7 @@ import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
@@ -49,7 +50,6 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
@@ -273,6 +273,9 @@ public class Case extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalID;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalToken;
+
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -333,6 +336,20 @@ public class Case extends PseudonymizableAdo {
 	private EndOfIsolationReason endOfIsolationReason;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String endOfIsolationReasonDetails;
+	@DatabaseField
+	private boolean nosocomialOutbreak;
+	@Enumerated(EnumType.STRING)
+	private InfectionSetting infectionSetting;
+
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown prohibitionToWork;
+	@DatabaseField
+	private Date prohibitionToWorkFrom;
+	@DatabaseField
+	private Date prohibitionToWorkUntil;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private District reportingDistrict;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
@@ -855,6 +872,14 @@ public class Case extends PseudonymizableAdo {
 		this.externalID = externalID;
 	}
 
+	public String getExternalToken() {
+		return externalToken;
+	}
+
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
+
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
@@ -1101,6 +1126,54 @@ public class Case extends PseudonymizableAdo {
 
 	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
+	}
+
+	public boolean isNosocomialOutbreak() {
+		return nosocomialOutbreak;
+	}
+
+	public void setNosocomialOutbreak(boolean nosocomialOutbreak) {
+		this.nosocomialOutbreak = nosocomialOutbreak;
+	}
+
+	public InfectionSetting getInfectionSetting() {
+		return infectionSetting;
+	}
+
+	public void setInfectionSetting(InfectionSetting infectionSetting) {
+		this.infectionSetting = infectionSetting;
+	}
+
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	public District getReportingDistrict() {
+		return reportingDistrict;
+	}
+
+	public void setReportingDistrict(District reportingDistrict) {
+		this.reportingDistrict = reportingDistrict;
 	}
 
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {

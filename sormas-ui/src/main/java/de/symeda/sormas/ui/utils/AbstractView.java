@@ -48,6 +48,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 	protected final String viewName;
 	private final HorizontalLayout viewHeader;
+	private final VerticalLayout viewTitleLayout;
 	private final Label viewTitleLabel;
 	private final Label viewSubTitleLabel;
 
@@ -67,7 +68,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		viewHeader.setSpacing(true);
 		CssStyles.style(viewHeader, "view-header");
 
-		VerticalLayout viewTitleLayout = new VerticalLayout();
+		viewTitleLayout = new VerticalLayout();
 		{
 			viewTitleLayout.setSizeUndefined();
 			viewTitleLayout.setSpacing(false);
@@ -95,6 +96,12 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	protected void addHeaderComponent(Component c) {
 		viewHeader.addComponent(c);
 		viewHeader.setComponentAlignment(c, Alignment.MIDDLE_RIGHT);
+	}
+
+	protected void setMainHeaderComponent(Component c) {
+		viewHeader.removeComponent(viewTitleLayout);
+		viewHeader.addComponent(c, 0);
+		viewHeader.setExpandRatio(c, 1);
 	}
 
 	@Override

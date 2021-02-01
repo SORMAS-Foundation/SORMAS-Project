@@ -18,6 +18,8 @@
 
 package de.symeda.sormas.backend.user.event;
 
+import java.util.function.Consumer;
+
 import de.symeda.sormas.backend.user.User;
 
 /**
@@ -32,6 +34,16 @@ public class UserUpdateEvent {
 
 	private final User newUser;
 
+	private Consumer<String> exceptionCallback;
+
+	/**
+	 * Used when there are not actual updates on the entity, but the Authentication Provider has to do a sync.
+	 */
+	public UserUpdateEvent(User user) {
+		this.oldUser = user;
+		this.newUser = user;
+	}
+
 	public UserUpdateEvent(User oldUser, User newUser) {
 		this.oldUser = oldUser;
 		this.newUser = newUser;
@@ -43,5 +55,13 @@ public class UserUpdateEvent {
 
 	public User getNewUser() {
 		return newUser;
+	}
+
+	public Consumer<String> getExceptionCallback() {
+		return exceptionCallback;
+	}
+
+	public void setExceptionCallback(Consumer<String> exceptionCallback) {
+		this.exceptionCallback = exceptionCallback;
 	}
 }

@@ -33,18 +33,19 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.data.validator.EmailValidator;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -65,7 +66,9 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -78,9 +81,9 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
@@ -113,6 +116,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
             loc(PERSON_INFORMATION_HEADING_LOC) +
 					fluidRowLocs(PersonDto.UUID, "")+
                     fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+					fluidRowLocs(PersonDto.SALUTATION, PersonDto.OTHER_SALUTATION) +
                     fluidRow(
                             fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
                             fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
@@ -137,7 +141,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
                     ) +
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
-					fluidRowLocs(PersonDto.EXTERNAL_ID, "") +
+					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
 
 
 
@@ -145,7 +149,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
-                            fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
+                            fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS) +
+                            fluidRow(oneOfTwoCol(PersonDto.ARMED_FORCES_RELATION_TYPE)),
                             fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
                     ) +
 
@@ -158,10 +163,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     loc(CONTACT_INFORMATION_HEADER) +
                     divsCss(
                             VSPACE_3,
-                            fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
-                                    fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-                                    fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
-                                    fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+							fluidRowLocs(PersonDto.BIRTH_NAME, "") +
+									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
+									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
+									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
+									fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
+									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
                                     loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 	//@formatter:on
 
@@ -199,10 +207,16 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.UUID).setReadOnly(true);
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
+
+		addFields(PersonDto.SALUTATION, PersonDto.OTHER_SALUTATION);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.OTHER_SALUTATION, PersonDto.SALUTATION, Salutation.OTHER, true);
+
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
+		addField(PersonDto.BIRTH_NAME, TextField.class);
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
 		addFields(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
+		addFields(PersonDto.NAMES_OF_GUARDIANS);
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -254,6 +268,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields(
 			PersonDto.OCCUPATION_TYPE,
 			PersonDto.OCCUPATION_DETAILS,
+			PersonDto.ARMED_FORCES_RELATION_TYPE,
 			PersonDto.EDUCATION_TYPE,
 			PersonDto.EDUCATION_DETAILS);
 
@@ -261,10 +276,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.PHONE_OWNER, TextField.class);
 		TextField emailAddress = addField(PersonDto.EMAIL_ADDRESS, TextField.class);
 
-		addFields(
-			PersonDto.PASSPORT_NUMBER,
-			PersonDto.NATIONAL_HEALTH_ID,
-			PersonDto.EXTERNAL_ID);
+		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
+		((ComboBox) addField(PersonDto.BIRTH_COUNTRY)).addItems(countries);
+		((ComboBox) addField(PersonDto.CITIZENSHIP)).addItems(countries);
+
+		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID, PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN);
 
 		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
@@ -327,7 +343,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible() && !getField(PersonDto.EDUCATION_TYPE).isVisible())
+		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible()
+			&& !getField(PersonDto.ARMED_FORCES_RELATION_TYPE).isVisible()
+			&& !getField(PersonDto.EDUCATION_TYPE).isVisible())
 			occupationHeader.setVisible(false);
 		if (!getField(PersonDto.ADDRESS).isVisible())
 			addressHeader.setVisible(false);
@@ -409,13 +427,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
 
-		phoneNumber.addValidator(
-			new PhoneNumberValidator(
-				I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
+		phoneNumber.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumber.getCaption())));
 
-		emailAddress.addValidator(
-			new EmailValidator(
-				I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
+		emailAddress.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, emailAddress.getCaption())));
 
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {

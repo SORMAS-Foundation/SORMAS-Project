@@ -294,6 +294,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		Case newCase = build(contact.getPerson());
 		newCase.setDisease(contact.getDisease());
 		newCase.setDiseaseDetails(contact.getDiseaseDetails());
+		newCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
 		return newCase;
 	}
 

@@ -105,7 +105,7 @@ public class SourceContactListEntry extends HorizontalLayout {
 			}
 
 			Label lblLastContactDate =
-				new Label(DateHelper.formatLocalDate(contact.getLastContactDate(), UserProvider.getCurrent().getUser().getLanguage()));
+				new Label(DateHelper.formatLocalDate(contact.getLastContactDate(), I18nProperties.getUserLanguage()));
 			CssStyles.style(lblLastContactDate, CssStyles.LABEL_TEXT_ALIGN_RIGHT);
 			lblLastContactDate.setWidth(100, Unit.PERCENTAGE);
 			rightColumn.addComponent(lblLastContactDate);

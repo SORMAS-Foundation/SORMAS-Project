@@ -42,6 +42,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String UUID = "uuid";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String DISEASE = "disease";
@@ -71,6 +72,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private String uuid;
 	private String epidNumber;
 	private String externalID;
+	private String externalToken;
 	@PersonalData
 	@SensitiveData
 	private String personFirstName;
@@ -105,26 +107,26 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private CaseJurisdictionDto jurisdiction;
 
 	//@formatter:off
-	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
-			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
-			PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
-			String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
-			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
-			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-			Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Date changeDate, Long facilityId) {
-		this(id, uuid, epidNumber, externalID,personFirstName, personLastName, disease,
+	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName, Disease disease,
+						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
+						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
+						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
+						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Date changeDate, Long facilityId) {
+		this(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease,
 				diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
 				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
 				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, changeDate, facilityId, null
-			);
+		);
 	}
 	//@formatter:on
 
 	//@formatter:off
-	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
+	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName, Disease disease,
 						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
@@ -133,12 +135,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,  SymptomJournalStatus symptomJournalStatus,
 						Date changeDate, Long facilityId, // XXX: unused, only here for TypedQuery mapping
 						Integer visitCount) {
-	//@formatter:on
+		//@formatter:on
 
 		this.id = id;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.externalID = externalID;
+		this.externalToken = externalToken;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.disease = disease;
@@ -354,6 +357,10 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
 	}
+
+	public String getExternalToken() { return externalToken; }
+
+	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
 
 	public Date getQuarantineTo() {
 		return quarantineTo;

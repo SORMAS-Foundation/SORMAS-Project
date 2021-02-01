@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,7 +44,7 @@ import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 public class ContactImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testImportCaseContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testImportCaseContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
@@ -61,7 +62,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 			rdcf);
 
 		// Successful import of 5 case contacts
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").toURI());
 		ContactImporter contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze);
 		ImportResultStatus importResult = contactImporter.runImport();
 
@@ -70,7 +71,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		// Person Similarity: pick
 		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze) {
 
 			@Override
@@ -93,7 +94,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(6, getPersonFacade().getAllUuids().size());
 
 		// Person Similarity: skip
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze) {
 
 			@Override
@@ -108,7 +109,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(6, getPersonFacade().getAllUuids().size());
 
 		// Person Similarity: create
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze) {
 
 			@Override
@@ -124,7 +125,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		// Test import contacts from a commented CSV file
 		// Successful import of 5 case contacts
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_comment_success.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_comment_success.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze);
 		importResult = contactImporter.runImport();
 
@@ -133,7 +134,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public void testImportContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
@@ -144,7 +145,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		// Try to import 3 contacts. 
 		// 2 of them belong to a case that does not exist.
 		// 1 of those 2 still has enough details to be imported
-		File csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").toURI());
 		ContactImporter contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), null);
 		ImportResultStatus importResult = contactImporter.runImport();
 
@@ -162,7 +163,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 			rdcf,
 			"ABCDEF-GHIJKL-MNOPQR");
 
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), null);
 		importResult = contactImporter.runImport();
 
@@ -181,7 +182,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(3, contactFacade.count(contactCriteria));
 
 		// Test import contacts from a commented CSV file
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test_comment.csv").getFile());
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test_comment.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), null);
 		importResult = contactImporter.runImport();
 
@@ -207,7 +208,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 			return new OutputStreamWriter(new OutputStream() {
 
 				@Override
-				public void write(int b) throws IOException {
+				public void write(int b) {
 					// Do nothing
 				}
 			});

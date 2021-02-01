@@ -52,6 +52,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -145,7 +146,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		creatorComment.setImmediate(true);
 		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(4);
 
-		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
+		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE, TaskDto.TASK_STATUS);
 		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
 
 		addValueChangeListener(e -> {
@@ -166,6 +167,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				}
 			}
 
+			UserDto userDto = UserProvider.getCurrent().getUser();
 			DistrictReferenceDto district = null;
 			RegionReferenceDto region = null;
 			if (taskDto.getCaze() != null) {
@@ -187,19 +189,27 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				district = eventDto.getEventLocation().getDistrict();
 				region = eventDto.getEventLocation().getRegion();
 			} else {
-				UserDto userDto = UserProvider.getCurrent().getUser();
 				district = userDto.getDistrict();
 				region = userDto.getRegion();
 			}
 
-			List<UserReferenceDto> users = new ArrayList<>();
+			final List<UserReferenceDto> users = new ArrayList<>();
 			if (district != null) {
-				users = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true);
+				users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true));
 			} else if (region != null) {
-				users = FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region);
+				users.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region));
 			} else {
 				// fallback - just show all users
-				users = FacadeProvider.getUserFacade().getAllUserRefs(false);
+				users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
+			}
+
+			// Allow regional users to assign the task to national ones
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
+				&& userDto.getDistrict() == null
+				&& userDto.getRegion() != null) {
+				users.addAll(
+					FacadeProvider.getUserFacade()
+						.getUsersByRegionAndRoles(null, UserRole.getWithJurisdictionLevels(JurisdictionLevel.NATION).toArray(new UserRole[0])));
 			}
 
 			// Validation

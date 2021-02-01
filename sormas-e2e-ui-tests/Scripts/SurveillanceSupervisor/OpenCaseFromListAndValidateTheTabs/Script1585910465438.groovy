@@ -25,8 +25,7 @@ WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/SymptomsTab/inp
 
 WebUI.click(findTestObject('Surveillance/CaseView/div_Epidemiological data_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/i_EpidemiologicalData_description_text'), 
-    3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/span_Exposure Investigation'), 3)
 
 WebUI.click(findTestObject('Surveillance/CaseView/div_Follow-up_tab'))
 

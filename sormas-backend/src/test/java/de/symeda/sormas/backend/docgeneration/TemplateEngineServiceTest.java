@@ -12,12 +12,11 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.AbstractBeanTest;

@@ -69,6 +69,7 @@ import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
+import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -107,7 +108,8 @@ public class MainScreen extends HorizontalLayout {
 				CommunitiesView.VIEW_NAME,
 				FacilitiesView.VIEW_NAME,
 				PointsOfEntryView.VIEW_NAME,
-				CountriesView.VIEW_NAME));
+				CountriesView.VIEW_NAME,
+				LabMessagesView.VIEW_NAME));
 
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			views.add(SurveillanceDashboardView.VIEW_NAME);
@@ -178,7 +180,7 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.DASHBOARD);
 		}
 
-		if (permitted(UserRight.TASK_VIEW)) {
+		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
@@ -209,14 +211,14 @@ public class MainScreen extends HorizontalLayout {
 			AbstractCampaignView.registerViews(navigator);
 			menu.addView(
 				CampaignDataView.class,
-				AbstractCampaignDataView.ROOT_VIEW_NAME,
+				AbstractCampaignView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuCampaigns),
 				VaadinIcons.CLIPBOARD_CHECK);
 		}
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}
-		if (permitted(UserRight.STATISTICS_ACCESS)) {
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.STATISTICS_ACCESS)) {
 			ControllerProvider.getStatisticsController().registerViews(navigator);
 			menu.addView(
 				StatisticsView.class,
@@ -230,7 +232,7 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
-				OutbreaksView.class,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : RegionsView.class,
 				AbstractConfigurationView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuConfiguration),
 				VaadinIcons.COGS);
@@ -342,7 +344,7 @@ public class MainScreen extends HorizontalLayout {
 					}
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					defaultView = SamplesView.VIEW_NAME;
-				} else if (permitted(UserRight.TASK_VIEW)) {
+				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;
 				} else {
 					defaultView = AboutView.VIEW_NAME;

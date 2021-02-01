@@ -21,7 +21,6 @@ import org.joda.time.DateTimeComparator;
 
 import android.view.View;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -34,6 +33,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
@@ -112,6 +112,10 @@ final class CaseValidator {
 
 		contentBinding.portHealthInfoDepartureDateTime.setValidationCallback(departureCallback);
 		contentBinding.portHealthInfoArrivalDateTime.setValidationCallback(arrivalCallback);
+	}
+
+	static void initializeProhibitionToWorkIntervalValidator(FragmentCaseEditLayoutBinding contentBinding) {
+		ValidationHelper.initDateIntervalValidator(contentBinding.caseDataProhibitionToWorkFrom, contentBinding.caseDataProhibitionToWorkUntil);
 	}
 
 	static void initializeHospitalizationValidation(final FragmentCaseEditHospitalizationLayoutBinding contentBinding, final Case caze) {

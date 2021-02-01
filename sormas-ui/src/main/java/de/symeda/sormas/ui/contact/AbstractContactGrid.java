@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -111,12 +112,15 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		visitsColumn.setId(NUMBER_OF_VISITS);
 		visitsColumn.setSortable(false);
 
-		Column<IndexDto, String> pendingTasksColumn = addColumn(
-			entry -> String.format(
-				I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
-				FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
-		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
-		pendingTasksColumn.setSortable(false);
+		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
+		if (tasksFeatureEnabled) {
+			Column<IndexDto, String> pendingTasksColumn = addColumn(
+					entry -> String.format(
+							I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
+							FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
+			pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
+			pendingTasksColumn.setSortable(false);
+		}
 
 		setColumns(getColumnList().toArray(String[]::new));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
@@ -125,6 +129,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
+			getColumn(CaseIndexDto.EXTERNAL_TOKEN).setHidden(true);
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
@@ -148,10 +153,14 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	}
 
 	protected Stream<String> getColumnList() {
+
+		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
+
 		return Stream.of(
 			Stream.of(
 				ContactIndexDto.UUID,
 				ContactIndexDto.EXTERNAL_ID,
+				ContactIndexDto.EXTERNAL_TOKEN,
 				DISEASE_SHORT,
 				ContactIndexDto.CONTACT_CLASSIFICATION,
 				ContactIndexDto.CONTACT_STATUS),
@@ -163,8 +172,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 				ContactIndexDto.FOLLOW_UP_STATUS,
 				ContactIndexDto.FOLLOW_UP_UNTIL,
 				ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
-				NUMBER_OF_VISITS,
-				NUMBER_OF_PENDING_TASKS))
+				NUMBER_OF_VISITS),
+			Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled))
 			.flatMap(s -> s);
 	}
 

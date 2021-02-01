@@ -331,7 +331,7 @@ public class Sample extends CoreAdo {
 		this.pathogenTests = pathogenTests;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = AdditionalTest.SAMPLE)
+	@OneToMany(mappedBy = AdditionalTest.SAMPLE, fetch = FetchType.LAZY)
 	public List<AdditionalTest> getAdditionalTests() {
 		return additionalTests;
 	}

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.outbreak;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +131,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	@Override
 	public OutbreakDto saveOutbreak(OutbreakDto outbreakDto) {
 
-		Outbreak outbreak = fromDto(outbreakDto);
+		Outbreak outbreak = fromDto(outbreakDto, true);
 		outbreakService.ensurePersisted(outbreak);
 		return toDto(outbreak);
 	}
@@ -144,21 +143,13 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		outbreakService.delete(outbreak);
 	}
 
-	public Outbreak fromDto(OutbreakDto source) {
+	public Outbreak fromDto(OutbreakDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		Outbreak target = outbreakService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Outbreak();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		Outbreak target = DtoHelper.fillOrBuildEntity(source, outbreakService.getByUuid(source.getUuid()), Outbreak::new, checkChangeDate);
 
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());

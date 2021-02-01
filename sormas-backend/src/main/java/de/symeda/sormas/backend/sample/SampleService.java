@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.sample;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,10 +50,10 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -63,7 +64,8 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
@@ -94,7 +96,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Predicate filter = buildCriteriaFilter(criteria, cb, joins);
 
 		if (user != null) {
-			filter = and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -106,8 +108,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			cq.orderBy(cb.desc(from.get(sortProperty)));
 		}
 
-		List<Sample> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<Sample> findBy(SampleCriteria criteria, User user) {
@@ -124,12 +125,12 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = AbstractAdoService.and(cb, filter, dateFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -149,7 +150,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = AbstractAdoService.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -182,8 +183,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
+		Join<Sample, Sample> referredJoin = from.join(Sample.REFERRED_TO, JoinType.LEFT);
 
-		cq.where(cb.equal(from.get(Sample.REFERRED_TO), getByUuid(sampleUuid)));
+		cq.where(cb.equal(referredJoin.get(AbstractDomainObject.UUID), sampleUuid));
 		try {
 			return em.createQuery(cq).getSingleResult();
 		} catch (NoResultException e) {
@@ -233,6 +235,19 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<Sample> getByContactUuids(List<String> contactUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		Root<Sample> sampleRoot = cq.from(Sample.class);
+		Join<Sample, Contact> contactJoin = sampleRoot.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
+
+		Predicate filter = cb.and(createDefaultFilter(cb, sampleRoot), contactJoin.get(AbstractDomainObject.UUID).in(contactUuids));
+
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
+
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 
 		if (CollectionUtils.isEmpty(caseIds)) {
@@ -243,44 +258,60 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		// Avoid parameter limit by joining caseIds to a String instead of n parameters 
 		StringBuilder queryBuilder = new StringBuilder();
 		//@formatter:off
-		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
-				.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
-				.append(" FROM ").append(Sample.TABLE_NAME).append(" WHERE (").append(Sample.SPECIMEN_CONDITION).append(" IS NULL OR ")
-				.append(Sample.SPECIMEN_CONDITION).append(" = '").append(SpecimenCondition.ADEQUATE.name()).append("') AND ").append(Sample.TABLE_NAME)
-				.append(".").append(Sample.DELETED).append(" = false ORDER BY ").append(Sample.ASSOCIATED_CASE).append("_id, ")
-				.append(Sample.SAMPLE_DATE_TIME).append(" desc) SELECT sortedsamples.").append(Sample.PATHOGEN_TEST_RESULT).append(", COUNT(")
-				.append(Sample.ASSOCIATED_CASE).append("_id) FROM sortedsamples JOIN ").append(Case.TABLE_NAME).append(" ON sortedsamples.")
-				.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
-				.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (").append(QueryHelper.concatLongs(caseIds)).append(") ")
-				.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
-		//@formatter:on
+			queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
+					.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
+					.append(" FROM ").append(Sample.TABLE_NAME).append(" WHERE (").append(Sample.SPECIMEN_CONDITION).append(" IS NULL OR ")
+					.append(Sample.SPECIMEN_CONDITION).append(" = '").append(SpecimenCondition.ADEQUATE.name()).append("') AND ").append(Sample.TABLE_NAME)
+					.append(".").append(Sample.DELETED).append(" = false ORDER BY ").append(Sample.ASSOCIATED_CASE).append("_id, ")
+					.append(Sample.SAMPLE_DATE_TIME).append(" desc) SELECT sortedsamples.").append(Sample.PATHOGEN_TEST_RESULT).append(", COUNT(")
+					.append(Sample.ASSOCIATED_CASE).append("_id) FROM sortedsamples JOIN ").append(Case.TABLE_NAME).append(" ON sortedsamples.")
+					.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
+					.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (:caseIds)")
+					.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
+			//@formatter:on
 
-		Query query = em.createNativeQuery(queryBuilder.toString());
+		if (caseIds.size() < ModelConstants.PARAMETER_LIMIT) {
+			List<Object[]> results;
+			Query query = em.createNativeQuery(queryBuilder.toString());
+			query.setParameter("caseIds", caseIds);
+			results = query.getResultList();
 
-		@SuppressWarnings("unchecked")
-		List<Object[]> results = query.getResultList();
-
-		return results.stream()
-			.filter(e -> e[0] != null)
-			.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+			return results.stream()
+				.filter(e -> e[0] != null)
+				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+		} else {
+			List<Object[]> results = new LinkedList<>();
+			IterableHelper.executeBatched(caseIds, ModelConstants.PARAMETER_LIMIT, batchedCaseIds -> {
+				Query query = em.createNativeQuery(queryBuilder.toString());
+				query.setParameter("caseIds", batchedCaseIds);
+				results.addAll(query.getResultList());
+			});
+			return results.stream()
+				.filter(e -> e[0] != null)
+				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+		}
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(cq, cb, new SampleJoins<>(samplePath));
+		return createUserFilter(cq, cb, new SampleJoins<>(samplePath), new SampleCriteria());
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins) {
+	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleCriteria criteria) {
 
 		Predicate filter = createUserFilterWithoutCase(cb, joins);
 
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, joins.getCaze(), null);
-		Predicate contactFilter = contactService.createUserFilterForJoin(cb, cq, joins.getContact());
-		Predicate eventParticipantFilter = eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant());
-		filter = or(cb, filter, caseFilter, contactFilter, eventParticipantFilter);
+		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
+		if (sampleAssociationType == SampleAssociationType.CASE) {
+			filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
+		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
+			filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
+		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
+			filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+		}
 
 		return filter;
 	}
@@ -295,13 +326,13 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		// lab users can see samples assigned to their laboratory
 		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			if (currentUser.getLaboratory() != null) {
-				filter = or(cb, filter, cb.equal(joins.getLab(), currentUser.getLaboratory()));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(joins.getLab(), currentUser.getLaboratory()));
 			}
 		}
 
 		// only show samples of a specific disease if a limited disease is set
 		if (filter != null && currentUser.getLimitedDisease() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(
@@ -320,11 +351,11 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Predicate filter = null;
 		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 		if (sampleAssociationType == SampleAssociationType.CASE) {
-			filter = and(cb, filter, cb.isNotNull(joins.getCaze()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getCaze()));
 		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
-			filter = and(cb, filter, cb.isNotNull(joins.getContact()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getContact()));
 		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
-			filter = and(cb, filter, cb.isNotNull(joins.getEventParticipant()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getEventParticipant()));
 		}
 
 		if (criteria.getRegion() != null) {
@@ -337,7 +368,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 							cb.selectCase()
 								.when(cb.isNotNull(joins.getContactCaseRegion()), joins.getContactCaseRegion().get(Region.UUID))
 								.otherwise(joins.getEventRegion().get(Region.UUID))));
-			filter = and(cb, filter, cb.equal(regionExpression, criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(regionExpression, criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
 			Expression<Object> districtExpression = cb.selectCase()
@@ -349,29 +380,29 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 							cb.selectCase()
 								.when(cb.isNotNull(joins.getContactCaseDistrict()), joins.getContactCaseDistrict().get(District.UUID))
 								.otherwise(joins.getEventDistrict().get(District.UUID))));
-			filter = and(cb, filter, cb.equal(districtExpression, criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(districtExpression, criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getLaboratory() != null) {
-			filter = and(cb, filter, cb.equal(joins.getLab().get(Facility.UUID), criteria.getLaboratory().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLab().get(Facility.UUID), criteria.getLaboratory().getUuid()));
 		}
 		if (criteria.getShipped() != null) {
-			filter = and(cb, filter, cb.equal(sample.get(Sample.SHIPPED), criteria.getShipped()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.SHIPPED), criteria.getShipped()));
 		}
 		if (criteria.getReceived() != null) {
-			filter = and(cb, filter, cb.equal(sample.get(Sample.RECEIVED), criteria.getReceived()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.RECEIVED), criteria.getReceived()));
 		}
 		if (criteria.getReferred() != null) {
 			if (criteria.getReferred().equals(Boolean.TRUE)) {
-				filter = and(cb, filter, cb.isNotNull(sample.get(Sample.REFERRED_TO)));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(sample.get(Sample.REFERRED_TO)));
 			} else {
-				filter = and(cb, filter, cb.isNull(sample.get(Sample.REFERRED_TO)));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(sample.get(Sample.REFERRED_TO)));
 			}
 		}
 		if (criteria.getPathogenTestResult() != null) {
-			filter = and(cb, filter, cb.equal(sample.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
 		}
 		if (criteria.getCaseClassification() != null) {
-			filter = and(cb, filter, cb.equal(joins.getCaze().get(Case.CASE_CLASSIFICATION), criteria.getCaseClassification()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.CASE_CLASSIFICATION), criteria.getCaseClassification()));
 		}
 		if (criteria.getDisease() != null) {
 			Expression<Object> diseaseExpression = cb.selectCase()
@@ -380,39 +411,43 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
 						.otherwise(joins.getEvent().get(Event.DISEASE)));
-			filter = and(cb, filter, cb.equal(diseaseExpression, criteria.getDisease()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(diseaseExpression, criteria.getDisease()));
 		}
 		if (criteria.getCaze() != null) {
-			filter = and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), criteria.getCaze().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), criteria.getCaze().getUuid()));
 		}
 		if (criteria.getContact() != null) {
-			filter = and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContact().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContact().getUuid()));
 		}
 		if (criteria.getEventParticipant() != null) {
-			filter = and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
 		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.between(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(), criteria.getSampleReportDateTo()));
 		} else if (criteria.getSampleReportDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
 		} else if (criteria.getSampleReportDateTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
 		}
 		if (criteria.getSpecimenCondition() != null) {
-			filter = and(cb, filter, cb.equal(sample.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = and(cb, filter, cb.or(cb.equal(joins.getCaze().get(Case.ARCHIVED), false), cb.isNull(joins.getCaze().get(Case.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(joins.getCaze().get(Case.ARCHIVED), false), cb.isNull(joins.getCaze().get(Case.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = and(cb, filter, cb.equal(joins.getCaze().get(Case.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.ARCHIVED), true));
 			}
 		}
 		if (criteria.getDeleted() != null) {
-			filter = and(cb, filter, cb.equal(sample.get(Sample.DELETED), criteria.getDeleted()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.DELETED), criteria.getDeleted()));
 		}
 
 		if (criteria.getCaseCodeIdLike() != null) {
@@ -428,7 +463,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 						cb.like(cb.lower(sample.get(Sample.LAB_SAMPLE_ID)), textFilter),
 						cb.like(cb.lower(sample.get(Sample.FIELD_SAMPLE_ID)), textFilter),
 						cb.like(cb.lower(joins.getLab().get(Facility.NAME)), textFilter));
-					filter = and(cb, filter, likeFilters);
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
 		}

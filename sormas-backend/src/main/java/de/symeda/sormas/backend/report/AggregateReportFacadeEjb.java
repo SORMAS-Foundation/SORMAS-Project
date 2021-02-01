@@ -26,7 +26,7 @@ import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -85,7 +85,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@Override
 	public AggregateReportDto saveAggregateReport(AggregateReportDto dto) {
 
-		AggregateReport report = fromDto(dto);
+		AggregateReport report = fromDto(dto, true);
 		service.ensurePersisted(report);
 		return toDto(report);
 	}
@@ -110,7 +110,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		Predicate filter = service.createUserFilter(cb, cq, root);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -155,14 +155,9 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
-	public AggregateReport fromDto(@NotNull AggregateReportDto source) {
+	public AggregateReport fromDto(@NotNull AggregateReportDto source, boolean checkChangeDate) {
 
-		AggregateReport target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new AggregateReport();
-			target.setUuid(source.getUuid());
-		}
-		DtoHelper.validateDto(source, target);
+		AggregateReport target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), AggregateReport::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
@@ -224,7 +219,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		Predicate filter = service.createUserFilter(cb, cq, root);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
