@@ -196,7 +196,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	private void appendAxisInformation(StringBuilder hcjs, Map<String, Long> stackMap, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
-		final List noPopulationDataLocations = new LinkedList<>();
+		final List<Object> noPopulationDataLocations = new LinkedList<>();
 		if (Objects.nonNull(totalValuesMap)) {
 			for (Object key : xAxisInfo.keySet()) {
 				if ((Double.valueOf(0)).equals(totalValuesMap.get(new CampaignDashboardTotalsReference(key, null)))) {
@@ -207,13 +207,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		hcjs.append("xAxis: {");
 		if (Objects.nonNull(diagramDefinition.getCampaignSeriesTotal())) {
-			Optional isPopulationGroupUsed =
+			Optional<CampaignDiagramSeries> isPopulationGroupUsed =
 				diagramDefinition.getCampaignSeriesTotal().stream().filter(series -> Objects.nonNull(series.getPopulationGroup())).findFirst();
 			if (showPercentages && isPopulationGroupUsed.isPresent() && !CollectionUtils.isEmpty(noPopulationDataLocations)) {
 				hcjs.append(
 					"title: {" + "        text:'"
 						+ String
-							.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(", ", noPopulationDataLocations))
+							.format(I18nProperties.getString(Strings.errorNoPopulationDataLocations), String.join(", ", noPopulationDataLocations.toString()))
 						+ "' },");
 			} else {
 				hcjs.append("title: {" + "text:'" + campaignJurisdictionLevelGroupBy.toString() + "' },");
