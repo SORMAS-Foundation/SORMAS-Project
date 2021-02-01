@@ -35,6 +35,11 @@ public class SampleJurisdictionHelper {
 				.isInJurisdictionOrOwned(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getContactJurisdiction());
 		}
 
+		if (sampleJurisdiction.getEventParticipantJurisdiction() != null) {
+			return EventParticipantJurisdictionHelper
+				.isInJurisdictionOrOwned(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getEventParticipantJurisdiction());
+		}
+
 		return false;
 	}
 }

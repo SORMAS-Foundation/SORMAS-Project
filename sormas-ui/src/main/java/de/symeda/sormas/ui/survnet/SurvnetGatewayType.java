@@ -13,27 +13,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.survnet;
+package de.symeda.sormas.ui.survnet;
 
-import java.util.List;
+public enum SurvnetGatewayType {
 
-import javax.ejb.Remote;
+	CASES,
+	EVENTS;
 
-/**
- * Gateway to interact with the local SurvNet instance of the health department
- */
-@Remote
-public interface SurvnetGatewayFacade {
-
-	boolean isFeatureEnabled();
-
-	/**
-	 * Requests the cases to be sent to SurvNet
-	 * 
-	 * @param caseUuids
-	 * @return http response code of the gateway
-	 */
-	int sendCases(List<String> caseUuids);
-
-	int sendEvents(List<String> eventUuids);
 }
