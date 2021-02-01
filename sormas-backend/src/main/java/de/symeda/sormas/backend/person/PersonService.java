@@ -54,6 +54,8 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -153,7 +155,46 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> personFrom) {
-		return null; // TODO: 22/01/2021 extend this
+
+		// TODO: 01/02/2021 clarify if this is needed
+//		User currentUser = getCurrentUser();
+//		if (currentUser == null) {
+//			return null;
+//		}
+//
+//		Predicate filter = null;
+//
+//		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
+//
+//		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+//		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
+//
+//			switch (jurisdictionLevel) {
+//			case REGION:
+//				final Region region = currentUser.getRegion();
+//				if (region != null) {
+//					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(location.get(Location.REGION).get(Region.ID), region.getId()));
+//				}
+//				break;
+//			case DISTRICT:
+//				final District district = currentUser.getDistrict();
+//				if (district != null) {
+//					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(location.get(Location.DISTRICT).get(District.ID), district.getId()));
+//				}
+//				break;
+//			case COMMUNITY:
+//				final Community community = currentUser.getCommunity();
+//				if (community != null) {
+//					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(location.get(Location.COMMUNITY).get(Community.ID), community.getId()));
+//				}
+//				break;
+//			default:
+//			}
+//
+//			return filter;
+//		}
+
+		return null;
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Person> personFrom) {
@@ -173,14 +214,14 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				String textFilter = formatForLike(textFilters[i]);
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(personFrom.get(Person.FIRST_NAME)), textFilter),
-							cb.like(cb.lower(personFrom.get(Person.LAST_NAME)), textFilter),
-							cb.like(cb.lower(personFrom.get(Person.UUID)), textFilter),
-							cb.like(cb.lower(personFrom.get(Person.EMAIL_ADDRESS)), textFilter),
-							phoneNumberPredicate(cb, personFrom.get(Person.PHONE), textFilter),
-							cb.like(cb.lower(location.get(Location.STREET)), textFilter),
-							cb.like(cb.lower(location.get(Location.CITY)), textFilter),
-							cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
+						cb.like(cb.lower(personFrom.get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(personFrom.get(Person.LAST_NAME)), textFilter),
+						cb.like(cb.lower(personFrom.get(Person.UUID)), textFilter),
+						cb.like(cb.lower(personFrom.get(Person.EMAIL_ADDRESS)), textFilter),
+						phoneNumberPredicate(cb, personFrom.get(Person.PHONE), textFilter),
+						cb.like(cb.lower(location.get(Location.STREET)), textFilter),
+						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
+						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 				}
 			}
@@ -189,7 +230,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		andEqualsReferenceDto(cb, region, filter, personCriteria.getRegion());
 		andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
 		andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
-		
+
 		if (personCriteria.getPersonAssociation() != null) {
 			switch (personCriteria.getPersonAssociation()) {
 
