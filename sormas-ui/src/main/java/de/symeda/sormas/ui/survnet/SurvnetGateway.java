@@ -24,6 +24,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.collections.CollectionUtils;
 
 /**
  * Provides UI components to integrate with the SurvNet gateway
@@ -69,9 +70,22 @@ public class SurvnetGateway {
 					I18nProperties.getString(Strings.SurvnetGateway_unableToSend)
 					);
 		} else {
+			int numberOfEntities = CollectionUtils.size(uuids.get());
+
+			String entityString;
+			if (gatewayType == SurvnetGatewayType.CASES &&  numberOfEntities == 1) {
+				entityString = I18nProperties.getString(Strings.entityCase).toLowerCase();
+			} else if (gatewayType == SurvnetGatewayType.CASES) {
+				entityString = I18nProperties.getString(Strings.entityCases).toLowerCase();
+			} else if (gatewayType == SurvnetGatewayType.EVENTS && numberOfEntities == 1) {
+				entityString = I18nProperties.getString(Strings.entityEvent).toLowerCase();
+			} else {
+				entityString = I18nProperties.getString(Strings.entityEvents).toLowerCase();
+			}
+
 			VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getCaption(Captions.SurvnetGateway_confirmSend),
-					new Label(I18nProperties.getString(Strings.SurvnetGateway_confirmSend)),
+					new Label(String.format(I18nProperties.getString(Strings.SurvnetGateway_confirmSend), entityString)),
 					I18nProperties.getString(Strings.yes),
 					I18nProperties.getString(Strings.no),
 					640,
