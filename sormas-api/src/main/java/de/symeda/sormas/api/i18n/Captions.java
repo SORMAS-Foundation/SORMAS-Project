@@ -915,7 +915,9 @@ public interface Captions {
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";
 	String exportCaseManagement = "exportCaseManagement";
+	String ExportConfiguration_myExports = "ExportConfiguration.myExports";
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
+	String ExportConfiguration_sharedExports = "ExportConfiguration.sharedExports";
 	String ExportConfiguration_sharedToPublic = "ExportConfiguration.sharedToPublic";
 	String exportCustom = "exportCustom";
 	String exportDetailed = "exportDetailed";
