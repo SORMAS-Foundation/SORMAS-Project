@@ -17,6 +17,7 @@ public class CampaignDiagramSeries implements Serializable {
 	private String stack;
 	private AgeGroup populationGroup;
 	private String caption;
+	private String color;
 
 	public CampaignDiagramSeries() {
 	}
@@ -68,6 +69,14 @@ public class CampaignDiagramSeries implements Serializable {
 		this.caption = caption;
 	}
 
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
 	/**
 	 * Needed. Otherwise hibernate will persist whenever loading,
 	 * because hibernate types creates new instances that aren't equal.
@@ -84,6 +93,7 @@ public class CampaignDiagramSeries implements Serializable {
 			&& Objects.equals(referenceValue, that.referenceValue)
 			&& Objects.equals(stack, that.stack)
 			&& Objects.equals(caption, that.caption)
+			&& Objects.equals(color, that.color)
 			&& Objects.equals(populationGroup, that.populationGroup);
 	}
 
@@ -97,6 +107,6 @@ public class CampaignDiagramSeries implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fieldId, formId, referenceValue, stack, caption, populationGroup);
+		return Objects.hash(fieldId, formId, referenceValue, stack, caption, color, populationGroup);
 	}
 }

@@ -36,7 +36,7 @@ public interface ExportFacade {
 
 	String generateZipArchive(String date, int randomNumber);
 
-	List<ExportConfigurationDto> getExportConfigurations(ExportConfigurationCriteria criteria);
+	List<ExportConfigurationDto> getExportConfigurations(ExportConfigurationCriteria criteria, boolean isPublic);
 
 	void saveExportConfiguration(ExportConfigurationDto exportConfiguration);
 

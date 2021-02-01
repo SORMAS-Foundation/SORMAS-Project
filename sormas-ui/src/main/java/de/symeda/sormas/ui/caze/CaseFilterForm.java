@@ -348,7 +348,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				} else {
 					clearAndDisableFields(communityField, facilityField, facilityTypeField, facilityTypeGroupField, pointOfEntryField);
 
-					final RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
+					final RegionReferenceDto region = regionField != null ? (RegionReferenceDto) regionField.getValue() : null;
 					addOfficers(officerField, region != null ? region : user.getRegion());
 				}
 			}
