@@ -64,25 +64,26 @@ public class SurvnetGateway {
 	}
 
 	private static void onSendButtonClick(DirtyStateComponent editComponent, SurvnetGatewayType gatewayType, Supplier<List<String>> uuids) {
+
+		int numberOfEntities = CollectionUtils.size(uuids.get());
+
+		String entityString;
+		if (gatewayType == SurvnetGatewayType.CASES &&  numberOfEntities == 1) {
+			entityString = I18nProperties.getString(Strings.entityCase).toLowerCase();
+		} else if (gatewayType == SurvnetGatewayType.CASES) {
+			entityString = I18nProperties.getString(Strings.entityCases).toLowerCase();
+		} else if (gatewayType == SurvnetGatewayType.EVENTS && numberOfEntities == 1) {
+			entityString = I18nProperties.getString(Strings.entityEvent).toLowerCase();
+		} else {
+			entityString = I18nProperties.getString(Strings.entityEvents).toLowerCase();
+		}
+
 		if (editComponent.isDirty()) {
 			VaadinUiUtil.showSimplePopupWindow(
 					I18nProperties.getCaption(Captions.SurvnetGateway_unableToSend),
-					I18nProperties.getString(Strings.SurvnetGateway_unableToSend)
+					String.format(I18nProperties.getString(Strings.SurvnetGateway_unableToSend), entityString)
 					);
 		} else {
-			int numberOfEntities = CollectionUtils.size(uuids.get());
-
-			String entityString;
-			if (gatewayType == SurvnetGatewayType.CASES &&  numberOfEntities == 1) {
-				entityString = I18nProperties.getString(Strings.entityCase).toLowerCase();
-			} else if (gatewayType == SurvnetGatewayType.CASES) {
-				entityString = I18nProperties.getString(Strings.entityCases).toLowerCase();
-			} else if (gatewayType == SurvnetGatewayType.EVENTS && numberOfEntities == 1) {
-				entityString = I18nProperties.getString(Strings.entityEvent).toLowerCase();
-			} else {
-				entityString = I18nProperties.getString(Strings.entityEvents).toLowerCase();
-			}
-
 			VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getCaption(Captions.SurvnetGateway_confirmSend),
 					new Label(String.format(I18nProperties.getString(Strings.SurvnetGateway_confirmSend), entityString)),
