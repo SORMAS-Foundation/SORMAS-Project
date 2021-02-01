@@ -1618,7 +1618,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		validate(dto);
 
-		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
 		if (caze != null) {
 			handleExternalJournalPerson(dto);
 		}
