@@ -33,12 +33,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.highcharts.HighChart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CampaignDashboardDiagramComponent.class);
+	private static final double MAX_PERCENTAGE_VALUE_THRESHOLD = 70.0;
 
 	private final CampaignDiagramDefinitionDto diagramDefinition;
 
