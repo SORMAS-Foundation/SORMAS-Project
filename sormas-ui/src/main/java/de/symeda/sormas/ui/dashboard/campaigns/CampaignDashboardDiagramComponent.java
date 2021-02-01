@@ -231,7 +231,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("]},");
 
 		//@formatter:off
-		hcjs.append("yAxis: { min: 0, title: { text: '"+ (showPercentages
+		final String restrictMaxValueProperty = scaledValueExceedsThreshold() ? "max: 100, " : "";
+		hcjs.append("yAxis: {" + restrictMaxValueProperty + "min: 0, title: { text: '"+ (showPercentages
 				? I18nProperties.getCaption(Captions.dashboardProportion)
 				: I18nProperties.getCaption(Captions.dashboardAggregatedNumber)) +"'}");
 		if (stackMap.size() > 1) {
@@ -285,6 +286,37 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		Iterator<CampaignDiagramDataDto> iterator = values.iterator();
 		return iterator.hasNext() ? iterator.next().getFieldCaption() : defaultValue;
+	}
+
+	private boolean scaledValueExceedsThreshold() {
+		if (!showPercentages || totalValuesMap == null) {
+			return false;
+		}
+		boolean result;
+		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
+			String seriesKey = series.getFormId() + series.getFieldId();
+			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
+				continue;
+			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
+			for (Object axisKey : xAxisInfo.keySet()) {
+				if (seriesData.containsKey(axisKey)) {
+					Double totalValue = totalValuesMap.get(new CampaignDashboardTotalsReference(
+									seriesData.get(axisKey).getGroupingKey(),
+									totalValuesWithoutStacks ? null : series.getStack())
+					);
+					if (totalValue != null && totalValue > 0) {
+						final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
+						final double scaledValue =
+								BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
+						result = scaledValue > MAX_PERCENTAGE_VALUE_THRESHOLD;
+						if (result) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private void appendData(
