@@ -358,11 +358,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> {
 			@SuppressWarnings("unchecked")
 			Field<ApproximateAgeType> ageTypeField = (Field<ApproximateAgeType>) getField(PersonDto.APPROXIMATE_AGE_TYPE);
-			if (e.getProperty().getValue() == null) {
-				ageTypeField.clear();
-			} else {
-				if (ageTypeField.isEmpty()) {
-					ageTypeField.setValue(ApproximateAgeType.YEARS);
+			if (!ageTypeField.isReadOnly()) {
+				if (e.getProperty().getValue() == null) {
+					ageTypeField.clear();
+				} else {
+					if (ageTypeField.isEmpty()) {
+						ageTypeField.setValue(ApproximateAgeType.YEARS);
+					}
 				}
 			}
 		});
