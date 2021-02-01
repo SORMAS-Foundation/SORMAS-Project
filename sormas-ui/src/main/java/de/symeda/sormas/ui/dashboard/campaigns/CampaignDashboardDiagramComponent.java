@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
+import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -46,6 +47,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private final Map<CampaignDashboardTotalsReference, Double> totalValuesMap;
 	private boolean totalValuesWithoutStacks;
 	private boolean showPercentages;
+	private boolean showAsColumnChart;
 	private boolean showDataLabels = false;
 	private final HighChart campaignColumnChart;
 
@@ -63,6 +65,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			totalValuesWithoutStacks = true;
 		}
 
+		showAsColumnChart = DiagramType.values().length > 0 && DiagramType.COLUMN == DiagramType.values()[0];
 		campaignColumnChart = new HighChart();
 
 		setSizeFull();
@@ -107,6 +110,12 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 				});
 
+		JavaScript.getCurrent()
+				.addFunction("changeDiagramChartType_" + diagramDefinition.getDiagramId(), (JavaScriptFunction) jsonArray -> {
+					setShowAsColumnChart(!isShowAsColumnChart());
+					buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
+				});
+
 		buildDiagramChart(diagramDefinition.getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
 
@@ -116,7 +125,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		//@formatter:off
 		hcjs.append("var options = {"
 				+ "chart:{ "
-				+ " type: 'column', "
+				+ " type: '" + (showAsColumnChart ? "column" : "bar") + "', "
 				+ " backgroundColor: 'white', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
@@ -143,6 +152,15 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						: I18nProperties.getCaption(Captions.dashboardShowPercentageValues))
 					+ "' } ");
 		}
+
+		hcjs.append(
+				", toggleChartType: { onclick: function() { window.changeDiagramChartType_" + diagramDefinition.getDiagramId()
+						+ "(); }, text: '"
+						+ (showAsColumnChart
+						   ? I18nProperties.getCaption(Captions.dashboardViewAsBarChart)
+						   : I18nProperties.getCaption(Captions.dashboardViewAsColumnChart))
+						+ "' } ");
+
 		hcjs.append(" }, ");
 
 		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }, ")
@@ -154,6 +172,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append(", 'togglePercentages'");
 		}
 
+		hcjs.append(", 'toggleChartType'");
 		hcjs.append("]");
 
 		final Map<String, Long> stackMap = diagramDefinition.getCampaignDiagramSeries()
@@ -345,5 +364,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	public void setShowDataLabels(boolean showDataLabels) {
 		this.showDataLabels = showDataLabels;
+	}
+
+	public boolean isShowAsColumnChart() {
+		return showAsColumnChart;
+	}
+
+	public void setShowAsColumnChart(boolean showAsColumnChart) {
+		this.showAsColumnChart = showAsColumnChart;
 	}
 }
