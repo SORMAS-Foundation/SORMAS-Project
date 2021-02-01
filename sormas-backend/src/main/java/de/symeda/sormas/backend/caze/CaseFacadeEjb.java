@@ -1623,7 +1623,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			handleExternalJournalPerson(dto);
 		}
 
-		caze = fillOrBuildEntity(dto, caze);
+		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
 
 		// Set version number on a new case
 		if (caze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
@@ -1656,7 +1656,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		Runnable notify = () -> externalJournalService.notifyExternalJournalPersonUpdate(existingPerson);
 		executorService.schedule(notify, 5, TimeUnit.SECONDS);
 	}
-
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
 

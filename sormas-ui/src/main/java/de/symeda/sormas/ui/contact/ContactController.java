@@ -17,10 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.ui.utils.CssStyles;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -53,7 +68,6 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.Captions;
@@ -126,10 +140,10 @@ public class ContactController {
 
 		if (event.getDisease() == null) {
 			new Notification(
-					I18nProperties.getString(Strings.headingCreateNewContactIssue),
-					I18nProperties.getString(Strings.messageEventParticipantToContactWithoutEventDisease),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
+				I18nProperties.getString(Strings.headingCreateNewContactIssue),
+				I18nProperties.getString(Strings.messageEventParticipantToContactWithoutEventDisease),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 			return;
 		}
 
@@ -435,7 +449,7 @@ public class ContactController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
 			editForm.getFieldGroup());
 
-		editComponent.addCommitListener(new CommitListener() {
+		editComponent.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
 
 			@Override
 			public void onCommit() {
@@ -504,7 +518,7 @@ public class ContactController {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditContacts));
 
-		editView.addCommitListener(new CommitListener() {
+		editView.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
 
 			@Override
 			public void onCommit() {
@@ -662,7 +676,7 @@ public class ContactController {
 	 * 3. The form is automatically submitted and replaced by the iFrame
 	 */
 	public void openSymptomJournalWindow(PersonDto person) {
-		String authToken = externalJournalFacade.getSymptomJournalAuthToken();
+		String authToken = FacadeProvider.getExternalJournalFacade().getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
 			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl();
 			Map<String, String> parameters = new LinkedHashMap<>();
@@ -711,7 +725,7 @@ public class ContactController {
 	 * Displays the result in a popup
 	 */
 	public void registerPatientDiaryPerson(PersonDto person) {
-		ExternalJournalValidation validationResult = externalJournalFacade.validatePatientDiaryPerson(person);
+		ExternalJournalValidation validationResult = FacadeProvider.getExternalJournalFacade().validatePatientDiaryPerson(person);
 		if (!validationResult.isValid()) {
 			showPatientDiaryWarningPopup(validationResult.getMessage());
 		} else {
@@ -719,7 +733,7 @@ public class ContactController {
 				|| SymptomJournalStatus.REGISTERED.equals(person.getSymptomJournalStatus())) {
 				openPatientDiaryEnrollPage(person.getUuid());
 			} else {
-				PatientDiaryRegisterResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
+				PatientDiaryRegisterResult registerResult = FacadeProvider.getExternalJournalFacade().registerPatientDiaryPerson(person);
 				showPatientRegisterResultPopup(registerResult);
 			}
 		}
@@ -727,7 +741,7 @@ public class ContactController {
 
 	private void openPatientDiaryEnrollPage(String personUuid) {
 		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
-		String authToken = externalJournalFacade.getPatientDiaryAuthToken();
+		String authToken = FacadeProvider.getExternalJournalFacade().getPatientDiaryAuthToken();
 		url += "/data?q=" + personUuid + "&token=" + authToken;
 		UI.getCurrent().getPage().open(url, "_blank");
 	}
