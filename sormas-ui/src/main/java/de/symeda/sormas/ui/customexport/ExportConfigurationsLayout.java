@@ -80,7 +80,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		addComponent(sharedExportsLabel);
 
 		gridSharedExportsToPublic = new ExportConfigurationsGrid(exportType, availableProperties, propertyCaptionProvider, true);
-		if (gridSharedExportsToPublic.getPublicExportCustomConfigurationRecords() > 0) {
+		if (gridSharedExportsToPublic.getNbOfSharedExportsToPublic() > 0) {
 			gridSharedExportsToPublic.setWidth(100, Unit.PERCENTAGE);
 			addComponent(gridSharedExportsToPublic);
 		}

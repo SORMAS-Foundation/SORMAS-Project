@@ -48,7 +48,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 	private Consumer<ExportConfigurationDto> exportCallback;
 
-	private long publicExportCustomConfigurationRecords;
+	private long nbOfSharedExportsToPublic;
 
 	private final ExportType exportType;
 
@@ -96,7 +96,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), true);
 		setItems(sharedConfigs);
 		setHeightByRows(sharedConfigs.size() > 0 ? (Math.min(sharedConfigs.size(), 10)) : 1);
-		setPublicExportCustomConfigurationRecords(sharedConfigs.size());
+		setNbOfSharedExportsToPublic(sharedConfigs.size());
 	}
 
 	private HorizontalLayout buildButtonLayout(
@@ -140,11 +140,11 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 		this.exportCallback = exportCallback;
 	}
 
-	public long getPublicExportCustomConfigurationRecords() {
-		return publicExportCustomConfigurationRecords;
+	public long getNbOfSharedExportsToPublic() {
+		return nbOfSharedExportsToPublic;
 	}
 
-	public void setPublicExportCustomConfigurationRecords(int publicExportCustomConfigurationRecords) {
-		this.publicExportCustomConfigurationRecords = publicExportCustomConfigurationRecords;
+	public void setNbOfSharedExportsToPublic(int nbOfSharedExportsToPublic) {
+		this.nbOfSharedExportsToPublic = nbOfSharedExportsToPublic;
 	}
 }
