@@ -60,11 +60,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 		this.exportType = exportType;
 
 		buildGrid(availableProperties, propertyCaptionProvider, isPublicExport);
-		if (isPublicExport) {
-			reloadPublicExportCustomConfiguration();
-		} else {
-			reload();
-		}
+		reload(isPublicExport);
 	}
 
 	private void buildGrid(
@@ -84,19 +80,14 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			.setCaption("");
 	}
 
-	public void reload() {
+	public void reload(boolean isPublic) {
 		List<ExportConfigurationDto> configs =
-			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), false);
+			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), isPublic);
 		setItems(configs);
 		setHeightByRows(configs.size() > 0 ? (Math.min(configs.size(), 10)) : 1);
-	}
-
-	public void reloadPublicExportCustomConfiguration() {
-		List<ExportConfigurationDto> sharedConfigs =
-			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), true);
-		setItems(sharedConfigs);
-		setHeightByRows(sharedConfigs.size() > 0 ? (Math.min(sharedConfigs.size(), 10)) : 1);
-		setNbOfSharedExportsToPublic(sharedConfigs.size());
+		if(isPublic){
+			setNbOfSharedExportsToPublic(configs.size());
+		}
 	}
 
 	private HorizontalLayout buildButtonLayout(
@@ -128,7 +119,7 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
 			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false)
 				.show(Page.getCurrent());
-			reload();
+			reload(false);
 		});
 		btnDelete.setEnabled(canEditOrDelete);
 		layout.addComponent(btnDelete);
