@@ -15,6 +15,7 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
@@ -109,6 +110,7 @@ public class ExposureDialog extends FormDialog {
 		contentBinding.exposureAnimalContactType.initializeSpinner(DataUtils.getEnumItems(AnimalContactType.class, true));
 		contentBinding.exposureTypeOfPlace.initializeSpinner(DataUtils.getEnumItems(TypeOfPlace.class, true));
 		contentBinding.exposureMeansOfTransport.initializeSpinner(DataUtils.getEnumItems(MeansOfTransport.class, true));
+		contentBinding.exposureExposureRole.initializeSpinner(DataUtils.getEnumItems(ExposureRole.class, true));
 
 		setUpHeadingVisibilities(data.getExposureType());
 		contentBinding.exposureExposureType.addValueChangedListener(e -> {
