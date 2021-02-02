@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent.QUARANTINE_LOC;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
@@ -34,6 +36,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
+import de.symeda.sormas.ui.docgeneration.CaseDocumentsComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -54,7 +57,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	public static final String HTML_LAYOUT = LayoutUtil.fluidRow(
 		LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
-		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC));
+		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
+		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
 
 	private CommitDiscardWrapperComponent<?> editComponent;
 
@@ -149,6 +153,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 			layout.addComponent(contactsLayout, CONTACTS_LOC);
 		}
+
+		CaseDocumentsComponent.addComponentToLayout(layout, eventParticipantRef);
 
 		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
 		if (!isEditAllowed) {

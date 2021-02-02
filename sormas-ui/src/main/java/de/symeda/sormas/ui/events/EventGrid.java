@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -47,6 +46,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -123,7 +123,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				NUMBER_OF_PENDING_TASKS,
 				EventIndexDto.PARTICIPANT_COUNT,
 				EventIndexDto.CASE_COUNT,
-				EventIndexDto.DEATH_COUNT));
+				EventIndexDto.DEATH_COUNT,
+				EventIndexDto.CONTACT_COUNT,
+				EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
 
 		if (!tasksFeatureEnabled) {
 			columnIds.remove(NUMBER_OF_PENDING_TASKS);
@@ -134,6 +136,10 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		getColumn(EventIndexDto.PARTICIPANT_COUNT).setSortable(false);
 		getColumn(EventIndexDto.CASE_COUNT).setSortable(false);
 		getColumn(EventIndexDto.DEATH_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT).setSortable(false);
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setSortable(false);
+
+		setContactCountMethod(EventContactCountMethod.ALL); // Count all contacts by default
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
@@ -147,12 +153,15 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 					.getDefault(getBeanType(), INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId));
 		}
 
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
+			.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
+
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
 	}
 
 	public static String createEventDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid) {
 		Column<EventIndexDto, String> eventDateColumn =
-				grid.addColumn(event -> EventHelper.buildEventDateString(event.getStartDate(), event.getEndDate()));
+			grid.addColumn(event -> EventHelper.buildEventDateString(event.getStartDate(), event.getEndDate()));
 		eventDateColumn.setId(EVENT_DATE);
 		eventDateColumn.setSortProperty(EventDto.START_DATE);
 		eventDateColumn.setSortable(true);
@@ -161,8 +170,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	}
 
 	public static String createEventEvolutionDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid) {
-		Column<EventIndexDto, String> eventDateColumn =
-				grid.addColumn(event -> DateFormatHelper.formatDate(event.getEvolutionDate()));
+		Column<EventIndexDto, String> eventDateColumn = grid.addColumn(event -> DateFormatHelper.formatDate(event.getEvolutionDate()));
 		eventDateColumn.setId(EVENT_EVOLUTION_DATE);
 		eventDateColumn.setSortProperty(EventDto.EVOLUTION_DATE);
 		eventDateColumn.setSortable(true);
@@ -192,6 +200,18 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		}
 
 		return (srcMediaWebsite != null ? srcMediaWebsite : "") + " " + (srcMediaName != null ? "(" + srcMediaName + ")" : "");
+	}
+
+	public void setContactCountMethod(EventContactCountMethod method) {
+		getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT).setHidden(method == EventContactCountMethod.ALL);
+		getColumn(EventIndexDto.CONTACT_COUNT).setHidden(method == EventContactCountMethod.SOURCE_CASE_IN_EVENT);
+		if (method == EventContactCountMethod.BOTH_METHODS) {
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
+				.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
+		} else {
+			getColumn(EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT)
+				.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
+		}
 	}
 
 	public void reload() {

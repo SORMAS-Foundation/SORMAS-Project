@@ -1382,7 +1382,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		filter = cb.and(filter, reportDateFilter);
-		filter = cb.and(filter, cb.or(sexFilter, birthDateFilter));
+		filter = cb.and(filter, cb.and(sexFilter, birthDateFilter));
 		filter = cb.and(filter, onsetDateFilter);
 		filter = cb.and(filter, creationDateFilter);
 		filter = cb.and(filter, cb.notEqual(root.get(Case.ID), root2.get(Case.ID)));
@@ -2180,13 +2180,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new Case();
-			target.setUuid(source.getUuid());
-			target.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
-		}
+		target = DtoHelper.fillOrBuildEntity(source, target, () -> {
+			Case newCase = new Case();
+			newCase.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
 
-		DtoHelper.validateDto(source, target, checkChangeDate);
+			return newCase;
+		}, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());

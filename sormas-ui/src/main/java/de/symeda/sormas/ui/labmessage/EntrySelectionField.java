@@ -207,8 +207,12 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		rbSelectContact.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
 				rbCreateEntity.setValue(null);
-				rbSelectCase.setValue(null);
-				rbSelectEventParticipant.setValue(null);
+				if (rbSelectCase != null) {
+					rbSelectCase.setValue(null);
+				}
+				if (rbSelectEventParticipant != null) {
+					rbSelectEventParticipant.setValue(null);
+				}
 				contactGrid.setEnabled(true);
 				if (caseGrid != null) {
 					caseGrid.setEnabled(false);

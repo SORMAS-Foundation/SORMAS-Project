@@ -50,6 +50,7 @@ import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
@@ -349,6 +350,19 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			}
 			break;
 		}
+		case ContactCriteria.BIRTHDATE_MM: {
+			Integer birthMM = (Integer) event.getProperty().getValue();
+
+			ComboBox birthDayDD = getField(ContactCriteria.BIRTHDATE_DD);
+			birthDayDD.setEnabled(birthMM != null);
+			FieldHelper.updateItems(
+				birthDayDD,
+				DateHelper.getDaysInMonth(
+					(Integer) getField(ContactCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(ContactCriteria.BIRTHDATE_YYYY).getValue()));
+
+			break;
+		}
 		}
 	}
 
@@ -514,7 +528,9 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			populateSurveillanceOfficers(items);
 		} else {
 			final ComboBox regionField = getField(ContactCriteria.REGION);
-			populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+			if (regionField != null) {
+				populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+			}
 		}
 	}
 

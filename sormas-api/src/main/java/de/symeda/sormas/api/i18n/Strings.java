@@ -169,6 +169,7 @@ public interface Strings {
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
@@ -203,8 +204,10 @@ public interface Strings {
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
 	String errorSurvNetCaseNotOwned = "errorSurvNetCaseNotOwned";
 	String errorSurvNetNonCoronavirusCase = "errorSurvNetNonCoronavirusCase";
+	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
+	String errorWritingTemplate = "errorWritingTemplate";
 	String fileName = "fileName";
 	String forCase = "forCase";
 	String forContact = "forContact";
@@ -409,6 +412,7 @@ public interface Strings {
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
 	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
+	String headingPickOrCreateSample = "headingPickOrCreateSample";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
@@ -524,6 +528,7 @@ public interface Strings {
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
 	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
+	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
@@ -784,6 +789,7 @@ public interface Strings {
 	String messageUserSyncSuccessful = "messageUserSyncSuccessful";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
+	String messageWrongTemplateFileType = "messageWrongTemplateFileType";
 	String min = "min";
 	String mmhg = "mmhg";
 	String month = "month";

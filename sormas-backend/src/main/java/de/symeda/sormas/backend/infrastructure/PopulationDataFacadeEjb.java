@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.infrastructure;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +34,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -45,6 +43,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PopulationDataFacade")
 public class PopulationDataFacadeEjb implements PopulationDataFacade {
@@ -206,17 +205,17 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		if (!CollectionUtils.isEmpty(criteria.getRegions()) && CollectionUtils.isEmpty(criteria.getDistricts())) {
 			List<Long> regionIds = regionService.getIdsByReferenceDtos(criteria.getRegions());
-			BaseAdoService.appendInFilterValues(regionsIn, parameters, regionIds, entry -> entry);
+			QueryHelper.appendInFilterValues(regionsIn, parameters, regionIds, entry -> entry);
 		}
 		if (!CollectionUtils.isEmpty(criteria.getDistricts())) {
 			List<Long> districtIds = districtService.getIdsByReferenceDtos(criteria.getDistricts());
-			BaseAdoService.appendInFilterValues(districtsIn, parameters, districtIds, entry -> entry);
+			QueryHelper.appendInFilterValues(districtsIn, parameters, districtIds, entry -> entry);
 		}
 		if (!CollectionUtils.isEmpty(criteria.getSexes())) {
-			BaseAdoService.appendInFilterValues(sexesIn, parameters, criteria.getSexes(), entry -> entry.name());
+			QueryHelper.appendInFilterValues(sexesIn, parameters, criteria.getSexes(), entry -> entry.name());
 		}
 		if (!CollectionUtils.isEmpty(criteria.getAgeGroups())) {
-			BaseAdoService.appendInFilterValues(ageGroupsIn, parameters, criteria.getAgeGroups(), entry -> entry.name());
+			QueryHelper.appendInFilterValues(ageGroupsIn, parameters, criteria.getAgeGroups(), entry -> entry.name());
 		}
 
 		StringBuilder queryBuilder = new StringBuilder();
@@ -300,15 +299,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 	public PopulationData fromDto(@NotNull PopulationDataDto source, boolean checkChangeDate) {
 
-		PopulationData target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new PopulationData();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		PopulationData target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), PopulationData::new, checkChangeDate);
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));

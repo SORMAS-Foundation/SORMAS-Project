@@ -49,12 +49,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
-		if (target == null) {
-			target = new LabMessage();
-			target.setUuid(source.getUuid());
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, LabMessage::new, checkChangeDate);
 
 		target.setLabMessageDetails(source.getLabMessageDetails());
 		target.setLabSampleId(source.getLabSampleId());
