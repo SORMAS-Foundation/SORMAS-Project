@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
+import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
@@ -85,6 +86,7 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 12, 0, DOCUMENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
@@ -127,6 +129,10 @@ public class EventDataView extends AbstractEventView {
 			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}
+
+		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef());
+		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
 		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
 		superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);

@@ -41,6 +41,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
+import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
@@ -96,8 +98,9 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
-import de.symeda.sormas.backend.docgeneration.TemplateEngineService;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -195,7 +198,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	@Before
 	public void createDiseaseConfigurations() {
 		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			getDiseaseConfigurationService().ensurePersisted(configuration);
@@ -493,12 +496,16 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PathogenTestService.class);
 	}
 
-	public TemplateEngineService getTemplateEngineService() {
-		return getBean(TemplateEngineService.class);
+	public DocumentTemplateFacade getDocumentTemplateFacade() {
+		return getBean(DocumentTemplateFacadeEjbLocal.class);
 	}
 
 	public QuarantineOrderFacade getQuarantineOrderFacade() {
 		return getBean(QuarantineOrderFacadeEjb.class);
+	}
+
+	public EventDocumentFacade getEventDocumentFacade() {
+		return getBean(EventDocumentFacadeEjb.class);
 	}
 
 	public BAGExportFacade getBAGExportFacade() {
