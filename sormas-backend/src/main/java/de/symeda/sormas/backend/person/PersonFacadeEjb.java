@@ -21,7 +21,6 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -109,13 +108,10 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.utils.CaseJoins;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.time.DateUtils;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
