@@ -211,6 +211,9 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertThat(importedPerson.getFirstName(), is("Import John"));
 		assertThat(importedPerson.getLastName(), is("Import Doe"));
 		assertThat(importedPerson.getSex(), is(Sex.MALE));
+		assertThat(importedPerson.getBirthdateDD(), is(11));
+		assertThat(importedPerson.getBirthdateMM(), is(12));
+		assertThat(importedPerson.getBirthdateYYYY(), is(1962));
 		assertThat(importedPerson.getPresentCondition(), is(PresentCondition.ALIVE));
 		assertThat(importedPerson.getAddress().getRegion(), is(rdcf.region));
 		assertThat(importedPerson.getAddress().getDistrict(), is(rdcf.district));
@@ -328,13 +331,15 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertThat(importedContact.getQuarantineTo().getTime(), is(DateHelper.getStartOfDay(dateNow).getTime()));
 		assertThat(importedContact.isQuarantineExtended(), is(true));
 		assertThat(importedContact.getFollowUpStatus(), is(FollowUpStatus.FOLLOW_UP));
-		assertThat(importedContact.getFollowUpUntil(), is(DateHelper.getStartOfDay(dateNow)));
 
 		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedContact.getPerson().getUuid());
 
 		assertThat(importedPerson.getFirstName(), is("Import John"));
 		assertThat(importedPerson.getLastName(), is("Import Doe"));
 		assertThat(importedPerson.getSex(), is(Sex.MALE));
+		assertThat(importedPerson.getBirthdateDD(), is(11));
+		assertThat(importedPerson.getBirthdateMM(), is(12));
+		assertThat(importedPerson.getBirthdateYYYY(), is(1962));
 		assertThat(importedPerson.getPresentCondition(), is(PresentCondition.ALIVE));
 		assertThat(importedPerson.getAddress().getRegion(), is(rdcf.region));
 		assertThat(importedPerson.getAddress().getDistrict(), is(rdcf.district));

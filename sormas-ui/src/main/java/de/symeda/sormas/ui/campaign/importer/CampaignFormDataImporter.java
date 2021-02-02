@@ -217,7 +217,7 @@ public class CampaignFormDataImporter extends DataImporter {
 				} catch (InvocationTargetException | IllegalAccessException e) {
 					throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, propertyPath));
 				} catch (IntrospectionException e) {
-//					throw new InvalidColumnException(entryHeaderPath[i]);
+					// skip unknown fields
 				} catch (ImportErrorException e) {
 					throw e;
 				} catch (Exception e) {
@@ -230,7 +230,7 @@ public class CampaignFormDataImporter extends DataImporter {
 				Optional<CampaignFormElement> existingFormElement =
 					campaignMetaDto.getCampaignFormElements().stream().filter(e -> e.getId().equals(formEntry.getId())).findFirst();
 				if (!existingFormElement.isPresent()) {
-//					throw new ImportErrorException(I18nProperties.getValidationError(Validations.campaignFormElementNotExisting, propertyPath));
+					// skip unknown fields
 					continue;
 				} else if (Objects.nonNull(formEntry.getValue())
 					&& StringUtils.isNotBlank(formEntry.getValue().toString())

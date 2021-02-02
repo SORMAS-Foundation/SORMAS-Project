@@ -83,7 +83,8 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportCampaignFormDataWithNonExistingColumn()
+	@Ignore("Remove ignore once we have replaced H2 - #2526")
+	public void testImportCampaignFormDataIgnoringNonExistingColumn()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -104,8 +105,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 		campaignFormDataImporter.runImport();
 
-		assertFalse(campaignFormDataImporter.getErrorMessages().isEmpty());
-		assertEquals("Column nonExistingColumn does not exist in form meta definition.", campaignFormDataImporter.getErrorMessages().get(0));
+		assertTrue(campaignFormDataImporter.getErrorMessages().isEmpty());
 	}
 
 	private static class CampaignFormDataImporterExtension extends CampaignFormDataImporter {

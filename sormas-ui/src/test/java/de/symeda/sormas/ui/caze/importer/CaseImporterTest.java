@@ -1,17 +1,15 @@
 package de.symeda.sormas.ui.caze.importer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -44,10 +42,10 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_success.csv").toURI());
-		CaseImporter caseImporter = new CaseImporterExtension(csvFile, true, user);
+		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(caseImporter.errors.toString(), ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Failed import of 5 cases because of errors
@@ -56,19 +54,6 @@ public class CaseImporterTest extends AbstractBeanTest {
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
-		assertEquals(5, getCaseFacade().count(null));
-
-		// Failed import
-		boolean exceptionWasThrown = false;
-
-		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_failure.csv").toURI());
-		caseImporter = new CaseImporterExtension(csvFile, true, user);
-		try {
-			caseImporter.runImport();
-		} catch (InvalidColumnException e) {
-			exceptionWasThrown = true;
-		}
-		assertTrue(exceptionWasThrown);
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Similarity: skip
@@ -216,7 +201,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user);
 		importResult = caseImporter.runImport();
 
-		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(caseImporter.errors.toString(), ImportResultStatus.COMPLETED, importResult);
 		assertEquals(12, getCaseFacade().count(null));
 	}
 
@@ -228,10 +213,10 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").toURI());
-		CaseImporter caseImporter = new CaseImporterExtension(csvFile, false, user);
+		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, false, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(caseImporter.errors.toString(), ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Successful import of 5 cases from commented CSV file
@@ -239,11 +224,14 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, false, user);
 		importResult = caseImporter.runImport();
 
-		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(caseImporter.errors.toString(), ImportResultStatus.COMPLETED, importResult);
 		assertEquals(10, getCaseFacade().count(null));
 	}
 
 	private static class CaseImporterExtension extends CaseImporter {
+
+		private StringBuilder errors = new StringBuilder("");
+		private StringBuilderWriter writer = new StringBuilderWriter(errors);
 
 		private CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
 			super(inputFile, hasEntityClassRow, currentUser);
@@ -258,13 +246,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		}
 
 		protected Writer createErrorReportWriter() {
-			return new OutputStreamWriter(new OutputStream() {
-
-				@Override
-				public void write(int b) {
-					// Do nothing
-				}
-			});
+			return writer;
 		}
 	}
 }
