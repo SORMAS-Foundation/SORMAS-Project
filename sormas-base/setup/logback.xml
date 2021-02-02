@@ -88,6 +88,9 @@
     <!-- Prevent the org.apache.http.impl.conn.Wire to log debug data which could contain plain Basic Auth credentials -->
     <logger name="org.apache.http" level="INFO" />
 
+    <!-- Prevent the TLSManager and ClientGenerator from outputting sensitive information -->
+    <logger name="de.rki.demis.importer" level="INFO" />
+
     <root level="debug">
             <appender-ref ref="FILE_DEBUG" />
             <appender-ref ref="FILE_INFO" />

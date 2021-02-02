@@ -165,6 +165,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		contentBinding.eventEventInvestigationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.eventEventInvestigationEndDate.initializeDateField(getFragmentManager());
+		contentBinding.eventTravelDate.initializeDateField(getFragmentManager());
 
 		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
 	}

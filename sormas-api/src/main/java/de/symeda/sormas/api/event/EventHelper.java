@@ -63,4 +63,9 @@ public final class EventHelper {
 	public static String buildEventActionTitleString(ActionMeasure actionMeasure, String actionTitle) {
 		return actionMeasure == null || actionMeasure == ActionMeasure.OTHER ? actionTitle : actionMeasure.toString();
 	}
+
+	public static Date getStartOrEndDate(Date eventStartDate, Date eventEndDate) {
+		return eventStartDate != null ? eventStartDate : eventEndDate;
+	}
+
 }
