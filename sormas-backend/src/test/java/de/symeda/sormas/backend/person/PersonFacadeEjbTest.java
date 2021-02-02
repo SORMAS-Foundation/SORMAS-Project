@@ -3,17 +3,21 @@ package de.symeda.sormas.backend.person;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.backend.caze.Case;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -243,7 +247,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(contact2.getFollowUpUntil(), exportPerson.getLatestFollowUpEndDate());
 	}
 
-
 	@Test
 	public void testGetFollowUpEndDatesCasesOnly() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
@@ -287,7 +290,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
 
-		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
 		final PersonDto person2 = creator.createPerson();
 		final ContactDto contact1 = creator.createContact(user.toReference(), person1.toReference());
@@ -365,5 +367,69 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedPerson.getUuid(), not(isEmptyOrNullString()));
 		assertThat(savedPerson.getAddress().getUuid(), not(isEmptyOrNullString()));
 		assertThat(savedPerson.getAddresses().get(0).getUuid(), not(isEmptyOrNullString()));
+	}
+
+	@Test
+	public void testGetMostRelevantFollowUpStatusByUuid() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities();
+		PersonDto person = creator.createPerson();
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+
+		ContactDto contact1 = creator.createContact(user.toReference(), person.toReference());
+
+		for (FollowUpStatus status : FollowUpStatus.values()) {
+			contact1.setFollowUpStatus(status);
+			getContactFacade().saveContact(contact1);
+
+			if (FollowUpStatus.COMPLETED.equals(status) || FollowUpStatus.NO_FOLLOW_UP.equals(status)) {
+				// In this case the status is automatically updated to FOLLOW_UP, because the end of the follow up period has not yet been reached.
+				assertThat(getPersonFacade().getMostRelevantFollowUpStatusByUuid(person.getUuid()), is(FollowUpStatus.FOLLOW_UP));
+				continue;
+			}
+			assertThat(getPersonFacade().getMostRelevantFollowUpStatusByUuid(person.getUuid()), is(status));
+		}
+
+		ContactDto contact2 = creator.createContact(user.toReference(), person.toReference());
+		CaseDataDto case1 = creator.createCase(user.toReference(), person.toReference(), rdcfEntities);
+
+		updateFollowUpStatus(contact1, FollowUpStatus.FOLLOW_UP);
+		for (FollowUpStatus status : FollowUpStatus.values()) {
+			updateFollowUpStatus(case1, status);
+			updateFollowUpStatus(contact2, status);
+			// Other states must not interfere one with ongoing follow up
+			assertThat(getPersonFacade().getMostRelevantFollowUpStatusByUuid(person.getUuid()), is(FollowUpStatus.FOLLOW_UP));
+			updateFollowUpStatus(contact1, status);
+			if (FollowUpStatus.COMPLETED.equals(status) || FollowUpStatus.NO_FOLLOW_UP.equals(status)) {
+				// In this case the status is automatically updated to FOLLOW_UP, because the end of the follow up period has not yet been reached.
+				assertThat(getPersonFacade().getMostRelevantFollowUpStatusByUuid(person.getUuid()), is(FollowUpStatus.FOLLOW_UP));
+				updateFollowUpStatus(contact1, FollowUpStatus.FOLLOW_UP);
+				continue;
+			}
+			// In that case one clear status can be calculated
+			assertThat(getPersonFacade().getMostRelevantFollowUpStatusByUuid(person.getUuid()), is(status));
+			updateFollowUpStatus(case1, FollowUpStatus.FOLLOW_UP);
+			// Also ongoing case follow up must not be overwritten
+			assertThat(getPersonFacade().getMostRelevantFollowUpStatusByUuid(person.getUuid()), is(FollowUpStatus.FOLLOW_UP));
+			updateFollowUpStatus(case1, status);
+			updateFollowUpStatus(contact1, FollowUpStatus.FOLLOW_UP);
+		}
+
+		updateFollowUpStatus(contact1, FollowUpStatus.LOST);
+		updateFollowUpStatus(contact2, FollowUpStatus.CANCELED);
+		updateFollowUpStatus(case1, FollowUpStatus.LOST);
+		assertThat(getPersonFacade().getMostRelevantFollowUpStatusByUuid(person.getUuid()), is(FollowUpStatus.NO_FOLLOW_UP));
+
+	}
+
+	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		contact.setFollowUpStatus(status);
+		getContactFacade().saveContact(contact);
+	}
+
+	private void updateFollowUpStatus(CaseDataDto caze, FollowUpStatus status) {
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		caze.setFollowUpStatus(status);
+		getCaseFacade().saveCase(caze);
 	}
 }

@@ -589,7 +589,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		assert (parameterStatus != null);
 
 		for (FollowUpStatusDto status : list) {
-			if (!parameterStatus.equals(status)) {
+			if (!parameterStatus.equals(status.getFollowUpStatus())) {
 				return false;
 			}
 		}
