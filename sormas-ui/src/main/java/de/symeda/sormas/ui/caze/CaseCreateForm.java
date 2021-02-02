@@ -121,7 +121,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		style(epidField, ERROR_COLOR_PRIMARY);
 
 		TextField externalIdField = addField(CaseDataDto.EXTERNAL_ID, TextField.class);
-		externalIdField.setInvalidCommitted(true);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
