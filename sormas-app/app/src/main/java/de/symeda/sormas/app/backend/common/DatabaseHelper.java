@@ -2024,9 +2024,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 280;
 
 				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN street varchar(4096);");
-				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN houseNumber varchar(255);");
-				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN additionalInformation varchar(4096);");
-				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN postalCode varchar(255);");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN houseNumber varchar(512);");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN additionalInformation varchar(255);");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN postalCode varchar(512);");
 				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN areaType varchar(255);");
 
 				// ATTENTION: break should only be done after last version
