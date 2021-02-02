@@ -3,38 +3,44 @@
 
 	.v-window {
 
-		height: 98% !important;
-	
-	  .v-window-outerheader {
+		.v-window-outerheader {
 
-		border-bottom: 3px solid $v-focus-color;
+			border-bottom: 3px solid $v-focus-color;
+			background-color: white;
 
-        .v-window-header {
-          padding: 16px 32px 8px 32px;
-          font-size: 24px;
-          font-weight: 600;
-          color: $s-primary-color;
-        }
-	  
-	    &::after {
-	      content: null;
-	    }
-	  }
-	
-	  .v-window-contents > .v-scrollable > .v-layout {
-	  
-	    &.v-margin-left {
-	      padding-left: 32px;
-	    }
-	    &.v-margin-right {
-	      padding-right: 32px;
-	    }
-	    &.v-margin-top {
-	      padding-top: 32px;
-	    }
-	    &.v-margin-bottom {
-	      padding-bottom: 32px;
-	    }
-	  }
+			.v-window-header {
+				padding: 16px 32px 8px 32px;
+				font-size: 24px;
+				font-weight: 600;
+				color: $s-primary-color;
+			}
+
+			&::after {
+				content: null;
+			}
+		}
+
+		.v-window-contents > .v-scrollable {
+
+			max-height: 95vh;
+
+			&.v-layout {
+				&.v-margin-left {
+					padding-left: 32px;
+				}
+
+				&.v-margin-right {
+					padding-right: 32px;
+				}
+
+				&.v-margin-top {
+					padding-top: 32px;
+				}
+
+				&.v-margin-bottom {
+					padding-bottom: 32px;
+				}
+		}
 	}
-}  
+	}
+}
