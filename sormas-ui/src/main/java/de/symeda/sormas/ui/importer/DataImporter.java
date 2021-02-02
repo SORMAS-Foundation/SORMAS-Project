@@ -470,7 +470,7 @@ public abstract class DataImporter {
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
 		Function<ImportCellData, Exception> insertCallback)
-		throws IOException, InvalidColumnException {
+		throws IOException {
 
 		boolean dataHasImportError = false;
 		List<String> invalidColumns = new ArrayList<>();

@@ -16,8 +16,10 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -25,6 +27,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -307,6 +310,13 @@ public class ContactImporter extends DataImporter {
 					// Set the current element to the created person
 					if (currentElement instanceof PersonReferenceDto) {
 						currentElement = person;
+					}
+				} else if (ContactExportDto.BIRTH_DATE.equals(headerPathElementName)) {
+					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, currentUser.getLanguage());
+					if (birthDateDto != null) {
+						person.setBirthdateDD(birthDateDto.getBirthdateDD());
+						person.setBirthdateMM(birthDateDto.getBirthdateMM());
+						person.setBirthdateYYYY(birthDateDto.getBirthdateYYYY());
 					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());

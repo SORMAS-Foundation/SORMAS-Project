@@ -64,6 +64,7 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String BURIAL_INFO = "burialInfo";
 	public static final String SAMPLE_INFORMATION = "sampleInformation";
 	public static final String CONTACT_COUNT = "contactCount";
+	public static final String BIRTH_DATE = "birthdate";
 
 	private long id;
 	private long personId;
@@ -306,6 +307,7 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(20)
+	@ExportProperty(BIRTH_DATE)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
 	}

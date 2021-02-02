@@ -35,8 +35,10 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -46,6 +48,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -283,6 +286,13 @@ public class EventParticipantImporter extends DataImporter {
 					// Set the current element to the created person
 					if (currentElement instanceof PersonReferenceDto) {
 						currentElement = person;
+					}
+				} else if (EventParticipantExportDto.BIRTH_DATE.equals(headerPathElementName)) {
+					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, currentUser.getLanguage());
+					if (birthDateDto != null) {
+						person.setBirthdateDD(birthDateDto.getBirthdateDD());
+						person.setBirthdateMM(birthDateDto.getBirthdateMM());
+						person.setBirthdateYYYY(birthDateDto.getBirthdateYYYY());
 					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());

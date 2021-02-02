@@ -58,7 +58,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM yyyy");
 
 	private static final Set<String> DATE_FORMAT_SEPARATORS = Sets.newHashSet(".", "/", "-");
-	private static final Pattern DATE_FORMAT_PATTERN = Pattern.compile("^(.+)([\\.\\-/])(.+)([\\.\\-/])(.+)$");
+	private static final Pattern DATE_FORMAT_PATTERN = Pattern.compile("^(.*)([\\.\\-/])(.*)([\\.\\-/])(.*)$");
 
 	public static SimpleDateFormat getLocalDateFormat(Language language) {
 		return new SimpleDateFormat(language.getDateFormat());
@@ -202,6 +202,16 @@ public final class DateHelper {
 		}
 
 		return dateFormats;
+	}
+
+	public static List<String> getDateFields(String dateOrFOrmat) {
+		Matcher matcher = DATE_FORMAT_PATTERN.matcher(dateOrFOrmat);
+
+		if (!matcher.matches()) {
+			return null;
+		}
+
+		return Arrays.asList(matcher.group(1), matcher.group(3), matcher.group(5));
 	}
 
 	public static String formatDateForExport(Date date) {
@@ -1081,5 +1091,45 @@ public final class DateHelper {
 	 */
 	public static long toSeconds(long milliseconds) {
 		return milliseconds / MILLISECONDS_PER_SECOND;
+	}
+
+	public static class ParsedDateFormat {
+
+		private String day;
+		private String month;
+		private String year;
+		private String separator;
+
+		public String getDay() {
+			return day;
+		}
+
+		public void setDay(String day) {
+			this.day = day;
+		}
+
+		public String getMonth() {
+			return month;
+		}
+
+		public void setMonth(String month) {
+			this.month = month;
+		}
+
+		public String getYear() {
+			return year;
+		}
+
+		public void setYear(String year) {
+			this.year = year;
+		}
+
+		public String getSeparator() {
+			return separator;
+		}
+
+		public void setSeparator(String separator) {
+			this.separator = separator;
+		}
 	}
 }

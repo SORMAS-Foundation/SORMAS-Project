@@ -93,11 +93,11 @@ public class CsvStreamUtils {
 			String[] labels = new String[readMethods.size()];
 			for (int i = 0; i < readMethods.size(); i++) {
 				final Method method = readMethods.get(i);
+				String fieldName = getFieldNameFromMethod(method);
 
-				String propertyId = getFieldNameFromMethod(method);
+				String propertyId = fieldName;
 
 				if (method.isAnnotationPresent(ExportProperty.class)) {
-					// TODO not sure why we are using the export property name to get the caption here
 					final ExportProperty exportProperty = method.getAnnotation(ExportProperty.class);
 					if (!exportProperty.combined()) {
 						propertyId = StringUtils.join(exportProperty.value(), ".");
@@ -118,7 +118,7 @@ public class CsvStreamUtils {
 					fieldClassNames[i] = DataHelper.getHumanClassName(fieldEntityClass);
 				}
 				fieldIds[i] = propertyId;
-				labels[i] = propertyIdCaptionSupplier.apply(propertyId, method.getReturnType());
+				labels[i] = propertyIdCaptionSupplier.apply(fieldName, method.getReturnType());
 			}
 
 			if (entityClass != null) {

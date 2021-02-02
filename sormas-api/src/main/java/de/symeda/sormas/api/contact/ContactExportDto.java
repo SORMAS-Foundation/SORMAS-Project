@@ -66,6 +66,7 @@ public class ContactExportDto implements Serializable {
 	public static final String LATEST_EVENT_ID = "latestEventId";
 	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
 	public static final String EVENT_COUNT = "eventCount";
+	public static final String BIRTH_DATE = "birthDate";
 
 	private long id;
 	private long personId;
@@ -427,9 +428,7 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(15)
-	@ExportProperty({
-		CaseDataDto.PERSON,
-		PersonDto.BIRTH_DATE })
+	@ExportProperty(BIRTH_DATE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public BirthDateDto getBirthdate() {
 		return birthdate;
