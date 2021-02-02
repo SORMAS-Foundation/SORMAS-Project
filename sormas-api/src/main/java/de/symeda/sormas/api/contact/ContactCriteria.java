@@ -61,8 +61,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String EVENT_LIKE = "eventLike";
-	public static final String EXTERNAL_ID = "externalIdLike";
-	public static final String EXTERNAL_TOKEN = "externalTokenLike";
 	public static final String INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS = "includeContactsFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
 
@@ -114,8 +112,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Integer birthdateDD;
 	private YesNoUnknown returningTraveler;
 	private String eventLike;
-	private String externalIdLike;
-	private String externalTokenLike;
 	private String eventUuid;
 	private Boolean includeContactsFromOtherJurisdictions = Boolean.FALSE;
 	private Boolean onlyContactsSharingEventWithSourceCase;
@@ -512,32 +508,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria eventLike(String eventLike) {
 		setEventLike(eventLike);
-		return this;
-	}
-
-	public void setExternalIdLike(String externalIdLike) {
-		this.externalIdLike = externalIdLike;
-	}
-
-	public String getExternalIdLike() {
-		return externalIdLike;
-	}
-
-	public ContactCriteria externalIdLike(String externalIdLike) {
-		setExternalIdLike(externalIdLike);
-		return this;
-	}
-
-	public void setExternalTokenLike(String externalTokenLike) {
-		this.externalTokenLike = externalTokenLike;
-	}
-
-	public String getExternalTokenLike() {
-		return externalTokenLike;
-	}
-
-	public ContactCriteria externalTokenLike(String externalTokenLike) {
-		setExternalTokenLike(externalTokenLike);
 		return this;
 	}
 

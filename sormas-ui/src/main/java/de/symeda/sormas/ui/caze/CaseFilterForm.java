@@ -20,7 +20,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -89,9 +88,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.FOLLOW_UP_STATUS,
 			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE,
-			CaseCriteria.EVENT_LIKE,
-			CaseCriteria.EXTERNAL_ID,
-			CaseCriteria.EXTERNAL_TOKEN };
+			CaseCriteria.EVENT_LIKE };
 	}
 
 	@Override
@@ -126,22 +123,6 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.EVENT_LIKE, I18nProperties.getString(Strings.promptCaseOrContactEventSearchField), 200));
 		eventSearchField.setNullRepresentation("");
-
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY) || isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
-			TextField externalIdTextField = addField(
-				FieldConfiguration.withCaptionAndPixelSized(
-					CaseCriteria.EXTERNAL_ID,
-					I18nProperties.getString(Strings.promptCaseOrContactExternalIdSearchField),
-					200));
-			externalIdTextField.setNullRepresentation("");
-
-			TextField externalTokenTextField = addField(
-				FieldConfiguration.withCaptionAndPixelSized(
-					CaseCriteria.EXTERNAL_TOKEN,
-					I18nProperties.getString(Strings.promptCaseOrContactExternalTokenSearchField),
-					200));
-			externalTokenTextField.setNullRepresentation("");
-		}
 	}
 
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {

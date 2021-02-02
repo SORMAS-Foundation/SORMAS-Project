@@ -661,6 +661,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(from.get(Case.UUID)), textFilter),
 						cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
 						cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
+						cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter),
+						cb.like(cb.lower(from.get(Case.EXTERNAL_TOKEN)), textFilter),
 						cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter),
 						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter),
 						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
@@ -698,14 +700,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (hasOnlyCasesWithEventsCriteria) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(event.get(Event.ID)));
 			}
-		}
-		if (caseCriteria.getExternalIdLike() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), formatForLike(caseCriteria.getExternalIdLike())));
-		}
-		if (caseCriteria.getExternalTokenLike() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.like(cb.lower(from.get(Case.EXTERNAL_TOKEN)), formatForLike(caseCriteria.getExternalTokenLike())));
 		}
 		if (caseCriteria.getReportingUserLike() != null) {
 			String[] textFilters = caseCriteria.getReportingUserLike().split("\\s+");

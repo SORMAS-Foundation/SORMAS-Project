@@ -853,8 +853,6 @@ public interface Strings {
 	String promptCampaign = "promptCampaign";
 	String promptCampaignSearch = "promptCampaignSearch";
 	String promptCaseOrContactEventSearchField = "promptCaseOrContactEventSearchField";
-	String promptCaseOrContactExternalIdSearchField = "promptCaseOrContactExternalIdSearchField";
-	String promptCaseOrContactExternalTokenSearchField = "promptCaseOrContactExternalTokenSearchField";
 	String promptCasesDateFrom = "promptCasesDateFrom";
 	String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
