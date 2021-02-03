@@ -337,7 +337,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		case EventDto.TYPE_OF_PLACE:
 			applyFacilityFieldsDependencies();
 			break;
-		}
 		case EventCriteria.RESPONSIBLE_USER_ROLE:
 			updateResponsibleUserFieldItems();
 			break;
