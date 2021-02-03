@@ -21,10 +21,10 @@
 		}
 
 		.v-window-contents > .v-scrollable {
+			max-height: 94vh;
+		}
 
-			max-height: 95vh;
-
-			&.v-layout {
+		.v-window-contents > .v-scrollable > .v-layout{
 				&.v-margin-left {
 					padding-left: 32px;
 				}
@@ -40,7 +40,6 @@
 				&.v-margin-bottom {
 					padding-bottom: 32px;
 				}
-		}
 	}
 	}
 }
