@@ -174,6 +174,7 @@ public class SampleController {
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
+			pathogenTest.setCqValue(Float.parseFloat((String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue()));
 			FacadeProvider.getSampleFacade().saveSample(newSample);
 			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
 			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();

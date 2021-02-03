@@ -62,6 +62,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -83,7 +84,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
-			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
+			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
 			+ fluidRow(fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 					fluidColumn(6, 0,
 							locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
@@ -102,7 +103,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public CaseCreateForm() {
 
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 
 		setWidth(720, Unit.PIXELS);
 
@@ -118,6 +119,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
 		style(epidField, ERROR_COLOR_PRIMARY);
+
+		TextField externalIdField = addField(CaseDataDto.EXTERNAL_ID, TextField.class);
+		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
@@ -317,6 +321,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				}
 			});
 		}
+
+		// Set initial visibilities & accesses
+		initializeVisibilitiesAndAllowedVisibilities();
 
 		setRequired(
 			true,

@@ -53,7 +53,6 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -72,6 +71,7 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CaseStatisticsFacade")
 public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
@@ -1190,7 +1190,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 
 		filterBuilder.append(tableName).append(".").append(fieldName).append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private StringBuilder extendFilterBuilderWithDate(
@@ -1242,7 +1242,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(")  AS integer))")
 			.append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithEpiWeek(
@@ -1258,7 +1258,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 
 		filterBuilder.append("epi_week(").append(tableName).append(".").append(fieldName).append(")").append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithEpiWeekOfYear(
@@ -1285,7 +1285,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append("))")
 			.append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithQuarterOfYear(
@@ -1311,7 +1311,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(") AS integer))")
 			.append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithMonthOfYear(
@@ -1337,7 +1337,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(") AS integer))")
 			.append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private String buildCaseGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping, String groupAlias) {

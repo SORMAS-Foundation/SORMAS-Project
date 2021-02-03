@@ -30,6 +30,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -398,5 +399,16 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public SampleJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(DateFormatHelper.formatLocalDateTime(sampleDateTime)).append(" - ");
+		sb.append(sampleMaterial);
+		sb.append(" (").append(disease).append(")");
+		if (pathogenTestResult != null) {
+			sb.append(": ").append(pathogenTestResult);
+		}
+		return sb.toString();
 	}
 }
