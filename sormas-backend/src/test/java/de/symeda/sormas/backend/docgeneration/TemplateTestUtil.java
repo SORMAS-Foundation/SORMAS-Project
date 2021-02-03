@@ -47,4 +47,8 @@ public class TemplateTestUtil {
 		String json = new ObjectMapper().writeValueAsString(object);
 		System.out.println("(" + canonicalClassName + ") " + json);
 	}
+
+	public static String cleanLineSeparators(String text) {
+		return text.replaceAll("\\r\\n?", "\n");
+	}
 }

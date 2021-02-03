@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.docgeneration;
 
+import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -127,14 +128,14 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 			String testcaseBasename = FilenameUtils.getBaseName(testCaseHtml.getName());
 
 			String htmlText = eventDocumentFacade.getGeneratedDocument(testcaseBasename + ".html", eventDto.toReference(), new Properties());
+			String actual = cleanLineSeparators(
+				htmlText.replaceAll("<p>Event-ID: <b>[A-Z0-9-]*</b></p>", "<p>Event-ID: <b>STN3WX-5JTGYV-IU2LRM-4UHCSOEE</b></p>"));
 
 			StringWriter writer = new StringWriter();
 			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/eventHandout/" + testcaseBasename + ".cmp"), writer, "UTF-8");
 
-			String expected = writer.toString().replaceAll("\\r\\n?", "\n");
-			assertEquals(
-				expected,
-				htmlText.replaceAll("<p>Event-ID: <b>[A-Z0-9-]*</b></p>", "<p>Event-ID: <b>STN3WX-5JTGYV-IU2LRM-4UHCSOEE</b></p>"));
+			String expected = cleanLineSeparators(writer.toString());
+			assertEquals(expected, actual);
 			System.out.println("Testcase completed: " + testcaseBasename);
 		}
 	}
