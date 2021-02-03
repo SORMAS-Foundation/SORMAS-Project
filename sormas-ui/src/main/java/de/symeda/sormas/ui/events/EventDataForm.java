@@ -24,9 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -120,7 +118,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private final Boolean isCreateForm;
 	private final boolean isPseudonymized;
 	private List<UserReferenceDto> responsibleUserSurveillanceSupervisors;
-	private List<UserReferenceDto> responsibleUserSurveillanceOfficers;
 
 	public EventDataForm(boolean create, boolean isPseudonymized) {
 		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), createFieldAccessCheckers(isPseudonymized, true));
@@ -365,10 +362,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			if (region != null) {
 				responsibleUserSurveillanceSupervisors =
 					FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR);
-				responsibleUserSurveillanceOfficers = FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_OFFICER);
 			} else {
 				responsibleUserSurveillanceSupervisors.clear();
-				responsibleUserSurveillanceOfficers.clear();
 			}
 		});
 
@@ -378,12 +373,11 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				List<UserReferenceDto> currentDistrictSurveillanceOfficers =
 					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER);
 
-				Set<UserReferenceDto> responsibleUsers = new LinkedHashSet<>();
+				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
 				responsibleUsers.addAll(currentDistrictSurveillanceOfficers);
-				responsibleUsers.addAll(responsibleUserSurveillanceOfficers);
 				responsibleUsers.addAll(responsibleUserSurveillanceSupervisors);
 
-				FieldHelper.updateItems(responsibleUserField, new ArrayList<>(responsibleUsers));
+				FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 			} else {
 				responsibleUserField.removeAllItems();
 			}
