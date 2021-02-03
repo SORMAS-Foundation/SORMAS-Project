@@ -1877,10 +1877,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN evolutionDate timestamp;");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN evolutionComment text;");
 
-			case 265:
-				currentVersion = 265;
-				getDao(Event.class).executeRaw("ALTER TABLE events RENAME surveillanceOfficer_id to responsibleUser_id;");
-
 				// ATTENTION: break should only be done after last version
 				break;
 

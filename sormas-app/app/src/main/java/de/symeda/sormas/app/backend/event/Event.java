@@ -192,7 +192,7 @@ public class Event extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "surveillanceOfficer_id")
 	private User responsibleUser;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
