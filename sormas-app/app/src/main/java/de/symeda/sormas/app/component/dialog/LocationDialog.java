@@ -30,6 +30,8 @@ import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -189,7 +191,53 @@ public class LocationDialog extends FormDialog {
 			contentBinding.locationFacilityType.setValue(data.getFacilityType());
 			contentBinding.facilityTypeGroup.setValue(data.getFacilityType().getFacilityTypeGroup());
 		}
-	}
+
+        contentBinding.locationFacility.addValueChangedListener(field -> {
+            final Facility facility = (Facility) field.getValue();
+            if (facility != null && (StringUtils.isNotEmpty(facility.getCity())
+                    || StringUtils.isNotEmpty(facility.getPostalCode())
+                    || StringUtils.isNotEmpty(facility.getStreet())
+                    || StringUtils.isNotEmpty(facility.getHouseNumber())
+                    || StringUtils.isNotEmpty(facility.getAdditionalInformation())
+                    || facility.getAreaType() != null
+                    || facility.getLatitude() != null
+                    || facility.getLongitude() != null
+            )) {
+                if ((StringUtils.isNotEmpty(contentBinding.locationCity.getValue()) && !contentBinding.locationCity.getValue().equals(facility.getCity()))
+                        || (StringUtils.isNotEmpty(contentBinding.locationPostalCode.getValue()) && !contentBinding.locationPostalCode.getValue().equals(facility.getPostalCode()))
+                        || (StringUtils.isNotEmpty(contentBinding.locationStreet.getValue()) && !contentBinding.locationStreet.getValue().equals(facility.getStreet()))
+                        || (StringUtils.isNotEmpty(contentBinding.locationHouseNumber.getValue()) && !contentBinding.locationHouseNumber.getValue().equals(facility.getHouseNumber()))
+                        || (StringUtils.isNotEmpty(contentBinding.locationAdditionalInformation.getValue()) && !contentBinding.locationAdditionalInformation.getValue().equals(facility.getAdditionalInformation()))
+                        || (contentBinding.locationAreaType.getValue() != null && contentBinding.locationAreaType.getValue() != facility.getAreaType())
+                        || (StringUtils.isNotEmpty(contentBinding.locationLatitude.getValue()) && !Double.valueOf(contentBinding.locationLatitude.getValue()).equals(facility.getLatitude()))
+                        || (StringUtils.isNotEmpty(contentBinding.locationLongitude.getValue()) && !Double.valueOf(contentBinding.locationLongitude.getValue()).equals(facility.getLongitude()))) {
+                    ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+                            getActivity(),
+                            R.string.heading_location,
+                            R.string.message_location_address_override_with_facility_one,
+                            R.string.action_confirm,
+                            R.string.action_cancel);
+                    confirmationDialog.setPositiveCallback(() -> {
+                        OverrideLocationDetailsWithFacilityOnes(facility);
+                    });
+                    confirmationDialog.show();
+                } else {
+                    OverrideLocationDetailsWithFacilityOnes(facility);
+                }
+            }
+        });
+    }
+
+    private void OverrideLocationDetailsWithFacilityOnes(Facility facility) {
+        contentBinding.locationCity.setValue(facility.getCity());
+        contentBinding.locationPostalCode.setValue(facility.getPostalCode());
+        contentBinding.locationStreet.setValue(facility.getStreet());
+        contentBinding.locationHouseNumber.setValue(facility.getHouseNumber());
+        contentBinding.locationAdditionalInformation.setValue(facility.getAdditionalInformation());
+        contentBinding.locationAreaType.setValue(facility.getAreaType());
+        contentBinding.locationLatitude.setDoubleValue(facility.getLatitude());
+        contentBinding.locationLongitude.setDoubleValue(facility.getLongitude());
+    }
 
 	public void setRequiredFieldsBasedOnCountry() {
 		contentBinding.locationCountry.addValueChangedListener(e -> {

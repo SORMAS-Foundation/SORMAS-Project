@@ -469,6 +469,7 @@
     <string name="message_install_app">A new SORMAS version is ready to install. Please click on \'Install\' to continue. You will need to restart the app after the update has been completed.</string>
     <string name="message_install_app_failed">There was an error installing the new SORMAS version. Maybe the downloaded file was incomplete because of an interrupted download. Please click on \'Redownload\' to try again or inform a supervisor if this error occurs again.</string>
     <string name="message_install_app_not_possible">There was an error installing the new SORMAS version. Your supervisor will automatically be notified about this issue.</string>
+    <string name="message_location_address_override_with_facility_one">The selected facility has location details that are different from the ones you are currently editing. Do you want to overwrite them with those from the facility ?</string>
     <string name="message_no_connection">You are not connected to the internet.</string>
     <string name="message_no_matching_persons">No matching persons found.</string>
     <string name="message_no_more_entries">There are no more entries to display.</string>
