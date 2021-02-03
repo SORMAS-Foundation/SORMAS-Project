@@ -70,7 +70,7 @@ public class Facility extends InfrastructureAdo {
 	private String houseNumber;
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String additionalInformation;
-	@Column
+	@Enumerated(EnumType.STRING)
 	private AreaType areaType;
 
 	@DatabaseField
