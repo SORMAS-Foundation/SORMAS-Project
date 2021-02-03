@@ -151,7 +151,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 265;
+	public static final int DATABASE_VERSION = 266;
 
 	private static DatabaseHelper instance = null;
 
@@ -1876,6 +1876,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 264;
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN evolutionDate timestamp;");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN evolutionComment text;");
+
+			case 265:
+
+				currentVersion = 265;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN firstVaccinationDate timestamp;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineName varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN otherVaccineName text;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineManufacturer varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN otherVaccineManufacturer text;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineInn text;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineBatchNumber text;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineUniiCode text;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineAtcCode text;");
 
 				// ATTENTION: break should only be done after last version
 				break;

@@ -69,10 +69,10 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
 		// Vaccination date
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataVaccination)) {
-			setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
+			setVisibleWhen(contentBinding.caseDataLastVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
 		}
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataSmallpoxVaccinationReceived)) {
-			setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
+			setVisibleWhen(contentBinding.caseDataLastVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
 		}
 
 		// Pregnancy
