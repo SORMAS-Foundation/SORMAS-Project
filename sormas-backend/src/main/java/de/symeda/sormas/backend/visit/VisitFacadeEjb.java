@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -492,15 +491,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	public Visit fromDto(@NotNull VisitDto source, boolean checkChangeDate) {
 
 		final String visitUuid = source.getUuid();
-		Visit target = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
-		if (target == null) {
-			target = new Visit();
-			target.setUuid(visitUuid);
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Visit target = DtoHelper.fillOrBuildEntity(source, visitService.getByUuid(visitUuid), Visit::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));

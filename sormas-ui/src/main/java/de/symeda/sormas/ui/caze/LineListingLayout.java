@@ -22,6 +22,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -474,7 +476,7 @@ public class LineListingLayout extends VerticalLayout {
 			});
 
 			addComponent(dateOfReport);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
+			if (shouldShowEpidNumber()) {
 				addComponent(epidNumber);
 			}
 			addComponents(
@@ -600,6 +602,13 @@ public class LineListingLayout extends VerticalLayout {
 				tfFacilityDetails.clear();
 				cbFacility.setWidth(324, Unit.PIXELS);
 			}
+		}
+
+		private boolean shouldShowEpidNumber() {
+			ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+			return UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)
+				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 		}
 
 		public ComboBox<CommunityReferenceDto> getCommunity() {

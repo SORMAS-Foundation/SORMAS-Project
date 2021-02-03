@@ -20,7 +20,6 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -129,16 +128,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	private RegionFacadeEjb.RegionFacadeEjbLocal regionFacadeEjb;
 
 	public CampaignFormData fromDto(@NotNull CampaignFormDataDto source, boolean checkChangeDate) {
-		CampaignFormData target = campaignFormDataService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new CampaignFormData();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		CampaignFormData target =
+			DtoHelper.fillOrBuildEntity(source, campaignFormDataService.getByUuid(source.getUuid()), CampaignFormData::new, checkChangeDate);
 
 		target.setFormValues(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));

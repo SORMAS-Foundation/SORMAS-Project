@@ -95,6 +95,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 		return new String[] {
 			EventCriteria.EVENT_STATUS,
+			EventCriteria.RISK_LEVEL,
 			EventIndexDto.DISEASE,
 			EventCriteria.REPORTING_USER_ROLE,
 			EventCriteria.RESPONSIBLE_USER,
@@ -105,6 +106,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	protected void addFields() {
 
 		addField(FieldConfiguration.pixelSized(EventCriteria.EVENT_STATUS, 140));
+		addField(FieldConfiguration.pixelSized(EventCriteria.RISK_LEVEL, 140));
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
 		ComboBox responsibleUserField = addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));

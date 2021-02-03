@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -271,15 +270,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	public PathogenTest fromDto(@NotNull PathogenTestDto source, boolean checkChangeDate) {
-		PathogenTest target = pathogenTestService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new PathogenTest();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		PathogenTest target =
+			DtoHelper.fillOrBuildEntity(source, pathogenTestService.getByUuid(source.getUuid()), PathogenTest::new, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());

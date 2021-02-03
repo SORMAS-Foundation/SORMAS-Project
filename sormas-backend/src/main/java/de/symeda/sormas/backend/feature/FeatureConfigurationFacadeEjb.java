@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.feature;
 
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -294,15 +293,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 	public FeatureConfiguration fromDto(@NotNull FeatureConfigurationDto source, boolean checkChangeDate) {
 
-		FeatureConfiguration target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new FeatureConfiguration();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		FeatureConfiguration target =
+			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), FeatureConfiguration::new, checkChangeDate);
 
 		target.setFeatureType(source.getFeatureType());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));

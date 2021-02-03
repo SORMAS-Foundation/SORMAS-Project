@@ -45,11 +45,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String FREE_TEXT = "freeText";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
 
 	private EventStatus eventStatus;
+	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
 	private UserRole reportingUserRole;
@@ -96,6 +98,19 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getRiskLevel() {
+		return riskLevel;
+	}
+
+	public EventCriteria riskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
+		return this;
+	}
+
+	public void setRiskLevel(RiskLevel riskLevel) {
+		this.riskLevel = riskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {

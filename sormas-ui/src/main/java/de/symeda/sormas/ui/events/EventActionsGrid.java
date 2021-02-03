@@ -69,6 +69,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			createEventDateColumn(this),
 			createEventEvolutionDateColumn(this),
 			EventActionIndexDto.EVENT_STATUS,
+			EventActionIndexDto.EVENT_RISK_LEVEL,
 			EventActionIndexDto.EVENT_INVESTIGATION_STATUS,
 			EventActionIndexDto.EVENT_REPORTING_USER,
 			EventActionIndexDto.EVENT_RESPONSIBLE_USER,

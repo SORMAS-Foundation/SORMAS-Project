@@ -36,6 +36,7 @@ public class EventActionIndexDto implements Serializable {
 	public static final String EVENT_START_DATE = "eventStartDate";
 	public static final String EVENT_END_DATE = "eventEndDate";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String EVENT_RISK_LEVEL = "eventRiskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_REPORTING_USER = "eventReportingUser";
 	public static final String EVENT_RESPONSIBLE_USER = "eventResponsibleUser";
@@ -53,6 +54,7 @@ public class EventActionIndexDto implements Serializable {
 	private Date eventStartDate;
 	private Date eventEndDate;
 	private EventStatus eventStatus;
+	private RiskLevel eventRiskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private UserReferenceDto eventReportingUser;
 	private UserReferenceDto eventResponsibleUser;
@@ -71,6 +73,7 @@ public class EventActionIndexDto implements Serializable {
 		Date eventStartDate,
 		Date eventEndDate,
 		EventStatus eventStatus,
+		RiskLevel eventRiskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
 		String eventReportingUserUuid,
 		String eventReportingUserFirstName,
@@ -97,6 +100,7 @@ public class EventActionIndexDto implements Serializable {
 		this.eventStartDate = eventStartDate;
 		this.eventEndDate = eventEndDate;
 		this.eventStatus = eventStatus;
+		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null);
 		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null);
@@ -149,6 +153,14 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
+	}
+
+	public RiskLevel getEventRiskLevel() {
+		return eventRiskLevel;
+	}
+
+	public void setEventRiskLevel(RiskLevel eventRiskLevel) {
+		this.eventRiskLevel = eventRiskLevel;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {

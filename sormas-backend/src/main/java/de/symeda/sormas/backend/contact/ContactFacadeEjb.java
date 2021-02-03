@@ -21,7 +21,6 @@ import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,6 +58,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.person.JournalPersonDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +96,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -1067,16 +1066,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	public Contact fromDto(@NotNull ContactDto source, boolean checkChangeDate) {
 
-		Contact target = contactService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Contact();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Contact target = DtoHelper.fillOrBuildEntity(source, contactService.getByUuid(source.getUuid()), Contact::new, checkChangeDate);
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));

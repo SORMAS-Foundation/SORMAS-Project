@@ -21,7 +21,9 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
@@ -144,5 +146,22 @@ public final class DtoHelper {
 			| InstantiationException e) {
 			throw new RuntimeException("Exception when trying to fill dto: " + e.getMessage(), e.getCause());
 		}
+	}
+
+	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
+		if (target == null) {
+			target = newEntity.get();
+
+			String uuid = source.getUuid() != null ? source.getUuid() : DataHelper.createUuid();
+			target.setUuid(uuid);
+
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+
+		DtoHelper.validateDto(source, target, checkChangeDate);
+
+		return target;
 	}
 }

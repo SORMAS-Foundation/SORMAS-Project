@@ -20,6 +20,8 @@ package de.symeda.sormas.backend.caze;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -38,9 +40,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,6 +70,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -76,11 +79,13 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -91,11 +96,13 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
+import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -131,7 +138,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -150,7 +157,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		singleResult.setReportDate(threeDaysAgo);
 		em.save(singleResult);
 
-		PersonDto cazePerson2 = creator.createPerson("Case", "Person");
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto case2 = creator.createCase(
 			user.toReference(),
 			cazePerson2.toReference(),
@@ -166,6 +173,72 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), true);
 		Assert.assertEquals(1, casesForDuplicateMergingToday.size());
 		Assert.assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
+	}
+
+	@Test
+	public void testGetDuplicateCasesOfSameSexAndDifferentBirthDateIsEmpty() {
+
+		final Date today = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			today,
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 2);
+		creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(today, -3),
+			rdcf);
+
+		Assert.assertEquals(
+			0,
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+	}
+
+	@Test
+	public void testGetDuplicateCasesOfDifferentSexAndSameBirthDateIsEmpty() {
+
+		final Date today = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			today,
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.FEMALE, 1980, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(today, -3),
+			rdcf);
+
+		Assert.assertEquals(
+			0,
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
 	}
 
 	@Test
@@ -1444,6 +1517,39 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		duplicatePerson.setLastName("lName ");
 		duplicates = getCaseFacade().getDuplicates(casePerson);
 		MatcherAssert.assertThat(duplicates, hasSize(2));
+	}
+
+	@Test
+	public void testCreateCaseWithoutUuid() {
+		RDCF rdcf = creator.createRDCF();
+		CaseDataDto caze = new CaseDataDto();
+
+		caze.setReportDate(new Date());
+		caze.setReportingUser(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference());
+		caze.setCaseClassification(CaseClassification.PROBABLE);
+		caze.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze.setDisease(Disease.CORONAVIRUS);
+		caze.setPerson(creator.createPerson().toReference());
+		caze.setRegion(rdcf.region);
+		caze.setDistrict(rdcf.district);
+		caze.setFacilityType(FacilityType.HOSPITAL);
+		caze.setHealthFacility(rdcf.facility);
+
+		caze.setTherapy(new TherapyDto());
+		caze.setSymptoms(new SymptomsDto());
+		EpiDataDto epiData = new EpiDataDto();
+		ExposureDto exposure = new ExposureDto();
+		exposure.setExposureType(ExposureType.WORK);
+		epiData.setExposures(Collections.singletonList(exposure));
+		caze.setEpiData(epiData);
+
+		CaseDataDto savedCaze = getCaseFacade().saveCase(caze);
+
+		MatcherAssert.assertThat(savedCaze.getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedCaze.getTherapy().getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedCaze.getSymptoms().getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedCaze.getEpiData().getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedCaze.getEpiData().getExposures().get(0).getUuid(), not(isEmptyOrNullString()));
 	}
 
 //	@Test

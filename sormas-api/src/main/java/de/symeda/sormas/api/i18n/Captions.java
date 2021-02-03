@@ -299,6 +299,7 @@ public interface Captions {
 	String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	String CaseData_sormasToSormasOriginInfo = "CaseData.sormasToSormasOriginInfo";
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
+	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
 	String CaseData_trimester = "CaseData.trimester";
@@ -715,6 +716,8 @@ public interface Captions {
 	String dashboardUncooperative = "dashboardUncooperative";
 	String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
+	String dashboardViewAsBarChart = "dashboardViewAsBarChart";
+	String dashboardViewAsColumnChart = "dashboardViewAsColumnChart";
 	String dashboardWeekBefore = "dashboardWeekBefore";
 	String dashboardYesterday = "dashboardYesterday";
 	String date = "date";
@@ -763,14 +766,20 @@ public interface Captions {
 	String districtName = "districtName";
 	String documentNoDocuments = "documentNoDocuments";
 	String DocumentTemplate = "DocumentTemplate";
+	String DocumentTemplate_buttonUploadTemplate = "DocumentTemplate.buttonUploadTemplate";
 	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
-	String DocumentTemplate_exampleTemplateLibreOffice = "DocumentTemplate.exampleTemplateLibreOffice";
-	String DocumentTemplate_exampleTemplateWord = "DocumentTemplate.exampleTemplateWord";
+	String DocumentTemplate_EventHandout = "DocumentTemplate.EventHandout";
+	String DocumentTemplate_EventHandout_create = "DocumentTemplate.EventHandout.create";
+	String DocumentTemplate_exampleTemplateCases = "DocumentTemplate.exampleTemplateCases";
+	String DocumentTemplate_exampleTemplateContacts = "DocumentTemplate.exampleTemplateContacts";
+	String DocumentTemplate_exampleTemplateEventHandout = "DocumentTemplate.exampleTemplateEventHandout";
+	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
 	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
 	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";
 	String DocumentTemplate_QuarantineOrder_templates = "DocumentTemplate.QuarantineOrder.templates";
 	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
+	String DocumentTemplate_uploadWorkflowTemplate = "DocumentTemplate.uploadWorkflowTemplate";
 	String documentUploadDocument = "documentUploadDocument";
 	String EpiData = "EpiData";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
@@ -785,6 +794,9 @@ public interface Captions {
 	String Event = "Event";
 	String Event_caseCount = "Event.caseCount";
 	String Event_connectionNumber = "Event.connectionNumber";
+	String Event_contactCount = "Event.contactCount";
+	String Event_contactCountMethod = "Event.contactCountMethod";
+	String Event_contactCountSourceInEvent = "Event.contactCountSourceInEvent";
 	String Event_deathCount = "Event.deathCount";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
@@ -843,6 +855,7 @@ public interface Captions {
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
 	String EventAction_eventReportingUser = "EventAction.eventReportingUser";
 	String EventAction_eventResponsibleUser = "EventAction.eventResponsibleUser";
+	String EventAction_eventRiskLevel = "EventAction.eventRiskLevel";
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
 	String EventAction_eventUuid = "EventAction.eventUuid";
@@ -916,7 +929,10 @@ public interface Captions {
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";
 	String exportCaseManagement = "exportCaseManagement";
+	String ExportConfiguration_myExports = "ExportConfiguration.myExports";
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
+	String ExportConfiguration_sharedExports = "ExportConfiguration.sharedExports";
+	String ExportConfiguration_sharedToPublic = "ExportConfiguration.sharedToPublic";
 	String exportCustom = "exportCustom";
 	String exportDetailed = "exportDetailed";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";
@@ -1398,6 +1414,7 @@ public interface Captions {
 	String sampleAllSamples = "sampleAllSamples";
 	String sampleArchivedSamples = "sampleArchivedSamples";
 	String sampleAssociationType = "sampleAssociationType";
+	String sampleCreateNew = "sampleCreateNew";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
 	String SampleExport_arterialVenousBloodGas = "SampleExport.arterialVenousBloodGas";
@@ -1482,6 +1499,7 @@ public interface Captions {
 	String sampleReferredTo = "sampleReferredTo";
 	String sampleReferredToInternal = "sampleReferredToInternal";
 	String sampleSamplesList = "sampleSamplesList";
+	String sampleSelect = "sampleSelect";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String sex = "sex";
@@ -1528,9 +1546,11 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
+	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
 	String SurvnetGateway_send = "SurvnetGateway.send";
 	String SurvnetGateway_sendShort = "SurvnetGateway.sendShort";
 	String SurvnetGateway_title = "SurvnetGateway.title";
+	String SurvnetGateway_unableToSend = "SurvnetGateway.unableToSend";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
 	String Symptoms_abnormalLungXrayFindings = "Symptoms.abnormalLungXrayFindings";

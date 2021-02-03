@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -353,15 +352,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	public ClinicalVisit fromDto(@NotNull ClinicalVisitDto source, ClinicalVisit target, boolean checkChangeDate) {
-		if (target == null) {
-			target = new ClinicalVisit();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, ClinicalVisit::new, checkChangeDate);
 
 		target.setClinicalCourse(clinicalCourseService.getByReferenceDto(source.getClinicalCourse()));
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms(), checkChangeDate));
