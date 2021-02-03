@@ -224,6 +224,7 @@ public interface Captions {
 	String CaseData_externalID = "CaseData.externalID";
 	String CaseData_externalToken = "CaseData.externalToken";
 	String CaseData_facilityType = "CaseData.facilityType";
+	String CaseData_firstVaccinationDate = "CaseData.firstVaccinationDate";
 	String CaseData_followUpComment = "CaseData.followUpComment";
 	String CaseData_followUpStatus = "CaseData.followUpStatus";
 	String CaseData_followUpUntil = "CaseData.followUpUntil";
@@ -236,6 +237,7 @@ public interface Captions {
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
+	String CaseData_lastVaccinationDate = "CaseData.lastVaccinationDate";
 	String CaseData_latestEventId = "CaseData.latestEventId";
 	String CaseData_latestEventStatus = "CaseData.latestEventStatus";
 	String CaseData_latestEventTitle = "CaseData.latestEventTitle";
@@ -305,10 +307,15 @@ public interface Captions {
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccination = "CaseData.vaccination";
-	String CaseData_vaccinationDate = "CaseData.vaccinationDate";
 	String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	String CaseData_vaccine = "CaseData.vaccine";
+	String CaseData_vaccineAtcCode = "CaseData.vaccineAtcCode";
+	String CaseData_vaccineBatchNumber = "CaseData.vaccineBatchNumber";
+	String CaseData_vaccineInn = "CaseData.vaccineInn";
+	String CaseData_vaccineManufacturer = "CaseData.vaccineManufacturer";
+	String CaseData_vaccineName = "CaseData.vaccineName";
+	String CaseData_vaccineUniiCode = "CaseData.vaccineUniiCode";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDefaultView = "caseDefaultView";

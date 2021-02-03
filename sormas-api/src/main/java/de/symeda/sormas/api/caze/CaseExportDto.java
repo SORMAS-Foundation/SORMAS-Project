@@ -1172,7 +1172,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.VACCINATION_DATE)
+	@ExportProperty(CaseDataDto.LAST_VACCINATION_DATE)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public Date getVaccinationDate() {
 		return vaccinationDate;

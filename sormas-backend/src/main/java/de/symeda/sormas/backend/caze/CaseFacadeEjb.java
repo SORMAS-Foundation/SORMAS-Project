@@ -40,10 +40,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,10 +71,6 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.contact.ContactFollowUpDto;
-import de.symeda.sormas.api.person.JournalPersonDto;
-import de.symeda.sormas.backend.exposure.Exposure;
-import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,8 +117,10 @@ import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -139,6 +137,7 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -211,10 +210,6 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.event.EventSummaryDetails;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.api.epidata.EpiDataHelper;
-import de.symeda.sormas.api.exposure.ExposureDto;
-import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -602,7 +597,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
-				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_DATE), 
+				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.LAST_VACCINATION_DATE),
 				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID),
@@ -2275,7 +2270,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccine(source.getVaccine());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setVaccinationDate(source.getVaccinationDate());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -2534,7 +2538,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccine(source.getVaccine());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setVaccinationDate(source.getVaccinationDate());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
 
 		target.setEpidNumber(source.getEpidNumber());
 

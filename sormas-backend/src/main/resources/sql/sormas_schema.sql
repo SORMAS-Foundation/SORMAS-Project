@@ -6296,4 +6296,34 @@ ALTER TABLE exportconfiguration_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
 
+-- 2021-02-03 Activate vaccination status for COVID-19 cases, contacts and event participant #4137
+
+ALTER TABLE cases
+    RENAME COLUMN vaccinationdate TO lastvaccinationdate;
+ALTER TABLE cases
+    ADD COLUMN firstvaccinationdate timestamp,
+    ADD COLUMN vaccinename varchar(255),
+    ADD COLUMN othervaccinename text,
+    ADD COLUMN vaccinemanufacturer varchar(255),
+    ADD COLUMN othervaccinemanufacturer text,
+    ADD COLUMN vaccineinn text,
+    ADD COLUMN vaccinebatchnumber text,
+    ADD COLUMN vaccineuniicode text,
+    ADD COLUMN vaccineatccode text;
+
+ALTER TABLE cases_history
+    RENAME COLUMN vaccinationdate TO lastvaccinationdate;
+ALTER TABLE cases_history
+    ADD COLUMN firstvaccinationdate timestamp,
+    ADD COLUMN vaccinename varchar(255),
+    ADD COLUMN othervaccinename text,
+    ADD COLUMN vaccinemanufacturer varchar(255),
+    ADD COLUMN othervaccinemanufacturer text,
+    ADD COLUMN vaccineinn text,
+    ADD COLUMN vaccinebatchnumber text,
+    ADD COLUMN vaccineuniicode text,
+    ADD COLUMN vaccineatccode text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'Activate vaccination status for COVID-19 cases, contacts and event participant #4137');
+
 -- *** Insert new sql commands BEFORE this line ***
