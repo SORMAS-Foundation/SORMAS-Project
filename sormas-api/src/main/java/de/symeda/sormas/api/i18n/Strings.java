@@ -169,6 +169,7 @@ public interface Strings {
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
@@ -203,8 +204,10 @@ public interface Strings {
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
 	String errorSurvNetCaseNotOwned = "errorSurvNetCaseNotOwned";
 	String errorSurvNetNonCoronavirusCase = "errorSurvNetNonCoronavirusCase";
+	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
+	String errorWritingTemplate = "errorWritingTemplate";
 	String fileName = "fileName";
 	String forCase = "forCase";
 	String forContact = "forContact";
@@ -786,6 +789,7 @@ public interface Strings {
 	String messageUserSyncSuccessful = "messageUserSyncSuccessful";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
+	String messageWrongTemplateFileType = "messageWrongTemplateFileType";
 	String min = "min";
 	String mmhg = "mmhg";
 	String month = "month";
@@ -905,9 +909,11 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
+	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
 	String SurvnetGateway_notificationEntryNotSent = "SurvnetGateway.notificationEntryNotSent";
 	String SurvnetGateway_notificationEntrySent = "SurvnetGateway.notificationEntrySent";
 	String SurvnetGateway_notificationErrorSending = "SurvnetGateway.notificationErrorSending";
+	String SurvnetGateway_unableToSend = "SurvnetGateway.unableToSend";
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";

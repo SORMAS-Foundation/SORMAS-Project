@@ -8,6 +8,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -70,7 +71,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
-								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId,
+								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Date changeDate, Long facilityId,
 								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
@@ -79,7 +80,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
-				quarantineTo, completeness, followUpStatus, followUpUntil, changeDate, facilityId, visitCount);
+				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, changeDate, facilityId, visitCount);
 		//@formatter:on
 
 		this.city = city;

@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.configuration.docgeneration;
 
 import com.vaadin.icons.VaadinIcons;
@@ -8,6 +23,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.Upload;
 
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -22,15 +38,18 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class DocumentTemplateUploadLayout extends VerticalLayout {
 
 	protected Upload upload;
+	private ImportLayoutComponent importGuideComponent;
+	private final DocumentWorkflow documentWorkflow;
 
-	public DocumentTemplateUploadLayout() {
+	public DocumentTemplateUploadLayout(DocumentWorkflow documentWorkflow) {
 		super();
+		this.documentWorkflow = documentWorkflow;
 		addDownloadResourcesComponent();
 		addUploadResourceComponent();
 	}
 
 	protected void addDownloadResourcesComponent() {
-		ImportLayoutComponent importGuideComponent = new ImportLayoutComponent(
+		importGuideComponent = new ImportLayoutComponent(
 			1,
 			I18nProperties.getString(Strings.headingDownloadDocumentTemplateGuide),
 			I18nProperties.getString(Strings.infoDownloadDocumentTemplateImportGuide),
@@ -40,45 +59,56 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		Button button = importGuideComponent.getButton();
 		addFileDownloader(button, new ClassResource("/SORMAS_Document_Template_Guide.pdf"));
 
-		Button exampleTemplateWordButton = ButtonHelper.createIconButton(
-			Captions.DocumentTemplate_exampleTemplateWord,
-			VaadinIcons.FILE_TEXT,
-			null,
-			ValoTheme.BUTTON_PRIMARY,
-			CssStyles.VSPACE_TOP_3);
-		addFileDownloader(exampleTemplateWordButton, new ClassResource("/ExampleTemplateMicrosoftWord.docx"));
-		importGuideComponent.addComponent(exampleTemplateWordButton);
+		addExampleTemplatesQuarantineOrder();
 
-		Button exampleTemplateLibreOfficeButton = ButtonHelper.createIconButton(
-			Captions.DocumentTemplate_exampleTemplateLibreOffice,
-			VaadinIcons.FILE_TEXT,
-			null,
-			ValoTheme.BUTTON_PRIMARY,
-			CssStyles.VSPACE_TOP_3);
-		addFileDownloader(exampleTemplateLibreOfficeButton, new ClassResource("/ExampleTemplateLibreOffice.docx"));
-		importGuideComponent.addComponent(exampleTemplateLibreOfficeButton);
-
-		Button dataDictionaryButton = ButtonHelper
-			.createIconButton(Captions.importDownloadDataDictionary, VaadinIcons.FILE_TABLE, null, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
-		addFileDownloader(dataDictionaryButton, new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		importGuideComponent.addComponent(dataDictionaryButton);
+		addDownloadResource(Captions.importDownloadDataDictionary, VaadinIcons.FILE_TABLE, new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 
 		addComponent(importGuideComponent);
+	}
 
+	private void addExampleTemplatesQuarantineOrder() {
+		if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_CASE) {
+			addDownloadResource(
+				Captions.DocumentTemplate_exampleTemplateCases,
+				VaadinIcons.FILE_TEXT,
+				new ClassResource("/ExampleDocumentTemplateCases.docx"));
+		} else if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_CONTACT) {
+			addDownloadResource(
+				Captions.DocumentTemplate_exampleTemplateContacts,
+				VaadinIcons.FILE_TEXT,
+				new ClassResource("/ExampleDocumentTemplateContacts.docx"));
+		} else if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT) {
+			addDownloadResource(
+				Captions.DocumentTemplate_exampleTemplateEventParticipants,
+				VaadinIcons.FILE_TEXT,
+				new ClassResource("/ExampleDocumentTemplateEventParticipant.docx"));
+		} else if (documentWorkflow == DocumentWorkflow.EVENT_HANDOUT) {
+			addDownloadResource(
+				Captions.DocumentTemplate_exampleTemplateEventHandout,
+				VaadinIcons.FILE_TEXT,
+				new ClassResource("/ExampleDocumentTemplateEventHandout.html"));
+		}
 	}
 
 	private void addUploadResourceComponent() {
 		String headline = I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate);
-		String infoText = I18nProperties.getString(Strings.infoUploadDocumentTemplate);
+		String infoText = String.format(I18nProperties.getString(Strings.infoUploadDocumentTemplate), documentWorkflow.getFileExtension());
 
 		ImportLayoutComponent uploadTemplateComponent = new ImportLayoutComponent(2, headline, infoText, null, null);
 		addComponent(uploadTemplateComponent);
 
-		DocumentTemplateReceiver receiver = new DocumentTemplateReceiver();
+		DocumentTemplateReceiver receiver = new DocumentTemplateReceiver(documentWorkflow);
 		upload = new Upload("", receiver);
+		upload.setButtonCaption(I18nProperties.getCaption(Captions.DocumentTemplate_buttonUploadTemplate));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
+	}
+
+	private void addDownloadResource(String caption, VaadinIcons icon, ClassResource resource) {
+		Button exampleTemplateWordButton = ButtonHelper.createIconButton(caption, icon, null, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
+		addFileDownloader(exampleTemplateWordButton, resource);
+		importGuideComponent.addComponent(exampleTemplateWordButton);
 	}
 
 	private void addFileDownloader(Button button, ClassResource importGuideResource) {

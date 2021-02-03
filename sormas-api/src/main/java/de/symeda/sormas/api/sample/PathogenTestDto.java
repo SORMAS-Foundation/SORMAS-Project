@@ -25,6 +25,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -230,5 +231,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setCqValue(Float cqValue) {
 		this.cqValue = cqValue;
+	}
+
+	public String toString() {
+		return DateFormatHelper.formatLocalDateTime(testDateTime) + " - " + testType + " (" + testedDisease + "): " + testResult;
 	}
 }

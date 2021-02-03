@@ -2107,7 +2107,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Complication
 	@HideForCountries
-	public SymptomState otherComplications;
+	private SymptomState otherComplications;
 
 	@Diseases({
 		AFP,
@@ -2133,7 +2133,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Complication
 	@HideForCountries
 	@SensitiveData
-	public String otherComplicationsText;
+	private String otherComplicationsText;
 
 	@Diseases({
 		AFP,
