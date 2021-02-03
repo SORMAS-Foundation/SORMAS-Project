@@ -1,8 +1,11 @@
 package de.symeda.sormas.backend.labmessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -39,6 +42,15 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "LabMessageFacade")
 public class LabMessageFacadeEjb implements LabMessageFacade {
 
+	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
+		LabMessageIndexDto.UUID,
+		LabMessageIndexDto.PERSON_FIRST_NAME,
+		LabMessageIndexDto.PERSON_LAST_NAME,
+		LabMessageIndexDto.MESSAGE_DATE_TIME,
+		LabMessageIndexDto.PROCESSED,
+		LabMessageIndexDto.TEST_RESULT,
+		LabMessageIndexDto.TESTED_DISEASE);
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -49,7 +61,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
-	private LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
+	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, LabMessage::new, checkChangeDate);
 
@@ -141,19 +153,22 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<LabMessage> labMessage = cq.from(LabMessage.class);
 
-		Predicate filter = null;
-
-		if (criteria != null) {
-			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
-			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
+		criteriaHandler(criteria, cb, cq, labMessage);
 
 		cq.select(cb.countDistinct(labMessage));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	private <T> void criteriaHandler(
+		LabMessageCriteria criteria,
+		CriteriaBuilder cb,
+		CriteriaQuery<T> cq,
+		Root<LabMessage> labMessage) {
+		Optional.ofNullable(criteria).ifPresent(labMessageCriteria -> {
+			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, labMessageCriteria);
+			Predicate filter = CriteriaBuilderHelper.and(cb, null, statusFilter);
+			cq.where(filter);
+		});
 	}
 
 	@Override
@@ -171,39 +186,21 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			labMessage.get(LabMessage.PERSON_LAST_NAME),
 			labMessage.get(LabMessage.PROCESSED));
 
-		Predicate filter = null;
-		if (criteria != null) {
-			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
-			filter = CriteriaBuilderHelper.and(cb, filter, statusFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
+		criteriaHandler(criteria, cb, cq, labMessage);
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
 
-		List<Order> order = new ArrayList<Order>();
-		if (sortProperties != null && sortProperties.size() > 0) {
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case LabMessageIndexDto.UUID:
-				case LabMessageIndexDto.PERSON_FIRST_NAME:
-				case LabMessageIndexDto.PERSON_LAST_NAME:
-				case LabMessageIndexDto.MESSAGE_DATE_TIME:
-				case LabMessageIndexDto.PROCESSED:
-				case LabMessageIndexDto.TEST_RESULT:
-				case LabMessageIndexDto.TESTED_DISEASE:
-					expression = labMessage.get(sortProperty.propertyName);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-		}
+		List<Order> order = Optional.ofNullable(sortProperties)
+			.orElseGet(ArrayList::new)
+			.stream()
+			.filter(sortProperty -> VALID_SORT_PROPERTY_NAMES.contains(sortProperty.propertyName))
+			.map(sortProperty -> {
+				Expression<?> expression = labMessage.get(sortProperty.propertyName);
+				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
+			})
+			.collect(Collectors.toList());
+
 		order.add(cb.desc(labMessage.get(LabMessage.MESSAGE_DATE_TIME)));
 		cq.orderBy(order);
 		List<LabMessageIndexDto> labMessages;
@@ -227,9 +224,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		Date since = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
 
-		if (since == null) {
-			since = new Date(0);
-		}
+		since = Optional.ofNullable(since).orElse(new Date(0));
 
 		LabMessageFetchResult fetchResult = new LabMessageFetchResult(true, null);
 
