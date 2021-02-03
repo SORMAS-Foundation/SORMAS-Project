@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
@@ -203,6 +204,14 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 		InfrastructureHelper
 			.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
+
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+				&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+			contentBinding.caseDataExternalID.setVisibility(GONE);
+			contentBinding.caseDataExternalToken.setVisibility(GONE);
+		} else {
+			contentBinding.caseDataEpidNumber.setVisibility(GONE);
+		}
 
 		contentBinding.caseDataRegion.setEnabled(false);
 		contentBinding.caseDataRegion.setRequired(false);
