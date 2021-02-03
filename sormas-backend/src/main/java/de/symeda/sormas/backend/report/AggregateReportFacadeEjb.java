@@ -157,12 +157,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	public AggregateReport fromDto(@NotNull AggregateReportDto source, boolean checkChangeDate) {
 
-		AggregateReport target = service.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new AggregateReport();
-			target.setUuid(source.getUuid());
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		AggregateReport target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), AggregateReport::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));

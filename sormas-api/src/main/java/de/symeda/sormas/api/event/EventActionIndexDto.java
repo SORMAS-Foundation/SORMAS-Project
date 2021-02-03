@@ -36,7 +36,9 @@ public class EventActionIndexDto implements Serializable {
 	public static final String EVENT_START_DATE = "eventStartDate";
 	public static final String EVENT_END_DATE = "eventEndDate";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String EVENT_RISK_LEVEL = "eventRiskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String EVENT_EVOLUTION_DATE = "eventEvolutionDate";
 	public static final String ACTION_TITLE = "actionTitle";
 	public static final String ACTION_CREATION_DATE = "actionCreationDate";
 	public static final String ACTION_CHANGE_DATE = "actionChangeDate";
@@ -50,7 +52,9 @@ public class EventActionIndexDto implements Serializable {
 	private Date eventStartDate;
 	private Date eventEndDate;
 	private EventStatus eventStatus;
+	private RiskLevel eventRiskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
+	private Date eventEvolutionDate;
 	private String actionTitle;
 	private Date actionCreationDate;
 	private Date actionChangeDate;
@@ -65,8 +69,10 @@ public class EventActionIndexDto implements Serializable {
 		Date eventStartDate,
 		Date eventEndDate,
 		EventStatus eventStatus,
+		RiskLevel eventRiskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
 		ActionMeasure actionMeasure,
+		Date eventEvolutionDate,
 		String actionTitle,
 		Date actionCreationDate,
 		Date actionChangeDate,
@@ -84,8 +90,11 @@ public class EventActionIndexDto implements Serializable {
 		this.eventStartDate = eventStartDate;
 		this.eventEndDate = eventEndDate;
 		this.eventStatus = eventStatus;
+		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.actionTitle = EventHelper.buildEventActionTitleString(actionMeasure, actionTitle);
+		this.eventEvolutionDate = eventEvolutionDate;
+		this.actionTitle = actionTitle;
 		this.actionCreationDate = actionCreationDate;
 		this.actionChangeDate = actionChangeDate;
 		this.actionStatus = actionStatus;
@@ -134,12 +143,28 @@ public class EventActionIndexDto implements Serializable {
 		this.eventStatus = eventStatus;
 	}
 
+	public RiskLevel getEventRiskLevel() {
+		return eventRiskLevel;
+	}
+
+	public void setEventRiskLevel(RiskLevel eventRiskLevel) {
+		this.eventRiskLevel = eventRiskLevel;
+	}
+
 	public EventInvestigationStatus getEventInvestigationStatus() {
 		return eventInvestigationStatus;
 	}
 
 	public void setEventInvestigationStatus(EventInvestigationStatus eventInvestigationStatus) {
 		this.eventInvestigationStatus = eventInvestigationStatus;
+	}
+
+	public Date getEventEvolutionDate() {
+		return eventEvolutionDate;
+	}
+
+	public void setEventEvolutionDate(Date eventEvolutionDate) {
+		this.eventEvolutionDate = eventEvolutionDate;
 	}
 
 	public String getActionTitle() {

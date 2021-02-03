@@ -20,6 +20,8 @@ package de.symeda.sormas.backend.caze;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -38,9 +40,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,6 +70,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -76,6 +79,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -91,11 +95,13 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
+import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -1444,6 +1450,39 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		duplicatePerson.setLastName("lName ");
 		duplicates = getCaseFacade().getDuplicates(casePerson);
 		MatcherAssert.assertThat(duplicates, hasSize(2));
+	}
+
+	@Test
+	public void testCreateCaseWithoutUuid() {
+		RDCF rdcf = creator.createRDCF();
+		CaseDataDto caze = new CaseDataDto();
+
+		caze.setReportDate(new Date());
+		caze.setReportingUser(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference());
+		caze.setCaseClassification(CaseClassification.PROBABLE);
+		caze.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze.setDisease(Disease.CORONAVIRUS);
+		caze.setPerson(creator.createPerson().toReference());
+		caze.setRegion(rdcf.region);
+		caze.setDistrict(rdcf.district);
+		caze.setFacilityType(FacilityType.HOSPITAL);
+		caze.setHealthFacility(rdcf.facility);
+
+		caze.setTherapy(new TherapyDto());
+		caze.setSymptoms(new SymptomsDto());
+		EpiDataDto epiData = new EpiDataDto();
+		ExposureDto exposure = new ExposureDto();
+		exposure.setExposureType(ExposureType.WORK);
+		epiData.setExposures(Collections.singletonList(exposure));
+		caze.setEpiData(epiData);
+
+		CaseDataDto savedCaze = getCaseFacade().saveCase(caze);
+
+		MatcherAssert.assertThat(savedCaze.getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedCaze.getTherapy().getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedCaze.getSymptoms().getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedCaze.getEpiData().getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedCaze.getEpiData().getExposures().get(0).getUuid(), not(isEmptyOrNullString()));
 	}
 
 //	@Test

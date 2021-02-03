@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -743,15 +742,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
 
-		Sample target = sampleService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new Sample();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target, checkChangeDate);
+		Sample target = DtoHelper.fillOrBuildEntity(source, sampleService.getByUuid(source.getUuid()), Sample::new, checkChangeDate);
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
 		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
