@@ -146,12 +146,12 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
 				640,
 				confirmed -> {
 					if (confirmed.booleanValue()) {
-						ContactIndexDto caseToMergeAndDelete =
+						ContactIndexDto contactToMergeAndDelete =
 							data.getParent(contact) != null ? data.getParent(contact) : data.getChildren(contact).get(0);
-						FacadeProvider.getContactFacade().mergeContact(contact.getUuid(), caseToMergeAndDelete.getUuid());
-						FacadeProvider.getContactFacade().deleteContactAsDuplicate(caseToMergeAndDelete.getUuid(), contact.getUuid());
+						FacadeProvider.getContactFacade().mergeContact(contact.getUuid(), contactToMergeAndDelete.getUuid());
+						FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToMergeAndDelete.getUuid(), contact.getUuid());
 
-						if (FacadeProvider.getContactFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
+						if (FacadeProvider.getContactFacade().isDeleted(contactToMergeAndDelete.getUuid())) {
 							reload();
 							new Notification(I18nProperties.getString(Strings.messageCasesMerged), Notification.Type.TRAY_NOTIFICATION)
 								.show(Page.getCurrent());
@@ -232,11 +232,11 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
 			hiddenUuidPairs = new ArrayList<>();
 		}
 
-		List<ContactIndexDto[]> casePairs = FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, ignoreRegion);
-		for (ContactIndexDto[] casePair : casePairs) {
+		List<ContactIndexDto[]> contactPairs = FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, ignoreRegion);
+		for (ContactIndexDto[] contactPair : contactPairs) {
 			boolean uuidPairExists = false;
 			for (String[] hiddenUuidPair : hiddenUuidPairs) {
-				if (hiddenUuidPair[0].equals(casePair[0].getUuid()) && hiddenUuidPair[1].equals(casePair[1].getUuid())) {
+				if (hiddenUuidPair[0].equals(contactPair[0].getUuid()) && hiddenUuidPair[1].equals(contactPair[1].getUuid())) {
 					uuidPairExists = true;
 				}
 			}
@@ -245,8 +245,8 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
 				continue;
 			}
 
-			data.addItem(null, casePair[0]);
-			data.addItem(casePair[0], casePair[1]);
+			data.addItem(null, contactPair[0]);
+			data.addItem(contactPair[0], contactPair[1]);
 		}
 
 		expandRecursively(data.getRootItems(), 0);

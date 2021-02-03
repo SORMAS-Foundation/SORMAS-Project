@@ -234,6 +234,7 @@ public interface Strings {
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseData = "headingCaseData";
 	String headingCaseImport = "headingCaseImport";
+	String headingCaseMergeGuide = "headingCaseMergeGuide";
 	String headingCasesArchived = "headingCasesArchived";
 	String headingCasesDearchived = "headingCasesDearchived";
 	String headingCasesDeleted = "headingCasesDeleted";
@@ -259,6 +260,7 @@ public interface Strings {
 	String headingContactDataNotComplete = "headingContactDataNotComplete";
 	String headingContactInformation = "headingContactInformation";
 	String headingContactMap = "headingContactMap";
+	String headingContactMergeGuide = "headingContactMergeGuide";
 	String headingContactsCancelFollowUp = "headingContactsCancelFollowUp";
 	String headingContactsConvertedToCase = "headingContactsConvertedToCase";
 	String headingContactsDeleted = "headingContactsDeleted";
@@ -347,6 +349,7 @@ public interface Strings {
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
+	String headingHowToMergeContacts = "headingHowToMergeContacts";
 	String headingImportAllCountries = "headingImportAllCountries";
 	String headingImportAreas = "headingImportAreas";
 	String headingImportCampaign = "headingImportCampaign";
@@ -376,7 +379,6 @@ public interface Strings {
 	String headingLoginFailed = "headingLoginFailed";
 	String headingMaternalHistory = "headingMaternalHistory";
 	String headingMedicalInformation = "headingMedicalInformation";
-	String headingMergeGuide = "headingMergeGuide";
 	String headingMissingDateFilter = "headingMissingDateFilter";
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
@@ -462,9 +464,9 @@ public interface Strings {
 	String infoAssigneeMissingEmailOrPhoneNumber = "infoAssigneeMissingEmailOrPhoneNumber";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
-	String infoCalculateCompleteness = "infoCalculateCompleteness";
 	String infoCampaignsDashboard = "infoCampaignsDashboard";
 	String infoCanceledBy = "infoCanceledBy";
+	String infoCaseCalculateCompleteness = "infoCaseCalculateCompleteness";
 	String infoCaseCompleteness = "infoCaseCompleteness";
 	String infoCaseDate = "infoCaseDate";
 	String infoCaseIncidence = "infoCaseIncidence";
@@ -474,6 +476,8 @@ public interface Strings {
 	String infoCaseManagementExport = "infoCaseManagementExport";
 	String infoCaseMap = "infoCaseMap";
 	String infoCompletenessMerge = "infoCompletenessMerge";
+	String infoContactCalculateCompleteness = "infoContactCalculateCompleteness";
+	String infoContactCompleteness = "infoContactCompleteness";
 	String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	String infoContactDashboard = "infoContactDashboard";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
@@ -504,6 +508,7 @@ public interface Strings {
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoHowToMergeCases = "infoHowToMergeCases";
+	String infoHowToMergeContact = "infoHowToMergeContact";
 	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportCsvFile = "infoImportCsvFile";
 	String infoImportProcess = "infoImportProcess";
@@ -514,10 +519,12 @@ public interface Strings {
 	String infoLineListingConfigurationRegionEdit = "infoLineListingConfigurationRegionEdit";
 	String infoLostToFollowUpBy = "infoLostToFollowUpBy";
 	String infoMergeIgnoreRegion = "infoMergeIgnoreRegion";
+	String infoMergingCaseMergeDescription = "infoMergingCaseMergeDescription";
+	String infoMergingCasePickDescription = "infoMergingCasePickDescription";
+	String infoMergingContactMergeDescription = "infoMergingContactMergeDescription";
+	String infoMergingContactPickDescription = "infoMergingContactPickDescription";
 	String infoMergingExplanation = "infoMergingExplanation";
 	String infoMergingHideDescription = "infoMergingHideDescription";
-	String infoMergingMergeDescription = "infoMergingMergeDescription";
-	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";

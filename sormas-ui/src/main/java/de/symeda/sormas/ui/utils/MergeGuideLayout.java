@@ -12,10 +12,14 @@ public class MergeGuideLayout extends VerticalLayout {
 
 	private static final long serialVersionUID = -4739282529871338153L;
 
-	public MergeGuideLayout() {
+	public MergeGuideLayout(boolean isCase) {
 
 		setMargin(true);
 		setSpacing(false);
+
+		String infoCalculateCompleteness = isCase ? Strings.infoCaseCalculateCompleteness : Strings.infoContactCalculateCompleteness;
+		String infoMergingPickDescription = isCase ? Strings.infoMergingCasePickDescription : Strings.infoMergingContactPickDescription;
+		String infoMergingMergeDescription = isCase ? Strings.infoMergingCaseMergeDescription : Strings.infoMergingContactMergeDescription;
 
 		Label lblHeadingIntroduction = new Label(I18nProperties.getString(Strings.headingIntroduction));
 		CssStyles.style(lblHeadingIntroduction, CssStyles.H2);
@@ -35,7 +39,7 @@ public class MergeGuideLayout extends VerticalLayout {
 		Label lblHeadingMerge = new Label(I18nProperties.getCaption(Captions.actionMerge));
 		CssStyles.style(lblHeadingMerge, CssStyles.H3);
 		addComponent(lblHeadingMerge);
-		Label lblMergeDescription = new Label(I18nProperties.getString(Strings.infoMergingMergeDescription));
+		Label lblMergeDescription = new Label(I18nProperties.getString(infoMergingMergeDescription));
 		lblMergeDescription.setContentMode(ContentMode.HTML);
 		lblMergeDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblMergeDescription);
@@ -43,7 +47,7 @@ public class MergeGuideLayout extends VerticalLayout {
 		Label lblHeadingPick = new Label(I18nProperties.getCaption(Captions.actionPick));
 		CssStyles.style(lblHeadingPick, CssStyles.H3);
 		addComponent(lblHeadingPick);
-		Label lblPickDescription = new Label(I18nProperties.getString(Strings.infoMergingPickDescription));
+		Label lblPickDescription = new Label(I18nProperties.getString(infoMergingPickDescription));
 		CssStyles.style(lblPickDescription, CssStyles.VSPACE_4);
 		lblPickDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblPickDescription);
@@ -66,7 +70,7 @@ public class MergeGuideLayout extends VerticalLayout {
 		addComponent(lblHeadingCompleteness);
 		Label lblCompletenessDescription = new Label(
 			I18nProperties.getString(Strings.infoCaseCompleteness) + I18nProperties.getString(Strings.infoCompletenessMerge) + "</br></br>"
-				+ I18nProperties.getString(Strings.infoCalculateCompleteness));
+				+ I18nProperties.getString(infoCalculateCompleteness));
 		lblCompletenessDescription.setContentMode(ContentMode.HTML);
 		lblCompletenessDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblCompletenessDescription);

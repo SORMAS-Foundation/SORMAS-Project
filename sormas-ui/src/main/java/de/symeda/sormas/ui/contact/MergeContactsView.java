@@ -92,9 +92,9 @@ public class MergeContactsView extends AbstractView {
 	}
 
 	private void buildAndOpenMergeInstructions() {
-		Window window = VaadinUiUtil.showPopupWindow(new MergeGuideLayout());
+		Window window = VaadinUiUtil.showPopupWindow(new MergeGuideLayout(false));
 		window.setWidth(1024, Unit.PIXELS);
-		window.setCaption(I18nProperties.getString(Strings.headingMergeGuide));
+		window.setCaption(I18nProperties.getString(Strings.headingContactMergeGuide));
 	}
 
 	private void showCalculateCompletenessWindow() {

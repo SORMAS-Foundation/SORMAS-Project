@@ -573,13 +573,4 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setIncludeCasesFromOtherJurisdictions(Boolean includeCasesFromOtherJurisdictions) {
 		this.includeCasesFromOtherJurisdictions = includeCasesFromOtherJurisdictions;
 	}
-
-	public ContactReferenceDto getContact() {
-		return contact;
-	}
-
-	public CaseCriteria contact(ContactReferenceDto contact) {
-		this.contact = contact;
-		return this;
-	}
 }

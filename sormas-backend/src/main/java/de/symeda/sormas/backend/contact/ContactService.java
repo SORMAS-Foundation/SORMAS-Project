@@ -1032,12 +1032,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.FOLLOW_UP_STATUS), contactCriteria.getFollowUpStatus()));
 		}
 		if (contactCriteria.getCreationDateFrom() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.greaterThan(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(contactCriteria.getCreationDateFrom())));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(contactCriteria.getCreationDateFrom())));
 		}
 		if (contactCriteria.getCreationDateTo() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(contactCriteria.getCreationDateTo())));
+				.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(contactCriteria.getCreationDateTo())));
 		}
 		if (contactCriteria.getReportDateFrom() != null && contactCriteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(

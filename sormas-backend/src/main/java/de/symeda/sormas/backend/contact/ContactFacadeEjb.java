@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.contact;
 
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -48,7 +49,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -57,7 +57,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.person.JournalPersonDto;
@@ -103,6 +102,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -120,6 +120,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
@@ -157,6 +158,8 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sample.AdditionalTest;
+import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
@@ -180,6 +183,8 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
@@ -202,6 +207,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private UserService userService;
 	@EJB
 	private VisitService visitService;
+	@EJB
+	private VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private TaskService taskService;
 	@EJB
@@ -238,6 +245,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private PathogenTestFacadeEjbLocal sampleTestFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private AdditionalTestFacadeEjbLocal additionalTestFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -1670,40 +1679,23 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		Predicate creationDateFilter = cb.lessThan(root.get(Contact.CREATION_DATE), root2.get(Contact.CREATION_DATE));
 
-		Predicate filter = cb.and(contactService.createDefaultFilter(cb, root), contactService.createDefaultFilter(cb, root2));
-		if (userFilter != null) {
-			filter = cb.and(filter, userFilter);
-		}
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
-		if (filter != null) {
-			filter = cb.and(filter, nameSimilarityFilter);
-		} else {
-			filter = nameSimilarityFilter;
-		}
-
-		if (filter != null) {
-			filter = cb.and(filter, cazeFilter);
-		} else {
-			filter = cazeFilter;
-		}
-		filter = cb.and(filter, diseaseFilter);
-
+		Predicate filter = CriteriaBuilderHelper.and(cb, contactService.createDefaultFilter(cb, root), contactService.createDefaultFilter(cb, root2));
+		filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, nameSimilarityFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, cazeFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, diseaseFilter);
 		if (!showDuplicatesWithDifferentRegion) {
 			filter = cb.and(filter, regionFilter);
 		}
-
 		filter = cb.and(filter, reportDateFilter);
 		filter = cb.and(filter, cb.or(sexFilter, birthDateFilter));
 		filter = cb.and(filter, creationDateFilter);
 
 		cq.where(filter);
+		cq.distinct(true);
 		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID));
 		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
-		TypedQuery<Object[]> test = em.createQuery(cq);
 
 		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
 		List<ContactIndexDto[]> resultList = new ArrayList<>();
@@ -1745,8 +1737,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<ContactIndexDto> cq, Root<Contact> root) {
-		List<Selection<?>> selections = listCriteriaBuilder.getContactIndexSelectionsForFusion(root, new ContactJoins(root));
-		cq.multiselect(selections);
+		cq.multiselect(listCriteriaBuilder.getContactIndexSelectionsForFusion(root, new ContactJoins(root)));
 	}
 
 	public void updateCompleteness(String contactUuid) {
@@ -1760,7 +1751,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		float completeness = 0f;
 
-		if (contact.getLastContactDate() != null) { // annuler le suivi abandon
+		if (contact.getLastContactDate() != null) {
 			completeness += 0.2f;
 		}
 		if (contact.getRelationToCase() != null) {
@@ -1821,7 +1812,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			if (cloning) {
 				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), leadCont.toReference());
 				DtoHelper.fillDto(newSample, SampleFacadeEjb.toDto(sample), cloning);
-				sampleFacade.saveSample(newSample, false);
+				sampleFacade.saveSample(newSample, false, false);
 
 				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
@@ -1829,6 +1820,12 @@ public class ContactFacadeEjb implements ContactFacade {
 					DtoHelper.fillDto(newPathogenTest, PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
 					sampleTestFacade.savePathogenTest(newPathogenTest);
 
+				}
+
+				for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
+					AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
+					fillDto(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
+					additionalTestFacade.saveAdditionalTest(newAdditionalTest);
 				}
 			} else {
 				// simply move existing entities to the merge target
@@ -1847,14 +1844,22 @@ public class ContactFacadeEjb implements ContactFacade {
 				taskService.ensurePersisted(task);
 			}
 		}
+
+		// 3 Attach otherContact visits to leadContact
+		// (set the person and the disease of the visit, saveVisit does the rest)
+		for (VisitDto otherVisit : otherCont.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
+			otherVisit.setPerson(leadContact.getPerson());
+			otherVisit.setDisease(leadContact.getDisease());
+			visitFacade.saveVisit(otherVisit);
+		}
 	}
 
 	@Override
 	public void deleteContactAsDuplicate(String contactUuid, String duplicateOfContactUuid) {
 
 		Contact contact = contactService.getByUuid(contactUuid);
-		Contact duplicateOfCase = contactService.getByUuid(duplicateOfContactUuid);
-		contact.setDuplicateOf(duplicateOfCase);
+		Contact duplicateOfContact = contactService.getByUuid(duplicateOfContactUuid);
+		contact.setDuplicateOf(duplicateOfContact);
 		contactService.ensurePersisted(contact);
 
 		deleteContact(contactUuid);
