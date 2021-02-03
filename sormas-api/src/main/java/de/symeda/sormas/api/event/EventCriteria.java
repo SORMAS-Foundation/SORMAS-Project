@@ -43,7 +43,6 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
-	public static final String RESPONSIBLE_USER_ROLE = "responsibleUserRole";
 	public static final String FREE_TEXT = "freeText";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
@@ -54,7 +53,6 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
 	private UserRole reportingUserRole;
-	private UserRole responsibleUserRole;
 	private Boolean deleted = Boolean.FALSE;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -149,14 +147,6 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setReportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
-	}
-
-	public UserRole getResponsibleUserRole() {
-		return responsibleUserRole;
-	}
-
-	public void setResponsibleUserRole(UserRole responsibleUserRole) {
-		this.responsibleUserRole = responsibleUserRole;
 	}
 
 	public EventCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
