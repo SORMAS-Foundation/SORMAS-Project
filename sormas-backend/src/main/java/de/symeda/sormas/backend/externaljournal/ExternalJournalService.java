@@ -53,6 +53,8 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryRegisterRes
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -185,8 +187,8 @@ public class ExternalJournalService {
 	 *            the follow-up end date before the update
 	 */
 	public void notifyExternalJournalFollowUpUntilUpdate(ContactDto contact, Date previousFollowUpUntilDate) {
-		SymptomJournalStatus savedStatus = personFacade.getPersonByUuid(contact.getPerson().getUuid()).getSymptomJournalStatus();
-		if (SymptomJournalStatus.REGISTERED.equals(savedStatus) || SymptomJournalStatus.ACCEPTED.equals(savedStatus)) {
+		PersonDto person = personFacade.getPersonByUuid(contact.getPerson().getUuid());
+		if (person.isEnrolledInExternalJournal()) {
 			if (contact.getFollowUpUntil().after(previousFollowUpUntilDate)) {
 				if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 					notifySymptomJournal(contact.getPerson().getUuid());
@@ -208,7 +210,7 @@ public class ExternalJournalService {
 	 */
 	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
 		boolean shouldNotify = shouldNotify(existingJournalPerson);
-		if (shouldNotify(existingJournalPerson)) {
+		if (shouldNotify) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
 				notifySymptomJournal(existingJournalPerson.getUuid());
 			}

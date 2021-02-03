@@ -299,6 +299,7 @@ public interface Captions {
 	String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	String CaseData_sormasToSormasOriginInfo = "CaseData.sormasToSormasOriginInfo";
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
+	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
 	String CaseData_trimester = "CaseData.trimester";
