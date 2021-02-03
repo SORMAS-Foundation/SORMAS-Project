@@ -6296,4 +6296,10 @@ ALTER TABLE exportconfiguration_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
 
+-- 2020-02-03
+ALTER TABLE pathogentest ADD COLUMN typingId text;
+ALTER TABLE pathogentest_history ADD COLUMN typingId text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'Add typing ID to pathogen tests #3957');
+
 -- *** Insert new sql commands BEFORE this line ***

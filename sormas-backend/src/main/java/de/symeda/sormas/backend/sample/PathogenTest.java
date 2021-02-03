@@ -49,6 +49,7 @@ public class PathogenTest extends CoreAdo {
 
 	public static final String SAMPLE = "sample";
 	public static final String TESTED_DISEASE = "testedDisease";
+	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_TYPE_TEXT = "testTypeText";
 	public static final String TEST_DATE_TIME = "testDateTime";
@@ -65,6 +66,7 @@ public class PathogenTest extends CoreAdo {
 	private Sample sample;
 	private Disease testedDisease;
 	private String testedDiseaseDetails;
+	private String typingId;
 	private PathogenTestType testType;
 	private String testTypeText;
 	private Date testDateTime;
@@ -104,6 +106,15 @@ public class PathogenTest extends CoreAdo {
 
 	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
 		this.testedDiseaseDetails = testedDiseaseDetails;
+	}
+
+	@Column
+	public String getTypingId() {
+		return typingId;
+	}
+
+	public void setTypingId(String typingId) {
+		this.typingId = typingId;
 	}
 
 	@Enumerated(EnumType.STRING)
