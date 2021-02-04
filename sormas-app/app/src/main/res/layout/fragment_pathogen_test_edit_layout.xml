@@ -83,6 +83,15 @@
                     app:required="true"
                     app:value="@={data.testedDiseaseDetails}"/>
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/pathogenTest_typingId"
+                        style="@style/ControlSingleColumnStyle"
+                        app:dependencyParentField="@{pathogenTestTestType}"
+                        app:dependencyParentValue="@{PathogenTestType.DNA_MICROARRAY}"
+                        app:dependencyParentValue2="@{PathogenTestType.PCR_RT_PCR}"
+                        app:dependencyParentValue3="@{PathogenTestType.SEQUENCING}"
+                        app:value="@={data.typingId}"/>
+
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/pathogenTest_testDateTime"
                     app:dateHint="@string/caption_date_of_sampling"
