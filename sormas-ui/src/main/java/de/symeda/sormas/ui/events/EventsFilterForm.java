@@ -3,8 +3,10 @@ package de.symeda.sormas.ui.events;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +39,8 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -65,10 +69,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		FACILITY_TYPE_GROUP_FILTER,
 		LocationDto.FACILITY_TYPE,
 		LocationDto.FACILITY,
-		EventDto.EVENT_INVESTIGATION_STATUS) +
-		loc(EVENT_WEEK_AND_DATE_FILTER) +
-		loc(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER) +
-		loc(ACTION_WEEK_AND_DATE_FILTER);
+		EventDto.EVENT_INVESTIGATION_STATUS)
+		+ loc(EVENT_WEEK_AND_DATE_FILTER)
+		+ loc(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER)
+		+ loc(ACTION_WEEK_AND_DATE_FILTER);
 
 	private final boolean hideEventStatusFilter;
 	private final boolean hideActionFilters;
@@ -109,8 +113,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addField(FieldConfiguration.pixelSized(EventCriteria.RISK_LEVEL, 140));
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
-		ComboBox responsibleUserField = addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
-		responsibleUserField.addItems(fetchResponsibleUsersByRegion(currentUserDto().getRegion()));
+		addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
+
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
 		searchField.setNullRepresentation("");
@@ -145,7 +149,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		communityField.setDescription(I18nProperties.getDescription(Descriptions.descCommunityFilter));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT), EVENT_WEEK_AND_DATE_FILTER);
-		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT_SIGNAL_EVOLUTION), EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
+		moreFiltersContainer
+			.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.EVENT_SIGNAL_EVOLUTION), EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION), ACTION_WEEK_AND_DATE_FILTER);
 
 		ComboBox facilityTypeGroupField = new ComboBox();
@@ -311,6 +316,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				clearAndDisableFields(LocationDto.DISTRICT, LocationDto.COMMUNITY);
 			}
 			applyFacilityFieldsDependencies();
+			updateResponsibleUserFieldItems();
 			break;
 		case LocationDto.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
@@ -320,6 +326,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				clearAndDisableFields(LocationDto.COMMUNITY);
 			}
 			applyFacilityFieldsDependencies();
+			updateResponsibleUserFieldItems();
 			break;
 		case EventDto.TYPE_OF_PLACE:
 			applyFacilityFieldsDependencies();
@@ -375,6 +382,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		applyRegionAndDistrictFilterDependency(region, LocationDto.DISTRICT, district, LocationDto.COMMUNITY);
 
 		applyFacilityFieldsDependencies(criteria.getTypeOfPlace(), criteria.getDistrict(), criteria.getCommunity());
+
+		updateResponsibleUserFieldItems(criteria.getDistrict(), criteria.getRegion());
 	}
 
 	private void applyDateDependencyOnNewValue(String componentId, DateFilterOption dateFilterOption, Date dateFrom, Date dateTo) {
@@ -419,6 +428,24 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		facilityField.setVisible(visible);
 		facilityTypeField.setVisible(visible);
 		facilityTypeGroupField.setVisible(visible);
+	}
+
+	private void updateResponsibleUserFieldItems() {
+		updateResponsibleUserFieldItems(
+			(DistrictReferenceDto) getField(EventCriteria.DISTRICT).getValue(),
+			(RegionReferenceDto) getField(EventCriteria.REGION).getValue());
+	}
+
+	private void updateResponsibleUserFieldItems(DistrictReferenceDto district, RegionReferenceDto region) {
+		final List<UserReferenceDto> items = new ArrayList<>();
+		if (district != null) {
+			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER));
+			items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR));
+		} else {
+			items.addAll(
+				FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.SURVEILLANCE_OFFICER));
+		}
+		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), items);
 	}
 
 	@Override
