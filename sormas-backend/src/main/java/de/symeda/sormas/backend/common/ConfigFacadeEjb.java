@@ -537,11 +537,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	public int getDashboardMapMarkerLimit() {
-	    return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
+		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
 	}
 
-	public boolean isCreateDefaultUsers(){
-	    return getBoolean(CREATE_DEFAULT_USERS,true);
+	public boolean isCreateDefaultUsers() {
+		return getBoolean(CREATE_DEFAULT_USERS, true);
 	}
 
 	public String getDocgenerationNullReplacement() {

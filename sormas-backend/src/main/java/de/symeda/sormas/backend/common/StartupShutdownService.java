@@ -346,13 +346,11 @@ public class StartupShutdownService {
 			userService.persist(admin);
 			userUpdateEvent.fire(new UserUpdateEvent(admin));
 
-
 			if (!configFacade.isCreateDefaultUsers()) {
 				// return if getCreateDefaultUsers() is false
 				logger.info("Skipping the creation of default users");
 				return;
 			}
-
 
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
