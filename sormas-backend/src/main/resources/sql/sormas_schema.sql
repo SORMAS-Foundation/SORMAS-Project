@@ -6296,4 +6296,9 @@ ALTER TABLE exportconfiguration_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
 
+-- 2021-01-11 Add testresulttext to labmessage #3820
+ALTER TABLE labmessage ADD COLUMN testresulttext TEXT;
+ALTER TABLE labmessage_history ADD COLUMN testresulttext TEXT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'Add testresulttext to labmessage #3820');
 -- *** Insert new sql commands BEFORE this line ***
