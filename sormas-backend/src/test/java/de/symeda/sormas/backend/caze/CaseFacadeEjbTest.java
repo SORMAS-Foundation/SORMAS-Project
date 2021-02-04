@@ -1572,7 +1572,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			c.setReportDate(new Date());
 		});
 
-		// case and person matching for some asserts
 		PersonDto person2 = creator.createPerson("Fname", "Lname", (p) -> {
 			p.setBirthdateMM(3);
 			p.setBirthdateYYYY(1968);
@@ -1604,7 +1603,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		List<CasePersonDto> duplicates;
 
-		// match by first name and last name
 		duplicateCaze.setExternalToken(null);
 		duplicatePerson.setFirstName("Fname");
 		duplicatePerson.setLastName("Lname");
