@@ -28,11 +28,15 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides UI components to integrate with the SurvNet gateway
  */
 public class SurvnetGateway {
+
+	private static final Logger logger = LoggerFactory.getLogger(SurvnetGateway.class);
 
 	public static final String SURVNET_GATEWAY_LOC = "survnetGateway";
 
@@ -138,7 +142,7 @@ public class SurvnetGateway {
 		Notification.show(I18nProperties.getCaption(Captions.SurvnetGateway_title), message, type);
 	}
 
-	public static <T extends EntityDto> void deleteInSurvnet(SurvnetGatewayType gatewayType, List<T> entities) {
+	public static <T extends EntityDto> boolean deleteInSurvnet(SurvnetGatewayType gatewayType, List<T> entities) {
 		int statusCode;
 
 		switch (gatewayType) {
@@ -155,11 +159,11 @@ public class SurvnetGateway {
 		switch (statusCode) {
 			case HttpServletResponse.SC_OK:
 			case HttpServletResponse.SC_NO_CONTENT:
-				return;
+				return true;
 			case HttpServletResponse.SC_BAD_REQUEST:
-				throw new RuntimeException("Invalid request for deleting " + gatewayType);
 			default:
-				throw new RuntimeException("Unknown exception when deleting " + gatewayType);
+				logger.warn("Cannot delete entities in SurvNet due to {} response", statusCode);
+				return false;
 		}
 	}
 

@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.vaadin.server.Sizeable;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -117,8 +119,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-
-import javax.transaction.Transactional;
 
 public class CaseController {
 
@@ -861,10 +861,9 @@ public class CaseController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteListener(() -> {
-				try {
-					deleteCase(caze);
+				if (deleteCase(caze)) {
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-				} catch (Exception e) {
+				} else {
 					Notification.show(
 							String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(caze.getUuid())),
 							"",
@@ -897,11 +896,17 @@ public class CaseController {
 		}
 	}
 
-	private void deleteCase(CaseDataDto caze) {
+	private boolean deleteCase(CaseDataDto caze) {
+		boolean deletable = true;
 		if (FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled() && caze.getDisease() == Disease.CORONAVIRUS) {
-			SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.CASES, Collections.singletonList(caze));
+			deletable = SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.CASES, Collections.singletonList(caze));
 		}
-		FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
+		if (deletable) {
+			FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
+			return true;
+		}
+		return false;
+
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
@@ -1203,25 +1208,37 @@ public class CaseController {
 		} else {
 			VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()), () -> {
-					String caseUuid = null;
-					try {
-						for (CaseIndexDto selectedRow : selectedRows) {
-							caseUuid = selectedRow.getUuid();
-							deleteCase(FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid));
+					int countNotDeletedCases = 0;
+					StringBuilder nonDeletableCases = new StringBuilder();
+					for (CaseIndexDto selectedRow : selectedRows) {
+						if (!deleteCase(FacadeProvider.getCaseFacade().getCaseDataByUuid(selectedRow.getUuid()))) {
+							countNotDeletedCases++;
+							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");
 						}
-						callback.run();
+					}
+					if (nonDeletableCases.length() > 0) {
+						nonDeletableCases = new StringBuilder(" " + nonDeletableCases.substring(0, nonDeletableCases.length() - 2) + ". ");
+					}
+					callback.run();
+					if (countNotDeletedCases == 0) {
 						new Notification(
 								I18nProperties.getString(Strings.headingCasesDeleted),
 								I18nProperties.getString(Strings.messageCasesDeleted),
 								Type.HUMANIZED_MESSAGE,
 								false).show(Page.getCurrent());
-					} catch (Exception e) {
-						Notification.show(
-								String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(caseUuid)),
-								"",
-								Type.ERROR_MESSAGE);
+					} else {
+						Window response = VaadinUiUtil.showSimplePopupWindow(
+								I18nProperties.getString(Strings.headingSomeCasesNotDeleted),
+								String.format(
+										"%1s <br/> <br/> %2s",
+										String.format(
+												I18nProperties.getString(Strings.messageCountCasesNotDeleted),
+												String.format("<b>%s</b>", countNotDeletedCases),
+												String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableCases.toString()))),
+										I18nProperties.getString(Strings.messageCasesNotDeletedReasonSurvnet)),
+								ContentMode.HTML);
+						response.setWidth(600, Sizeable.Unit.PIXELS);
 					}
-
 				});
 		}
 	}
