@@ -43,6 +43,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
+import org.hamcrest.MatcherAssert;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1551,6 +1553,56 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(savedCaze.getEpiData().getUuid(), not(isEmptyOrNullString()));
 		MatcherAssert.assertThat(savedCaze.getEpiData().getExposures().get(0).getUuid(), not(isEmptyOrNullString()));
 	}
+
+	@Test
+	public void testGetDuplicatesWithReportDateThreshold() {
+		RDCF rdcf = creator.createRDCF();
+
+		//case and person matching for asserts
+		PersonDto person = creator.createPerson("Fname", "Lname", (p) -> {
+			p.setBirthdateDD(12);
+			p.setBirthdateMM(3);
+			p.setBirthdateYYYY(1968);
+		});
+
+		Date now = new Date();
+
+		CaseDataDto caze = creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(person.toReference());
+			c.setExternalID("test-ext-id");
+			c.setExternalToken("test-ext-token");
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setDistrict(rdcf.district);
+			c.setReportDate(now);
+		});
+
+		// second case matching the first one except for the reporting date
+		PersonDto person2 = creator.createPerson("Fname", "Lname", (p) -> {
+			p.setBirthdateDD(12);
+			p.setBirthdateMM(3);
+			p.setBirthdateYYYY(1968);
+		});
+		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(person2.toReference());
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setReportDate(new DateTime(now).minusDays(1).toDate());
+		});
+
+
+		CasePersonDto casePerson = new CasePersonDto();
+		PersonDto duplicatePerson = PersonDto.build();
+		CaseDataDto duplicateCaze = CaseDataDto.build(duplicatePerson.toReference(), Disease.CORONAVIRUS);
+		duplicateCaze.setDistrict(rdcf.district);
+		duplicateCaze.setReportDate(new Date());
+
+		casePerson.setCaze(duplicateCaze);
+		casePerson.setPerson(duplicatePerson);
+
+		List<CasePersonDto> duplicates = getCaseFacade().getDuplicates(casePerson, 2);
+		MatcherAssert.assertThat(duplicates, hasSize(2));
+	}
+
+
 
 //	@Test
 //	public void testGetSimilarCases() {
