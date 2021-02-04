@@ -1557,7 +1557,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetDuplicatesWithReportDateThreshold() {
 		RDCF rdcf = creator.createRDCF();
-
+		Date now = new Date();
 		//case and person matching for asserts
 		PersonDto person = creator.createPerson("Fname", "Lname", (p) -> {
 			p.setBirthdateDD(12);
@@ -1565,20 +1565,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			p.setBirthdateYYYY(1968);
 		});
 
-		Date now = new Date();
-
 		CaseDataDto caze = creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
 			c.setPerson(person.toReference());
-			c.setExternalID("test-ext-id");
-			c.setExternalToken("test-ext-token");
 			c.setDisease(Disease.CORONAVIRUS);
 			c.setDistrict(rdcf.district);
-			c.setReportDate(now);
+			c.setReportDate(new Date());
 		});
 
-		// second case matching the first one except for the reporting date
+		// case and person matching for some asserts
 		PersonDto person2 = creator.createPerson("Fname", "Lname", (p) -> {
-			p.setBirthdateDD(12);
 			p.setBirthdateMM(3);
 			p.setBirthdateYYYY(1968);
 		});
@@ -1588,6 +1583,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			c.setReportDate(new DateTime(now).minusDays(1).toDate());
 		});
 
+		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(creator.createPerson().toReference());
+			c.setDisease(Disease.CHOLERA);
+		});
+
+		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
+			c.setPerson(person.toReference());
+			c.setDisease(Disease.CHOLERA);
+		});
 
 		CasePersonDto casePerson = new CasePersonDto();
 		PersonDto duplicatePerson = PersonDto.build();
@@ -1598,7 +1602,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		casePerson.setCaze(duplicateCaze);
 		casePerson.setPerson(duplicatePerson);
 
-		List<CasePersonDto> duplicates = getCaseFacade().getDuplicates(casePerson, 2);
+		List<CasePersonDto> duplicates;
+
+		// match by first name and last name
+		duplicateCaze.setExternalToken(null);
+		duplicatePerson.setFirstName("Fname");
+		duplicatePerson.setLastName("Lname");
+		duplicates = getCaseFacade().getDuplicates(casePerson, 1);
 		MatcherAssert.assertThat(duplicates, hasSize(2));
 	}
 
