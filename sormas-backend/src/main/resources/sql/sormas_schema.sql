@@ -6331,4 +6331,40 @@ ALTER TABLE cases_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (315, 'Activate vaccination status for COVID-19 cases, contacts and event participant #4137');
 
+-- 2021-02-04 Add vaccination for contacts and event participant #4137
+
+CREATE TABLE vaccinationinfo (
+    id bigint NOT NULL,
+    changedate timestamp without time zone NOT NULL,
+    creationdate timestamp without time zone NOT NULL,
+    uuid character varying(36) NOT NULL,
+    vaccination varchar(255),
+    vaccinationdoses varchar(512),
+    vaccinationinfosource varchar(255),
+    firstvaccinationdate timestamp,
+    lastvaccinationdate timestamp,
+    vaccinename varchar(255),
+    othervaccinename text,
+    vaccinemanufacturer varchar(255),
+    othervaccinemanufacturer text,
+    vaccineinn text,
+    vaccinebatchnumber text,
+    vaccineuniicode text,
+    vaccineatccode text,
+    primary key (id)
+);
+
+ALTER TABLE contact
+    ADD COLUMN vaccinationinfo_id bigint;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_vaccinationinfo_id FOREIGN KEY (vaccinationinfo_id) REFERENCES vaccinationinfo(id);
+
+ALTER TABLE eventparticipant
+    ADD COLUMN vaccinationinfo_id bigint;
+
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_vaccinationinfo_id FOREIGN KEY (vaccinationinfo_id) REFERENCES vaccinationinfo(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (316, 'Add vaccination for contacts and event participant #4137');
+
+
 -- *** Insert new sql commands BEFORE this line ***

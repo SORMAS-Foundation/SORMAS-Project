@@ -38,6 +38,7 @@ import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -47,6 +48,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
+	private VaccinationInfoDtoHelper vaccinationInfoDtoHelper = new VaccinationInfoDtoHelper();
 
 	public ContactDtoHelper() {
 	}
@@ -164,6 +166,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
+
+		target.setVaccinationInfo(vaccinationInfoDtoHelper.fillOrCreateFromDto(target.getVaccinationInfo(), source.getVaccinationInfo()));
 	}
 
 	@Override
@@ -306,6 +310,12 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 			target.setReportingDistrict(DistrictDtoHelper.toReferenceDto(district));
 		} else {
 			target.setReportingDistrict(null);
+		}
+
+		if (source.getVaccinationInfo() != null) {
+			target.setVaccinationInfo(vaccinationInfoDtoHelper.adoToDto(source.getVaccinationInfo()));
+		} else {
+			target.setVaccinationInfo(null);
 		}
 	}
 

@@ -292,9 +292,11 @@ public class CaseExportDto implements Serializable {
 						 String phone, String phoneOwner, String emailAddress, EducationType educationType, String educationDetails,
 						 OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
+						 // vaccination info
 						 Vaccination vaccination, String vaccinationDoses, VaccinationInfoSource vaccinationInfoSource, Date firstVaccinationDate, Date lastVaccinationDate,
 						 Vaccine vaccineName, String otherVaccineName, VaccineManufacturer vaccineManufacturer, String otherVaccineManufacturer,
 						 String vaccineInn, String vaccineBatchNumber, String vaccineUniiCode, String vaccineAtcCode,
+
 						 YesNoUnknown postpartum, Trimester trimester,
 						 long eventCount, String externalID, String externalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,

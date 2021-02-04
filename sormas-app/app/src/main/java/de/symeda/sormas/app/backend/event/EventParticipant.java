@@ -26,6 +26,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfo;
 
 @Entity(name = EventParticipant.TABLE_NAME)
 @DatabaseTable(tableName = EventParticipant.TABLE_NAME)
@@ -55,6 +56,9 @@ public class EventParticipant extends PseudonymizableAdo {
 
 	@DatabaseField
 	private String resultingCaseUuid;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private VaccinationInfo vaccinationInfo;
 
 	public User getReportingUser() {
 		return reportingUser;
@@ -116,5 +120,13 @@ public class EventParticipant extends PseudonymizableAdo {
 
 	public void setResultingCaseUuid(String resultingCaseUuid) {
 		this.resultingCaseUuid = resultingCaseUuid;
+	}
+
+	public VaccinationInfo getVaccinationInfo() {
+		return vaccinationInfo;
+	}
+
+	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
+		this.vaccinationInfo = vaccinationInfo;
 	}
 }

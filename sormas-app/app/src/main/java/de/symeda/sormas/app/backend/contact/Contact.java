@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -52,6 +53,7 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.vaccinationinfo.VaccinationInfo;
 
 @Entity(name = Contact.TABLE_NAME)
 @DatabaseTable(tableName = Contact.TABLE_NAME)
@@ -246,6 +248,9 @@ public class Contact extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District reportingDistrict;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private VaccinationInfo vaccinationInfo;
 
 	public Person getPerson() {
 		return person;
@@ -835,5 +840,13 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setReportingDistrict(District reportingDistrict) {
 		this.reportingDistrict = reportingDistrict;
+	}
+
+	public VaccinationInfo getVaccinationInfo() {
+		return vaccinationInfo;
+	}
+
+	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
+		this.vaccinationInfo = vaccinationInfo;
 	}
 }
