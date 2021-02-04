@@ -42,4 +42,11 @@ public class DataHelperTest {
 		assertEquals((Long) Long.MAX_VALUE, DataHelper.tryParseLong(String.valueOf(Long.MAX_VALUE)));
 		assertNull(DataHelper.tryParseLong(String.valueOf(Long.MAX_VALUE) + "0"));
 	}
+
+	@Test
+	public void testShortUuid() {
+		assertEquals("A", DataHelper.getShortUuid("A"));
+		assertEquals("UZOUEH", DataHelper.getShortUuid("UZOUEH-HP7DRG-YOJ74F-PXWL2JZ4"));
+		assertNull(DataHelper.getShortUuid((String) null));
+	}
 }

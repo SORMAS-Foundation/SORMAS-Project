@@ -30,6 +30,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
@@ -48,8 +49,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
 	@Override
 	protected String generateFilename(String templateFile) {
-		String uuid = eventReferenceDto.getUuid();
-		return uuid.substring(0, Math.min(5, uuid.length())) + "_" + templateFile;
+		return DataHelper.getShortUuid(eventReferenceDto) + "_" + templateFile;
 	}
 
 	@Override

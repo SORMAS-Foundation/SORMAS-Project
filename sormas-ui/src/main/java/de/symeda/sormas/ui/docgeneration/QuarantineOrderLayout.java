@@ -43,6 +43,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.UserProvider;
 
@@ -108,8 +109,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	@Override
 	protected String generateFilename(String templateFile) {
-		String uuid = referenceDto.getUuid();
-		return uuid.substring(0, Math.min(5, uuid.length())) + "_" + templateFile;
+		return DataHelper.getShortUuid(referenceDto) + "_" + templateFile;
 	}
 
 	@Override
