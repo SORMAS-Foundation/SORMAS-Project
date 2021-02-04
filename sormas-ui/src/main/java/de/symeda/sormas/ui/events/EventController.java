@@ -77,6 +77,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import javax.transaction.Transactional;
+
 public class EventController {
 
 	public void registerViews(Navigator navigator) {
@@ -467,17 +469,21 @@ public class EventController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
 			editView.addDeleteListener(() -> {
-				if (!existEventParticipantsLinkedToEvent(event)) {
-					FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
-					if(event.getEventStatus() == EventStatus.CLUSTER && FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
-						SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.EVENTS, Collections.singletonList(event));
+				try {
+					if (!existEventParticipantsLinkedToEvent(event)) {
+						deleteEvent(event);
+					} else {
+						VaadinUiUtil.showSimplePopupWindow(
+								I18nProperties.getString(Strings.headingEventNotDeleted),
+								I18nProperties.getString(Strings.messageEventsNotDeletedReason));
 					}
-				} else {
-					VaadinUiUtil.showSimplePopupWindow(
-						I18nProperties.getString(Strings.headingEventNotDeleted),
-						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
+					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
+				} catch (Exception e) {
+					Notification.show(
+							String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(event.getUuid())),
+							"",
+							Type.ERROR_MESSAGE);
 				}
-				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent));
 		}
 
@@ -494,6 +500,13 @@ public class EventController {
 		}
 
 		return editView;
+	}
+
+	private void deleteEvent(EventDto event) {
+		if(event.getEventStatus() == EventStatus.CLUSTER && FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
+			SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.EVENTS, Collections.singletonList(event));
+		}
+		FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
 	}
 
 	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {
@@ -615,39 +628,49 @@ public class EventController {
 					List<EventDto> eventDtoList = new ArrayList<>();
 					StringBuilder nonDeletableEvents = new StringBuilder();
 					Integer countNotDeletedEvents = 0;
-					for (EventIndexDto selectedRow : selectedRows) {
-						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(selectedRow.getUuid());
-						if (existEventParticipantsLinkedToEvent(eventDto)) {
-							eventDtoList.add(eventDto);
-							countNotDeletedEvents = countNotDeletedEvents + 1;
-							nonDeletableEvents.append(selectedRow.getUuid().substring(0, 6)).append(", ");
-						} else {
-							FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid());
+					String eventUuid = null;
+					try {
+						for (EventIndexDto selectedRow : selectedRows) {
+							eventUuid = selectedRow.getUuid();
+							EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventUuid);
+							if (existEventParticipantsLinkedToEvent(eventDto)) {
+								eventDtoList.add(eventDto);
+								countNotDeletedEvents = countNotDeletedEvents + 1;
+								nonDeletableEvents.append(eventUuid, 0, 6).append(", ");
+							} else {
+								deleteEvent(eventDto);
+								FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid());
+							}
 						}
-					}
-					if (nonDeletableEvents.length() > 0) {
-						nonDeletableEvents = new StringBuilder(" " + nonDeletableEvents.substring(0, nonDeletableEvents.length() - 2) + ". ");
+						if (nonDeletableEvents.length() > 0) {
+							nonDeletableEvents = new StringBuilder(" " + nonDeletableEvents.substring(0, nonDeletableEvents.length() - 2) + ". ");
 
-					}
-					callback.run();
-					if (eventDtoList.isEmpty()) {
-						new Notification(
-							I18nProperties.getString(Strings.headingEventsDeleted),
-							I18nProperties.getString(Strings.messageEventsDeleted),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					} else {
-						Window response = VaadinUiUtil.showSimplePopupWindow(
-							I18nProperties.getString(Strings.headingSomeEventsNotDeleted),
-							String.format(
-								"%1s <br/> <br/> %2s",
-								String.format(
-									I18nProperties.getString(Strings.messageCountEventsNotDeleted),
-									String.format("<b>%s</b>", countNotDeletedEvents),
-									String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEvents.toString()))),
-								I18nProperties.getString(Strings.messageEventsNotDeletedReason)),
-							ContentMode.HTML);
-						response.setWidth(600, Sizeable.Unit.PIXELS);
+						}
+						callback.run();
+						if (eventDtoList.isEmpty()) {
+							new Notification(
+									I18nProperties.getString(Strings.headingEventsDeleted),
+									I18nProperties.getString(Strings.messageEventsDeleted),
+									Type.HUMANIZED_MESSAGE,
+									false).show(Page.getCurrent());
+						} else {
+							Window response = VaadinUiUtil.showSimplePopupWindow(
+									I18nProperties.getString(Strings.headingSomeEventsNotDeleted),
+									String.format(
+											"%1s <br/> <br/> %2s",
+											String.format(
+													I18nProperties.getString(Strings.messageCountEventsNotDeleted),
+													String.format("<b>%s</b>", countNotDeletedEvents),
+													String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEvents.toString()))),
+											I18nProperties.getString(Strings.messageEventsNotDeletedReason)),
+									ContentMode.HTML);
+							response.setWidth(600, Sizeable.Unit.PIXELS);
+						}
+					} catch (Exception e) {
+						Notification.show(
+								String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(eventUuid)),
+								"",
+								Type.ERROR_MESSAGE);
 					}
 				});
 		}

@@ -897,12 +897,11 @@ public class CaseController {
 		}
 	}
 
-	@Transactional(rollbackOn = Exception.class)
 	private void deleteCase(CaseDataDto caze) {
-		FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
 		if (FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled() && caze.getDisease() == Disease.CORONAVIRUS) {
 			SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.CASES, Collections.singletonList(caze));
 		}
+		FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
