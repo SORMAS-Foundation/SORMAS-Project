@@ -597,8 +597,15 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
-				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.LAST_VACCINATION_DATE),
-				caseRoot.get(Case.VACCINATION_INFO_SOURCE), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
+				// vaccination
+				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_INFO_SOURCE),
+				caseRoot.get(Case.FIRST_VACCINATION_DATE), caseRoot.get(Case.LAST_VACCINATION_DATE),
+				caseRoot.get(Case.VACCINE_NAME), caseRoot.get(Case.OTHER_VACCINE_NAME),
+				caseRoot.get(Case.VACCINE_MANUFACTURER), caseRoot.get(Case.OTHER_VACCINE_MANUFACTURER),
+				caseRoot.get(Case.VACCINE_INN), caseRoot.get(Case.VACCINE_BATCH_NUMBER),
+				caseRoot.get(Case.VACCINE_UNII_CODE), caseRoot.get(Case.VACCINE_ATC_CODE),
+				// postpartum
+				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),

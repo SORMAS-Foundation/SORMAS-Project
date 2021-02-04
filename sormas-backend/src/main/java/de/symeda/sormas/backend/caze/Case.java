@@ -130,8 +130,17 @@ public class Case extends CoreAdo {
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
-	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
+	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
+	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
+	public static final String VACCINE_NAME = "vaccineName";
+	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
+	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
+	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
+	public static final String VACCINE_INN = "vaccineInn";
+	public static final String VACCINE_BATCH_NUMBER = "vaccineBatchNumber";
+	public static final String VACCINE_UNII_CODE = "vaccineUniiCode";
+	public static final String VACCINE_ATC_CODE = "vaccineAtcCode";
 	public static final String WHICH_VACCINE = "whichVaccine";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
@@ -822,7 +831,7 @@ public class Case extends CoreAdo {
 		this.vaccineName = vaccineName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getOtherVaccineName() {
 		return otherVaccineName;
 	}
@@ -840,7 +849,7 @@ public class Case extends CoreAdo {
 		this.vaccineManufacturer = vaccineManufacturer;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getOtherVaccineManufacturer() {
 		return otherVaccineManufacturer;
 	}
@@ -849,7 +858,7 @@ public class Case extends CoreAdo {
 		this.otherVaccineManufacturer = otherVaccineManufacturer;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getVaccineInn() {
 		return vaccineInn;
 	}
@@ -858,7 +867,7 @@ public class Case extends CoreAdo {
 		this.vaccineInn = vaccineInn;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getVaccineBatchNumber() {
 		return vaccineBatchNumber;
 	}
@@ -867,7 +876,7 @@ public class Case extends CoreAdo {
 		this.vaccineBatchNumber = vaccineBatchNumber;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getVaccineUniiCode() {
 		return vaccineUniiCode;
 	}
@@ -876,7 +885,7 @@ public class Case extends CoreAdo {
 		this.vaccineUniiCode = vaccineUniiCode;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getVaccineAtcCode() {
 		return vaccineAtcCode;
 	}
