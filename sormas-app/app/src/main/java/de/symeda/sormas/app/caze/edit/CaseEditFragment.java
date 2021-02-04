@@ -463,11 +463,18 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReduced
 			.addValueChangedListener(e -> contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE));
 
-		contentBinding.caseDataVaccineName.addValueChangedListener((e) -> {
-			Vaccine vaccine = (Vaccine) e.getValue();
+		contentBinding.caseDataVaccineName.addValueChangedListener(new ValueChangeListener() {
 
-			if (vaccine != null) {
-				contentBinding.caseDataVaccineManufacturer.setValue(vaccine.getManufacturer());
+			private Vaccine currentVaccine = record.getVaccineName();
+
+			@Override
+			public void onChange(ControlPropertyField e) {
+				Vaccine vaccine = (Vaccine) e.getValue();
+
+				if (currentVaccine != vaccine) {
+					contentBinding.caseDataVaccineManufacturer.setValue(vaccine != null ? vaccine.getManufacturer() : null);
+					currentVaccine = vaccine;
+				}
 			}
 		});
 

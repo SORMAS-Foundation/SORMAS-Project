@@ -710,7 +710,7 @@
                         app:value="@={data.vaccineName}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/caseData_otherVaccineName"
                         app:value="@={data.otherVaccineName}"
                         app:dependencyParentField="@{caseDataVaccineName}"
@@ -727,7 +727,7 @@
                         app:value="@={data.vaccineManufacturer}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/caseData_otherVaccineManufacturer"
                         app:value="@={data.otherVaccineManufacturer}"
                         app:dependencyParentField="@{caseDataVaccineManufacturer}"

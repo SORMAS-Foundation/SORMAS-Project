@@ -216,25 +216,25 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private Vaccine vaccineName;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String otherVaccineName;
 
 	@Enumerated(EnumType.STRING)
 	private VaccineManufacturer vaccineManufacturer;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String otherVaccineManufacturer;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String vaccineInn;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String vaccineBatchNumber;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String vaccineUniiCode;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	private String vaccineAtcCode;
 
 	@Deprecated
