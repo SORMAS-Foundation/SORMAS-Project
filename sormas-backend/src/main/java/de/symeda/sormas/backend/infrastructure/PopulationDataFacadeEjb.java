@@ -34,7 +34,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -44,6 +43,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PopulationDataFacade")
 public class PopulationDataFacadeEjb implements PopulationDataFacade {
@@ -205,17 +205,17 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		if (!CollectionUtils.isEmpty(criteria.getRegions()) && CollectionUtils.isEmpty(criteria.getDistricts())) {
 			List<Long> regionIds = regionService.getIdsByReferenceDtos(criteria.getRegions());
-			BaseAdoService.appendInFilterValues(regionsIn, parameters, regionIds, entry -> entry);
+			QueryHelper.appendInFilterValues(regionsIn, parameters, regionIds, entry -> entry);
 		}
 		if (!CollectionUtils.isEmpty(criteria.getDistricts())) {
 			List<Long> districtIds = districtService.getIdsByReferenceDtos(criteria.getDistricts());
-			BaseAdoService.appendInFilterValues(districtsIn, parameters, districtIds, entry -> entry);
+			QueryHelper.appendInFilterValues(districtsIn, parameters, districtIds, entry -> entry);
 		}
 		if (!CollectionUtils.isEmpty(criteria.getSexes())) {
-			BaseAdoService.appendInFilterValues(sexesIn, parameters, criteria.getSexes(), entry -> entry.name());
+			QueryHelper.appendInFilterValues(sexesIn, parameters, criteria.getSexes(), entry -> entry.name());
 		}
 		if (!CollectionUtils.isEmpty(criteria.getAgeGroups())) {
-			BaseAdoService.appendInFilterValues(ageGroupsIn, parameters, criteria.getAgeGroups(), entry -> entry.name());
+			QueryHelper.appendInFilterValues(ageGroupsIn, parameters, criteria.getAgeGroups(), entry -> entry.name());
 		}
 
 		StringBuilder queryBuilder = new StringBuilder();

@@ -6280,9 +6280,25 @@ ALTER TABLE events_history ADD COLUMN evolutionComment text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (311, 'Add evolution date and comment to events #3753');
 
+-- 2020-01-13 Add indexes to optimize event directory performance #3276
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_person_id ON eventparticipant USING hash (person_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_event_id ON eventparticipant USING hash (event_id);
+CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING hash (person_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (312, 'Add indexes to optimize event directory performance #3276');
+
+-- 2020-01-27
+ALTER TABLE exportconfiguration
+    ADD COLUMN sharedToPublic boolean default false;
+
+ALTER TABLE exportconfiguration_history
+    ADD COLUMN sharedToPublic boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
+
 -- 2021-01-11 Add testresulttext to labmessage #3820
 ALTER TABLE labmessage ADD COLUMN testresulttext TEXT;
 ALTER TABLE labmessage_history ADD COLUMN testresulttext TEXT;
 
-INSERT INTO schema_version (version_number, comment) VALUES (312, 'Add testresulttext to labmessage #3820');
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'Add testresulttext to labmessage #3820');
 -- *** Insert new sql commands BEFORE this line ***

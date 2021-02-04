@@ -159,7 +159,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	}
 
 	@Override
-	public List<ExportConfigurationDto> getExportConfigurations(ExportConfigurationCriteria criteria) {
+	public List<ExportConfigurationDto> getExportConfigurations(ExportConfigurationCriteria criteria, boolean isPublic) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -171,8 +171,16 @@ public class ExportFacadeEjb implements ExportFacade {
 		Root<ExportConfiguration> config = cq.from(ExportConfiguration.class);
 
 		Predicate criteriaFilters = buildExportConfigurationCriteriaFilter(criteria, cb, config);
-		Predicate filters = CriteriaBuilderHelper.and(cb, criteriaFilters, cb.equal(config.get(ExportConfiguration.USER), user));
-
+		Predicate filters;
+		if (isPublic) {
+			filters = CriteriaBuilderHelper.and(
+					cb,
+					criteriaFilters,
+					cb.equal(config.get(ExportConfiguration.SHARED_TO_PUBLIC), true),
+					cb.notEqual(config.get(ExportConfiguration.USER), user));
+		} else {
+			filters = CriteriaBuilderHelper.and(cb, criteriaFilters, cb.equal(config.get(ExportConfiguration.USER), user));
+		}
 		cq.where(filters);
 		cq.orderBy(cb.desc(config.get(ExportConfiguration.CHANGE_DATE)));
 
@@ -199,6 +207,7 @@ public class ExportFacadeEjb implements ExportFacade {
 			DtoHelper.fillOrBuildEntity(source, exportConfigurationService.getByUuid(source.getUuid()), ExportConfiguration::new, checkChangeDate);
 
 		target.setName(source.getName());
+		target.setSharedToPublic(source.isSharedToPublic());
 		target.setUser(userService.getByReferenceDto(source.getUser()));
 		target.setExportType(source.getExportType());
 		target.setProperties(source.getProperties());
@@ -216,6 +225,7 @@ public class ExportFacadeEjb implements ExportFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setName(source.getName());
+		target.setSharedToPublic(source.isSharedToPublic());
 		target.setUser(UserFacadeEjb.toReferenceDto(source.getUser()));
 		target.setExportType(source.getExportType());
 		target.setProperties(source.getProperties());
