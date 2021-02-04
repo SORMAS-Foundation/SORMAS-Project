@@ -249,6 +249,8 @@ public interface Captions {
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
+	String CaseData_otherVaccineManufacturer = "CaseData.otherVaccineManufacturer";
+	String CaseData_otherVaccineName = "CaseData.otherVaccineName";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
 	String CaseData_overwriteFollowUpUntil = "CaseData.overwriteFollowUpUntil";
