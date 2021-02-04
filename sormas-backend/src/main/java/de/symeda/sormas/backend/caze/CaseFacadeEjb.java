@@ -3432,12 +3432,18 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * * same externalToken
 	 * * same first name, last name, date of birth, sex (null is considered equal to any sex), disease, reportDate (ignore time), district
 	 *
+	 * The reportDateThreshold allows to return duplicates where
+	 * -reportDateThreshold <= match.reportDate <= reportDateThreshold
+	 *
 	 * @param casePerson
 	 *            - case and person
+	 * @param reportDateThreshold
+	 * 			  - the range bounds on match.reportDate
 	 * @return list of duplicate cases
 	 */
 	@Override
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold) {
+
 		CaseDataDto searchCaze = casePerson.getCaze();
 		PersonDto searchPerson = casePerson.getPerson();
 
@@ -3527,6 +3533,11 @@ public class CaseFacadeEjb implements CaseFacade {
 					getCaseDataByUuid((String) casePersonUuids[0]),
 					personFacade.getPersonByUuid((String) casePersonUuids[1])))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+		return getDuplicates(casePerson, 0);
 	}
 
 	@LocalBean
