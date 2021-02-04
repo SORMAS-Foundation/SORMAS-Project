@@ -6296,10 +6296,45 @@ ALTER TABLE exportconfiguration_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
 
+-- 2021-01-11 Add testresulttext to labmessage #3820
+ALTER TABLE labmessage ADD COLUMN testresulttext TEXT;
+ALTER TABLE labmessage_history ADD COLUMN testresulttext TEXT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'Add testresulttext to labmessage #3820');
+
+-- 2021-02-03 Activate vaccination status for COVID-19 cases, contacts and event participant #4137
+ALTER TABLE cases
+    RENAME COLUMN vaccinationdate TO lastvaccinationdate;
+ALTER TABLE cases
+    ADD COLUMN firstvaccinationdate timestamp,
+    ADD COLUMN vaccinename varchar(255),
+    ADD COLUMN othervaccinename text,
+    ADD COLUMN vaccinemanufacturer varchar(255),
+    ADD COLUMN othervaccinemanufacturer text,
+    ADD COLUMN vaccineinn text,
+    ADD COLUMN vaccinebatchnumber text,
+    ADD COLUMN vaccineuniicode text,
+    ADD COLUMN vaccineatccode text;
+
+ALTER TABLE cases_history
+    RENAME COLUMN vaccinationdate TO lastvaccinationdate;
+ALTER TABLE cases_history
+    ADD COLUMN firstvaccinationdate timestamp,
+    ADD COLUMN vaccinename varchar(255),
+    ADD COLUMN othervaccinename text,
+    ADD COLUMN vaccinemanufacturer varchar(255),
+    ADD COLUMN othervaccinemanufacturer text,
+    ADD COLUMN vaccineinn text,
+    ADD COLUMN vaccinebatchnumber text,
+    ADD COLUMN vaccineuniicode text,
+    ADD COLUMN vaccineatccode text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (315, 'Activate vaccination status for COVID-19 cases, contacts and event participant #4137');
+
 -- 2021-01-07 Change event's surveillanceOfficer to responsibleUser allow more roles to be it #3827
 ALTER TABLE events RENAME surveillanceofficer_id to responsibleuser_id;
 ALTER TABLE events_history RENAME surveillanceofficer_id to responsibleuser_id;
 
-INSERT INTO schema_version (version_number, comment) VALUES (314, 'Change event''s surveillanceOfficer to responsibleUser allow more roles to be it #3827');
+INSERT INTO schema_version (version_number, comment) VALUES (316, 'Change event''s surveillanceOfficer to responsibleUser allow more roles to be it #3827');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -65,7 +65,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			totalValuesWithoutStacks = true;
 		}
 
-		showAsColumnChart = DiagramType.values().length > 0 && DiagramType.COLUMN == DiagramType.values()[0];
+		showAsColumnChart = DiagramType.COLUMN == diagramDefinition.getDiagramType();
 		campaignColumnChart = new HighChart();
 
 		setSizeFull();
