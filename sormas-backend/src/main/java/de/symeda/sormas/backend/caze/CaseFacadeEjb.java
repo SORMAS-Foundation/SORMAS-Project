@@ -72,6 +72,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -3432,12 +3433,18 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * * same externalToken
 	 * * same first name, last name, date of birth, sex (null is considered equal to any sex), disease, reportDate (ignore time), district
 	 *
+	 * The reportDateThreshold allows to return duplicates where
+	 * -reportDateThreshold <= match.reportDate <= reportDateThreshold
+	 *
 	 * @param casePerson
 	 *            - case and person
+	 * @param reportDateThreshold
+	 * 			  - the range bounds on match.reportDate
 	 * @return list of duplicate cases
 	 */
 	@Override
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold) {
+
 		CaseDataDto searchCaze = casePerson.getCaze();
 		PersonDto searchPerson = casePerson.getPerson();
 
@@ -3502,13 +3509,32 @@ public class CaseFacadeEjb implements CaseFacade {
 					and(cb, personPredicate, or(cb, cb.isNull(person.get(Person.SEX)), cb.equal(person.get(Person.SEX), searchPerson.getSex())));
 			}
 
+			Predicate reportDatePredicate;
+
+			if (reportDateThreshold == 0){
+				// threshold is zero: we want to get exact matches
+				reportDatePredicate = cb.equal(
+						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+						cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))
+				);
+			} else{
+				// threshold is nonzero: apply time range of threshold to the reportDate
+				Date reportDate = casePerson.getCaze().getReportDate();
+				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
+				Date dateAfter= new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
+
+				reportDatePredicate = cb.between(
+						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+						cb.function("date", Date.class, cb.literal(dateBefore)),
+						cb.function("date", Date.class, cb.literal(dateAfter))
+				);
+			}
+
 			combinedPredicate = and(
 				cb,
 				personPredicate,
 				cb.equal(caseRoot.get(Case.DISEASE), searchCaze.getDisease()),
-				cb.equal(
-					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-					cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))),
+				reportDatePredicate,
 				cb.equal(caseCaseJoins.getDistrict().get(District.UUID), searchCaze.getDistrict().getUuid()));
 		}
 
@@ -3527,6 +3553,11 @@ public class CaseFacadeEjb implements CaseFacade {
 					getCaseDataByUuid((String) casePersonUuids[0]),
 					personFacade.getPersonByUuid((String) casePersonUuids[1])))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+		return getDuplicates(casePerson, 0);
 	}
 
 	@LocalBean
