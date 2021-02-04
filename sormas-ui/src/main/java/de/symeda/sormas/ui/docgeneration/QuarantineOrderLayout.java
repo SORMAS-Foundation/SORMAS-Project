@@ -81,15 +81,23 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		sampleSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Sample));
 		sampleSelector.setWidth(100F, Unit.PERCENTAGE);
 		sampleSelector.setItems(samples);
+		sampleSelector.setEnabled(!samples.isEmpty());
 		sampleSelector.addValueChangeListener(e -> {
 			pathogenTestSelector.clear();
 			if (e != null && e.getValue() != null) {
-				pathogenTestSelector.setItems(FacadeProvider.getPathogenTestFacade().getAllBySample(e.getValue().toReference()));
-				pathogenTestSelector.setEnabled(true);
+				List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(e.getValue().toReference());
+				pathogenTestSelector.setItems(pathogenTests);
+				pathogenTestSelector.setEnabled(!pathogenTests.isEmpty());
+				if (pathogenTests.size() == 1) {
+					pathogenTestSelector.setSelectedItem(pathogenTests.get(0));
+				}
 			} else {
 				pathogenTestSelector.setEnabled(false);
 			}
 		});
+		if (samples.size() == 1) {
+			sampleSelector.setSelectedItem(samples.get(0));
+		}
 
 		additionalParametersComponent.addComponent(sampleSelector);
 		additionalParametersComponent.addComponent(pathogenTestSelector);
