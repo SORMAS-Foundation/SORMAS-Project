@@ -100,8 +100,6 @@ BEGIN
 
     --### event participant child entities
     EXECUTE 'INSERT INTO delete_cleanup (SELECT ''samples'', id FROM samples WHERE associatedeventparticipant_id IN (SELECT id FROM delete_cleanup WHERE table_name = ''eventparticipant'') AND associatedcontact_id is NULL AND associatedcase_id is NULL)';
-    EXECUTE 'INSERT INTO delete_cleanup (SELECT ''event'', event_id FROM eventparticipant WHERE id IN (SELECT id FROM delete_cleanup WHERE table_name = ''eventparticipant'')
-      and not exists (select 1 from eventparticipant ep where ep.event_id = event_id and ep.id <> id))';
     EXECUTE 'INSERT INTO delete_cleanup (SELECT ''person'', mEp.person_id FROM eventparticipant mEp WHERE mEp.id IN (SELECT id FROM delete_cleanup WHERE table_name = ''eventparticipant'')
       and not exists (select 1 from cases c where c.person_id = mEp.person_id)
       and not exists (select 1 from contact ct where ct.person_id = mEp.person_id)
