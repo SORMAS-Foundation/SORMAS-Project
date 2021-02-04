@@ -1582,16 +1582,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			c.setReportDate(new DateTime(now).minusDays(1).toDate());
 		});
 
-		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
-			c.setPerson(creator.createPerson().toReference());
-			c.setDisease(Disease.CHOLERA);
-		});
-
-		creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), rdcf, (c) -> {
-			c.setPerson(person.toReference());
-			c.setDisease(Disease.CHOLERA);
-		});
-
 		CasePersonDto casePerson = new CasePersonDto();
 		PersonDto duplicatePerson = PersonDto.build();
 		CaseDataDto duplicateCaze = CaseDataDto.build(duplicatePerson.toReference(), Disease.CORONAVIRUS);
