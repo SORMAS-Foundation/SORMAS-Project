@@ -81,6 +81,7 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -162,7 +163,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.DISEASE_DETAILS,
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.DENGUE_FEVER_TYPE,
-									CaseDataDto.RABIES_TYPE))) +
+									CaseDataDto.RABIES_TYPE)),
+							fluidColumnLoc(6, 0, CaseDataDto.DISEASE_VARIANT)) +
 					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORTING_TYPE, CaseDataDto.REPORTING_DISTRICT) +
@@ -321,6 +323,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
+		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
+		diseaseVariantField.setNullSelectionAllowed(true);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
@@ -757,6 +761,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(Vaccination.VACCINATED),
 				true);
 		}
+		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
+			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
+			List<DiseaseVariantReferenceDto> variants;
+			if (disease != null && disease.isVariantAllowed()) {
+				variants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+			} else {
+				variants = Collections.emptyList();
+			}
+			FieldHelper.updateItems(diseaseVariantField, variants);
+			diseaseVariantField.setVisible(isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && !variants.isEmpty());
+		});
 		if (isVisibleAllowed(CaseDataDto.DISEASE_DETAILS)) {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);

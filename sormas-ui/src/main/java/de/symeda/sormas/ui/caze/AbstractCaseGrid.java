@@ -185,6 +185,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.EXTERNAL_ID,
 				CaseIndexDto.EXTERNAL_TOKEN,
 				DISEASE_SHORT,
+				CaseIndexDto.DISEASE_VARIANT,
 				CaseIndexDto.CASE_CLASSIFICATION,
 				CaseIndexDto.OUTCOME,
 				CaseIndexDto.INVESTIGATION_STATUS),

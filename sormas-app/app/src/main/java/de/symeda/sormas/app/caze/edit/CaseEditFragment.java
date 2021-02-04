@@ -67,6 +67,7 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelpe
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -91,6 +92,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> caseOutcomeList;
 	private List<Item> vaccinationInfoSourceList;
 	private List<Item> diseaseList;
+	private List<Item> diseaseVariantList;
 	private List<Item> plagueTypeList;
 	private List<Item> dengueFeverTypeList;
 	private List<Item> humanRabiesTypeList;
@@ -259,6 +261,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		diseaseVariantList = DataUtils.toItems(diseaseVariants);
+		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
+			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
+		}
 
 		caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
@@ -329,8 +336,15 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 						new ConfirmationDialog(thisActivity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
 					dlg.setCancelable(false);
 					dlg.setNegativeCallback(() -> contentBinding.caseDataDisease.setValue(currentDisease));
-					dlg.setPositiveCallback(() -> this.currentDisease = null);
+					dlg.setPositiveCallback(() -> {
+						this.currentDisease = null;
+
+						updateDiseaseVariantsField(contentBinding);
+					});
 					dlg.show();
+				} else if (this.currentDisease == null) {
+					// It means the disease were already changed
+					updateDiseaseVariantsField(contentBinding);
 				}
 			}
 		});
@@ -492,6 +506,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		// Initialize ControlSpinnerFields
 		contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+		contentBinding.caseDataDiseaseVariant.initializeSpinner(diseaseVariantList);
 		contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
 		contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
@@ -559,6 +574,15 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		// vaccination
 		contentBinding.caseDataVaccineName.initializeSpinner(vaccineList);
 		contentBinding.caseDataVaccineManufacturer.initializeSpinner(vaccineManufacturerList);
+	}
+
+	private void updateDiseaseVariantsField(FragmentCaseEditLayoutBinding contentBinding) {
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getDiseaseVariantDao().getAllByDisease(record.getDisease());
+		diseaseVariantList.clear();
+		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
+		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);
+		contentBinding.caseDataDiseaseVariant.setValue(null);
+		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
 	}
 
 	@Override
