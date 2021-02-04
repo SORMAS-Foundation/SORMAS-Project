@@ -6371,10 +6371,5 @@ UPDATE exposures SET exposureRole = 'STAFF' WHERE exposureRole = 'WORKING_AT';
 UPDATE exposures SET exposureRole = 'GUEST' WHERE exposureRole = 'ACCOMMODATED_IN';
 UPDATE exposures SET exposureRole = 'PATIENT' WHERE exposureRole = 'CARED_FOR';
 
-UPDATE exposures_history SET exposureRole = NULL WHERE exposureRole = 'NOT_COLLECTED';
-UPDATE exposures_history SET exposureRole = 'STAFF' WHERE exposureRole = 'WORKING_AT';
-UPDATE exposures_history SET exposureRole = 'GUEST' WHERE exposureRole = 'ACCOMMODATED_IN';
-UPDATE exposures_history SET exposureRole = 'PATIENT' WHERE exposureRole = 'CARED_FOR';
-
 INSERT INTO schema_version (version_number, comment) VALUES (314, '[SurvNet Interface] Change title of role field in exposures and add new field #4036');
 -- *** Insert new sql commands BEFORE this line ***
