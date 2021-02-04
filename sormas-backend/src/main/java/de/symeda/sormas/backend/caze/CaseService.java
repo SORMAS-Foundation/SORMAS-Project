@@ -47,6 +47,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.disease.DiseaseVariant;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -503,6 +504,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, Community> community = joins.getCommunity();
 		Join<Case, Facility> facility = joins.getFacility();
 		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		Join<Case, DiseaseVariant> diseaseVariant = joins.getDiseaseVariant();
 
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
@@ -513,6 +515,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
+		}
+		if (caseCriteria.getDiseaseVariant() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(diseaseVariant.get(DiseaseVariant.UUID), caseCriteria.getDiseaseVariant().getUuid()));
 		}
 		if (caseCriteria.getOutcome() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));

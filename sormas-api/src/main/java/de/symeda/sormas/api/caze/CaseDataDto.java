@@ -31,6 +31,8 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.disease.DiseaseVariantDto;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -78,6 +80,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
@@ -189,6 +192,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	@Required
 	private Disease disease;
+	private DiseaseVariantReferenceDto diseaseVariant;
 	@Outbreaks
 	private String diseaseDetails;
 	@Diseases({
@@ -722,6 +726,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public DiseaseVariantReferenceDto getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public String getDiseaseDetails() {

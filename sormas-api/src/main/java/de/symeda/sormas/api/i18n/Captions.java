@@ -212,6 +212,7 @@ public interface Captions {
 	String CaseData_covidTestReasonDetails = "CaseData.covidTestReasonDetails";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
@@ -1221,6 +1222,7 @@ public interface Captions {
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
+	String PathogenTest_typingId = "PathogenTest.typingId";
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";
