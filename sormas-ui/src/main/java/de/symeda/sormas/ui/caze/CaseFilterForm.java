@@ -4,7 +4,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 
 import com.vaadin.server.Page;
@@ -20,7 +22,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -28,6 +30,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -88,6 +91,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.CASE_ORIGIN,
 			CaseDataDto.OUTCOME,
 			CaseDataDto.DISEASE,
+			CaseDataDto.DISEASE_VARIANT,
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.FOLLOW_UP_STATUS,
 			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE,
@@ -106,6 +110,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
+		ComboBox diseaseVariantField = addField(FieldConfiguration.pixelSized(CaseDataDto.DISEASE_VARIANT, 140), ComboBox.class);
 
 		if (isConfiguredServer("de")) {
 			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
@@ -454,6 +459,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				}
 			}
 		}
+		case CaseDataDto.DISEASE: {
+			ComboBox field = getField(CaseDataDto.DISEASE_VARIANT);
+			Disease disease = (Disease) event.getProperty().getValue();
+			if (disease == null) {
+				FieldHelper.updateItems(field, Collections.emptyList());
+				FieldHelper.setEnabled(false, field);
+			} else {
+				List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+				FieldHelper.updateItems(field, diseaseVariants);
+				FieldHelper.setEnabled(!diseaseVariants.isEmpty(), field);
+			}
+		}
 		}
 	}
 
@@ -593,6 +610,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		} else {
 			birthDateDD.clear();
 			birthDateDD.setEnabled(false);
+		}
+
+		ComboBox diseaseField = getField(CaseDataDto.DISEASE);
+		ComboBox diseaseVariantField = getField(CaseDataDto.DISEASE_VARIANT);
+		Disease disease = (Disease) diseaseField.getValue();
+		if (disease == null) {
+			FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
+			FieldHelper.setEnabled(false, diseaseVariantField);
+		} else {
+			List<DiseaseVariantReferenceDto> diseaseVariants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			FieldHelper.setEnabled(!diseaseVariants.isEmpty(), diseaseVariantField);
 		}
 	}
 

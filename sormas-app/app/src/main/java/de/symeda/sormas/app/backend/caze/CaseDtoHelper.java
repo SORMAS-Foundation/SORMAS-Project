@@ -27,6 +27,7 @@ import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.disease.DiseaseVariantDtoHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -100,6 +101,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(DatabaseHelper.getDiseaseVariantDao().getByReferenceDto(source.getDiseaseVariant()));
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
@@ -236,6 +238,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setInvestigationStatus(source.getInvestigationStatus());
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(DiseaseVariantDtoHelper.toReferenceDto(source.getDiseaseVariant()));
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());

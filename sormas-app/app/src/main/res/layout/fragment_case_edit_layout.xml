@@ -222,6 +222,11 @@
                     app:dependencyParentValue="@{Disease.RABIES}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_diseaseVariant"
+                    app:value="@={data.diseaseVariant}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
                 <LinearLayout

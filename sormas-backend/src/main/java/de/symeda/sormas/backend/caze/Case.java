@@ -72,6 +72,7 @@ import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -106,6 +107,7 @@ public class Case extends CoreAdo {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String RABIES_TYPE = "rabiesType";
@@ -209,6 +211,7 @@ public class Case extends CoreAdo {
 	private Person person;
 	private String description;
 	private Disease disease;
+	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
@@ -387,6 +390,16 @@ public class Case extends CoreAdo {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	@ManyToOne(cascade = {})
+	@JoinColumn(nullable = true)
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
