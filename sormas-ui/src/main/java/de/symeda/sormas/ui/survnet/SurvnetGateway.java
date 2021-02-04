@@ -15,7 +15,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -133,6 +136,31 @@ public class SurvnetGateway {
 		}
 
 		Notification.show(I18nProperties.getCaption(Captions.SurvnetGateway_title), message, type);
+	}
+
+	public static <T extends EntityDto> void deleteInSurvnet(SurvnetGatewayType gatewayType, List<T> entities) {
+		int statusCode;
+
+		switch (gatewayType) {
+			case CASES:
+				statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteCases((List<CaseDataDto>) entities);
+				break;
+			case EVENTS:
+				statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteEvents((List<EventDto>) entities);
+				break;
+			default:
+				throw new IllegalArgumentException(gatewayType.toString());
+		}
+
+		switch (statusCode) {
+			case HttpServletResponse.SC_OK:
+			case HttpServletResponse.SC_NO_CONTENT:
+				return;
+			case HttpServletResponse.SC_BAD_REQUEST:
+				throw new RuntimeException("Invalid request for deleting " + gatewayType);
+			default:
+				throw new RuntimeException("Unknown exception when deleting " + gatewayType);
+		}
 	}
 
 }

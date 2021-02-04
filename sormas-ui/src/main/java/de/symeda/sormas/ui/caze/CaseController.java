@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -116,6 +117,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import javax.transaction.Transactional;
 
 public class CaseController {
 
@@ -858,8 +861,15 @@ public class CaseController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteListener(() -> {
-				FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
-				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
+				try {
+					deleteCase(caze);
+					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
+				} catch (Exception e) {
+					Notification.show(
+							String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(caze.getUuid())),
+							"",
+							Type.ERROR_MESSAGE);
+				}
 			}, I18nProperties.getString(Strings.entityCase));
 		}
 
@@ -884,6 +894,14 @@ public class CaseController {
 
 			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
 			editView.getButtonsPanel().setComponentAlignment(btnReferToFacility, Alignment.BOTTOM_LEFT);
+		}
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	private void deleteCase(CaseDataDto caze) {
+		FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
+		if (FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled() && caze.getDisease() == Disease.CORONAVIRUS) {
+			SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.CASES, Collections.singletonList(caze));
 		}
 	}
 
@@ -1186,15 +1204,25 @@ public class CaseController {
 		} else {
 			VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()), () -> {
-					for (CaseIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid());
+					String caseUuid = null;
+					try {
+						for (CaseIndexDto selectedRow : selectedRows) {
+							caseUuid = selectedRow.getUuid();
+							deleteCase(FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid));
+						}
+						callback.run();
+						new Notification(
+								I18nProperties.getString(Strings.headingCasesDeleted),
+								I18nProperties.getString(Strings.messageCasesDeleted),
+								Type.HUMANIZED_MESSAGE,
+								false).show(Page.getCurrent());
+					} catch (Exception e) {
+						Notification.show(
+								String.format(I18nProperties.getString(Strings.SurvnetGateway_notificationEntryNotDeleted), DataHelper.getShortUuid(caseUuid)),
+								"",
+								Type.ERROR_MESSAGE);
 					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingCasesDeleted),
-						I18nProperties.getString(Strings.messageCasesDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
+
 				});
 		}
 	}

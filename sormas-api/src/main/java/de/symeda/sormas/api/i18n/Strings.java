@@ -910,8 +910,11 @@ public interface Strings {
 	String reportedOn = "reportedOn";
 	String step = "step";
 	String SurvnetGateway_confirmSend = "SurvnetGateway.confirmSend";
+	String SurvnetGateway_notificationEntryDeleted = "SurvnetGateway.notificationEntryDeleted";
+	String SurvnetGateway_notificationEntryNotDeleted = "SurvnetGateway.notificationEntryNotDeleted";
 	String SurvnetGateway_notificationEntryNotSent = "SurvnetGateway.notificationEntryNotSent";
 	String SurvnetGateway_notificationEntrySent = "SurvnetGateway.notificationEntrySent";
+	String SurvnetGateway_notificationErrorDeleting = "SurvnetGateway.notificationErrorDeleting";
 	String SurvnetGateway_notificationErrorSending = "SurvnetGateway.notificationErrorSending";
 	String SurvnetGateway_unableToSend = "SurvnetGateway.unableToSend";
 	String text = "text";

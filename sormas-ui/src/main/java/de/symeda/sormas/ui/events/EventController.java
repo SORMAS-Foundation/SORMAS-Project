@@ -19,11 +19,15 @@ package de.symeda.sormas.ui.events;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.ui.survnet.SurvnetGateway;
+import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -465,6 +469,9 @@ public class EventController {
 			editView.addDeleteListener(() -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
+					if(event.getEventStatus() == EventStatus.CLUSTER && FacadeProvider.getSurvnetGatewayFacade().isFeatureEnabled()) {
+						SurvnetGateway.deleteInSurvnet(SurvnetGatewayType.EVENTS, Collections.singletonList(event));
+					}
 				} else {
 					VaadinUiUtil.showSimplePopupWindow(
 						I18nProperties.getString(Strings.headingEventNotDeleted),
