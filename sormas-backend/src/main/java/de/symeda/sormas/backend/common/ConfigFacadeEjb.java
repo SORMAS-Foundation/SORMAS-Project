@@ -540,7 +540,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	    return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
 	}
 
-	public boolean getCreateDefaultUsers(){
+	public boolean isCreateDefaultUsers(){
 	    return getBoolean(CREATE_DEFAULT_USERS,true);
 	}
 

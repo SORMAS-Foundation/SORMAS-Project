@@ -340,6 +340,20 @@ public class StartupShutdownService {
 
 		if (userService.count() == 0) {
 
+			// Create Admin
+			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
+			admin.setUserName("admin");
+			userService.persist(admin);
+			userUpdateEvent.fire(new UserUpdateEvent(admin));
+
+
+			if (!configFacade.isCreateDefaultUsers()) {
+				// return if getCreateDefaultUsers() is false
+				logger.info("Skipping the creation of default users");
+				return;
+			}
+
+
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
@@ -348,19 +362,6 @@ public class StartupShutdownService {
 			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
 			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
-
-			// Create Admin
-			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
-			admin.setUserName("admin");
-			userService.persist(admin);
-			userUpdateEvent.fire(new UserUpdateEvent(admin));
-
-
-			if (!configFacade.getCreateDefaultUsers()) {
-				// return if getCreateDefaultUsers() is false
-				logger.info("Skipping the creation of default users");
-				return;
-			}
 
 			logger.info("Create default users");
 
