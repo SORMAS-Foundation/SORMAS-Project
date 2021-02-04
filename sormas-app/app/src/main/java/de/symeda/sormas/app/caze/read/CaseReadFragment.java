@@ -108,7 +108,8 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			contentBinding.caseButtonsPanel.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+				&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
 			contentBinding.caseDataExternalToken.setVisibility(GONE);
 		} else {
