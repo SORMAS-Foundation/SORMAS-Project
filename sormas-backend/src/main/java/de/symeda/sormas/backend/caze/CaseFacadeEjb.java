@@ -72,6 +72,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -3508,13 +3509,32 @@ public class CaseFacadeEjb implements CaseFacade {
 					and(cb, personPredicate, or(cb, cb.isNull(person.get(Person.SEX)), cb.equal(person.get(Person.SEX), searchPerson.getSex())));
 			}
 
+			Predicate reportDatePredicate;
+
+			if (reportDateThreshold == 0){
+				// threshold is zero: we want to get exact matches
+				reportDatePredicate = cb.equal(
+						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+						cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))
+				);
+			} else{
+				// threshold is nonzero: apply time range of threshold to the reportDate
+				Date reportDate = casePerson.getCaze().getReportDate();
+				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
+				Date dateAfter= new DateTime(reportDate).plusDays(reportDateThreshold).toDate();;
+
+				reportDatePredicate = cb.between(
+						cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
+						cb.function("date", Date.class, cb.literal(dateBefore)),
+						cb.function("date", Date.class, cb.literal(dateAfter))
+				);
+			}
+
 			combinedPredicate = and(
 				cb,
 				personPredicate,
 				cb.equal(caseRoot.get(Case.DISEASE), searchCaze.getDisease()),
-				cb.equal(
-					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-					cb.function("date", Date.class, cb.literal(searchCaze.getReportDate()))),
+				reportDatePredicate,
 				cb.equal(caseCaseJoins.getDistrict().get(District.UUID), searchCaze.getDistrict().getUuid()));
 		}
 
