@@ -6296,6 +6296,72 @@ ALTER TABLE exportconfiguration_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (313, 'Allow specific users to create public custom exports #1754');
 
+-- 2021-01-11 Add testresulttext to labmessage #3820
+ALTER TABLE labmessage ADD COLUMN testresulttext TEXT;
+ALTER TABLE labmessage_history ADD COLUMN testresulttext TEXT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (314, 'Add testresulttext to labmessage #3820');
+
+-- 2021-02-03 Activate vaccination status for COVID-19 cases, contacts and event participant #4137
+ALTER TABLE cases
+    RENAME COLUMN vaccinationdate TO lastvaccinationdate;
+ALTER TABLE cases
+    ADD COLUMN firstvaccinationdate timestamp,
+    ADD COLUMN vaccinename varchar(255),
+    ADD COLUMN othervaccinename text,
+    ADD COLUMN vaccinemanufacturer varchar(255),
+    ADD COLUMN othervaccinemanufacturer text,
+    ADD COLUMN vaccineinn text,
+    ADD COLUMN vaccinebatchnumber text,
+    ADD COLUMN vaccineuniicode text,
+    ADD COLUMN vaccineatccode text;
+
+ALTER TABLE cases_history
+    RENAME COLUMN vaccinationdate TO lastvaccinationdate;
+ALTER TABLE cases_history
+    ADD COLUMN firstvaccinationdate timestamp,
+    ADD COLUMN vaccinename varchar(255),
+    ADD COLUMN othervaccinename text,
+    ADD COLUMN vaccinemanufacturer varchar(255),
+    ADD COLUMN othervaccinemanufacturer text,
+    ADD COLUMN vaccineinn text,
+    ADD COLUMN vaccinebatchnumber text,
+    ADD COLUMN vaccineuniicode text,
+    ADD COLUMN vaccineatccode text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (315, 'Activate vaccination status for COVID-19 cases, contacts and event participant #4137');
+
+-- 2021-01-19 Add DiseaseVariant entity #4042
+CREATE TABLE diseasevariant(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	disease varchar(255) not null,
+	name varchar(512) not null,
+	sys_period tstzrange not null,
+	primary key(id));
+
+ALTER TABLE diseasevariant OWNER TO sormas_user;
+
+CREATE TABLE diseasevariant_history (LIKE diseasevariant);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON diseasevariant
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseasevariant_history', true);
+ALTER TABLE diseasevariant_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN diseasevariant_id bigint;
+ALTER TABLE cases_history ADD COLUMN diseasevariant_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_diseasevariant_id FOREIGN KEY (diseasevariant_id) REFERENCES diseasevariant(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (316, 'Add DiseaseVariant entity #4042');
+
+ -- 2020-02-03
+ALTER TABLE pathogentest ADD COLUMN typingId text;
+ALTER TABLE pathogentest_history ADD COLUMN typingId text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (317, 'Add typing ID to pathogen tests #3957');
+
 --2020-02-02
 ALTER TABLE exposures RENAME patientexpositionrole TO exposureRole;
 ALTER TABLE exposures_history RENAME patientexpositionrole TO exposureRole;
