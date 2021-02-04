@@ -128,6 +128,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SURVNET_GATEWAY_URL = "survnet.url";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
+	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -535,6 +536,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public int getDashboardMapMarkerLimit() {
 		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
+	}
+
+	@Override
+	public boolean isAuditorAttributeLoggingEnabled() {
+		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
 	}
 
 	@LocalBean
