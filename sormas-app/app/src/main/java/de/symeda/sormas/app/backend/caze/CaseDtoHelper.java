@@ -138,7 +138,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setVaccinationDate(source.getVaccinationDate());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
 		target.setEpidNumber(source.getEpidNumber());
 		target.setCaseOrigin(source.getCaseOrigin());
 
@@ -350,7 +359,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setVaccinationDate(source.getVaccinationDate());
+		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
+		target.setLastVaccinationDate(source.getLastVaccinationDate());
+		target.setVaccineName(source.getVaccineName());
+		target.setOtherVaccineName(source.getOtherVaccineName());
+		target.setVaccineManufacturer(source.getVaccineManufacturer());
+		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
+		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
+		target.setVaccineUniiCode(source.getVaccineUniiCode());
+		target.setVaccineAtcCode(source.getVaccineAtcCode());
 		target.setEpidNumber(source.getEpidNumber());
 		target.setCaseOrigin(source.getCaseOrigin());
 

@@ -60,6 +60,8 @@ import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -128,8 +130,17 @@ public class Case extends CoreAdo {
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
-	public static final String VACCINATION_DATE = "vaccinationDate";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
+	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
+	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
+	public static final String VACCINE_NAME = "vaccineName";
+	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
+	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
+	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
+	public static final String VACCINE_INN = "vaccineInn";
+	public static final String VACCINE_BATCH_NUMBER = "vaccineBatchNumber";
+	public static final String VACCINE_UNII_CODE = "vaccineUniiCode";
+	public static final String VACCINE_ATC_CODE = "vaccineAtcCode";
 	public static final String WHICH_VACCINE = "whichVaccine";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
@@ -255,7 +266,16 @@ public class Case extends CoreAdo {
 	private Vaccination vaccination;
 	private String vaccinationDoses;
 	private VaccinationInfoSource vaccinationInfoSource;
-	private Date vaccinationDate;
+	private Date firstVaccinationDate;
+	private Date lastVaccinationDate;
+	private Vaccine vaccineName;
+	private String otherVaccineName;
+	private VaccineManufacturer vaccineManufacturer;
+	private String otherVaccineManufacturer;
+	private String vaccineInn;
+	private String vaccineBatchNumber;
+	private String vaccineUniiCode;
+	private String vaccineAtcCode;
 	private String vaccine;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
@@ -785,12 +805,93 @@ public class Case extends CoreAdo {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	public Date getVaccinationDate() {
-		return vaccinationDate;
+	public Date getFirstVaccinationDate() {
+		return firstVaccinationDate;
 	}
 
-	public void setVaccinationDate(Date vaccinationDate) {
-		this.vaccinationDate = vaccinationDate;
+	public void setFirstVaccinationDate(Date firstVaccinationDate) {
+		this.firstVaccinationDate = firstVaccinationDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getLastVaccinationDate() {
+		return lastVaccinationDate;
+	}
+
+	public void setLastVaccinationDate(Date vaccinationDate) {
+		this.lastVaccinationDate = vaccinationDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Vaccine getVaccineName() {
+		return vaccineName;
+	}
+
+	public void setVaccineName(Vaccine vaccineName) {
+		this.vaccineName = vaccineName;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getOtherVaccineName() {
+		return otherVaccineName;
+	}
+
+	public void setOtherVaccineName(String otherVaccineName) {
+		this.otherVaccineName = otherVaccineName;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VaccineManufacturer getVaccineManufacturer() {
+		return vaccineManufacturer;
+	}
+
+	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
+		this.vaccineManufacturer = vaccineManufacturer;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getOtherVaccineManufacturer() {
+		return otherVaccineManufacturer;
+	}
+
+	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
+		this.otherVaccineManufacturer = otherVaccineManufacturer;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getVaccineInn() {
+		return vaccineInn;
+	}
+
+	public void setVaccineInn(String vaccineInn) {
+		this.vaccineInn = vaccineInn;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getVaccineBatchNumber() {
+		return vaccineBatchNumber;
+	}
+
+	public void setVaccineBatchNumber(String vaccineBatchNumber) {
+		this.vaccineBatchNumber = vaccineBatchNumber;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getVaccineUniiCode() {
+		return vaccineUniiCode;
+	}
+
+	public void setVaccineUniiCode(String vaccineUniiCode) {
+		this.vaccineUniiCode = vaccineUniiCode;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getVaccineAtcCode() {
+		return vaccineAtcCode;
+	}
+
+	public void setVaccineAtcCode(String vaccineAtcCode) {
+		this.vaccineAtcCode = vaccineAtcCode;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -1041,7 +1142,9 @@ public class Case extends CoreAdo {
 		return externalToken;
 	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
 
 	@Column
 	public boolean isSharedToCountry() {

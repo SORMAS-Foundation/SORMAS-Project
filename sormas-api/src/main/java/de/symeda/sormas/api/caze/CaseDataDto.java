@@ -105,7 +105,16 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
-	public static final String VACCINATION_DATE = "vaccinationDate";
+	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
+	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
+	public static final String VACCINE_NAME = "vaccineName";
+	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
+	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
+	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
+	public static final String VACCINE_INN = "vaccineInn";
+	public static final String VACCINE_BATCH_NUMBER = "vaccineBatchNumber";
+	public static final String VACCINE_UNII_CODE = "vaccineUniiCode";
+	public static final String VACCINE_ATC_CODE = "vaccineAtcCode";
 	public static final String VACCINE = "vaccine";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
@@ -272,6 +281,7 @@ public class CaseDataDto extends PseudonymizableDto {
 		Disease.RABIES,
 		Disease.UNSPECIFIED_VHF,
 		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
@@ -285,6 +295,7 @@ public class CaseDataDto extends PseudonymizableDto {
 		Disease.RABIES,
 		Disease.UNSPECIFIED_VHF,
 		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
 	private String vaccinationDoses;
@@ -299,9 +310,25 @@ public class CaseDataDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.RABIES,
 		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
-	private Date vaccinationDate;
+	private Date firstVaccinationDate;
+	@Diseases({
+		Disease.AFP,
+		Disease.GUINEA_WORM,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.CSM,
+		Disease.MONKEYPOX,
+		Disease.UNSPECIFIED_VHF,
+		Disease.RABIES,
+		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
+		Disease.OTHER })
+	@Outbreaks
+	private Date lastVaccinationDate;
 	@Diseases({
 		Disease.AFP,
 		Disease.GUINEA_WORM,
@@ -312,8 +339,73 @@ public class CaseDataDto extends PseudonymizableDto {
 		Disease.RABIES,
 		Disease.UNSPECIFIED_VHF,
 		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	private Vaccine vaccineName;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	private String otherVaccineName;
+	@Diseases({
+		Disease.CORONAVIRUS, })
+	private VaccineManufacturer vaccineManufacturer;
+	@Diseases({
+		Disease.CORONAVIRUS, })
+	private String otherVaccineManufacturer;
+	@Diseases({
+		Disease.AFP,
+		Disease.GUINEA_WORM,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.CSM,
+		Disease.RABIES,
+		Disease.UNSPECIFIED_VHF,
+		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
+		Disease.OTHER })
+	private String vaccineInn;
+	@Diseases({
+		Disease.AFP,
+		Disease.GUINEA_WORM,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.CSM,
+		Disease.RABIES,
+		Disease.UNSPECIFIED_VHF,
+		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
+		Disease.OTHER })
+	private String vaccineBatchNumber;
+	@Diseases({
+		Disease.AFP,
+		Disease.GUINEA_WORM,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.CSM,
+		Disease.RABIES,
+		Disease.UNSPECIFIED_VHF,
+		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
+		Disease.OTHER })
+	private String vaccineUniiCode;
+	@Diseases({
+		Disease.AFP,
+		Disease.GUINEA_WORM,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.CSM,
+		Disease.RABIES,
+		Disease.UNSPECIFIED_VHF,
+		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
+		Disease.OTHER })
+	private String vaccineAtcCode;
 	@Diseases({
 		Disease.AFP,
 		Disease.GUINEA_WORM,
@@ -377,8 +469,8 @@ public class CaseDataDto extends PseudonymizableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
 	@HideForCountriesExcept(countries = {
-			COUNTRY_CODE_GERMANY,
-			COUNTRY_CODE_SWITZERLAND })
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private String externalToken;
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
@@ -874,6 +966,70 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
+	public Vaccine getVaccineName() {
+		return vaccineName;
+	}
+
+	public void setVaccineName(Vaccine vaccineName) {
+		this.vaccineName = vaccineName;
+	}
+
+	public String getOtherVaccineName() {
+		return otherVaccineName;
+	}
+
+	public void setOtherVaccineName(String otherVaccineName) {
+		this.otherVaccineName = otherVaccineName;
+	}
+
+	public VaccineManufacturer getVaccineManufacturer() {
+		return vaccineManufacturer;
+	}
+
+	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
+		this.vaccineManufacturer = vaccineManufacturer;
+	}
+
+	public String getOtherVaccineManufacturer() {
+		return otherVaccineManufacturer;
+	}
+
+	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
+		this.otherVaccineManufacturer = otherVaccineManufacturer;
+	}
+
+	public String getVaccineInn() {
+		return vaccineInn;
+	}
+
+	public void setVaccineInn(String vaccineInn) {
+		this.vaccineInn = vaccineInn;
+	}
+
+	public String getVaccineBatchNumber() {
+		return vaccineBatchNumber;
+	}
+
+	public void setVaccineBatchNumber(String vaccineBatchNumber) {
+		this.vaccineBatchNumber = vaccineBatchNumber;
+	}
+
+	public String getVaccineUniiCode() {
+		return vaccineUniiCode;
+	}
+
+	public void setVaccineUniiCode(String vaccineUniiCode) {
+		this.vaccineUniiCode = vaccineUniiCode;
+	}
+
+	public String getVaccineAtcCode() {
+		return vaccineAtcCode;
+	}
+
+	public void setVaccineAtcCode(String vaccineAtcCode) {
+		this.vaccineAtcCode = vaccineAtcCode;
+	}
+
 	public YesNoUnknown getSmallpoxVaccinationScar() {
 		return smallpoxVaccinationScar;
 	}
@@ -890,12 +1046,20 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
 
-	public Date getVaccinationDate() {
-		return vaccinationDate;
+	public Date getFirstVaccinationDate() {
+		return firstVaccinationDate;
 	}
 
-	public void setVaccinationDate(Date vaccinationDate) {
-		this.vaccinationDate = vaccinationDate;
+	public void setFirstVaccinationDate(Date firstVaccinationDate) {
+		this.firstVaccinationDate = firstVaccinationDate;
+	}
+
+	public Date getLastVaccinationDate() {
+		return lastVaccinationDate;
+	}
+
+	public void setLastVaccinationDate(Date lastVaccinationDate) {
+		this.lastVaccinationDate = lastVaccinationDate;
 	}
 
 	public String getVaccine() {
@@ -1035,7 +1199,9 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.externalID = externalID;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,23 +13,38 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.exposure;
+package de.symeda.sormas.api.caze;
+
+import javax.annotation.Nullable;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum GatheringType {
+public enum Vaccine {
 
-	PARTY,
-	RELIGIOUS,
-	MUSICAL,
-	DEMONSTRATION,
-	CARNIVAL,
-	FAIR,
-	SPORTING_EVENT,
+	COMIRNATY(VaccineManufacturer.BIONTECH_PFIZER),
+	MRNA_1273(VaccineManufacturer.MODERNA),
+	OXFORD_ASTRA_ZENECA(VaccineManufacturer.ASTRA_ZENECA),
+	AD26_COV2_S(VaccineManufacturer.JOHNSON_JOHNSON),
+	NVX_COV_2373(VaccineManufacturer.NOVAVAX),
+	SANOFI_GSK(VaccineManufacturer.SANOFI_GSK),
+	UNKNOWN,
 	OTHER;
+
+	@Nullable
+	private VaccineManufacturer manufacturer;
+
+	Vaccine() {
+	}
+
+	Vaccine(VaccineManufacturer manufacturer) {
+		this.manufacturer = manufacturer;
+	}
+
+	public VaccineManufacturer getManufacturer() {
+		return manufacturer;
+	}
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

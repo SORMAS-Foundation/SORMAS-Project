@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.labmessage;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
@@ -54,6 +55,7 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
+	public static final String TEST_RESULT_TEXT = "testResultText";
 
 	private Date messageDateTime;
 	private Date sampleDateTime;
@@ -83,6 +85,7 @@ public class LabMessage extends AbstractDomainObject {
 	private String labMessageDetails;
 
 	private boolean processed;
+	private String testResultText;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getMessageDateTime() {
@@ -316,5 +319,14 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setProcessed(boolean processed) {
 		this.processed = processed;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getTestResultText() {
+		return testResultText;
+	}
+
+	public void setTestResultText(String testResultText) {
+		this.testResultText = testResultText;
 	}
 }

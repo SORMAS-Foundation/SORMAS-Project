@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.docgeneration;
 
+import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -102,7 +103,7 @@ public class TemplateEngineTest {
 					Properties properties = new Properties();
 					properties.load(new FileInputStream(new File(testcaseProperties.toURI())));
 					deserializeObjects(properties);
-					String testCaseText = testCaseRunner.getGeneratedText(testCase, properties);
+					String testCaseText = cleanLineSeparators(testCaseRunner.getGeneratedText(testCase, properties));
 
 					String expected = getComparisonText(new File(testcaseCmpText.toURI()));
 					assertEquals(testcaseBasename + ": generated text does not match.", expected, testCaseText);
@@ -198,6 +199,6 @@ public class TemplateEngineTest {
 	private String getComparisonText(File testcaseCmpText) throws IOException {
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(new FileInputStream(testcaseCmpText), writer, "UTF-8");
-		return writer.toString().replaceAll("\\r\\n?", "\n");
+		return cleanLineSeparators(writer.toString());
 	}
 }
