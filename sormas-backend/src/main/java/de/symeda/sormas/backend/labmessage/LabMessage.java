@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.labmessage;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
@@ -320,7 +321,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.processed = processed;
 	}
 
-	@Column
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getTestResultText() {
 		return testResultText;
 	}
