@@ -35,6 +35,8 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
@@ -214,9 +216,10 @@ public class LocationDialog extends FormDialog {
                     ConfirmationDialog confirmationDialog = new ConfirmationDialog(
                             getActivity(),
                             R.string.heading_location,
-                            R.string.message_location_address_override_with_facility_one,
+                            0,
                             R.string.action_confirm,
                             R.string.action_cancel);
+                    confirmationDialog.getConfig().setSubHeading(I18nProperties.getString(Strings.confirmationLocationFacilityAddressOverride));
                     confirmationDialog.setPositiveCallback(() -> {
                         overrideLocationDetailsWithFacilityOnes(facility);
                     });
