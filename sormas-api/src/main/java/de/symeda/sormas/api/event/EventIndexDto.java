@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class EventIndexDto extends PseudonymizableIndexDto implements Serializable {
@@ -51,6 +52,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -85,6 +88,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private String srcMediaWebsite;
 	private String srcMediaName;
 	private Date reportDateTime;
+	private UserReferenceDto reportingUser;
+	private UserReferenceDto responsibleUser;
 	private EventJurisdictionDto jurisdiction;
 
 	public EventIndexDto(
@@ -116,7 +121,11 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String srcMediaName,
 		Date reportDateTime,
 		String reportingUserUuid,
-		String surveillanceOfficerUuid) {
+		String reportingUserFirstName,
+		String reportingUserLastName,
+		String responsibleUserUuid,
+		String responsibleUserFirstName,
+		String responsibleUserLastName) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
@@ -136,7 +145,9 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.srcMediaWebsite = srcMediaWebsite;
 		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
+		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	public String getUuid() {
@@ -277,6 +288,22 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
+	}
+
+	public UserReferenceDto getResponsibleUser() {
+		return responsibleUser;
+	}
+
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	public long getParticipantCount() {
