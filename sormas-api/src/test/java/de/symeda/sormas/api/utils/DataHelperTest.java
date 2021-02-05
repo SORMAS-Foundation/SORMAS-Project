@@ -2,6 +2,7 @@ package de.symeda.sormas.api.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -63,11 +64,14 @@ public class DataHelperTest {
 		assertEquals("UZOUEH", DataHelper.getShortUuid("UZOUEH-HP7DRG-YOJ74F-PXWL2JZ4"));
 		assertNull(DataHelper.getShortUuid((String) null));
 
+		boolean exceptionThrown = false;
 		try {
 			assertEquals("A", DataHelper.getShortUuid("A"));
 			fail("getShortUuid should not be graceful on Uuids that are too short.");
 		} catch (StringIndexOutOfBoundsException e) {
-			assertEquals("String index out of range: 6", e.getMessage());
+			exceptionThrown = true;
 		}
+
+		assertTrue("getShortUuid should throw StringIndexOutOfBoundsException on Uuids that are too short.", exceptionThrown);
 	}
 }
