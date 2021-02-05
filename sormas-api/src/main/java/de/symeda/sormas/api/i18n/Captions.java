@@ -967,6 +967,7 @@ public interface Captions {
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
 	String Exposure_exposureDate = "Exposure.exposureDate";
+	String Exposure_exposureRole = "Exposure.exposureRole";
 	String Exposure_exposureType = "Exposure.exposureType";
 	String Exposure_exposureTypeDetails = "Exposure.exposureTypeDetails";
 	String Exposure_gatheringDetails = "Exposure.gatheringDetails";
@@ -982,7 +983,6 @@ public interface Captions {
 	String Exposure_meansOfTransportDetails = "Exposure.meansOfTransportDetails";
 	String Exposure_otherProtectiveMeasures = "Exposure.otherProtectiveMeasures";
 	String Exposure_outdoors = "Exposure.outdoors";
-	String Exposure_patientExpositionRole = "Exposure.patientExpositionRole";
 	String Exposure_percutaneous = "Exposure.percutaneous";
 	String Exposure_physicalContactDuringPreparation = "Exposure.physicalContactDuringPreparation";
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";

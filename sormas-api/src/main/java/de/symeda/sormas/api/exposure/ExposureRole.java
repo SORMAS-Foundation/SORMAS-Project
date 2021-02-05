@@ -17,13 +17,24 @@ package de.symeda.sormas.api.exposure;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum PatientExpositionRole {
+public enum ExposureRole {
 
-	NOT_COLLECTED,
+	PASSENGER,
+	STAFF,
+	NURSING_STAFF,
+	MEDICAL_STAFF,
+	VISITOR,
+	GUEST,
+	CUSTOMER,
+	CONSERVATEE,
+	PATIENT,
+	EDUCATOR,
+	TRAINEE_TEACHER,
+	PUPIL,
+	STUDENT,
+	PARENT,
+	TEACHER,
 	UNKNOWN,
-	WORKING_AT,
-	ACCOMMODATED_IN,
-	CARED_FOR,
 	OTHER;
 
 	public String toString() {

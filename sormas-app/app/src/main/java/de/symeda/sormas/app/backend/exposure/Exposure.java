@@ -18,6 +18,7 @@ import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
@@ -70,6 +71,8 @@ public class Exposure extends PseudonymizableAdo {
 	private String exposureTypeDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Location location;
+	@Enumerated(EnumType.STRING)
+	private ExposureRole exposureRole;
 
 	// Type of Place
 	@Enumerated(EnumType.STRING)
@@ -230,6 +233,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public ExposureRole getExposureRole() {
+		return exposureRole;
+	}
+
+	public void setExposureRole(ExposureRole exposureRole) {
+		this.exposureRole = exposureRole;
 	}
 
 	public YesNoUnknown getIndoors() {

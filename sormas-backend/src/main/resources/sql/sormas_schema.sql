@@ -6368,4 +6368,14 @@ ALTER TABLE events_history RENAME surveillanceofficer_id to responsibleuser_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (318, 'Change event''s surveillanceOfficer to responsibleUser allow more roles to be it #3827');
 
+--2020-02-02
+ALTER TABLE exposures RENAME patientexpositionrole TO exposureRole;
+ALTER TABLE exposures_history RENAME patientexpositionrole TO exposureRole;
+
+UPDATE exposures SET exposureRole = NULL WHERE exposureRole = 'NOT_COLLECTED';
+UPDATE exposures SET exposureRole = 'STAFF' WHERE exposureRole = 'WORKING_AT';
+UPDATE exposures SET exposureRole = 'GUEST' WHERE exposureRole = 'ACCOMMODATED_IN';
+UPDATE exposures SET exposureRole = 'PATIENT' WHERE exposureRole = 'CARED_FOR';
+
+INSERT INTO schema_version (version_number, comment) VALUES (319, '[SurvNet Interface] Change title of role field in exposures and add new field #4036');
 -- *** Insert new sql commands BEFORE this line ***
