@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -43,6 +44,9 @@ import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.apache.velocity.util.introspection.SecureUberspector;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document.OutputSettings;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +54,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
@@ -63,9 +68,11 @@ import fr.opensagres.xdocreport.template.velocity.internal.VelocityTemplateEngin
 public class TemplateEngine {
 
 	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *(!)? *([A-Za-z0-9._]+) *[}]| *(!)? *([A-Za-z0-9._]+) *)");
+	private static final Whitelist HTML_TEMPLATE_WHITELIST =
+		HtmlHelper.EVENTACTION_WHITELIST.addAttributes("div", "class").addAttributes("span", "class").addAttributes("table", "class");
 	private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
 
-	private Properties xdocVelocityProperties;
+	private final Properties xdocVelocityProperties;
 
 	public TemplateEngine() {
 		xdocVelocityProperties = new Properties();
@@ -136,6 +143,9 @@ public class TemplateEngine {
 		velocityEngine.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, SecureUberspector.class.getCanonicalName());
 		// Disable Includes
 		velocityEngine.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE, NoIncludesEventHandler.class.getCanonicalName());
+		// Clean Html
+		velocityEngine.setProperty(RuntimeConstants.EVENTHANDLER_REFERENCEINSERTION, CleanHtmlReference.class.getCanonicalName());
+
 		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "file");
 		velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, FilenameUtils.getFullPathNoEndSeparator(templateFile.getPath()));
 		Template template = velocityEngine.getTemplate(templateFile.getName());
@@ -152,7 +162,10 @@ public class TemplateEngine {
 
 		StringWriter stringWriter = new StringWriter();
 		template.merge(velocityContext, stringWriter);
-		return stringWriter.toString();
+		OutputSettings outputSettings = new OutputSettings();
+		outputSettings.prettyPrint(false);
+		outputSettings.charset(StandardCharsets.UTF_8);
+		return Jsoup.clean(stringWriter.toString(), "", HTML_TEMPLATE_WHITELIST, outputSettings);
 	}
 
 	public void validateTemplateDocx(InputStream templateInputStream) throws DocumentTemplateException {

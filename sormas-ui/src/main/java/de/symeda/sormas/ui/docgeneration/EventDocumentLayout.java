@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.docgeneration;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.vaadin.server.Page;
@@ -30,6 +31,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
@@ -48,8 +50,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
 	@Override
 	protected String generateFilename(String templateFile) {
-		String uuid = eventReferenceDto.getUuid();
-		return uuid.substring(0, Math.min(5, uuid.length())) + "_" + templateFile;
+		return DataHelper.getShortUuid(eventReferenceDto) + "_" + templateFile;
 	}
 
 	@Override
@@ -63,7 +64,8 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 			EventDocumentFacade eventDocumentFacade = FacadeProvider.getEventDocumentFacade();
 			try {
 				return new ByteArrayInputStream(
-					eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, readAdditionalVariables()).getBytes());
+					eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, readAdditionalVariables())
+						.getBytes(StandardCharsets.UTF_8));
 			} catch (Exception e) {
 				e.printStackTrace();
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
