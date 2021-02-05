@@ -6356,7 +6356,7 @@ ALTER TABLE cases ADD CONSTRAINT fk_cases_diseasevariant_id FOREIGN KEY (disease
 
 INSERT INTO schema_version (version_number, comment) VALUES (316, 'Add DiseaseVariant entity #4042');
               
- -- 2020-02-03
+ -- 2021-02-03
 ALTER TABLE pathogentest ADD COLUMN typingId text;
 ALTER TABLE pathogentest_history ADD COLUMN typingId text;
 
@@ -6378,4 +6378,11 @@ UPDATE exposures SET exposureRole = 'GUEST' WHERE exposureRole = 'ACCOMMODATED_I
 UPDATE exposures SET exposureRole = 'PATIENT' WHERE exposureRole = 'CARED_FOR';
 
 INSERT INTO schema_version (version_number, comment) VALUES (319, '[SurvNet Interface] Change title of role field in exposures and add new field #4036');
+
+-- 2021-02-05 Case identification source #3420
+ALTER TABLE cases ADD COLUMN caseidentificationsource character varying(255);
+ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (320, 'Case identification source #3420');
+
 -- *** Insert new sql commands BEFORE this line ***
