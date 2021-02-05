@@ -62,6 +62,7 @@
 		<class>de.symeda.sormas.backend.common.messaging.ManualMessageLog</class>
 		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
 		<class>de.symeda.sormas.backend.labmessage.LabMessage</class>
+		<class>de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
