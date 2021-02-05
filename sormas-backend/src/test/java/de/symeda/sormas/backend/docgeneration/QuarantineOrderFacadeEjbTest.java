@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.docgeneration;
 
+import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -217,7 +218,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		XWPFDocument xwpfDocument = new XWPFDocument(generatedDocument);
 		XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(xwpfDocument);
-		String docxText = xwpfWordExtractor.getText();
+		String docxText = cleanLineSeparators(xwpfWordExtractor.getText());
 		xwpfWordExtractor.close();
 
 		StringWriter writer = new StringWriter();
@@ -227,7 +228,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 			writer,
 			"UTF-8");
 
-		String expected = writer.toString().replaceAll("\\r\\n?", "\n");
+		String expected = cleanLineSeparators(writer.toString());
 		assertEquals(expected, docxText);
 	}
 

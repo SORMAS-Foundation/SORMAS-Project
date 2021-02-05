@@ -212,6 +212,7 @@ public interface Captions {
 	String CaseData_covidTestReasonDetails = "CaseData.covidTestReasonDetails";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
@@ -224,6 +225,7 @@ public interface Captions {
 	String CaseData_externalID = "CaseData.externalID";
 	String CaseData_externalToken = "CaseData.externalToken";
 	String CaseData_facilityType = "CaseData.facilityType";
+	String CaseData_firstVaccinationDate = "CaseData.firstVaccinationDate";
 	String CaseData_followUpComment = "CaseData.followUpComment";
 	String CaseData_followUpStatus = "CaseData.followUpStatus";
 	String CaseData_followUpUntil = "CaseData.followUpUntil";
@@ -236,6 +238,7 @@ public interface Captions {
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
+	String CaseData_lastVaccinationDate = "CaseData.lastVaccinationDate";
 	String CaseData_latestEventId = "CaseData.latestEventId";
 	String CaseData_latestEventStatus = "CaseData.latestEventStatus";
 	String CaseData_latestEventTitle = "CaseData.latestEventTitle";
@@ -247,6 +250,8 @@ public interface Captions {
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
+	String CaseData_otherVaccineManufacturer = "CaseData.otherVaccineManufacturer";
+	String CaseData_otherVaccineName = "CaseData.otherVaccineName";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
 	String CaseData_overwriteFollowUpUntil = "CaseData.overwriteFollowUpUntil";
@@ -305,10 +310,15 @@ public interface Captions {
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccination = "CaseData.vaccination";
-	String CaseData_vaccinationDate = "CaseData.vaccinationDate";
 	String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	String CaseData_vaccine = "CaseData.vaccine";
+	String CaseData_vaccineAtcCode = "CaseData.vaccineAtcCode";
+	String CaseData_vaccineBatchNumber = "CaseData.vaccineBatchNumber";
+	String CaseData_vaccineInn = "CaseData.vaccineInn";
+	String CaseData_vaccineManufacturer = "CaseData.vaccineManufacturer";
+	String CaseData_vaccineName = "CaseData.vaccineName";
+	String CaseData_vaccineUniiCode = "CaseData.vaccineUniiCode";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
 	String caseDefaultView = "caseDefaultView";
@@ -1210,6 +1220,7 @@ public interface Captions {
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
+	String PathogenTest_typingId = "PathogenTest.typingId";
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";

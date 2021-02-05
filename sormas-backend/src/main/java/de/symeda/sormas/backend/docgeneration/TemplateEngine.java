@@ -35,6 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.VelocityException;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.parser.ParseException;
@@ -42,6 +43,8 @@ import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.apache.velocity.util.introspection.SecureUberspector;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
@@ -53,12 +56,29 @@ import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
 import fr.opensagres.xdocreport.template.FieldExtractor;
 import fr.opensagres.xdocreport.template.FieldsExtractor;
 import fr.opensagres.xdocreport.template.IContext;
-import fr.opensagres.xdocreport.template.TemplateEngineKind;
+import fr.opensagres.xdocreport.template.ITemplateEngine;
 import fr.opensagres.xdocreport.template.velocity.internal.ExtractVariablesVelocityVisitor;
+import fr.opensagres.xdocreport.template.velocity.internal.VelocityTemplateEngine;
 
 public class TemplateEngine {
 
 	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *(!)? *([A-Za-z0-9._]+) *[}]| *(!)? *([A-Za-z0-9._]+) *)");
+	private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
+
+	private Properties xdocVelocityProperties;
+
+	public TemplateEngine() {
+		xdocVelocityProperties = new Properties();
+		try {
+			xdocVelocityProperties.load(VelocityTemplateEngine.class.getClassLoader().getResourceAsStream("xdocreport-velocity.properties"));
+		} catch (IOException e) {
+			logger.error("Could not read velocity properties.", e);
+		}
+		// Disable Reflection and Classloader related methods
+		xdocVelocityProperties.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, SecureUberspector.class.getCanonicalName());
+		// Disable Includes
+		xdocVelocityProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE, NoIncludesEventHandler.class.getCanonicalName());
+	}
 
 	public DocumentVariables extractTemplateVariablesDocx(File templateFile) throws DocumentTemplateException {
 		try {
@@ -105,7 +125,7 @@ public class TemplateEngine {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			report.process(context, outputStream);
 			return outputStream.toByteArray();
-		} catch (IOException | XDocReportException e) {
+		} catch (IOException | XDocReportException | VelocityException e) {
 			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), templateFile.getName()));
 		}
 	}
@@ -161,7 +181,8 @@ public class TemplateEngine {
 
 		try {
 			ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
-			return XDocReportRegistry.getRegistry().loadReport(inStream, TemplateEngineKind.Velocity);
+			ITemplateEngine templateEngine = new XDocTemplateEngine(xdocVelocityProperties);
+			return XDocReportRegistry.getRegistry().loadReport(inStream, templateEngine);
 		} catch (IOException | XDocReportException | NullPointerException e) {
 			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
 		}
