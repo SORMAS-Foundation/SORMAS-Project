@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.docgeneration;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.vaadin.server.Page;
@@ -63,7 +64,8 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 			EventDocumentFacade eventDocumentFacade = FacadeProvider.getEventDocumentFacade();
 			try {
 				return new ByteArrayInputStream(
-					eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, readAdditionalVariables()).getBytes());
+					eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, readAdditionalVariables())
+						.getBytes(StandardCharsets.UTF_8));
 			} catch (Exception e) {
 				e.printStackTrace();
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)

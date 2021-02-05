@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -163,6 +164,7 @@ public class TemplateEngine {
 		template.merge(velocityContext, stringWriter);
 		OutputSettings outputSettings = new OutputSettings();
 		outputSettings.prettyPrint(false);
+		outputSettings.charset(StandardCharsets.UTF_8);
 		return Jsoup.clean(stringWriter.toString(), "", HTML_TEMPLATE_WHITELIST, outputSettings);
 	}
 
