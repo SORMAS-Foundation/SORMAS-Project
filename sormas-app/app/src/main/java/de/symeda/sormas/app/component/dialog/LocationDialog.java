@@ -216,7 +216,7 @@ public class LocationDialog extends FormDialog {
                     ConfirmationDialog confirmationDialog = new ConfirmationDialog(
                             getActivity(),
                             R.string.heading_location,
-                            0,
+                            -1,
                             R.string.action_confirm,
                             R.string.action_cancel);
                     confirmationDialog.getConfig().setSubHeading(I18nProperties.getString(Strings.confirmationLocationFacilityAddressOverride));
