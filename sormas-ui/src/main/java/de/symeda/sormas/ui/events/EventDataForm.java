@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
@@ -400,6 +402,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			srcTelNo,
 			srcMediaWebsite,
 			srcMediaName);
+
+		// Make external ID field read-only when SORMAS is connected to a SurvNet instance
+		if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getSurvnetGatewayUrl())) {
+			setEnabled(false, EventDto.EXTERNAL_ID);
+			((TextField) getField(EventDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
+		}
 	}
 
 	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {

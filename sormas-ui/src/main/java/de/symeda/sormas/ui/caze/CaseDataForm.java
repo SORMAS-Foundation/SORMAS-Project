@@ -39,6 +39,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
@@ -1123,6 +1125,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE,
 					CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT,
 					CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE);
+			}
+
+			// Make external ID field read-only when SORMAS is connected to a SurvNet instance
+			if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getSurvnetGatewayUrl())) {
+				setEnabled(false, CaseDataDto.EXTERNAL_ID);
+				((TextField) getField(CaseDataDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdSurvNet));
 			}
 		});
 	}
