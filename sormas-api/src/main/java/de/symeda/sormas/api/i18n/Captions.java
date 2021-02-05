@@ -854,6 +854,7 @@ public interface Captions {
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
+	String Event_workEnvironment = "Event.workEnvironment";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
 	String EventAction_actionLastModifiedBy = "EventAction.actionLastModifiedBy";
@@ -1001,6 +1002,7 @@ public interface Captions {
 	String Exposure_waterSourceDetails = "Exposure.waterSourceDetails";
 	String Exposure_wearingMask = "Exposure.wearingMask";
 	String Exposure_wearingPpe = "Exposure.wearingPpe";
+	String Exposure_workEnvironment = "Exposure.workEnvironment";
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";

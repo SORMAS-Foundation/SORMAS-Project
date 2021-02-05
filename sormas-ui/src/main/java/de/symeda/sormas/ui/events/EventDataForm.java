@@ -18,8 +18,11 @@
 package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +50,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -110,8 +114,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			loc(LOCATION_HEADING_LOC) +
 			fluidRowLocs(EventDto.TRANSREGIONAL_OUTBREAK, "") +
-			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
-			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) + 
+			fluidRow(
+				fluidColumn(6,0,locs(EventDto.TYPE_OF_PLACE)),
+				fluidColumn(6,0, locs(
+						EventDto.TYPE_OF_PLACE_TEXT,
+						EventDto.MEANS_OF_TRANSPORT,
+						EventDto.WORK_ENVIRONMENT))) +
+			loc(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
 			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.RESPONSIBLE_USER);
@@ -230,6 +239,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlace.setNullSelectionAllowed(true);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
 
+		addField(EventDto.WORK_ENVIRONMENT);
 		ComboBox meansOfTransport = addField(EventDto.MEANS_OF_TRANSPORT);
 		TextField connectionNumber = addField(EventDto.CONNECTION_NUMBER);
 		DateField travelDate = addField(EventDto.TRAVEL_DATE);
@@ -311,6 +321,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
 		initializeAccessAndAllowedAccesses();
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			EventDto.WORK_ENVIRONMENT,
+			locationForm.getFacilityTypeGroup(),
+			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
+			true);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

@@ -6441,4 +6441,12 @@ $$ LANGUAGE plpgsql;
 INSERT INTO schema_version (version_number, comment) VALUES (320, 'Add vaccination for contacts and event participant #4137');
 
 
+-- 2020-02-04
+ALTER TABLE exposures ADD COLUMN workenvironment varchar(255);
+ALTER TABLE exposures_history ADD COLUMN workenvironment varchar(255);
+ALTER TABLE events ADD COLUMN workenvironment varchar(255);
+ALTER TABLE events_history ADD COLUMN workenvironment varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (321, '[SurvNet Interface] Add fields next to type of place #4038');
+
 -- *** Insert new sql commands BEFORE this line ***

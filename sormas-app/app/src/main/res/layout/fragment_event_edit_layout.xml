@@ -252,7 +252,10 @@
 
             </LinearLayout>
 
-
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_workEnvironment"
+                app:value="@={data.workEnvironment}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
                 android:id="@+id/event_eventLocation"
