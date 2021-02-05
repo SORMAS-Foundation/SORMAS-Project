@@ -161,7 +161,7 @@ public final class DataHelper {
 
 		if (uuid == null)
 			return null;
-		return uuid.substring(0, Math.min(uuid.length(), 6)).toUpperCase();
+		return uuid.substring(0, 6).toUpperCase();
 	}
 
 	public static class Pair<K, V> implements Serializable {

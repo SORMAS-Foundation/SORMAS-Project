@@ -12,7 +12,7 @@
     Community: <b>$!event_eventLocation_community</b>
 </p>
 
-<p>Reported: $event_reportDateTime by $event_reportingUser_firstName $event_reportingUser_lastName</p>
+<p>Reported: <b>$event_reportDateTime</b> by <b>$event_reportingUser_firstName $event_reportingUser_lastName</b></p>
 
 <h2>Description</h2>
 
@@ -24,11 +24,11 @@
 <div class="actions">
     <h2>$action.title</h2>
     <p>
-        date: $F.format($action.getDate())<br/>
-        status: $!action.getStatus()<br/>
-        status changed: $!F.format($action.getStatusChangeDate())<br/>
-        created: $F.format($action.getCreationDate())<br/>
-        modified: $!F.format($action.getChangeDate())
+        date: <b>$F.format($action.getDate())</b><br/>
+        status: <b>$!action.getActionStatus()</b><br/>
+        status changed: <b>$!F.format($action.getStatusChangeDate())</b><br/>
+        created: <b>$F.format($action.getCreationDate())</b><br/>
+        modified: <b>$!F.format($action.getChangeDate())</b>
     </p>
     <div>#if($action.getDescription()) $action.getDescription() #else <span class="red">*</span> #end</div>
     <div>#if($action.reply) $action.reply #else <span class="red">*</span> #end</div>
