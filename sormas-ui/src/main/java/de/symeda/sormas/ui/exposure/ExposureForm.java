@@ -121,7 +121,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					fluidColumn(6, 0, locs(
 							ExposureDto.TYPE_OF_PLACE_DETAILS,
 							ExposureDto.MEANS_OF_TRANSPORT,
-							ExposureDto.COMMERCE,
 							ExposureDto.WORK_ENVIRONMENT
 					))
 			) +
@@ -232,7 +231,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.MEANS_OF_TRANSPORT_DETAILS,
 			ExposureDto.SEAT_NUMBER,
 			ExposureDto.EXPOSURE_ROLE,
-			ExposureDto.COMMERCE,
 			ExposureDto.WORK_ENVIRONMENT);
 
 		addFieldsWithCss(
@@ -301,7 +299,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Arrays.asList(MeansOfTransport.PLANE, MeansOfTransport.TRAIN, MeansOfTransport.OTHER),
 			true);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.COMMERCE, ExposureDto.TYPE_OF_PLACE, TypeOfPlace.COMMERCE, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ExposureDto.WORK_ENVIRONMENT,

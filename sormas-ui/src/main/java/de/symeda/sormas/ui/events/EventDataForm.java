@@ -117,14 +117,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				fluidColumn(6,0, locs(
 						EventDto.TYPE_OF_PLACE_TEXT,
 						EventDto.MEANS_OF_TRANSPORT,
-						EventDto.COMMERCE,
 						EventDto.WORK_ENVIRONMENT))) +
 			loc(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
 			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
-
-//			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
-//			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) +
-//			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.RESPONSIBLE_USER);
 	//@formatter:on
@@ -242,18 +237,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlace.setNullSelectionAllowed(true);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
 
-		ComboBox commerce = addField(EventDto.COMMERCE);
-		ComboBox workEnvironment = addField(EventDto.WORK_ENVIRONMENT);
+		addField(EventDto.WORK_ENVIRONMENT);
 		ComboBox meansOfTransport = addField(EventDto.MEANS_OF_TRANSPORT);
 		TextField connectionNumber = addField(EventDto.CONNECTION_NUMBER);
 		DateField travelDate = addField(EventDto.TRAVEL_DATE);
-
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			Collections.singletonList(EventDto.COMMERCE),
-			EventDto.TYPE_OF_PLACE,
-			Collections.singletonList(TypeOfPlace.COMMERCE),
-			true);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

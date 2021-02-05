@@ -244,13 +244,6 @@
                 app:value="@{data.eventLocation}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_commerce"
-                app:value="@{data.commerce}"
-                app:dependencyParentField="@{eventTypeOfPlace}"
-                app:dependencyParentValue="@{TypeOfPlace.COMMERCE}"
-                style="@style/ControlSingleColumnStyle"/>
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/exposure_workEnvironment"
                 app:value="@{data.workEnvironment}"
                 style="@style/ControlSingleColumnStyle" />

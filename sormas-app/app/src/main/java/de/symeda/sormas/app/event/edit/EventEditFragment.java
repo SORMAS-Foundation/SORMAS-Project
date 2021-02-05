@@ -31,7 +31,6 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
@@ -70,7 +69,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> meansOfTransportList;
 	private List<Item> diseaseTransmissionModeList;
 	private boolean isMultiDayEvent;
-	private List<Item> commerceList;
 	private List<Item> workEnvironmentList;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
@@ -119,6 +117,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		locationDialog.show();
 		locationDialog.setRegionAndDistrictRequired(true);
 		locationDialog.setFacilityFieldsVisible(record.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
+
 		locationDialog.setPositiveCallback(() -> {
 			try {
 				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
@@ -165,7 +164,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		srcInstitutionalPartnerTypeList = DataUtils.getEnumItems(InstitutionalPartnerType.class, true);
 		meansOfTransportList = DataUtils.getEnumItems(MeansOfTransport.class, true);
 		diseaseTransmissionModeList = DataUtils.getEnumItems(DiseaseTransmissionMode.class, true);
-		commerceList = DataUtils.getEnumItems(Commerce.class, true);
 		workEnvironmentList = DataUtils.getEnumItems(WorkEnvironment.class, true);
 	}
 
@@ -190,7 +188,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventSrcInstitutionalPartnerType.initializeSpinner(srcInstitutionalPartnerTypeList);
 		contentBinding.eventMeansOfTransport.initializeSpinner(meansOfTransportList);
 		contentBinding.eventDiseaseTransmissionMode.initializeSpinner(diseaseTransmissionModeList);
-		contentBinding.eventCommerce.initializeSpinner(commerceList);
 		contentBinding.eventWorkEnvironment.initializeSpinner(workEnvironmentList);
 
 		// Initialize ControlDateFields
@@ -209,10 +206,16 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
 
-		FacilityType facilityType = record.getEventLocation().getFacilityType();
-
-		contentBinding.eventWorkEnvironment
-			.setVisibility(facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+		contentBinding.eventTypeOfPlace.addValueChangedListener(e -> {
+			if (e.getValue() != TypeOfPlace.FACILITY) {
+				contentBinding.eventWorkEnvironment.setValue(null);
+				contentBinding.eventWorkEnvironment.setVisibility(View.GONE);
+			} else {
+				FacilityType facilityType = record.getEventLocation().getFacilityType();
+				contentBinding.eventWorkEnvironment.setVisibility(
+					facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+			}
+		});
 	}
 
 	@Override

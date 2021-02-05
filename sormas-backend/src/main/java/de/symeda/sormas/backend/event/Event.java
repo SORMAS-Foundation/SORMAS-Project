@@ -47,7 +47,6 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -137,7 +136,6 @@ public class Event extends CoreAdo {
 	private String meansOfTransportDetails;
 	private String connectionNumber;
 	private Date travelDate;
-	private Commerce commerce;
 	private WorkEnvironment workEnvironment;
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
@@ -372,15 +370,6 @@ public class Event extends CoreAdo {
 
 	public void setTravelDate(Date travelDate) {
 		this.travelDate = travelDate;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public Commerce getCommerce() {
-		return commerce;
-	}
-
-	public void setCommerce(Commerce commerce) {
-		this.commerce = commerce;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -6442,12 +6442,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (320, 'Add vaccinati
 
 
 -- 2020-02-04
-ALTER TABLE exposures ADD COLUMN commerce varchar(255);
-ALTER TABLE exposures_history ADD COLUMN commerce varchar(255);
 ALTER TABLE exposures ADD COLUMN workenvironment varchar(255);
 ALTER TABLE exposures_history ADD COLUMN workenvironment varchar(255);
-ALTER TABLE events ADD COLUMN commerce varchar(255);
-ALTER TABLE events_history ADD COLUMN commerce varchar(255);
 ALTER TABLE events ADD COLUMN workenvironment varchar(255);
 ALTER TABLE events_history ADD COLUMN workenvironment varchar(255);
 

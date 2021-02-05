@@ -20,7 +20,6 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -62,7 +61,6 @@ public class EventDto extends PseudonymizableDto {
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
 	public static final String TRAVEL_DATE = "travelDate";
-	public static final String COMMERCE = "commerce";
 	public static final String WORK_ENVIRONMENT = "workEnvironment";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_INSTITUTIONAL_PARTNER_TYPE = "srcInstitutionalPartnerType";
@@ -114,7 +112,6 @@ public class EventDto extends PseudonymizableDto {
 	private String connectionNumber;
 	private Date travelDate;
 
-	private Commerce commerce;
 	private WorkEnvironment workEnvironment;
 
 	private EventSourceType srcType;
@@ -324,14 +321,6 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setTravelDate(Date travelDate) {
 		this.travelDate = travelDate;
-	}
-
-	public Commerce getCommerce() {
-		return commerce;
-	}
-
-	public void setCommerce(Commerce commerce) {
-		this.commerce = commerce;
 	}
 
 	public WorkEnvironment getWorkEnvironment() {

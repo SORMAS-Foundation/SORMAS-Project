@@ -37,7 +37,6 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureRole;
-import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
@@ -81,7 +80,6 @@ public class Exposure extends AbstractDomainObject {
 	private String connectionNumber;
 	private String seatNumber;
 
-	private Commerce commerce;
 	private WorkEnvironment workEnvironment;
 
 	// Details
@@ -560,15 +558,6 @@ public class Exposure extends AbstractDomainObject {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSeatNumber() {
 		return seatNumber;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public Commerce getCommerce() {
-		return commerce;
-	}
-
-	public void setCommerce(Commerce commerce) {
-		this.commerce = commerce;
 	}
 
 	@Enumerated(EnumType.STRING)

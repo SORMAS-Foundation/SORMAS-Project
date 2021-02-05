@@ -1914,7 +1914,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 268;
 				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN exposureRole varchar(255);");
 
-			// TODO [vaccination info] integrate vaccination info
+				// TODO [vaccination info] integrate vaccination info
 //			case 269:
 //
 //				currentVersion = 269;
@@ -1930,9 +1930,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 269:
 				currentVersion = 269;
-				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN commerce varchar(255);");
 				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN workEnvironment varchar(255);");
-				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN commerce varchar(255);");
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN workEnvironment varchar(255);");
 
 				// ATTENTION: break should only be done after last version

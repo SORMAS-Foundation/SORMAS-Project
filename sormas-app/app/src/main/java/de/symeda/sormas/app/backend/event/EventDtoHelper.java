@@ -91,7 +91,6 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setTravelDate(source.getTravelDate());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
-		target.setCommerce(source.getCommerce());
 		target.setWorkEnvironment(source.getWorkEnvironment());
 
 		target.setSrcType(source.getSrcType());
@@ -164,7 +163,6 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setTravelDate(source.getTravelDate());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
-		target.setCommerce(source.getCommerce());
 		target.setWorkEnvironment(source.getWorkEnvironment());
 
 		target.setSrcType(source.getSrcType());

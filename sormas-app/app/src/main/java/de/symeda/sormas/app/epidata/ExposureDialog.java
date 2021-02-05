@@ -14,7 +14,6 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
-import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
@@ -121,7 +120,6 @@ public class ExposureDialog extends FormDialog {
 		contentBinding.exposureTypeOfPlace.initializeSpinner(DataUtils.getEnumItems(TypeOfPlace.class, true));
 		contentBinding.exposureMeansOfTransport.initializeSpinner(DataUtils.getEnumItems(MeansOfTransport.class, true));
 		contentBinding.exposureExposureRole.initializeSpinner(DataUtils.getEnumItems(ExposureRole.class, true));
-		contentBinding.exposureCommerce.initializeSpinner(DataUtils.getEnumItems(Commerce.class, true));
 		contentBinding.exposureWorkEnvironment.initializeSpinner(DataUtils.getEnumItems(WorkEnvironment.class, true));
 
 		setUpHeadingVisibilities(data.getExposureType());
@@ -139,10 +137,16 @@ public class ExposureDialog extends FormDialog {
 
 		setFieldVisibilitiesAndAccesses(ExposureDto.class, (ViewGroup) getRootView());
 
-		FacilityType facilityType = data.getLocation().getFacilityType();
-
-		contentBinding.exposureWorkEnvironment
-			.setVisibility(facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+		contentBinding.exposureTypeOfPlace.addValueChangedListener(e -> {
+			if (e.getValue() != TypeOfPlace.FACILITY) {
+				contentBinding.exposureWorkEnvironment.setValue(null);
+				contentBinding.exposureWorkEnvironment.setVisibility(View.GONE);
+			} else {
+				FacilityType facilityType = data.getLocation().getFacilityType();
+				contentBinding.exposureWorkEnvironment.setVisibility(
+					facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+			}
+		});
 	}
 
 	@Override

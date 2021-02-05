@@ -253,13 +253,6 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/event_commerce"
-                app:value="@={data.commerce}"
-                app:dependencyParentField="@{eventTypeOfPlace}"
-                app:dependencyParentValue="@{TypeOfPlace.COMMERCE}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/event_workEnvironment"
                 app:value="@={data.workEnvironment}"
                 style="@style/ControlSingleColumnStyle" />

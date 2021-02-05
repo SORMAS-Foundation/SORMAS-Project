@@ -62,6 +62,8 @@ public enum FacilityType {
 	REHAB_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, true, false),
 	RESTAURANT(FacilityTypeGroup.CATERING_OUTLET, false, false),
 	RETIREMENT_HOME(FacilityTypeGroup.RESIDENCE, true, false),
+	RETAIL(FacilityTypeGroup.COMMERCE, false, false),
+	WHOLESALE(FacilityTypeGroup.COMMERCE, false, false),
 	SCHOOL(FacilityTypeGroup.EDUCATIONAL_FACILITY, false, false),
 	SWIMMING_POOL(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	THEATER(FacilityTypeGroup.LEISURE_FACILITY, false, false),

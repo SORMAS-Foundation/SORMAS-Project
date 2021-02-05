@@ -19,7 +19,6 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureRole;
-import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
@@ -90,8 +89,6 @@ public class Exposure extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String seatNumber;
 
-	@Enumerated(EnumType.STRING)
-	private Commerce commerce;
 	@Enumerated(EnumType.STRING)
 	private WorkEnvironment workEnvironment;
 
@@ -560,14 +557,6 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setSeatNumber(String seatNumber) {
 		this.seatNumber = seatNumber;
-	}
-
-	public Commerce getCommerce() {
-		return commerce;
-	}
-
-	public void setCommerce(Commerce commerce) {
-		this.commerce = commerce;
 	}
 
 	public WorkEnvironment getWorkEnvironment() {
