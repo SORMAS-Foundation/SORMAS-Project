@@ -803,6 +803,7 @@ public interface Captions {
 	String epiWeekTo = "epiWeekTo";
 	String Event = "Event";
 	String Event_caseCount = "Event.caseCount";
+	String Event_commerce = "Event.commerce";
 	String Event_connectionNumber = "Event.connectionNumber";
 	String Event_contactCount = "Event.contactCount";
 	String Event_contactCountMethod = "Event.contactCountMethod";
@@ -854,6 +855,7 @@ public interface Captions {
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
+	String Event_workEnvironment = "Event.workEnvironment";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
 	String EventAction_actionLastModifiedBy = "EventAction.actionLastModifiedBy";
@@ -958,6 +960,7 @@ public interface Captions {
 	String Exposure_animalMarket = "Exposure.animalMarket";
 	String Exposure_animalVaccinated = "Exposure.animalVaccinated";
 	String Exposure_bodyOfWater = "Exposure.bodyOfWater";
+	String Exposure_commerce = "Exposure.commerce";
 	String Exposure_connectionNumber = "Exposure.connectionNumber";
 	String Exposure_contactToBodyFluids = "Exposure.contactToBodyFluids";
 	String Exposure_contactToCase = "Exposure.contactToCase";
@@ -1001,6 +1004,7 @@ public interface Captions {
 	String Exposure_waterSourceDetails = "Exposure.waterSourceDetails";
 	String Exposure_wearingMask = "Exposure.wearingMask";
 	String Exposure_wearingPpe = "Exposure.wearingPpe";
+	String Exposure_workEnvironment = "Exposure.workEnvironment";
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
