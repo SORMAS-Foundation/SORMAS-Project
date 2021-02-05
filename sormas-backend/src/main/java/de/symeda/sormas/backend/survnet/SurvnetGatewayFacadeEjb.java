@@ -24,6 +24,9 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.backend.caze.Case;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.survnet.SurvnetGatewayFacade;
@@ -69,6 +72,34 @@ public class SurvnetGatewayFacadeEjb implements SurvnetGatewayFacade {
 		return response.getStatus();
 	}
 
+	@Override
+	public int deleteCases(List<CaseDataDto> cases) {
+		DeleteParameters params = new DeleteParameters();
+		params.setCases(cases);
+
+		return sendDeleteRequest(params);
+	}
+
+	@Override
+	public int deleteEvents(List<EventDto> events) {
+		DeleteParameters params = new DeleteParameters();
+		params.setEvents(events);
+
+		return sendDeleteRequest(params);
+	}
+
+	private int sendDeleteRequest(DeleteParameters params) {
+		String serviceUrl = configFacade.getSurvnetGatewayUrl().trim();
+		Response response = ClientBuilder.newBuilder()
+				.connectTimeout(30, TimeUnit.SECONDS)
+				.build()
+				.target(serviceUrl)
+				.path("delete")
+				.request()
+				.post(Entity.json(params));
+		return response.getStatus();
+	}
+
 	public static class ExportParameters {
 
 		private List<String> caseUuids;
@@ -88,6 +119,29 @@ public class SurvnetGatewayFacadeEjb implements SurvnetGatewayFacade {
 
 		public void setEventUuids(List<String> eventUuids) {
 			this.eventUuids = eventUuids;
+		}
+	}
+
+	public static class DeleteParameters {
+
+		private List<CaseDataDto> cases;
+
+		private List<EventDto> events;
+
+		public List<CaseDataDto> getCases() {
+			return cases;
+		}
+
+		public void setCases(List<CaseDataDto> cases) {
+			this.cases = cases;
+		}
+
+		public List<EventDto> getEvents() {
+			return events;
+		}
+
+		public void setEvents(List<EventDto> events) {
+			this.events = events;
 		}
 	}
 }
