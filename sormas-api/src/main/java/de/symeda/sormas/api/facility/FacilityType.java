@@ -55,6 +55,7 @@ public enum FacilityType {
 	OTHER_MEDICAL_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, true, true),
 	OTHER_RESIDENCE(FacilityTypeGroup.RESIDENCE, true, false),
 	OTHER_WORKING_PLACE(FacilityTypeGroup.WORKING_PLACE, false, false),
+	OTHER_COMMERCE(FacilityTypeGroup.COMMERCE, false, false),
 	OUTPATIENT_TREATMENT_FACILITY(FacilityTypeGroup.MEDICAL_FACILITY, false, true),
 	PLACE_OF_WORSHIP(FacilityTypeGroup.LEISURE_FACILITY, false, false),
 	PUBLIC_PLACE(FacilityTypeGroup.LEISURE_FACILITY, false, false),
