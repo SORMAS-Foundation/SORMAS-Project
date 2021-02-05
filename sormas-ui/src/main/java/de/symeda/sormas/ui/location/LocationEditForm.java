@@ -349,8 +349,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 							|| (StringUtils.isNotEmpty(additionalInformationField.getValue())
 								&& !additionalInformationField.getValue().equals(facilityDto.getAdditionalInformation()))
 							|| (areaType.getValue() != null && areaType.getValue() != facilityDto.getAreaType())
-							|| (tfLatitude.getValue() != null && !Double.valueOf(tfLatitude.getValue()).equals(facilityDto.getLatitude()))
-							|| (tfLongitude.getValue() != null && !Double.valueOf(tfLongitude.getValue()).equals(facilityDto.getLongitude()))) {
+							|| (tfLatitude.getConvertedValue() != null
+								&& Double.compare((Double) tfLatitude.getConvertedValue(), facilityDto.getLatitude()) != 0)
+							|| (tfLongitude.getConvertedValue() != null
+								&& Double.compare((Double) tfLongitude.getConvertedValue(), facilityDto.getLongitude()) != 0)) {
 
 							VaadinUiUtil.showConfirmationPopup(
 								I18nProperties.getString(Strings.headingLocation),
