@@ -12,6 +12,7 @@ public interface Validations {
 
 	String afterDate = "afterDate";
 	String afterDateSoft = "afterDateSoft";
+	String afterDateWithDate = "afterDateWithDate";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
 	String campaignDashboardChartIdDoesNotExist = "campaignDashboardChartIdDoesNotExist";
