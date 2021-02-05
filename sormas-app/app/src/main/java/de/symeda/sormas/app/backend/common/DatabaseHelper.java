@@ -38,7 +38,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
-
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -74,6 +73,8 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDao;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDao;
+import de.symeda.sormas.app.backend.disease.DiseaseVariant;
+import de.symeda.sormas.app.backend.disease.DiseaseVariantDao;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDao;
 import de.symeda.sormas.app.backend.event.Event;
@@ -152,7 +153,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 267;
+	public static final int DATABASE_VERSION = 269;
 
 	private static DatabaseHelper instance = null;
 
@@ -225,6 +226,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, User.class);
 				TableUtils.clearTable(connectionSource, UserRoleConfig.class);
 				TableUtils.clearTable(connectionSource, DiseaseConfiguration.class);
+				TableUtils.clearTable(connectionSource, DiseaseVariant.class);
 				TableUtils.clearTable(connectionSource, FeatureConfiguration.class);
 				TableUtils.clearTable(connectionSource, PointOfEntry.class);
 				TableUtils.clearTable(connectionSource, Facility.class);
@@ -266,6 +268,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, PointOfEntry.class);
 			TableUtils.createTable(connectionSource, UserRoleConfig.class);
 			TableUtils.createTable(connectionSource, DiseaseConfiguration.class);
+			TableUtils.createTable(connectionSource, DiseaseVariant.class);
 			TableUtils.createTable(connectionSource, FeatureConfiguration.class);
 			TableUtils.createTable(connectionSource, User.class);
 			TableUtils.createTable(connectionSource, Person.class);
@@ -1883,7 +1886,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN evolutionComment text;");
 
 			case 265:
-
 				currentVersion = 265;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN firstVaccinationDate timestamp;");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineName varchar(255);");
@@ -1895,10 +1897,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineUniiCode text;");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccineAtcCode text;");
 
-				// TODO [vaccination info] integrate vaccination info
-//			case 266:
+			case 266:
+				currentVersion = 266;
+				getDao(DiseaseVariant.class).executeRaw(
+					"CREATE TABLE diseaseVariant(" + "  id integer not null primary key autoincrement," + "  uuid varchar(36) not null unique,"
+						+ "  changeDate TIMESTAMP not null," + "  creationDate TIMESTAMP not null," + "  disease varchar(255) not null,"
+						+ "  name VARCHAR(512) not null," + "  lastOpenedDate BIGINT," + "  localChangeDate BIGINT NOT NULL," + "  modified SMALLINT,"
+						+ "  snapshot SMALLINT);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseVariant_id bigint REFERENCES diseaseVariant(id);");
+
+			case 267:
+				currentVersion = 267;
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogentest ADD COLUMN typingId text;");
+
+			case 268:
+				currentVersion = 268;
+				getDao(Exposure.class).executeRaw("ALTER TABLE exposures ADD COLUMN exposureRole varchar(255);");
+
+			// TODO [vaccination info] integrate vaccination info
+//			case 269:
 //
-//				currentVersion = 266;
+//				currentVersion = 269;
 //
 //				getDao(VaccinationInfo.class).executeRaw(
 //					"CREATE TABLE vaccinationInfo(vaccination	VARCHAR(255), vaccinationDoses TEXT, vaccinationInfoSource VARCHAR(255), firstVaccinationDate TIMESTAMP, lastVaccinationDate TIMESTAMP, vaccineName VARCHAR(255), otherVaccineName TEXT, "
@@ -2239,6 +2258,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Outbreak.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseClassificationCriteria.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseConfiguration.class, true);
+			TableUtils.dropTable(connectionSource, DiseaseVariant.class, true);
 			TableUtils.dropTable(connectionSource, FeatureConfiguration.class, true);
 			TableUtils.dropTable(connectionSource, Campaign.class, true);
 			TableUtils.dropTable(connectionSource, CampaignFormMeta.class, true);
@@ -2298,6 +2318,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new UserRoleConfigDao((Dao<UserRoleConfig, Long>) innerDao);
 				} else if (type.equals(DiseaseConfiguration.class)) {
 					dao = (AbstractAdoDao<ADO>) new DiseaseConfigurationDao((Dao<DiseaseConfiguration, Long>) innerDao);
+				} else if (type.equals(DiseaseVariant.class)) {
+					dao = (AbstractAdoDao<ADO>) new DiseaseVariantDao((Dao<DiseaseVariant, Long>) innerDao);
 				} else if (type.equals(FeatureConfiguration.class)) {
 					dao = (AbstractAdoDao<ADO>) new FeatureConfigurationDao((Dao<FeatureConfiguration, Long>) innerDao);
 				} else if (type.equals(Symptoms.class)) {
@@ -2494,6 +2516,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static DiseaseConfigurationDao getDiseaseConfigurationDao() {
 		return (DiseaseConfigurationDao) getAdoDao(DiseaseConfiguration.class);
+	}
+
+	public static DiseaseVariantDao getDiseaseVariantDao() {
+		return (DiseaseVariantDao) getAdoDao(DiseaseVariant.class);
 	}
 
 	public static FeatureConfigurationDao getFeatureConfigurationDao() {

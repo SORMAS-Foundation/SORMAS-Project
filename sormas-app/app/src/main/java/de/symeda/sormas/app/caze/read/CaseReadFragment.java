@@ -144,6 +144,10 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			contentBinding.caseDataContactTracingDivider.setVisibility(VISIBLE);
 			contentBinding.caseDataContactTracingFirstContactHeading.setVisibility(VISIBLE);
 		}
+
+		if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataDiseaseVariant)) {
+			contentBinding.caseDataDiseaseVariant.setVisibility(record.getDiseaseVariant() != null ? VISIBLE : GONE);
+		}
 	}
 
 	private void setUpControlListeners(FragmentCaseReadLayoutBinding contentBinding) {

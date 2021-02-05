@@ -29,6 +29,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -120,6 +121,7 @@ public class CaseExportDto implements Serializable {
 	private String epidNumber;
 	private String diseaseFormatted;
 	private Disease disease;
+	private DiseaseVariantReferenceDto diseaseVariant;
 	@PersonalData
 	@SensitiveData
 	private String firstName;
@@ -271,7 +273,7 @@ public class CaseExportDto implements Serializable {
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
-						 Disease disease, String diseaseDetails, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
+						 Disease disease, String diseaseVariantUuid, String diseaseVariantName, String diseaseDetails, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
 						 Integer birthdateYYYY, Date reportDate, String reportingUserUuid, String regionUuid, String region,
 						 String districtUuid, String district, String communityUuid, String community,
@@ -316,6 +318,7 @@ public class CaseExportDto implements Serializable {
 		this.armedForcesRelationType = ArmedForcesRelationType;
 		this.diseaseFormatted = DiseaseHelper.toString(disease, diseaseDetails);
 		this.disease = disease;
+		this.diseaseVariant = new DiseaseVariantReferenceDto(diseaseVariantUuid, diseaseVariantName);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.salutation = EnumHelper.toString(salutation, otherSalutation, Salutation.OTHER);
@@ -499,6 +502,16 @@ public class CaseExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.CORE)
 	public String getDiseaseFormatted() {
 		return diseaseFormatted;
+	}
+
+	@Order(7)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.DISEASE_VARIANT)
+	@ExportGroup(ExportGroupType.CORE)
+	public DiseaseVariantReferenceDto getDiseaseVariant() {
+		return diseaseVariant;
 	}
 
 	@Order(10)
@@ -1661,6 +1674,10 @@ public class CaseExportDto implements Serializable {
 
 	public void setDiseaseFormatted(String diseaseFormatted) {
 		this.diseaseFormatted = diseaseFormatted;
+	}
+
+	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public void setFirstName(String firstName) {

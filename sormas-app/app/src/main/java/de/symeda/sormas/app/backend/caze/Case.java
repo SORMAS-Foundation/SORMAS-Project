@@ -57,6 +57,7 @@ import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
@@ -104,6 +105,9 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private DiseaseVariant diseaseVariant;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
@@ -411,6 +415,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public String getDiseaseDetails() {

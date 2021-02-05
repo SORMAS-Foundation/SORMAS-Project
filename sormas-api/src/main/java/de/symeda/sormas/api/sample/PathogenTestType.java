@@ -41,6 +41,7 @@ public enum PathogenTestType {
 	LATEX_AGGLUTINATION,
 	CQ_VALUE_DETECTION,
 	SEQUENCING,
+	DNA_MICROARRAY,
 	OTHER;
 
 	public String toString() {

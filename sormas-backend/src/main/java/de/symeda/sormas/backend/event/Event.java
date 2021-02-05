@@ -96,7 +96,7 @@ public class Event extends CoreAdo {
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String TASKS = "tasks";
 	public static final String REPORT_LAT = "reportLat";
@@ -145,7 +145,7 @@ public class Event extends CoreAdo {
 	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;
-	private User surveillanceOfficer;
+	private User responsibleUser;
 	private String typeOfPlaceText;
 	private Double reportLat;
 	private Double reportLon;
@@ -477,12 +477,12 @@ public class Event extends CoreAdo {
 	}
 
 	@ManyToOne
-	public User getSurveillanceOfficer() {
-		return surveillanceOfficer;
+	public User getResponsibleUser() {
+		return responsibleUser;
 	}
 
-	public void setSurveillanceOfficer(User surveillanceOfficer) {
-		this.surveillanceOfficer = surveillanceOfficer;
+	public void setResponsibleUser(User responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

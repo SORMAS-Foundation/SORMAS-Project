@@ -89,7 +89,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String DECEASED_PERSON_ILL = "deceasedPersonIll";
 	public static final String DECEASED_PERSON_NAME = "deceasedPersonName";
 	public static final String DECEASED_PERSON_RELATION = "deceasedPersonRelation";
-	public static final String PATIENT_EXPOSITION_ROLE = "patientExpositionRole";
+	public static final String EXPOSURE_ROLE = "exposureRole";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -103,7 +103,7 @@ public class ExposureDto extends PseudonymizableDto {
 	private String exposureTypeDetails;
 	private LocationDto location;
 	@HideForCountriesExcept
-	private PatientExpositionRole patientExpositionRole;
+	private ExposureRole exposureRole;
 
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
@@ -306,12 +306,12 @@ public class ExposureDto extends PseudonymizableDto {
 		this.location = location;
 	}
 
-	public PatientExpositionRole getPatientExpositionRole() {
-		return patientExpositionRole;
+	public ExposureRole getExposureRole() {
+		return exposureRole;
 	}
 
-	public void setPatientExpositionRole(PatientExpositionRole patientExpositionRole) {
-		this.patientExpositionRole = patientExpositionRole;
+	public void setExposureRole(ExposureRole exposureRole) {
+		this.exposureRole = exposureRole;
 	}
 
 	public YesNoUnknown getIndoors() {

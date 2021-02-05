@@ -77,7 +77,7 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 	private Join<Location, District> eventDistrict;
 	private Join<Location, Community> eventCommunity;
 	private Join<Event, User> eventReportingUser;
-	private Join<Event, User> eventSurveillanceOfficer;
+	private Join<Event, User> eventResponsibleUser;
 
 	public SampleJoins(From<P, Sample> root) {
 		super(root);
@@ -243,12 +243,12 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 		this.eventReportingUser = eventReportingUser;
 	}
 
-	public Join<Event, User> getEventSurveillanceOfficer() {
-		return getOrCreate(eventSurveillanceOfficer, Event.SURVEILLANCE_OFFICER, JoinType.LEFT, getEvent(), this::setEventSurveillanceOfficer);
+	public Join<Event, User> getEventResponsibleUser() {
+		return getOrCreate(eventResponsibleUser, Event.RESPONSIBLE_USER, JoinType.LEFT, getEvent(), this::setEventResponsibleUser);
 	}
 
-	private void setEventSurveillanceOfficer(Join<Event, User> eventSurveillanceOfficer) {
-		this.eventSurveillanceOfficer = eventSurveillanceOfficer;
+	private void setEventResponsibleUser(Join<Event, User> eventResponsibleUser) {
+		this.eventResponsibleUser = eventResponsibleUser;
 	}
 
 	public Join<Contact, Person> getContactPerson() {

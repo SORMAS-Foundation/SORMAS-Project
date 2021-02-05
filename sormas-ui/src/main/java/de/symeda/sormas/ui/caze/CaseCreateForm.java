@@ -30,6 +30,7 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
@@ -43,6 +44,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -85,10 +87,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
 			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
-			+ fluidRow(fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
+			+ fluidRow(
+					fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 					fluidColumn(6, 0,
 							locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
-									CaseDataDto.RABIES_TYPE)))
+									CaseDataDto.RABIES_TYPE)),
+					fluidColumnLoc(6, 0, CaseDataDto.DISEASE_VARIANT))
 			+ fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
 			+ fluidRowLocs(FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
 			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
@@ -124,7 +128,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
-		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
+		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
+		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
+		diseaseVariantField.setNullSelectionAllowed(true);
+		diseaseVariantField.setVisible(false);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		NullableOptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
@@ -380,13 +387,24 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addValueChangeListener(e -> {
 			Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
 			if (defaultDisease != null) {
-				disease.setValue(defaultDisease);
+				diseaseField.setValue(defaultDisease);
 			}
 
 			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN, CaseDataDto.DISEASE, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}
+		});
+		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
+			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
+			List<DiseaseVariantReferenceDto> variants;
+			if (disease != null && disease.isVariantAllowed()) {
+				variants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
+			} else {
+				variants = Collections.emptyList();
+			}
+			FieldHelper.updateItems(diseaseVariantField, variants);
+			diseaseVariantField.setVisible(isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && !variants.isEmpty());
 		});
 	}
 

@@ -212,6 +212,7 @@ public interface Captions {
 	String CaseData_covidTestReasonDetails = "CaseData.covidTestReasonDetails";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
@@ -835,6 +836,7 @@ public interface Captions {
 	String Event_participantCount = "Event.participantCount";
 	String Event_reportDateTime = "Event.reportDateTime";
 	String Event_reportingUser = "Event.reportingUser";
+	String Event_responsibleUser = "Event.responsibleUser";
 	String Event_riskLevel = "Event.riskLevel";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
@@ -847,7 +849,6 @@ public interface Captions {
 	String Event_srcTelNo = "Event.srcTelNo";
 	String Event_srcType = "Event.srcType";
 	String Event_startDate = "Event.startDate";
-	String Event_surveillanceOfficer = "Event.surveillanceOfficer";
 	String Event_transregionalOutbreak = "Event.transregionalOutbreak";
 	String Event_travelDate = "Event.travelDate";
 	String Event_typeOfPlace = "Event.typeOfPlace";
@@ -862,6 +863,8 @@ public interface Captions {
 	String EventAction_eventEvolutionComment = "EventAction.eventEvolutionComment";
 	String EventAction_eventEvolutionDate = "EventAction.eventEvolutionDate";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
+	String EventAction_eventReportingUser = "EventAction.eventReportingUser";
+	String EventAction_eventResponsibleUser = "EventAction.eventResponsibleUser";
 	String EventAction_eventRiskLevel = "EventAction.eventRiskLevel";
 	String EventAction_eventStatus = "EventAction.eventStatus";
 	String EventAction_eventTitle = "EventAction.eventTitle";
@@ -964,6 +967,7 @@ public interface Captions {
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
 	String Exposure_exposureDate = "Exposure.exposureDate";
+	String Exposure_exposureRole = "Exposure.exposureRole";
 	String Exposure_exposureType = "Exposure.exposureType";
 	String Exposure_exposureTypeDetails = "Exposure.exposureTypeDetails";
 	String Exposure_gatheringDetails = "Exposure.gatheringDetails";
@@ -979,7 +983,6 @@ public interface Captions {
 	String Exposure_meansOfTransportDetails = "Exposure.meansOfTransportDetails";
 	String Exposure_otherProtectiveMeasures = "Exposure.otherProtectiveMeasures";
 	String Exposure_outdoors = "Exposure.outdoors";
-	String Exposure_patientExpositionRole = "Exposure.patientExpositionRole";
 	String Exposure_percutaneous = "Exposure.percutaneous";
 	String Exposure_physicalContactDuringPreparation = "Exposure.physicalContactDuringPreparation";
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
@@ -1219,6 +1222,7 @@ public interface Captions {
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
+	String PathogenTest_typingId = "PathogenTest.typingId";
 	String pathogenTestNewResult = "pathogenTestNewResult";
 	String pathogenTestNewTest = "pathogenTestNewTest";
 	String PathogenTests = "PathogenTests";

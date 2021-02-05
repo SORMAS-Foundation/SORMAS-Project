@@ -15,7 +15,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -25,11 +28,15 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides UI components to integrate with the SurvNet gateway
  */
 public class SurvnetGateway {
+
+	private static final Logger logger = LoggerFactory.getLogger(SurvnetGateway.class);
 
 	public static final String SURVNET_GATEWAY_LOC = "survnetGateway";
 
@@ -133,6 +140,31 @@ public class SurvnetGateway {
 		}
 
 		Notification.show(I18nProperties.getCaption(Captions.SurvnetGateway_title), message, type);
+	}
+
+	public static <T extends EntityDto> boolean deleteInSurvnet(SurvnetGatewayType gatewayType, List<T> entities) {
+		int statusCode;
+
+		switch (gatewayType) {
+			case CASES:
+				statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteCases((List<CaseDataDto>) entities);
+				break;
+			case EVENTS:
+				statusCode = FacadeProvider.getSurvnetGatewayFacade().deleteEvents((List<EventDto>) entities);
+				break;
+			default:
+				throw new IllegalArgumentException(gatewayType.toString());
+		}
+
+		switch (statusCode) {
+			case HttpServletResponse.SC_OK:
+			case HttpServletResponse.SC_NO_CONTENT:
+				return true;
+			case HttpServletResponse.SC_BAD_REQUEST:
+			default:
+				logger.warn("Cannot delete entities in SurvNet due to {} response", statusCode);
+				return false;
+		}
 	}
 
 }
