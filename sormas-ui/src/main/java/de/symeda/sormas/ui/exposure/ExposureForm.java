@@ -231,10 +231,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.MEANS_OF_TRANSPORT,
 			ExposureDto.MEANS_OF_TRANSPORT_DETAILS,
 			ExposureDto.SEAT_NUMBER,
-			ExposureDto.EXPOSURE_ROLE);
+			ExposureDto.EXPOSURE_ROLE,
 			ExposureDto.COMMERCE,
-			ExposureDto.WORK_ENVIRONMENT,
-			ExposureDto.PATIENT_EXPOSITION_ROLE);
+			ExposureDto.WORK_ENVIRONMENT);
 
 		addFieldsWithCss(
 			NullableOptionGroup.class,

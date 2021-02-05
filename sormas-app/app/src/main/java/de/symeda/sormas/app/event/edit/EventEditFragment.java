@@ -33,6 +33,8 @@ import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.Commerce;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -122,6 +124,14 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
 				contentBinding.eventEventLocation.setValue(locationClone);
 				record.setEventLocation(locationClone);
+
+				if (FacilityTypeGroup.WORKING_PLACE != locationDialog.getContentBinding().facilityTypeGroup.getValue()) {
+					contentBinding.eventWorkEnvironment.setValue(null);
+					contentBinding.eventWorkEnvironment.setVisibility(View.GONE);
+				} else {
+					contentBinding.eventWorkEnvironment.setVisibility(View.VISIBLE);
+				}
+
 				locationDialog.dismiss();
 			} catch (ValidationException e) {
 				NotificationHelper.showDialogNotification(locationDialog, ERROR, e.getMessage());
@@ -198,6 +208,11 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventEvolutionDate.initializeDateField(getFragmentManager());
 
 		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
+
+		FacilityType facilityType = record.getEventLocation().getFacilityType();
+
+		contentBinding.eventWorkEnvironment
+			.setVisibility(facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
 	}
 
 	@Override
