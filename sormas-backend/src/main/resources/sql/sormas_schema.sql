@@ -6398,8 +6398,17 @@ CREATE TABLE vaccinationinfo (
     vaccinebatchnumber text,
     vaccineuniicode text,
     vaccineatccode text,
+    sys_period tstzrange not null,
     primary key (id)
 );
+
+ALTER TABLE vaccinationinfo OWNER TO sormas_user;
+
+CREATE TABLE vaccinationinfo_history (LIKE vaccinationinfo);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON vaccinationinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccinationinfo_history', true);
+ALTER TABLE vaccinationinfo_history OWNER TO sormas_user;
 
 ALTER TABLE contact
     ADD COLUMN vaccinationinfo_id bigint;

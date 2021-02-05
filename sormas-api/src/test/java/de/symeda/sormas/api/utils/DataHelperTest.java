@@ -67,7 +67,7 @@ public class DataHelperTest {
 			assertEquals("A", DataHelper.getShortUuid("A"));
 			fail("getShortUuid should not be graceful on Uuids that are too short.");
 		} catch (StringIndexOutOfBoundsException e) {
-			assertEquals("begin 0, end 6, length 1", e.getMessage());
+			assertEquals("String index out of range: 6", e.getMessage());
 		}
 	}
 }
