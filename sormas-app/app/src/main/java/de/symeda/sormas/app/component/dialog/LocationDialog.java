@@ -218,17 +218,17 @@ public class LocationDialog extends FormDialog {
                             R.string.action_confirm,
                             R.string.action_cancel);
                     confirmationDialog.setPositiveCallback(() -> {
-                        OverrideLocationDetailsWithFacilityOnes(facility);
+                        overrideLocationDetailsWithFacilityOnes(facility);
                     });
                     confirmationDialog.show();
                 } else {
-                    OverrideLocationDetailsWithFacilityOnes(facility);
+                    overrideLocationDetailsWithFacilityOnes(facility);
                 }
             }
         });
     }
 
-    private void OverrideLocationDetailsWithFacilityOnes(Facility facility) {
+    private void overrideLocationDetailsWithFacilityOnes(Facility facility) {
         contentBinding.locationCity.setValue(facility.getCity());
         contentBinding.locationPostalCode.setValue(facility.getPostalCode());
         contentBinding.locationStreet.setValue(facility.getStreet());

@@ -360,11 +360,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 								640,
 								confirmationEvent -> {
 									if (confirmationEvent) {
-										OverrideLocationDetailsWithFacilityOnes(facilityDto);
+										overrideLocationDetailsWithFacilityOnes(facilityDto);
 									}
 								});
 						} else {
-							OverrideLocationDetailsWithFacilityOnes(facilityDto);
+							overrideLocationDetailsWithFacilityOnes(facilityDto);
 						}
 					}
 				}
@@ -400,7 +400,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityTypeGroup.setEnabled(isEnabled);
 	}
 
-	private void OverrideLocationDetailsWithFacilityOnes(FacilityDto facilityDto) {
+	private void overrideLocationDetailsWithFacilityOnes(FacilityDto facilityDto) {
 		((TextField) getField(LocationDto.CITY)).setValue(facilityDto.getCity());
 		((TextField) getField(LocationDto.POSTAL_CODE)).setValue(facilityDto.getPostalCode());
 		((TextField) getField(LocationDto.STREET)).setValue(facilityDto.getStreet());
